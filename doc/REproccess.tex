@@ -14,16 +14,15 @@
 
 \begin{document}
 \maketitle
-
-\begin{abstract}
-To be done later....
-\end{abstract}
-
+%
+%\begin{abstract}
+%\end{abstract}
+%
 \section{Introduction}
 
-It is widely accepted that there is a clear link between proper system requirement and project success, as described in  \cite{Boe91} and \cite{Jac99}.  Also, there is clear link between failure to understand requirements and project failure \cite{Ewu03}.  Although requirement engineering (RE) process is very important, the academic field is still seen as immature \cite{Poh96}. There is agreement that a definition of a requirement is related to \emph{what} a system can do and not \emph{how} it is done.  Moreover, the community acknowledge that requirements must be elicited, specified and validated.  However, the agreements seem to end there and little uniformity on terminology is reached \cite{Poh96}. In the AMIDST project, we have therefore chosen to inspect the main challenges in the project, before choosing a paradigm for conducting a RE process.
+It is widely accepted that there is a clear link between proper system requirement and project success, as described in  \cite{Boe91} and \cite{Jac99}.  Also, there is clear link between failure to understand requirements and project failure \cite{Ewu03}.  Although requirement engineering (RE) process is very important, the academic field is still seen as immature \cite{Poh96}. There is agreement that a definition of a requirement is related to \emph{what} a system can do and not \emph{how} it is done.  Moreover, the community acknowledge that requirements must be elicited, specified and validated.  However, the agreements seem to end there and little uniformity on terminology is reached \cite{Poh96}.  Moreover, in \cite{Ebe10} it was emphasised that since projects differ, no standard RE process exists.  In the AMIDST project, we have therefore chosen to inspect the main challenges in the project, before choosing a paradigm for conducting the RE process.
 
-The report is outlined as follows.  In section \ref{sec:challenges}, the main challenges for outlining the process are discussed.  Moreover, some definitions related to RE is argued for based on those challenges.  In section \ref{sec:reprocess}, an overview of the process is given and argued for in relation to the challenges identified in section \ref{sec:challenges}.  Section \ref{sec:retrospection} contains a retrospection before the report is concluded in section \ref{sec:conclusion}.
+The report is outlined as follows.  In section \ref{sec:challenges}, the main challenges for outlining the process are discussed and some definitions related to RE is argued for based on those challenges.  In section \ref{sec:reprocess}, an overview of the process is given and argued for in relation to the challenges identified in section \ref{sec:challenges}.  Section \ref{sec:retrospection} contains a some additional comments.
 
 \section{Main challenges in AMIDST RE process}
 \label{sec:challenges}
@@ -44,6 +43,7 @@ Prior to project start, the importance of RE was well acknowledged by the partne
 4 & The software itself is based on graphical probabilistic models, which is a domain that is limited to people with a strong engineering background.  This domain is difficult to learn for some of the industrial participants.  \tabularnewline
 5 & The goal of the software is to reach targets that are highly innovational. Defining a requirement is linked with the perception of which design pattern one wants to follow to meet the requirement \cite{Ral13}.  Since a requirement is understood to be clear and of no ambiguity, it is more difficult to define it, when there is unclarity in which design patterns to follow \cite{Ral13}. \tabularnewline
 6 & It is not clear to what extent hardware is needed to be taken into account.  This imposes a constraint on which competences is needed for the analysis. \tabularnewline
+7 & When the RE process is conducted then both the process and resulting document must be in compliance with the approved application to the seventh EU programme. \tabularnewline
 & \tabularnewline
 \hline
 \end{tabular}
@@ -72,13 +72,13 @@ Within each organisation we decided to group the users into a small set of user 
 
 \subsection{Definition of a use case}
 
-In software and systems engineering, a use case is a list of steps, typically defining interactions between an actor and a system, to achieve a goal. The actor can be a human or an external system.  An overview on how to write effective use cases is given in \cite{Coc01}, where several templates are given.  In the AMIDST project, we decided to keep a simple definition to meet challenge one. The use case providers are asked to provide the use cases in natural language and for each use case the following questions are central:
+In software and systems engineering, a use case is a list of steps, typically defining interactions between an actor and a system, to achieve a goal. The actor can be a human or an external system \cite{Poh10}.  An overview on how to write effective use cases is given in \cite{Coc01}, where several templates are given.  In the AMIDST project, we have decided to keep a simple definition to meet challenge one. The use case providers are asked to provide the use cases in natural language and for each use case the following questions are central:
 
 \begin{enumerate}
-\item Who/Which are the actors involved in the use case? An actor is an external person or entity that interacts with the AMIDST framework. If the entity is a person, please indicate which user group he/she belongs to.   
-\item What is the main event that initiates the use case? This could e.g. be an external business event or a system event that causes the use case to begin, or it could be the initial step in a normal work flow. 
-\item What are the main user actions and system responses that will take place during the normal execution of the use case?. This dialog sequence will ultimately lead to accomplishing the goal implied by the use case name and description.
-\item How do you evaluate the success of the use case?
+\item Who/Which are the actors involved in the use case? An actor is either a person belonging to a user group or an entity that interacts with the AMIDST framework.  
+\item What is the main event that initiates the use case? This could e.g. be an external business event or a system event that causes the use case to begin.  It could also be the initial step in a normal work flow. 
+\item What are the main user actions and system responses that will take place during the normal execution of the use case?. This dialog sequence will ultimately lead to accomplishing the goal that is implied by the use case name and description.
+\item How can we evaluate the success of the use case?
 \end{enumerate}
 
 \subsection{Definition of a requirement}
@@ -92,9 +92,9 @@ It is also of important to give clarity the definition of a requirement in the A
 \end{enumerate}
 }
 
-This definition has a clear focus on the user, the system or the system component and also which contract, standard or specification is needed to be met.  This is particularly tractable in the AMIDST project where most contributors understand only parts of the project, as understood by challenge 3 and 4 in table \ref{tab:challenges}. Notice, that this definition does not allow for a requirement to be to some degree optional,.  This is needed to meet challenge 5 in table \ref{tab:challenges} and as an extension we introduce the term \emph{optional requirements}. The term optional requirement is used when the system is required to meet only a fraction of the optional requirements.
+This definition has a clear focus on the user, the system/system component and also which contract, standard or specification is needed to be met.  This is particularly tractable in the AMIDST project where most contributors understand only parts of the project, as understood by challenge 3 and 4 in table \ref{tab:challenges}. Notice, that this definition does not allow for a requirement to be to some degree optional,.  This is needed to meet challenge 5 in table \ref{tab:challenges} and as an extension we introduce the term \emph{optional requirements}. The term optional requirement is used when the system is required to meet only a fraction of the optional requirements.  The requirements are divided up into three categories; must, should and could, which clarifies how \emph{optional} they are.
 
-A requirement can also be associated with a step in a design or an operation stage as described in figure \ref{REprocess2}
+A requirement is also associated with a step in a product life cycle as described and \cite{Eig09}.  In this reference the overall life cycle is divided into three phases; design phase, operation phase and disposal phase.  In the AMIDST project we only considered the two first phases and figure \ref{REprocess2} shows the AMIDST product life cycle.
 
 \begin{figure}
 \centering
@@ -114,9 +114,9 @@ In the AMIDST process all requirements are associated with only one of these ste
 
 \section{The requirements engineering process in AMIDST}
 \label{sec:reprocess}
-The overall RE process is carried out in an iterative fashion that is expected to involve a high level of cooperation and interaction between the partners in order to meet all challenges in in table \ref{tab:challenges}. During this process the document for the requirements analysis will be gradually refined and expanded. In figure \ref{REprocess1}  an illustration of the RE process for AMIDST is given.  In general the process contain five phases, which are discussed below.\begin{enumerate} \item Preparation I.  This phase started with Work Package 1 and ended when the initial template for the RE document was finished.  This template can be found in attachment X1. In this template there is emphasis on a number of definitions in RE to meet challenge one in table \ref{tab:challenges}.  Moreover, the use case providers are asked to provide a detailed description of the system context that the AMIDST software is expected to run in, identify which user groups are involved and finally describe use cases and requirements.  These actions are in compliance with challenge three in table\ref{tab:challenges}.  
-\item Elicitation. The distribution of the above mentioned template marks the initialisation of this phase.  Its aim is to get an initial high-level description of the different use cases and their requirements. This information are specified by the use case providers in collaboration with the academic partners to meet challenge four and also five and six in table \ref{tab:challenges}.  Once the use case providers return the present document with the requested information, feedback and informal meetings are expected to clarify and refine the information provided.  At the end of the elicitation phase, the aim is to have a first coherent description of the requirements for each use case provider. \item Prioritization. In this phase the use case providers completes an extended version of the document template used in the previous phase. This template is used to link each of the requirements to the relevant work packages and tasks in the AMIDST project. Moreover, the template allows the use case providers to provide a more fine grained prioritization of the relevant requirements for the AMIDST framework.  
- \item Validation. In this phase, the requirements from all use-case providers are collected to get the ?big picture?.  This involves a discussion to what extent the requirements can be accommodated. Revisions and negotiations of the detailed requirements are therefore expected.   \item Evaluation and Testing. In this phase, the focus is on the elicitation of the evaluation and testing procedures in the AMIDST project. This phase starts with the distribution of a new document template, where the aim is to obtain a high level description of the evaluation and testing methods that is necessary to measure the performance of the AMIDST framework.
+The overall RE process is carried out in an iterative fashion that is expected to involve a high level of cooperation and interaction between the partners in order to meet all challenges in table \ref{tab:challenges}. During this process the document for the requirements analysis will be gradually refined and expanded. In figure \ref{REprocess1}  an illustration of the RE process for AMIDST is given, which is inspired by and \cite{Ebe10}.  In general the process contain five phases, which are discussed below.\begin{enumerate} \item Preparation I.  This phase started with Work Package 1 and ended when the initial template for the RE document was finished.  This template can be found in attachment X1. In this template there is emphasis on a number of definitions in RE to meet challenge one in table \ref{tab:challenges}.  Moreover, the use case providers are asked to provide a detailed description of the system context that the AMIDST software is expected to run in, identify which user groups are involved and finally describe use cases and requirements.  These actions are in compliance with challenge three in table \ref{tab:challenges}.  
+\item Elicitation. The distribution of the above mentioned template marks the initialisation of this phase.  Its aim is to get an initial high-level description of the different use cases and their requirements. This information are specified by the use case providers in collaboration with the academic partners to meet challenge four and also five and six in table \ref{tab:challenges}.  Once the use case providers return the present document with the requested information, feedback and informal meetings are expected to clarify and refine the information provided.  At the end of the elicitation phase, the aim is to have a first coherent description of the requirements for each use case provider. \item Prioritization. In this phase the use case providers completes an extended version of the document template used in the previous phase. This template is used to link each of the requirements to the relevant work packages and tasks in the AMIDST project. Moreover, the template allows the use case providers to provide a more fine grained prioritization of the relevant requirements for the AMIDST framework.  In this step it is of key importance to ensure that challenge 7 in table  \ref{tab:challenges} is met.
+ \item Validation. In this phase, the requirements from all use-case providers are collected to get the \emph{big picture}.  This involves a discussion to what extent the requirements can be accommodated. Revisions and negotiations of the detailed requirements are therefore expected.   \item Evaluation and Testing. In this phase, the focus is on the elicitation of the evaluation and testing procedures in the AMIDST project. This phase starts with the distribution of a new document template, where the aim is to obtain a high level description of the evaluation and testing methods that is necessary to measure the performance of the AMIDST framework.
 \end{enumerate}
 
 \begin{figure}
@@ -126,11 +126,10 @@ In the AMIDST process all requirements are associated with only one of these ste
 \label{REprocess1}
 \end{figure}
 
-\section{Retrospection}
+\section{Additional comments}
 \label{sec:retrospection}
 
-\section{Conclusion}
-\label{sec:conclusion}
+It is appropriate to make a few comments related to challenge two in table \ref{tab:challenges} and also the need for massive knowledge transfer in the project.  No constraints on the form of the meetings are set.  Communication is done through meetings, video calls, telephone, email and document transferral.  The participants in the meetings could range from a large group to only a few people.  The reason for the \emph{no constraint policy} is to encourage as much knowledge transfer as possible.  The formal parts are taken into account in the RE documents that will be delivered at the end of the RE process. 
 
 \bibliographystyle{splncs}
 \bibliography{re}
