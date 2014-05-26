@@ -15,6 +15,19 @@ hs_err_pid*
 .idea/
 core.iml
 
+
+
+# pdf noise
+doc/REproccess.pdf
+
+
+# latex noise
+*.synctex.gz
+*.log
+*.aux
+*.bbl
+*.blg
+
+
 # Other noise
 *~
-
