@@ -120,31 +120,108 @@ To understand the use case driven approach to requirement engineering better it 
 \section{The AMIDST requirements engineering process}
 \label{sec:AmidstRequirementProcess}
 
-In this section we describe the AMIDST engineering process by first describing some characteristics with this particular project.  Prior to project start, the importance of requirement engineering was well acknowledged by the partners in the project.  This is evident from the fact that 23 out of 310 person months were assigned to conduct the requirement analysis.  We have chosen to summarise the characteristics in the next subsections, which makes it is easier to refer to them later in this report.
+In this section we describe the AMIDST requirements engineering process.  We firstly start describing the main characteristics of this project and how they influenced the pursued RE approach. 
 
+%Prior to project start, the importance of requirement engineering was well acknowledged by the partners in the project.  This is evident from the %fact that 23 out of 310 person months were assigned to conduct the requirement analysis.  We have chosen to summarise the characteristics in t%he next subsections, which makes it is easier to refer to them later in this report.
 \subsection{Characteristics of the AMIDST project}
 \label{sec:characteristics}
 
-\subsubsection{Characteristics one: Many partners on different locations}
+We list and discuss now which are the main aspects or characteristics of this project which had the greatest impact when we designed of our RE process. Our intention here is two fold. Firstly, we use them to justify our pursed approach for eliciting the requirements. But we aim also to highlight which are the key aspects that a project should share in order to benefit from our proposed RE solution. So, other practitioners or researchers aiming to use the RE approach proposed in this work should evaluate to what extent their particular project share or not all or some the key aspects that, in our opinion, made very suitable the presented RE approach for this kind of projects. 
+
+\subsubsection*{Characteristics one: Many partners on different locations}
 \label{sec:characteristic1}
-The project is a consortium of 7 partners, 4 industrial and 3 universities, which are situated in 4 different countries.  Many partners means many stakeholders to the project, which again means that it is more challenging to agree on requirements.  Moreover, when the partners are located in different countries, it is more costly to meet in person.
+The project is a consortium of 7 partners, 4 industrial and 3 universities, which are situated in 4 different countries.  The result is a project with many stakeholders, which have different backgrounds, priorities, point of views, etc. Moreover, the partners are located in different countries, what implies that the financial and time costs for personal meetings are quite high.  This characteristic of the project had a strong influence in the pursued RE process mainly because our approach could not heavily rely on personal meetings or interviews, as happens with some RE approaches proposed in the literature [?]. 
 
-\subsubsection{Characteristics two: Transference of domain knowledge from industrial partners}
+%This lack of frequent and personal communication is a potential source of misunderstandings between the peers, frictions, delays, etc.  Moreover,  it %also limited  the support and guidance that we could give to the industrial partners. In the next subsection we detail which approach we followed to %address, successfully in our opinion, this lack of frequent direct personal interaction. 
+
+
+\subsubsection*{Characteristics two: Transference of domain knowledge between industrial and academic partners}
 \label{sec:characteristic2}
-The software is expected to be compatible with three different systems in three different domains, with three different companies.  In the AMIDST project, we are expecting to solve difficult problems in the industrial domains that have not been solved before.  The developers of the software are mainly from the academic partners.  It is therefore essential that the academic partners gain enough knowledge about the industrial domains and also the systems that the AMIDST software is going to interact with. 
 
-\subsubsection{Characteristics three: Transference of domain knowledge from academic partners}
+The industrial partners of the AMIDST project come from very different domains: automotive, energy and finance industry.  It was essential that the academic partners gained enough knowledge about the industrial domains to achieve a successful elicitation and understanding of the requirements of the project. This was considered in the way we divided our work among the academic partners. 
+
+\subsubsection*{Characteristics three:  A single framework for three different problems}
 \label{sec:characteristic3}
-The software itself is based on probabilistic graphical models.  Often, the discussions between the academic and the industrial participants only involves discussing causal relations between variables in a Bayesian network.  This is usually comprehendible for most users of a system.  However, discussions often need to go deeper than this and this leads to more theoretical reflections which are difficult for many industrial participants. 
 
-\subsubsection{Characteristics four: Targets are highly innovational}
+The main aim of AMIDST project is to give solutions to the three problems posed  by our industrial partners. And our commitment is to develop a single framework which can be applied to all of them, not three specific, isolated and different solutions. This commitment for obtaining a single framework also had a strong influenced in how we pursued our RE approach. As we will detail later, we tried to adapt our RE methodology to elicit common requirements to the three problems that should be fulfilled by the proposed single framework. 
+
+\subsubsection*{Characteristics four: Targets can not be not fully defined}
 \label{sec:characteristic4}
-Defining a requirement is linked with the perception of which design pattern to follow \cite{Ral13}.  A design pattern is chosen by the software developer and is basically the path to meet the requirement.  As explained in \cite{Ral13}, when there is a high degree of unclarity of which design design pattern to follow, this ambiguity is transferred to the definition of the requirement as well.  The goal of the AMIDST software is to reach targets that are highly innovational, meaning that it is particularly difficult to define requirements that are clear and unambiguous.
 
-\subsubsection{Characteristics five: Compliance with EU application}
+AMIDST is a research project. The posed problems are challenging and, as usual, some aspects of the problems can not yet fully understood at early stages of the project. In our case, we realized that the priority of some of the requirements of the problem can change as the projects id developed. Moreover, the academic partners can not assess yet to what extent the proposed  solutions will fulfill the expectations of the industrial partners, which might be too high. These issues were  a major factor when designing the RE process.
+
+
+%Defining a requirement is linked with the perception of which design pattern to follow \cite{Ral13}.  A design pattern is chosen by the software %developer and is basically the path to meet the requirement.  As explained in \cite{Ral13}, when there is a high degree of unclarity of which  design %pattern to follow, this ambiguity is transferred to the definition of the requirement as well.  The goal of the AMIDST software is to reach targets %that are highly innovational, meaning that it is particularly difficult to define requirements that are clear and unambiguous.
+
+
+
+\subsubsection*{Characteristics five:  Pre-specified scope of the project}
 \label{sec:characteristic5}
-The requirement engineering document and the requirement engineering process itself must be in compliance
-with the approved application to the seventh EU programme. It is not enough that the software fulfil the need of the users, but it must also comply with the tasks that are promised in this project. 
+%<<<<<<< HEAD
+%The requirement engineering document and the requirement engineering process itself must be in compliance
+%with the approved application to the seventh EU programme. It is not enough that the software fulfil the need of the users, but it must also comply with the tasks that are promised in this project. 
+%=======
+
+When the partners of the project applies for funds to the seventh EU programme,  they created a document of work (DoW) which contained a description of the project and which would be the main tasks and goals of the project. The outcome of the AMIDST project must comply with the scope defined by this DoW, apart from the requirements defined by the industrial partners. As we will see, this characteristic of the project also had relevant implications  in the RE process.
+
+\subsection{Main aspects of  AMIDST's RE process}
+\label{sec:reprocess}
+
+In this section, we details which are the main elements that define the RE process followed in AMIDST. When designing this RE process, we were strongly influenced by the characteristics of project mentioned in the previous subsection. Each one of the following aspects tries to accommodate the RE process to the particularities of the AMIDST project. In the next section we, will detail how the AMIDST's RE process was finally implemented. 
+
+\subsubsection*{The division of Work}
+
+Each industrial partner was assigned to a mentor, which was one of the academic partners. The mentor of Verdande was NTNU, the mentor of DAIMLER was AAU; and the mentor of CajaMar was UAL. Hugin had a coordination role. We considered geographical and affinity reasons these assignments. In this way, each academic partner focused in one problem domain: NTNU in the oil domain; AAU in the automative domain; UAL in the finance domain. This allowed to focus the efforts when trying to understand each industrial domain. In our opinion, this division of work ease the knowledge transfer between the industrial and academic partners (AMIDST's characteristic two). Moreover, each industrial partner had a close and clear academic partner they can contact when some issue came up. 
+
+%\subsubsection*{An iterative process}
+
+%The employment of an iterative scheme in the RE process is a standard approach in the literature [?]. In our case, we 
+
+
+\subsubsection*{The document-template}
+
+As commented in the previous section, we considered that we could not follow an RE approach which heavily relies on personal meetings or direct personal interviews, as happens with some the RE approaches proposed in the literature [?], due to the number and geographical distribution of the project partners (AMIDST's characteristic one). We then decided to pursue a RE approach which can be accommodated to a more effective work flow. We then decided the creation of a document template. This document template was electronically  sent to the different partners to collect the information needed for the elicitation of the requirements. The content of this document template will be detailed in Section ?
+
+In our opinion, these some of the main advantages that we found with this approach:
+
+\begin{itemize}
+\item  The partners can be given a longer period of time to provide the information. This is an advantage over RE approaches based on frequent personal meetings where folks need to be present in the same room and face much tighter time restrictions. 
+
+\item The provided information could be easily discussed among the different relevant persons of each industrial partner, because the information gathering always takes places at the partners offices.
+
+\item The process was mainly ``asynchronous'' which ease the time resources allocation for this task by the different partners.
+\end{itemize}
+
+%Under our opinion, the main disadvantage  associated to this ``document-template'' based approach was the risk of misunderstanding the aim of some parts of the ``document-template''. Mainly because this approach implies no frequent personal iteration. We tried to address this problem with the following actions:
+% 
+%\begin{itemize}
+% 
+%\item Having online video-c	onferences where the main goals of each section of the document template were explained. 
+%
+%\item Include in the document lengthy introductions explaining which information was intended to be collected at any moment. 
+%
+%\item Structure the information gathering process in the different phases. Then, in a subsequent phase we could always ask to the partners to provide the information not provided in a previous iteration. 
+%
+%\end{itemize}
+
+\subsubsection*{Use-Cases and Requirements elicitation}
+
+- Use cases based  methodology. 
+
+- Requirements for each use cases. 
+
+- Only high-level requirements
+
+- Performance requirements. 
+
+\subsubsection*{Requirements Prioritization}
+
+We asked to the industrial partners to give rigorous prioritization of each of the requirements. By doing this, we tried to reduce the aforementioned uncertainty about the requirements. Our opinion was that by prioritizing each requirement we would force to the industrial partners to think more thoroughly about which are the relevant requirements for their particular problems. Moreover, due to the highly innovational targets of problem, we have a high risk that some the of the elicited requirements will not be meet in the final given solution. This prioritization is another way to reduce this risk because the project will focus on the full-fillment of the high level requirements. 
+
+\subsubsection*{Requirements  and Work Packages Allocation}
+
+
+
 
 \subsection{The AMIDST requirements engineering process}
 \label{sec:reprocess}
