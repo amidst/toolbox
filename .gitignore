@@ -27,7 +27,11 @@ doc/REproccess.pdf
 *.aux
 *.bbl
 *.blg
-
+*.nav
+*.out
+*.snm
+*.pdf
+*.toc
 
 # Other noise
 *~

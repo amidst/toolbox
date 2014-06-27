@@ -69,6 +69,7 @@ Principal Research Engineer, Verdande Technology}
 \item<3-> Optimization of drilling parameters
 \item<4-> Detection of drilling inefficiencies (with MSE)
 \item<5-> Better diagnostics of improper hole cleaning, instability and vibration issues
+\item<6-> Important step on the path to automation
 \end{itemize}
 
 \end{frame}
@@ -76,11 +77,7 @@ Principal Research Engineer, Verdande Technology}
 \begin{frame} \frametitle{Current Solution to Formation Detection} 
 \vspace{-1cm}
 \begin{columns}[onlytextwidth]
-\begin{column}{0.6\textwidth}
-%\centering
-%\rule{100pt}{150pt}% Place your graphic here
-
-\begin{itemize}
+\begin{column}{0.6\textwidth}\begin{itemize}
 \item<1-> Manual inspection of: 
 \begin{itemize}
 \item<1-> Petrophysical measurements from the LWD tool
@@ -88,15 +85,14 @@ Principal Research Engineer, Verdande Technology}
 \item<1-> Cuttings analyses at lag depth
 \item<1-> Lithology chart
 \end{itemize}
-
 \item<2-> Drawbacks with manual inspection: 
 \begin{itemize}
-\item<2-> Takes time to collect all data and reason
-\item<2-> Dependent on analysts time schedule
-\item<2-> Dependent on analysts experience and knowledge
+\item<3-> Time consuming
+\item<4-> Dependent on analysts time schedule
+\item<5-> Dependent on analysts experience and knowledge
 \end{itemize}
- \end{itemize}
-  \end{column}
+\end{itemize}
+\end{column}
 
 \begin{column}{0.4\textwidth}
 \begin{figure}
@@ -110,35 +106,70 @@ Principal Research Engineer, Verdande Technology}
 \end{columns}
 \end{frame}
 
-\begin{frame} \frametitle{General Methodology} 
+\begin{frame} \frametitle{Our Ideas} 
 \vspace{-1cm}
 
 \begin{columns}[onlytextwidth]
 \begin{column}{0.6\textwidth}
 
 \begin{itemize}
-\item<1-> Formation detection at the LWD tool:
+\item<1-> Automatic formation detection at the LWD tool:
 \begin{itemize}
 \item<2-> Use Lithology chart from planning as a prior 
 \item<3-> Detect changes in LWD data 
 \item<4-> Detect the most likely lithology chart above the LWD tool
 \end{itemize}
 
-\item<5-> Formation detection at the bit:
+\item<5-> Automatic formation detection at the bit:
 \begin{itemize}
 \item<6-> Use the updated lithology chart as a prior
-\item<7-> Detect \emph{changes} in drilling parameters (MSE is key)
+\item<7-> Detect \emph{changes} in drilling parameters
 \item<8-> Decide what is the most likely lithology chart above the bit
 \end{itemize}
 \end{itemize}
-  \end{column}
+ \end{column}
 
 \begin{column}{0.4\textwidth}
 
-\only<1-8>{
+\only<2>{
 \begin{figure}
 \begin{center}
-\includegraphics [keepaspectratio,width = 4.7cm] {lithologyGamma.png}\end{center}
+\includegraphics [keepaspectratio,width = 3.45cm] {fig2.png}\end{center}
+\end{figure}
+}
+
+\only<3>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 3.45cm] {fig3.png}\end{center}
+\end{figure}
+}
+
+\only<4>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 3.45cm] {fig4.png}\end{center}
+\end{figure}
+}
+
+\only<6>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 3.45cm] {fig5.png}\end{center}
+\end{figure}
+}
+
+\only<7>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 3.45cm] {fig6.png}\end{center}
+\end{figure}
+}
+
+\only<8>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 3.45cm] {fig7.png}\end{center}
 \end{figure}
 }
 
@@ -146,6 +177,102 @@ Principal Research Engineer, Verdande Technology}
 \end{columns}
 
 \end{frame}
+
+
+\begin{frame} \frametitle{How to use Information From Offset Data?} 
+\vspace{-1cm}
+
+\begin{itemize}
+\item<1-> Investigate formation changes on offset data:
+\item<2-> How is data from formation A different from data from formation B?
+\item<3-> Some easy wins:
+\begin{itemize}
+\item<4-> Some changes involve a clear step in MSE or a clear drilling break
+\item<5-> Some changes involve a more variable MSE (interbedded formations)
+\item<6-> Some changes involve ECD increase 
+\end{itemize}
+\item<7-> And there are data diven approaches...
+\end{itemize}
+\end{frame}
+
+\begin{frame} \frametitle{Data Driven Approach to Formation Detection} 
+\vspace{-1cm}
+
+\begin{columns}[onlytextwidth]
+\begin{column}{0.4\textwidth}
+
+\begin{itemize}
+\item<2-> Classification problem
+\item<5-> Data is time series
+\item<6-> Data is control response pairs 
+\begin{itemize}
+\item<6-> Flow -> pressure
+\item<6-> RPM -> torque
+\item<6-> WOB,RPM,flow -> ROP
+\end{itemize}
+\item<7-> Solution:Dynamic Bayesian networks (Kalman filters)
+\end{itemize}
+ \end{column}
+
+\begin{column}{0.6\textwidth}
+
+\only<2>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 6cm] {figClass1.png}\end{center}
+\end{figure}
+}
+
+\only<3>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 6cm] {figClass2.png}\end{center}
+\end{figure}
+}
+
+\only<4>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 6cm] {figClass3.png}\end{center}
+\end{figure}
+}
+
+\only<5>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 7cm] {ar.png}\end{center}
+\end{figure}
+}
+
+\only<6>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 7cm] {control.png}\end{center}
+\end{figure}
+}
+
+
+\only<7>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 6cm] {figClass3.png}\end{center}
+\end{figure}
+}
+
+\only<8>{
+\begin{figure}
+\begin{center}
+\includegraphics [keepaspectratio,width = 6cm] {figClass4.png}\end{center}
+\end{figure}
+}
+
+\end{column}
+\end{columns}
+
+\end{frame}
+
+
+
 
 \begin{frame} \frametitle{Mechanical Specific Energy MSE} 
 \vspace{-1cm}
@@ -159,7 +286,7 @@ MSE = \frac{WOB}{A} + \frac{TRQ \times RPM}{A \times ROP} \quad \mbox{(in SI uni
 
 \item<2-> Challenges with this measure:
 \begin{itemize}
-\item<2-> What is downhole torque? Estimate from surface or differential pressure
+\item<2-> What is downhole torque? Estimate from surface or differential pressure?
 \item<2-> Drifting of WOB. When is it calibrated?
 \item<2-> How much to average parameters before calculation? Average on depth
 \end{itemize}
@@ -186,9 +313,9 @@ MSE = \frac{WOB}{A} + \frac{TRQ \times RPM}{A \times ROP} \quad \mbox{(in SI uni
 \item<1-> Surface data
 \item<1-> Lithology data (before and after)
 \item<1-> LWD data
+\item<1-> Offset data, interpretations of offset data
 \item<2-> Memory data
 \item<2-> Wireline data 
-\item<2-> Offset data, interpretations of offset data
 \end{itemize}
 \item<3-> Resource investments:
 \begin{itemize}
@@ -212,8 +339,8 @@ MSE = \frac{WOB}{A} + \frac{TRQ \times RPM}{A \times ROP} \quad \mbox{(in SI uni
 \item<2-> Knowledge gain:
 \begin{itemize}
 \item<2-> What is the state of art in pattern recognition on drilling data?
-\item<2-> More knowledge on MSE
 \item<2-> How good can we automatically predict formations at the bit and at the LWD tool?
+\item<2-> Possibly more knowledge on MSE
 \end{itemize}
 \end{itemize}
 
