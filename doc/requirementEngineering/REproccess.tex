@@ -20,23 +20,25 @@
 %
 \section{Introduction}
 
-Even though the field of requirement engineering RE is mature and requirement engineering on very small software projects (less than 10 developers) are seen as quite immature as stated in \cite{Qui10}. In 2007, a study of seven very small software enterprises VSSE in Canada was conducted \cite{Ara07}..  The preliminary result was that 1) RE practices in successful VSSE are diverse and work well in organisations where they are applied, 2) all the companies that where studied had a strong cultural cohesion, 3) experienced persons where in charge of RE process and 4) requirement errors in these companies where rarely catastrophic.  Contrastingly, in 2011, a study of 24 experienced project managers from 24 different small software companies in Chile came to different conclusions \cite{Qui10}.  The study involved a survey of 48 questions and attending an hour long focal group for discussions.  The findings were that 1) project specifications were usually met, but the clients usually finds the solution unsatisfactory, 2) communication issues with the clients cause incomplete specifications, 3) scope creep is common 4) the RE process is often ad-hoc, 5) loss of requirements are common, 6) in cases of uncertainty, developers often finds solutions without contracting the clients and 7) VSSE are aware of RE practices but are not sure how to apply them.  Based on these two studies, it is clear that in practice RE processes are conducted very differently and experiences vary much.  Consequently, practical experiences do not point in a unified way to a common method for RE process on small projects.
+Despite the fact that the field of requirement engineering RE has existed since the seventies, very few surveys have been conducted on RE for very small software projects with less than 10 developers \cite{Qui10}. In 2007, a study of seven very small software enterprises in Canada was conducted \cite{Ara07}.
+And in 2011, a study which involved 24 experienced project managers from 24 different small software companies in Chile was conducted \cite{Qui10}.  Based on these two studies, it is clear that RE processes in very small companies are more ad-hoc and that there seem to be little agreement on how to conduct the RE process in practice.
 
-In the literature, several ready-to-use approaches for RE on small projects are attempted.  In 2004, Nikula presented a basic RE model as part of his phd thesis \cite{Nik04}, but based on an argumentation in \cite{Qui10}, this method may not be suitable for VSSE projects, because the method is based on results from a study that involved mostly larger companies \cite{Nik00}.   Dorr et. al. presented a set of 36 RE practices for RE improvement for small software projects \cite{Dor08}.  However, in this research the six companies that was considered had between 20 and 200 employees, meaning that this research was biased towards medium sized projects rather than VSSE. It is also worth mentioning that a large portion of modern software companies follows Agile methods for software development \cite{Din10}.  
-Paper \cite{Kav11} outlines how to incorporate requirement gathering in small Agile projects.  However, in the Agile methodology, requirement engineering is seen as an ongoing process involving a product owner that continuously is renegotiating the requirements.  Due to the project management process in EU, the AMIDST project is limited from following such a process. 
+In the literature, several ready-to-use approaches for RE on small projects are attempted.  In 2004, Nikula presented a basic RE model baRE as part of his PhD thesis \cite{Nik04}.  Based on an argumentation in \cite{Qui10}, this method may not be suitable for very small projects, because the method is based on results from a study that involved mostly larger companies \cite{Nik00}.   Dorr et. al. presented a set of 36 RE practices for RE improvement for small software projects \cite{Dor08}.  However, the six companies that was considered had between 20 and 200 employees, meaning that this research was also biased towards medium sized projects rather than very small. 
 
-Based on the lack of clarity in practice and consensus in literature on a common RE process for small projects, we decided to identify the characteristics of our project and motivate our choices of RE process from this.  For instance, the AMIDST project is characterized by the fact that there is a description of work that is agreed upon upfront.  The 
-AMIDST RE process must comply with the STREP proposal FP7-ICT-2013-11, and in more particular the software must comply with all deliveries in work package 1 to 8. 
+It is also worth mentioning that a large portion of modern software companies follows Agile methods for software development \cite{Din10}.  Paper \cite{Kav11} outlines how to incorporate requirement gathering in small Agile projects.  However, in the Agile methodology, requirement engineering is seen as an ongoing process throughout the whole project, which involves a product owner that continuously renegotiates the requirements.  Due to the project management process in EU's Seventh Framework Programme, the AMIDST project is limited from following such a process. 
+
+Based on the lack of clarity in practice and consensus in literature on a common RE process for small projects, we decided to identify the characteristics of our project and motivate our choices related to the RE process from this.  For instance, the AMIDST project is characterized by the fact that there is a description of work that is agreed upon upfront.  The 
+AMIDST RE process must comply with the STREP proposal FP7-ICT-2013-11, and the software must comply with all deliveries in work package 1 to 8. 
 %task 2.3 in work package 2, tasks; 3.3, 3.4, 3.5, 3,6 and 3.7 in work package 3, tasks; 4.1, 4,2 4,3 and 4.4 in work package 4 and tasks; 5.1, 5,3, 5,4 and 5,6 in work package 5.
-Another important characteristic, is that there is a huge widespread of stakeholders in the project and that the software is required to interface with three different softwares from three different companies.  Because of this, a clear focus has been put on functional requirements, which are the requirements that are most transparent to the user.  As will be discussed more later, a use case driven approach xx is taken to achieve this.
 
-The report is outlined as follows.  In section \ref{sec:stateOfArt}, the basic principles of in modern requirement engineering are briefly outlined.  Section \ref{sec:AmidstRequirementProcess} starts by describing the main characteristics of the AMIDST project, before the requirement engineering process is outlined.  In section \ref{sec:realization}, we have described the realisation of the process so far, before the report is concluded in section \ref{sec:conclusion}.
+Another important characteristic, is that there is a huge widespread of stakeholders in the project and that the software is required to interface with three different softwares from three different companies.  Because of this, we chose to focus on the functional requirements, which are the requirements that are the most transparent to the user.  As will be discussed later, a use case driven approach \cite{Poh10} and \cite{Coc01} is taken to achieve this.
 
+The report is outlined as follows.  In section \ref{sec:stateOfArt}, the basic principles of requirement engineering are briefly outlined.  Section \ref{sec:AmidstRequirementProcess} starts by describing the main characteristics of the AMIDST project, before the RE process is outlined.  In section \ref{sec:realization}, we have described the realization of the process so far, before the report is concluded in section \ref{sec:conclusion}.
 
 \section{Basic principles in requirement engineering}
 \label{sec:stateOfArt}
 
-In practice, the requirement engineering process ends with a document containing a list with requirements, which are in the form of what a software must do or comply with.  There is agreement that a definition of a requirement is related to \emph{what} a system can do and not \emph{how} it is done.  
+In practice, the requirement engineering process ends with a document containing a list with requirements, which are in the form of what a software must do or comply with.  
 
 To date there is no common definition of requirement engineering.  Some definitions focus on elicitation of requirements and therefore the interaction with the user, while others focus on the documentation or the specification.  A definition that takes both focuses into account is the IEEE standard given in \cite{Iee90}:
 
@@ -47,7 +49,7 @@ To date there is no common definition of requirement engineering.  Some definiti
 \end{enumerate}
 }
 
-In the context of understanding the requirement engineering process, it is worth spending some space defining the requirement itself.  A definition of a requirement is given in IEEE standard \cite{Iee90}: 
+In the context of understanding the requirement engineering process, it is worth spending some space on defining the requirement itself.  A definition of a requirement is given in IEEE standard \cite{Iee90}: 
 \emph{
 \begin{enumerate}
 \item A condition or capability needed by a user to solve a problem or achieve an objective. 
@@ -56,16 +58,118 @@ In the context of understanding the requirement engineering process, it is worth
 \end{enumerate}
 }
 
-This definition has a clear focus on the user, the system/system component and also which contract, standard or specification is needed to be met. 
+This definition has a clear focus on the user, the system/system component and also which contract, standard or specification is needed to be met. Notice, that the requirement is related to \emph{what} a system can do and not \emph{how} it is done.
 
-\subsection{Product lifecycle}
+\subsection{Activities involved in requirement engineering}
 
-In order for a requirement to be useful for the software engineers, they are often associated with steps in a product life cycle as for instance described in \cite{Eig09}.  In this reference the overall life cycle is divided into three phases; design phase, operation phase and disposal phase, see figure \ref{REprocess2}.
+The activities involved in requirements engineering vary widely, depending on the type of system being developed and the specific practices of the organization(s) involved  \cite{Som11}.  These may include:
+\begin{itemize}
+\item Requirements inception or requirements elicitation 
+\item Requirements identification - identifying new requirements
+\item Requirements analysis and negotiation - checking requirements and resolving stakeholder conflicts
+\item Requirements specification (Software Requirements Specification) - documenting the requirements in a requirements document
+\item System modeling - deriving models of the system, often using a notation such as the Unified Modeling Language
+\item Requirements validation - checking that the documented requirements and models are consistent and meet stakeholder needs
+\item Requirements management - managing changes to the requirements as the system is developed and put into use
+\end{itemize}
+
+These activities are sometimes presented as chronological stages although, in practice, there is considerable interleaving between them.  
+
+\subsection{Use case driven requirement engineering}
+
+It has always been a challenge for the software industry to communicate functionality to the users of a software. Moreover, software engineers are often frustrated, because users often do not know what they want. They only have an idea of what they want.  To improve this communication, the use-case driven approach was developed in the nineties.  It was first published by Ivar Jacobsen \cite{Jac92} and more modern references are \cite{Poh10} and \cite{Coc01}.  A use case focuses only on the interaction between a user and the system.  Requirements are always associated with a use case. This means that the user is requested to only focus on what he/she wants.  This is an advantage, compared to the traditional way where requirements are listed in relation to components and subcomponents in the software.  The traditional way often lead to a complexity that the user do not understand.  Also, it is more common with requirement duplicates in the traditional approach.
+
+A use case is a list of steps, typically defining interactions between an actor and a system, to achieve a goal. The actor can be a human or an external system.  An overview on how to write effective use cases is given in \cite{Coc01}, where several templates are given. The use case providers are asked to provide the use cases in natural language and for each use case the following questions are central:
+
+\begin{enumerate}
+\item Who are the actors involved in the use case? An actor is either a person or an entity that interacts with the software.  
+\item What is the main event that initiates the use case? This could e.g. be an external business event or a system event that causes the use case to begin.  It could also be the initial step in a normal work flow. 
+\item What are the main user actions and system responses that will take place during the normal execution of the use case?. This dialog sequence will ultimately lead to accomplishing the goal that is implied by the use case name and description.
+\item How can we evaluate the success of the use case?
+\end{enumerate}
+ 
+It is also common to group the users, or human actors, within an organization into a small set of user groups. The users within each user group need to have similar roles within their organization and their set of competences are expected to be similar. 
+
+To understand the use case driven approach to requirement engineering better, it is useful to distinguish between functional and non functional requirements.  Functional requirements are those requirements that are directly related to the interaction between the user and the system.  The non functional requirements are more hidden for the user are related to the global overall success.  For instance scalability, traceability and testability.  When use cases are provided and functional requirements are identified, it is the requirement engineers role to identify, document and communicate these non functional requirements as well.  The use case driven approach to requirement engineering focuses on revealing the functional requirements together with the users.  This improves the communication between the users and the developers, because the focus is on what the users wants and less on how it can be done.
+
+\section{The AMIDST requirements engineering process}
+\label{sec:AmidstRequirementProcess}
+
+This section contains a description of the AMIDST RE process.  We first describe the main characteristics of AMIDST and continue by describing the RE process in relation to these characteristics.
+
+%Prior to project start, the importance of requirement engineering was well acknowledged by the partners in the project.  This is evident from the %fact that 23 out of 310 person months were assigned to conduct the requirement analysis.  We have chosen to summarize the characteristics in t%he next subsections, which makes it is easier to refer to them later in this report.
+\subsection{Characteristics of the AMIDST project}
+\label{sec:characteristics}
+
+In this subsection, we list the main aspects or characteristics of the project that have the greatest impact on the design of the RE process.  Notice, that there are also many other characteristics of AMIDST that are not mentioned here.  This is because their impact on the RE process is believed to be minimal.  
+%It is also worth noting that other researchers and practitioners that want to follow our path of describing characteristics of the project, may benefit from our analyses of which characteristics had the most impact on the RE process.
+
+
+\subsubsection*{Characteristics one:  Pre-specified scope of the project}
+\label{sec:characteristic1}
+
+When the AMIDST project started, there was a document of work that was already agreed upon.  In particular the RE process must comply with this document and the software must comply with the deliveries in the work package one to eight.  In practice, this means that whenever a requirement is considered, it must always be justified and linked with a delivery in a work package.
+
+\subsubsection*{Characteristics two: Many partners on different locations}
+\label{sec:characteristic2}
+The project is a consortium of 7 partners, 4 industrial and 3 universities, which are situated in 4 different countries.  The result is a project with many stakeholders, which have different backgrounds, priorities and influences on the software. Moreover, the partners are located in different countries, which implies that the financial and time costs for personal meetings are quite high.  This characteristic has an influence on the pursued RE process, because the process is restricted to not rely heavily on meetings with many participants.
+
+\subsubsection*{Characteristics three: Transference of domain knowledge between industrial and academic partners}
+\label{sec:characteristic3}
+
+The industrial partners of the AMIDST project come from very different domains: automotive, energy and finance industry.  On one side, it was essential that the industrial partners gained enough insight of what can be done with probabilistic graphical models to identify proper use cases.  On the other side, it was essential that the academic partners gained enough knowledge about the industrial domains to understand the proposed use cases and requirements.
+%This was considered in the way we divided our work among the academic partners. 
+
+\subsubsection*{Characteristics four:  One framework for three different problems}
+\label{sec:characteristic4}
+
+The main aim of AMIDST software is to give solutions to the problems that are posed by the three industrial partners.  One single framework shall solve all posed problems.  It is therefore a challenge to find common requirements that are addressing problems across all three domains.
+
+\subsubsection*{Characteristics five: Targets are not fully defined}
+\label{sec:characteristic5}
+
+AMIDST is a research project. The posed problems are challenging and, as usual, some aspects of the problems are not fully understood at this stage in the project. We realize that the priority of some of the requirements can change as the project continue. There is also an uncertainty related to how satisfied the industrial partners will be when the proposed solutions are implemented.  
+
+%Defining a requirement is linked with the perception of which design pattern to follow \cite{Ral13}.  A design pattern is chosen by the software %developer and is basically the path to meet the requirement.  As explained in \cite{Ral13}, when there is a high degree of unclarity of which  design %pattern to follow, this ambiguity is transferred to the definition of the requirement as well.  The goal of the AMIDST software is to reach targets %that are highly innovational, meaning that it is particularly difficult to define requirements that are clear and unambiguous.
+
+\subsection{Main aspects of the AMIDST's RE process}
+\label{sec:reprocess}
+
+In this subsection, we detail the main elements that define the AMIDST RE process, which are strongly influenced by the characteristics in the previous subsection.  This subsection contains a description of how the work is divided among the partners and how the use case driven approach is adapted.  Moreover, a document template that is central in the AMIDST RE process is described.  Requirement are discussed in terms of how they are linked with the product life cycle and deliveries in the AMIDST project.  Prioritization of requirements are also briefly described, before the outline of the main activities in the AMIDST RE process is given.
+
+\subsubsection*{Division of work}
+
+For each industrial partner, a mentor among the academic partners is assigned. The mentor for Verdande Technology is NTNU, the mentor for DAIMLER is AAU; and the mentor for CajaMar is UAL. Hugin has a coordination role. We considered geographical and affinity reasons for these assignments.  On one side, this allows each of the academic partners to focus on only one industrial domain.  On the other side, the industrial partners have the academic support they need for identifying proper use cases.  This division of work is a tool to mitigate characteristic two, because it eases the knowledge transfer between the industrial and academic partners. 
+
+\subsubsection*{Use case driven approach}
+
+A use case driven approach is chosen in the AMIDST RE process.  In a use case driven approach, there is a clear focus on the functional requirements which are the most relevant to the user.  It is also important that requirement are listed with respect to each use case, meaning that the users get a better overview than if requirements are listed component-wise. The use case driven approach is designed to ease the communication between the user and the software developer.  It is therefore a good choice to meet characteristic three.  
+
+Moreover, since the functional requirements are generally more high-level, this approach comply with characteristic five.  This is because it is less likely to add a very specific requirement that becomes less relevant later.  
+
+In order to meet characteristic one, the use case providers are asked to describe how every use case can be tested and what is needed for them to deem the product a success.  These requirements are identified as performance requirements.
+
+\subsubsection*{Document template}
+
+Because of characteristics two, we have decided to not follow a RE process that heavily relies on personal meetings and direct personal interviews.  Even though meetings still is an important ingredient in the process, we decided to distribute a document template to each of the industrial partners early in the process. The document template contains a description of how to describe the system context that the AMIDST software shall run in.  Moreover, it contains a description of how to write the use cases, how to define the user groups and how to document the requirements.
+The main advantages with this template are:
+
+\begin{itemize}
+\item Industrial partners are pushed to contribute with use cases early, meaning that issues and misunderstandings are revealed early.  This is important to mitigate characteristic three.
+\item All ideas are documented and there is no loss of information, which is common in interviews.  This is important to meet characteristic one, three, four and five.
+\item The provided information can easily be transferred from the mentors to the other academic partners.  This is important for meeting characteristic four.
+\item  The partners can spend more time on use cases and requirements, before talking to the mentors.  To some extent, this meets characteristics three, because it is easier for the mentors to learn when the requirements are more though through.
+\item The work on the different templates can be asynchronous in time.  This eases the resources allocation for the different partners.  This is related to characteristic two.
+\end{itemize}
+
+\subsubsection*{Requirements and the product lifecycle}
+
+In order for a requirement to be useful for the software engineers, they are often associated with steps in a product life cycle as for instance described in \cite{Eig09}.  In this reference the overall life cycle is divided into three phases; design phase, operation phase and disposal phase.  In the AMIDST software, the disposal phase is not relevant for us.  This is shown in figure \ref{REprocess2}.
 
 \begin{figure}
 \centering
 \includegraphics [keepaspectratio,width = 14cm] {REprocess2}
-\caption{The table show key steps in the design and operation stages. Notice that each requirement can only be member of one step.  The third step is removed (TODO add to figure )}
+\caption{The table show key steps in the design and operation stages. Notice that each requirement can only be member of one step.} 
 \label{REprocess2}
 \end{figure}
 
@@ -84,156 +188,25 @@ The requirements for the operation phase concern the functionality of the deploy
  \item inference functionality, i.e., what queries the system should be able to answer
 \end{itemize}
 
+\subsubsection*{Requirements and work packages allocation}
 
-\subsection{Activities involved in requirement engineering}
+To make sure that all requirement comply with the document of work that is agreed upon upfront, every requirement is linked with the deliveries that are relevant.  This is clearly a tool to mitigate characteristic one.
 
-The activities involved in requirements engineering vary widely, depending on the type of system being developed and the specific practices of the organization(s) involved  \cite{Som11}.  These may include:
-\begin{itemize}
-\item Requirements inception or requirements elicitation 
-\item Requirements identification - identifying new requirements
-\item Requirements analysis and negotiation - checking requirements and resolving stakeholder conflicts
-\item Requirements specification (Software Requirements Specification) - documenting the requirements in a requirements document
-\item System moddeling - deriving models of the system, often using a notation such as the Unified Modeling Language
-\item Requirements validation - checking that the documented requirements and models are consistent and meet stakeholder needs
-\item Requirements management - managing changes to the requirements as the system is developed and put into use
-\end{itemize}
+\subsubsection*{Requirements prioritization}
 
-These activities are sometimes presented as chronological stages although, in practice, there is considerable interleaving between them.  
+In the Amidst RE process, the industrial partners are asked to categorize every requirement as an either must, should or could requirement.  Moreover, they are also asked to give rigorous prioritization of each requirement.  The intention is that the industrial partners are forced to think thoroughly about every requirement and how it relates to solving their problems.  This is a way to mitigate characteristic five.
 
-\subsection{Use case driven requirement engineering}
-
-It has always been a challenge for the software industry to communicate functionality to the users of a software. Moreover, software engineers are often frustrated, because users often do not know what they want. They only have an idea of what they want.  To improve this communication, the use-case driven approach was developed in the nineties, first published by  \cite{Jac92}.  More on use cases can for instance be found in \cite{Poh10} and \cite{Coc01}.  A use case focuses only on the interaction between a user and the system and requirements are always associated with a use case. This means that the user is requested to only focus on what he/she wants.  This is an advantage, compared to the traditional way where requirements are listed in relation to components and subcomponents in the software.  The traditional way often lead to a complexity that a user do not understand.  Also, it is more common with requirement duplicates in the traditional approach.
-
-A use case is a list of steps, typically defining interactions between an actor and a system, to achieve a goal. The actor can be a human or an external system.  An overview on how to write effective use cases is given in \cite{Coc01}, where several templates are given. The use case providers are asked to provide the use cases in natural language and for each use case the following questions are central:
-
-\begin{enumerate}
-\item Who are the actors involved in the use case? An actor is either a person or an entity that interacts with the software.  
-\item What is the main event that initiates the use case? This could e.g. be an external business event or a system event that causes the use case to begin.  It could also be the initial step in a normal work flow. 
-\item What are the main user actions and system responses that will take place during the normal execution of the use case?. This dialog sequence will ultimately lead to accomplishing the goal that is implied by the use case name and description.
-\item How can we evaluate the success of the use case?
-\end{enumerate}
- 
-It is also common to group the users, or human actors, within an organisation into a small set of user groups. The users within each user group need to have similar roles within their organisation and their set of competences are expected to be similar. 
-
-To understand the use case driven approach to requirement engineering better it is useful to distinguish between functional and non functional requirements.  Functional requirements are those requirements that are directly related to the interaction between the user and the system.  The non functional requirements are more hidden for the user are related to the global overall success.  For instance scalability, traceability and testability.  When use cases are provided and functional requirements are identified, it is the requirement engineers role to identify, document and communicate these non functional requirements as well.  The use case driven approach to requirement engineering focuses on revealing the functional requirements together with the users.  This improves the communication between the users and the developers, because the focus is on what the users wants and less on how it can be done.
-
-\section{The AMIDST requirements engineering process}
-\label{sec:AmidstRequirementProcess}
-
-In this section we describe the AMIDST requirements engineering process.  We firstly start describing the main characteristics of this project and how they influenced the pursued RE approach. 
-
-%Prior to project start, the importance of requirement engineering was well acknowledged by the partners in the project.  This is evident from the %fact that 23 out of 310 person months were assigned to conduct the requirement analysis.  We have chosen to summarise the characteristics in t%he next subsections, which makes it is easier to refer to them later in this report.
-\subsection{Characteristics of the AMIDST project}
-\label{sec:characteristics}
-
-We list and discuss now which are the main aspects or characteristics of this project which had the greatest impact when we designed of our RE process. Our intention here is two fold. Firstly, we use them to justify our pursed approach for eliciting the requirements. But we aim also to highlight which are the key aspects that a project should share in order to benefit from our proposed RE solution. So, other practitioners or researchers aiming to use the RE approach proposed in this work should evaluate to what extent their particular project share or not all or some the key aspects that, in our opinion, made very suitable the presented RE approach for this kind of projects. 
-
-\subsubsection*{Characteristics one: Many partners on different locations}
-\label{sec:characteristic1}
-The project is a consortium of 7 partners, 4 industrial and 3 universities, which are situated in 4 different countries.  The result is a project with many stakeholders, which have different backgrounds, priorities, point of views, etc. Moreover, the partners are located in different countries, what implies that the financial and time costs for personal meetings are quite high.  This characteristic of the project had a strong influence in the pursued RE process mainly because our approach could not heavily rely on personal meetings or interviews, as happens with some RE approaches proposed in the literature [?]. 
-
-%This lack of frequent and personal communication is a potential source of misunderstandings between the peers, frictions, delays, etc.  Moreover,  it %also limited  the support and guidance that we could give to the industrial partners. In the next subsection we detail which approach we followed to %address, successfully in our opinion, this lack of frequent direct personal interaction. 
-
-
-\subsubsection*{Characteristics two: Transference of domain knowledge between industrial and academic partners}
-\label{sec:characteristic2}
-
-The industrial partners of the AMIDST project come from very different domains: automotive, energy and finance industry.  It was essential that the academic partners gained enough knowledge about the industrial domains to achieve a successful elicitation and understanding of the requirements of the project. This was considered in the way we divided our work among the academic partners. 
-
-\subsubsection*{Characteristics three:  A single framework for three different problems}
-\label{sec:characteristic3}
-
-The main aim of AMIDST project is to give solutions to the three problems posed  by our industrial partners. And our commitment is to develop a single framework which can be applied to all of them, not three specific, isolated and different solutions. This commitment for obtaining a single framework also had a strong influenced in how we pursued our RE approach. As we will detail later, we tried to adapt our RE methodology to elicit common requirements to the three problems that should be fulfilled by the proposed single framework. 
-
-\subsubsection*{Characteristics four: Targets can not be not fully defined}
-\label{sec:characteristic4}
-
-AMIDST is a research project. The posed problems are challenging and, as usual, some aspects of the problems can not yet fully understood at early stages of the project. In our case, we realized that the priority of some of the requirements of the problem can change as the projects id developed. Moreover, the academic partners can not assess yet to what extent the proposed  solutions will fulfill the expectations of the industrial partners, which might be too high. These issues were  a major factor when designing the RE process.
-
-
-%Defining a requirement is linked with the perception of which design pattern to follow \cite{Ral13}.  A design pattern is chosen by the software %developer and is basically the path to meet the requirement.  As explained in \cite{Ral13}, when there is a high degree of unclarity of which  design %pattern to follow, this ambiguity is transferred to the definition of the requirement as well.  The goal of the AMIDST software is to reach targets %that are highly innovational, meaning that it is particularly difficult to define requirements that are clear and unambiguous.
-
-
-
-\subsubsection*{Characteristics five:  Pre-specified scope of the project}
-\label{sec:characteristic5}
-%<<<<<<< HEAD
-%The requirement engineering document and the requirement engineering process itself must be in compliance
-%with the approved application to the seventh EU programme. It is not enough that the software fulfil the need of the users, but it must also comply with the tasks that are promised in this project. 
-%=======
-
-When the partners of the project applies for funds to the seventh EU programme,  they created a document of work (DoW) which contained a description of the project and which would be the main tasks and goals of the project. The outcome of the AMIDST project must comply with the scope defined by this DoW, apart from the requirements defined by the industrial partners. As we will see, this characteristic of the project also had relevant implications  in the RE process.
-
-\subsection{Main aspects of  AMIDST's RE process}
+\subsubsection*{The activities in the AMIDST requirements engineering process}
 \label{sec:reprocess}
 
-In this section, we details which are the main elements that define the RE process followed in AMIDST. When designing this RE process, we were strongly influenced by the characteristics of project mentioned in the previous subsection. Each one of the following aspects tries to accommodate the RE process to the particularities of the AMIDST project. In the next section we, will detail how the AMIDST's RE process was finally implemented. 
-
-\subsubsection*{The division of Work}
-
-Each industrial partner was assigned to a mentor, which was one of the academic partners. The mentor of Verdande was NTNU, the mentor of DAIMLER was AAU; and the mentor of CajaMar was UAL. Hugin had a coordination role. We considered geographical and affinity reasons these assignments. In this way, each academic partner focused in one problem domain: NTNU in the oil domain; AAU in the automative domain; UAL in the finance domain. This allowed to focus the efforts when trying to understand each industrial domain. In our opinion, this division of work ease the knowledge transfer between the industrial and academic partners (AMIDST's characteristic two). Moreover, each industrial partner had a close and clear academic partner they can contact when some issue came up. 
-
-%\subsubsection*{An iterative process}
-
-%The employment of an iterative scheme in the RE process is a standard approach in the literature [?]. In our case, we 
-
-
-\subsubsection*{The document-template}
-
-As commented in the previous section, we considered that we could not follow an RE approach which heavily relies on personal meetings or direct personal interviews, as happens with some the RE approaches proposed in the literature [?], due to the number and geographical distribution of the project partners (AMIDST's characteristic one). We then decided to pursue a RE approach which can be accommodated to a more effective work flow. We then decided the creation of a document template. This document template was electronically  sent to the different partners to collect the information needed for the elicitation of the requirements. The content of this document template will be detailed in Section ?
-
-In our opinion, these some of the main advantages that we found with this approach:
-
-\begin{itemize}
-\item  The partners can be given a longer period of time to provide the information. This is an advantage over RE approaches based on frequent personal meetings where folks need to be present in the same room and face much tighter time restrictions. 
-
-\item The provided information could be easily discussed among the different relevant persons of each industrial partner, because the information gathering always takes places at the partners offices.
-
-\item The process was mainly ``asynchronous'' which ease the time resources allocation for this task by the different partners.
-\end{itemize}
-
-%Under our opinion, the main disadvantage  associated to this ``document-template'' based approach was the risk of misunderstanding the aim of some parts of the ``document-template''. Mainly because this approach implies no frequent personal iteration. We tried to address this problem with the following actions:
-% 
-%\begin{itemize}
-% 
-%\item Having online video-c	onferences where the main goals of each section of the document template were explained. 
-%
-%\item Include in the document lengthy introductions explaining which information was intended to be collected at any moment. 
-%
-%\item Structure the information gathering process in the different phases. Then, in a subsequent phase we could always ask to the partners to provide the information not provided in a previous iteration. 
-%
-%\end{itemize}
-
-\subsubsection*{Use-Cases and Requirements elicitation}
-
-- Use cases based  methodology. 
-
-- Requirements for each use cases. 
-
-- Only high-level requirements
-
-- Performance requirements. 
-
-\subsubsection*{Requirements Prioritization}
-
-We asked to the industrial partners to give rigorous prioritization of each of the requirements. By doing this, we tried to reduce the aforementioned uncertainty about the requirements. Our opinion was that by prioritizing each requirement we would force to the industrial partners to think more thoroughly about which are the relevant requirements for their particular problems. Moreover, due to the highly innovational targets of problem, we have a high risk that some the of the elicited requirements will not be meet in the final given solution. This prioritization is another way to reduce this risk because the project will focus on the full-fillment of the high level requirements. 
-
-\subsubsection*{Requirements  and Work Packages Allocation}
-
-
-
-
-\subsection{The AMIDST requirements engineering process}
-\label{sec:reprocess}
-
-The overall requirement engineering process is carried out in an iterative fashion that is expected to involve a high level of cooperation and interaction between the partners in order to meet all characteristics in subsection \label{sec:characteristics}.  A use case driven approach, which has a focus on functional requirements, is chosen to meet challenge two and three in particular.  
+The activities in the requirement engineering process is carried out in an iterative fashion that is expected to involve a high level of cooperation and interaction between the partners in order to meet all characteristics in subsection \ref{sec:characteristics}. 
 
 In figure \ref{REprocess1}, an illustration of the requirement engineering process for AMIDST is given, which is inspired by \cite{Ebe10}.  In general the process contain five phases, which are discussed below.
 \begin{enumerate}
-\item Preparation I.  This phase starts at the same time as Work Package 1 and ends when the initial template, attachment X1, for the requirement engineering document is finished.  In this template, the requirement engineering process is outlined including definitions of use cases, user groups and how to link requirements with stages in development process.  In order to meet challenge two, the use case providers are asked to provide a detailed description of the system context that the AMIDST software is expected to run in, identify user groups, describe use cases and requirements.  In order to meet characteristics three, the requirements are linked with references to stages in the development cycle.  In the AMIDST project lifcycle we only considered the two first phases and figure \ref{REprocess2}.
-\item Elicitation. The distribution of the above mentioned template marks the initialisation of this phase.  Its aim is to get an initial high-level description of the different use cases and their requirements. This information are specified by the use case providers in collaboration with the academic partners to meet characteristic two, three and five.  Once the use case providers return the present document with the requested information, feedback and informal meetings are expected to clarify and refine the information provided.  At the end of the elicitation phase, the aim is to have a first coherent description of the requirements for each use case provider.
- \item Prioritization. In this phase the use case providers completes an extended version of the document template used in the previous phase. This template is used to link each of the requirements to the relevant work packages and tasks in the AMIDST project to meet characteristics five. Moreover, the template allows the use case providers to provide a more fine grained prioritization of the relevant requirements for the AMIDST framework.  Specifically, the use case providers are asked to rate each requirement in terms of must, should and could and also rate how important it is to them.  
-\item Validation. In this phase, the requirements from all use-case providers are collected to get the \emph{big picture}.  This involves a discussion to what extent the requirements can be accommodated. Revisions and negotiations of the detailed requirements are therefore expected.  In this step it is of key importance to ensure that characteristics five is met.
+\item Preparation I.  This phase starts at the same time as work package one and ends when the initial template, attachment X1, for the requirement engineering document is finished.  In this template, the requirement engineering process is outlined including definitions of use cases, user groups and how to link requirements with stages in development process.  In order to meet characteristic three, four and five, the use case providers are asked to provide a detailed description of the system context that the AMIDST software is expected to run in, identify user groups, describe use cases and requirements.  In order to meet characteristic four, the requirements are linked with references to stages in the development cycle. 
+\item Elicitation. The distribution of the above mentioned template marks the initialization of this phase.  Its aim is to get an initial high-level description of the different use cases and their requirements. This information are specified by the use case providers in collaboration with the academic partners to meet characteristic one, three and four.  Once the use case providers return the present document with the requested information, feedback and informal meetings are expected to clarify and refine the information provided.  At the end of the elicitation phase, the aim is to have a first coherent description of the requirements for each use case provider.
+ \item Prioritization. In this phase the use case providers completes an extended version of the document template used in the previous phase. This template is used to link each of the requirements to the relevant work packages and tasks in the AMIDST project to meet characteristic one. Moreover, the template allows the use case providers to provide a more fine grained prioritization of the relevant requirements for the AMIDST framework.  Specifically, the use case providers are asked to rate each requirement in terms of must, should and could and also rate how important the requirement is to them.  
+\item Validation. In this phase, the requirements from all use-case providers are collected to get the \emph{big picture}.  This involves a discussion to what extent the requirements can be accommodated. Revisions and negotiations of the detailed requirements are therefore expected.  In this phase, it is important to ensure that characteristic one is met.
  \item Evaluation and Testing. In this phase, the focus is on the elicitation of the evaluation and testing procedures in the AMIDST project. This phase starts with the distribution of a new document template, where the aim is to obtain a high level description of the evaluation and testing methods that is necessary to measure the performance of the AMIDST framework.
 \end{enumerate}
 
@@ -247,15 +220,7 @@ In figure \ref{REprocess1}, an illustration of the requirement engineering proce
 \section{Realization of the requirements engineering process}
 \label{sec:realization}
 
-It is appropriate to make a few comments related to characteristics two in table \ref{tab:characteristic} and also the need for massive knowledge transfer in the project.  No constraints on the form of the meetings are set.  Communication is done through meetings, video calls, telephone, email and document transferral.  The participants in the meetings could range from a large group to only a few people.  The reason for the \emph{no constraint policy} is to encourage as much knowledge transfer as possible.  The formal parts are taken into account in the requirement engineering documents that will be delivered at the end of the requirement engineering process. 
-
-
-\section{Conclusion, observations and reflections}
-\label{sec:conclusion}
-
-This part of the report is written in month six when most of the process is conducted.  This section contains a few points on what experiences we have gained in the project so far
-
-Some important experiences in this project have been:
+This part of the report is written in month six when most of the process is conducted.  This section contains a few points on what experiences we have gained in the project so far:
 
 \begin{enumerate}
 \item Everyone involved has had a learning experience on many levels.  The industrial partners have learned about probabilistic graphical models, while the academic partners have learned about the industrial domains.  Most participants have increased their knowledge on how to conduct a requirement analysis. 
@@ -263,14 +228,10 @@ Some important experiences in this project have been:
 \item There have been adjustments of the template X1 as the process has proceeded.  Examples of this is adding fields to the requirements so they could be linked to concrete tasks in the AMIDST project or adding columns for rating the importance of a requirement.
 \end{enumerate}
 
+\section{Conclusion, observations and reflections}
+\label{sec:conclusion}
 
-
-
-
-
-
-
-
+Based on the lack of agreement in literature and in practice on a unified RE process for small projects, we chose to make our own process.  The approach was to identify the main characteristics in the AMIDST project that is believed to have an impact on the choices for how to conduct the RE process.  The main characteristics are that there is a pre-specified scope in the project, many different stakeholders, the software is supposed to solve very different problems and that the targets are not fully defined.  A use-case driven approach was chosen and we also introduced a document template early in the project to mitigate the above challenges.  The project is not finished yet, so it is difficult to fully evaluate the process today.  However, it is positive that there seem to be a high level of agreement between the partners at this point.
 
 \bibliographystyle{splncs}
 \bibliography{re}
