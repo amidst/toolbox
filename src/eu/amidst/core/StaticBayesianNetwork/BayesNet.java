@@ -1,6 +1,9 @@
 package eu.amidst.core.StaticBayesianNetwork;
 
 import eu.amidst.core.Estimators.Estimator;
+import eu.amidst.core.StaticDataBase.StaticModelHeader;
+import eu.amidst.core.StaticDataBase.StaticDataHeader;
+
 
 /**
  * Created by afa on 02/07/14.
@@ -8,8 +11,8 @@ import eu.amidst.core.Estimators.Estimator;
 public class BayesNet implements BayesianNetwork {
     private ParentSet[] parents;
     private Estimator[] estimators;
-    private eu.amidst.core.StaticDataBase.StaticModelHeader modelHeader;
-    private eu.amidst.core.StaticDataBase.StaticDataHeader dataHeader;
+    private StaticModelHeader modelHeader;
+    private StaticDataHeader dataHeader;
 
     public void learnParameters() {
     }

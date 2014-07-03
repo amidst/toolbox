@@ -1,5 +1,6 @@
 package eu.amidst.core.DynamicDataBase;
 
+import eu.amidst.core.StaticDataBase.StaticModelHeader;
 /**
  * Created by afa on 03/07/14.
  */
@@ -12,7 +13,7 @@ public class DynamicModelHeader {
         return 0;
     }
 
-    public eu.amidst.core.StaticDataBase.StaticModelHeader getStaticModelHeader() {
+    public StaticModelHeader getStaticModelHeader() {
         return null;
     }
 
