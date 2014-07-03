@@ -1,6 +1,9 @@
 package eu.amidst.core.DynamicBayesianNetwork;
 
 import eu.amidst.core.StaticBayesianNetwork.ParentSet;
+import eu.amidst.core.DynamicDataBase.DynamicModelHeader;
+import eu.amidst.core.DynamicDataBase.DynamicDataHeader;
+
 import eu.amidst.core.Estimators.Estimator;
 
 /**
@@ -8,7 +11,7 @@ import eu.amidst.core.Estimators.Estimator;
  */
 public class DynamicBayesNet implements DynamicBayesianNetwork {
     private ParentSet[][] parentSetTimeBeforeT;
-    private eu.amidst.core.StaticBayesianNetwork.ParentSet[] parentSetTimet;
+    private ParentSet[] parentSetTimet;
     private Estimator[][] estimatorTimeBeforet;
     private Estimator[] estimatorTimet;
     private DynamicModelHeader modelHeader;

@@ -1,10 +1,12 @@
 package eu.amidst.core.DynamicDataBase;
 
+import eu.amidst.core.DynamicDataBase.DynamicDataHeader;
+
 /**
  * Created by afa on 03/07/14.
  */
 public class SequenceStream {
-    public eu.amidst.core.DynamicBayesianNetwork.DynamicDataHeader getDynamicDataHeader() {
+    public DynamicDataHeader getDynamicDataHeader() {
         return null;
     }
 

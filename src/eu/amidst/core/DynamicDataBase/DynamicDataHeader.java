@@ -9,7 +9,7 @@ public class DynamicDataHeader {
     private double[] observedVarIDs;
     private DynamicModelHeader modelHeader;
 
-    public java.util.List getObservedVariables() {
+    public List getObservedVariables() {
         return null;
     }
 
