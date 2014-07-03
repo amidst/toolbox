@@ -38,7 +38,7 @@ necessity in relation to AMIDST should be justified and demonstrated.
 % When the AMIDST project started, there was a document of work that was already agreed upon.  In particular the RE process must comply with this document and the software must comply with the deliveries in the work package one to eight.  In practice, this means that whenever a requirement is considered, it must always be justified and linked with a delivery in a work package.
 
 \ \\
-\noindent \emph{Characteristics two: Several partners at different geographical locations}
+\noindent \emph{Characteristics two: Partners at different geographical locations}
 \label{sec:characteristic2}
 
 The AMIDST consortium consists of 7 partners/stakeholders, 4 industrial and 3 universities, which are situated in 4 different
@@ -106,56 +106,103 @@ application domains.
 %% We decompose the overall project period into phases to better -> support identification of requirements and work
 %% package allocation.
 
+The overall project duration is decomposed into distinct phases, for which requirements can be specified. According to
+\cite{Eig09} a project life cycle can be divided into three general phases: the design phase, operations phase, and
+disposal phase. The disposal phase is outside the scope of AMIDST. The design and operations phase represent the
+temporal development of the project, where each consists of distinct states in the project. This overall process is
+shown in Figure~\ref{REprocess2}. 
 
-In order for a requirement to be useful for the software engineers, they are often associated with steps in a product life cycle as for instance described in \cite{Eig09}.  In this reference the overall life cycle is divided into three phases; design phase, operation phase and disposal phase.  In the AMIDST software, the disposal phase is not relevant for us.  This is shown in figure \ref{REprocess2}.
+
+%%In order for a requirement to be useful for the software engineers, they are often associated with steps in a product life cycle as for instance described in \cite{Eig09}.  In this reference the overall life cycle is divided into three phases; design phase, operation phase and disposal phase.  In the AMIDST software, the disposal phase is not relevant for us.  
 
 \begin{figure}[htbp]
 \centering
-\includegraphics [keepaspectratio,width = 14cm] {REprocess2}
-\caption{The table show key steps in the design and operation stages. Notice that each requirement can only be member of one step.} 
+\includegraphics [keepaspectratio,width = 14cm] {amidst_phases}
+\caption{The figure shows the key stages in the design and operation phases. For the requirement specification, each
+  requirement should be defined relative to one of these stages.} 
 \label{REprocess2}
 \end{figure}
 
-The design stage contains general functionality requirements for the system, i.e. what the system should do and support.
-In figure \ref{REprocess2}, we detail key steps inside this phase. The first step consists of the design of the general
-framework (models and algorithms) as well as the design and development of the software tools. the phases are primarily
-related to Work packages 1--5. In a second step, the general framework and software is instantiated for each specific use case. Finally, initial tests of the use case instantiated framework are conducted.  At the design phase, possible design requirements could e.g. address
+
+\fixme{Describe the content of the two phases, design and operations}
+
+
+In the design stage general functionality requirements for the system is specified, i.e., what the system should do and support.
+Figure \ref{REprocess2} details key stages inside this phase. The first stage consists of the design of the general
+framework (models and algorithms) as well as the design and development of the software tools. These stages are primarily
+related to Work packages 1--5. In the second stage, the general framework and software is instantiated for each specific
+use case. Finally, initial tests of the use case instantiated frameworks are conducted.  During this phase of the project, possible design requirements could, e.g., address
 \begin{itemize}
  \item the scope of the model
  \item the interpretability of the learned models
  \item the extent and type of domain knowledge that can be integrated into the models
+ \item prediction accuracy of the developed models
  \item documentation
 \end{itemize}
 
-The requirements for the operation phase concern the functionality of the deployed system. In figure \ref{REprocess2}, we decompose this phase into three stages: installation, interface to existing systems, and production testing. The requirements for this phase could e.g. address
+The requirements for the operation phase concern the functionality of the deployed system. In figure \ref{REprocess2}, we decompose this phase into three stages: installation, interface to existing systems, and production testing. The requirements for this phase could, e.g., address
 \begin{itemize}
  \item hardware constraints
  \item interfaces to existing software or data base systems
  \item inference functionality, i.e., what queries the system should be able to answer
+ \item response time
 \end{itemize}
 
 
 \subsubsection{Use cases and user groups in the requirements engineering process}
 
-A use case driven approach is chosen in the AMIDST RE process.  In a use case driven approach, there is a clear focus on the functional requirements which are the most relevant to the user.  It is also important that requirement are listed with respect to each use case, meaning that the users get a better overview than if requirements are listed component-wise. The use case driven approach is designed to ease the communication between the user and the software developer.  It is therefore a good choice to meet characteristic three.  
+As discussed in Section~\ref{sec:stateOfArt}, a use case driven approach to requirements engineering focuses on the
+interactions between actors (this being either a person or another hardware/software module) and the system. With this
+perspective, emphasis is on the functional requirements of the system. Furthermore, to obtain more well-defined
+requirements and establish a closer connection
+between the use cases and the project stages and work packages, we require that use cases (as described in
+Section~\ref{sec:stateOfArt}) are also considered indivisible scenarios. Specifically, when defining the use cases,
+the industrial partners were informed that:
 
-Moreover, since the functional requirements are generally more high-level, this approach comply with characteristic five.  This is because it is less likely to add a very specific requirement that becomes less relevant later.  
+\begin{quote}
+\emph{  \ldots a use case should ideally be indivisible. If a use case can be decomposed into multiple
+  sub-use cases, each with a well-defined sub-objective relevant for AMIDST, then these sub-use cases should be
+  described separately.}
+\end{quote}
 
-In order to meet characteristic one, the use case providers are asked to describe how every use case can be tested and what is needed for them to deem the product a success.  These requirements are identified as performance requirements.
+The requirements derived from the use cases are typically specified in relation to a particular user or type of user (possibly another
+component of the system). In AMIDST the possible users have very diverse backgrounds, ranging from developers with an
+intimate knowledge of the key technologies embedded in the AMIDST framework to programmers and users working in
+marketing. In order to ensure that focus is on the eventual \emph{users} of the system, the MIDST requirements
+engineering process also adopts and identifies user groups (as described in Section~\ref{sec:stateOfArt}), which will be
+explicitly linked to the relevant requirements.
+
+% A use case driven approach is chosen in the AMIDST RE process.  In a use case driven approach, there is a clear focus on the functional requirements which are the most relevant to the user.  It is also important that requirement are listed with respect to each use case, meaning that the users get a better overview than if requirements are listed component-wise. The use case driven approach is designed to ease the communication between the user and the software developer.  It is therefore a good choice to meet characteristic three.  
+
+%Moreover, since the functional requirements are generally more high-level, this approach comply with characteristic five.  This is because it is less likely to add a very specific requirement that becomes less relevant later.  
+
+%In order to meet characteristic one, the use case providers are asked to describe how every use case can be tested and what is needed for them to deem the product a success.  These requirements are identified as performance requirements.
 
 \subsection{The general AMIDST requirements engineering process}
 \label{sec:reprocess}
 
-The activities in the requirement engineering process is carried out in an iterative fashion that is expected to involve a high level of cooperation and interaction between the partners in order to meet all characteristics in subsection \ref{sec:characteristics}. 
+To ensure a sufficient amount of knowledge transfer between the partners (c.f.\ Characteristics three, Page~\pageref{sec:characteristic3}),
+the overall  requirement engineering process will be carried out in an iterative fashion that is expected to involve a
+high level of cooperation and interaction between the partners.  
 
 In figure \ref{REprocess1}, an illustration of the requirement engineering process for AMIDST is given, which is inspired by \cite{Ebe10}.  In general the process contain five phases, which are discussed below.
-\begin{enumerate}
-\item Preparation I.  This phase starts at the same time as work package one and ends when the initial template, attachment X1, for the requirement engineering document is finished.  In this template, the requirement engineering process is outlined including definitions of use cases, user groups and how to link requirements with stages in development process.  In order to meet characteristic three, four and five, the use case providers are asked to provide a detailed description of the system context that the AMIDST software is expected to run in, identify user groups, describe use cases and requirements.  In order to meet characteristic four, the requirements are linked with references to stages in the development cycle. 
-\item Elicitation. The distribution of the above mentioned template marks the initialization of this phase.  Its aim is to get an initial high-level description of the different use cases and their requirements. This information are specified by the use case providers in collaboration with the academic partners to meet characteristic one, three and four.  Once the use case providers return the present document with the requested information, feedback and informal meetings are expected to clarify and refine the information provided.  At the end of the elicitation phase, the aim is to have a first coherent description of the requirements for each use case provider.
- \item Prioritization. In this phase the use case providers completes an extended version of the document template used in the previous phase. This template is used to link each of the requirements to the relevant work packages and tasks in the AMIDST project to meet characteristic one. Moreover, the template allows the use case providers to provide a more fine grained prioritization of the relevant requirements for the AMIDST framework.  Specifically, the use case providers are asked to rate each requirement in terms of must, should and could and also rate how important the requirement is to them.  
-\item Validation. In this phase, the requirements from all use-case providers are collected to get the \emph{big picture}.  This involves a discussion to what extent the requirements can be accommodated. Revisions and negotiations of the detailed requirements are therefore expected.  In this phase, it is important to ensure that characteristic one is met.
- \item Evaluation and Testing. In this phase, the focus is on the elicitation of the evaluation and testing procedures in the AMIDST project. This phase starts with the distribution of a new document template, where the aim is to obtain a high level description of the evaluation and testing methods that is necessary to measure the performance of the AMIDST framework.
-\end{enumerate}
+
+\emph{Preparation I:}  This phase starts at the same time as work package one and ends when the initial template, attachment X1, for the requirement engineering document is finished.  In this template, the requirement engineering process is outlined including definitions of use cases, user groups and how to link requirements with stages in development process.  In order to meet characteristic three, four and five, the use case providers are asked to provide a detailed description of the system context that the AMIDST software is expected to run in, identify user groups, describe use cases and requirements.  In order to meet characteristic four, the requirements are linked with references to stages in the development cycle. 
+
+\emph{Elicitation:} The distribution of the above mentioned template marks the initialization of this phase.  Its aim is to get an initial high-level description of the different use cases and their requirements. This information are specified by the use case providers in collaboration with the academic partners to meet characteristic one, three and four.  Once the use case providers return the present document with the requested information, feedback and informal meetings are expected to clarify and refine the information provided.  At the end of the elicitation phase, the aim is to have a first coherent description of the requirements for each use case provider.
+
+ \emph{Prioritization:} In this phase the use case providers completes an extended version of the document template used in the previous phase. This template is used to link each of the requirements to the relevant work packages and tasks in the AMIDST project to meet characteristic one. Moreover, the template allows the use case providers to provide a more fine grained prioritization of the relevant requirements for the AMIDST framework.  Specifically, the use case providers are asked to rate each requirement in terms of must, should and could and also rate how important the requirement is to them.  
+
+\emph{Validation:} In this phase, the requirements from all use-case providers are collected to get the \emph{big picture}.  This involves a discussion to what extent the requirements can be accommodated. Revisions and negotiations of the detailed requirements are therefore expected.  In this phase, it is important to ensure that characteristic one is met.
+
+ \emph{Evaluation and Testing:} In this phase, the focus is on the elicitation of the evaluation and testing procedures
+ in the AMIDST project. This phase starts with the distribution of a new document template, where the aim is to obtain a
+ high level description of the evaluation and testing methods that is necessary to measure the performance of the AMIDST
+ framework. This phase is not strictly part of the requirements engineering process, but will supplement the process by providing
+ detailed specifications of how to perform tests and evaluations to measure the extend of which the more quantitative
+ requirements have been met. As such, documentation of this phase is out of the scope of the present document, but will
+ be included in the initial version of the AMIDST handbook (Delieverale D1.3).    
+
 
 \begin{figure}[htbp]
 \centering
