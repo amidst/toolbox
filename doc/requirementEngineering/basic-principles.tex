@@ -39,7 +39,7 @@ These activities are sometimes presented as chronological stages although, in pr
 Anyone who has a direct or indirect influence on the process is identified as a stakeholder.   Stakeholders include end-users that will interact with the system, the developers that will maintain the system, management, domain experts, union representatives etcetera.  A challenge in the RE process is therefore to keep a smooth communication between the different stakeholders.  The use-case driven approach to RE focuses on simplyfing the communication between the end-users and the developers to improve the overall comminication.
 
 \subsection{Use-case driven requirement engineering}
-
+\label{sec:use-case-driven}
 It has always been a challenge for the software industry to communicate functionality to the users of a software. Moreover, software engineers are often frustrated, because users often do not know what they want. They only have an idea of what they want.  To improve this communication, the use-case driven approach was developed in the nineties.  It was first published by Ivar Jacobsen \cite{Jac92} and more modern references are \cite{Poh10} and \cite{Coc01}.  A use-case focuses only on the interaction between a user and the system.  Requirements are always associated with a use-case. This means that the user is requested to only focus on what he/she wants.  This is an advantage, compared to the traditional way where requirements are listed in relation to components and subcomponents in the software.  The traditional way often lead to a complexity that the user do not understand.  Also, it is more common with requirement duplicates in the traditional approach.
 
 A use-case is a list of steps, typically defining interactions between an actor and a system, to achieve a goal. The actor can be a human or an external system.  An overview on how to write effective use-cases is given in \cite{Coc01}, where several templates are given. The use-case providers are asked to provide the use-cases in natural language and for each use-case the following questions are central:
@@ -51,6 +51,16 @@ A use-case is a list of steps, typically defining interactions between an actor 
 \item How can we evaluate the success of the use-case?
 \end{enumerate}
  
-It is also common to group the users, or human actors, within an organization into a small set of user groups. The users within each user group need to have similar roles within their organization and their set of competences are expected to be similar. 
+It is also common to group the users, or human actors, within an organization into a small set of user groups. The users
+within each user group need to have similar roles within their organization and their set of competences are expected to
+be similar. \cite{Could we expand a bit on this?} 
 
-To understand the use-case driven approach better, it is useful to distinguish between functional and non functional requirements.  Functional requirements are those requirements that are directly related to the interaction between the user and the system.  The non functional requirements are more hidden for the user are related to the global overall success.  For instance scalability, traceability and testability.  When use-cases are provided and functional requirements are identified, it is the requirement engineers role to identify, document and communicate these non functional requirements as well.  The use-case driven approach to requirement engineering focuses on revealing the functional requirements together with the users.  This improves the communication between the users and the developers, because the focus is on what the users wants and less on how it can be done.
+To understand the use-case driven approach better, it is useful to distinguish between functional and non functional
+requirements.  Functional requirements are those requirements that are directly related to the interaction between the
+user and the system.  The non functional requirements are more hidden for the user are related to the global overall
+\fixme{How does the discussion about non functional requirements relate to our approach? Could we expand on this?}
+success.  For instance scalability, traceability and testability.  When use-cases are provided and functional
+requirements are identified, it is the requirement engineers role to identify, document and communicate these non
+functional requirements as well.  The use-case driven approach to requirement engineering focuses on revealing the
+functional requirements together with the users.  This improves the communication between the users and the developers,
+because the focus is on what the users wants and less on how it can be done. 
