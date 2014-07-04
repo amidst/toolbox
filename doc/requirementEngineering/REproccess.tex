@@ -9,20 +9,90 @@
 \usepackage{cite}
 \usepackage[draft]{fixme}
 \usepackage{pdfpages}
+\usepackage{tabularx}
+\usepackage{fancyheadings}
+\usepackage{lastpage}
 
 \parskip 6pt % 1pt = 0.351 mm
 \parindent 0pt
 
-\title{Requirement Engineering Process in AMIDST}
-\author{The handsome AMIDST guys et. al.}
-\date{Latest version, \today}							% Activate to display a given date or no date
+%\title{Requirement Engineering Process in AMIDST}
+%\author{The handsome AMIDST guys et. al.}
+%\date{Latest version, \today}							% Activate to display a given date or no date
+
+\pagestyle{fancy}
+\lhead{\tiny FP7-ICT 619209 / AMIDST}
+\chead{\tiny Page {\thepage} of \pageref{LastPage} \\}
+\rhead{\tiny Public}
+\renewcommand{\footrulewidth}{0.4pt}
+\cfoot{}
+
+
+
 
 \begin{document}
-\maketitle
+
+\includepdf{AMiDST_Template_Deliverables.pdf}
+
+%\maketitle
 %
 %\begin{abstract}
 %\end{abstract}
 %
+
+
+
+% Table of contents
+\tableofcontents
+
+\newpage
+
+% Document History
+
+\section*{Document history}
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabularx}{\linewidth}{|p{15mm}|p{15mm}|X|X|}\hline
+    {\bf Version} & {\bf Date} & {\bf Author (Unit)} & {\bf Description} \\ \hline \hline
+    0.3 & 1/6 2014 & Sigve Hovda and Andr\'es Masegosa & First draft finished  \\ \hline
+    0.5 & 4/7 2014 & Sigve Hovda and Thomas D.\ Nielsen& First version of the document to be send around to the PSRG  \\ \hline
+    1.0 & & & \\ \hline \hline
+  \end{tabularx}
+\end{table}
+
+\newpage
+
+
+% Document History
+
+\section{Executive summary}
+
+The General methodology for requirement analysis document describes the requirements engineering (RE) process that has
+been adopted in the AMIDST project. 
+
+There is a general lack of formal and agreed upon methods for conducting
+requirements engineering for smaller software projects like AMIDST. As a results, the AMIDST RE process is based on selected methodological approaches from existing
+general RE processes, which have subsequently been 
+tailored to the specific characteristics of the AMIDST project. 
+
+The AMIDST RE process specifically addresses the need for a joint elicitation of requirements from use case providers coming from
+different industries that are geographically dislocated. This is partly achieved by the development of a template
+supporting a 
+unified formal framework for requirements elicitation. This framework also provides transparency in the overall
+requirement engineering process and helps prioritize requirements and resolve potential conflicts across different domains.  
+
+The AMIDST requirements engineering process targets the use case providers requirements concerning
+the functionality of the AMIDST framework. Non-functional requirements to the framework are not covered by the process,
+and are therefore not part of the present document. Requirements of this type are, however, defined in the Description
+of Work document. This e.g.\ includes the requirement that the software should live beyond the project as well as
+provide support and
+encourage an open source strategy. \fixme{Antonio, do 
+  you have something that should be added here?}
+
+
+
+\newpage
 
 \input{introduction}
 
@@ -42,7 +112,7 @@
 
 \section{Formal framework for requirements elicitation}
 \label{sec:form-fram-requ}
-\includepdf[pages={-}]{appendixA1.pdf}
-\includepdf[pages={-}]{appendixA2.pdf}
+\includepdf[offset=0 1cm,scale=0.85,pages={-},pagecommand={\pagestyle{fancy}}]{appendixA1.pdf}
+\includepdf[offset=0 1cm,scale=0.85,pages={-},pagecommand={\pagestyle{fancy}}]{appendixA2.pdf}
 
 \end{document}  
