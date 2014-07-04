@@ -36,3 +36,5 @@ doc/REproccess.pdf
 *~
 *.bak
 *.el
+
+*.rel
