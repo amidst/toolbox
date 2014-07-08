@@ -7,7 +7,8 @@ AMIDST RE process, which is based on the RE processes described in
 Section~\ref{sec:use-case-driven}, but tailored to the specific characteristics of AMIDST. Since the focus of the RE process
 is on the functionality and documentation of the software products being developed, we will, e.g., not cover
 process-related requirements or non-functional requirements, c.f. Section~\ref{sec:use-case-driven}. Non-functional
-requirements pertaining, e.g., to the open source strategy or the lifespan of the AMIDST software project are defined by the DoW framework.
+requirements are defined by the DoW framework and pertains to, e.g., the open source strategy and the requirement that
+the AMIDST software developments should live beyond the lifespan of the AMIDST project.
 
 
 
@@ -82,7 +83,7 @@ of the elicited requirements.
 \noindent \emph{Characteristics four:  One framework for three different domains}
 \label{sec:characteristic4}
 
-The AMIDST system should define a general framework that can encompass the diverse domains of the three industrial
+The AMIDST toolbox should define a general framework that can encompass the diverse domains of the three industrial
 partners. Thus, the format of the unified requirements framework should be sufficiently general and flexible to
 allow for all relevant requirements to be elicited for the three domains. At the same time the framework should be
 appropriately structured and formalized enabling a controlled elicitation process (see also Characteristic two) with the
@@ -97,7 +98,7 @@ a clear overview of the requirements that are relevant for the activities in a s
 \noindent \emph{Characteristics five: Potential refinement of project focus}
 \label{sec:characteristic5}
 
-AMIDST is a research project, where both the industrial and academic partners' understanding of the domains develop as
+AMIDST is an RTD project, where both the industrial and academic partners' understanding of the domains develop as
 the project unfolds. In order to support a potential refinement of the project's focus and goals, the requirements
 engineering process should allow for an internal (re)prioritization of the requirements that is transparent across
 application domains.    
@@ -118,7 +119,7 @@ The overall project duration will be decomposed into different phases, each havi
 disposal phase. The disposal phase is outside the scope of AMIDST and, thus, will not be considered in the present
 document. The design and operations phase, however, represent the
 temporal development of the project, and are initiated by the start of the project and ends with the testing of the
-deployed system.\fixme{Antonio, do you have some wise words that should be added here?} Each
+deployed system, which will be adopted by the use case providers if deemed effective. Each
 phase can furthermore be described as a collection of distinct stages in the project. The overall process is
 illustrated in Figure~\ref{REprocess2}. 
 
@@ -161,7 +162,7 @@ The requirements for the operation phase concern the functionality of the deploy
 
 \subsubsection{Use cases and user groups in the requirements engineering process}
 
-As discussed in Section~\ref{sec:stateOfArt}, a use case driven approach to requirements engineering puts emphasis on
+As discussed in Section~\ref{sec:stateOfArt}, a use case driven approach to RE puts emphasis on
 the functional requirements of the system, by focusing on the
 interactions between actors (this being either persons or other hardware/software modules ) and the system. This focus
 is consistent with the general objectives of the requirement engineering process in AMIDST, and the use case-based
@@ -203,23 +204,29 @@ In Figure \ref{REprocess1}, inspired by \cite{Ebe10}, an illustration of the req
 see Appendix A, for the requirement engineering document is finished.  In this template, the requirement engineering process
 is outlined, including definitions of use cases, user groups, and how to link requirements with the stages and WP/tasks
 in the development process.  In order to meet characteristic three, four and five, the use case providers are asked to
-provide a detailed description of the system context that the AMIDST software is expected to operate in, identify user
+provide a detailed description of the system context that the AMIDST solution is expected to operate in, identify user
 groups, describe use cases and requirements.  In order to meet characteristic four, the requirements are linked to their
 associated work packages and tasks. 
 
 \emph{Elicitation:} The distribution of the above mentioned template marks the initialization of this phase.  Its aim is
 to get an initial high-level description of the different use cases and their requirements. This information are
-specified by the use case providers in collaboration with the academic partners, thus addressing characteristic one, three and four.  Once the use case providers return the present document with the requested information, feedback and informal meetings are expected to clarify and refine the information provided.  At the end of the elicitation phase, the aim is to have a first coherent description of the requirements for each use case provider.
+specified by the use case providers in collaboration with the academic partners, thus addressing characteristic one,
+three and four.  Once the use case providers return the present document with the requested information, feedback and
+review sessions should be held to clarify and refine the information provided. These review sessions not only serve as a
+quality check and to align the expectations of the developers/designers and use-case providers, but they also provide the end-users with an
+opportunity to give feedback to the developers.  At the end of the elicitation phase, the
+aim is to have a first coherent description of the requirements for each use case provider. 
 
  \emph{Prioritization:} In this phase the use case providers complete and refine  the document template used in the
- previous phase. This template explicitly links each of the requirements to the relevant work packages and tasks in the
+ previous phase. The provided template explicitly links each of the requirements to the relevant work packages and tasks in the
  AMIDST project, thus providing an initial consistency check with the DoW framework (see Characteristic one). Moreover, the template allows the use case providers to give
  a prioritization of the relevant requirements for the AMIDST framework.  Specifically, the use case
  providers are asked to rate each requirement in terms of whether it is a must, should, or could requirement:
 \begin{description}
-\item[Must (be)] These requirements are expected by the use case providers and include properties guaranteed in the AMIDST DoW framework.
+\item[Must (be)] These requirements are expected by the use case providers and include properties described in the AMIDST DoW framework.
 \item[Should (performance)] These requirements are expected by the use-case provider, but are not explicitly agreed upon.
-\item[Could (delighters)] Optional requirements that will often be satisfying to have.
+\item[Could (delighters)] Optional requirements that will often be satisfying to have, but which have not been required
+  by the use-case provider in neither an explicit nor implicit manner.
 \end{description}
  This high-level prioritization scheme is inspired by the Kano model
  correlating product development with customer satisfaction, see Figure~\ref{fig:kano}. Within each of these categories, the
