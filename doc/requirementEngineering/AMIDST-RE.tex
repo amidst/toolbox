@@ -1,7 +1,7 @@
 \section{The AMIDST requirements engineering process}
 \label{sec:AmidstRequirementProcess}
 
-This section contains a description of the AMIDST RE process.  We first describe the main characteristics of the AMIDST project that
+This section contains a description of the AMIDST RE process.  We first give a brief overview of AMIDST and describe the main characteristics of the AMIDST project that
 has influenced and shaped the RE process. Based on these characteristics we present the
 AMIDST RE process, which is based on the RE processes described in
 Section~\ref{sec:use-case-driven}, but tailored to the specific characteristics of AMIDST. Since the focus of the RE process
@@ -10,6 +10,25 @@ process-related requirements or non-functional requirements, c.f. Section~\ref{s
 requirements are defined by the DoW framework and pertains to, e.g., the open source strategy and the requirement that
 the AMIDST software developments should live beyond the lifespan of the AMIDST project.
 
+
+\subsection{The AMIDST project: a brief overview}
+
+AMIDST is an RTD project funded by the European Union's Seventh Framework Programme. The objective of AMIDST is to develop
+a scalable toolbox capable of providing a framework that facilitates efficient prediction and data analysis in streaming
+data. The toolbox will be instantiated to target three distinct industries represented by the three industrial
+use case providers in the AMIDST consortium. The development of the toolbox and its subsequent instantiation will be driven by
+functional requirements specified by the use case providers and elicited in accordance with the RE process described in the present
+document; the requirements supplement the non-functional requirements described in the DoW framework. If deemed effective,
+the instantiated toolboxes (referred to as AMIDST \emph{solutions}) will be adopted by the use case providers. 
+
+The AMIDST project is structured around ten work packages. The first work package is concerned with requirements
+engineering and evaluation and has the present document as its first deliverable. Work packages 2--4 focus on
+methodological developments with particular emphasis on probabilistic models as well as scalable inference and learning
+algorithms tailored to these models. Work package 5 is concerned with extensions to the Hugin tool, and
+in Work packages 6--8 the AMIDST solutions for the three industrial partners will be realized. Finally, Work packages 9
+and 10 deal with dissemination and exploitation as well as management.     
+
+%In addition to the use case providers' functional requirements to the toolbox, the DoW
 
 
 
@@ -135,10 +154,10 @@ illustrated in Figure~\ref{REprocess2}.
 \end{figure}
 
 
-\fixme{Describe the content of the two phases, design and operations}
+%\fixme{Describe the content of the two phases, design and operations}
 
 
-In the design phase  general functionality requirements for the system is specified, i.e., what the system should do and support.
+In the design phase  general functionality requirements for the system are specified, i.e., what the system should do and support.
 Figure \ref{REprocess2} details key stages inside this phase. The first stage consists of the design of the general
 framework (models and algorithms) as well as the design and development of the software tools. These stages are primarily
 related to Work packages 1--5. In the second stage, the general framework and software is instantiated for each specific
@@ -151,7 +170,7 @@ use case. Finally, initial tests of the use case instantiated frameworks are con
  \item documentation
 \end{itemize}
 
-The requirements for the operation phase concern the functionality of the deployed system. In Figure \ref{REprocess2}, we decompose this phase into three stages: installation, interface to existing systems, and production testing. The requirements for this phase could, e.g., address
+The requirements for the operations phase concern the functionality of the deployed system. In Figure \ref{REprocess2}, we decompose this phase into three stages: installation, interface to existing systems, and production testing. The requirements for this phase could, e.g., address
 \begin{itemize}
  \item hardware constraints
  \item interfaces to existing software or data base systems
@@ -165,7 +184,7 @@ The requirements for the operation phase concern the functionality of the deploy
 As discussed in Section~\ref{sec:stateOfArt}, a use case driven approach to RE puts emphasis on
 the functional requirements of the system, by focusing on the
 interactions between actors (this being either persons or other hardware/software modules ) and the system. This focus
-is consistent with the general objectives of the requirement engineering process in AMIDST, and the use case-based
+is consistent with the general objectives of the RE process in AMIDST, and the use case-based
 approach to RE is therefore adopted in AMIDST. However, to obtain more well-defined
 requirements and establish a closer connection
 between the use cases and the project stages/work packages (c.f.\ Characteristics four), we further require that use
@@ -195,13 +214,13 @@ explicitly linked to the relevant requirements.
 \label{sec:reprocess}
 
 To ensure a sufficient amount of knowledge transfer between the partners (c.f.\ Characteristics three, Page~\pageref{sec:characteristic3}),
-the overall  requirement engineering process will be carried out in an iterative fashion that is expected to involve a
+the overall  RE process will be carried out in an iterative fashion that is expected to involve a
 high level of cooperation and interaction between the partners.  
 
-In Figure \ref{REprocess1}, inspired by \cite{Ebe10}, an illustration of the requirement engineering process for AMIDST is given.  The process contains five phases, which are discussed below.
+In Figure \ref{REprocess1}, inspired by \cite{Ebe10}, an illustration of the RE process for AMIDST is given.  The process contains five phases, which are discussed below.
 
-\emph{Preparation I:}  This phase starts at the same time as work package one and ends when the initial template,
-see Appendix A, for the requirement engineering document is finished.  In this template, the requirement engineering process
+\emph{Preparation I:}  This phase starts at the same time as Work package 1 and ends when the initial template,
+see Appendix A, for the RE document is finished.  In this template, the RE process
 is outlined, including definitions of use cases, user groups, and how to link requirements with the stages and WP/tasks
 in the development process.  In order to meet characteristic three, four and five, the use case providers are asked to
 provide a detailed description of the system context that the AMIDST solution is expected to operate in, identify user
@@ -211,9 +230,9 @@ associated work packages and tasks.
 \emph{Elicitation:} The distribution of the above mentioned template marks the initialization of this phase.  Its aim is
 to get an initial high-level description of the different use cases and their requirements. This information are
 specified by the use case providers in collaboration with the academic partners, thus addressing characteristic one,
-three and four.  Once the use case providers return the present document with the requested information, feedback and
+three and four.  Once the use case providers return the document with the requested information, feedback and
 review sessions should be held to clarify and refine the information provided. These review sessions not only serve as a
-quality check and to align the expectations of the developers/designers and use-case providers, but they also provide the end-users with an
+quality check and to align the expectations of the developers/designers and use case providers, but they also provide the end-users with an
 opportunity to give feedback to the developers.  At the end of the elicitation phase, the
 aim is to have a first coherent description of the requirements for each use case provider. 
 
@@ -224,9 +243,9 @@ aim is to have a first coherent description of the requirements for each use cas
  providers are asked to rate each requirement in terms of whether it is a must, should, or could requirement:
 \begin{description}
 \item[Must (be)] These requirements are expected by the use case providers and include properties described in the AMIDST DoW framework.
-\item[Should (performance)] These requirements are expected by the use-case provider, but are not explicitly agreed upon.
+\item[Should (performance)] These requirements are expected by the use case provider, but are not explicitly agreed upon.
 \item[Could (delighters)] Optional requirements that will often be satisfying to have, but which have not been required
-  by the use-case provider in neither an explicit nor implicit manner.
+  by the use case provider in neither an explicit nor implicit manner.
 \end{description}
  This high-level prioritization scheme is inspired by the Kano model
  correlating product development with customer satisfaction, see Figure~\ref{fig:kano}. Within each of these categories, the
@@ -235,14 +254,14 @@ aim is to have a first coherent description of the requirements for each use cas
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.75\linewidth]{kano}
+  \includegraphics[width=0.7\linewidth]{kano}
   \caption{The Kano model.}
   \label{fig:kano}
 \end{figure}
 
 
-\emph{Validation:} In this phase, the requirements from all use-case providers are collected to get the \emph{big
-  picture}.  This includes a discussion among the members of the  project science review group as to the extend in which the
+\emph{Validation:} In this phase, the requirements from all use case providers are collected to get the \emph{big
+  picture}.  This includes a discussion among the members of the  project science review group as to the extend to which the
 requirements can be accommodated and whether they collectively produce any potential conflicts, either internally or in
 relation to the
 DoW framework. Revisions and negotiations of the detailed requirements are therefore expected.  In this phase, it is important to ensure that Characteristic one is met.
@@ -258,7 +277,7 @@ DoW framework. Revisions and negotiations of the detailed requirements are there
 \begin{figure}[htbp]
 \centering
 \includegraphics [keepaspectratio,width = 14cm] {amidst_re}
-\caption{Description of the five phases in the requirement engineering process in AMIDST.}
+\caption{Description of the five phases in the RE process in AMIDST.}
 \label{REprocess1}
 \end{figure}
 
