@@ -3,23 +3,14 @@ package eu.amidst.core.StaticDataBase;
 /**
  * Created by afa on 02/07/14.
  */
-public class DataStream {
-    public DataInstance nextDataInstance() {
-        return null;
-    }
+public interface DataStream {
+    public DataInstance nextDataInstance();
 
-    public boolean hasMoreDataInstances() {
-        return false;
-    }
+    public boolean hasMoreDataInstances();
 
-    public boolean isRestartable() {
-        return false;
-    }
+    public boolean isRestartable();
 
-    public void restart() {
-    }
+    public void restart();
 
-    public StaticDataHeader getStaticDataHeader() {
-        return null;
-    }
+    public StaticDataHeader getStaticDataHeader();
 }

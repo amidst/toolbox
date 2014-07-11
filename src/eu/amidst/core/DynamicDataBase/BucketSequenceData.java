@@ -3,23 +3,14 @@ package eu.amidst.core.DynamicDataBase;
 /**
  * Created by afa on 03/07/14.
  */
-public class BucketSequenceData {
-    public int getMarkovOrder() {
-        return 0;
-    }
+public interface BucketSequenceData {
+    public int getMarkovOrder();
 
-    public boolean hasMoreData() {
-        return false;
-    }
+    public boolean hasMoreData();
 
-    public SequenceData nextSequenceData() {
-        return null;
-    }
+    public SequenceData nextSequenceData();
 
-    public boolean isReseteable() {
-        return false;
-    }
+    public boolean isReseteable();
 
-    public void reset() {
-    }
+    public void reset();
 }
