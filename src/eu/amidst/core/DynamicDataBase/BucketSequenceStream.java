@@ -3,27 +3,17 @@ package eu.amidst.core.DynamicDataBase;
 /**
  * Created by afa on 03/07/14.
  */
-public class BucketSequenceStream {
-    public DynamicDataHeader getDynamidDataHeader() {
-        return null;
-    }
+public interface BucketSequenceStream {
 
-    public int getMarkovOrder() {
-        return 0;
-    }
+    public DynamicDataHeader getDynamicDataHeader();
 
-    public boolean hasMoreData() {
-        return false;
-    }
+    public int getMarkovOrder();
 
-    public BucketSequenceData nextBucketSequenceData() {
-        return null;
-    }
+    public boolean hasMoreData();
 
-    public boolean isReseteable() {
-        return false;
-    }
+    public BucketSequenceData nextBucketSequenceData();
 
-    public void reset() {
-    }
+    public boolean isReseteable();
+
+    public void reset();
 }

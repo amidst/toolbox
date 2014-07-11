@@ -5,27 +5,16 @@ import eu.amidst.core.DynamicDataBase.DynamicDataHeader;
 /**
  * Created by afa on 03/07/14.
  */
-public class SequenceStream {
-    public DynamicDataHeader getDynamicDataHeader() {
-        return null;
-    }
+public interface SequenceStream {
+    public DynamicDataHeader getDynamicDataHeader();
 
-    public int getMarkovOrder() {
-        return 0;
-    }
+    public int getMarkovOrder();
 
-    public boolean hasMoreData() {
-        return false;
-    }
+    public boolean hasMoreData();
 
-    public SequenceData nextSequenceData() {
-        return null;
-    }
+    public SequenceData nextSequenceData();
 
-    public void reset() {
-    }
+    public void reset();
 
-    public boolean isReseteable() {
-        return false;
-    }
+    public boolean isReseteable();
 }

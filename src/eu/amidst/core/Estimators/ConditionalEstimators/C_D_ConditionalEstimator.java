@@ -1,17 +1,14 @@
-package eu.amidst.core.Estimators;
+package eu.amidst.core.Estimators.ConditionalEstimators;
 
+import eu.amidst.core.Estimators.UnConditionalEstimators.GaussianEstimator;
 import eu.amidst.core.Potential.Potential;
 import eu.amidst.core.StaticDataBase.DataInstance;
 
 /**
  * Created by afa on 03/07/14.
  */
-public class GaussianEstimator implements Estimator {
-    private double mean;
-    private double sd;
-    private double sumSquaredValues;
-    private double sumValues;
-    private double intervalWidth;
+public class C_D_ConditionalEstimator implements ConditionalEstimator {
+    private GaussianEstimator[] estim;
 
     @Override
     public void updateSufficientStatistics(DataInstance instance) {

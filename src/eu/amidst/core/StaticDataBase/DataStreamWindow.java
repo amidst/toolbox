@@ -3,26 +3,16 @@ package eu.amidst.core.StaticDataBase;
 /**
  * Created by afa on 02/07/14.
  */
-public class DataStreamWindow {
-    public int getWindowSize() {
-        return 0;
-    }
+public interface DataStreamWindow {
+    public int getWindowSize();
 
-    public void loadNextDataWindow() {
-    }
+    public void loadNextDataWindow();
 
-    public DataInstance getDataInstance(int indexInWindow) {
-        return null;
-    }
+    public DataInstance getDataInstance(int indexInWindow);
 
-    public boolean isRestartable() {
-        return false;
-    }
+    public boolean isRestartable();
 
-    public void restart() {
-    }
+    public void restart();
 
-    public StaticDataHeader getStaticDataHeader() {
-        return null;
-    }
+    public StaticDataHeader getStaticDataHeader();
 }
