@@ -1,16 +1,33 @@
 \section{Introduction}
 
-Despite the fact that the field of requirement engineering RE has existed since the seventies, very few surveys have been conducted on RE for very small software projects with less than 10 developers \cite{Qui10}. In 2007, a study of seven very small software enterprises in Canada was conducted \cite{Ara07}.
-And in 2011, a study which involved 24 experienced project managers from 24 different small software companies in Chile was conducted \cite{Qui10}.  Based on these two studies, it is clear that RE processes in very small companies are more ad-hoc and that there seem to be little agreement on how to conduct the RE process in practice.
+The requirements engineering process adopted by a particular software project typically reflects intrinsic
+characteristics of the project in question. Thus, there is often no standard way to conduct a requirements engineering
+(RE) process \cite{Poh10}, but one rather adapts existing processes to the needs and specifics of the project. This
+especially applies to smaller software projects in which category the AMIDST project belongs. To our
+knowledge only two surveys have been conducted on RE processes for small software projects with less than 10 developers;
+see \cite{Qui10} and \cite{Ara07}.  Based on these two studies, it is clear that RE processes in small companies follow
+more ad-hoc strategies and that there seems to be little agreement on how to conduct the RE process in practice. 
+ 
+Another defining characteristic of the AMIDST project is the Description of Work (DoW) document. The DoW defines the scope of the
+project as well as more general requirements to the system, both functional and non-functional, and e.g.\ includes a fixed deadline
+for the RE process. This restricts the project from, e.g., following a strict Agile approach
+\cite{Din10}, where a product owner is continuously renegotiating the requirements and where the RE process is seen as a
+continuous process throughout the whole project \cite{Kav11}.
 
-In the literature, several ready-to-use approaches for RE on small projects are attempted.  In 2004, Nikula presented a basic RE model baRE as part of his PhD thesis \cite{Nik04}.  Based on an argumentation in \cite{Qui10}, this method may not be suitable for very small projects, because the method is based on results from a study that involved mostly larger companies \cite{Nik00}.   Dorr et. al. presented a set of 36 RE practices for RE improvement for small software projects \cite{Dor08}.  However, the six companies that was considered had between 20 and 200 employees, meaning that this research was also biased towards medium sized projects rather than very small. 
+Finally, the software framework developed in the project should be sufficiently general to accommodate stakeholders and
+use case providers representing different industries and not only the once being part of the consortium. Thus, the RE
+process relates not only to the software framework, but also to the solutions to be developed for the use
+cases. Specifically, for each use case provider the general AMIDST framework will be instantiated in order to meet the
+needs and requirements of that use case provider.    
 
-It is also worth mentioning that a large portion of modern software companies follows Agile methods for software development \cite{Din10}.  Paper \cite{Kav11} outlines how to incorporate requirement gathering in small Agile projects.  However, in the Agile methodology, requirement engineering is seen as an ongoing process throughout the whole project, which involves a product owner that continuously renegotiates the requirements.  Due to the project management process in EU's Seventh Framework Programme, the AMIDST project is limited from following such a process. 
+These characteristics and challenges are usually associated with larger software projects, and have  formed
+the basis for the development of the AMIDST RE process: Based on primarily organizational characteristics of the AMIDST
+project, the AMIDST RE process is composed of selected components from existing RE processes that have been tailored to
+the identified AMIDST characteristics. The characteristics are sufficiently general to make them
+applicable for future use cases also. As a result the RE process can be applied in combination with the AMIDST
+toolbox beyond the life time of AMIDST.     
 
-Based on the lack of clarity in practice and consensus in literature on a common RE process for small projects, we decided to identify the characteristics of our project and motivate our choices related to the RE process from this.  For instance, the AMIDST project is characterized by the fact that there is a description of work that is agreed upon upfront.  The 
-AMIDST RE process must comply with the STREP proposal FP7-ICT-2013-11, and the software must comply with all deliveries in work package 1 to 8. 
-%task 2.3 in work package 2, tasks; 3.3, 3.4, 3.5, 3,6 and 3.7 in work package 3, tasks; 4.1, 4,2 4,3 and 4.4 in work package 4 and tasks; 5.1, 5,3, 5,4 and 5,6 in work package 5.
-
-Another important characteristic, is that there is a huge widespread of stakeholders in the project and that the software is required to interface with three different softwares from three different companies.  Because of this, we chose to focus on the functional requirements, which are the requirements that are the most transparent to the user.  As will be discussed later, a use-case driven approach \cite{Poh10} and \cite{Coc01} is taken to achieve this.
-
-The report is outlined as follows.  In section \ref{sec:stateOfArt}, the basic principles of requirement engineering are briefly outlined.  Section \ref{sec:AmidstRequirementProcess} starts by describing the main characteristics of the AMIDST project, before the RE process is outlined.  In section \ref{sec:realization}, we have described the realization of the process so far, before the report is concluded in section \ref{sec:conclusion}.
+The report is outlined as follows.  In section \ref{sec:stateOfArt}, the basic principles of requirement engineering are
+briefly outlined.  Section \ref{sec:AmidstRequirementProcess} starts by describing the main characteristics of the
+AMIDST project, before the RE process is outlined.  In section \ref{sec:realization}, we have described the realization
+of the process, and the report is concluded in section \ref{sec:conclusion}. 
