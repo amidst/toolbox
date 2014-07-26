@@ -1,0 +1,52 @@
+\documentclass[ukenglish]{nik}  
+
+%NIK packages
+\usepackage{times}
+
+\usepackage[latin1]{inputenc}
+%angir tegnsettet i LaTeX-filen. (Opsjonen må selvfølgelig tilpasses om man har et annet tegnsett.)
+\usepackage[T1]{fontenc}
+%spesifiserer bruk av 8-bits fonter.
+%\usepackage{babel}  comment SH (only needed for Norwegian I suppose)
+%ordner alle språkavhengig ting.
+\usepackage{textcomp}
+%gir tilgang til flere symboler.
+\usepackage{type1cm}
+%forteller at systemet kan skalere Computer Modern i alle størrelser. 	
+
+%spesific packages
+\usepackage{graphicx}				
+\usepackage{array}								
+\usepackage{amssymb}
+\usepackage{cite}
+\usepackage[final]{fixme}
+\usepackage{pdfpages}
+\usepackage{tabularx}
+
+
+\title{Requirement Engineering for a Small Project with Pre-Specified Scope}
+\author{Thomas D.\ Nielsen, Sigve Hovda, Andr\'es Masegosa, Helge Langseth, \\
+Antonio Fern\'andez, Antonio Salmer\'on, and Anders L.\ Madsen} 
+\date{Latest version, \today}		%To be excluded later					
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\input{abstractNIK}
+\end{abstract}
+
+\input{introductionNIK}
+
+\input{basic-principles}
+
+\input{AMIDST-RE-NIK}
+
+\input{AMIDST-realizationNIK}
+
+\input{conclusionNIK}
+
+\bibliographystyle{splncs}
+\bibliography{re}
+
+\end{document}  
