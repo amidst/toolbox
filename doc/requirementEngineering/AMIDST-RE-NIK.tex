@@ -4,13 +4,21 @@
 This section contains a description of the AMIDST RE process.  We first give a brief overview of AMIDST and describe the 
 main characteristics of the AMIDST project that has influenced and shaped the RE process. Based on these characteristics 
 we present the AMIDST RE process, which is based on the RE processes described in Section~\ref{sec:use-case-driven}, 
-but tailored to the specific characteristics of AMIDST. Since the focus of the RE process is on the functionality and 
+but tailored to the specific characteristics of AMIDST. Since the focus of the present RE process is on the functionality and 
 documentation of the software products being developed, we will, e.g., not cover process-related requirements or non-
-functional requirements, c.f. Section~\ref{sec:use-case-driven}. 
+functional requirements, c.f.\ Section~\ref{sec:use-case-driven}. Non-functional requirements are defined by the
+aforementioned DoW. 
 
 \subsection{The AMIDST project: a brief overview}
 
-AMIDST is a project funded by the European Union's Seventh Framework Programme for research technological development and demonstration. The objective of AMIDST is to develop a scalable toolbox capable of providing a framework that facilitates efficient prediction and data analysis in streaming data. The toolbox will be instantiated to target three distinct industries represented by the three industrial use case providers in the AMIDST consortium. The use case provider in the energy domain is Verdande Technology, the use case provider in the financial domain is the Cajamar Cajas Rurales Unidas and the use case provider in the automobile domain is Daimler AG.  In addition to the use case providers, there are also three academic partners and a fourth industrial partner in the software industry.  The fourth industrial partner is Hugin Expert and the three academic partners are Norwegian University of Schience and Technologogy, Universidad de Almeria and Aalborg University.
+AMIDST is a project funded by the European Union's Seventh Framework Programme for research technological development
+and demonstration. The objective of AMIDST is to develop a scalable toolbox capable of providing a framework that
+facilitates efficient prediction and data analysis in streaming data. The toolbox will be instantiated to target three
+distinct industries represented by the three industrial use case providers in the AMIDST consortium. The use case
+provider in the energy domain is Verdande Technology, the use case provider in the financial domain is the Cajamar Cajas
+Rurales Unidas, and the use case provider in the automobile domain is Daimler AG.  In addition to the use case
+providers, there are also three academic partners and a fourth industrial partner in the software industry.  The fourth
+industrial partner is Hugin Expert and the three academic partners are the Norwegian University of Science and Technologogy, Universidad de Almeria, and Aalborg University.
 
 The development of the toolbox and its subsequent instantiation will be driven by functional requirements specified by the use case providers and elicited in accordance with the RE process described in the present document; the requirements supplement the non-functional requirements described in the DoW framework. If deemed effective, the instantiated toolboxes (referred to as AMIDST \emph{solutions}) will be adopted by the use case providers. 
 
@@ -99,6 +107,7 @@ a clear overview of the requirements that are relevant for the activities in a s
 %%One single framework shall solve all posed problems.  It is therefore a challenge to find common requirements that are 
 %addressing problems across all three domains.
 %
+
 \ \\
 \noindent \emph{Characteristics five: Potential refinement of project focus}
 \label{sec:characteristic5}
@@ -159,7 +168,7 @@ primarily
 related to Work packages 1--5. In the second stage, the general framework and software is instantiated for each specific
 use case. Finally, initial tests of the use case instantiated frameworks are conducted.  During this phase of the project, 
 possible design requirements could, e.g., address
-\begin{itemize}
+\begin{itemize}[itemsep=2pt,parsep=2pt,topsep=4pt, partopsep=4pt]
  \item the scope of the model
  \item the interpretability of the learned models
  \item the extent and type of domain knowledge that can be integrated into the models
@@ -170,7 +179,7 @@ possible design requirements could, e.g., address
 The requirements for the operations phase concern the functionality of the deployed system. In Figure \ref{REprocess2}, 
 we decompose this phase into three stages: installation, interface to existing systems, and production testing. The 
 requirements for this phase could, e.g., address
-\begin{itemize}
+\begin{itemize}[itemsep=2pt,parsep=2pt,topsep=4pt, partopsep=4pt]
  \item hardware constraints
  \item interfaces to existing software or data base systems
  \item inference functionality, i.e., what queries the system should be able to answer
@@ -266,7 +275,7 @@ AMIDST DoW framework.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.7\linewidth]{kano}
+  \includegraphics[width=0.65\linewidth]{kano}
   \caption{The Kano model.}
   \label{fig:kano}
 \end{figure}
@@ -291,7 +300,7 @@ the present document, but will
 
 \begin{figure}[htbp]
 \centering
-\includegraphics [keepaspectratio,width = 14cm] {amidst_re}
+\includegraphics [keepaspectratio,width =\linewidth] {amidst_re}
 \caption{Description of the five phases in the RE process in AMIDST.}
 \label{REprocess1}
 \end{figure}
