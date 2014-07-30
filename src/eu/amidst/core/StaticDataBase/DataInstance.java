@@ -10,3 +10,4 @@ public interface DataInstance {
 
     public DataStream getDataStream();
 }
+
