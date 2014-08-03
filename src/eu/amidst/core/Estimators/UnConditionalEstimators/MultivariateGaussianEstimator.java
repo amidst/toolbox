@@ -8,6 +8,10 @@ import eu.amidst.core.StaticDataBase.DataInstance;
  * Created by afa on 03/07/14.
  */
 public class MultivariateGaussianEstimator implements Estimator {
+
+    private double[] means;
+    private double[][] covMatrix;
+
     @Override
     public void updateSufficientStatistics(DataInstance instance) {
 
@@ -22,9 +26,6 @@ public class MultivariateGaussianEstimator implements Estimator {
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
     }
-
-    private double[] means;
-    private double[][] covMatrix;
 
 
 }

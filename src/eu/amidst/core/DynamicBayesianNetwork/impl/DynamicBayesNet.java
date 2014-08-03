@@ -35,4 +35,6 @@ public class DynamicBayesNet implements DynamicBayesianNetwork {
 
     @Override
     public void learnParameters() {
+    }
 
+}
