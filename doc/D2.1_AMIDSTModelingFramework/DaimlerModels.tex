@@ -111,17 +111,17 @@ Each manoeuvre can be considered as a process, developing in time, i.e., as data
 %\begin{enumerate}
 %\item \textbf{Dynamics on Lateral Evidence (LE)}
 A good starting point to model the dynamics of the data involves the variables that capture the lateral evidence for the different vehicles, given its relevance and simplicity. 
-The dynamic BN (DBN) incorporates the trend of change for the real values, where their physics relations are represented as causal dependencies between the time steps $dt$, e.g. in Fig. \ref{Figure:daimlerLEdyn} the transition function of O\_LAT at time $t$, O(t), is modeled as a Gaussian distribution. Its mean is affected by O(t-1), and by V\_LAT at time $t-1$, $v(t-1)$:
+The dynamic BN (DBN) incorporates the trend of change for the real values, where their physics relations are represented as causal dependencies between the time steps $dt$, e.g. in Fig. \ref{Figure:daimlerLEdyn} the transition function of O\_LAT at time $t$, $O(t)$, is modeled as a Gaussian distribution. Its mean is affected by $O(t-1)$, and by V\_LAT at time $t-1$, $v(t-1)$:
 
 \begin{equation}
-O(t) =O(t-1) +v(t-1)·dt +N
+O(t) =O(t-1) +v(t-1)dt +N
 \end{equation}
 
-where $N$ denotes a white noise $N(0,\sigma^2)$ due to possible acceleration term $(a·dt2)/2$, which is assumed to be small for a time step in the order of $102$ milliseconds.
+where $N$ denotes a white noise $N(0,\sigma^2)$ which is assumed to be small.
 
 The shaded nodes represent the development of the real values of observations over several time steps in the time window. Thus, their trend estimation contributes to the prediction of probability of transition from a lane follow to a lane change manoeuvre.
 
-In order to corroborate the validity of this BN fragment, we have analysed the hypothesis $O(t) - O(t-1) = v(t-1)·dt +N$ on our data. Figure \ref{Figure:daimlerVvsOffs} shows the plot and contour plots for $v(t-1)$ and $O(t) - O(t-1)$, where we observe a linear correlation. 
+In order to corroborate the validity of this BN fragment, we have analysed the hypothesis $\Delta O = O(t) - O(t-1) = v(t-1)dt +N$ on our data. Figure \ref{Figure:daimlerVvsOffs} shows the plot and contour plots for $v$ and $\Delta O$, where we observe a linear correlation. 
 
 \begin{figure}
   \centering
