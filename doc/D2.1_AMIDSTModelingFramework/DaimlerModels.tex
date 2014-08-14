@@ -83,57 +83,6 @@ The situation features used for maneuver recognition are structured along three 
 
 Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events, which in our automotive scenario correspond to the different driving maneuvers: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects, see [12], [13].
 
-
-\subsubsection*{The dynamic-OOBN model}
->>>>>>> FETCH_HEAD
-
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerHierarchicalModelling}
-\caption{\label{Figure:DaimlerHierarchicalModelling} Static-OOBN model for the prediction of an event (maneuver).}
-\end{center}
-\end{figure}
-
-In a first step the sensor data is modelled and, sequentially,  a new layer is created on top of that to detect a lane change behaviour. Understanding the lane change behaviour of the vehicles, the system is able to model the lane change maneuver. And, with this information, the system is able to decide the kind of driving maneuver is taking place between pair of vehicles. 
-
-
-
-\subsubsection*{The static-OOBN model}
-
-As commented above, this model will work with ``object data''. This data mainly consists on a set of measured and/or computed signals or situation features denoted by $S$ (i.e. EGO speed, EGO lateral velocity, speed of a car in-front, etc.)  describing the traffic scene. 
-
-The causal probabilistic treatment of these signals or situation features allows exploiting heterogeneous sources of information and the quantitative incorporation of uncertainties in the measured signals. The general structure of the static-OOBN model consists of a number of abstraction levels (see Figure \ref{Figure:DaimlerOOBNAbstraction}): all measured and/or computed signals $S$ are handled with their uncertainties $\sigma^2$. These are represented as object classes at the lowest level (class $S$) of the OOBN. The real values $\mu$ of evidence signals are then used at the next level of hierarchy to evaluate the hypotheses (class $H$ in Figure \ref{Figure:DaimlerOOBNAbstraction}). The combined evaluation of several hypotheses results in the prediction of events, class E. In our case: the events are modelling traffic maneuvers of the own and neighbour vehicles.
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerOOBNAbstraction}
-\caption{\label{Figure:DaimlerOOBNAbstraction} Static-OOBN model for the prediction of an event (maneuver).}
-\end{center}
-\end{figure}
-
-As commented above, the observations characterizing a situation are acquired from sensors and computations and, in consequence, are \textit{measured data}. If the measurement instrument is not functioning properly (due to sensor noise or fault), then the sensor-reading ($S\_MEASURED$) and the real variable ($S\_REAL$) under measurement need not to be the same. This fact imposes the causal model structure as shown in Figure \ref{Figure:DaimlerSensorModelling}. The sensor-reading of any measured variable is conditionally dependent on random changes in two variables: real value under measurement ($S\_REAL$) and sensor fault ($S\_SIGMA$).
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerSensorModelling}
-\caption{\label{Figure:DaimlerSensorModelling} BN fragment for modeling of sensor’s uncertainties with a discrete ``measurement'' variable.}
-\end{center}
-\end{figure}
-
-
-The situation features used for maneuver recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID). They represent the three hypotheses (see Figure \ref{Figure:DaimlerOOBNAbstraction}), which are modelled by the corresponding OOBN-fragments. For more details see [13], [14]. The hypothesis LE is shown in Figure \ref{Figure:DaimlerLE}. Its conditional probability distribution is represented by a sigmoid (logistic) function to expresses the growing probability for the lateral evidence on crossing the lane marking, when the vehicle is coming closer to the lane marking (modeled by $O\_LAT\_MEASURED$) by growing lateral velocity (modeled by $V\_LAT\_ MEASURED$).
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerLE}
-\caption{\label{Figure:DaimlerLE} BN fragment for modeling of sensor’s uncertainties with a discrete ``measurement'' variable.}
-\end{center}
-\end{figure}
-
-Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events, which in our automotive scenario correspond to the different driving maneuvers: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects, see [12], [13].
-
-
 \subsubsection*{The dynamic-OOBN model}
 
 The above described static OOBN is able to detect a maneuver 0.6s before execution. The goal is to extend the prediction horizon for manoeuvre recognition at least to 1-2 seconds (max. 4-5 seconds ahead) before the actual lane marking crossing, which is of advantage for the adaptive cruise control. Most precisely, and as indicated in the Use Case 8 on the Requirement Analysis,  the area under the ROC curve (AUC) should be greater than 0.96 for 1 second and greater than 0.9 for 2 seconds.
