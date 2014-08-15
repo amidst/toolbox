@@ -3,7 +3,7 @@
 
 \subsubsection*{Introduction}
 
-The basic settings of the DAIMLER's use-case [][] are as follows. Let us suppose we are driving our car, which will be referred as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the problem consists in the early recognition a maneuver either of the EGO or another relevant car in the traffic scene. In total, the system is expected to recognized the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
+The basic settings of the DAIMLER's use-case [][] are as follows. Let us suppose we are driving our car, which will be referred as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the problem consists in the early recognition of a maneuver either of the EGO or another relevant car in the traffic scene (OBJ). In total, the system is expected to recognized the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
 \begin{enumerate}
 \item \textbf{Object-CutOut}:  A vehicle that was driving in front of us is leaving the EGO lane.
 \item \textbf{Object-CutIn}: A vehicle is moving to the lane where the EGO vehicle is placed.
@@ -21,7 +21,7 @@ The basic settings of the DAIMLER's use-case [][] are as follows. Let us suppose
 \end{center}
 \end{figure}
 
-The data used to address this problem do not contain raw data from the video, radar and on-board sensors. The manoeuvre recognition system directly works with the so-called ``object data'', which contains ``high level'' representations or features describing the ``traffic scene'' such as EGO's speed, distance between EGO and another vehicle in front, etc.  
+Instead of working with the raw data from the video, radar and on-board sensors, the manoeuvre recognition system uses the so-called ``object data'', which contains ``high level'' representations or features describing the ``traffic scene'' such as EGO's speed, distance between EGO and another vehicle in front, etc.  
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.35]{./figures/DaimlerDataFlow}
@@ -29,7 +29,7 @@ The data used to address this problem do not contain raw data from the video, ra
 \end{center}
 \end{figure}
 
-Figure \ref{Figure:DaimlerDataFlow} contains a visual description of the current data flow used to create this ``object data''.  As can be seen in this figure, in a first step the raw data coming for the the video, radar and sensors is preprocessed. In a second step this preprocessed data is fused and the high-level or ``object data'' describing the traffic scene is obtained. 
+Figure \ref{Figure:DaimlerDataFlow} contains a visual description of the current data flow used to create this ``object data''.  As can be seen in this figure, in a first step the raw data coming from the video, radar and sensors is preprocessed. In a second step this preprocessed data is fused and the high-level or ``object data'' describing the traffic scene is obtained. 
 
 Using this ``object data'', Daimler has developed a probabilistic graphical model [] which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place. This probabilistic approach is based on modelling the problem in different layers as shown in Figure \ref{Figure:DaimlerHierarchicalModelling}.
 
@@ -42,7 +42,7 @@ Using this ``object data'', Daimler has developed a probabilistic graphical mode
 \end{center}
 \end{figure}
 
-In a first step it is only modelled the sensor data. Using this layer, a new layer is created on top with the goal of detecting a lane change behaviour. The detection of a lane change behaviour allows the system to model the lane change manoeuvre in a higher layer. Finally, with this information, the system is able to identify the kind of driving manoeuvre which is taking place between a pair of vehicles. 
+The sensor data is modelled in the first step. Using this layer, a new layer is created on top with the goal of detecting a lane change behaviour. The detection of a lane change behaviour allows the system to model the lane change manoeuvre in a higher layer. Finally, with this information, the system is able to identify the kind of driving manoeuvre which is taking place between a pair of vehicles. 
 
 
 
@@ -64,7 +64,7 @@ The general structure of this OOBN model consists of a number of abstraction lev
 \end{center}
 \end{figure}
 
-As commented above, the observations characterizing a situation are acquired from sensors and computations (see Figure \ref{Figure:DaimlerDataFlow}) and, in consequence, are \textit{measured data}. If the measurement instrument is not functioning properly (due to sensor noise or fault), then the sensor-reading ($S\_MEASURED$) and the real variable ($S\_REAL$) under measurement need not to be the same. This fact imposes the causal model structure as shown in Figure \ref{Figure:DaimlerSensorModelling}. The sensor-reading of any measured variable is conditionally dependent on random changes in two variables: real value under measurement ($S\_REAL$) and sensor fault ($S\_SIGMA$).
+As commented above, the observations characterizing a situation are acquired from sensors and computations (see Figure \ref{Figure:DaimlerDataFlow}) and, in consequence, they are regarded as  \textit{measured data}. If the measurement instrument is not functioning properly (due to sensor noise or fault), then the sensor-reading ($S\_MEASURED$) and the real variable ($S\_REAL$) under measurement need not to be the same. This fact imposes the causal model structure as shown in Figure \ref{Figure:DaimlerSensorModelling}. The sensor-reading of any measured variable is conditionally dependent on random changes in two variables: real value under measurement ($S\_REAL$) and sensor fault ($S\_SIGMA$).
 
 \begin{figure}
 \begin{center}
@@ -89,7 +89,7 @@ Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses
 
 The above described static OOBN is able to detect a maneuver 0.6s before execution. The goal is to extend the prediction horizon for manoeuvre recognition at least to 1-2 seconds (max. 4-5 seconds ahead) before the actual lane marking crossing, which is of advantage for the adaptive cruise control. Most precisely, and as indicated in the Use Case 8 on the Requirement Analysis,  the area under the ROC curve (AUC) should be greater than 0.96 for 1 second and greater than 0.9 for 2 seconds.
 
-Figure \ref{Figure:daimlerTPlot} shows the evolution on time for lateral velocity and offset in an object Follow (OF) $\rightarrow$ OBJ\_Cutout and Lane Follow(LF) $\rightarrow$ OBJ\_Cutin manoeuvres. The black line corresponds to the values massured from the point of view of the EGO car (left side) and the green line to the measures from the point of view of the right part of the OBJ car. The vertical bar indicates the moment in which the manoeuvre has been recognised by the static OOBN. By taking the temporal properties of the data into account on the model, we should be able to predict the manoeuvre earlier on time. Ideally, the manoeuvre should be detected as soon as the lateral offset and velocity for the OBJ start to increase. 
+Figure \ref{Figure:daimlerTPlot} shows the evolution on time for lateral velocity and offset in an Object-Follow (OF) $\rightarrow$ Object-CutOut and Lane-Follow(LF) $\rightarrow$ Object-CutIn manoeuvres. The black line corresponds to the values massured from the point of view of the EGO car (left side) and the green line to the measures from the point of view of the right part of the OBJ car. The vertical bar indicates the moment in which the manoeuvre has been recognised by the static OOBN. By taking the temporal properties of the data into account on the model, we should be able to predict the manoeuvre earlier on time. Ideally, the manoeuvre should be detected as soon as the lateral offset and velocity for the OBJ start to increase. 
 
 \begin{figure}[tb]
 \begin{center}
@@ -121,7 +121,7 @@ where $N$ denotes a white noise $N(0,\sigma^2)$ which is assumed to be small.
 
 The shaded nodes represent the development of the real values of observations over several time steps in the time window. Thus, their trend estimation contributes to the prediction of probability of transition from a lane follow to a lane change manoeuvre.
 
-In order to corroborate the validity of this BN fragment, we have analysed the hypothesis $\Delta O = O(t) - O(t-1) = v(t-1)dt +N$ on our data. Figure \ref{Figure:daimlerVvsOffs} shows the plot and contour plots for $v$ and $\Delta O$, where we observe a linear correlation. 
+In order to corroborate the validity of this BN fragment, we have analysed the hypothesis $O(t) - O(t-1) = \Delta O = v(t-1)dt +N$ on our data. Figure \ref{Figure:daimlerVvsOffs} shows the plot and contour plots for $v$ and $\Delta O$, where we observe a linear correlation. 
 
 \begin{figure}
   \centering
@@ -134,7 +134,7 @@ In order to corroborate the validity of this BN fragment, we have analysed the h
       \caption{ \label{Figure:daimlerVvsOffs}Time plot for $v(t-1)$ vs $O(t) - O(t-1)$. Linear correlation can be observed.}
 \end{figure}
 
-A DBN induces a number of constraints on the compilation of the network into a computational structure. One constraint relates to transferring the belief state from one time slice to the next where the belief state is the probability distribution over the variables shared by neighbouring time slices. In general, the belief state is transferred as a joint distribution. We have imposed limitations in our dynamic model so that the next state depends only on the current state, and not on the sequence of events that preceded it, i.e. first order Markov model. Although in principle this might seem as a strong limitation, we have observed this property to hold in our data. Fig. \ref{Figure:daimlerCorrel} displays, at the top, the sample correlograms for lateral velocity and offset, that is, the correlation of the data with lagged values of themselfves. The partial correlogram (bottom figures) is used to remove the common linear effect of the data in between samples. In our example, for both variables, the correolograms take some time to decay to zero, while the partial correlograms are large for lag one and then small of all other lags. This indicates that the correlation between non consecutive samples is due to the common relationship of these samples and the samples in between \cite{Chapter 2: describing Univariate Time Series}.
+A DBN induces a number of constraints on the compilation of the network into a computational structure. One constraint relates to transferring the belief state from one time slice to the next where the belief state is the probability distribution over the variables shared by neighbouring time slices. In general, the belief state is transferred as a joint distribution. We have imposed limitations in our dynamic model so that the next state depends only on the current state, and not on the sequence of events that preceded it, i.e. first order Markov model. Although in principle this might seem as a strong limitation, we have observed this property to hold in our data. Fig. \ref{Figure:daimlerCorrel} displays, at the top, the sample correlograms for lateral velocity and offset, that is, the correlation of the data with lagged values of themselfves. The partial correlogram (bottom figures) is used to remove the common linear effect of the data in between samples. In our example, for both variables, the correolograms take some time to decay to zero, while the partial correlograms are large for lag one and then small of all other lags. This indicates that the correlation between non consecutive samples is due to the common relationship of these samples and the samples in between [].
 
 \begin{figure}
   \centering
@@ -151,6 +151,7 @@ A DBN induces a number of constraints on the compilation of the network into a c
 
 %This means that approximate methods \cite{BoyenKoller} may have to be considered for meeting the requirements of the target platform.
 
+Additionally,  we believe that even earlier prediction of manoeuvre intentions can be achieved before any development of the trend for lateral evidence LE has been observed. A first indication of possible lane change intention can be observed through the relative dynamics between one vehicle (host or object) and the vehicles in front of it on the same lane. Once again, the goal is to further increase the prediction horizon for manoeuvre recognition (up to 5 seconds), and this approach will be further explored? in future stages of the project. 
 
 
 \drop{ %To be included in the next version of the deliverable
