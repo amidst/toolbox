@@ -3,12 +3,12 @@
 
 \subsubsection*{Introduction}
 
-The basic settings of the DAIMLER's use-case [][] are as follows. Let us suppose we are driving our car, which will be referred as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the problem consists in the early recognition of a maneuver either of the EGO or another relevant car in the traffic scene (OBJ). In total, the system is expected to recognized the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
+The basic settings of the DAIMLER's use-case \cite{Fer14}	 are as follows. Let us suppose we are driving our car, which will be referred as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the challenge consists in the early recognition of a maneuver either of the EGO or another relevant car in the traffic scene (OBJ). In total, the system is expected to recognized the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
 \begin{enumerate}
 \item \textbf{Object-CutOut}:  A vehicle that was driving in front of us is leaving the EGO lane.
 \item \textbf{Object-CutIn}: A vehicle is moving to the lane where the EGO vehicle is placed.
 \item \textbf{EGO-CutOut}: The EGO vehicle is leaving the lane where it was driving.
-\item \textbf{EGO-CutIn}: The EGO vehicle is moving to a new lane already occupied for another vehicle. 
+\item \textbf{EGO-CutIn}: The EGO vehicle is moving to a new lane already occupied by another vehicle. 
 \item \textbf{Object-Follow}: There is no lane change. The EGO is driving and there is some other vehicle in front.
 \item \textbf{Lane-Follow}: There is no lane change. The EGO is driving and there is not any other vehicle in front.
 \end{enumerate}
@@ -31,7 +31,7 @@ Instead of working with the raw data from the video, radar and on-board sensors,
 
 Figure \ref{Figure:DaimlerDataFlow} contains a visual description of the current data flow used to create this ``object data''.  As can be seen in this figure, in a first step the raw data coming from the video, radar and sensors is preprocessed. In a second step this preprocessed data is fused and the high-level or ``object data'' describing the traffic scene is obtained. 
 
-Using this ``object data'', Daimler has developed a probabilistic graphical model [] which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place. This probabilistic approach is based on modelling the problem in different layers as shown in Figure \ref{Figure:DaimlerHierarchicalModelling}.
+Using this ``object data'', Daimler has developed a probabilistic graphical model \cite{kasper2012object} which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place. This probabilistic approach is based on modelling the problem in different layers as shown in Figure \ref{Figure:DaimlerHierarchicalModelling}.
 
 
 
