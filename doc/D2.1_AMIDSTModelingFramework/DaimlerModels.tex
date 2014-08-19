@@ -48,7 +48,7 @@ The sensor data is modelled in the first step. Using this layer, a new layer is 
 
 \subsubsection*{The static-OOBN model}
 
-As commented above, this model will work with the so-called ``object data''. This data mainly consists on a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see [] for further details) describing the traffic scene. And the whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling}. This hierarchical modelling was previously implemented in [][] using an object-oriented Bayesian network (OOBN) []. 
+As commented above, this model will work with the so-called ``object data''. This data mainly consists on a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. And the whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling}. This hierarchical modelling was previously implemented in \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
 
 
 %Even using this high-level features, the modelling problem is very complex. 
@@ -60,7 +60,7 @@ The general structure of this OOBN model consists of a number of abstraction lev
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.35]{./figures/DaimlerOOBNAbstraction}
-\caption{\label{Figure:DaimlerOOBNAbstraction} Static-OOBN model for the prediction of an event (maneuver).}
+\caption{\label{Figure:DaimlerOOBNAbstraction} Static-OOBN model for the prediction of an event (maneuver) \cite{Weidl2014}.}
 \end{center}
 \end{figure}
 
@@ -74,7 +74,7 @@ As commented above, the observations characterizing a situation are acquired fro
 \end{figure}
 
 
-The situation features used for maneuver recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID). They represent the three hypotheses (see Figure \ref{Figure:DaimlerOOBNAbstraction}), which are modelled by the corresponding OOBN-fragments. For more details see [13], [14]. The hypothesis LE is shown in Figure \ref{Figure:DaimlerLE}. Its conditional probability distribution is represented by a sigmoid (logistic) function to expresses the growing probability for the lateral evidence on crossing the lane marking, when the vehicle is coming closer to the lane marking (modeled by $O\_LAT\_MEASURED$) by growing lateral velocity (modeled by $V\_LAT\_ MEASURED$).
+The situation features used for maneuver recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID). They represent the three hypotheses (see Figure \ref{Figure:DaimlerOOBNAbstraction}), which are modelled by the corresponding OOBN-fragments \cite{kasper2012object}. The hypothesis LE is shown in Figure \ref{Figure:DaimlerLE}. Its conditional probability distribution is represented by a sigmoid (logistic) function to expresses the growing probability for the lateral evidence on crossing the lane marking, when the vehicle is coming closer to the lane marking (modeled by $O\_LAT\_MEASURED$) by growing lateral velocity (modeled by $V\_LAT\_ MEASURED$).
 
 \begin{figure}
 \begin{center}
@@ -83,7 +83,7 @@ The situation features used for maneuver recognition are structured along three 
 \end{center}
 \end{figure}
 
-Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events, which in our automotive scenario correspond to the different driving maneuvers: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects, see [12], [13].
+Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events, which in our automotive scenario correspond to the different driving maneuvers: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects, see \cite{kasper2012object}.
 
 \subsubsection*{The dynamic-OOBN model}
 
