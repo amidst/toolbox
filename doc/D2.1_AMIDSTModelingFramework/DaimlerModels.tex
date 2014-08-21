@@ -3,7 +3,7 @@
 
 \subsubsection*{Introduction}
 
-The basic settings of the DAIMLER's use-case \cite{Fer14}	 are as follows. Let us suppose we are driving our car, which will be referred as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the challenge consists in the early recognition of a maneuver either of the EGO or another relevant car in the traffic scene (OBJ). In total, the system is expected to recognized the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
+The basic settings of the DAIMLER's use-case \cite{Fer14}	 are as follows. Let us suppose we are driving our car, which will be referred as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the challenge consists in the early recognition of a manoeuvre either of the EGO or another relevant car in the traffic scene (OBJ). In total, the system is expected to recognised the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
 \begin{enumerate}
 \item \textbf{Object-CutOut}:  A vehicle that was driving in front of us is leaving the EGO lane.
 \item \textbf{Object-CutIn}: A vehicle is moving to the lane where the EGO vehicle is placed.
@@ -31,13 +31,13 @@ Instead of working with the raw data from the video, radar and on-board sensors,
 
 Figure \ref{Figure:DaimlerDataFlow} contains a visual description of the current data flow used to create this ``object data''.  As can be seen in this figure, in a first step the raw data coming from the video, radar and sensors is preprocessed. In a second step this preprocessed data is fused and the high-level or ``object data'' describing the traffic scene is obtained. 
 
-Using this ``object data'', Daimler has developed a probabilistic graphical model \cite{kasper2012object} which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place. This probabilistic approach is based on modelling the problem in different layers as shown in Figure \ref{Figure:DaimlerHierarchicalModelling}.
+Using the resulting ``object data'', Daimler has developed a probabilistic graphical model \cite{kasper2012object} which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place. This probabilistic approach is based on modelling the problem in different layers as shown in Figure \ref{Figure:DaimlerHierarchicalModelling}.
 
 
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerHierarchicalModelling}
+\includegraphics[scale=0.58]{./figures/DaimlerHierarchicalModelling}
 \caption{\label{Figure:DaimlerHierarchicalModelling} Hierarchical layers for the recognition of driving manoeuvres.}
 \end{center}
 \end{figure}
@@ -48,75 +48,61 @@ The sensor data is modelled in the first step. Using this layer, a new layer is 
 
 \subsubsection*{The static-OOBN model}
 
-As commented above, this model will work with the so-called ``object data''. This data mainly consists on a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. And the whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling}. This hierarchical modelling was previously implemented in \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
+As commented above, this model will work with the so-called ``object data''. This data mainly consists of a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. The whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling} and it has been previously implemented \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
 
 
 %Even using this high-level features, the modelling problem is very complex. 
 
 %At the same time, the problem contain a lot of structure and can be divided in simpler and similar sub-problems. For example, when deciding whether there is evidence or not that a car is performing a %lateral movement to the right, we can employ two situation-features such as the lateral velocity to the right and the lateral offset w.r.t. the right lane marking of this vehicle to make this decision. But %we will find a quite similar problem when deciding about the lateral movement evidence of the EGO car or any other car, when the only difference that will use another situation-features (e.g. the right %lateral velocity of the EGO) .
 
-The general structure of this OOBN model consists of a number of abstraction levels (see Figure \ref{Figure:DaimlerOOBNAbstraction}): all measured and/or computed signals $S$ are handled with their uncertainties $\sigma^2$. These are represented as object classes at the lowest level (class $S$) of the OOBN. The real values $\mu$ of evidence signals are then used at the next level of the hierarchy to evaluate the hypotheses (class $H$ in Figure \ref{Figure:DaimlerOOBNAbstraction}). The combined evaluation of several hypotheses results in the prediction of events, class E. In our case, the events are modelling traffic maneuvers of the own and neighbour vehicles.
+The general structure of this OOBN model consists of a number of abstraction levels (see Figure \ref{Figure:DaimlerOOBNAbstraction}): all measured and/or computed signals S\_MEAS are handled with their uncertainties S\_SIGMA. These are represented as object classes at the lowest level (class $S$) of the OOBN. The real values S\_REAL of evidence signals are then used at the next level of the hierarchy to evaluate the hypotheses (class $H$ in Figure \ref{Figure:DaimlerOOBNAbstraction}). The combined evaluation of several hypotheses results in the prediction of events, class E. In our case, the events are modelling traffic manoeuvres of the own and neighbour vehicles.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerOOBNAbstraction}
+\includegraphics[scale=0.58]{./figures/DaimlerOOBNAbstraction}
 \caption{\label{Figure:DaimlerOOBNAbstraction} Static-OOBN model for the prediction of an event (maneuver) \cite{Weidl2014}.}
 \end{center}
 \end{figure}
 
-As commented above, the observations characterizing a situation are acquired from sensors and computations (see Figure \ref{Figure:DaimlerDataFlow}) and, in consequence, they are regarded as  \textit{measured data}. If the measurement instrument is not functioning properly (due to sensor noise or fault), then the sensor-reading ($S\_MEASURED$) and the real variable ($S\_REAL$) under measurement need not to be the same. This fact imposes the causal model structure as shown in Figure \ref{Figure:DaimlerSensorModelling}. The sensor-reading of any measured variable is conditionally dependent on random changes in two variables: real value under measurement ($S\_REAL$) and sensor fault ($S\_SIGMA$).
+As commented above, the observations characterising a situation are acquired from sensors and computations (see Figure \ref{Figure:DaimlerDataFlow}) and, in consequence, they are regarded as  \textit{measured data}. If the measurement instrument is not functioning properly (due to sensor noise or fault), then the sensor-reading (S\_MEAS) and the real variable (S\_REAL) under measurement need not to be the same. This fact imposes the causal model structure as shown in the first part on Figure \ref{Figure:DaimlerOOBNAbstraction}. The sensor-reading of any measured variable is conditionally dependent on random changes in two variables: real value under measurement (S\_REAL) and sensor fault (S\_SIGMA).
+
+The situation features used for manoeuvre recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID). They represent the three hypotheses (see Figure \ref{Figure:DaimlerOOBNAbstraction}), which are modelled by the corresponding OOBN-fragments \cite{kasper2012object}. The BN fragment for the hypothesis LE is shown in Figure \ref{Figure:DaimlerLE}. Its conditional probability distribution is represented by a sigmoid (logistic) function. This is used to model the growing probability for the lateral evidence to cross the lane marking, based on the vehicle coming closer to the lane marking (modelled by O\_LAT\_MEAS) and the increase of its lateral velocity (modelled by V\_LAT\_ MEAS).
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerSensorModelling}
-\caption{\label{Figure:DaimlerSensorModelling} BN fragment for modeling of sensor’s uncertainties with a discrete ``measurement'' variable.}
+\includegraphics[scale=0.58]{./figures/DaimlerLE}
+\caption{\label{Figure:DaimlerLE} Static BN fragment for the LE hypothesis.}
 \end{center}
 \end{figure}
 
-
-The situation features used for maneuver recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID). They represent the three hypotheses (see Figure \ref{Figure:DaimlerOOBNAbstraction}), which are modelled by the corresponding OOBN-fragments \cite{kasper2012object}. The hypothesis LE is shown in Figure \ref{Figure:DaimlerLE}. Its conditional probability distribution is represented by a sigmoid (logistic) function to expresses the growing probability for the lateral evidence on crossing the lane marking, when the vehicle is coming closer to the lane marking (modeled by $O\_LAT\_MEASURED$) by growing lateral velocity (modeled by $V\_LAT\_ MEASURED$).
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.35]{./figures/DaimlerLE}
-\caption{\label{Figure:DaimlerLE} BN fragment for modeling of sensor’s uncertainties with a discrete ``measurement'' variable.}
-\end{center}
-\end{figure}
-
-Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events, which in our automotive scenario correspond to the different driving maneuvers: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects, see \cite{kasper2012object}.
+The right-hand square on Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events (right-hand square), which in our automotive scenario correspond to the different driving manoeuvres: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects\cite{kasper2012object}.
 
 \subsubsection*{The dynamic-OOBN model}
 
 The above described static OOBN is able to detect a manoeuvre 0.6s before execution. The goal is to extend the prediction horizon for manoeuvre recognition at least to 1-2 seconds (max. 4-5 seconds ahead) before the actual lane marking crossing, which is of advantage for the adaptive cruise control. Most precisely, and as indicated on Daimler's use cases \cite{Fer14},  the area under the ROC curve (AUC) should be greater than 0.96 for 1 second and greater than 0.9 for 2 seconds.
 
-Figure \ref{Figure:daimlerTPlot} shows an example of the current performance, and limitations, of the static-OOBN model. In these figures we plot the evolution on different time-steps for lateral velocity and lateral offset to a lane marking in an ongoing Object-CutOut and Object-Cutin manoeuvres (see Figure \ref{Figure:DaimlerManeuvers}). The vertical black bar in these figures indicates the moment in which the manoeuvre has been recognised by the static-OOBN. The manoeuvre is finished at the end of the series, which coincides with the actual moment of changed lane. The black line corresponds to the lateral offset and lateral velocity of the EGO car, which is following the lane (LF), and the green line to the values of the Object car performing the Object-CutOut/Object-Cutin manoeuvres. As expected for lane follow (LF), the lateral velocity of the EGO fluctuates around zero  (i.e. EGO car is just driving inside its lane) and the lateral offset of the lane marking is almost constant all the time. However, when we look at the lane change behaviour of the OBJ car (green lines) we easily see a quite different behaviour. Firstly, we see as the lateral velocity is much more higher indicating a lateral movement. Similarly, we also see as the lateral offset steadily increases, what clearly indicates that the Object car is leaving its current lane in both manoeuvres. 
+Figure \ref{Figure:daimlerTPlot} shows an example of the current performance, and limitations, of the static-OOBN model. In these figures we plot the evolution on different time-steps for lateral velocity and lateral offset to a lane marking in an ongoing Object-CutOut and Object-Cutin manoeuvres (see Figure \ref{Figure:DaimlerManeuvers}). The vertical black bar in these figures indicates the moment in which the manoeuvre has been recognised by the static-OOBN. The manoeuvre is finished at the end of the series, which coincides with the actual moment of changed lane. The black line corresponds to the lateral offset and lateral velocity of the EGO car, which is following the lane (LF), and the green line to the values of the Object car performing the Object-CutOut/Object-Cutin manoeuvres. As expected for lane follow (LF), the lateral velocity of the EGO fluctuates around zero  (i.e. EGO car is just driving inside its lane) and the lateral offset of the lane marking is almost constant all the time. However, when we look at the lane change behaviour of the OBJ car (green lines) we easily see a quite different behaviour. Firstly, we observe that the lateral velocity is much  higher indicating a lateral movement. Similarly, we also observe how the lateral offset steadily increases, what clearly indicates that the Object car is leaving its current lane in both manoeuvres. 
 
-%The vertical black bar in these figures indicates the moment in which the manoeuvre has been recognised by the static-OOBN. The manoeuvre is assumed to be finished at the end of the series. And the prediction happens around 15 time steps  or, equivalently, around 0.62 seconds (i.e. 1 time step is around 42ms) before that manoeuvre is finished in both cases. 
-
-
-%However, looking carefully at these plots we could assume that this prediction could be performed much earlier, around time step 25 or 30 (just when the lateral offset and lateral velocity starts to increase). 
-Although the manoeuvre is clearly identified before it completes in both cases (approx. 0.6 seconds in advance), it is desired to predict it 1-2 seconds in advance.
-This is one of the basic piece of evidence that motivated us to develop the dynamical version of the static-OOBN model. More generally, it is clear that this problem has an inherent dynamic component. So, our main assumption is that the use of the dynamic model will allow us to build a more accurate and reliable system for manoeuvre recognition. 
-
-
-\begin{figure}[tb]
+\begin{figure}
 \begin{center}
 \includegraphics[scale=0.65]{./figures/DaimlerLE_EGO_L_LE_OBJ_L_OBJCut.pdf}
 \caption{\label{Figure:daimlerTPlot}Daimler Time Plot}
 \end{center}
 \end{figure}
 
-Note however that the prediction horizon for manoeuvre recognition is limited, in order to avoid false positives.  In case of a false positive, such as an erroneously Object-CutIn for instance, the adaptive cruise control would react with an unnecessary break.%Figure \ref{Figure:daimlerFalsePositive} shows an example of a Lane Follow/Object Follow sequence, in which a lane change manoeuvre could be erroneously predicted if at time X.
 
+Although the manoeuvre is clearly identified before it completes in both cases (approx. 0.6 seconds in advance), it is desired to predict it 1-2 seconds in advance.
+This is one of the basic piece of evidence that motivated us to develop the dynamical version of the static-OOBN model. More generally, it is clear that this problem has an inherent dynamic component. So, our main assumption is that the use of the dynamic model will allow us to build a more accurate and reliable system for manoeuvre recognition. 
 
+Note however that the prediction horizon for manoeuvre recognition is limited in order to avoid false positives.  In case of a false positive, such as an erroneously Object-CutIn for instance, the adaptive cruise control would react with an unnecessary break, so they ought to be avoided.
 
-In fact, each manoeuvre can be considered as a process, developing in time, i.e., as data stream given by a time sequence of the transition from lane follow into lane change manoeuvre. The dynamic extension involves copies of the static OOBN for different number of time steps in the time window (e.g. see Fig. \ref{Figure:daimlerLEdyn} where the two top nodes are temporal clone defining the share belief state between consecutive time steps creating a first order Markov process), if also the requirement on earlier prognostics of maneuver is to be satisfied. 
+In general, each manoeuvre can be considered as a process, developing in time, i.e., as data stream given by a time sequence of the transition from lane follow into lane change manoeuvre. The dynamic extension involves copies of the static OOBN for different number of time steps in the time window, Fig. \ref{Figure:daimlerLEdyn} shows an example for the LE hypothesis, where the two top nodes are temporal clones defining the share belief state between consecutive time steps, and hence creating a first order Markov process.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.5]{./figures/DaimlerLEdyn.pdf}
+\includegraphics[scale=0.58]{./figures/DaimlerLEdyn}
 \end{center}
-\caption{\label{Figure:daimlerLEdyn}Daimler Temporal Model}
+\caption{\label{Figure:daimlerLEdyn}Daimler Temporal fragment for the LE hypothesis.}
 \end{figure}
 
 
@@ -151,19 +137,26 @@ A DBN induces a number of constraints on the compilation of the network into a c
 \begin{figure}
   \centering
     \begin{tabular}{cc}
-    \includegraphics[width=60mm]{figures/DaimlerCorrOBJ_R50Offs.pdf}&
-    \includegraphics[width=60mm]{figures/DaimlerCorrOBJ_R50Vel.pdf}\\
+    \includegraphics[width=60mm]{figures/DaimlerCorrOBJ_R80Offs.pdf}&
+    \includegraphics[width=60mm]{figures/DaimlerCorrOBJ_R80Vel.pdf}\\
         \includegraphics[width=60mm]{figures/DaimlerPcorrOBJ_R5Offs.pdf}&
     \includegraphics[width=60mm]{figures/DaimlerPcorrOBJ_R5Vel.pdf}\\
   \end{tabular}
     \caption{\label{Figure:daimlerCorrel}Correlograms and partial correlograms for Lateral velocity and offset.}
 \end{figure}
 
+Figure \ref{Figure:daimlerLEdynGeneric} shows the temporal for all hypotheses. The final event is then determined by the combination of these hypotheses and the position of the OBJ with respect to the EGO car.
 
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.58]{./figures/DaimlerLEdynGeneric}
+\end{center}
+\caption{\label{Figure:daimlerLEdynGeneric}Daimler Temporal model with several hypothesis.}
+\end{figure}
 
 %This means that approximate methods \cite{BoyenKoller} may have to be considered for meeting the requirements of the target platform.
 
-Additionally,  we believe that even earlier prediction of manoeuvre intentions can be achieved before any development of the trend for lateral evidence LE has been observed. A first indication of possible lane change intention can be observed through the relative dynamics between one vehicle (host or object) and the vehicles in front of it on the same lane. Once again, the goal is to further increase the prediction horizon for manoeuvre recognition (up to 5 seconds), and this approach will be further explored in future stages of the project. 
+Additionally,  we believe that even earlier prediction of manoeuvre intentions could be achieved before any development of the trend for lateral evidence LE has been observed. A first indication of possible lane change intention can be observed through the relative dynamics between one vehicle (host or object) and the vehicles in front of it on the same lane. Once again, the goal is to further increase the prediction horizon for manoeuvre recognition (up to 5 seconds), and this approach will be further explored in future stages of the project. 
 
 
 \drop{ %To be included in the next version of the deliverable
