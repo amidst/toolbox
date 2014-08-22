@@ -5,9 +5,9 @@
 
 There are two tasks to be solved for Cajamar's use case (see D1.2 and DoW). The main one is
 the estimation of the \emph{probability of default}, defined as the probability that a
-credit operation will end up to a default in two years. The other task is to obtain 
-good customers profiles in terms of risk so that marketing campaigns can be
-specifically directed to low risk customers. 
+credit operation will end up in default within two years. The secondary task consists in obtaining 
+good customer profiles in terms of risk, so that marketing campaigns can be
+specifically targeted to these low risk customers. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Predicting probability of default}
@@ -16,43 +16,46 @@ specifically directed to low risk customers.
 %---------------------------------------------------------------------------------------------
 \subsubsection*{Introduction of the problem} 
 
-In any commercial bank, when one customer arrives to a bank office and applies for a loan, the bank experts evaluates the risk profile of the customer before they decide whether they accept the loan (and give the money to the client). 
+In any commercial bank, every time a customer applies for a loan, the bank experts evaluate the customer's risk profile before making their decision. 
 
-At CajarMar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not in the following two years after he applies for the loan. This decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar as well as information about the recent past paying behavior of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
+At CajarMar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. This decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
 
 Currently at CajaMar, this risk evaluation is updated daily for every customer of the bank. This daily evaluation is made by creating two data sets: the model evaluation data set, and the model training data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem. 
 
 \begin{itemize}
-\item \textbf{Model Evaluation Data Set:} We denote by day $E$ to the day at which this evaluation data set is created. This data set contains a record for every client to be evaluated at that day $E$. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behavior of this client in a recent past as well as about the socio-demographics data of this person. 
 
-The recent financial activity refers to attributes of the customer such as ``account balance'', ``number of credit card operations'', etc. These attributes usually change daily for a customer, then they are encoded by introducing a set of variables for each attribute that contains the value of this attribute in the last 180 days from day $E$. I.e. if the financial activity of the customer is detailed by $F$ attributes,   $180\cdot F$ predictive variables are included in this data set.
+\item \textbf{Model Training Data Set:}  At day $E$, the training dataset, the predictive variables in the training data set are defined for the day $T = E$ - 2 years (i.e. two years before in time). So the training data set contains one record for each customer of the bank and the predictive variables refers to the financial activity and paying behaviour of these customers in the recent past before day $T$ (i.e. the previous 180 days or the previous 36 months) and their socio-demographic data. 
 
-In the case of past paying behavior, the attributes refers to attributes such as ????. These attributes are updated monthly and the last 36 months from day $T$ are considered when building the evaluation data set. So, if there are $P$ variables referring to the paying behavior of a customer, $36\cdot P$ variables are included to have information  about the past paying behavior.  
+The recent financial activity refers to attributes of the customer such as ``account balance'', ``number of credit card operations'', etc. These attributes usually change daily for a customer, then they are encoded by introducing a set of variables for each attribute that contains the value of this attribute in the last 180 days from day $E$. I.e. if the financial activity of the customer is detailed by $F$ attributes,  $180\cdot F$ predictive variables are included in this data set.
 
-The task of the supervised classification model is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting in the following two years. If at some point the probability of defaulting of some customers rises above some predefined threshold, the bank can try to take preventive actions to reduce the chances that this customer finally defaults in some of his/her loans.
+In the case of past paying behaviour, the attributes refer to information such as ????. \textcolor{red}{These attributes are updated monthly} and the last 36 months from day $T$ are considered when building the evaluation data set. So, if there are $P$ variables referring to the paying behaviour of a customer, $36\cdot P$ variables are included as information about the past paying behaviour.  
 
-\item \textbf{Model Training Data Set:}  The training data set is built in the same way than the evaluation data set. They contain the same set of predictive variables with the main difference that they refer to different time points. If the predictive variables in the evaluation data set are built for day $E$, the predictive variables in the training data set are defined for the day $T = E$ - 2 years (i.e. two years before in time). So the training data set contain one record for each customer of the bank and the predictive variables refers to the financial activity and paying behavior of this customer in the recent past before day $T$ (i.e. the previous 180 days or the previous 36 months). 
+Unlike the evaluation data set, each record of this data set contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the 2 years data between day $T$ and current day $E$. If during these two years the client has regularly paid each of his/her loans and the other financial institutions does not provide any evidence of defaulting, the client is labelled as non-defaulter. Otherwise, the corresponding record is labeled as defaulter (see Data Characteristics document for more detailed information about this respect).   
 
-Unlike the evaluation data set, each record of this data set contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the 2 years data between day $T$ and day $E$. If during these two years the client has regularly pay each of his/her loans and the other financial institutions does not provide any evidence of defaulting, the client is laballed as non-defaulter. Otherwise, it is labeled as defaulter (see Data Characteristics document for more detailed information about this respect).   
+Using this data set, the bank then fits a logistic regression model, which will be then used to update the probability of defaulting of each of the clients in the evaluation data set.  
 
-Using this data set, the bank fits a logistic regression model, which is then used to update the probability of defaulting of each of the clients in the evaluation data set. 
+\item \textbf{Model Evaluation Data Set:} This data set contains a record for every client to be evaluated at that day $E$. It is built in the same way than the evaluation data set. They contain the same set of predictive variables, with the main difference that they refer to different time points.  As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for the different customers. As in the training set, the predictor variables refer to the financial activity and paying behaviour of these clients in the recent past and their socio-demographic data. 
+
+
+The task of the supervised classification model is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. If at some point the probability of defaulting for some customers rise above some predefined threshold, the bank can try to take preventive actions to reduce the chances that this customer finally defaults in some of his/her loans.
 
 \end{itemize}
  
 
 \subsubsection*{Static Model} 
 
-In this first approach we do not explicitly consider some of the dynamics of the problem: we do not model that a customer can be non-defaulter and defaulter at different moments in time (e.g. one customer can be creditworthy and, after some time, be in bankrupt for becoming unemployed). Here we just build a prediction model where given the financial behaviour of the client over a recent past, it predicts whether the client will default or not in 2 the next years. 
+In this first approach we do not explicitly consider some of the dynamics of the problem: we do not model that a customer can be non-defaulter and defaulter at different moments in time (e.g. one customer can be creditworthy and, after some time, go bankrupt due to unemployment). As for now, we consider a static prediction model where given the financial behaviour of the client over a recent past, it predicts whether the client will default or not within the next 2 years. 
 
-Figure \ref{Figure:CajaMarStatic} shows the general structure of this static model. Each yellow box represents a set of variables measures during the same day.
-The variables within a box can be connected (e.g. according to a tree structure and, globally, conforming a TAN). The model only considers variables referring to the last 180 days (for the shake of simplicity, we do not consider that other variables might refer to the last 36 months) . The red node models the possibility that the customer is a defaulter in the next two years. 
+Figure \ref{Figure:CajaMarStatic} shows the general structure of this static model. Each yellow box represents a set of $F$ variable measurements for a particular day.
+For the shake of simplicity, for now on and in the graphical models depicted, we do not explicitly show the variables that refer to monthly information during the last 36 months. The red node models the possibility that the customer is a defaulter in the next two years. 
 
-The process of building this static model would consist of the following steps:
+The variables within a box can be connected (e.g. according to a tree structure and, globally, conforming a TAN). \textcolor{blue}{Figure X shows how indeed there exist at least pairwise dependences between some of the variables in the data for a particular day.}
 
+Given the original relational database, the process of building this static model consists of the following steps:
 
 \begin{itemize}
 \item Construct a single flat table, containing information on time windows of \emph{180 days}.
-\item Build a BN classifier (i.e. NB or TAN). 
+\item Build a semi-naive BN classifier (e.g NB or TAN). 
 \item Update risk profiles using the classifier.
 \end{itemize}
 
@@ -132,7 +135,7 @@ client is defaulter and are temporal connected.}
 %---------------------------------------------------------------------------------------------
 \subsubsection*{Dynamic Model} 
 
-In this approach we will consider the the dynamic structure of the problem. These dynamics are present because the behaviour of the customers evolves over time (e.g. the account balance is continuously changing from month to another, the level of incomes, etc.)  as well as the labelling as defaulter or non-defaulter customer (e.g. one customer can be creditworthy and, but after some time, be in bankrupt for becoming unemployed). 
+In this second approach, we will consider the dynamic structure of the problem. These dynamics are present because the behaviour of the customers evolves over time (e.g. the account balance is continuously changing from one month to another, also the income levels, etc.)  as well as the label as a defaulter or non-defaulter customer (e.g. customers can be creditworthy and, after some time, go bankrupt because they have lost their job). \textcolor{blue}{Analysing some of the data, we can actually see that if a customer was a defaulter at day $E$, the probability of being a defaulter at day $E+1$ changes from $X$ (static model) to $Y$ (dynamic model). The reason for this dramatic change is that once a client is a defaulter, he/she will be a defaulter for some time, and the static model is unable to represent this effect.} \textcolor{red}{ And the way we have defined the problem it actually does not matter much, does it?} 
 
 
 \begin{figure}
@@ -175,7 +178,7 @@ In this approach we will consider the the dynamic structure of the problem. Thes
 Figure~\ref{fig:global_temp} represents the global idea of the temporal model. It can be compactly
 represented by a dynamic Bayesian network made of components as the one displayed in 
 Figure~\ref{fig:component}. $D_t$ represents the class variable at time slice $t$ (i.e. defaulting or non-defaulting client). Each feature
-variable at time $t$, denoted as $X_t$, is linked to the same variable at time $t_1$: $X_{t-1}$
+variable at time $t$, denoted as $X_t$, is linked to the same variable at time $t-1$, $X_{t-1}$,
 as well as to a \emph{memory variable} $\bar{X}_t$ that represents the average value of $X$
 during the last $180$ time slices (days). Finally, an indicator variable $\delta_{X_t}$ may
 be included if the variable is such that is observed many times at point 0. This is the case as,
