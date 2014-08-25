@@ -1,10 +1,10 @@
 \section{AMIDST Model Class}
 
-\subsection{Introduction}
+\subsection{Introduction  and Notation}
 
 One of the main goals of this project [] was the definition of a general model class which the following features: (i) it has to be applicable to the three main use-cases; (ii) it should be general enough to apply to other future similar use-cases;  (iii) and it should contain certain structure that can be exploited to make this model class valid for scalable inference and learning in massive data streams. 
 
-With these three aims in mind,  we started the definition of the general model class by finding commonalities between the different models presented in Section \ref{Section:PreliminaryModels}.  To try to elicit these commonalities between the proposed models for the three use-cases, we  introduce some new ``graphical'' notation to ease this process. This new graphical notation is based on the use of subnetworks modules (?), they are represented by square boxes and represents a subset of nodes with some kind of interconnection between them (when looking at the examples, we think this concept will be much clear). Following the same notation we used for nodes, square boxes rounded by dashed lines refers to a subnetwork which is not observable (i.e. composed by hidden variables); square boxes rounded by continuous lines refers to a subnetwork where the nodes are observed; when the square box is coloured, it means that all the nodes of the subnetwork are discrete (green color) or continuous (blue color). Square boxes can also be nested to represent smaller subcomponents inside a bigger subcomponent. In Figure ? we give a visual description of this notation. 
+With these three aims in mind,  we started the definition of the general model class by finding commonalities between the different models presented in Section \ref{Section:PreliminaryModels}.  With this aim, we  introduce some new ``graphical'' notation to ease this process. This new graphical notation is based on the use of subnetworks modules (?), they are represented by square boxes and refers to a subset of nodes with some kind of interconnection between them (when looking at the examples, we think this concept will be much clear). Following the same notation we used for nodes, square boxes rounded by dashed lines refers to a subnetwork which is not observable (i.e. composed by hidden variables); square boxes rounded by continuous lines refers to a subnetwork where the nodes are observed; when the square box is coloured, it means that all the nodes of the subnetwork are discrete (green color) or continuous (blue color). Square boxes can also be nested to represent smaller subcomponents inside a bigger subcomponent. In Figure ? we give a visual description of this notation. 
 
 \begin{figure}
 \begin{center}
@@ -13,9 +13,13 @@ With these three aims in mind,  we started the definition of the general model c
 \end{center}
 \end{figure}
 
-In this new step, we are going to present again the models of the three use-cases but using now this previously introduced notation. 
+We present now the models of the three use-cases but using this previously introduced notation. 
 
 \subsubsection*{Daimler Model Class}
+
+Figure \ref{Figure:DaimlerModelClass} shows the general structure of the Daimler's models. The model is structured as a stationary dynamic Bayesian network. The static model which is repeated through the time is composed by three elements: a set of hidden discrete nodes on top; and two observed sub-networks, one continuous and one discrete, which directly depends of the hidden sub-network. This dynamic BN is only temporally connected through the hidden sub-network.  In consequence, the future and past time slices of our dynamic BN are conditionally independent given the hidden sub-network corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete sub-networks are also conditionally independent given the hidden-subnetwork.
+
+We also have more structure that can be exploited during inference and which is not reflected in this meta-network. Specifically, we have that the hidden and observed sub-networks have a poly-tree structure. Then, the static BN as well as the dynamic BN both have poly-tree structure and this can be exploited during inference. 
 
 \begin{figure}
 \begin{center}
