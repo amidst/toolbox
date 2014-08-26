@@ -18,13 +18,13 @@ specifically targeted to these low risk customers.
 
 In any commercial bank, every time a customer applies for a loan, the bank experts evaluate the customer's risk profile before making their decision. 
 
-At CajarMar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. This decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
+At CajarMar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
 
-Currently at CajaMar, this risk evaluation is updated daily for every customer of the bank. This daily evaluation is made by creating two data sets: the model evaluation data set, and the model training data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem. 
+Currently at CajaMar, this risk evaluation is updated daily for every customer of the bank. This daily evaluation is made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem. 
 
 \begin{itemize}
 
-\item \textbf{Model Training Data Set:}  At day $E$, the training dataset, the predictive variables in the training data set are defined for the day $T = E$ - 2 years (i.e. two years before in time). So the training data set contains one record for each customer of the bank and the predictive variables refers to the financial activity and paying behaviour of these customers in the recent past before day $T$ (i.e. the previous 180 days or the previous 36 months) and their socio-demographic data. 
+\item \textbf{Model Training Data Set:}  At day $E$, the predictive variables in the training data set are defined for the day $T = E$ - 2 years (i.e. two years before in time). So the training data set contains one record for each customer of the bank and the predictive variables refers to the financial activity and paying behaviour of these customers in the recent past before day $T$ (i.e. the previous 180 days or the previous 36 months) and their socio-demographic data. 
 
 The recent financial activity refers to attributes of the customer such as ``account balance'', ``number of credit card operations'', etc. These attributes usually change daily for a customer, then they are encoded by introducing a set of variables for each attribute that contains the value of this attribute in the last 180 days from day $E$. I.e. if the financial activity of the customer is detailed by $F$ attributes,  $180\cdot F$ predictive variables are included in this data set.
 
@@ -44,10 +44,10 @@ The task of the supervised classification model is to take each of the records (
 
 \subsubsection*{Static Model} 
 
-In this first approach we do not explicitly consider some of the dynamics of the problem: we do not model that a customer can be non-defaulter and defaulter at different moments in time (e.g. one customer can be creditworthy and, after some time, go bankrupt due to unemployment). As for now, we consider a static prediction model where given the financial behaviour of the client over a recent past, it predicts whether the client will default or not within the next 2 years. 
+In this first approach we do not explicitly consider some of the dynamics of the problem: we do not model that a customer can be non-defaulter and defaulter at different moments in time (e.g. one customer can be creditworthy and, after some time, go bankrupt due to unemployment). Instead, we consider a static prediction model where given the financial behaviour of the client over a recent past, it predicts whether the client will default or not within the next 2 years. 
 
 Figure \ref{Figure:CajaMarStatic} shows the general structure of this static model. Each yellow box represents a set of $F$ variable measurements for a particular day.
-For the shake of simplicity, for now on and in the graphical models depicted, we do not explicitly show the variables that refer to monthly information during the last 36 months. The red node models the possibility that the customer is a defaulter in the next two years. 
+For the shake of simplicity, for now on and in the graphical models depicted, we do not explicitly show the variables that refer to monthly information during the last 36 months. The green node is the class variable that represents the probability that a customer will default within the next two years. 
 
 \begin{figure}
 \begin{center}
@@ -58,7 +58,7 @@ The variables within a box can be connected (e.g. according to a tree structure 
 \end{center}
 \end{figure}
 
-The variables within a box can be connected (e.g. according to a tree structure and, globally, conforming a TAN). \textcolor{blue}{Figure \ref{Figure:cajamarDependences}(a) shows how indeed there exist dependences between some of the variables in the data for a particular day \textcolor{red}{Please replace this BN by another one with the name of some of the variables}. Figure \ref{Figure:cajamarDependences}(b) shows the contour bivariate plot for variables V1 and V2, showing a clear linear relationship between the two variables. This might even indicate that one variable is just a replica of the other variable, and their joint contribution will not only make learning and inference computationally more expensive, but it could lead to poorer performance. This would support the need to explore suitable feature selection techniques as specified in Use Case 2 of Cajamar's Requirement analysis.}
+The variables within a box can be connected (e.g. according to a tree structure and, globally, conforming a TAN). \textcolor{blue}{Figure \ref{Figure:cajamarDependences}(a) shows how indeed there exist dependences between some of the variables in the data for a particular day. \textcolor{red}{Please replace this BN by another one with the name of some of the variables}. Figure \ref{Figure:cajamarDependences}(b) shows the contour bivariate plot for variables V1 and V2, showing a clear linear relationship between the two variables. This might even indicate that one variable is just a replica of the other variable, and their joint contribution will not only make learning and inference computationally more expensive, but it could lead to poorer performance. This would contribute to support the need to explore suitable feature selection techniques as specified in Use Case 2 of Cajamar's Requirement analysis.}
 
 \begin{figure}
   \centering
@@ -69,7 +69,7 @@ The variables within a box can be connected (e.g. according to a tree structure 
     \caption{\label{Figure:cajamarDependences}.}
 \end{figure}
 
-It is also of major interest to analyse the type of density probability distributions to use in the proposed model. Figure \ref{Figure:cajamarMixt} shows a density histogram for the values of the continuos attribute that measures the end-of-day balance for defaulters and non-defaulters (may other continuous predictive attributes present similar histograms). The density curves represent a credible approximation using mixture of Gaussian distributions. Note that for defaulters, the values of the end-of-day balance are overall lower compared to those corresponding to non-defaulters.
+It is also of major interest to analyse the type of density probability distributions to use in the proposed model. Figures \ref{Figure:cajamarMixt}(a) and (b) show the density histogram for the values of a continuos attribute that measures the end-of-day balance for defaulters and non-defaulters respectively. The density curves represent a credible approximation using mixture of Gaussian distributions, which is the case for most of the other predictive attributes. Note that for defaulters, the values of the end-of-day balance are overall lower compared to those corresponding to non-defaulters.
 
 \begin{figure}
   \centering
@@ -82,7 +82,7 @@ It is also of major interest to analyse the type of density probability distribu
 
 \textcolor{red}{Check please!}There exist however discrete (non-ordinal) predictive attributes which impose a limitation in the structure of the Conditional Gaussian network, since discrete attributes cannot have continuous parents. This might not be a problem for the semi-naive Bayesian network to be considered, and it is certainly not a problem for naive Bayes. Nonetheless, if this limitation were found to be problematic in future stages of the project then other families of probability distributions will be explored, such as Mixture of Truncated Exponentials[] or Mixture of Truncated Basis Functions[], which can cope with more generic Bayesian structures at a higher computation cost. 
 
-Given the original relational database, the process of building this static model consists of the following steps:
+In summary and given the original relational database, the process of building this static model consists of the following steps:\textcolor{blue}{(Should this be included?)}.
 
 \begin{itemize}
 \item Construct a single flat table, containing information on time windows of \emph{180 days}.
@@ -147,7 +147,7 @@ Given the original relational database, the process of building this static mode
 %---------------------------------------------------------------------------------------------
 \subsubsection*{Dynamic Model} 
 
-In this second approach, we will consider the dynamic structure of the problem. These dynamics are present because the behaviour of the customers evolves over time (e.g. the account balance is continuously changing from one month to another, also the income levels, etc.)  as well as the label as a defaulter or non-defaulter customer (e.g. customers can be creditworthy and, after some time, go bankrupt because they have lost their job). \textcolor{blue}{Analysing some of the data, we can actually see that if a customer was a defaulter at day $E$, the probability of being a defaulter at day $E+1$ changes from $X$ (static model) to $Y$ (dynamic model). The reason for this dramatic change is that once a client is a defaulter, he/she will be a defaulter for some time, and the static model is unable to represent this effect.} \textcolor{red}{ And the way we have defined the problem it actually does not matter much, does it?} 
+In this second approach, we will consider the dynamic structure of the problem. These dynamics are present because the behaviour of the customers evolves over time (e.g. the account balance is continuously changing from one month to another, also the income levels, etc.)  as well as the label as a defaulter or non-defaulter customer (e.g. customers can be creditworthy and, after some time, go bankrupt because they have lost their job). \textcolor{blue}{Analysing some of the data, we can actually see that if a customer was a defaulter at day $E$, the probability of being a defaulter at day $E+1$ changes from $p$ (static model) to $p'$ (dynamic model). The reason for this dramatic change is that once a client is a defaulter, he/she will be a defaulter for some time, and the static model is unable to represent this effect.} \textcolor{red}{ And the way we have defined the problem it actually does not matter much, does it?} 
 
 
 
@@ -193,7 +193,7 @@ client is defaulter and are temporal connected.}
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.35]{./figures/CajaMarModel2}
+\includegraphics[scale=0.45]{./figures/CajaMarModel2}
 \caption{Basic component of the structure of the dynamic model.}
 \label{fig:component}
 \end{center}
@@ -201,7 +201,7 @@ client is defaulter and are temporal connected.}
 
 
 Figure~\ref{fig:global_temp} represents the global idea of the proposed temporal model. It can be compactly represented by a dynamic Bayesian network made of components as the one displayed in 
-Figure~\ref{fig:component}. $D_t$ represents the class variable at time slice $t$ (i.e. defaulting or non-defaulting client). Each feature variable at time $t$, denoted as $X_t$, is linked to the same variable at time $t+1$, $X_{t+1}$. Although this is a reasonable assumption for most of the variables, this first Markov order relationship however might prove insufficient for some of the variables. \textcolor{red}{Figures \ref{fig:cajamarPC1order} and Y show the partial correlograms for different continuous predictive variables. For the variables in Figure X, the partial correlograms drop to almost zero for a lag equal to $2$, making the first Markov order assumption a reasonable one. However, for the variables in Figure X the partial correllogram takes more time to drop to zero, which might indicate that past samples still have an influence on the current sample given the previous one.} To mitigate this effect,  a \emph{memory variable}, $\bar{X}_t$ ,that represents the average value of $X$ during the last $180$ time slices (days) is included. 
+Figure~\ref{fig:component}. $D_t$ represents the class variable at time slice $t$ (i.e. defaulting or non-defaulting client). Each feature variable at time $t$, denoted as $X_t$, is linked to the same variable at time $t+1$, $X_{t+1}$. Although this is a reasonable assumption for most of the variables, this first Markov order relationship however might prove insufficient for some of the variables. \textcolor{red}{Figures \ref{fig:cajamarPC1order} and FigY (FigY should show a couple of partial correlograms that do not drop to zero at lag $2$)  show the partial correlograms for different continuous predictive variables. For the variables in Figure \ref{fig:cajamarPC1order}, the partial correlograms drop to almost zero for a lag equal to $2$, making the first Markov order assumption a reasonable one. However, for the variables in Figure FigY the partial correllogram takes more time to drop to zero, which might indicate that past samples still have an influence on the current sample given the previous one.} To mitigate this effect,  a \emph{memory variable}, $\bar{X}_t$, that represents the average value of $X$ during the last $180$ time slices (days) is included. 
 
 
 \begin{figure}
@@ -214,7 +214,7 @@ Figure~\ref{fig:component}. $D_t$ represents the class variable at time slice $t
 \end{figure}
 
 
-Finally, an indicator variable $\delta_{X_t}$ may be included if the variable is such that is observed many times at point 0. This is the case for payments made by credit card or the historical monthly outstanding amount on the account, for instance, whose value can be equal to zero for a large number of days for most customers, as shown in Figure \ref{fig:CajamarIndicatorVar}. Figure \ref{fig:CajamarIndicatorVar}(a) displays the histogram of this variable including all values, and \ref{fig:CajamarIndicatorVar}(b) when the zero values are not considered.
+Finally, an indicator variable $\delta_{X_t}$ may be included if the variable is such that is observed many times at point 0. This is the case for payments made by credit card or the historical monthly outstanding amount on the account for instance, whose value can be equal to zero for a large number of days for most customers, as shown in Figure \ref{fig:CajamarIndicatorVar}. Figure \ref{fig:CajamarIndicatorVar}(a) displays the histogram of this variable including all values, and \ref{fig:CajamarIndicatorVar}(b) when the zero values are not considered.
 
 \begin{figure}
   \centering
@@ -225,7 +225,7 @@ Finally, an indicator variable $\delta_{X_t}$ may be included if the variable is
     \caption{\label{fig:CajamarIndicatorVar}Frequency histogram of the historical monthly outstanding amount}
 \end{figure}
 
-There are some variables that do not display any type of dynamic behaviour. These is for instance the case for variables 1 and 3, whose correllograms show values very close to zero for all lags. These variables are hence not linked through consecutive time steps, which are represented by $Y_{t}$ and $Y_{t+1}$ in Figure \ref{fig:component}. \textcolor{red}{What about drawing only one $Y$? aren't you including the socio-economic variables pointing at the class variable?}. 
+On the other hand, there exist some variables that do not display any type of dynamic behaviour. This is for instance the case for variables \textcolor{red}{1 and 3 (please replace with the names of the vars.)}, whose correllograms on Figure \ref{fig:cajamarCorr} show values very close to zero for all lags. These variables are hence not linked through consecutive time steps, which are represented by $Y_{t}$ and $Y_{t+1}$ in Figure \ref{fig:component}. \textcolor{red}{What about drawing only one $Y$? aren't we including the socio-economic variables pointing at the class variable?}. 
 
 \begin{figure}
   \centering
@@ -233,14 +233,14 @@ There are some variables that do not display any type of dynamic behaviour. Thes
     \includegraphics[width=70mm]{figures/CajaMarcrl1}&
      \includegraphics[width=70mm]{figures/CajaMarcrl3}\\
   \end{tabular}
-    \caption{\label{fig:cajamarPC1order}Correllogram for variables 1 and 3. No temporal dynamic shown.}
+    \caption{\label{fig:cajamarCorr}Correllogram for variables 1 and 3. No temporal dynamic shown.}
 \end{figure}
 
 
-The process of building this dynamic model from the original relational database consists of the following steps:
+In summary, the process of building this dynamic model from the original relational database consists of the following steps:\textcolor{blue}{(Should this be included?)}.
 
 \begin{itemize}
-\item Construct \emph{1 flat table} for each day \textcolor{blue}{(Should this be included?)}.
+\item Construct \emph{1 flat table} for each day.
 \item Build a \emph{dynamic} BN classifier (e.g. NB or TAN like structure extended in a dynamic fashion). 
 \item Update risk profiles using the dynamic classifier.
 \end{itemize}
@@ -259,5 +259,4 @@ The process of building this dynamic model from the original relational database
 
 
 
-\subsubsection*{Data Analysis}
 
