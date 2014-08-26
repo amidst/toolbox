@@ -20,14 +20,15 @@ In any commercial bank, every time a customer applies for a loan, the bank exper
 
 At CajarMar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
 
-Currently at CajaMar, this risk evaluation is updated daily for every customer of the bank. This daily evaluation is made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure \ref{Figure:CajaMarTimeLine} also shows the time-line of the generation of the evaluation and training data set. 
+The methodology currently employed does not assume dependence structure among the variables. Even though this model is quite simple, current predictions are made using only a set of $27$ variables out of the more than $1000$ that are available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are selected partly due to limitations in the available commercial software and the computing resources.
+
+The objective is to daily update the risk evaluation for every customer of the bank. This daily evaluation will be made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure \ref{Figure:CajaMarTimeLine} shows the time-line of the generation of the evaluation and training data set, which is further explained below. 
 
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{./figures/CajarMarTimeLine}
-\caption{\label{Figure:CajaMarStatic}Time-line of the generation of the evaluation and training data sets.}
-\label{Figure:CajarMarTimeLine}
+\includegraphics[scale=0.4]{figures/CajarMarTimeLine}
+\caption{\label{Figure:CajaMarTimeLine}Time-line of the generation of the evaluation and training data sets.}
 \end{center}
 \end{figure}
 
@@ -50,9 +51,10 @@ Using this data set, the bank fits a logistic regression model, which is then us
 
 
 
+
 \subsubsection*{Static Model} 
 
-In this first approach we do not explicitly consider some of the dynamics of the problem: we do not model that a customer can be non-defaulter and defaulter at different moments in time (e.g. one customer can be creditworthy and, after some time, go bankrupt due to unemployment). Instead, we consider a static prediction model where given the financial behaviour of the client over a recent past, it predicts whether the client will default or not within the next 2 years. Similarly what it is done in the current CajaMar approach. 
+In this first approach we do not explicitly consider some of the dynamics of the problem: we do not model that a customer can be non-defaulter and defaulter at different moments in time (e.g. one customer can be creditworthy and, after some time, go bankrupt due to unemployment). Instead, we consider a static prediction model where given the financial behaviour of the client over a recent past, it predicts whether the client will default or not within the next 2 years. Similarly to what it is done in the current CajaMar approach. 
 
 Figure \ref{Figure:CajaMarStatic} shows the general structure of this static model. Each yellow box represents a set of $F$ variable measurements for a particular day.
 For the shake of simplicity, for now on and in the graphical models depicted, we do not explicitly show the variables that refer to monthly information during the last 36 months. The green node is the class variable that represents the probability that a customer will default within the next two years. 
