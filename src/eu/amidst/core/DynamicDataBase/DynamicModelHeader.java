@@ -1,6 +1,6 @@
 package eu.amidst.core.DynamicDataBase;
 
-import eu.amidst.core.StaticDataBase.StaticModelHeader;
+import eu.amidst.core.headers.StaticModelHeader;
 /**
  * Created by afa on 03/07/14.
  */
