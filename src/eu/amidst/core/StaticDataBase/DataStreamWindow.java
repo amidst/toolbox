@@ -1,5 +1,7 @@
 package eu.amidst.core.StaticDataBase;
 
+import eu.amidst.core.headers.StaticDataHeader;
+
 /**
  * Created by afa on 02/07/14.
  */
