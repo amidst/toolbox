@@ -78,14 +78,15 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         if (!Utils.isMissing(data.getValue(this.getHiddenClassID())))
             return null;//Error
 
-        PotentialTable potResult = new PotentialTable(this.getBayesianNetwork().getVariable(this.getHiddenClassID()).getNumberOfStates());
+        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getEstimator(this.getHiddenClassID()).getRestrictedPotential(data);
 
         for (int i=0; i<this.getBayesianNetwork().getNumberOfNodes(); i++) {
-            if (Utils.isMissing(data.getValue(i)))
+            if (Utils.isMissing(data.getValue(i)) || i==this.getHiddenClassID())
                 continue;
             Potential pot = this.getBayesianNetwork().getEstimator(i).getRestrictedPotential(data);
             potResult.combine(pot);
         }
+        potResult.normalize();
 
         return potResult.getValues();
     }

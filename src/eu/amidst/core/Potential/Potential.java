@@ -14,5 +14,4 @@ public interface Potential {
     public void combine(Potential pot);
 
     public void marginalize(List variables);
-
 }
