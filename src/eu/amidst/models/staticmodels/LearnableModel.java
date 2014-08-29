@@ -26,6 +26,7 @@ public abstract class LearnableModel {
     }
 
     public void initLearning(){
+        this.setLeaves();
         algorithm.setLearnableModel(this);
         algorithm.initLearning();
     }
@@ -44,6 +45,11 @@ public abstract class LearnableModel {
 
     public void learnModelFromStream(DataStream dataStream){
         algorithm.learnModelFromStream(dataStream);
+    }
+
+
+    private void setLeaves(){
+
     }
 
 }

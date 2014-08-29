@@ -36,4 +36,9 @@ public class PotentialTable implements Potential {
     public void marginalize(List variables) {
 
     }
+
+    public void normalize(){
+
+    }
+
 }
