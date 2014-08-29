@@ -16,26 +16,33 @@ import eu.amidst.learning.staticLearning.MaximumLikelihood;
  */
 public class NaiveBayes extends LearnableModel implements Classifier {
 
-    int classID=0;
+    int classID = 0;
 
-    public NaiveBayes(){
+    public NaiveBayes() {
+
         this.setLearningAlgorithm(new MaximumLikelihood());
     }
 
     @Override
     public double[] predict(DataInstance data) {
+        double currentClass = data.getValue(this.getClassVarID());
+        if (!Utils.isMissing(currentClass)) {
+            data.setValue(this.getClassVarID(), Utils.getMissingValue());
+        }
 
-        if (!Utils.isMissing(data.getValue(this.getClassVarID())))
-            return null;
-
-        PotentialTable potResult = new PotentialTable(this.getBayesianNetwork().getVariable(this.classID).getNumberOfStates());
+        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getEstimator(this.classID).getRestrictedPotential(data);
 
 
-        for (int i=0; i<this.getBayesianNetwork().getNumberOfNodes(); i++) {
-            if (Utils.isMissing(data.getValue(i)))
+        for (int i = 0; i < this.getBayesianNetwork().getNumberOfNodes(); i++) {
+            if (Utils.isMissing(data.getValue(i)) || i==this.getClassVarID())
                 continue;
             Potential pot = this.getBayesianNetwork().getEstimator(i).getRestrictedPotential(data);
             potResult.combine(pot);
+        }
+        potResult.normalize();
+
+        if (!Utils.isMissing(currentClass)) {
+            data.setValue(this.getClassVarID(), currentClass);
         }
 
         return potResult.getValues();
@@ -48,37 +55,30 @@ public class NaiveBayes extends LearnableModel implements Classifier {
 
     @Override
     public void setClassVarID(int varID) {
-        this.classID=varID;
+        this.classID = varID;
     }
 
     @Override
     public Potential inferenceForLearning(DataInstance data, int varID) {
-        if (varID==this.getClassVarID())
-            return null;//Error
-
-        if (!Utils.isMissing(data.getValue(varID)))
-            return new ConstantPotential(this.getBayesianNetwork().getEstimator(varID).getProbability(data));
-
-        return this.getBayesianNetwork().getEstimator(varID).getRestrictedPotential(data);
-
+        return null;
     }
 
     @Override
-    public void buildStructure(StaticDataHeader dataHeader){
+    public void buildStructure(StaticDataHeader dataHeader) {
 
         StaticModelHeader modelHeader = new StaticModelHeader(dataHeader);
 
         BayesianNetwork net = BNFactory.createBN(modelHeader);
 
-        for (int i=0; i<net.getNumberOfNodes(); i++){
-            if (i==this.getClassVarID())
+        for (int i = 0; i < net.getNumberOfNodes(); i++) {
+            if (i == this.getClassVarID())
                 continue;
             net.getParentSet(i).addParent(this.getClassVarID());
         }
 
         net.initEstimators();
 
-        this.bnet=net;
+        this.bnet = net;
     }
 
 

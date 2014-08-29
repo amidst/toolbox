@@ -5,6 +5,9 @@ package eu.amidst.core.utils;
  */
 public class Utils {
 
+    public static double getMissingValue(){
+        return Double.NaN;
+    }
 
     public static boolean isMissing(double val){
         return Double.isNaN(val);

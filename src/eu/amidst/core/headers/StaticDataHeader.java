@@ -36,6 +36,7 @@ public class StaticDataHeader {
         private int varID;
         private boolean observable;
         private int numberOfStates;
+        private boolean isLeave=false;
 
         public VariableImplementation(String name) {
             this.name = new String(name);
@@ -65,6 +66,14 @@ public class StaticDataHeader {
 
         public void setNumberOfStates(int numberOfStates) {
             this.numberOfStates = numberOfStates;
+        }
+
+        public boolean isLeave(){
+            return this.isLeave;
+        }
+
+        public void setLeave(boolean isLeave){
+            this.isLeave=isLeave;
         }
     }
 
