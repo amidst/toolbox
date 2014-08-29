@@ -19,7 +19,6 @@ public class NaiveBayes extends LearnableModel implements Classifier {
     int classID = 0;
 
     public NaiveBayes() {
-
         this.setLearningAlgorithm(new MaximumLikelihood());
     }
 
