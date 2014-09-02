@@ -1,22 +1,30 @@
 \section{Preliminary Models}
 \subsection{Daimler Models}
 
-\subsubsection*{Introduction}
+\subsubsection{Introduction}
 
-The basic settings of the DAIMLER's use-case \cite{Fer14}	 are as follows. Let us suppose we are driving our car, which will be referred as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the challenge consists in the early recognition of a manoeuvre either of the EGO or another relevant car in the traffic scene (OBJ). In total, the system is expected to recognised the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
+Daimler use-case is based on two application scenarios \cite{Fer14}: i) early recognition of a lane change manoeuvre; and ii) earlier prediction of the need for a lane change based on relative dynamics between two vehicles driving in the same lane at different speeds. 
+
+The first scenario has been previously addressed by Daimler \cite{kasper2012object}. The main result of this previous work was a static object oriented Bayesian network \cite{koller1997object} able to detect a manoeuvre 0.6s before execution. The goal now is to extend the prediction horizon for manoeuvre recognition at least 1-2 seconds to further improve the quality of the on board adaptive cruise control. As we will explain later, this improvement is expected to be achieved by a dynamic extension of this previously proposed static model. We built on this previously proposed static model for two main reasons: although with a limit prediction horizon, this static model has proven to be very robust for this task and it is considered to be the gold-standard for this problem in Daimler; the developed models are expected to be integrated in a ECU \cite{Fer14}, and the advances made about this respect for the static model \cite{Weidl2014} can be exploited during the integration of their dynamic counterparts. 
+
+
+
+\subsubsection*{Description of Application Scenario 1}
+
+The basic settings of this application scenario are as follows. Let us suppose we are driving our car, which will be referred to as the EGO vehicle, in a highway. This EGO vehicle is equipped with a video camera, radar and some on-board sensors.  Using the data provided by these sensors, the challenge consists on making an early recognition of a manoeuvre either by the EGO or another relevant car in the traffic scene (OBJ). In total, the system is expected to recognise the following set of manoeuvres (a visual description of them is given below in Figure \ref{Figure:DaimlerManeuvers}):
 \begin{enumerate}
-\item \textbf{Object-CutOut}:  A vehicle that was driving in front of us is leaving the EGO lane.
 \item \textbf{Object-CutIn}: A vehicle is moving to the lane where the EGO vehicle is placed.
-\item \textbf{EGO-CutOut}: The EGO vehicle is leaving the lane where it was driving.
-\item \textbf{EGO-CutIn}: The EGO vehicle is moving to a new lane already occupied by another vehicle. 
+\item \textbf{Object-CutOut}:  A vehicle that was driving in front of the EGO is leaving the EGO's lane.
 \item \textbf{Object-Follow}: There is no lane change. The EGO is driving and there is some other vehicle in front.
-\item \textbf{Lane-Follow}: There is no lane change. The EGO is driving and there is not any other vehicle in front.
+\item \textbf{Lane-Follow}: There is no lane change. The EGO is driving and there are no other vehicles in front.
+\item \textbf{EGO-CutIn}: The EGO vehicle is moving right-direction to a new lane already occupied by another vehicle. 
+\item \textbf{EGO-CutOut}: The EGO vehicle is leaving left-direction the lane where it was driving.
 \end{enumerate}
 
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.4]{./figures/DaimlerManeuvers}
-\caption{\label{Figure:DaimlerManeuvers}Different maneuvers which should be identified by the AMIDST system.  Red blocks represents the EGO vehicle and blue blocks represents other vehicles in the scene. In the first four maneuvers, there is a lane change event or, under Daimler's terminology, a ``Lane Marking Crossing'' (LMC) event. 
+\caption{\label{Figure:DaimlerManeuvers}Different maneuvers which should be identified by the AMIDST system.  Red blocks represents the EGO vehicle and blue blocks represents other vehicles in the scene.
 }
 \end{center}
 \end{figure}
@@ -46,7 +54,7 @@ The sensor data is modelled in the first step. Using this layer, a new layer is 
 
 
 
-\subsubsection*{The static-OOBN model}
+\subsubsection{The static-OOBN model}
 
 As commented above, this model will work with the so-called ``object data''. This data mainly consists of a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. The whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling} and it has been previously implemented \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
 
@@ -77,7 +85,7 @@ The situation features used for manoeuvre recognition are structured along three
 
 The right-hand square on Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events, which in our automotive scenario correspond to the different driving manoeuvres: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects\cite{kasper2012object}.
 
-\subsubsection*{The dynamic-OOBN model}
+\subsubsection{The dynamic-OOBN model}
 
 The above described static OOBN is able to detect a manoeuvre 0.6s before execution. As detailed in the DoW [], the goal is to extend the prediction horizon for manoeuvre recognition at least to 1-2 seconds (max. 4-5 seconds ahead) before the actual lane marking crossing, which is of advantage for the adaptive cruise control. Moreover, this early detection of the manoeuvre should be at not expenses of the prediction accuracy,  as indicated on Daimler's use cases \cite{Fer14}, the area under the ROC curve (AUC) should be greater than 0.96 for 1 second and greater than 0.9 for 2 seconds.
 
