@@ -6,24 +6,29 @@ import java.util.List;
 /**
  * Created by afa on 02/07/14.
  */
-public class StaticModelHeader {
-    private StaticDataHeader dataHeader;
-    private ArrayList<Variable> allVariables;
+public class DynamicModelHeader {
+    private DynamicDataHeader dataHeader;
+    private ArrayList<DynamicVariable> allVariables;
+    private int markovOrder = 1;
 
-    public StaticModelHeader(StaticDataHeader dataHeader) {
+    public DynamicModelHeader(DynamicDataHeader dataHeader, int markovOrder) {
         this.dataHeader = dataHeader;
         this.allVariables = new ArrayList<>();
-        for (Variable var : dataHeader.getObservedVariables()) {
+        for (DynamicVariable var : dataHeader.getObservedVariables()) {
             allVariables.add(var.getVarID(), var);
         }
+
+        this.markovOrder=markovOrder;
     }
 
-    public StaticDataHeader getStaticDataHeader() {
+    public int getMarkovOrder(){ return this.markovOrder; }
+
+    public DynamicDataHeader getDynamicDataHeader() {
         return dataHeader;
     }
 
     public Variable addHiddenVariable(String name, int numberOfStates) {
-        VariableImplementation var = new VariableImplementation(name);
+        DynamicVariableImplementation var = new DynamicVariableImplementation(name);
         var.setNumberOfStates(numberOfStates);
         var.setObservable(false);
         var.setVarID(allVariables.size());
@@ -31,27 +36,33 @@ public class StaticModelHeader {
         return var;
     }
 
-    public List<Variable> getVariables() {
+    public List<DynamicVariable> getVariables() {
         return this.allVariables;
     }
 
-    public Variable getVariable(int varID) {
+    public DynamicVariable getVariableById(int varID) {
         return this.allVariables.get(varID);
+    }
+
+    public DynamicVariable getVariableByTimeId(int varTimeID){
+        return this.allVariables.get(varTimeID%this.allVariables.size());
     }
 
     public int getNumberOfVars() {
         return this.allVariables.size();
     }
 
-    private class VariableImplementation implements Variable {
+    private class DynamicVariableImplementation implements DynamicVariable {
         private String name;
         private int varID;
         private boolean observable;
         private int numberOfStates;
         private boolean isLeave = false;
+        private boolean isTemporalConnected = true;
 
 
-        public VariableImplementation(String name) {
+
+        public DynamicVariableImplementation(String name) {
             this.name = new String(name);
         }
 
@@ -87,6 +98,21 @@ public class StaticModelHeader {
 
         public void setLeave(boolean isLeave) {
             this.isLeave = isLeave;
+        }
+
+        @Override
+        public int getTimeVarID(int previousTime) {
+            return DynamicModelHeader.this.getNumberOfVars()*(-previousTime) + this.getVarID();
+        }
+
+        @Override
+        public boolean isTemporalConnected() {
+            return isTemporalConnected;
+        }
+
+        @Override
+        public void setTemporalConnected(boolean isTemporalConnected) {
+            this.isTemporalConnected=isTemporalConnected;
         }
 
         public boolean isContinuous(){
