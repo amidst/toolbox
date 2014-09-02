@@ -56,7 +56,26 @@ The sensor data is modelled in the first step. Using this layer, a new layer is 
 
 \subsubsection{The static-OOBN model}
 
-This model will work with the so-called ``object data''. This data mainly consists of a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. The whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling} and it has been previously implemented \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
+This model works with the so-called ``object data''. This data mainly consists of a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. The situation features (see Figure \ref{Figure:DaimlerSituationFeatures}) used for manoeuvre recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID).  They are referred to as the three hypotheses of possible lane change maneuver:. 
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics[scale=0.58]{./figures/DaimlerLEHipothesis} &
+
+\includegraphics[scale=0.58]{./figures/DaimlerTRAJHipothesis} &
+
+\includegraphics[scale=0.58]{./figures/DaimlerOCCGRIDHipothesis} \\
+
+Lateral Evidence & Trajectory & Occupancy Grid \\
+\end{tabular}
+\caption{\label{Figure:DaimlerSituationFeatures}  Three main dimensions of the situation features \cite{kasper2012object}.}
+\end{center}
+\end{figure}
+
+
+
+The whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling} and it has been previously implemented \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
 
 
 %Even using this high-level features, the modelling problem is very complex. 
