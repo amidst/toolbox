@@ -1,7 +1,7 @@
 import eu.amidst.core.StaticDataBase.DataStream;
 import eu.amidst.core.StaticDataBase.readers.DataStreamReaderFromFile;
+import eu.amidst.models.staticmodels.NaiveBayesClassifier;
 import eu.amidst.models.staticmodels.NaiveBayesClusteringModel;
-import eu.amidst.models.staticmodels.NaiveBayes;
 
 public class Main {
 
@@ -27,7 +27,7 @@ public class Main {
 
         DataStream dataStream = reader.getDataStream();
 
-        NaiveBayes nb = new NaiveBayes();
+        NaiveBayesClassifier nb = new NaiveBayesClassifier();
         nb.setClassVarID(dataStream.getStaticDataHeader().getObservedVariables().size()-1);
         nb.buildStructure(dataStream.getStaticDataHeader());
         nb.initLearning();
