@@ -93,7 +93,7 @@ Figure \ref{Figure:daimlerTPlot} shows an example of the current performance and
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.65]{./figures/DaimlerLE_EGO_L_LE_OBJ_L_OBJCut.pdf}
+\includegraphics[scale=0.65]{./figures/DaimlerLE_EGO_L_LE_OBJ_R_OBJCut.pdf}
 \caption{\label{Figure:daimlerTPlot}Daimler time plots of the lateral velocity and offsets for EGO (black line) and OBJECT (green line) in two randomly selected sequences of an ObjCutOut and an ObjCutIn. The x-axis corresponds to the different timesteps and the y-axis to the lateral offset on the left-hand side graphs and lateral velocity on the right-hand side graphs.}
 \end{center}
 \end{figure}
@@ -131,10 +131,10 @@ As explained in Section \ref{Section:Preliminaries}, the dynamic extension invol
 \end{figure}
 
 
-As described in \cite{Weidl2014}, the proposed dynamic BN (DBN) aims to incorporate the trend of change for the real values, where their physical relations are represented as causal dependencies between the time steps $dt$, e.g. in Figure \ref{Figure:daimlerLEdyn} the transition function of O\_LAT at time $t$, $O(t)$, is modeled as a Gaussian distribution. Its mean is affected by $O(t-1)$, and by V\_LAT at time $t-1$, $v(t-1)$:
+As described in \cite{Weidl2014}, the proposed dynamic BN (DBN) aims to incorporate the trend of change for the real values, where their physical relations are represented as causal dependencies between the time steps $dt$, e.g. in Figure \ref{Figure:daimlerLEdyn} the transition function of O\_LAT at time $t$, $O(t)$, is modeled as a Gaussian distribution. Its mean is affected by $O(t-1)$, and by V\_LAT at time $t-1$, $V(t-1)$:
 
 \begin{equation}
-O(t) =O(t-1) +v(t-1)dt +\epsilon
+O(t) =O(t-1) +V(t-1)dt +\epsilon
 \end{equation}
 
 where $\epsilon$ denotes a white noise $\mathcal{N}(0,\sigma^2)$ which is assumed to be small. In order to corroborate the validity of this distributional assumption, we also analysed the hypothesis $O(t) - O(t-1) = \Delta O = V(t-1)dt +\epsilon$ on our data. Figure \ref{Figure:daimlerVvsOffs} shows the plot and contour plots for $V$ and $\Delta O$, which show that the assumption of linear relationship with Gaussian noise might not be very far from reality. 
@@ -158,7 +158,7 @@ Finally, in Figure \ref{Figure:daimlerLEdynGeneric} we show a rough overview of 
 \begin{center}
 \includegraphics[scale=0.58]{./figures/DaimlerLEdynGeneric}
 \end{center}
-\caption{\label{Figure:daimlerLEdynGeneric}Daimler Temporal model with several hypothesis.}
+\caption{\label{Figure:daimlerLEdynGeneric}Daimler dynamic model with several hypothesis.}
 \end{figure}
 
 
