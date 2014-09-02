@@ -1,5 +1,7 @@
 package eu.amidst.core.DynamicDataBase;
 
+import eu.amidst.core.headers.DynamicDataHeader;
+
 /**
  * Created by afa on 03/07/14.
  */

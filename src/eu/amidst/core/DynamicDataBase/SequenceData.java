@@ -1,12 +1,22 @@
 package eu.amidst.core.DynamicDataBase;
 
+import eu.amidst.core.StaticDataBase.DataInstance;
+
 /**
  * Created by afa on 03/07/14.
  */
 public interface SequenceData {
-    public double getValue(int var, int time);
 
-    public int varTimeID();
+    public double getValueCurrentTime(int varID);
 
-    public int getMarkovOrder();
+    public double getValuePreviousTime(int varID, int previousTime);
+
+    public double getTimeID();
+
+    public int getNumTimeStepsBack();
+
+    public SequenceDataStream getSequenceDataStream();
+
+    public DataInstance getDataInstance();
+
 }

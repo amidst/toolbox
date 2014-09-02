@@ -14,11 +14,11 @@ import eu.amidst.learning.staticLearning.MaximumLikelihood;
 /**
  * Created by afa on 02/07/14.
  */
-public class NaiveBayes extends LearnableModel implements Classifier {
+public class NaiveBayesClassifier extends LearnableModel implements Classifier {
 
     int classID = 0;
 
-    public NaiveBayes() {
+    public NaiveBayesClassifier() {
         this.setLearningAlgorithm(new MaximumLikelihood());
     }
 

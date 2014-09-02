@@ -17,4 +17,6 @@ public interface Variable {
 
     public void setLeave(boolean isLeave);
 
+    public boolean isContinuous();
+
 }

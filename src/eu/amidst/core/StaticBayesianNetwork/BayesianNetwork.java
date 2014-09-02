@@ -8,15 +8,16 @@ import eu.amidst.core.headers.Variable;
  * Created by afa on 02/07/14.
  */
 public interface BayesianNetwork {
-    public ParentSet getParentSet(int varID);
 
-    public void initEstimators();
+    public ParentSet getParentSet(int varID);
 
     public Estimator getEstimator(int varId);
 
-    public int getNumberOfNodes();
-
     public Variable getVariable(int varID);
+
+    public void initEstimators();
+
+    public int getNumberOfNodes();
 
     public StaticModelHeader getStaticModelHeader();
 }
