@@ -17,7 +17,7 @@ public abstract class LearnableModel {
 
     LearningAlgorithm algorithm = new MaximumLikelihood();
 
-    public abstract void buildStructure(StaticDataHeader modelHeader);
+    public abstract void buildStructure(StaticDataHeader dataHeader);
 
     public abstract Potential inferenceForLearning(DataInstance data, int varID);
 

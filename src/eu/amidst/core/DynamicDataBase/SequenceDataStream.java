@@ -1,14 +1,14 @@
 package eu.amidst.core.DynamicDataBase;
 
-import eu.amidst.core.DynamicDataBase.DynamicDataHeader;
+import eu.amidst.core.headers.DynamicDataHeader;
 
 /**
  * Created by afa on 03/07/14.
  */
-public interface SequenceStream {
+public interface SequenceDataStream {
     public DynamicDataHeader getDynamicDataHeader();
 
-    public int getMarkovOrder();
+    public int getNumTimeStepsBack();
 
     public boolean hasMoreData();
 
