@@ -56,7 +56,26 @@ The sensor data is modelled in the first step. Using this layer, a new layer is 
 
 \subsubsection{The static-OOBN model}
 
-This model will work with the so-called ``object data''. This data mainly consists of a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. The whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling} and it has been previously implemented \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
+This model works with the so-called ``object data''. This data mainly consists of a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. The situation features (see Figure \ref{Figure:DaimlerSituationFeatures}) used for manoeuvre recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID).  They are referred to as the three hypotheses of possible lane change manoeuvre. the lateral evidence hypothesis considers the lateral offset and the lateral velocity of the car and accounts for the lateral movement of the car. The trajectory hypothesis tries to account for the evidence about the car's trajectory by using the measures of the angle of the car and the estimated time to crossing the line. Finally, for the occupancy grid hypothesis it is collected data that allow to identify if the surroundings of the car are going to be occupied by some other vehicle in the traffic scene. 
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics[scale=0.5]{./figures/DaimlerLEHipothesis} &
+
+\includegraphics[scale=0.5]{./figures/DaimlerTRAJHipothesis} &
+
+\includegraphics[scale=0.5]{./figures/DaimlerOCCGRIDHipothesis} \\
+
+Lateral Evidence & Trajectory & Occupancy Grid \\
+\end{tabular}
+\caption{\label{Figure:DaimlerSituationFeatures}  The three main dimensions of the situation features \cite{kasper2012object}.}
+\end{center}
+\end{figure}
+
+
+
+The whole modelling is structured in hierarchical layers as detailed in Figure \ref{Figure:DaimlerHierarchicalModelling} and it has been previously implemented \cite{kasper2012object} using an object-oriented Bayesian network (OOBN) \cite{koller1997object}. 
 
 
 %Even using this high-level features, the modelling problem is very complex. 
@@ -84,4 +103,3 @@ The situation features used for manoeuvre recognition are structured along three
 \end{figure}
 
 The right-hand square on Figure \ref{Figure:DaimlerOOBNAbstraction} abstractly shows how these hypotheses are combined into events, which in our automotive scenario correspond to the different driving manoeuvres: lane follow, lane change (cut-in, cut-out), expressed for ego and surrounding objects\cite{kasper2012object}.
-
