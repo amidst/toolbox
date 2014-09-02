@@ -5,14 +5,14 @@ import java.util.*;
 /**
  * Created by afa on 02/07/14.
  */
-public class StaticDataHeader {
-    private ArrayList<Variable> vars;
+public class DynamicDataHeader {
+    private ArrayList<DynamicVariable> vars;
 
-    public ArrayList<Variable> getObservedVariables() {
+    public ArrayList<DynamicVariable> getObservedVariables() {
         return vars;
     }
 
-    public void setObservedVariables(ArrayList<Variable> vars) {
+    public void setObservedVariables(ArrayList<DynamicVariable> vars) {
         this.vars = vars;
     }
 
@@ -20,23 +20,24 @@ public class StaticDataHeader {
         return vars.size();
     }
 
-    public Variable addObservedVariable(int dataPosition, String name, int numberOfStates) {
-        VariableImplementation var = new VariableImplementation(name);
+    public Variable addObservedVariable(int dataPositionAtTimeT, String name, int numberOfStates) {
+        DynamicVariableImplementation var = new DynamicVariableImplementation(name);
         var.setNumberOfStates(numberOfStates);
         var.setObservable(true);
-        var.setVarID(dataPosition);
-        vars.add(dataPosition,var);
+        var.setVarID(dataPositionAtTimeT);
+        vars.add(dataPositionAtTimeT, var);
         return var;
     }
-    private class VariableImplementation implements Variable {
+
+    private class DynamicVariableImplementation implements DynamicVariable {
         private String name;
         private int varID;
         private boolean observable;
         private int numberOfStates;
         private boolean isLeave = false;
+        private boolean isTemporalConnected = true;
 
-
-        public VariableImplementation(String name) {
+        public DynamicVariableImplementation(String name) {
             this.name = new String(name);
         }
 
@@ -74,10 +75,24 @@ public class StaticDataHeader {
             this.isLeave = isLeave;
         }
 
+        @Override
+        public int getTimeVarID(int previousTime) {
+            return -1;
+        }
+
+        @Override
+        public boolean isTemporalConnected() {
+            return isTemporalConnected;
+        }
+
+        @Override
+        public void setTemporalConnected(boolean isTemporalConnected) {
+            this.isTemporalConnected=isTemporalConnected;
+        }
+
         public boolean isContinuous(){
             return this.numberOfStates==0;
         }
-
     }
 
 }
