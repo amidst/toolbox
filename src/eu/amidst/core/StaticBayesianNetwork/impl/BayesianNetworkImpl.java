@@ -15,12 +15,9 @@ public class BayesianNetworkImpl implements BayesianNetwork {
     private ParentSet[] parents;
     private Estimator[] estimators;
     private StaticModelHeader modelHeader;
-    private StaticDataHeader dataHeader;
 
     public BayesianNetworkImpl(StaticModelHeader modelHeader){
 
-    }
-    public void learnParameters() {
     }
 
     @Override
