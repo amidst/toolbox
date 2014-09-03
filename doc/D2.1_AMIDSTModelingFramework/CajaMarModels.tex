@@ -1,4 +1,5 @@
 %!TEX root = D2.1_AMIDSTModellingFramework.tex
+\input{commands}
 \subsection{CajaMar Models}
 \label{Section:CajaMarModels}
 
@@ -20,7 +21,7 @@ specifically targeted to these low risk customers.
 
 In any commercial bank, every time a customer applies for a loan, the bank experts evaluate the customer's risk profile before making their decision. 
 
-At Cajamar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
+At Cajamar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. If a client is labelled as defaulter, he/she will remain defaulter in the database at least two more years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
 
 The methodology currently employed does not assume dependence structure among the variables. Even though this model is quite simple, current predictions are made using only a set of $27$ variables out of the more than $1000$ that are available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are selected partly due to limitations in the available commercial software and the computing resources.
 
@@ -35,15 +36,47 @@ The objective is to daily update the risk evaluation for every customer of the b
 \end{figure}
 
 \begin{itemize}
-\item \textbf{Model Evaluation Data Set:} We denote by day $E$ to the day at which this evaluation data set is created. This data set contains a record for every client to be evaluated at that day $E$. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behaviour of the customers in a recent past and their socio-demographics data. 
+\item \textbf{Model Evaluation Data Set:} We denote by day $E$ to the day at which this evaluation data set is created. This data set contains a record for every client to be evaluated at that day $E$. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behaviour of the customers in a recent past and their socio-demographic data. 
 
 The recent financial activity refers to attributes of the customer such as ``account balance'', ``number of credit card operations'', etc. in the last 180 days \footnote{This limit is fixed by the Bank of Spain}. These attributes usually change daily for a customer, then they are encoded by introducing a set of variables for each attribute that contains the value of this attribute in the last 180 days from day $E$. I.e. if the financial activity of the customer is detailed by $F$ attributes,   $180\cdot F$ predictive variables are included in this data set.
 
-In the case of past paying behaviour, the attributes refers to attributes such as the paying behaviour of the customer with other financial institutions or other companies (phone companies, electricity companies, public bodies, etc.). A monthly record of the last 36 months from day $T$ is considered when building the evaluation data set. So, if there are $P$ variables referring to the paying behaviour of a customer, $36\cdot P$ variables are included as information about the past paying behaviour.  
+In the case of past paying behaviour, the attributes refers to attributes such as the paying behaviour of the customer with other financial institutions or other companies (phone companies, electricity companies, public bodies, etc.). A monthly record of the last 36 months from day $T$ is considered when building the evaluation data set. So, if there are $P$ variables referring to the paying behaviour of a customer, $36\cdot P$ variables are included as information about the past paying behaviour. 
+
+The dataset for the evaluation of customers is detailed in Table~\ref{tab:EvaluationDataset}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|ccc|ccc|c}
+	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} \\
+     Time $t$              & $\X^{(t-180)}$ & $\ldots$ & $\X^{(t-1)} $ & $\Y^{(t-6)}$  & $\ldots$ & $\Y^{(t-1)} $ & $\Z$  \\  
+\hline
+Client$_1$  &                                                  &              &                     &                               &                     &        \\ 
+$\vdots$      &                                                 &               &                     &                                &                     &      \\ 
+Client$_n$  &                                                &               &                     &                                &                     &     \\ 
+\end{tabular}
+\caption{Evaluation dataset at time $t$. Attributes for financial activity, paying behavior and sociodemographic information are denoted as $\X$, $\Y$ and $\Z$, respectively.}
+\label{tab:EvaluationDataset} 
+\end{table}
 
 The task of the supervised classification model is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. If at some point the probability of defaulting of some customers rises above some predefined threshold, the bank can try to take preventive actions to reduce the chances that this customer finally defaults in some of his/her loans.
 
 \item \textbf{Model Training Data Set:}  The training data set is built in the same way than the evaluation data set. They contain the same set of predictive variables with the main difference that they refer to different time points. If the predictive variables in the evaluation data set are built for day $E$, the predictive variables in the training data set are defined for the day $T = E$ - 2 years (i.e. two years before in time). So the training data set contain one record for each customer of the bank and the predictive variables refers to the financial activity and paying behaviour of this customer in the recent past before day $T$ (i.e. the previous 180 days or the previous 36 months). 
+
+The dataset for training/updating the model is detailed in Table~\ref{tab:EvaluationDataset}.
+
+\begin{table}[h]
+\begin{tabular}{c|ccc|ccc|c|c}
+	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} & \\
+     Time $t$              & $\X^{(k-180)}$ & $\ldots$ & $\X^{(k-1)} $ & $\Y^{(k-6)}$  & $\ldots$ & $\Y^{(k-1)} $ & $\Z$ & Defaulter$^{(t)}$\\  
+\hline
+Client$_1$  &                                                  &              &                     &                               &                     &        &  \\ 
+$\vdots$      &                                                 &               &                     &                                &                     &       & \\ 
+Client$_n$  &                                                &               &                     &                                &                     &     & \\ 
+\end{tabular} 
+\caption{Training dataset at time $t$ with $k=t - 2$ years.  Attributes for financial activity, paying behavior and sociodemographic information are denoted as $\X$, $\Y$ and $\Z$, respectively. Note that the column \emph{Defaulter} at time $t$ is labelled as false only if the customer has not been defaulter during the last $2$ years.}
+\label{tab:EvaluationDataset} 
+\end{table}
+
 
 Unlike the evaluation data set, each record of this data set contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the 2 years data between day $T$ and current day $E$. If during these two years the client has regularly pay each of his/her loans and the other financial institutions does not provide any evidence of defaulting, the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter (see Data Characteristics document for more detailed information about this respect).   
 
