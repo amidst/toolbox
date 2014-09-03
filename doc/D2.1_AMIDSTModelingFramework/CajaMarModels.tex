@@ -1,5 +1,6 @@
 %!TEX root = D2.1_AMIDSTModellingFramework.tex
-\input{commands}
+
+
 \subsection{CajaMar Models}
 \label{Section:CajaMarModels}
 
@@ -25,7 +26,7 @@ At Cajamar, this risk evaluation protocol is implemented by evaluating whether t
 
 The methodology currently employed does not assume dependence structure among the variables. Even though this model is quite simple, current predictions are made using only a set of $27$ variables out of the more than $1000$ that are available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are selected partly due to limitations in the available commercial software and the computing resources.
 
-The objective is to daily update the risk evaluation for every customer of the bank. This daily evaluation will be made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure \ref{Figure:CajaMarTimeLine} shows the time-line of the generation of the evaluation and training data set, which is further explained below. 
+The objective is to daily update the risk evaluation for every customer of the bank. This daily evaluation will be made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure \ref{Figure:CajaMarTimeLine} shows the time-line of the generation of the evaluation and training data set, which is further explained below. First, let denote the current time as $t$ and 2 years back as $k$. and  
 
 
 \begin{figure}
@@ -36,13 +37,17 @@ The objective is to daily update the risk evaluation for every customer of the b
 \end{figure}
 
 \begin{itemize}
-\item \textbf{Model Evaluation Data Set:} We denote by day $E$ to the day at which this evaluation data set is created. This data set contains a record for every client to be evaluated at that day $E$. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behaviour of the customers in a recent past and their socio-demographic data. 
+\item \textbf{Model Evaluation Data Set:} The evaluation data set is created at time t. This data set contains a record for every client to be evaluated. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behaviour of the customers in a recent past and their socio-demographic data. 
 
 The recent financial activity refers to attributes of the customer such as ``account balance'', ``number of credit card operations'', etc. in the last 180 days \footnote{This limit is fixed by the Bank of Spain}. These attributes usually change daily for a customer, then they are encoded by introducing a set of variables for each attribute that contains the value of this attribute in the last 180 days from day $E$. I.e. if the financial activity of the customer is detailed by $F$ attributes,   $180\cdot F$ predictive variables are included in this data set.
 
 In the case of past paying behaviour, the attributes refers to attributes such as the paying behaviour of the customer with other financial institutions or other companies (phone companies, electricity companies, public bodies, etc.). A monthly record of the last 36 months from day $T$ is considered when building the evaluation data set. So, if there are $P$ variables referring to the paying behaviour of a customer, $36\cdot P$ variables are included as information about the past paying behaviour. 
 
 The dataset for the evaluation of customers is detailed in Table~\ref{tab:EvaluationDataset}.
+
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\Z}{\mathbf{Z}}
 
 \begin{table}[h]
 \centering
@@ -58,7 +63,23 @@ Client$_n$  &                                                &               &  
 \label{tab:EvaluationDataset} 
 \end{table}
 
-The task of the supervised classification model is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. If at some point the probability of defaulting of some customers rises above some predefined threshold, the bank can try to take preventive actions to reduce the chances that this customer finally defaults in some of his/her loans.
+The task of the supervised classification model is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. Finally, the risk table in the system is updated (see Table~\ref{tab:riskTable}).
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{c|ccc|ccc|c}
+     Time $t$  & Risk of defaulting \\  
+\hline
+Client$_1$  &    $\hat{r_1}$  \\ 
+$\vdots$      &   $\vdots$   \\ 
+Client$_n$  &   $\hat{r_n}$  \\ 
+\end{tabular} 
+\caption{Table containing the risk of defaulting for every client.}
+\label{tab:riskTable}
+\end{figure}
+
+
+If at some point the probability of defaulting of some customers rises above some predefined threshold, the bank can try to take preventive actions to reduce the chances that this customer finally defaults in some of his/her loans.
 
 \item \textbf{Model Training Data Set:}  The training data set is built in the same way than the evaluation data set. They contain the same set of predictive variables with the main difference that they refer to different time points. If the predictive variables in the evaluation data set are built for day $E$, the predictive variables in the training data set are defined for the day $T = E$ - 2 years (i.e. two years before in time). So the training data set contain one record for each customer of the bank and the predictive variables refers to the financial activity and paying behaviour of this customer in the recent past before day $T$ (i.e. the previous 180 days or the previous 36 months). 
 
@@ -80,7 +101,7 @@ Client$_n$  &                                                &               &  
 
 Unlike the evaluation data set, each record of this data set contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the 2 years data between day $T$ and current day $E$. If during these two years the client has regularly pay each of his/her loans and the other financial institutions does not provide any evidence of defaulting, the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter (see Data Characteristics document for more detailed information about this respect).   
 
-Using this data set, the bank fits a logistic regression model, which is then used to update the probability of defaulting of each of the clients in the evaluation data set. 
+Using this data set, the bank fits a logistic regression model, which is then used to update the probability of defaulting of each of the clients in the evaluation data set. \textcolor{blue}{Checks if the dataset currently used is the same?}
 
 \end{itemize}
 
