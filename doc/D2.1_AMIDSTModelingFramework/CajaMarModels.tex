@@ -1,3 +1,4 @@
+%!TEX root = D2.1_AMIDSTModellingFramework.tex
 \subsection{CajaMar Models}
 \label{Section:CajaMarModels}
 
@@ -11,6 +12,7 @@ specifically targeted to these low risk customers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Predicting probability of default}
+\label{SubSection:Predicting}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %---------------------------------------------------------------------------------------------
@@ -255,6 +257,55 @@ In summary, the process of building this dynamic model from the original relatio
 \item Update risk profiles using the dynamic classifier.
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Low risk profile extraction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection*{Introduction of the problem}
+
+The marketing department at Cajamar periodically launches marketing campaigns for the recruitment of new products by customers (i.e. a new credit card, an insurance, ...). The success of these campaigns depends greatly on the client group to which the campaign has finally targeted. It is also crucial to reduce as much as possible unnecessary expenses focused on non-potential customers. 
+
+For this purpose, the marketing group proceeds as follows. First, they filter the customers using their own marketing models and also, in collaboration with the risk department, select a subset of predictors considered relevant to be part of the final profile (mainly sociodemographic variables). For example, the age of a client is a relevant predictor when designing campaigns to attract customers for a death insurance. 
+
+After obtaining this first group of customers for the campaign and determining the set of relevant attributes, the model proposed in Section~\ref{SubSection:Predicting} will be used to identify the profiles of the less risky clients using the most probable explanations (MPE) method (\emph{defaulter} variable is evidenced to \emph{No}) . Thus, the target customers previously filtered can be now grouped and ranked using these profiles.
+
+
+\subsubsection*{Static model}
+
+As pointed out before, mainly sociodemographic variables will determine the customer profiles used in the campaigns. These variables are mostly static as they do not change frequently over time (e.g. marital status, sex, type of job, ...). Hence, it has more sense to explore a profile extraction solution based on a static model as the one depicted in Fig.~\ref{ProfileStaticModel}.
+
+\begin{figure}[h]
+
+\centering
+\begin{tikzpicture}[
+  node distance=1cm and 1cm,
+  mynode/.style={draw,circle,text width=0.5cm,align=center}
+]
+\node[mynode] (x1) {$X_1$};
+\node[mynode,below left=of x1] (x2) {$X_2$};
+\node[mynode,below right=of x1] (x3) {$X_3$};
+\node[mynode,below right=of x2] (x4) {$X_4$};
+\node[mynode,below right=of x3] (x5) {$X_5$};
+
+\path (x1) edge[-latex] (x2)
+         (x1) edge[-latex] (x3) 
+	(x2) edge[-latex] (x4)
+	(x3) edge[-latex] (x4)
+	(x3) edge[-latex] (x5)
+	;
+\end{tikzpicture}
+\caption{Static Bayesian network}
+\label{fig:staticBN}
+\end{figure}
+%---------------------------------------------------------------------------------------------
+
+
+Note that past information about the variables are not considered for this problem as they remains fixed in most cases
+
+For the profile extraction, the model not necessarily must have a classifier structure but it can have a general structure instead. However, what is desirable is to avoid using a NB structure for this task. The reason is that once the \emph{defaulter} variable is evidenced to \emph{No}, the predictors become independent and the analysis would be poorer (MPE in this case would correspond to the maximum probability value for each variable individually).
+
+A solution could be the use of augmented Bayesian classifiers like TAN, $k$-DB to reduce the search space required for general structures.
+
+\subsubsection*{Dynamic model}
 
 
 
