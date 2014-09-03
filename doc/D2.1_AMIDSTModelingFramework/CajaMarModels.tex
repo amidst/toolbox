@@ -20,7 +20,7 @@ specifically targeted to these low risk customers.
 
 In any commercial bank, every time a customer applies for a loan, the bank experts evaluate the customer's risk profile before making their decision. 
 
-At CajarMar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
+At Cajamar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
 
 The methodology currently employed does not assume dependence structure among the variables. Even though this model is quite simple, current predictions are made using only a set of $27$ variables out of the more than $1000$ that are available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are selected partly due to limitations in the available commercial software and the computing resources.
 
@@ -275,20 +275,19 @@ As pointed out before, mainly sociodemographic variables will determine the cust
 
 
 \begin{figure}[h]
-
 \centering
-\begin{tikzpicture}[
-  node distance=1cm and 1cm,
-  mynode/.style={draw,ellipse,text width=1.5cm,align=center}
-]
-\node[mynode,fill=green] (default) {Defaulter};
-\node[mynode,fill=cyan,below=of default] (predictors) {Predictors};
-
-\path (default) edge[-latex] (predictors);
+\begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,node distance=2cm,semithick,
+        azul/.style={fill=cyan,rectangle,draw},
+        verde/.style={fill=green,ellipse,draw}]
+        \node[verde] (default) {Default};
+        \node[azul] (predictors) [below of=default] {Predictors};
+        \draw (default) to (predictors);
 \end{tikzpicture}
-\caption{Static Bayesian network for the profile extraction. The variables within the blue node can be connected to conform an augmented Bayesian classifier.}
+\caption{Static Bayesian network for the profile extraction. The variables within the blue box can be connected to conform an augmented Bayesian classifier.}
 \label{fig:StaticBNProfile}
 \end{figure}
+
+
 %---------------------------------------------------------------------------------------------
 
 
