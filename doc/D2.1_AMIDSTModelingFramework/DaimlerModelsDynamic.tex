@@ -29,7 +29,7 @@ In any case, let us note however that the prediction horizon for manoeuvre recog
 \begin{center}
 \includegraphics[scale=0.58]{./figures/DaimlerLEdyn}
 \end{center}
-\caption{\label{Figure:daimlerLEdyn}Daimler Temporal fragment for the LE hypothesis.}
+\caption{\label{Figure:daimlerLEdyn}Daimler dynamic fragment for the LE hypothesis.}
 \end{figure}
 
 As explained in Section \ref{Section:Preliminaries}, the dynamic extension involves copies of the static OOBN for different number of time steps in the time window. Figure \ref{Figure:daimlerLEdyn} shows an example for the LE hypothesis, where the nodes for $O\_LAT\_REAL$ and $V\_LAT\_REAL$ are temporal clones defining the share belief state between consecutive time steps, and hence creating a first order Markov process. This model has been proposed in \cite{Weidl2014} by some of the AMIDST partners.  The first order assumption is a standard assumption in this kind of models and helps to simplify the posterior inference and learning process. Fortunately, if we build a partial-correlogram as the ones plotted in Figure \ref{Figure:daimlerPartialCorrel}, we can see that this assumption seems reasonable because the influence of $O\_LAT_{t-2}$ on $O\_LAT_{t}$ given $O\_LAT_{t-1}$ is close to null (i.e. the value at $v=2$ for the lag is close to null in Figure \ref{Figure:daimlerPartialCorrel}). And the same reasoning applies to $V\_LAT$.
@@ -106,9 +106,10 @@ If we compare the structure of this network with that of Fig. \ref{Figure:daimle
 \subsubsection*{Discussion and future models}
 The above included proposals are preliminary models designed in line with the expert knowledge facilitated by Daimler. They all try to balance a good level of expressiveness and efficiency. 
 
-In the case of the dynamic extension, another alternative is to consider not only the temporal dependences between consecutive time steps for the sensor measurements but also, or instead, consider the temporal links between a hypothesis at consecutive time steps. It seems natural that the probability of observing lateral evidence (LE) for the EGO car should be higher given that there was LE at the previous time step. And similarly for the rest of the hypothesis, such as TRAJ or OCCGRID  and the final hypothesis or event that identifies the type of manoeuvre. However and since these hypothesis nodes are placed at the bottom of the DBN; as opposed to the sensor measurements, which are placed at the top; adding these type of dependences would greatly increase the complexity of the inference in the resulting network.
+In the case of the dynamic extension, another alternative is to consider not only the temporal dependences between consecutive time steps for the sensor measurements but also, or instead, consider the temporal links between a hypothesis at consecutive time steps. It seems natural, for instance, that the probability of observing lateral evidence (LE) for the EGO car should be higher given that there was LE at the previous time step. And similarly for the rest of the hypothesis, such as TRAJ or OCCGRID  and the final hypothesis or event that identifies the type of manoeuvre. However and since these hypothesis nodes are placed at the bottom of the DBN; as opposed to the sensor measurements, which are placed at the top; adding these type of dependences would greatly increase the complexity of the inference in the resulting network.
 
-Another possible extension that we envision is the consideration of an extra hidden variable to model acceleration for the dynamic model. We believe that assuming that lateral velocity varies according to a constant acceleration can lead to inaccuracies. Figure \ref{figure:daimlerVelocity}(a) shows the behaviour of lateral velocity for a given sequence, that in this case corresponds to an EGO-CutIn manoeuvre. At the beginning of the sequence acceleration is close to constant, but from around time steps 30 to 50 a higher acceleration value should be taken into account. Hence, we believe that an extra hidden variable should be consider in the temporal model to represent acceleration as displayed in Figure \ref{Figure:tempDynAccel} (SIGMA and MEAS. variables have been left out for simplicity). Thus, the following equation would be considered for velocity at consecutive time steps:
+Another possible extension that we envision is the consideration of an extra hidden variable to model acceleration for the dynamic model. We believe that assuming that lateral velocity varies according to a constant acceleration can lead to inaccuracies. Figure \ref{Figure:daimlerVel}(a) shows the behaviour of lateral velocity for a given sequence, that in this case corresponds to an EGO-CutIn manoeuvre. At the beginning of the sequence acceleration is close to constant, but from around time steps 30 to 50 a higher acceleration value should be taken into account. The contour plot on Figure \ref{Figure:daimlerVel}(a) shows a large density of points around lower and higher values of V where the acceleration is constant, but just isolated points in between. Hence, we believe that the model could benefit from an extra hidden variable should be consider in the temporal model to represent acceleration as displayed in Figure \ref{Figure:tempDynAccel}. %(SIGMA and MEAS. variables have been left out for simplicity). 
+Thus, the following equation would be considered for velocity at consecutive time steps:
 \begin{equation}
 V(t) =V(t-1) +A(t-1)dt +\epsilon
 \end{equation}
@@ -118,8 +119,15 @@ V(t) =V(t-1) +A(t-1)dt +\epsilon
   \setlength{\tabcolsep}{0.05pt}
   \renewcommand{\arraystretch}{0.02}
     \begin{tabular}{cc}
-    %\includegraphics[width=60mm]{figures/DaimlerEGOplotSerie10Vel.pdf}&
-    %\includegraphics[width=60mm]{figures/DaimlerEGOcontourSerie10Vel.pdf}\\
+    \includegraphics[width=60mm]{figures/DaimlerLE_EGO_L_LE_OBJ_R_EGOCutInVel.pdf}&
+    \includegraphics[width=60mm]{figures/DaimlerBivariate_temporal_analysisEGO_LVel.pdf}\\
   \end{tabular}
       \caption{ \label{Figure:daimlerVel}Time and contour plots for $V(t)$ vs $V(t-1)$. Varying acceleration should be considered to capture the variations in the data.}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.58]{./figures/DaimlertempDynAccel}
+\end{center}
+\caption{\label{Figure:tempDynAccel}Daimler dynamic fragment for the LE hypothesis with a hidden node for acceleration.}
 \end{figure}
