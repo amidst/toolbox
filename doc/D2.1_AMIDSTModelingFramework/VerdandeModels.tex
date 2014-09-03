@@ -1,5 +1,40 @@
 \subsection{Verdande Models}
+
+\subsubsection*{Introduction}
+
+As has been pointed out in Delivrable D1.2, three main tasks have to be addressed for Verdande use case:
+
+\begin{enumerate}
+
+\item The automatic detection of drillstring vibrations and abnormal torque states which aims to diagnose better the shapes of the wellbore and the shape of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time.
+
+\item The semi-automatic labelling which aims to compute and output a normality score for a considered drilling situation. This should be performed taking into account of the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. This further reduces the non-productive time and improves the data quality.
+
+\item The automatic formation detection which aims to provide a probability table for the formations at depth of the MWD (measurements while drilling) tool in real-time. Once again, this should be performed taking into account of the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. The evaluation process includes measuring the deviation between the detected lithology chart and the lithology chart that is interpreted after the well is drilled.
+
+\end{enumerate}
+
+For all tasks, the model must deal with both continuous and discrete observed random variables. Moreover, the oil-well data to be used presents the following characteristics: 
+
+\begin{itemize}
+
+\item Having a dynamic that is put together by \emph{long-term} patches (ranging from a couple of hundred observations and into the thousands). Inside a patch, the data is typically fairly \emph{stable} and with low noise, even if this is not always the case. Between the patches the data can vary a lot. A \emph{patch of data} typically corresponds to the implementation of one activity (like drilling, connection tripping in/out, etc.). Verdande has systems in place to detect activities (and even more important: the change of activities). The models that we make will probably be better at working inside a single patch. I?m calling these \emph{local models}. Models designed for a broader span will be denoted \emph{global}.
+
+\item Inside one activity, many of the attributes can be strongly correlated. The observed correlation between variables $X$ and $Y$ can either be instantaneous (i.e., corr($X_t, Y_t$) significant), or delayed to some extent (i.e., exposed through the correlation corr($X_t, Y_{t+k}$) for some fixed $k$).
+
+\item Physical models can be used to understand why these correlations are there, but not to quantify them. In addition, sometimes the strength, and even the sign, of the correlation may change from well to well.
+
+\end{itemize}
+
 \subsubsection*{Model Structure}
 
+
+
+
+
+
 \subsubsection*{Data Analysis}
+
+
+
 
