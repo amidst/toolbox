@@ -1,3 +1,6 @@
+%!TEX root = D2.1_AMIDSTModellingFramework.tex
+
+
 \subsection{CajaMar Models}
 \label{Section:CajaMarModels}
 
@@ -11,6 +14,7 @@ specifically targeted to these low risk customers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Predicting probability of default}
+\label{SubSection:Predicting}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %---------------------------------------------------------------------------------------------
@@ -18,11 +22,11 @@ specifically targeted to these low risk customers.
 
 In any commercial bank, every time a customer applies for a loan, the bank experts evaluate the customer's risk profile before making their decision. 
 
-At CajarMar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
+At Cajamar, this risk evaluation protocol is implemented by evaluating whether the client is going to default or not within the following two years. If a client is labelled as defaulter, he/she will remain defaulter in the database at least two more years. At the moment of writing, this decision is supported by an automatic supervised classification model (i.e. a logistic regression) which takes information about the recent financial activity of the customer at CajaMar, as well as information about the recent past paying behaviour of the customer provided by other Spanish financial institutions, and make predictions using this information about the probability that the client will default during the following two years.
 
 The methodology currently employed does not assume dependence structure among the variables. Even though this model is quite simple, current predictions are made using only a set of $27$ variables out of the more than $1000$ that are available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are selected partly due to limitations in the available commercial software and the computing resources.
 
-The objective is to daily update the risk evaluation for every customer of the bank. This daily evaluation will be made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure \ref{Figure:CajaMarTimeLine} shows the time-line of the generation of the evaluation and training data set, which is further explained below. 
+The objective is to daily update the risk evaluation for every customer of the bank. This daily evaluation will be made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure \ref{Figure:CajaMarTimeLine} shows the time-line of the generation of the evaluation and training data set, which is further explained below. First, let denote the current time as $t$ and 2 years back as $k$. and  
 
 
 \begin{figure}
@@ -33,19 +37,71 @@ The objective is to daily update the risk evaluation for every customer of the b
 \end{figure}
 
 \begin{itemize}
-\item \textbf{Model Evaluation Data Set:} We denote by day $E$ to the day at which this evaluation data set is created. This data set contains a record for every client to be evaluated at that day $E$. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behaviour of the customers in a recent past and their socio-demographics data. 
+\item \textbf{Model Evaluation Data Set:} The evaluation data set is created at time t. This data set contains a record for every client to be evaluated. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behaviour of the customers in a recent past and their socio-demographic data. 
 
 The recent financial activity refers to attributes of the customer such as ``account balance'', ``number of credit card operations'', etc. in the last 180 days \footnote{This limit is fixed by the Bank of Spain}. These attributes usually change daily for a customer, then they are encoded by introducing a set of variables for each attribute that contains the value of this attribute in the last 180 days from day $E$. I.e. if the financial activity of the customer is detailed by $F$ attributes,   $180\cdot F$ predictive variables are included in this data set.
 
-In the case of past paying behaviour, the attributes refers to attributes such as the paying behaviour of the customer with other financial institutions or other companies (phone companies, electricity companies, public bodies, etc.). A monthly record of the last 36 months from day $T$ is considered when building the evaluation data set. So, if there are $P$ variables referring to the paying behaviour of a customer, $36\cdot P$ variables are included as information about the past paying behaviour.  
+In the case of past paying behaviour, the attributes refers to attributes such as the paying behaviour of the customer with other financial institutions or other companies (phone companies, electricity companies, public bodies, etc.). A monthly record of the last 36 months from day $T$ is considered when building the evaluation data set. So, if there are $P$ variables referring to the paying behaviour of a customer, $36\cdot P$ variables are included as information about the past paying behaviour. 
 
-The task of the supervised classification model is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. If at some point the probability of defaulting of some customers rises above some predefined threshold, the bank can try to take preventive actions to reduce the chances that this customer finally defaults in some of his/her loans.
+The dataset for the evaluation of customers is detailed in Table~\ref{tab:EvaluationDataset}.
+
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\Z}{\mathbf{Z}}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|ccc|ccc|c}
+	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} \\
+     Time $t$              & $\X^{(t-180)}$ & $\ldots$ & $\X^{(t-1)} $ & $\Y^{(t-6)}$  & $\ldots$ & $\Y^{(t-1)} $ & $\Z$  \\  
+\hline
+Client$_1$  &                                                  &              &                     &                               &                     &        \\ 
+$\vdots$      &                                                 &               &                     &                                &                     &      \\ 
+Client$_n$  &                                                &               &                     &                                &                     &     \\ 
+\end{tabular}
+\caption{Evaluation dataset at time $t$. Attributes for financial activity, paying behavior and sociodemographic information are denoted as $\X$, $\Y$ and $\Z$, respectively.}
+\label{tab:EvaluationDataset} 
+\end{table}
+
+The task of the supervised classification model is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. Finally, the risk table in the system is updated (see Table~\ref{tab:riskTable}).
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{c|ccc|ccc|c}
+     Time $t$  & Risk of defaulting \\  
+\hline
+Client$_1$  &    $\hat{r_1}$  \\ 
+$\vdots$      &   $\vdots$   \\ 
+Client$_n$  &   $\hat{r_n}$  \\ 
+\end{tabular} 
+\caption{Table containing the risk of defaulting for every client.}
+\label{tab:riskTable}
+\end{figure}
+
+
+If at some point the probability of defaulting of some customers rises above some predefined threshold, the bank can try to take preventive actions to reduce the chances that this customer finally defaults in some of his/her loans.
 
 \item \textbf{Model Training Data Set:}  The training data set is built in the same way than the evaluation data set. They contain the same set of predictive variables with the main difference that they refer to different time points. If the predictive variables in the evaluation data set are built for day $E$, the predictive variables in the training data set are defined for the day $T = E$ - 2 years (i.e. two years before in time). So the training data set contain one record for each customer of the bank and the predictive variables refers to the financial activity and paying behaviour of this customer in the recent past before day $T$ (i.e. the previous 180 days or the previous 36 months). 
 
+The dataset for training/updating the model is detailed in Table~\ref{tab:EvaluationDataset}.
+
+\begin{table}[h]
+\begin{tabular}{c|ccc|ccc|c|c}
+	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} & \\
+     Time $t$              & $\X^{(k-180)}$ & $\ldots$ & $\X^{(k-1)} $ & $\Y^{(k-6)}$  & $\ldots$ & $\Y^{(k-1)} $ & $\Z$ & Defaulter$^{(t)}$\\  
+\hline
+Client$_1$  &                                                  &              &                     &                               &                     &        &  \\ 
+$\vdots$      &                                                 &               &                     &                                &                     &       & \\ 
+Client$_n$  &                                                &               &                     &                                &                     &     & \\ 
+\end{tabular} 
+\caption{Training dataset at time $t$ with $k=t - 2$ years.  Attributes for financial activity, paying behavior and sociodemographic information are denoted as $\X$, $\Y$ and $\Z$, respectively. Note that the column \emph{Defaulter} at time $t$ is labelled as false only if the customer has not been defaulter during the last $2$ years.}
+\label{tab:EvaluationDataset} 
+\end{table}
+
+
 Unlike the evaluation data set, each record of this data set contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the 2 years data between day $T$ and current day $E$. If during these two years the client has regularly pay each of his/her loans and the other financial institutions does not provide any evidence of defaulting, the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter (see Data Characteristics document for more detailed information about this respect).   
 
-Using this data set, the bank fits a logistic regression model, which is then used to update the probability of defaulting of each of the clients in the evaluation data set. 
+Using this data set, the bank fits a logistic regression model, which is then used to update the probability of defaulting of each of the clients in the evaluation data set. \textcolor{blue}{Checks if the dataset currently used is the same?}
 
 \end{itemize}
 
@@ -255,9 +311,51 @@ In summary, the process of building this dynamic model from the original relatio
 \item Update risk profiles using the dynamic classifier.
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Low risk profile extraction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection*{Introduction of the problem}
+
+The marketing department at Cajamar periodically launches marketing campaigns for the recruitment of new products by customers (i.e. a new credit card, an insurance, ...). The success of these campaigns depends greatly on the client group to which the campaign has finally targeted. It is also crucial to reduce as much as possible unnecessary expenses focused on non-potential customers. 
+
+For this purpose, the marketing group proceeds as follows. First, they filter the customers using their own marketing models and also, in collaboration with the risk department, select a subset of predictors considered relevant to be part of the final profile (mainly sociodemographic variables). For example, the age of a client is a relevant predictor when designing campaigns to attract customers for a death insurance. 
+
+After obtaining this first group of customers for the campaign and determining the set of relevant attributes, the model proposed in Section~\ref{SubSection:Predicting} will be used to identify the profiles of the less risky clients using the most probable explanations (MPE) method (\emph{defaulter} variable is evidenced to \emph{No}) . Thus, the target customers previously filtered can be now grouped and ranked using these profiles.
+
+
+\subsubsection*{Static model}
+
+As pointed out before, mainly sociodemographic variables will determine the customer profiles used in the campaigns. These variables are mostly static as they do not change frequently over time (e.g. marital status, sex, type of job, ...). Hence, it has more sense to explore a profile extraction solution based on a static model as the one depicted in Fig.~\ref{fig:StaticBNProfile}. A solution could be the use of augmented Bayesian classifiers like TAN, $k$-DB to reduce the search space required for general structures. 
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,node distance=2cm,semithick,
+        azul/.style={fill=cyan,rectangle,draw},
+        verde/.style={fill=green,ellipse,draw}]
+        \node[verde] (default) {Default};
+        \node[azul] (predictors) [below of=default] {Predictors};
+        \draw (default) to (predictors);
+\end{tikzpicture}
+\caption{Static Bayesian network for the profile extraction. The variables within the blue box can be connected to conform an augmented Bayesian classifier.}
+\label{fig:StaticBNProfile}
+\end{figure}
+
+
+%---------------------------------------------------------------------------------------------
+
+
+Note that past information about the variables are not considered for this problem as it was for predicting the probability of defaulting in Section~\ref{SubSection:Predicting}. In this model the latest information about the variables are considered instead.
+
+For the profile extraction, the model not necessarily must have a classifier structure but it can have a general structure instead. However, what is desirable is to avoid using a NB structure for this task. The reason is that once the \emph{defaulter} variable is evidenced to \emph{No}, the predictors become independent and the analysis would be poorer (MPE in this case would correspond to the maximum probability value for each variable individually).
 
 
 
+\subsubsection*{Dynamic model}
+
+A dynamic model for the profile extraction makes no sense as the variables used are mainly sociodemographic and their values do not change over time.
+
+\textcolor{blue}{We could include some plots showing that sociodemographic variables does not change over time?}
 
 %\subsubsection*{Model Structure}
 %
