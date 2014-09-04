@@ -1,24 +1,24 @@
 \subsection{Verdande Models}
 
-\subsubsection*{Introduction}
+%\subsubsection{Introduction}
 
-As has been pointed out in Delivrable D1.2, three main tasks have to be addressed for Verdande use case:
+As has been pointed out in Delivrable D1.2, three main tasks have to be addressed for Verdande Technology use case:
 
 \begin{enumerate}
 
-\item The automatic detection of drillstring vibrations and abnormal torque states which aims to diagnose better the shapes of the wellbore and the shape of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time.
+\item \textbf{Automatic detection of drill string vibrations and abnormal torque states} which aims to better diagnose the shape of the wellbore and the state of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time. To this end, a probabilistic graphical model for erratic torque monitoring and detection will be used.
 
-\item The semi-automatic labelling which aims to compute and output a normality score for a considered drilling situation. This should be performed taking into account of the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. This further reduces the non-productive time and improves the data quality.
 
-\item The automatic formation detection which aims to provide a probability table for the formations at depth of the MWD (measurements while drilling) tool in real-time. Once again, this should be performed taking into account of the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. The evaluation process includes measuring the deviation between the detected lithology chart and the lithology chart that is interpreted after the well is drilled.
+\item \textbf{Semi-automatic labelling}: Given unlabelled data streams collected over time from typical drilling conditions, semi-automatic labelleing aims to compute a normality score for each considered drilling situation, then label it as either "normal" or "abnormal". As previous task, a probabilistic graphical model will be used, taking into account of the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. Semi-automatic labelling allows to reduce the non-productive time and improve as well the data quality.
 
+\item \textbf{Automatic formation detection}: which aims to predict in real time the formation tops from the MWD (measurements while drilling) data using a probabilistic graphical model. Once again, this should be performed taking into account of the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. The automatic formation detection is vital for dealing with several issues such as hole instability and vibrations, and also important for reducing the costs and the overall non-productive time.
 \end{enumerate}
 
 For all tasks, the model must deal with both continuous and discrete observed random variables. Moreover, the oil-well data to be used presents the following characteristics: 
 
 \begin{itemize}
 
-\item Having a dynamic that is put together by \emph{long-term} patches (ranging from a couple of hundred observations and into the thousands). Inside a patch, the data is typically fairly \emph{stable} and with low noise, even if this is not always the case. Between the patches the data can vary a lot. A \emph{patch of data} typically corresponds to the implementation of one activity (like drilling, connection tripping in/out, etc.). Verdande has systems in place to detect activities (and even more important: the change of activities). The models that we make will probably be better at working inside a single patch. I?m calling these \emph{local models}. Models designed for a broader span will be denoted \emph{global}.
+\item It has a dynamic structure consisting of \emph{long-term} patches (ranging from a couple of hundred observations and into the thousands). Inside a patch, the data is typically fairly \emph{stable} and with low noise, even if this is not always the case. Between the patches the data can vary a lot. A \emph{patch of data} typically corresponds to the implementation of one activity (like drilling, connection tripping in/out, etc.). Consequently, the models would be better designed locally inside each single patch.
 
 \item Inside one activity, many of the attributes can be strongly correlated. The observed correlation between variables $X$ and $Y$ can either be instantaneous (i.e., corr($X_t, Y_t$) significant), or delayed to some extent (i.e., exposed through the correlation corr($X_t, Y_{t+k}$) for some fixed $k$).
 
@@ -26,15 +26,15 @@ For all tasks, the model must deal with both continuous and discrete observed ra
 
 \end{itemize}
 
-\subsubsection*{Model Structure}
 
 
+\subsubsection{Detection of drill string vibrations}
 
 
+\subsubsection{Semi-automatic labelling}
 
 
-\subsubsection*{Data Analysis}
+\subsubsection{Automatic formation detection}
 
 
-
-
+\subsubsection{Discussion and future models}
