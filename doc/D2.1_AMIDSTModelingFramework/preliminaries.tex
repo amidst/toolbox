@@ -54,8 +54,23 @@ Similarly, we plot in Figure \ref{Figure:PreliminariesCorrelograms}(c) and  in  
 \end{center}
 \end{figure}
 
-\subsubsection*{Distributional assumptions: histograms and bivariate distributions}
+\subsubsection*{Distributional assumptions: Histograms and Bivariate Distributions}
 
-For example, we are going to test whether
+With the tools described in this section we tried to get insights about the conditional distribution probabilities  of the proposed models. The first basic tool that we employed for this purpose was the histograms. However this tool, although quite useful in a static context, is quite limited in dynamic models. For example, let assume we have a time series $x_1,\ldots, x_T$ and our histogram shows that the empirical distribution of the variable when we aggregate the data samples over time looks like a mixture of Gaussian distributions. There are two simple possibilities that can give rise to this finding: i)  $X_t$ is distributed according to a mixture of Gaussians where each Gaussian component depends on $X_{t-1}$; ii) there is a discrete hidden variable that influences $X_{t}$ but which is not observed and it is the one that generates the different mixture components.  As shown in this example, histograms are difficult to interpret in dynamic models, but we are going to use them when we think that they can be of some help. 
 
-The aim of the analysis detailed in this section was the following. As commented in the introduction, the models presented from the different use cases were mainly built by expert knowledge. However, when defining these models we did not want to rely only on 
+The other tool that we are going to use to get insights about the conditional distributions of the model is the contour plot of the empirical bivariate distribution of $X_t$ versus $X_{t-1}$.  These contour plots can show many relevant information such as if there are linear relationships between variables or if we can assume they are normality distributed, etc. In Figure \ref{Figure:PreliminariesBivariates}, we plot the bivariate contour plot for the i.i.d data and the time series data previously employed when describing the sample correlograms. As can be seen, the bivariate contour plot of the time series clearly show a linear relationship between $X_t$ and $X_{t-1}$  and how they can be assumed to be distributed according to a bivariate normal with a covariance that displays some degree of correlation. In the case of i.i.d. data, the contour plot looks like quite different. 
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[scale=0.25]{./figures/BivariateGaussian} &
+\includegraphics[scale=0.25]{./figures/BivariateTimeSerie} \\
+(a) i.i.d. data & (b)  Time series data \\
+\end{tabular}
+\caption{\label{Figure:PreliminariesBivariates}Bivariate contour plots for a set of i.i.d. data and for a time series data. 
+}
+\end{center}
+\end{figure}
+
+
+>>>>>>> 4b6c554498b8852b9e3f137d4e4d563e21672013
