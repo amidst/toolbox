@@ -39,20 +39,19 @@ Instead of working with the raw data from the video, radar and on-board sensors,
 
 Figure \ref{Figure:DaimlerDataFlow} contains a visual description of the current data flow used to create this ``object data''.  As can be seen in this figure, in a first step the raw data coming from the video, radar and sensors is preprocessed. In a second step this preprocessed data is fused and the high-level or ``object data'' describing the traffic scene is obtained. 
 
-As commented before, using the resulting ``object data'', Daimler has developed a probabilistic graphical model \cite{kasper2012object} which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place. This probabilistic approach is based on modelling the problem in different layers as shown in Figure \ref{Figure:DaimlerHierarchicalModelling}.
+As commented before, using the resulting ``object data'', Daimler has developed a probabilistic graphical model \cite{kasper2012object} which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place.  This probabilistic approach is based on modelling the problem in different abstraction layers. 
 
 
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.58]{./figures/DaimlerHierarchicalModelling}
-\caption{\label{Figure:DaimlerHierarchicalModelling} Hierarchical layers for the recognition of driving manoeuvres.}
-\end{center}
-\end{figure}
-
-The sensor data is modelled in the first step. Using this layer, a new layer is created on top with the goal of detecting a lane change behaviour. The detection of a lane change behaviour allows the system to model the lane change manoeuvre in a higher layer. Finally, with this information, the system is able to identify the kind of driving manoeuvre which is taking place between a pair of vehicles. 
-
-
+%The sensor data is modelled in the first layer. Using this layer, a new layer is created on top with the goal of detecting a lane change behaviour. The detection of a lane change behaviour allows the system to model the lane change manoeuvre in a higher layer. Finally, with this information, the system is able to identify the kind of driving manoeuvre which is taking place between a pair of vehicles. 
+%
+%
+%
+%\begin{figure}
+%\begin{center}
+%\includegraphics[scale=0.58]{./figures/DaimlerHierarchicalModelling}
+%\caption{\label{Figure:DaimlerHierarchicalModelling} Hierarchical layers for the recognition of driving manoeuvres.}
+%\end{center}
+%\end{figure}
 
 \subsubsection*{The static-OOBN model}
 
