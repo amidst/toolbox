@@ -1,15 +1,53 @@
 \section{Preliminaries}\label{Section:Preliminaries}
-%Preliminaries for the temporal series data analysis: correlograms, partial correlograms. %Preliminaries for the AMIDST models.
+%Need for handling uncertainty in data streams.
+%BNs as the natural solution.
 
-\subsection{Dynamic Bayesian Networks}
+The following sections aim at describing some of the concepts and basic structures required to easily interpret the AMIDST models that will be proposed for the different use cases below. Section \ref{SubSection:HybridBNs} briefly introduces the challenges encountered for reasoning with continuous and discrete variables. Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time. Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to support many of the assumptions made on the proposed models.
+
+
+\subsection{Static Hybrid Bayesian networks}\label{SubSection:HybridBNs}
+%Talk about the challenges of discrete children with continouous parents.
+Traditionally, Bayesian networks have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement also imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; an example is distance and velocity measurements, which are key sensor readings for identifying and interpreting manoeuvres in traffic (see the DoW \cite{Fer14}). To extend probabilistic graphical models with support for continuous variables research has largely pursued three directions. Firstly, one may choose to carefully construct the model such that exact inference algorithms can still be applied. Lauritzen [1992] describes an architecture revised by Lauritzen and Jensen [2001] for exact in infer- ence conditional linear Gaussian (CLG) Bayesian networks where the local probability distributions of the continuous variables are specified as conditional linear Gaussian distributions and discrete variables have discrete parents only. The CLG model does, however, impose certain limitations on the domain being modeled: discrete variables cannot directly depend on a continuous variable and each continuous variable must follow a conditional linear Gaussian distribution. Another approach for extending the expressive power of the model is to rely on approximate algorithms for performing inference, thereby allowing, in principle, arbitrary distributions to be associated with the model; examples include the Gibbs sampler [Geman and Geman, 1984; Hrycej, 1990] and variational inference [Jordan et al., 1999]. Finally, one can “translate” the original model into an approximate model, for which exact inference algorithms can be applied. This can be achieved by discretizing the continuous variables [Kozlov and Koller, 1997] or using translations with more expressive power. This includes mixtures of truncated exponentials [Moral et al., 2001] and the more recently proposed mixtures of truncated basis functions framework [Langseth et al., 2012] that aims to combine several of the previously proposed frameworks.
+
+\subsection{Probabilistic reasoning over time}\label{SubSection:DBNs}
+\cite{russelNorvig2009,JensenNielsen2007}
+Many domains, and in particular those being analysed in the AMIDST project, can be seen as having strong internal structure. This will be evident by the domains being appropriately described using an object oriented language, either due to repetitive substructures or substructures that can naturally be ordered in a superclass–subclass hierarchy. We can find this property either in dynamic domains, where the same objects are repeated over time, or for snapshot models where many similar objects are observed simultaneously. Object oriented Bayesian networks [Koller and Pfeffer, 1997] (OOBNs) are defined to take advantage of such internal model structure A special type of OOBNs is dynamic Bayesian networks (DBNs) [Dean and Kanazawa, 1989], which are used to model domains that develop over time by representing the temporal dynamics of the system explicitly. For regular types of dynamic Bayesian networks we usually assume that observations are made at a fixed frequency and that the probability distribution underlying the transition model and the observation model are invariant over time Dynamic Bayesian networks obviously share the computational difficulties of regular Bayesian networks, but in the dynamic case we are also often faced with the entanglement problem: after a certain time step, all variables describing the current system state will become dependent, and we can therefore not represent the exact probability distribution over the current state (the belief state) in a compact and factorized form. 
+
+At every time slice in a DBN there is a group of random variables, that can be either hidden or observed. We will use $\bm X_t$ to denote the state/hidden variables and $\bm Y_t$ for the observed ones. Figure \ref{Figure:PreliminariesNotation} shows the graphical representation for each type of variables in our graphs, besides, distinctions are made between discrete and continuous ones. %We will use $\bm X_t$ to denote hidden discrete variables and $\bm Z_t$ for hidden continuous ones. Discrete observed variables will be denoted by $\bm V_t$, and the continuous observed ones by $\bm Y_t$. Figure \ref{Figure:PreliminariesNotation} shows the graphical representation for each time of variables. 
 
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.4]{./figures/PreliminariesNotation}
-\caption{\label{Figure:Preliminaries Notation}PreliminariesNotation
+\caption{\label{Figure:PreliminariesNotation}PreliminariesNotation
 }
 \end{center}
 \end{figure}
+
+The interval between time slices vary from problem to problem, and we will use the notation $\bm X_{a:b}$ to denote the set of variables from $\bm X_a$ to $\bm X_b$. We need to specify how the world evolves (the transition model) and how the observed variables get their values (sensor model). The transition model specifies the probability distribution of the state variables at $t$ given the previous values, that is, $P(X_t|\bm X_{0:t-1})$. As $t$ increases the set $X_{0:t-1}$ becomes intractable. To reduce the number of links we resort to the well-known Markov assumption, for which the current state is independent from the past given a finite number of previous steps. In particular, we will consider a first-order Markov chain and assume that knowing the present makes the future conditional independent from the past, that is, : $P(X_t|\bm X_{0:t-1}) = P(X_t|\bm X_{t-1})$ (see Figure \ref{Figure:markovChain}).
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.56]{./figures/PreliminariesMarkovChain}
+\caption{\label{Figure:markovChain}DBN assuming a third-order Markov property (above) and a first-order Markov property (below).
+}
+\end{center}
+\end{figure}
+
+//Stationary process
+
+//Sensor Markov assumption
+
+
+\subsubsection*{Hidden Markov models}
+
+
+\subsubsection*{Kalman filters}
+Similar to the extension of the static Bayesian network model to hybrid domains, dynamic Bayesian
+network models have likewise been extended to continuous and hybrid domains. In purely continuous domains, where the continuous variables follow linear Gaussian distributions, the dynamic Bayesian net- work corresponds to (a factorized version of) a Kalman filter. In these types of models, the dynamics of the process are assumed to be linear. When modelling non-linear domains, the dynamics and observational distributions are often approximated through, e.g., the extended Kalman filter or the unscented Kalman filter. 
+
+\subsubsection*{Dynamic Bayesian networks}
+Because of the entanglement problem above mentioned, one often employs approximate methods including approximate factorizations of the joint probability distribution describing the system state [Boyen and Koller, 1998] as well as sampling based techniques in the form of particle filtering [Doucetet al., 2000].
+
 
 \subsection{Data analysis}
 
