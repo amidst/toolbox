@@ -1,13 +1,11 @@
-\section{Preliminary Models}
-\subsection{Daimler Models}
+\section{Preliminary models}
+\subsection{Daimler models}
 
 %\subsubsection{Introduction}
 
 Daimler use-case is based on two application scenarios \cite{Fer14}: i) early recognition of a lane change manoeuvre; and ii) earlier prediction of the need for a lane change based on relative dynamics between two vehicles driving in the same lane at different speeds. 
 
-The first scenario has been previously addressed by Daimler \cite{kasper2012object}. The main result of this previous work was a static object oriented Bayesian network \cite{koller1997object} able to detect a manoeuvre 0.6s before execution. The goal now is to extend the prediction horizon for manoeuvre recognition at least 1-2 seconds to further improve the quality of the on board adaptive cruise control. As we will explain later, this improvement is expected to be achieved by a dynamic extension of this previously proposed static model. We built on this previously proposed static model for two main reasons: although with a limit prediction horizon, this static model has proven to be very robust for this task and it is considered to be the gold-standard for this problem in Daimler; and, also, because the developed models in this project are expected to be integrated in a ECU \cite{Fer14}, and the advances made about this respect for the static model \cite{Weidl2014} can be exploited during the integration in the ECU of their dynamic counterparts. 
-
-
+The first scenario has been previously addressed by Daimler \cite{kasper2012object}. The main result of this previous work was a static object-oriented Bayesian network (OOBN) \cite{koller1997object} able to detect a manoeuvre 0.6 seconds before execution. The goal now is to enhance the prediction horizon for manoeuvre recognition by at least 1-2 seconds before execution to further improve the quality of the on board adaptive cruise control. As we will explain later, this improvement is expected to be achieved by introducing a dynamic extension of the previously proposed static OOBN model. We basically consider such a dynamic extension for two main reasons: First, although with a limit prediction horizon, the static OOBN model has proven to be very robust for this task and it is considered as the gold-standard solution in Daimler. Second, the developed models in AMIDST project are expected to be integrated in an electronic control unit (ECU) \cite{Fer14}, so that the advances already made for the static model \cite{Weidl2014} could be exploited during the integration in the ECU of their dynamic counterparts. 
 
 \subsubsection{Early recognition of a lane change manoeuvre}
 
@@ -33,28 +31,27 @@ Instead of working with the raw data from the video, radar and on-board sensors,
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.35]{./figures/DaimlerDataFlow}
-\caption{\label{Figure:DaimlerDataFlow} Daimler's Data Flow.}
+\caption{\label{Figure:DaimlerDataFlow} Daimler's data flow.}
 \end{center}
 \end{figure}
 
 Figure \ref{Figure:DaimlerDataFlow} contains a visual description of the current data flow used to create this ``object data''.  As can be seen in this figure, in a first step the raw data coming from the video, radar and sensors is preprocessed. In a second step this preprocessed data is fused and the high-level or ``object data'' describing the traffic scene is obtained. 
 
-As commented before, using the resulting ``object data'', Daimler has developed a probabilistic graphical model \cite{kasper2012object} which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place. This probabilistic approach is based on modelling the problem in different layers as shown in Figure \ref{Figure:DaimlerHierarchicalModelling}.
+As commented before, using the resulting ``object data'', Daimler has developed a probabilistic graphical model \cite{kasper2012object} which is able to recognize an ongoing manoeuvre around 0.6 seconds before the manoeuvre really takes place.  This probabilistic approach is based on modelling the problem in different abstraction layers. 
 
 
+%The sensor data is modelled in the first layer. Using this layer, a new layer is created on top with the goal of detecting a lane change behaviour. The detection of a lane change behaviour allows the system to model the lane change manoeuvre in a higher layer. Finally, with this information, the system is able to identify the kind of driving manoeuvre which is taking place between a pair of vehicles. 
+%
+%
+%
+%\begin{figure}
+%\begin{center}
+%\includegraphics[scale=0.58]{./figures/DaimlerHierarchicalModelling}
+%\caption{\label{Figure:DaimlerHierarchicalModelling} Hierarchical layers for the recognition of driving manoeuvres.}
+%\end{center}
+%\end{figure}
 
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.58]{./figures/DaimlerHierarchicalModelling}
-\caption{\label{Figure:DaimlerHierarchicalModelling} Hierarchical layers for the recognition of driving manoeuvres.}
-\end{center}
-\end{figure}
-
-The sensor data is modelled in the first step. Using this layer, a new layer is created on top with the goal of detecting a lane change behaviour. The detection of a lane change behaviour allows the system to model the lane change manoeuvre in a higher layer. Finally, with this information, the system is able to identify the kind of driving manoeuvre which is taking place between a pair of vehicles. 
-
-
-
-\subsubsection{The static-OOBN model}
+\subsubsection*{Static OOBN model}
 
 The model described here was presented in \cite{kasper2012object} as an object-oriented Bayesian network  (OOBN) \cite{koller1997object} for addressing the problem of early recognition of a lane change manoeuvre (application scenario 1).  This model works with the so-called ``object data''. This data mainly consists of a set of measured and/or computed signals or situation-features denoted by $S$ (e.g.. EGO speed, EGO lateral velocity, speed of a car in-front, etc., see \cite{kasper2012object} for further details) describing the traffic scene. The situation features used for manoeuvre recognition are structured along three main dimensions: lateral evidence (LE), trajectory (TRAJ), and occupancy schedule grid (OCCGRID).  A visual description is given in Figure \ref{Figure:DaimlerSituationFeatures}. They are referred to as the three hypotheses of possible lane change manoeuvre. The lateral evidence hypothesis considers the lateral offset and the lateral velocity of the car and accounts for the lateral movement of the car. The trajectory hypothesis tries to account for the evidence about the car's trajectory by using the measures of the angle of the car and the estimated time to crossing the line. Finally, for the occupancy grid hypothesis it is collected data that allow to identify if the surroundings of the car are going to be occupied by some other vehicle in the traffic scene. 
 
@@ -82,11 +79,11 @@ Lateral Evidence & Trajectory & Occupancy Grid \\
 The general structure of this OOBN model consists of a number of abstraction levels as detailed in Figure \ref{Figure:DaimlerOOBNAbstraction}. : 
 
 \begin{description}
-\item[Class Sensor Measurement:]  This class represents objects at the lowest level of the OOBN. It models the so-called \textit{measured data} which are  the observations characterising a situation. They are acquired from sensors and computations (see Figure \ref{Figure:DaimlerDataFlow}). The structure is the common one found in a standard Kalman filter model to account for sensor noise or fault:  S\_MEAS refers to the sensor-reading value, S\_REAL to the real value and S\_SIGMA to the uncertainty in the measurements. So, the sensor-reading of a measured variable is conditionally dependent on random changes in the real value under measurement (S\_REAL) and sensor noise/fault (S\_SIGMA).  In this problem,  and due to the particular data flow in  Daimler, observations about the measured value S\_MEAS but also about the uncertainty of the measurement S\_SIGMA are given in the object data. 
+\item[Class sensor measurement:]  This class represents objects at the lowest level of the OOBN. It models the so-called \textit{measured data} which are  the observations characterising a situation. They are acquired from sensors and computations (see Figure \ref{Figure:DaimlerDataFlow}). The structure is the common one found in a standard Kalman filter model to account for sensor noise or fault:  S\_MEAS refers to the sensor-reading value, S\_REAL to the real value and S\_SIGMA to the uncertainty in the measurements. So, the sensor-reading of a measured variable is conditionally dependent on random changes in the real value under measurement (S\_REAL) and sensor noise/fault (S\_SIGMA).  In this problem,  and due to the particular data flow in  Daimler, observations about the measured value S\_MEAS but also about the uncertainty of the measurement S\_SIGMA are given in the object data. 
 
-\item[Class Hypothesis:] This class is in a higher level and  directly depends on the real values S\_REAL obtained in the previous class. These real sensor values  are used to evaluate different hypothesis such as lateral evidence, trajectory and occupancy grid. 
+\item[Class hypothesis:] This class is in a higher level and  directly depends on the real values S\_REAL obtained in the previous class. These real sensor values  are used to evaluate different hypothesis such as lateral evidence, trajectory and occupancy grid. 
 
-\item[Class Event:] This class is at the top level of the modelling. It allows to model high-level hypothesis based on low-level hypothesis in a recursive way. This class also includes the variable or the event  representing the the possible traffic manoeuvres of the own and neighbour vehicles. This event is modelled based on previous high-level hypothesis. 
+\item[Class event:] This class is at the top level of the modelling. It allows to model high-level hypothesis based on low-level hypothesis in a recursive way. This class also includes the variable or the event  representing the the possible traffic manoeuvres of the own and neighbour vehicles. This event is modelled based on previous high-level hypothesis. 
 
 \end{description}
 
@@ -102,10 +99,9 @@ Finally, in Figure \ref{Figure:DaimlerLE}, we show a concrete fragment of the OO
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.58]{./figures/DaimlerLE}
-\caption{\label{Figure:DaimlerLE} Static BN fragment for the LE hypothesis.}
+\caption{\label{Figure:DaimlerLE} Static BN fragment for the lateral evidence hypothesis.}
 \end{center}
 \end{figure}
-
 
 As denoted in Figure \ref{DaimlerOOBNAbstraction} and \ref{Figure:DaimlerLE}, S\_REAL variables are continuous variables. However, this modelling has significant impact when making inference because we have discrete childs with continuous parents and, in consequence, the conditional probability distribution of the hypotheses given then S\_REAL variables does not fall inside the conditional linear Gaussian family \cite{nielsen2009bayesian}. One possible solution used in  \cite{kasper2012object} is to discretize the S\_REAL variables. In this case, we have that S\_MEAS, S\_SIGMA are always observed so their potentials can be collapsed/combined with the potential of the respective  discretized S\_REAL variables. Then, all the inferences in this probabilistic model can be made by only using discrete potentials \cite{nielsen2009bayesian}.
 
