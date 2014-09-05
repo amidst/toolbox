@@ -10,6 +10,7 @@ The following sections aim at describing some of the concepts and basic structur
 Traditionally, Bayesian networks have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement also imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; an example is distance and velocity measurements, which are key sensor readings for identifying and interpreting manoeuvres in traffic (see the DoW \cite{Fer14}). To extend probabilistic graphical models with support for continuous variables research has largely pursued three directions. Firstly, one may choose to carefully construct the model such that exact inference algorithms can still be applied. Lauritzen [1992] describes an architecture revised by Lauritzen and Jensen [2001] for exact in infer- ence conditional linear Gaussian (CLG) Bayesian networks where the local probability distributions of the continuous variables are specified as conditional linear Gaussian distributions and discrete variables have discrete parents only. The CLG model does, however, impose certain limitations on the domain being modeled: discrete variables cannot directly depend on a continuous variable and each continuous variable must follow a conditional linear Gaussian distribution. Another approach for extending the expressive power of the model is to rely on approximate algorithms for performing inference, thereby allowing, in principle, arbitrary distributions to be associated with the model; examples include the Gibbs sampler [Geman and Geman, 1984; Hrycej, 1990] and variational inference [Jordan et al., 1999]. Finally, one can “translate” the original model into an approximate model, for which exact inference algorithms can be applied. This can be achieved by discretizing the continuous variables [Kozlov and Koller, 1997] or using translations with more expressive power. This includes mixtures of truncated exponentials [Moral et al., 2001] and the more recently proposed mixtures of truncated basis functions framework [Langseth et al., 2012] that aims to combine several of the previously proposed frameworks.
 
 \subsection{Probabilistic reasoning over time}\label{SubSection:DBNs}
+
 \cite{russelNorvig2009,JensenNielsen2007}
 Many domains, and in particular those being analysed in the AMIDST project, can be seen as having strong internal structure. This will be evident by the domains being appropriately described using an object oriented language, either due to repetitive substructures or substructures that can naturally be ordered in a superclass–subclass hierarchy. We can find this property either in dynamic domains, where the same objects are repeated over time, or for snapshot models where many similar objects are observed simultaneously. Object oriented Bayesian networks [Koller and Pfeffer, 1997] (OOBNs) are defined to take advantage of such internal model structure A special type of OOBNs is dynamic Bayesian networks (DBNs) [Dean and Kanazawa, 1989], which are used to model domains that develop over time by representing the temporal dynamics of the system explicitly. For regular types of dynamic Bayesian networks we usually assume that observations are made at a fixed frequency and that the probability distribution underlying the transition model and the observation model are invariant over time Dynamic Bayesian networks obviously share the computational difficulties of regular Bayesian networks, but in the dynamic case we are also often faced with the entanglement problem: after a certain time step, all variables describing the current system state will become dependent, and we can therefore not represent the exact probability distribution over the current state (the belief state) in a compact and factorized form. 
 
@@ -23,7 +24,7 @@ At every time slice in a DBN there is a group of random variables, that can be e
 \end{center}
 \end{figure}
 
-The interval between time slices vary from problem to problem, and we will use the notation $\bm X_{a:b}$ to denote the set of variables from $\bm X_a$ to $\bm X_b$. We need to specify how the world evolves (the transition model) and how the observed variables get their values (sensor model). The transition model specifies the probability distribution of the state variables at $t$ given the previous values, that is, $P(X_t|\bm X_{0:t-1})$. As $t$ increases the set $X_{0:t-1}$ becomes intractable. To reduce the number of links we resort to the well-known Markov assumption, for which the current state is independent from the past given a finite number of previous steps. In particular, we will consider a first-order Markov chain and assume that knowing the present makes the future conditional independent from the past, that is, : $P(X_t|\bm X_{0:t-1}) = P(X_t|\bm X_{t-1})$ (see Figure \ref{Figure:markovChain}).
+The interval between time slices vary from problem to problem, and we will use the notation $\bm X_{a:b}$ to denote the set of variables from $\bm X_a$ to $\bm X_b$. We need to specify how the world evolves (the transition model) and how the observed variables get their values (sensor model). The transition model specifies the probability distribution of the state variables at $t$ given the previous values, that is, $P(X_t|\bm X_{0:t-1})$. As $t$ increases the set $X_{0:t-1}$ becomes intractable. To reduce the number of links we resort to the well-known Markov assumption, for which the current state is independent from the past given a finite number of previous steps. In particular, we will consider a \textbf{first-order Markov chain} and assume that knowing the present makes the future conditional independent from the past, that is, : $P(\bm X_t|\bm X_{0:t-1}) = P(\bm X_t|\bm X_{t-1})$ (see Figure \ref{Figure:markovChain}).
 
 \begin{figure}
 \begin{center}
@@ -33,21 +34,52 @@ The interval between time slices vary from problem to problem, and we will use t
 \end{center}
 \end{figure}
 
-//Stationary process
+In order to increase the accuracy of the approximation of using a first-order Markov model, we could either increase the Markov order or equivalently, increase the number of state variables, which would also increase the complexity. Hence, we would like to come up with models that contain a self-sufficient set of variables, which likewise requires to fully understand the "physics" of the process being modelled for the different use cases. 
 
-//Sensor Markov assumption
 
+We still face the problem of having to specify a different distribution for each time slice. To avoid this problem, we assume that changes in the world state are driven by a \textbf{stationary process}, that is, $P(\bm X_{t+1}|\bm X_{t} =\bm X_t|\bm X_{t-1})\ \forall t$.
+
+We will represent the sensor (or observation) model by $P(\bm Y_t|\bm X_t)$. Most of our models, although not all of them (Cajamar will be an exception, as shown in Section \ref{Section:CajaMarModels}), will assume that the current state is sufficient to generate the current sensor values. This is referred to as the \textbf{sensor Markov assumption}, that is, $P(\bm Y_t|\bm X_{0:t}, \bm Y_{0:t-1}) = P(\bm Y_t|\bm X_t)$.
+
+By considering the prior probability distribution at time $0$, $P(0)$, we can specify the complete joint distribution over all the variables for any $t$ as:
+
+\begin{equation}
+P(\bm X_{0:t},\bm Y_{1:t}) = P(\bm X_0) \prod_{i=1}^t{P(\bm X_i| \bm X_{i-1})P(\bm Y_i|\bm X_i)}
+\end{equation}
+
+Although most of our models will fit into this description of observed and hidden (state) variables, there will be cases in which the transition model takes place in observed variables (the case of Cajamar), which in general simplifies the learning-inference processes of the problem.
+
+There exist well-known algorithms defined for learning and inference (including most likely explanation). Because of the entanglement problem above mentioned, one often employs approximate methods including approximate factorizations of the joint probability distribution describing the system state [Boyen and Koller, 1998] as well as sampling based techniques in the form of particle filtering [Doucetet al., 2000].
+
+In the following sections we present the simplest instantiations of a DBN, such as Hidden Markov models and Kalman filters.
 
 \subsubsection*{Hidden Markov models}
+A Hidden Markov model (HMM) is the simplest DBN, in which the state of the process is represented by a single discrete variable. This discrete variable, which can be in reality the combination of several discrete variables, represents the different possible states of the target problem. Figure \ref{Figure:HMM} shows a graphical example of an HMM\footnote{Although the observed variables are represented as discrete, they can be a combination of discrete and continuous variables}. The advantage of having a single state variable is that all the computations reduce to simple matrix-vector operations .
 
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.56]{./figures/HMM}
+\caption{\label{Figure:HMM}Bayesian network structure corresponding to a Hidden Markov model.}
+\end{center}
+\end{figure}
 
 \subsubsection*{Kalman filters}
-Similar to the extension of the static Bayesian network model to hybrid domains, dynamic Bayesian
-network models have likewise been extended to continuous and hybrid domains. In purely continuous domains, where the continuous variables follow linear Gaussian distributions, the dynamic Bayesian net- work corresponds to (a factorized version of) a Kalman filter. In these types of models, the dynamics of the process are assumed to be linear. When modelling non-linear domains, the dynamics and observational distributions are often approximated through, e.g., the extended Kalman filter or the unscented Kalman filter. 
+Similar to the extension of the static Bayesian network model to hybrid domains, dynamic Bayesian network models have likewise been extended to continuous and hybrid domains. In purely continuous domains, where the continuous variables follow linear Gaussian distributions, the dynamic Bayesian network corresponds to (a factorized version of) a Kalman filter (KF). The structure of a KF is exactly the same as the one displayed in Figure \ref{Figure:HMM} for the HMM, although all variables should be considered continuous. In this case, the state variables can be a combination of continuous variables with different (linear) dependences. In these types of models, the dynamics of the process are assumed to be linear. When modelling non-linear domains, the dynamics and observational distributions are often approximated through, e.g., the extended Kalman filter, which model the system as \textit{locally} linear in the mean of the current state distribution. 
+
+In order to make non-linear prediction we need a more expressive model, such as the \textbf{switching Kalman filter} (SKF). The SKF includes an extra discrete state variable to the network that allows running multiple KFs in parallel. 
 
 \subsubsection*{Dynamic Bayesian networks}
-Because of the entanglement problem above mentioned, one often employs approximate methods including approximate factorizations of the joint probability distribution describing the system state [Boyen and Koller, 1998] as well as sampling based techniques in the form of particle filtering [Doucetet al., 2000].
 
+DBNs in general can model arbitrary distributions. In our models however we will try to remain in the family of the conditional linear Gaussian distributions (CLG), and that is why we will try to avoid discrete children with continuous parents. The probability distributions in the AMIDST models can be parametrized as follows:
+\begin{itemize}
+\item Discrete $\leftrightarrows$ Discrete:
+\item Continuous $\leftrightarrows$ Continuous:
+\item Discrete $\rightarrow$ Continuous:
+\end{itemize}
+
+- Mention: 2-timeslice DBN.
+
+- Mention that the DBN take the structure of the network into account to factorize the joint prob. distribution, as opposed to matrix operations (which would be intractable).
 
 \subsection{Data analysis}
 
