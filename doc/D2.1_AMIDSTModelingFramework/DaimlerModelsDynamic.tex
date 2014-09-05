@@ -81,46 +81,41 @@ Similarly to what happened with the static version of this OOBN, for the dynamic
 %A DBN induces a number of constraints on the compilation of the network into a computational structure. One constraint relates to transferring the belief state from one time slice to the next where the belief state is the probability distribution over the variables shared by neighbouring time slices. In general, the belief state is transferred as a joint distribution. We have imposed limitations in our dynamic model so that the next state depends only on the current state, and not on the sequence of events that preceded it, i.e. first order Markov model. Although in principle this might seem as a strong limitation, we have reasons to believe that this property might hold in our data. Fig. \ref{Figure:daimlerCorrel} displays, at the top, the sample correlograms for lateral velocity and offset, that is, the correlation of the data with lagged values of themselfves. The partial correlogram (bottom figures) is used to remove the common linear effect of the data in between samples. In our example, for both variables, the correolograms take some time to decay to zero, while the partial correlograms are large for lag one and then small of all other lags. This indicates that the correlation between non consecutive samples is due to the common relationship of these samples and the samples in between \cite{Newton:1988}.
 
 \subsubsection{Earlier prediction of the need for a lane change based on relative dynamics}
-%Earlier prediction of the need for a lane change based on relative dynamics between two vehicles driving in the same lane at different speeds
 
-%The models to be used for this application scenario, that involve the use of relative dynamics will be further discussed in a future version of this document.
+Earlier prediction of manoeuvre intentions could be achieved before any development of the trend for lateral evidence has been observed. A first indication of possible lane change intention can be observed through the relative dynamics between one vehicle (EGO or OBJECT) and the vehicles in front of it on the same lane. If a slower vehicle is driving in front of the own vehicle on the same lane, this could be an indication of the need for a lane change. Because to continue its safe driving, the approaching vehicle should either break and reduce its speed to the speed of the vehicle in front or, alternatively, it should change to the neighbour lane, if the neighbour lane is free and no other vehicle is approaching with a higher speed than the own vehicle. A continued safe manoeuvre (of type ``lane follow'' or ``lane change'') is modelled by estimating the TTC (TimeToCollision) to the vehicle in front (on the same lane) or to eventually approaching vehicle (on the neighbour lane). For safe manoeuvre, TTC should be bigger than 1 second, if the own vehicle wants to change to the neighbour lane or if it needs to break to ensure safe driving on the same lane (``lane follow'') . Our assumptions is that this approach will allow us to further increase the prediction horizon for manoeuvre recognition (up to $5$ seconds).
 
-%\drop{ %To be included in the next version of the deliverable
-%\item \textbf{New hypothesis: Relative Dynamics (REL\_DYN)}
-
-Earlier prediction of manoeuvre intentions could be achieved before any development of the trend for lateral evidence has been observed. A first indication of possible lane change intention can be observed through the relative dynamics between one vehicle (EGO or OBJECT) and the vehicles in front of it on the same lane.For example, if the distance between the car in front the EGO and the EGO is steadily decreasing because the EGO drives at a higher velocity that the car in front, this is a clear piece of evidence that  where a lane change manoeuvre is highly likely. 
-
- Once again, the goal is to further increase the prediction horizon for manoeuvre recognition (up to $5$ seconds), and this approach will be further explored in future stages of the project. 
+Similarly to the models described in Figure \ref{Figure:daimlerLEdyn},  a new dynamic OOBN is defined with the hypothesis ``relative dynamics'' (REL\_DYN), as shown in Figure \ref{Figure:daimlerreldyn}. Due to confidentiality reasons, we can not give at this stage of the project further details about this model. We can see however that this model have the same general structure that the dynamic models proposed for the previous application scenario. 
+% any type of data analysis that supports this hypothesis. 
 
 
-We can include qualitatively new information based on driving experience, which indicates a need for a lane change if a slower vehicle is driving in front of the own vehicle on the same lane. To continue its safe driving, the approaching vehicle should either break and reduce its speed to the speed of the vehicle in front or, alternatively, it should change to the neighbour lane, if the neighbour lane is free and no other vehicle is approaching with a higher speed than the own vehicle. A continued safe manoeuvre (of type ``lane follow'' or ``lane change'') is modelled by estimating the TTC (TimeToCollision) to the vehicle in front (on the same lane) or to eventually approaching vehicle (on the neighbour lane). For safe manoeuvre, TTC should be bigger than 1 second, if the own vehicle wants to change to the neighbour lane or if it needs to break to ensure safe driving on the same lane (``'lane follow'') .
-
-%Figure [timedetectionRelDyn] shows the evolution on time for the velocity and distance in an EGO\_CutOut manoeuvre. The vertical bar indicates the moment in which the manoeuvre has been recognised by the static OOBN. By taking the temporal properties of the relative dynamics into account on the DBN, we should be able to predict the manoeuvre even earlier on time.
-
-By analogy to Figure \ref{Figure:daimlerLEdyn}, the original OOBN has been extended with the hypothesis ``relative dynamics'' (REL\_DYN), as shown in Figure\ref{Figure:daimlerreldyn}. This BN fragment  models the hypothesis REL\_DYN with 3 states Left/Follow/RIGHT, utilising the independency assumption for the discrete variables V\_REL\_MEASSURED and X\_REL\_MEASSURED.
+ 
 
 \begin{figure}
 \begin{center}
 \includegraphics[scale=0.58]{./figures/Daimlerreldyn.png}
 \end{center}
-\caption{\label{Figure:daimlerreldyn}Daimler Temporal Model with relative dynamics}
+\caption{\label{Figure:daimlerreldyn}Daimler Temporal Model with relative dynamics. V\_REAL and O\_REAL refers to the relative velocity and relative distance between the EGO and the car in front, repectively. The other variables with \_MEAS and \_SIGMA suffixes refers to the measured values and the uncertainty of the measurements, respectively, as commented in the previous section for other sensor readings.}
 \end{figure}
 
-If we compare the structure of this network with that of Figure \ref{Figure:daimlerLEdyn}, we can observe two additional nodes:  REL\_DYN\_V\_REL\_OBJ and REL\_DYN\_X\_REL\_OBJ. They are the results of a modelling trick to simplify the EM-learning of parameters from data for the static BN fragment.
 
-\textcolor{red}{Note that the new REL\_DYN hypothesis introduced would require two instances in the OOBN, one for the relative dynamics of the EGO with the OBJ in front, and another one for the OBJ and another OBJ in front of it. Each REL\_DYN would indicate if the EGO and the OBJ cars are going to turn right, left or continue straight.}
-%\end{enumerate}
-%}
+%This BN fragment  models the hypothesis REL\_DYN with 3 states Left/Follow/RIGHT, utilising the independency assumption for the discrete variables V\_REL\_MEASSURED and X\_REL\_MEASSURED.
+%
+%If we compare the structure of this network with that of Figure \ref{Figure:daimlerLEdyn}, we can observe two additional nodes:  REL\_DYN\_V\_REL\_OBJ and REL\_DYN\_X\_REL\_OBJ. They are the results of a modelling trick to simplify the EM-learning of parameters from data for the static BN fragment.
+%
+%\textcolor{red}{Note that the new REL\_DYN hypothesis introduced would require two instances in the OOBN, one for the relative dynamics of the EGO with the OBJ in front, and another one for the OBJ and another OBJ in front of it. Each REL\_DYN would indicate if the EGO and the OBJ cars are going to turn right, left or continue straight.}
+%
 
-Due to confidentiality reasons, we cannot show at this stage any type of data analysis that supports this hypothesis. 
 
-\subsubsection*{Discussion and future models}
-The above included proposals are preliminary models designed in line with the expert knowledge facilitated by Daimler. They all try to balance a good level of expressiveness and efficiency. 
 
+\subsubsection{Alternative future models}
+The above included proposals are preliminary models designed in line with the expert knowledge facilitated by Daimler. They all try to balance a good level of expressiveness and efficiency during inference.  But, in any case, they should be seen as first proposal that might be modified in the future if they do not meet the efficiency and accuracy targets specified in the requirements \cite{Fer14}. 
+
+For application scenario 1 (see \ref{Section:Daimler:EarlyRecognition}), 
 In the case of the dynamic extension, another alternative is to consider not only the temporal dependences between consecutive time steps for the sensor measurements but also, or instead, consider the temporal links between a hypothesis at consecutive time steps. It seems natural, for instance, that the probability of observing lateral evidence (LE) for the EGO car should be higher given that there was LE at the previous time step. And similarly for the rest of the hypotheses, such as TRAJ or OCCGRID  and the final hypothesis or event that identifies the type of manoeuvre. However and since these hypothesis nodes are placed at the bottom of the DBN; as opposed to the sensor measurements, which are placed at the top; adding these type of dependences would greatly increase the complexity of inference in the resulting network because the number of dependencies will be much higher as the DBN is unfolded through the time. 
 
 Another possible extension that we envision is the consideration of an extra hidden variable to model acceleration for the dynamic model. We believe that assuming that lateral velocity varies according to a constant acceleration can lead to inaccuracies. Figure \ref{Figure:daimlerVel}(a) shows the behaviour of lateral velocity for a given sequence, that in this case corresponds to an EGO-CutIn manoeuvre. At the beginning of the sequence, acceleration is close to constant, but from around time steps 30 to 50 a higher acceleration value should be taken into account. The contour plot on Figure \ref{Figure:daimlerVel}(b) shows a large density of points around lower and higher values of V where the acceleration is constant, but just isolated points in between. Hence, we believe that the dynamic model could benefit from an extra hidden variable to represent acceleration as displayed in Figure \ref{Figure:tempDynAccel}. %(SIGMA and MEAS. variables have been left out for simplicity). 
 Thus, the following equation would be considered for velocity at consecutive time steps:
+
 \begin{equation}
 V(t) =V(t-1) +A(t-1)dt +\epsilon
 \end{equation}
