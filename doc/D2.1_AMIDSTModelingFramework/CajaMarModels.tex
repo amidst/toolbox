@@ -118,7 +118,7 @@ Figure \ref{Figure:CajaMarStatic} shows the general structure of this static mod
 \label{fig:static}
 \end{figure}
 
-The variables within a blue box might be connected (e.g. according to a tree structure and, globally, conforming a TAN). Figure~\ref{fig:CajaMarBayesianNetwork} shows a Bayesian network structure learnt from customers data. 
+The variables within a blue box might be connected (e.g. according to a tree structure and, globally, conforming a TAN). Figure~\ref{fig:CajaMarBayesianNetwork} shows a Bayesian network structure learnt from customers data that have been aggregated from different times, e.g., 180 times for financial activities \textcolor{red}{(We think it has no influence to get more dependences in the network structure) }
 %To computationally simplify this learning in this preliminary overview,  \textcolor{blue}{only data correspond to one day?} are considered, meaning that the number of cases for learning has been considerably reduced. 
 Looking at the structure is evident that indeed there exist dependences between some of the variables\footnote{For confidentially reasons variable names are not shown}. The structure has been learnt using the R package \texttt{bnlearn}~\cite{Scu10, Nag13}.
 
