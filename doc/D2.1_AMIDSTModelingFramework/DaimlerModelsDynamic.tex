@@ -1,4 +1,5 @@
 \subsubsection*{The dynamic-OOBN model}
+\label{Section:DaimlerDynamic}
 
 The above described static OOBN is able to detect a manoeuvre $0.6$ seconds before execution. As detailed in the DoW \cite{Fer14}, the goal is to enhance the prediction horizon for manoeuvre recognition to at least $1-2$ seconds (max.\ $4-5$ seconds) ahead before the actual lane marking crossing. Moreover, this early detection of the manoeuvre should not be at the expense of the prediction accuracy. As specified in Daimler's DoW \cite{Fer14}, the area under the ROC curve (AUC) should be greater than 0.96 for 1 second and greater than 0.9 for 2 seconds.
 
@@ -70,7 +71,7 @@ where $\epsilon$ denotes a white noise $\mathcal{N}(0,\sigma^2)$ which is assume
 
 Finally, in Figure \ref{Figure:daimlerLEdynGeneric} we show a rough overview of the final structure of this dynamic Bayesian network\footnote{Full details can not be given for confidentiality reasons}, which shows how the temporal connection is only made on the top nodes involving the situation-features in consecutive time steps.  The final event or manoeuvre prediction is then determined by the combination of these hypotheses and the position of the OBJ with respect to the EGO car.
 
-Similarly to what happened with the static version of this OOBN, for the dynamic model in this current form we have that the conditional probability distribution of the LE hypotheses given the V\_LAT\_REAL and O\_LAT\_REAL variables does not fall in the conditional linear Gaussian family \cite{nielsen2009bayesian} because we have discrete childs with continuous parents. Similarly to the static case, a possible approach to deal with that is the discretization of the V\_LAT\_REAL and O\_LAT\_REAL variables. And, again, we would obtain a model where all the inferences can be implemented over discrete potentials because the remaining continuous variables S\_MEAS and S\_SIGAM are always observed. 
+Similarly to what happened with the static version of this OOBN, for the dynamic model in this current form we have that the conditional probability distribution of the LE hypotheses given the V\_LAT\_REAL and O\_LAT\_REAL variables does not fall in the conditional linear Gaussian family \cite{nielsen2009bayesian} because we have discrete children with continuous parents. Similarly to the static case, a possible approach to deal with that is the discretization of the V\_LAT\_REAL and O\_LAT\_REAL variables. And, again, we would obtain a model where all the inferences can be implemented over discrete potentials because the remaining continuous variables S\_MEAS and S\_SIGAM are always observed. 
 
 \begin{figure}
 \begin{center}
@@ -87,7 +88,9 @@ Similarly to what happened with the static version of this OOBN, for the dynamic
 
 Earlier prediction of manoeuvre intentions could be achieved before any development of the trend for lateral evidence has been observed. A first indication of possible lane change intention can be observed through the relative dynamics between one vehicle (EGO or OBJECT) and the vehicles in front of it on the same lane. If a slower vehicle is driving in front of the own vehicle on the same lane, this could be an indication of the need for a lane change. Because to continue its safe driving, the approaching vehicle should either break and reduce its speed to the speed of the vehicle in front or, alternatively, it should change to the neighbour lane, if the neighbour lane is free and no other vehicle is approaching with a higher speed than the own vehicle. A continued safe manoeuvre (of type ``lane follow'' or ``lane change'') is modelled by estimating the TTC (TimeToCollision) to the vehicle in front (on the same lane) or to eventually approaching vehicle (on the neighbour lane). For safe manoeuvre, TTC should be bigger than 1 second, if the own vehicle wants to change to the neighbour lane or if it needs to break to ensure safe driving on the same lane (``lane follow'') . Our assumptions is that this approach will allow us to further increase the prediction horizon for manoeuvre recognition (up to $5$ seconds).
 
-Similarly to the models described in Figure \ref{Figure:daimlerLEdyn},  a new dynamic OOBN is defined with the hypothesis ``relative dynamics'' (REL\_DYN), as shown in Figure \ref{Figure:daimlerreldyn}. Due to confidentiality reasons, we can not give at this stage of the project further details about this model. We can see however that this model have the same general structure that the dynamic models proposed for the previous application scenario. 
+Similarly to the models described in Figure \ref{Figure:daimlerLEdyn},  a new dynamic OOBN is defined with the hypothesis ``relative dynamics'' (REL\_DYN), as shown in Figure \ref{Figure:daimlerreldyn}. Due to confidentiality reasons, we can not give at this stage of the project further details about this model. 
+
+%We can see however that this model have the same general structure that the dynamic models proposed for the previous application scenario. 
 % any type of data analysis that supports this hypothesis. 
 
 
