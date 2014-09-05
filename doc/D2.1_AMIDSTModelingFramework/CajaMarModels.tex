@@ -6,7 +6,7 @@
 \newcommand{\Y}{\mathbf{Y}}
 \newcommand{\Z}{\mathbf{Z}}
 
-\subsection{CajaMar Models (ENVIAR A RAMÓN )}
+\subsection{CajaMar Models}
 \label{Section:CajaMarModels}
 
 \subsubsection{Introduction}
@@ -96,7 +96,7 @@ Client$_n$  &                                                &               &  
 \label{tab:TrainingDataset} 
 \end{table}
 
-Unlike the evaluation data set, each record contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the data 2 years back from current time $t$. If during these two years there are not any evidence of defaultingthe client's payments (at Cajamar and other financial institutions) has gone as expected and , the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter.
+Unlike the evaluation data set, each record contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the data 2 years back from current time $t$. If during these two years there are not any evidence of defaulting and the client's payments (at Cajamar and other financial institutions) has gone as expected, the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter.
 
 \end{itemize}
 
@@ -111,14 +111,6 @@ In this first approach we do not explicitly consider some of the dynamics of the
 Figure \ref{Figure:CajaMarStatic} shows the general structure of this static model. The payment variables are grouped by semesters whilst the financial activity variables by day. Note that past sociodemographic information are not necessary as it does not change frequently.
 %For the sake of simplicity, for now on and in the graphical models depicted, we do not explicitly show the variables that refer to monthly information during the last 36 months. 
 
-LAS VARIABLES pueden relacionarse entre los bloques!!!!!!!! UFFFF
-
-PREPROCEO DE OULIERSS!!!!!
-ELIMINAR 0s
-
-DELTA SIEMPRE ESTARÁ OBSERVADA
-
-
 \begin{figure}[htbp]
   \centering
 \includegraphics[scale=0.5]{./figures/CajaMarModel0}
@@ -126,7 +118,9 @@ DELTA SIEMPRE ESTARÁ OBSERVADA
 \label{fig:static}
 \end{figure}
 
-The variables within a blue box might be connected (e.g. according to a tree structure and, globally, conforming a TAN). Figure~\ref{fig:CajaMarBayesianNetwork} shows a Bayesian network structure learnt from customers data. To computationally simplify this learning in this preliminary overview,  \textcolor{blue}{only data correspond to one day?} are considered, meaning that the number of cases for learning has been considerably reduced. Looking at the structure is evident that indeed there exist dependences between some of the variables\footnote{For confidentially reasons variable names are not shown}. The structure has been learnt using the R package \texttt{bnlearn}~\cite{Scu10, Nag13}.
+The variables within a blue box might be connected (e.g. according to a tree structure and, globally, conforming a TAN). Figure~\ref{fig:CajaMarBayesianNetwork} shows a Bayesian network structure learnt from customers data. 
+%To computationally simplify this learning in this preliminary overview,  \textcolor{blue}{only data correspond to one day?} are considered, meaning that the number of cases for learning has been considerably reduced. 
+Looking at the structure is evident that indeed there exist dependences between some of the variables\footnote{For confidentially reasons variable names are not shown}. The structure has been learnt using the R package \texttt{bnlearn}~\cite{Scu10, Nag13}.
 
 \begin{figure}[htbp]
   \centering
