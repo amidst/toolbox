@@ -31,7 +31,7 @@ At Cajamar, this risk evaluation protocol is implemented by evaluating whether t
 
 The problem of predicting the customer risk of default is currently addressed at Cajamar by an automatic supervised classification model (i.e. a logistic regression). It takes information about the recent financial activity of a customer, as well as information about recent past paying behaviour provided by other Spanish financial institutions. Finally, using this information, predictions about the probability that the client will default during the following two years are made. The methodology currently employed does not assume dependence structure among the variables and current predictions are made using only a set of $27$ variables out of more than $1000$ available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are partly due to limitations in the available commercial software and the computing resources.
 
-The objective is to daily update the risk of default for every customer of the bank. This daily evaluation will be made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure \ref{Figure:CajaMarTimeLine} how the evaluation and training datasets are generated within a time-line. The current time is denoted as $t$ and the time $2$ years back as $k$, i.e., $k=t-2$. Note that, data about the predicted defaulting behavior is still missing at time $t$ when conforming the evaluation dataset. It will be obtained after performing inference on the model.
+The objective is to daily update the risk of default for every customer of the bank. This daily evaluation will be made by creating two data sets: the model training data set and the model evaluation data set (see Use Case 1 in D1.2). How these data sets are created gives us some insights about the nature of this risk prediction problem.  Figure~\ref{Figure:CajaMarTimeLine} show how the evaluation and training datasets are generated within a time-line. The current time is denoted as $t$ and the time $2$ years back as $k$, i.e., $k=t-2$ years. 
 
 \begin{figure}[htbp]
 \centering
@@ -40,13 +40,14 @@ The objective is to daily update the risk of default for every customer of the b
 \end{figure}
 
 \begin{itemize}
-\item \textbf{Model Evaluation Data Set:} The evaluation data set is created at time $t$. This data set contains a record for every client to be evaluated. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predictor variables refers to the financial activity and the paying behaviour of the customers in a recent past and their socio-demographic data. 
+\item \textbf{Model Evaluation Data Set:} The evaluation data set is created at time $t$. This data set contains a record for every client to be evaluated. Note that, data about the predicted defaulting behavior is still missing at time $t$ when conforming the evaluation dataset. It will be obtained after performing inference on the model. As in any standard evaluation data set in supervised classification settings, each record will contain the values of the predictors variables for this customer. The predicting variables refers to the financial activity and the paying behaviour of the customers in a recent past, and their socio-demographic data. 
 
-The recent {\bf financial activity} of a customer refers to attributes such as ``account balance'', ``number of credit card operations'', ... in the last 180 days\footnote{This limit is fixed by the Bank of Spain}. These attributes usually change daily for a customer, so they are encoded by introducing a set of variables for each attribute, one for each day back from current time $t$. Hence, the financial activity of a customer is specified by a number of variables equals to 180 times the number of predictors. 
+The recent {\bf financial activity} of a customer refers to attributes such as ``account balance'', ``number of credit card operations'', etc. in the last 180 days\footnote{This limit is fixed by the Bank of Spain}. These attributes usually change daily for a customer, so they are encoded by introducing a set of variables for each attribute, one for each day back from current time $t$. Hence, the financial activity of a customer is specified by a number of variables equals to 180 times the number of predictors. 
 
-In the case of {\bf past paying behaviour}, the attributes refers to variables such as payments inside Cajamar (loans, mortgages, credits, ...). A record of the last 36 months divided by semester is considered when building the evaluation data set. So, a number of variables equals to $6$ times the number of attributes referring to the paying behaviour are used in this case. Moreover, some other static variables with information about payments to other financial institutions or companies (phone and electricity bill, public bodies, ...) is included in this group of variables.
+In the case of {\bf past paying behaviour}, the attributes refers to variables such as payments inside Cajamar (loans, mortgages, credits, etc.). A record of the last 36 months divided by semester is considered when building the evaluation data set. So, a number of variables equals to $6$ times the number of attributes referring to the paying behaviour are used in this case. Moreover, some other static variables with information about payments to other financial institutions or companies (phone and electricity bill, public bodies, etc.) is included in this group of variables.
 
-The dataset for the evaluation of customers is detailed in Table~\ref{tab:EvaluationDataset}. Note that there exist a group of variables denoted as $\Z$ (mainly sociodemographic variables) that are not replicated over time as they remains fixed. The data included in both data sets regarding these variables refer to time $t$.
+The dataset for the evaluation of customers is detailed in Table~\ref{tab:EvaluationDataset}. Note that there exist another group of variables denoted as $\Z$ (mainly sociodemographic variables) that are not replicated over time as they remains fixed. 
+%The data included in both data sets regarding these variables refer to time $t$.
 
 
 \begin{table}[htbp]
@@ -63,16 +64,16 @@ Client$_n$  &                                                &               &  
 \label{tab:EvaluationDataset} 
 \end{table}
 
-In conclusion, the idea is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. Finally, the risk table in the system is updated (see Table~\ref{tab:EvaluationDataset}).
+In conclusion, the idea is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. Finally, the risk table in the system is updated (see Table~\ref{tab:riskTable}).
 
 \begin{figure}[h]
 \centering
 \begin{tabular}{c|ccc|ccc|c}
      Time $t$  & Risk of defaulting \\  
 \hline
-Client$_1$  &    $\hat{r_1}$  \\ 
+Client$_1$  &    $r_1$  \\ 
 $\vdots$      &   $\vdots$   \\ 
-Client$_n$  &   $\hat{r_n}$  \\ 
+Client$_n$  &   $r_n$  \\ 
 \end{tabular} 
 \caption{Table containing the risk of defaulting for every client.}
 \label{tab:riskTable}
@@ -96,7 +97,7 @@ Client$_n$  &                                                &               &  
 \label{tab:TrainingDataset} 
 \end{table}
 
-Unlike the evaluation data set, each record contains a class label indicating if this customer is defaulter o non-defaulter. To decide if a customer is defaulter or not, we look at the data 2 years back from current time $t$. If during these two years there are not any evidence of defaulting and the client's payments (at Cajamar and other financial institutions) has gone as expected, the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter.
+Unlike the evaluation data set, each record contains a class label indicating if this customer is defaulter o non-defaulter as predicting variables data are prepared in such a way that information about defaulting behavior is available at time $t$. To decide if a customer is defaulter or not, we look at the data 2 years back from current time $t$. If during these two years there are not any evidence of defaulting and the client's payments (at Cajamar and other financial institutions) has gone as expected, the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter.
 
 \end{itemize}
 
