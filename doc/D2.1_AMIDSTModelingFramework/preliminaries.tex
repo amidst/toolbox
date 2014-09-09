@@ -134,7 +134,7 @@ $$ X_t = a_0 + a_1X_{t-1} + a_2X_{t-2} + ... a_{v-1}X_{t-v-1}$$
 In addition, let $e_{t,v}$ denote the residuals of this regression problem (i.e., the error when estimating $X_t$ using a linear combination of $v-1$ previous observations). The \emph{sample partial autocorrelation coefficient} of lag $v$, denoted as  $\hat{\theta}_v$, is the standard sample autocorrelation between the series $\{x_{t-v}\}_{t-v\in\{1,...,T\}}$ and $\{e_{t,v}\}_{t\in\{1,...,T\}}$. Intuitively, the sample partial autocorrelation coefficient of lag $v$ can be seen as the correlation between $X_t$ and $X_{t+v}$ after having removed the common \emph{linear} effect of the data in between.
 \end{description}
 
-Sample correlograms can be interpreted as a way to measure the strength of the following unconditional dependences: $X_t  \not\perp X_{t+v}$ for some lag $v \geq 1$.  When $\hat{\rho}_v$ is close to zero, this indicates that there exists a strong unconditional independence between $X_t$ and $X_{t+v}$. However, when $\hat{\rho}_v$ is close to either $1$ or $-1$, this indicates that there is a strong correlation or dependency between $X_t$ and $X_{t+v}$. But, again, we should never forget that when computing these Pearson correlation coefficients we are making a strong assumption about the normality of the data, which might not hold in the data.
+Sample correlograms can be interpreted as a way to measure the strength of the following unconditional dependences: $X_t  \not\perp X_{t+v}$ for some lag $v \geq 1$.  When $\hat{\rho}_v$ is close to zero, this indicates that there exists a strong unconditional independence between $X_t$ and $X_{t+v}$. However, when $\hat{\rho}_v$ is close to either $1$ or $-1$, this indicates that there is a strong correlation or dependency between $X_t$ and $X_{t+v}$. However, once again, we should never forget that when computing these Pearson correlation coefficients, we are making a strong assumption about the normality of the data, which might not hold in the data.
 
 Figure \ref{Figure:PreliminariesCorrelograms} shows an example of how a sample correlogram looks like for two different types of data sets: a sequence of 50 data samples i.i.d. according to a Gaussian distribution with zero mean and unit variance $x_t\sim {\mathcal N}(0,1)$ (see Figure \ref{Figure:PreliminariesCorrelograms}(a)); and on the other hand, a sequence of 50 data samples distrubuted as $x_t=x_{t-1} + \epsilon$, such that $\epsilon\sim {\mathcal N}(0,1)$ (see  Figure \ref{Figure:PreliminariesCorrelograms}(b)). As can be seen on the first graph, the correlogram for the i.i.d. data shows values close to zero for all lags. However, for the time series data, the correlogram clearly identifies the presence of a temporal relationship in the data. As expected, the correlation decreases with the size of the lag, and how quickly it decreases depends on the strength of the temporal relationship. 
 
@@ -155,13 +155,13 @@ Similarly, we plot in Figure \ref{Figure:PreliminariesCorrelograms}(c) and  in  
 \end{center}
 \end{figure}
 
-\subsubsection{Distributional assumptions: Histograms and Bivariate distributions}
+\subsubsection{Distributional assumptions: Histograms and bivariate distributions}
 
 With the tools described in this section we will try to get insights about the conditional probability distributions of the proposed models. The first basic tool that we will employ for this purpose is the histograms. However this tool, although quite useful in a static context, is rather limited in dynamic models. For example, let assume we have a time series $x_1,\ldots, x_T$ and our histogram shows that the empirical distribution of the variable when we aggregate the data samples over time looks like a mixture of Gaussian distributions. 
 There are two simple possibilities that can give rise to this finding: 
 i) $X_t$ is distributed according to a mixture of Gaussians where each Gaussian component depends on $X_{t-1}$; ii) there is a discrete hidden variable $Z_t$ that influences $X_{t}$ but which is not observed and it is the one that generates the different mixture components. 
 
-Despite of its limitations in dynamic contexts, we will resort to the use of histograms whenever we find that they could shed some light on the underlying distribution of the sample.
+Despite its limitations in dynamic contexts, we will resort to the use of histograms whenever we find that they could shed some light on the underlying distribution of the sample.
 %As shown in this example, histograms are difficult to interpret in dynamic models, but we are going to use them when we think that they can be of some help. 
 
 The other tool that we are going to use to get insights about the conditional distributions of the model is the contour plot of the empirical bivariate distribution of $X_t$ versus $X_{t-1}$. These contour plots can show many relevant information, such as if there are linear relationships between variables or if we can assume they are normality distributed, etc. In Figure \ref{Figure:PreliminariesBivariates}, we plot the bivariate contour plot for the i.i.d data and the time series data previously employed when describing the sample correlograms. As can be seen, the bivariate contour plot shows how $X_t$ and $X_{t+1}$ seems to be distributed according to a bivariate normal with a covariance matrix that displays a strong degree of correlation. In the case of i.i.d. data, the contour plot does not reveal  any temporal dependence between $X_t$ and $X_{t-1}$. 
@@ -173,9 +173,9 @@ The other tool that we are going to use to get insights about the conditional di
 \includegraphics[scale=0.25]{./figures/BivariateTimeSerie} \\
 (a) i.i.d. data & (b)  Time series data \\
 \end{tabular}
-\caption{\label{Figure:PreliminariesBivariates}Bivariate contour plots for a set of i.i.d. data and for a time series data. 
+\caption{\label{Figure:PreliminariesBivariates}Bivariate contour plots for a set of i.i.d. and time series data. 
 }
 \end{center}
 \end{figure}
 
-Note however that the usefulness of these tools is also limited due to its generative nature. That is, they do not explicitly target the prediction problem for the different use cases. It will only be after performing proper evaluation of the static and dynamic models built, that we will be able to re-adjust the different assumptions now considered. 
+Finally, note that the usefulness of all these tools is limited due to its generative nature. That is, they do not explicitly target the prediction problem for the different use cases. After performing a proper evaluation of the conceived static and dynamic models, it will be possible to re-adjust, if needed, the currently considered assumptions. 
