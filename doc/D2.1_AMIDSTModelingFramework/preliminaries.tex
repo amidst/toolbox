@@ -2,80 +2,130 @@
 %Need for handling uncertainty in data streams.
 %BNs as the natural solution.
 
-The following sections aim at describing some of the concepts and basic structures required to easily interpret the AMIDST models that will be proposed for the different use cases below. Section \ref{SubSection:HybridBNs} briefly introduces the challenges encountered for reasoning with continuous and discrete variables. Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time. Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to support many of the assumptions made on the proposed models.
+The following sections aim at describing some of the required concepts and basic structures to easily interpret the AMIDST models that will be proposed afterwards for the different use cases. Section \ref{SubSection:HybridBNs} briefly introduces the challenges encountered for reasoning with continuous and discrete variables, Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time, and finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to support several assumptions made on the proposed models.
 
 
-\subsection{Static Hybrid Bayesian networks}\label{SubSection:HybridBNs}
+\subsection{Static hybrid Bayesian networks}\label{SubSection:HybridBNs}
 %Talk about the challenges of discrete children with continouous parents.
-Traditionally, Bayesian networks have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement also imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; an example is distance and velocity measurements, which are key sensor readings for identifying and interpreting manoeuvres in traffic (see the DoW \cite{Fer14}). To extend probabilistic graphical models with support for continuous variables research has largely pursued three directions. Firstly, one may choose to carefully construct the model such that exact inference algorithms can still be applied. Lauritzen [1992] describes an architecture revised by Lauritzen and Jensen [2001] for exact in infer- ence conditional linear Gaussian (CLG) Bayesian networks where the local probability distributions of the continuous variables are specified as conditional linear Gaussian distributions and discrete variables have discrete parents only. The CLG model does, however, impose certain limitations on the domain being modeled: discrete variables cannot directly depend on a continuous variable and each continuous variable must follow a conditional linear Gaussian distribution. Another approach for extending the expressive power of the model is to rely on approximate algorithms for performing inference, thereby allowing, in principle, arbitrary distributions to be associated with the model; examples include the Gibbs sampler [Geman and Geman, 1984; Hrycej, 1990] and variational inference [Jordan et al., 1999]. Finally, one can â€œtranslateâ€ the original model into an approximate model, for which exact inference algorithms can be applied. This can be achieved by discretizing the continuous variables [Kozlov and Koller, 1997] or using translations with more expressive power. This includes mixtures of truncated exponentials [Moral et al., 2001] and the more recently proposed mixtures of truncated basis functions framework [Langseth et al., 2012] that aims to combine several of the previously proposed frameworks.
+Traditionally, Bayesian networks have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement also imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements, which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}). Research has largely pursued three main directions in order to extend probabilistic graphical models to support continuous variables. 
+
+First, one may choose to carefully construct the model such that exact inference algorithms can still be applied. This is the case for the conditional linear Gaussian (CLG) Bayesian networks \cite{Lauritzen1992,LauritzenJensen2001}, where the local probability distributions of the continuous variables are specified as conditional linear Gaussian distributions and discrete variables can only have discrete parents. However, CLG model imposes certain limitations on the domain being modelled, i.e., discrete variables cannot directly depend on a continuous variable, and each continuous variable must follow a conditional linear Gaussian distribution. A second approach to extend the expressive power of the model is to rely on approximate algorithms for performing inference, thereby allowing, in principle, arbitrary distributions to be associated with the model; examples include the Gibbs sampler \cite{Geman1984, hrycej1990gibbs} and variational inference \cite{Jordan1999}. Finally, the third approach consists in "translating" the original model into an approximate model, for which exact inference algorithms can be applied. This can be achieved either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using translations with more expressive power. It includes mixtures of truncated exponentials \cite{Moral2001} and the more recently proposed mixtures of truncated basis functions framework \cite{Langseth12} that combines several previously proposed frameworks.
 
 \subsection{Probabilistic reasoning over time}\label{SubSection:DBNs}
-\cite{russelNorvig2009,JensenNielsen2007}
-Many domains, and in particular those being analysed in the AMIDST project, can be seen as having strong internal structure. This will be evident by the domains being appropriately described using an object oriented language, either due to repetitive substructures or substructures that can naturally be ordered in a superclassâ€“subclass hierarchy. We can find this property either in dynamic domains, where the same objects are repeated over time, or for snapshot models where many similar objects are observed simultaneously. Object oriented Bayesian networks [Koller and Pfeffer, 1997] (OOBNs) are defined to take advantage of such internal model structure A special type of OOBNs is dynamic Bayesian networks (DBNs) [Dean and Kanazawa, 1989], which are used to model domains that develop over time by representing the temporal dynamics of the system explicitly. For regular types of dynamic Bayesian networks we usually assume that observations are made at a fixed frequency and that the probability distribution underlying the transition model and the observation model are invariant over time Dynamic Bayesian networks obviously share the computational difficulties of regular Bayesian networks, but in the dynamic case we are also often faced with the entanglement problem: after a certain time step, all variables describing the current system state will become dependent, and we can therefore not represent the exact probability distribution over the current state (the belief state) in a compact and factorized form. 
 
-At every time slice in a DBN there is a group of random variables, that can be either hidden or observed. We will use $\bm X_t$ to denote the state/hidden variables and $\bm Y_t$ for the observed ones. Figure \ref{Figure:PreliminariesNotation} shows the graphical representation for each type of variables in our graphs, besides, distinctions are made between discrete and continuous ones. %We will use $\bm X_t$ to denote hidden discrete variables and $\bm Z_t$ for hidden continuous ones. Discrete observed variables will be denoted by $\bm V_t$, and the continuous observed ones by $\bm Y_t$. Figure \ref{Figure:PreliminariesNotation} shows the graphical representation for each time of variables. 
+Many domains, and in particular those being analysed in the AMIDST project, can be seen as having strong internal structure. This will be evident by the domains being appropriately described using an object oriented language, either due to repetitive substructures or substructures that can naturally be ordered in a superclass/€“subclass hierarchy. We can find this property either in dynamic domains, where the same objects are repeated over time, or for snapshot models where many similar objects are observed simultaneously. Object oriented Bayesian networks \cite{KollerPfeffer1997} (OOBNs) are defined to take advantage of such internal model structure. 
 
-\begin{figure}
+A special type of OOBNs is dynamic Bayesian networks (DBN) \cite{DeanKanazawa1989}, that are used to model domains that evolve over time by representing explicitly the temporal dynamics of the system. More formally, at each time slice in a DBN, there is a group of random variables that can be either hidden or observed. We will use $\bm X_t$ to denote the state/hidden variables, and $\bm Y_t$ to denote the observed ones. Figure \ref{Figure:PreliminariesNotation} shows the graphical representation for each type of variables (hidden/observed and continuous/discrete) used in the graphical models discussed in the remaining sections of this document.
+
+%We will use $\bm X_t$ to denote hidden discrete variables and $\bm Z_t$ for hidden continuous ones. Discrete observed variables will be denoted by $\bm V_t$, and the continuous observed ones by $\bm Y_t$. Figure \ref{Figure:PreliminariesNotation} shows the graphical representation for each time of variables. 
+
+% and that the probability distribution underlying the transition model and the observation model are invariant over time. Dynamic Bayesian networks obviously share the computational difficulties of regular Bayesian networks, but in the dynamic case we are also often faced with the entanglement problem: after a certain time step, all variables describing the current system state will become dependent, and we can therefore not represent the exact probability distribution over the current state (the belief state) in a compact and factorized form. 
+
+\begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.4]{./figures/PreliminariesNotation}
-\caption{\label{Figure:PreliminariesNotation}PreliminariesNotation
-}
+\caption{\label{Figure:PreliminariesNotation}Preliminary notations.}
 \end{center}
 \end{figure}
 
-The interval between time slices vary from problem to problem, and we will use the notation $\bm X_{a:b}$ to denote the set of variables from $\bm X_a$ to $\bm X_b$. We need to specify how the world evolves (the transition model) and how the observed variables get their values (sensor model). The transition model specifies the probability distribution of the state variables at $t$ given the previous values, that is, $P(X_t|\bm X_{0:t-1})$. As $t$ increases the set $X_{0:t-1}$ becomes intractable. To reduce the number of links we resort to the well-known Markov assumption, for which the current state is independent from the past given a finite number of previous steps. In particular, we will consider a first-order Markov chain and assume that knowing the present makes the future conditional independent from the past, that is, : $P(X_t|\bm X_{0:t-1}) = P(X_t|\bm X_{t-1})$ (see Figure \ref{Figure:markovChain}).
+For regular types of dynamic Bayesian networks, we usually assume that observations are made at a fixed frequency. The interval between time slices vary from one problem to another, and $\bm X_{a:b}$ denotes the set of variables from $\bm X_a$ to $\bm X_b$. In addition, we need to specify how the world evolves (the transition model) and how the observed variables get their values (sensor model). The transition model specifies the probability distribution of the state variables at time $t$ given the previous values, that is, $P(X_t \mid \bm X_{0:t-1})$. As $t$ increases, the set $X_{0:t-1}$ becomes intractable. To reduce the number of links we resort to the well-known \textit{Markov assumption}, for which the current state is independent from the past given a finite number of previous steps. In particular, we will consider the \textit{first-order Markov chain} and assume that knowing the present makes the future conditional independent from the past, that is, $P(\bm X_t \mid \bm X_{0:t-1}) = P(\bm X_t|\bm X_{t-1})$ (see Figure \ref{Figure:markovChain}).
 
-\begin{figure}
+\begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.56]{./figures/PreliminariesMarkovChain}
-\caption{\label{Figure:markovChain}DBN assuming a third-order Markov property (above) and a first-order Markov property (below).
+\caption{\label{Figure:markovChain} An example of DBNs assuming a third-order Markov property (above) and a first-order Markov property (below).
 }
 \end{center}
 \end{figure}
 
-//Stationary process
+In order to increase the accuracy of the approximation of using a first-order Markov model, we could either increase the Markov order, or equivalently, increase the number of state variables, which would also increase the complexity. Hence, we would like to come up with models that contain a self-sufficient set of variables, which likewise requires to fully understand the ``physics''  of the process being modelled for the different use cases \cite{russelNorvig2009}. 
 
-//Sensor Markov assumption
+Note that, a different distribution might have to be specified for each time slice. To avoid this problem, we assume that changes in the world state are driven by a \textit{stationary process}, that is, $P(\bm X_{t+1} \mid \bm X_{t} = \bm X_t \mid \bm X_{t-1})\ \forall t$.
 
+In the following sub-sections, we present the simplest instantiations of a DBN, namely, hidden Markov models and Kalman filters.
 
-\subsubsection*{Hidden Markov models}
+\subsubsection{Hidden Markov models}
 
+A hidden Markov model (HMM) is the simplest DBN with both hidden and observed variables, in which the state of the process is represented by a single discrete variable. This discrete state variable, which can be in reality the combination of several discrete variables, represents the different possible states of the target problem. Figure \ref{Figure:HMM} shows a graphical example of a HMM\footnote{Although the observed variables are represented as discrete, they can be a combination of discrete and continuous variables.}. The advantage of having a single state variable is that all the computations reduce to simple matrix-vector operations.
 
-\subsubsection*{Kalman filters}
-Similar to the extension of the static Bayesian network model to hybrid domains, dynamic Bayesian
-network models have likewise been extended to continuous and hybrid domains. In purely continuous domains, where the continuous variables follow linear Gaussian distributions, the dynamic Bayesian net- work corresponds to (a factorized version of) a Kalman filter. In these types of models, the dynamics of the process are assumed to be linear. When modelling non-linear domains, the dynamics and observational distributions are often approximated through, e.g., the extended Kalman filter or the unscented Kalman filter. 
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.56]{./figures/PreliminariesHMM}
+\caption{\label{Figure:HMM} An example of a BN structure corresponding to a HMM.}
+\end{center}
+\end{figure}
 
-\subsubsection*{Dynamic Bayesian networks}
-Because of the entanglement problem above mentioned, one often employs approximate methods including approximate factorizations of the joint probability distribution describing the system state [Boyen and Koller, 1998] as well as sampling based techniques in the form of particle filtering [Doucetet al., 2000].
+We will represent the sensor (or observation) model by $P(\bm Y_t|\bm X_t)$. Most of our models, although not all of them (Cajamar will be an exception, as shown in Section \ref{Section:CajaMarModels}), will assume that the current state is sufficient to generate the current sensor values. This is referred to as the \textit{sensor Markov assumption}, that is, $P(\bm Y_t \mid \bm X_{0:t}, \bm Y_{0:t-1}) = P(\bm Y_t \mid \bm X_t)$.
 
+By considering the prior probability distribution at time $0$, denoted $P(0)$, we can specify the complete joint distribution over all the variables for any time $t$ as follows:
 
-\subsection{Data analysis}
+\begin{equation}
+P(\bm X_{0:t},\bm Y_{1:t}) = P(\bm X_0) \prod_{i=1}^t{P(\bm X_i| \bm X_{i-1})P(\bm Y_i|\bm X_i)}
+\end{equation}
 
-As already commented in the introduction, the data analysis detailed here will be used to test some assumptions supporting the models elicited by the experts in the different use cases, and also to complement our understanding about the nature of the problem we are modelling. The set of tools employed for this purpose allow us to get insights about some simple and basic aspects of the structural and the distributional assumptions present in a dynamic Bayesian network (DBN).
+Although most of our models will fit into this description of observed and hidden (state) variables, there will be cases in which the transition model takes place in observed variables (the case of Cajamar). In general, this simplifies the learning and inference processes of the problem.
 
-\subsubsection*{Structural assumptions: sample correlograms and partial correlograms}
+\subsubsection{Kalman filters}
+Similar to the extension of the static BN model to hybrid domains, DBN models have been likewise extended to continuous and hybrid domains. In purely continuous domains, where the continuous variables follow linear Gaussian distributions, the DBN corresponds to (a factorized version of) a Kalman filter (KF). The structure of a KF is exactly the same as the one displayed in Figure \ref{Figure:HMM} for the HMM, however all the variables should be continuous. In this case, the state variables can be a combination of continuous variables with different (linear) dependences. In KF models, the dynamics of the process are assumed to be linear. When modelling non-linear domains, the dynamics and observational distributions are often approximated through, for e.g. the extended Kalman filter, which models the system as \textit{locally} linear in the mean of the current state distribution. 
 
-A DBN mainly aims to model complex multivariate time series. By using sample correlogramas and sample partial correlograms, we will try to test if the available data supports the temporal correlation between variables assumed by the DBN model, i.e., the temporal links between variables. However, these tools will only allow us to look at univariate time series, what strongly limits the reach of the  extracted conclusions. But, at least and as we will see later in the different use-cases, this analysis will give us some interesting insights which usually can not be elicited from experts.  
+In order to make non-linear prediction, we need a more expressive model such as the \textbf{switching Kalman filter} (SKF). The SKF includes an extra discrete state variable to the network that allows running multiple KFs in parallel. 
+
+\subsubsection{Dynamic Bayesian networks}
+
+DBN in general can model arbitrary distributions. An example is presented in Figure \ref{Figure:DBN} where discrete random variables could even have continuous parents. However, in our models, we will try to remain in the CLG family and avoid thereby having discrete children with continuous parents. The probability distributions in the AMIDST models can be parametrized as follows (read notation as parents $\rightarrow$ children):
+
+\begin{itemize}
+\item Discrete $\leftrightarrows$ Discrete: distributed as a multinomial distribution conditioned on the discrete parents.
+\item Continuous $\leftrightarrows$ Continuous: distributed as (linear) Gaussian/multivariate Gaussian distribution conditioned on the continuous parents (conditional linear Gaussian).
+\item Discrete $\rightarrow$ Continuous: distributed as a mixture of Gaussians (the number of components increases exponentially in time if the discrete parent variables are linked over time). 
+\end{itemize}
+
+The DBN in Figure \ref{Figure:DBN} satisfies the first-order Markov property, and hence can be sufficiently represented by showing two time slices. These restricted DBN are often refered to as \textit{2-time slice DBN} and usually defined by an initial model representing the initial joint distribution of the process and a transition model (as explained above). 
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.45]{./figures/PreliminariesDBN}
+\caption{\label{Figure:DBN}An example of a BN structure corresponding to an unrestricted DBN.}
+\end{center}
+\end{figure}
+
+%- Mention: finite vs infinite horizone?
+
+Note that HMM, KF or SKF are particular cases of DBN. In fact, every HMM can be represented as a DBN with a single state variable, and every discrete DBN can be represented as a HMM combining all hidden variables into a single state variable. However, it is often preferred to factorise the joint distribution taking the structure of the network into account, in order to take advantage of the sparseness in the model. Likewise, every KF can be represented as a DBN with linear Gaussian conditional distributions, but obviously not every continuous DBN can be represented as a KF, since the latter is limited to single multivariate Gaussian distributions to model the current state distribution. The advantage of using HMM and KF models is that they can benefit from very efficient implementations by using matrix operations.
+
+DBN obviously share the computational difficulties of regular BNs. Nevertheless, in the dynamic case, we are also often faced with the entanglement problem, i.e., after a certain time step, all variables describing the current system state will become dependent, so that the exact probability distribution could not be represented over the current state (the belief state) in a compact factorized form. Well-known algorithms have been defined for learning and inference (including the most likely explanation). Due to the entanglement problem, approximate methods are usually used including approximate factorizations of the joint probability distribution describing the system state \cite{BoyenKoller1998}, as well as sampling based techniques in the form of particle filtering \cite{Doucet2000}.
+
+\subsection{Data analysis}\label{SubSection:DataAnalysis}
+
+%As already commented in the introduction
+The data analysis detailed here will be used to test some assumptions supporting the models elicited by the experts in the different use cases and also to complement our understanding about the nature of the problem we are modelling. The set of tools employed for this purpose allow us to get insights about some simple and basic aspects of the structural and the distributional assumptions present in a DBN.
+
+\subsubsection{Structural assumptions: Sample correlograms and sample partial correlograms}
+
+A DBN mainly aims to model complex multivariate time series. By using sample correlogramas and sample partial correlograms, we will try to test if the available data supports the temporal correlation between variables assumed by the DBN model, i.e., the temporal links between variables. However, these tools will only allow us to look at univariate time series, what strongly limits the reach of the  extracted conclusions. Despite its limitations, this analysis will give us some interesting insights which usually cannot be elicited from experts, as we will see below for the different use-cases.  
+
+Both the correlogram and the partial correlogram will be used to get an intuition of the type of memory encoded in a particular univariate sample. 
+
 
 \begin{description}
 \item[Sample correlogram:] Let ${x_1,...,x_T}$ be a univariate time series. The \emph{sample autocorrelation coefficient} at lag $v$ is given by 
 
 $$ \hat{\rho}_v =\frac{\sum_{t=1}^{T-v} (x_t-\bar{x})(x_{t+v}-\bar{x})}{\sum_{t=1}^{n} (x_t-\bar{x})^2}$$ 
 
-\noindent where $\bar{x}$ is the sample mean. The plot of $\hat{p}_v$ versus $v$ for $v=1,..., M$ for some maximum $M$ is called the \emph{sample correlogram} of the data.
+\noindent where $\bar{x}$ is the sample mean and $T$ the total length of the data considered. The plot of $\hat{p}_v$ versus $v$ for $v=1,..., M$ for some maximum $M$ is called the \emph{sample correlogram} of the data. $\hat{p}_v$ corresponds to the Pearson correlation between the series $\{x_t\}_{t\in\{1,...,T\}}$ and $\{x_{t+v}\}_{t+v\in\{1,...,T\}}$.
 
 \item[Sample partial correlogram:] Let us denote by $X_t$ to the random variable associated to $X$ taking values at time $t$. We can build the following regression problem:
 
 $$ X_t = a_0 + a_1X_{t-1} + a_2X_{t-2} + ... a_{v-1}X_{t-v-1}$$
 
-In addition, let $e_{i,v}$ denotes the residuals of this regression problem (i.e., the error when estimating $X_t$ using a linear combination of $v-1$ previous observations). The \emph{sample partial autocorrelation coefficient} of lag $v$, denoted as  $\hat{\theta}_v$, is the standard sample autocorrelation between  the variable $X_{t-v}$ and these residuals. Intuitively, the sample partial autocorrelation coefficient of lag $v$ can be seen as the correlation between $X_t$ and $X_{t+v}$ after having removed the common \emph{linear} effect of the data in between.
+In addition, let $e_{t,v}$ denote the residuals of this regression problem (i.e., the error when estimating $X_t$ using a linear combination of $v-1$ previous observations). The \emph{sample partial autocorrelation coefficient} of lag $v$, denoted as  $\hat{\theta}_v$, is the standard sample autocorrelation between the series $\{x_{t-v}\}_{t-v\in\{1,...,T\}}$ and $\{e_{t,v}\}_{t\in\{1,...,T\}}$. Intuitively, the sample partial autocorrelation coefficient of lag $v$ can be seen as the correlation between $X_t$ and $X_{t+v}$ after having removed the common \emph{linear} effect of the data in between.
 \end{description}
 
-Sample correlograms can be interpreted as a way to measure the strength of the following unconditional dependences: $X_t  \not\perp X_{t+v}$ for some lag $v \geq 1$.  When $\hat{\rho}_v$ is close to zero, this strongly indicates that there is an unconditional independence between $X_t$ and $X_{t+v}$. However, when $\hat{\rho}_v$ is close to either $1$ or $-1$, this strongly indicates that there is a correlation or dependency between $X_t$ and $X_{t+v}$. But, again, we should never forget that we are making linear relationships and normality assumptions. 
+Sample correlograms can be interpreted as a way to measure the strength of the following unconditional dependences: $X_t  \not\perp X_{t+v}$ for some lag $v \geq 1$.  When $\hat{\rho}_v$ is close to zero, this indicates that there exists a strong unconditional independence between $X_t$ and $X_{t+v}$. However, when $\hat{\rho}_v$ is close to either $1$ or $-1$, this indicates that there is a strong correlation or dependency between $X_t$ and $X_{t+v}$. But, again, we should never forget that when computing these Pearson correlation coefficients we are making a strong assumption about the normality of the data, which might not hold in the data.
 
-Figure \ref{Figure:PreliminariesCorrelograms} shows an example of how a sample correlogram looks like for two kind of data sets: First, a sequence of 50 data samples i.i.d. according to a Gaussian distribution with zero mean and unit variance $x_t\sim N(0,1)$ (see Figure \ref{Figure:PreliminariesCorrelograms}(a));  and second, a sequence of 50 data samples distrubuted as $x_t=x_{t-1} + \epsilon$, $x_0=\epsilon$, such that $\epsilon\sim N(0,1)$ (see  Figure \ref{Figure:PreliminariesCorrelograms}(b)). As can be seen, for the i.i.d. data the correlogram has always values close to zero for all the lags. However, for time series data, the correlogram clearly identifies the presence of a temporal relationship in the data. As expected, the correlation decreases with the size of the lag, and how quickly it decreases depends on the strength of the temporal relationship. 
+Figure \ref{Figure:PreliminariesCorrelograms} shows an example of how a sample correlogram looks like for two different types of data sets: a sequence of 50 data samples i.i.d. according to a Gaussian distribution with zero mean and unit variance $x_t\sim {\mathcal N}(0,1)$ (see Figure \ref{Figure:PreliminariesCorrelograms}(a)); and on the other hand, a sequence of 50 data samples distrubuted as $x_t=x_{t-1} + \epsilon$, such that $\epsilon\sim {\mathcal N}(0,1)$ (see  Figure \ref{Figure:PreliminariesCorrelograms}(b)). As can be seen on the first graph, the correlogram for the i.i.d. data shows values close to zero for all lags. However, for the time series data, the correlogram clearly identifies the presence of a temporal relationship in the data. As expected, the correlation decreases with the size of the lag, and how quickly it decreases depends on the strength of the temporal relationship. 
 
-Similarly, we plot in Figure \ref{Figure:PreliminariesCorrelograms}(c) and  in  Figure \ref{Figure:PreliminariesCorrelograms}(d) the sample partial correlograms for the same two data sequences presented above. In the case of i.i.d. data, we can see again that the partial correlogram does not show any sign of partial correlation between the data sequence samples. However, for time series data, the partial correlogram takes a high value for $v=1$ and then is null for $v$ higher than 1. Sample partial correlogram can be interpreted as a way to measure the strength of the following conditional dependence: $X_t  \not\perp X_{t+v} | X_1,...,X_{t+v-1}$ for some lag $v\geq 1$.  Accordingly, the sample partial correlogram correctly identifies that we have the following conditional independencies: $X_t\perp X_{t+2}|X_{t+1}$ in the considered time series data. Therefore, sample partial correlogram can be seen as a tool to test the order of the Markov chain generating a time data sequence, with all the same caveats expressed for the sample correlogram. 
+Similarly, we plot in Figure \ref{Figure:PreliminariesCorrelograms}(c) and  in  Figure \ref{Figure:PreliminariesCorrelograms}(d) the sample partial correlograms for the same two data sequences presented above. In the case of i.i.d. data, we can see again that the partial correlogram does not show any sign of partial correlation between the data sequence samples. However, for the time series data, the partial correlogram takes a high value for $v=1$ (i..e for this lag it is equal to the sample correlogram), which then becomes close to zero for values of $v$ higher than 1. The sample partial correlogram can be interpreted as a way to measure the strength of the following conditional dependence: $X_t  \not\perp X_{t+v} | X_1,...,X_{t+v-1}$ for some lag $v>1$. Accordingly, the sample partial correlogram correctly identifies that we have the following conditional independencies: $X_t\perp X_{t+2}|X_{t+1}$ in this time series data. Therefore, sample partial correlograms can be seen as a tool to test the order of the Markov chain generating a time data sequence, with all the same caveats expressed for the sample correlogram. 
 
 \begin{figure}
 \begin{center}
@@ -92,11 +142,16 @@ Similarly, we plot in Figure \ref{Figure:PreliminariesCorrelograms}(c) and  in  
 \end{center}
 \end{figure}
 
-\subsubsection*{Distributional assumptions: Histograms and Bivariate Distributions}
+\subsubsection{Distributional assumptions: Histograms and Bivariate distributions}
 
-With the tools described in this section we tried to get insights about the conditional distribution probabilities  of the proposed models. The first basic tool that we employed for this purpose was the histograms. However this tool, although quite useful in a static context, is quite limited in dynamic models. For example, let assume we have a time series $x_1,\ldots, x_T$ and our histogram shows that the empirical distribution of the variable when we aggregate the data samples over time looks like a mixture of Gaussian distributions. There are two simple possibilities that can give rise to this finding: i)  $X_t$ is distributed according to a mixture of Gaussians where each Gaussian component depends on $X_{t-1}$; ii) there is a discrete hidden variable that influences $X_{t}$ but which is not observed and it is the one that generates the different mixture components.  As shown in this example, histograms are difficult to interpret in dynamic models, but we are going to use them when we think that they can be of some help. 
+With the tools described in this section we will try to get insights about the conditional probability distributions of the proposed models. The first basic tool that we will employ for this purpose is the histograms. However this tool, although quite useful in a static context, is rather limited in dynamic models. For example, let assume we have a time series $x_1,\ldots, x_T$ and our histogram shows that the empirical distribution of the variable when we aggregate the data samples over time looks like a mixture of Gaussian distributions. 
+There are two simple possibilities that can give rise to this finding: 
+i) $X_t$ is distributed according to a mixture of Gaussians where each Gaussian component depends on $X_{t-1}$; ii) there is a discrete hidden variable $Z_t$ that influences $X_{t}$ but which is not observed and it is the one that generates the different mixture components. 
 
-The other tool that we are going to use to get insights about the conditional distributions of the model is the contour plot of the empirical bivariate distribution of $X_t$ versus $X_{t-1}$.  These contour plots can show many relevant information such as if there are linear relationships between variables or if we can assume they are normality distributed, etc. In Figure \ref{Figure:PreliminariesBivariates}, we plot the bivariate contour plot for the i.i.d data and the time series data previously employed when describing the sample correlograms. As can be seen, the bivariate contour plot of the time series clearly show a linear relationship between $X_t$ and $X_{t-1}$  and how they can be assumed to be distributed according to a bivariate normal with a covariance that displays some degree of correlation. In the case of i.i.d. data, the contour plot looks like quite different. 
+Despite of its limitations in dynamic contexts, we will resort to the use of histograms whenever we find that they could shed some light on the underlying distribution of the sample.
+%As shown in this example, histograms are difficult to interpret in dynamic models, but we are going to use them when we think that they can be of some help. 
+
+The other tool that we are going to use to get insights about the conditional distributions of the model is the contour plot of the empirical bivariate distribution of $X_t$ versus $X_{t-1}$. These contour plots can show many relevant information, such as if there are linear relationships between variables or if we can assume they are normality distributed, etc. In Figure \ref{Figure:PreliminariesBivariates}, we plot the bivariate contour plot for the i.i.d data and the time series data previously employed when describing the sample correlograms. As can be seen, the bivariate contour plot shows how $X_t$ and $X_{t+1}$ seems to be distributed according to a bivariate normal with a covariance matrix that displays a strong degree of correlation. In the case of i.i.d. data, the contour plot does not reveal  any temporal dependence between $X_t$ and $X_{t-1}$. 
 
 \begin{figure}
 \begin{center}
@@ -109,3 +164,5 @@ The other tool that we are going to use to get insights about the conditional di
 }
 \end{center}
 \end{figure}
+
+Note however that the usefulness of these tools is also limited due to its generative nature. That is, they do not explicitly target the prediction problem for the different use cases. It will only be after performing proper evaluation of the static and dynamic models built, that we will be able to re-adjust the different assumptions now considered. 
