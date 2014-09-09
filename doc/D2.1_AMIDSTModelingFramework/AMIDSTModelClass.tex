@@ -4,7 +4,9 @@
 
 One of the main goals of this project was the definition of a general model class which the following features: (i) it has to be applicable to the three use-cases; (ii) it should be general enough to apply to other future similar use-cases;  (iii) and it should contain certain structure that can be exploited to make this model class valid for scalable inference and learning in massive data streams. 
 
-With these three aims in mind,  we started the definition of the general model class by finding commonalities between the different models presented in Section \ref{Section:PreliminaryModels}.  With this aim, we  introduce some new ``graphical'' notation to ease this process. This new graphical notation is based on the use of subnetworks modules, i.e. some part of the dynamic Bayesian network with some common features such as all the nodes are continuous and observed.  We represent these subnetworks modules by square boxes, in opposite to circle or ellipsed nodes used to represents single variables in a graph. Following a similar notation we used for nodes (see Figure \ref{Figure:PreliminariesNotation}), square boxes rounded by dashed lines refers to a subnetwork which is not observable (i.e. composed by hidden variables); square boxes rounded by continuous lines refers to a subnetwork where the nodes are observed; when the square box is coloured, it means that all the nodes of the subnetwork are discrete (green color) or continuous (blue color). Square boxes can also be nested to represent smaller subcomponents inside a bigger subcomponent. In Figure \ref{Figure:ModelClass:Notation} we give a visual description of this notation. 
+With these three aims in mind,  we started the definition of the general model class by finding commonalities between the different models presented in Section \ref{Section:PreliminaryModels}.  With this aim, we  introduce some new ``graphical'' notation to ease this process. This new graphical notation is based on the use of subnetworks modules, i.e. some part of the dynamic Bayesian network with some common features such as all the nodes are continuous and observed.  We represent these subnetworks modules by square boxes, in opposite to circle or ellipsed nodes used to represents single variables in a graph. Following a similar notation we used for nodes (see Figure \ref{Figure:PreliminariesNotation}), square boxes rounded by dashed lines refers to a subnetwork which is not observable (i.e. composed by hidden variables); square boxes rounded by continuous lines refers to a subnetwork where the nodes are observed; when the square box is coloured, it means that all the nodes of the subnetwork are discrete (green color) or continuous (blue color). In Figure \ref{Figure:ModelClass:Notation} we give a visual description of this notation. 
+
+% Square boxes can also be nested to represent smaller subcomponents inside a bigger subcomponent. 
 
 \begin{figure}
 \begin{center}
@@ -26,11 +28,11 @@ Daimler's model were visually described in Figures \ref{Figure:daimlerLEdynGener
 \end{center}
 \end{figure}
 
-This general model is structured as a two-time slices dynamic Bayesian network \cite{JensenNielsen2007}. The static model which is repeated through the time is composed by three elements: a set of hidden discrete nodes on top; and two observed sub-networks, one continuous and one discrete, which directly depends of the hidden sub-network. This dynamic BN is only temporally connected through the hidden sub-network.  In consequence, the future and past time slices of our dynamic BN are conditionally independent given the hidden sub-network corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete sub-networks are also conditionally independent given the hidden-subnetwork.
+This general model is structured as a 2T-DBN  (see Section \ref{Section:Preliminaries}). The static model which is repeated through the time is composed by four elements: ``Discrete 1'',  a discrete hidden subnetwork which is the only element temporally connected; ``Discrete 2'',  another discrete hidden subnetwork which is not temporally connected is only for modelling purposes inside a time slice; ``Discrete 3'' which is an observed discrete subnetwork directly depending on ``Discrete 2'' module; finally, we also have a observed continuous subnetwork which is also observed directly depending of the ``Discrete 1'' submodule. 
+
+As commented, this DBN is only temporally connected through the hidden sub-network on top.  In consequence, the future and past time slices of our dynamic BN are conditionally independent given the hidden sub-network corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete sub-networks are also conditionally independent given this hidden-subnetwork.
 
 We also have more structure that can be exploited during inference and which is not reflected in this meta-network. Specifically, we have that the hidden and observed sub-networks have a poly-tree structure \cite{JensenNielsen2007}. Then, the static BN as well as the dynamic BN both have poly-tree structure and this can be exploited during inference. 
-
-
 
 \subsubsection*{Verdande Model Class}
 
@@ -45,29 +47,59 @@ of the three application scenarios. If we keep the subnetworks ``Discrete 2'', `
 \end{center}
 \end{figure}
 
-Similarly to the Daimler model, the general model is structured as a two-time slices dynamic Bayesian network \cite{JensenNielsen2007}. The static part which is repeated through the time is composed by 5 sub-networks: two observed components, one discrete temporally connected on the top and one continuous at the bottom; and three hidden components in the middle, one hidden discrete and one hidden continuous temporally connected, and one hidden discrete which is not temporally connected whose function is to account for the possible conditional dependencies of the observed continuous variables.  
+Similarly to the Daimler model, the general model is structured as a two-time slices dynamic Bayesian network. The static part which is repeated through the time is composed by 5 sub-networks: two observed components, one discrete temporally connected on the top and one continuous at the bottom; and three hidden components in the middle, one hidden discrete and one hidden continuous both temporally connected, and one hidden discrete which is not temporally connected whose function is to account for the possible conditional dependencies of the observed continuous variables.  
 
 In opposite to Daimler,  this model does not have a poly-tree structure that can be exploited during inference. 
 
 \subsubsection*{Caja Mar Model Class}
 
-%\begin{figure}
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/CajaMarModelClass}
-%\caption{\label{Figure:CajaMarModelClass} CajaMar Model Class}
-%\end{center}
-%\end{figure}
+At CajaMar (see Section \ref{Section:CajaMarModels}) both application scenarios share the  same models. At the same time, we presented an static and a dynamic version of the models.  At this point we obviate the static version, because the AMIDST model class is a dynamic model class. So, the high-level description of CajaMar's dynamic model is given in Figure \ref{Figure:CajaMarModelClass}. As can be seen, CajaMar models is composed by 4 main subnetworks, which are expanded over time, all of them observed. So at CajaMar there are not hidden subnetworks. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{./figures/CajaMarModelClass}
+\caption{\label{Figure:CajaMarModelClass} CajaMar Model Class}
+\end{center}
+\end{figure}
 
 
 
 \subsection{AMIDST Model Class}
 
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{./figures/AMIDSTModelClassGeneral}
+\caption{\label{Figure:AMIDSTModelClassHighLevel} AMIDST Model Class General}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{./figures/AMIDSTModelClass}
+\caption{\label{Figure:AMIDSTModelClass} AMIDST Model Class Low Level}
+\end{center}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{./figures/AMIDSTModelClassHighLevel}
+\caption{\label{Figure:AMIDSTModelClassHighLevel} AMIDST Model Class High Level}
+\end{center}
+\end{figure}
 
 
 
-%\begin{figure}
-%\begin{center}
-%\caption{\label{Figure:AMIDSTModelClass} CajaMar Model Class}
-%\includegraphics[scale=0.7]{./figures/AMIDSTModelClass}
-%\end{center}
-%\end{figure}
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{./figures/AMIDSTModelClassTopPart}
+\caption{\label{Figure:AMIDSTModelClassHighLevel} AMIDST Model Class Top Part}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{./figures/AMIDSTModelClassLowPart}
+\caption{\label{Figure:AMIDSTModelClassHighLevel} AMIDST Model Class Low Part}
+\end{center}
+\end{figure}
