@@ -66,7 +66,7 @@ Client$_n$  &                                                &               &  
 
 In conclusion, the idea is to take each of the records (i.e. customers) of this data set and compute the probability of defaulting within the following two years. Finally, the risk table in the system is updated (see Table~\ref{tab:riskTable}).
 
-\begin{figure}[h]
+\begin{table}[h]
 \centering
 \begin{tabular}{c|ccc|ccc|c}
      Time $t$  & Risk of defaulting \\  
@@ -77,7 +77,7 @@ Client$_n$  &   $r_n$  \\
 \end{tabular} 
 \caption{Table containing the risk of defaulting for every client.}
 \label{tab:riskTable}
-\end{figure}
+\end{table}
 
 
 If at some point the probability of defaulting of some customers rises above some predefined threshold, the bank considers taking preventive actions to reduce the chances of defaulting by the customer.
@@ -115,37 +115,43 @@ Figure \ref{Figure:CajaMarStatic} shows the general structure of this static mod
 \begin{figure}[htbp]
   \centering
 \includegraphics[scale=0.5]{./figures/CajaMarModel0}
-\caption{\label{Figure:CajaMarStatic}Global structure of the static model. Each blue box represents a set of variables for a particular time. The green node on top is the class variable \emph{Defaulter} that represents the probability that a customer will default within the next two years. } 
+\caption{\label{Figure:CajaMarStatic}Global structure of the static model. Each white box represents a set of variables for a particular time. The green node on top is the class variable \emph{Defaulter} that represents the probability that a customer will default within the next two years. } 
 \label{fig:static}
 \end{figure}
 
-The variables within a blue box might be connected (e.g. according to a tree structure and, globally, conforming a TAN). Figure~\ref{fig:CajaMarBayesianNetwork} shows a Bayesian network structure learnt from customers data that have been aggregated from different times, e.g., 180 times for financial activities \textcolor{red}{(We think it has no influence to get more dependences in the network structure) }
+Expert knowledge from the bank point out that predicting variables are expected to be related so they might be connected within each box (e.g. according to a tree structure and, globally, conforming a TAN). 
+
+
+
+
+%Figure~\ref{fig:CajaMarBayesianNetwork} shows a Bayesian network structure learnt from customers data that have been aggregated from different times, e.g., 180 times for financial activities \textcolor{red}{(We think it has no influence to get more dependences in the network structure)}
 %To computationally simplify this learning in this preliminary overview,  \textcolor{blue}{only data correspond to one day?} are considered, meaning that the number of cases for learning has been considerably reduced. 
-Looking at the structure is evident that indeed there exist dependences between some of the variables\footnote{For confidentially reasons variable names are not shown}. The structure has been learnt using the R package \texttt{bnlearn}~\cite{Scu10, Nag13}.
-
-\begin{figure}[htbp]
-  \centering
-    \includegraphics[width=70mm]{figures/CajaMarBayesianNetwork}
-    \vspace{-1cm}
-    \caption{Bayesian network structure learnt from 13 variables randomly chosen from the whole set of variables.}
-    \label{fig:CajaMarBayesianNetwork}
-\end{figure}
-
-
+%Looking at the structure is evident that indeed there exist dependences between some of the variables\footnote{For confidentially reasons variable names are not shown}. The structure has been learnt using the R package \texttt{bnlearn}~\cite{Scu10, Nag13}.
+%
+%\begin{figure}[htbp]
+%  \centering
+%    \includegraphics[width=70mm]{figures/CajaMarBayesianNetwork}
+%    \vspace{-1cm}
+%    \caption{Bayesian network structure learnt from 13 variables randomly chosen from the whole set of variables.}
+%    \label{fig:CajaMarBayesianNetwork}
+%\end{figure}
 
 
-\begin{figure}[htbp]
-  \centering
-    \includegraphics[width=70mm]{figures/CajaMarbv4}
-    \caption{Contour plot with (ideally) strong linear correlation between two variables \textcolor{blue}{(maybe class-conditioned?).}}
-    \label{fig:CajamarContourPlot}
-\end{figure}
+%
+%
+%\begin{figure}[htbp]
+%  \centering
+%    \includegraphics[width=70mm]{figures/CajaMarbv4}
+%    \caption{Contour plot with (ideally) strong linear correlation between two variables \textcolor{blue}{(maybe class-conditioned?).}}
+%    \label{fig:CajamarContourPlot}
+%\end{figure}
 
 
 
-Figure \ref{fig:CajamarContourPlot} shows the contour bivariate plot for two variables, showing a clear linear relationship between them. This might even indicate that one variable is just a replica of the other or contain quite similar information, and their joint contribution will not only make learning and inference computationally more expensive, but it could lead to poorer performance. This would contribute to support the need to explore suitable feature selection techniques as specified in Use Case 2 of Cajamar's Requirement analysis.
-
-
+%Figure \ref{fig:CajamarContourPlot} shows the contour bivariate plot for two variables, showing a clear linear relationship between them. 
+Moreover, it may happen that one variable is even a replica of the other or contain quite similar information
+%This might even indicate that one variable is just a replica of the other or contain quite similar information, 
+and their joint contribution will not only make learning and inference computationally more expensive, but it could lead to poorer performance. This would contribute to support the need to explore suitable feature selection techniques as specified in Use Case 2 of Cajamar's Requirement analysis\cite{Fer14b}.
 
 It is also of major interest to analyse the type of density probability distributions to use in the proposed model. Figures \ref{Figure:cajamarMixt} shows the density histogram for the values of one continuos attribute for defaulters and non-defaulters respectively. The density curves represent a credible approximation using mixture of Gaussian distributions, which is the case for most of the other predictive attributes. Note that for defaulters, the values of the \emph{end-of-day balance} are overall lower compared to those corresponding to non-defaulters.
 
@@ -229,7 +235,7 @@ In summary, the process of building this static model consists of the following 
 In this second approach, we will consider the dynamic structure of the problem because the behaviour of the customers evolves over time (e.g. the account balance is continuously changing from one month to another, also the incomes, ...)  as well as the label as a defaulter or non-defaulter customer (e.g. customers can be creditworthy and, after some time, go bankrupt because they have lost their job). 
 
 
-\textcolor{red}{Analysing some of the data, we can actually see that if a customer was a defaulter at day $t$, the probability of being a defaulter at day $t+1$ changes from $p$ (prior probability in the static model) to $p'$ (transition probability in the dynamic model). The reason for this dramatic change is that once a client is a defaulter, he/she will be a defaulter for some time, and the static model is unable to represent this effect. }\textcolor{red}{ And the way we have defined the problem it actually does not matter much, does it? ANTONIO: I DON'T REALLY UNDERSTAND THIS PARAGRAPH} 
+%\textcolor{red}{Analysing some of the data, we can actually see that if a customer was a defaulter at day $t$, the probability of being a defaulter at day $t+1$ changes from $p$ (prior probability in the static model) to $p'$ (transition probability in the dynamic model). The reason for this dramatic change is that once a client is a defaulter, he/she will be a defaulter for some time, and the static model is unable to represent this effect. }\textcolor{red}{ And the way we have defined the problem it actually does not matter much, does it? ANTONIO: I DON'T REALLY UNDERSTAND THIS PARAGRAPH} 
 
 
 
@@ -278,7 +284,7 @@ To avoid building complex dynamic models with high Markov order, and to mitigate
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[scale=0.45]{./figures/CajaMarModel1}
-\caption{Global structure of the dynamic model. Each blue box represents a set of variables measures during the same day.
+\caption{Global structure of the dynamic model. Each white box represents a set of variables measures during the same day.
 The variables within a box can be connected as well as variables between two consecutive days representing the same attribute. For the ease of presentation past paying behaviour and sociodemographic variables are omitted from now on.}
 \label{fig:global_temp}
 \end{center}
@@ -294,8 +300,11 @@ The variables within a box can be connected as well as variables between two con
 
 \begin{figure}[htbp]
   \centering
-    \includegraphics[width=70mm]{figures/CajamarPartialCorrelogram1}
-    \caption{\label{fig:CajamarPartialCorrelograms}Partial correlogram for a variable. A first order Markov assumption seems reasonable to capture dependences over time.}
+   \begin{tabular}{cc}    
+       \includegraphics[width=70mm]{figures/CajamarCorrelogram} &
+        \includegraphics[width=70mm]{figures/CajamarPartialCorrelogram}
+    \end{tabular}
+     \caption{\label{fig:CajamarCorrelogramsAndPartial} Correlogram and partial correlogram for a variable. A first order Markov assumption seems reasonable to capture dependences over time.}
 \end{figure}
 
 
@@ -381,6 +390,6 @@ The model for the profile extraction is the same as the one depicted in Figure~\
 %
 %The graphical structure of the dynamic probabilistic graphical model devised for this problem is given in Figure \ref{Figure:CajaMarModel1}.  The yellow square boxes ``Day -180'', ..., ``Day-1'' represents the temporal evolution of the predictor variables. The model only refers to 180 days because this is the imposed limit of days when making predictions. Similarly, the class variable ``default'' is assumed to evolve over time but with the relevant different that the default class sequence refers to a point in the time \textbf{two years later} than  the point in the time the daily predictor variables. 
 
-
+\subsubsection{Discussion and future models}
 
 
