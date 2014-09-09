@@ -12,7 +12,7 @@ Formally, we will de note by $\bm X = \{X_1,\ldots,X_N\}$ to the set of stochast
 
 $$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$ 
 
-\noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parents} variables of $X_i$. Bayesian networks can be graphically represented by a acyclic directed graph. Each node in the graph corresponds to the factor or conditional probability $p(X_i|Pa(X_i))$  and it is labelled by $X_i$. Additionally, for each $X_j\in Pa(X_i)$ the graph contains one directed edge pointing from $X_j$ to $X_i$. Hence, $Pa(X_i)$ are called the \emph{parents} variables and $X_i$ the child variable. 
+\noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parents} variables of $X_i$. Bayesian networks can be graphically represented by a directed acyclic graph. Each node in the graph corresponds to the factor or conditional probability $p(X_i|Pa(X_i))$  and it is labelled by $X_i$. Additionally, for each $X_j\in Pa(X_i)$ the graph contains one directed edge pointing from $X_j$ to $X_i$. Hence, $Pa(X_i)$ are called the \emph{parents} variables and $X_i$ the \emph{child} variable. 
 
 Figure ? contain an example of this kind of graphical model. There, the nodes are coloured to highlight the nature, discrete or continuous, of each variable according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. This is a very relevant aspect because it defines how each conditional probability $p(X_i|Pa(X_i))$ of the BN is defined. 
 
@@ -20,9 +20,19 @@ Traditionally, Bayesian networks have been defined for discrete domains, where t
 
 First, one may choose to carefully construct the model such that exact inference algorithms can still be applied. This is the case for the conditional linear Gaussian (CLG) Bayesian networks \cite{Lauritzen1992,LauritzenJensen2001}, where the local probability distributions of the continuous variables are specified as conditional linear Gaussian distributions and discrete variables can only have discrete parents. However, CLG model imposes certain limitations on the domain being modelled, i.e., discrete variables cannot directly depend on a continuous variable, and each continuous variable must follow a conditional linear Gaussian distribution. A second approach to extend the expressive power of the model is to rely on approximate algorithms for performing inference, thereby allowing, in principle, arbitrary distributions to be associated with the model; examples include the Gibbs sampler \cite{Geman1984, hrycej1990gibbs} and variational inference \cite{Jordan1999}. Finally, the third approach consists in "translating" the original model into an approximate model, for which exact inference algorithms can be applied. This can be achieved either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using translations with more expressive power. It includes mixtures of truncated exponentials \cite{Moral2001} and the more recently proposed mixtures of truncated basis functions framework \cite{Langseth12} that combines several previously proposed frameworks.
 
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{./figures/PreliminariesNotation}
+\caption{\label{Figure:PreliminariesNotation}Graphical notation of observed/hidden and continuous/discrete variables.
+}
+\end{center}
+\end{figure}
+
+
 \subsection{Probabilistic reasoning over time}\label{SubSection:DBNs}
 
-Many domains, and in particular those being analysed in the AMIDST project, can be seen as having strong internal structure. This will be evident by the domains being appropriately described using an object oriented language, either due to repetitive substructures or substructures that can naturally be ordered in a superclass–subclass hierarchy.  Object oriented Bayesian networks \cite{KollerPfeffer1997} (OOBNs) are defined to take advantage of such internal model structure. In dynamic models, we also find this property because the same part of the model is repeated over time (i.e. we have multiple objects of the same class under the OOBNs language). A special type of OOBNs is dynamic Bayesian networks (DBN) \cite{DeanKanazawa1989}, which are used to model domains that develop over time by representing the temporal dynamics of the system explicitly. DBNs can be also readily understood as an extension of standard Bayesian networks to the temporal domain. 
+Many domains, and in particular those being analysed in the AMIDST project, can be seen as having strong internal structure. This will be evident by the domains being appropriately described using an object oriented language, either due to repetitive substructures or substructures that can naturally be ordered in a superclass–subclass hierarchy.  Object oriented Bayesian networks \cite{KollerPfeffer1997} (OOBNs) are defined to take advantage of such internal model structure. In dynamic models, we also find this property because the same part of the model is repeated over time (i.e. we have multiple objects of the same class under the OOBNs language). A special type of OOBNs are the dynamic Bayesian networks (DBN) \cite{DeanKanazawa1989}, which are used to model domains that develop over time by representing the temporal dynamics of the system explicitly. DBNs can be also readily understood as an extension of standard Bayesian networks to the temporal domain. 
 
 In the same way that static Bayesian networks, we model our problem/system as a set of stochastic random variables $\bm X_t$ with the main difference that these variables are indexed by a discrete time index $t$. In this way,  we explicitly model the state of the problem/system at any moment in time. Moreover,  we always assume that the problem/system is modelled at a fixed frequency. We will denote by $\bm X_{a:b} \equiv X_a,X_{a+1},\ldots,X_{b}$ to the set of variables between two time points $a$ and $b$.  
 
@@ -30,7 +40,7 @@ For reasoning over time we need to model the joint probability $p(\bm X_{1:T})$ 
 
 $$p(\bm X_{1:T})  = \prod_{t=1}^T p(\bm X_t|\bm X_{1:t-1})$$
 
-\noindent where $p(\bm X_t|\bm X_{1:t-1})$ is equal to $p(X_1)$ for $t=1$. As $t$ increases the conditional probability $p(\bm X_t|\bm X_{1:t-1})$ becomes intractable. Similarly to static Bayesian networks, \textbf{dynamic Bayesian networks} (DBN) will allow for more compact factorization of the above joint probability. The first conditional independence assumptions usually  exploited by DBNs models to reduce the complexity of this factorization is the well-known Markov assumption. Under this assumption the current state is independent from the past given a finite number of previous steps.  Dynamic models satisfying this conditional independence assumption are called \textbf{Markov chains}. A Markov chained can be defined on either discrete or continuous variables $\bm X_{1:T}$ and exploits the following equality:
+\noindent where $p(\bm X_t|\bm X_{1:t-1})$ is equal to $p(\bm X_1)$ for $t=1$. As $t$ increases the conditional probability $p(\bm X_t|\bm X_{1:t-1})$ becomes intractable. Similarly to static Bayesian networks, \textbf{dynamic Bayesian networks} (DBN) will allow for more compact factorization of the above joint probability. The first conditional independence assumptions usually  exploited by DBNs models to reduce the complexity of this factorization is the well-known Markov assumption. Under this assumption the current state is independent from the past given a finite number of previous steps.  Dynamic models satisfying this conditional independence assumption are called \textbf{Markov chains}. A Markov chained can be defined on either discrete or continuous variables $\bm X_{1:T}$ and exploits the following equality:
 
 $$p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-V:t-1})$$
 
@@ -47,24 +57,16 @@ $$p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-V:t-1})$$
 
 Among Markov chains, the \textbf{first-order Markov chains} are the most widely used. They assume that knowing the present makes the future conditional independent from the past, that is,: $p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-1})$. The problem is that this could be an unrealistic assumption in some problems leading to poor approximations of the joint distribution. In order to increase the accuracy of the approximation, we could either increase the Markov order or equivalently, increase the number of state variables, which would also increase the complexity. Hence, we would like to come up with models that contain a self-sufficient set of variables, which likewise requires to fully understand the ``physics''  of the process being modelled for the different use cases \cite{russelNorvig2009}. 
 
-Another challenging problem in  DBN models is the specification of the conditional probabilities at each time step. To avoid this problem, we usually assume that changes in the world state are driven by a \textbf{stationary process}, that is, $p(\bm X_{t+1}|\bm X_{t}) = p(\bm X_t|\bm X_{t-1})\ \forall t \in\{1,\ldots,T\}$. 
+Another challenging problem in  DBN models is the specification of the conditional probabilities at each time step. To face this problem, we usually assume that changes in the world state are driven by a \textbf{stationary process}, that is, $p(\bm X_{t+1}|\bm X_{t}) = p(\bm X_t|\bm X_{t-1})\ \forall t \in\{1,\ldots,T\}$. 
 
 
 
-In the following sections we present some basic examples of DBN such as Hidden Markov models and Kalman filters. And we also introduced the kind of DBN model most used in AMIDST, the 2-time-slices DBN. Before that, at Figure \ref{Figure:PreliminariesNotation} we show the graphical notation for each type of variables that will be used when describing these graphical models.  
+In the following sections we present some basic examples of DBN such as Hidden Markov models and Kalman filters. And we also introduced the kind of DBN model most used in AMIDST, the 2-time-slices DBN. Let us remind that at Figure \ref{Figure:PreliminariesNotation} it is the depicted the graphical notation employed when graphically describing these models.
 %Besides, distinctions are made between discrete and continuous ones, because they have a strong impact in the kind of model that we consider. 
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.4]{./figures/PreliminariesNotation}
-\caption{\label{Figure:PreliminariesNotation}Graphical notation of observed/hidden and continuous/discrete variables.
-}
-\end{center}
-\end{figure}
 
 
 \subsubsection{Hidden Markov models}
-A Hidden Markov model (HMM) is the simplest DBN with both hidden and observed variables, in which the state of the process is represented by a single discrete variable. More precisely, a Hidden Markov model (HMM) defines a Markov chain on hidden or non-observable variables $X_{1:T}$. The observed variables denoted by $\bm Y_{1:T}$ are dependent on the hidden variables under the \textbf{sensor Markov assumption}, that is, $P(\bm Y_t| X_{0:t}, \bm Y_{0:t-1}) = P(\bm Y_t| X_t)$, where $P(\bm Y_t| X_t)$ represents the the sensor (or observation) model.  
+A Hidden Markov model (HMM) is the simplest DBN with both hidden and observed variables, in which the latent state of the process is represented by a single discrete variable. More precisely, a Hidden Markov model (HMM) defines a Markov chain on hidden or non-observable variables $X_{1:T}$. The observed variables denoted by $\bm Y_{1:T}$ are dependent on the hidden variables under the \textbf{sensor Markov assumption}, that is, $P(\bm Y_t| X_{1:T}, \bm Y_{1:t-1}) = P(\bm Y_t| X_t)$, where $P(\bm Y_t| X_t)$ represents the the sensor (or observation) model.  
 
 \begin{figure}[ht!]
 \begin{center}
