@@ -1,7 +1,8 @@
 package eu.amidst.core.StaticBayesianNetwork;
 
 
-import eu.amidst.core.StaticBayesianNetwork.impl.BayesNet;
+import eu.amidst.core.StaticBayesianNetwork.impl.BayesianNetworkImpl;
+import eu.amidst.core.headers.StaticModelHeader;
 
 /**
  * Created by andres on 11/07/14.
@@ -9,7 +10,7 @@ import eu.amidst.core.StaticBayesianNetwork.impl.BayesNet;
 public class BNFactory {
 
 
-    public static BayesianNetwork createBN(){
-        return new BayesNet();
+    public static BayesianNetwork createBN(StaticModelHeader modelHeader){
+        return new BayesianNetworkImpl(modelHeader);
     }
 }
