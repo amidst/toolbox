@@ -14,7 +14,16 @@ $$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$
 
 \noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. Bayesian networks can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, encodes the factor or conditional probability $p(X_i|Pa(X_i))$ . Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
 
-Figure ? contain an example of a BN model. The nodes are coloured to highlight the nature, discrete or continuous, of each variable according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. This is a very relevant aspect because it defines how each conditional probability $p(X_i|Pa(X_i))$ of the BN is defined. 
+Figure \ref{Figure:GeneralBayesianNetwork} contains an example of a BN model. The nodes are coloured to highlight the nature, discrete or continuous, of each variable according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. This is a very relevant aspect because it defines how each conditional probability $p(X_i|Pa(X_i))$ of the BN is defined. 
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.25]{./figures/GeneralBayesianNetwork}
+\caption{\label{Figure:GeneralBayesianNetwork}Example of a Bayesian network with continuous and discrete variables.
+}
+\end{center}
+\end{figure}
+
 
 Traditionally, BNs have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}). 
 
@@ -68,7 +77,7 @@ A hidden Markov model (HMM) is the simplest DBN including both hidden and observ
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.56]{./figures/PreliminariesHMM}
-\caption{\label{Figure:HMM}An example of a BN structure corresponding to a HMM. {\color{red} Add a new figure with a SKF.}}
+\caption{\label{Figure:HMM}An example of a BN structure corresponding to a HMM.}
 \end{center}
 \end{figure}
 
@@ -85,7 +94,14 @@ Although most of our models will fit into this description of observed and hidde
 %--------------------------
 Similar to the extension of the static BN model to hybrid domains, DBNs have likewise been extended to continuous and hybrid domains. In purely continuous domains, where the continuous variables follow linear Gaussian distributions, the DBN corresponds to (a factorized version of) a Kalman filter (KF). The structure of a KF is exactly the same as the one displayed in Figure \ref{Figure:HMM} for the HMM, however with the restriction that all variables should be continuous. In this case, the state variables can be a combination of continuous variables with different dependences, and the dynamics of the process are assumed to be linear. 
 
-When modelling non-linear domains, the dynamics and observational distributions are often approximated through, e.g., the \textit{extended Kalman filter}, which models the system as \textit{locally} linear in the mean of the current state distribution. In addition, in order to perform non-linear predictions, we need a more expressive model such as the \textit{switching Kalman filter} (SKF). The SKF includes an extra discrete state variable to the network that allows to model multiple KFs running in parallel. 
+When modelling non-linear domains, the dynamics and observational distributions are often approximated through, e.g., the \textit{extended Kalman filter}, which models the system as \textit{locally} linear in the mean of the current state distribution. In addition, in order to perform non-linear predictions, we need a more expressive model such as the \textit{switching Kalman filter} (SKF). The SKF includes an extra discrete state variable to the network that allows to model multiple KFs running in parallel. Figure \ref{Figure:SKF} depicts the graphical structure of this dynamic model.
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.3]{./figures/SKF}
+\caption{\label{Figure:SKF} A Switching Kalman Filter. $Z_t$ is the discrete state variable that allows to model multiple KFs running in parallel.}
+\end{center}
+\end{figure}
 
 %--------------------------
 \subsubsection{Two-time slice dynamic Bayesian networks}\label{SubSubSection:2DBNs}	
@@ -95,8 +111,8 @@ In general, DBNs can model arbitrary distributions over time. However, in AMIDST
 
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[scale=0.45]{./figures/PreliminariesDBN}
-\caption{\label{Figure:DBN}An example of a BN structure corresponding to a 2T-DBN. {\color{red} Change the color of $X'_t$ to make it discrete.}}
+\includegraphics[scale=0.3]{./figures/PreliminariesDBN}
+\caption{\label{Figure:DBN}An example of a BN structure corresponding to a 2T-DBN.}
 \end{center}
 \end{figure}
 
