@@ -1,3 +1,4 @@
+% !TEX root = D2.1_AMIDSTModellingFramework.tex
 \subsection{Verdande Models}
 \label{Section:VerdandeModels}
 
@@ -30,10 +31,112 @@ For all tasks, the model must deal with both continuous and discrete observed ra
 
 
 
-\subsubsection{Detection of drill string vibrations}
+\subsubsection{Detection of drill string vibrations and abnormal torque states}
+
+{\bf Sigve will add some oil-lingo to explain why this is a problem worth looking at}
+
+
+
+
+Two time-windows of torque-readings are given in Figure \ref{Figure:VTTorqueValues}; the uppermost plot traces the torque over a period of 25.000 observations, the other is zoomed in to cover only 500 observations. It is evident that the torque varies over time, and often drops to zero (in particular when the drill-bit is not rotating). Furthermore, we can see from the zoomed-in trace that the variance changes over time; this time-window commences with rapidly varying torque, before the variation is reduced. The goal is to extract passages where high variance in the observed torque cannot be explained by other drilling parameters. 
+We will begin the following discussion by considering how to model the torque as a random variable developing over time, without thinking about vibration and the variable's relationship to other drilling parameters.   
+Thereafter, a full model will be proposed.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.3]{./figures/VT_TRQ_values} 
+\caption{\label{Figure:VTTorqueValues}  Measurements of TRQ.}
+\end{center}
+\end{figure}
+
+
+The autocorrelation and partial autocorrelation of the torque can be seen in Figure \ref{Figure:VTTorqueAutoCorr}. It is clear that a significant autocorrelation exists, also at high lags. The figure goes up to $k=20$, where the correlation is still above .6; note that the only data from drilling (i.e., where the torque is positive and ``moving naturally'') have been included. A model capturing the time dynamic is therefore essential. Furthermore, the partial autocorrelation shows very significant contributions at lags 1 and 2, and also significant effects at lags 5--10.  
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{c@{}c}
+\includegraphics[scale=0.3]{./figures/VT_autoCorr_TRQ} &
+\includegraphics[scale=0.3]{./figures/VT_partialAutoCorr_TRQ}  \\
+Autocorrelation & Partial autocorrelation
+\end{tabular}
+\caption{\label{Figure:VTTorqueAutoCorr}  Whatever.}
+\end{center}
+\end{figure}
+
+
+To capture the dynamics of this variable, we propose a Kalman filter model, with a ``sufficiently rich'' latent variable space (that is, more than a single one-dimensional latent variable may be required to capture the partial autocorrelations in the data).  {\bf NEED TO SHOW FIGURE WITH THE KALMAN FILTER?}
+
+
+
+Next, we consider how to model a torque sequence that also includes  abnormal torque measurements (those that are corrupted by vibrations). 
+Our working assumption is that an abnormal torque signal is the result of a string vibration with higher frequency than the sampling frequency of the data. Thus, it will be observed as a white-noise signal superimposed on top of the ``true'' underlying torque signal. An abnormal torque regime will typically last for some unknown time significantly longer than one time step, thus we must create a model with the ability to choose a state that fits the observations best (normal or abnormal), and with a tendency to remain in a chosen state over time. This can be obtained by a switching Kalman Filter, where the switching variable (connected over time) is used to show which state one is in at a given time (normal or abnormal) and the transition model for the variable is used to capture the state remaining for some time. 
+
+{\bf SHOW dBN?}
+
+Preliminary results using this class of models, but without learning the parameters properly, and relying on an inference scheme that does not scale to the data-sizes we have available in the AMIDST project are shown in Figure \ref{Figure:VTEraticTorqueMarked}. The same subset of data used in Figure \ref{Figure:VTTorqueValues} is once again used, and the positions the system detects as having ``abnormal torque'' is highlighted along the $x$-axis. These annotations correlate well with what can be obtained by simple inspection of the time series with the human eye. Still, some undesired observations remain. For instance, the two  areas with small dips in the observed torque towards the end of the sequence can be explained by specific drilling activities going on ({\bf SIGVE: I think this was a connection because (as far as I remember) ROP is zero here. Not really sure,though. Is it correct?}), and should not be marked as outliers. To understand that these observations are not abnormal, the context of the torque observation must be includes, which is what we turn to next.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.3]{./figures/VT_ErraticTRQ_marked} 
+\caption{\label{Figure:VTEraticTorqueMarked}  Whatever.}
+\end{center}
+\end{figure}
+
+
+
+{\bf Sigve: Say why ROP is the most relevant ``driver''-variable.}
+
+
+
+
+
+To examine the relationship between ROP and TRQ further, we plot the joint density of (ROP$_t$, TRQ$_t$) and the sample correlation between ROP$_t$ and TRQ$_{t+k}$ in Figure \ref{Figure:VTTorqueRateOfPenetration}. We notice that even if a strong correlation is not apparent in the density plot, if can be seen as significant form the correlation plot, and should therefore be included in the model. We capture this through an \textit{input-output Kalman filter}, where the ``input'' at time $t$ is the rate of penetration at that point in time, the ``output'' of the Kalman filter is the (observed) torque readings, and where we have to sets of latent variables: $i)$ a discrete switching variable, which is used to signify which torque regime we are currently in, and $ii)$ a latent vector of continuous variables used to capture and model the natural behavior of the torque sequence over time. During inference, the posterior probability of the discrete latent variable at time $t$ can be used to detect whether or not the system experiences abnormal torque (that is not explained by the observed rate of penetration) over time. 
+
+Further extensions to the model, where also other predictive variables are taken into account, will be considered at a later stage. The general model structure will, however, not be changed.
+
+
+\begin{figure}
+\begin{center}
+\begin{tabular}{c@{}c}
+\includegraphics[scale=0.2]{./figures/VT_TRQ_ROP_density} &
+
+\includegraphics[scale=0.2]{./figures/VT_crossCorrTRQvsROP}  \\
+
+\end{tabular}
+\caption{\label{Figure:VTTorqueRateOfPenetration}  Whatever.}
+\end{center}
+\end{figure}
+
+
+
+
 
 
 \subsubsection{Semi-automatic labelling}
+
+The main contribution from DrillEdge during operation is that it enables the driller to see in real time if the current situation is ``similar'' to previous situations that lead to undesired circumstances. 
+If this is the case, remedial actions can be found to avoid undesired events. 
+At the core of the analysis are historical examples of noteworthy episodes, ranging from clearly undesired events, for instance getting stuck, to more subtle indications of evolving problems, such as abnormal readings of hook-load. 
+Verdande Technology has already extensive datasets (made available to the project from its beginning), where such episodes are identified. 
+However, the definitions of the episodes are not always crisp, and domain experts can at times disagree about what is happening at a certain time. 
+This can potentially lead to inconsistencies in the dataset, complicating both the automatic learning of models as well as the comparison with previous situations. 
+Additionally, it can confuse the driller to be presented with information that he/she does not relate to or agree with.
+
+Manually labelling new data sequences, or adapting the existing labelling to new definitions, can be a very time-consuming activity, and Verdande Technology therefore want to start looking into techniques for semi-automatic labelling.
+This process is initiated by the system being fed with unlabelled data streams from typical drilling conditions. The system should adapt to this data, and recognise what is ``normal'', both with respect to auto-correlations of each variable over time, as well as the intricate relationships between variables. Simultaneously, sub-sequences that do not fit well with the normal data should be marked as ``abnormal''.
+The abnormal sub-sequences can thereafter be examined more closely by drilling experts. It is desired that the process should be able to take back information from this examination, and update the reasoning if the sequences marked as abnormal were not correctly labelled. The benefit of the automatic tagging is that more time can be spent on scrutinizing the ``interesting'' parts of the drilling logs, and less time on the ``normal'' parts. 
+This implies the potential for further reduction in non-productive time. Specifically, the goal is to provide a ``normality'' score for historical logs to facilitate semi-automatic detection of abnormal situations. The calculations should be efficient enough to run in real time if so desired.
+
+Drilling is performed in phases, where different activities are conducted in sequence. For instance, one can only drill the well (increase the length of the well-bore) after having transported the drill-bit to the bottom of the well (that is, performed a ``tripping-in'' activity). Similarly, a long drilling sequence is split up into smaller sequences, where each subsequence is initiated by a ``connection'' activity, where the length of the drill-string is increased.
+The division of the drilling log into subsequences containing only a single activity is done automatically by Verdande Technology's Drill Edge system. 
+Therefore, the AMIDST system will be fed sequences where a single activity is conducted. 
+The behaviour during each of these sequences  is fairly consistent if the process runs smoothly, and the relationships between variables can be established (e.g., the amount of mud transported into the drill-string will, after stabilization, be strongly indicative of the amount of mud coming out after circulating through the well string). 
+
+Some of the variables in the data set are used to monitor quantities that are set externally by the drilling crew (examples include ``weight-on-bit'', ``rotations-per-minute'' and ``mud-flow-in''). Other variables, like ``torque'', ``rate-of-penetration'' and ``mud-flow-out'' can be understood as  (possibly delayed) responses to the input from the geology. The cause $\rightarrow$ response relationships are mostly unknown, but some qualitative understanding exists. {\bf Sigve: Is that correct? Can you give an example?}
+
+The measurements are continuous, but not necessarily Gaussian. We therefore propose to use an input-output Kalman filter with Gaussian mixtures at the leaves to model a data stream from a single subsequence. The normality-index for an observation ${\bm e}_t$ at time $t$ given the observations up until $t$, ${\bm e}_{1:t-1}$ will be calculated as the log conditional likelihood,  $\ell_t := \log f\left({\bm e}_t|{\bm e}_{1:t-1}\right)$. By monitoring  $\ell_t$ over time, significant departures from its ``typical behaviour'' will be noted, and marked as potential irregularities.
+
+{\bf Do we need the input-output-KF? What about the structure of the analysis for the $\ell_t$-terms?}
 
 
 \subsubsection{Automatic formation detection}
