@@ -17,7 +17,7 @@ We present now the models of the three use-cases but using this previously intro
 
 \subsubsection*{Daimler Model Class}
 
-Daimler's model were visually described in Figures \ref{Figure:daimlerLEdynGeneric}  and \ref{Figure:daimlerreldyn}. As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of these current models is that they contain discrete children with continuous parents and do not fall in the conditional linear Gaussian family \cite{nielsen2009bayesian}. We adopt here the same solution pursed in \cite{kasper2012object} which consists on the discretization of these nodes. In that way, the general structure of Daimler's models would be the one plotted in Figure \ref{Figure:DaimlerModelClass}, where do not have any more discrete children with continuous parents which allows for a standard parametrization \cite{nielsen2009bayesian}. 
+Daimler's model were visually described in Figures \ref{Figure:daimlerLEdynGeneric}  and \ref{Figure:daimlerreldyn}. As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of these current models is that they contain discrete children with continuous parents and do not fall in the conditional linear Gaussian family \cite{JensenNielsen2007}. We adopt here the same solution pursed in \cite{kasper2012object} which consists on the discretization of these nodes. In that way, the general structure of Daimler's models would be the one plotted in Figure \ref{Figure:DaimlerModelClass}, where do not have any more discrete children with continuous parents which allows for a standard parametrization \cite{JensenNielsen2007}. 
 
 \begin{figure}
 \begin{center}
@@ -26,9 +26,9 @@ Daimler's model were visually described in Figures \ref{Figure:daimlerLEdynGener
 \end{center}
 \end{figure}
 
-This general model is structured as a two-time slices dynamic Bayesian network \cite{nielsen2009bayesian}. The static model which is repeated through the time is composed by three elements: a set of hidden discrete nodes on top; and two observed sub-networks, one continuous and one discrete, which directly depends of the hidden sub-network. This dynamic BN is only temporally connected through the hidden sub-network.  In consequence, the future and past time slices of our dynamic BN are conditionally independent given the hidden sub-network corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete sub-networks are also conditionally independent given the hidden-subnetwork.
+This general model is structured as a two-time slices dynamic Bayesian network \cite{JensenNielsen2007}. The static model which is repeated through the time is composed by three elements: a set of hidden discrete nodes on top; and two observed sub-networks, one continuous and one discrete, which directly depends of the hidden sub-network. This dynamic BN is only temporally connected through the hidden sub-network.  In consequence, the future and past time slices of our dynamic BN are conditionally independent given the hidden sub-network corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete sub-networks are also conditionally independent given the hidden-subnetwork.
 
-We also have more structure that can be exploited during inference and which is not reflected in this meta-network. Specifically, we have that the hidden and observed sub-networks have a poly-tree structure \cite{nielsen2009bayesian}. Then, the static BN as well as the dynamic BN both have poly-tree structure and this can be exploited during inference. 
+We also have more structure that can be exploited during inference and which is not reflected in this meta-network. Specifically, we have that the hidden and observed sub-networks have a poly-tree structure \cite{JensenNielsen2007}. Then, the static BN as well as the dynamic BN both have poly-tree structure and this can be exploited during inference. 
 
 
 
@@ -45,7 +45,7 @@ of the three application scenarios. If we keep the subnetworks ``Discrete 2'', `
 \end{center}
 \end{figure}
 
-Similarly to the Daimler model, the general model is structured as a two-time slices dynamic Bayesian network \cite{nielsen2009bayesian}. The static part which is repeated through the time is composed by 5 sub-networks: two observed components, one discrete temporally connected on the top and one continuous at the bottom; and three hidden components in the middle, one hidden discrete and one hidden continuous temporally connected, and one hidden discrete which is not temporally connected whose function is to account for the possible conditional dependencies of the observed continuous variables.  
+Similarly to the Daimler model, the general model is structured as a two-time slices dynamic Bayesian network \cite{JensenNielsen2007}. The static part which is repeated through the time is composed by 5 sub-networks: two observed components, one discrete temporally connected on the top and one continuous at the bottom; and three hidden components in the middle, one hidden discrete and one hidden continuous temporally connected, and one hidden discrete which is not temporally connected whose function is to account for the possible conditional dependencies of the observed continuous variables.  
 
 In opposite to Daimler,  this model does not have a poly-tree structure that can be exploited during inference. 
 
