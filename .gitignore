@@ -14,7 +14,7 @@ doc/presentations/omv_meeting.pdf
 doc/requirementEngineering/REproccess.pdf
 doc/requirementEngineering/REproccessOLD.pdf
 doc/requirementEngineering/REproccessNIK.pdf
-
+doc/testEvaluation/testEvaluation*
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
