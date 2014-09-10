@@ -116,7 +116,7 @@ Figure \ref{Figure:CajaMarStatic} shows the general structure of this static mod
   \centering
 \includegraphics[scale=0.5]{./figures/CajaMarModel0}
 \caption{\label{Figure:CajaMarStatic}Global structure of the static model. Each white box represents a set of variables for a particular time. The green node on top is the class variable \emph{Defaulter} that represents the probability that a customer will default within the next two years. } 
-\label{fig:static}
+\label{fig:CajamarStaticModel}
 \end{figure}
 
 Expert knowledge from the bank point out that predicting variables are expected to be related so they might be connected within each box (e.g. according to a tree structure and, globally, conforming a TAN). 
@@ -164,7 +164,7 @@ It is also of major interest to analyse the type of density probability distribu
     \caption{\label{Figure:cajamarMixt}Mixture of Gaussian approximation of one predicting variables conditioned to defaulter (left) and non-defaulter (right) value of the class variable.}
 \end{figure}
 
-There exist however discrete (non-ordinal) predictive attributes which impose a limitation in the structure of the Conditional Gaussian network, since discrete attributes cannot have continuous parents. This might not be a problem for the semi-naive Bayesian network to be considered, and it is certainly not a problem for naive Bayes. Nonetheless, if this limitation were found to be problematic, then other probability distributions families will be explored, such as Mixture of Truncated Basis Functions~\cite{Lan12}, which can cope with any generic model structure. 
+There exist however discrete (non-ordinal) predictive attributes which impose a limitation in the structure of the Conditional Gaussian network, since discrete attributes cannot have continuous parents as pointed out in Section~\ref{SubSection:HybridBNs}. This might not be a problem for the semi-naive Bayesian network to be considered, and it is certainly not a problem for naive Bayes. Nonetheless, if this limitation were found to be problematic, then other probability distributions families will be explored, such as Mixture of Truncated Basis Functions~\cite{Lan12}, which can cope with any generic model structure. 
 
 In summary, the process of building this static model consists of the following steps:
 
@@ -275,7 +275,7 @@ In this second approach, we will consider the dynamic structure of the problem b
 Figure~\ref{fig:global_temp} represents the global idea of the proposed temporal model. It can be compactly represented by a dynamic Bayesian network made of components as the one displayed in 
 Figure~\ref{fig:component}. $D_t$ represents the class variable at time slice $t$ (i.e. defaulting or non-defaulting client). Each feature variable at time $t$, denoted as $X_t$, is linked to the same variable at time $t+1$, $X_{t+1}$. Although this is a reasonable assumption for most of the variables, this first Markov order relationship however might prove insufficient for some of the variables.
 
-$\bar{X}_{t-1}$ and $\bar{X}_{t}$ represents memory variables at time $t$ and $t+1$ respectively. The inclusion of these type of variable might be necessary when we have evidence that first order Markov relationships does not hold and we need to account for information coming from the past. This evidence could be obtained for a partial correlogram.
+$\bar{X}_{t-1}$ and $\bar{X}_{t}$ represents memory variables at time $t$ and $t+1$ respectively. The inclusion of these type of variable might be necessary when we have evidence that first order Markov relationships does not hold and we need to account for information coming from the past. This evidence could be obtained from a partial correlogram as mentioned in Section~\ref{SubSubSection:StructuralAsumptions}.
 
 Figure~\ref{fig:CajamarPartialCorrelograms} show a correlogram for a continuous predictive variable. The correlogram drop to almost zero for a lag equal to $2$, making a first Markov order assumption reasonable. However, a higher order could also rise from data, meaning that even earlier samples still could have an influence on the current sample given the previous one. 
 %However, the right correlogram takes more time to drop to zero, which might indicate that 
@@ -316,7 +316,7 @@ Finally, an indicator variable $\delta_{X_t}$ may be included if the variable co
        \includegraphics[width=70mm]{figures/with_zeroes}&
        \includegraphics[width=70mm]{figures/without_zeroes}
     \end{tabular}
-    \caption{\label{fig:CajamarZeroes}Data histograms and fitted densities for the same variable including zeroes (left) and discarding them (right).}
+    \caption{\label{fig:CajamarZeroes}Data histograms and fitted densities for the same variable including zeroes (left) and discarding them (right). In both cases, outliers have been removed for a clearer representation.}
 \end{figure}
 
 On the other hand, there exist some variables that, even though some dependences over time would expected, they do not display any type of dynamic behaviour. This is for instance the case for variables whose correllograms in Figure \ref{fig:cajamarCorr} show values very close to zero for all lags. These variables are hence not linked through consecutive time steps in the dynamic model and are represented by $Y_{t+1}$ in Figure \ref{fig:component} together with sociodemographic variables.
@@ -334,7 +334,7 @@ In summary, the process of building this dynamic model from the original relatio
 is exactly the same as for the static model.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Low risk profile extraction}
+\subsubsection{Low risk profile extraction} \label{subsubsec:profileExtraction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Introduction of the problem}
 
@@ -391,5 +391,30 @@ The model for the profile extraction is the same as the one depicted in Figure~\
 %The graphical structure of the dynamic probabilistic graphical model devised for this problem is given in Figure \ref{Figure:CajaMarModel1}.  The yellow square boxes ``Day -180'', ..., ``Day-1'' represents the temporal evolution of the predictor variables. The model only refers to 180 days because this is the imposed limit of days when making predictions. Similarly, the class variable ``default'' is assumed to evolve over time but with the relevant different that the default class sequence refers to a point in the time \textbf{two years later} than  the point in the time the daily predictor variables. 
 
 \subsubsection{Discussion and future models}
+
+Models presented above are a first attempt to address the tasks involved in Cajamar problem. Thus, this section is mainly devoted to state that some of the proposals might be slightly modified to achieve the requirements presented in~\cite{Fer14b} and to face other unexpected events.
+
+The static model shown in Figure~\ref{fig:CajamarStaticModel} for predicting the probability of default is assumed to have only dependences among variables within each group of variables (white boxes). However, according to expert knowledge, no limitations should be imposed to the model structure among the predicting variables. Figure~\ref{fig:staticDependences} shows the modified structure of the static model when dependences among predicting variables are allowed, meaning that, variables within the dashed blue box could be connected as well. Note that, in this case, complexity grows considerably but, it is worth considering this approach to capture dependences that intuitively are not expected and therefore the analysis will be enriched.
+
+\begin{figure}[htbp]
+  \centering
+\includegraphics[scale=0.35]{./figures/CajaMarModel3}
+\caption{\label{fig:staticDependences}Global structure of the static model allowing dependences among any variable within the dashed blue box. Each white box represents a set of variables for a particular time. The green node on top is the class variable \emph{Defaulter} that represents the probability that a customer will default within the next two years.} 
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%
+
+In general, the model structure in Figure~\ref{fig:staticDependences} can not be modeled by CG distributions (see Section\ref{sec:}). If so, other probability distributions families will be explored. Mainly, they consist in translating the probability distribution into another such that learning and inference become feasible. These approaches include discretization or more complicated families based on Mixture of Truncated Basis Functions~\cite{Lan12}, which can cope with any generic model structure.
+
+
+%%%%%%%%%%%%%%%%%%
+
+Another issue to be considered is about complexity in the profile extraction task explained in Section~\ref{subsubsec:profileExtraction}. It is well known that abductive inference over BNs and, in particular, the computation of the most probable explanations (MPEs) is an NP-hard problem~\cite{Shi94}. Thus, the model presented in Figure~\ref{fig:staticDependences}, which is valid for the profile extraction as well, could be simplified if necessary
+by manually reducing the number of predictors in such a way that computational burden is adapted to the needs. In fact, this process is tightly connected to the expert knowledge provided by the marketing group, and this refinement would not be a problem.
+
+%%%%%%%%%%%%%%%
+
+The model for predicting the risk of default is assumed to be learnt every day. However, if required, this assumption can be relaxed and the learning process could be carried out less frequently. The results hardly will be affected as one-day data have little impact in comparison with the historical data captured in the current model so far. Note that, even if the model is not update, the risk predictions are computed every day using the latest model available so far.
+
 
 
