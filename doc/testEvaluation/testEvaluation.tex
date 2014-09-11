@@ -4,6 +4,21 @@
 \usepackage{graphicx}
 \usepackage{latexsym}
 
+\usepackage{bm}
+\usepackage{subfigure}
+
+\usepackage{theorem}
+
+\theoremstyle{theorem}
+\newtheorem{theorem}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+
+
+
 \title{Performance Measures for Classification Problems on Real World Streaming Data}
 %\author{Sigve Hovda \\
 %Norwegian University of Science and Technology\\
@@ -22,7 +37,33 @@ Several real world classification problems in the domains of automobile, energy 
 
 \section{Introduction}
 
-In classical statistical classification, the most common performance measures are quantities that can be deduces from the confusion matrix such as accuracy, precision, recall, f-number and many others. Often, it is more costly to misclassify one class compared to another class. In these cases the expected cost of misclassification is a performance measure that predict how much the current algorithm is losing compared to a perfect classifier.  
+In classical statistical classification, the most common performance measures are quantities that can be deduces from the confusion matrix such as accuracy, precision, recall, f-number and many others. Often, it is more costly to misclassify one class compared to another class. In these cases the expected cost of misclassification (ref) is a performance measure that predict how much the current algorithm is losing compared to a classifier that never misclassifies.  
+
+\begin{equation}
+\label{eq:ecm}
+ECM =  c(2|1)p(2|1)p_1  + c(1|2)p(1|2)p_2,
+\end{equation}
+
+where $c(2|1)$ is the cost for misclassifying an item of class one as class two and $p(2|1)$ is the misclassification probability given class one.  The quantities $c(1|2)$ and $p(1|2)$ are defined equivalently, while $p_1$ and $p_2$ are the priors.  
+
+On a real world problem, the costs $c(1|2)$ and $c(2|1)$, can usually be found by reasoning about a problem.  For instance how expensive is it to give a person medical treatment when it is not needed and how \emph{expensive} is it if the treatment do not start at all.  Moreover, the prior and the misclassification probabilities are usually not known and must be estimated from running the algorithm on a labeled population.   
+
+
+\begin{definition}
+Let $D$ be the space of all possible decisions that can be made based on an observed random variable $X$ that is taken values from the probability space $(\chi, \mathcal{B}, P_\theta)$ where $\theta \in \Theta$.  A \emph{loss function} is a real lower bounded function $L$ on $\Theta \times D$.  The value of the loss function at an arbitrary point $(\theta, d)$ is interpreted as taking the decision $d \in D$, where the true parameter is $\theta \in \Theta$.
+\end{definition}
+
+The expected loss in a frequentist context is often referred to as the risk function.  It is obtained by taking the expected value over the loss function with respect to the probability distribution $P_\theta$ of the observed data $X$.
+
+
+\begin{definition}
+The \emph{risk function} is given by:
+\begin{equation}
+R(\theta,d) = \int_{X} L(\theta, d(x)) dP_\theta(x)
+\end{equation}
+\end{definition}
+
+
 
 
 Performance measures have been viewed as the only way for evaluating the quality of machine learning programs.
