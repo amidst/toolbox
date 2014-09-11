@@ -33,7 +33,7 @@ For all tasks, the model must deal with both continuous and discrete observed ra
 
 \subsubsection{Detection of drill string vibrations and abnormal torque states}
 
-{\bf Sigve will add some oil-lingo to explain why this is a problem worth looking at}
+{\bf Sigve: Add some oil-lingo to explain why this is a problem worth looking at}
 
 
 
@@ -73,7 +73,7 @@ Our working assumption is that an abnormal torque signal is the result of a stri
 
 {\bf SHOW dBN?}
 
-Preliminary results using this class of models, but without learning the parameters properly, and relying on an inference scheme that does not scale to the data-sizes we have available in the AMIDST project are shown in Figure \ref{Figure:VTEraticTorqueMarked}. The same subset of data used in Figure \ref{Figure:VTTorqueValues} is once again used, and the positions the system detects as having ``abnormal torque'' is highlighted along the $x$-axis. These annotations correlate well with what can be obtained by simple inspection of the time series with the human eye. Still, some undesired observations remain. For instance, the two  areas with small dips in the observed torque towards the end of the sequence can be explained by specific drilling activities going on ({\bf SIGVE: I think this was a connection because (as far as I remember) ROP is zero here. Not really sure,though. Is it correct?}), and should not be marked as outliers. To understand that these observations are not abnormal, the context of the torque observation must be includes, which is what we turn to next.
+Preliminary results using this class of models, but without learning the parameters properly, and relying on an inference scheme that does not scale to the data-sizes we have available in the AMIDST project are shown in Figure \ref{Figure:VTEraticTorqueMarked}. The same subset of data used in Figure \ref{Figure:VTTorqueValues} is once again used, and the positions the system detects as having ``abnormal torque'' is highlighted along the $x$-axis. These annotations correlate well with what can be obtained by simple inspection of the time series with the human eye. Still, some undesired observations remain. For instance, the two  areas with small dips in the observed torque towards the end of the sequence can be explained by specific drilling activities going on ({\bf Sigve: I think this was a connection because (as far as I remember) ROP is zero here. Not really sure,though. Is it correct?}), and should not be marked as outliers. To understand that these observations are not abnormal, the context of the torque observation must be includes, which is what we turn to next.
 
 \begin{figure}
 \begin{center}
@@ -136,10 +136,55 @@ Some of the variables in the data set are used to monitor quantities that are se
 
 The measurements are continuous, but not necessarily Gaussian. We therefore propose to use an input-output Kalman filter with Gaussian mixtures at the leaves to model a data stream from a single subsequence. The normality-index for an observation ${\bm e}_t$ at time $t$ given the observations up until $t$, ${\bm e}_{1:t-1}$ will be calculated as the log conditional likelihood,  $\ell_t := \log f\left({\bm e}_t|{\bm e}_{1:t-1}\right)$. By monitoring  $\ell_t$ over time, significant departures from its ``typical behaviour'' will be noted, and marked as potential irregularities.
 
-{\bf Do we need the input-output-KF? What about the structure of the analysis for the $\ell_t$-terms?}
+{\bf Do we need to show the input-output-KF? What about the structure of the analysis for the $\ell_t$-terms?}
 
 
 \subsubsection{Automatic formation detection}
 
 
+In many drilling operations, a precise recognition of a formation change can be vital for cost savings. 
+For instance, it is important to cement the casing in the correct formation, to manage the formation pressures as well as correctly identifying the top and the bottom of an oil reservoir. 
+Additionally, accurate knowledge of the formation allows the drilling crew to optimise drilling parameters and better diagnose the condition of the bit. 
+Knowing the formation is also an important input in how to deal with symptoms such as improper hole-cleaning, hole-instability and vibration issues. 
+A proper formation detection is therefore an important piece in the puzzle for reducing the overall non-productive time.
+
+Before the well is drilled, a chart with the expected formation tops is available from the well plan. The chart is based on seismic data and drilling data from neighbouring wells and contains the best guesses on which depths the various formation tops are located. Since it is uncertain where the formation tops are, an uncertainty interval is associated with every formation top. This is called the lithology chart.
+
+In practice, the prediction of the formation tops is refined by a human, who interprets  {\em measurement while drilling} (MWD) data, and aligns this with the lithology chart as the well is being drilled. 
+The MWD data measures petrophysical properties of the rock such as gamma radiation, sonic speed and electrical resistivity. 
+Often, shifts in these graphs happen when the formation is changing. We will therefore formulate the formation detection problem as change-point detection in a multivariate data stream. 
+Indications of change-points (shifts) are to be compared with the prior belief to specifically locate the changes. 
+
+The prior information, giving the expected locations (depths, in meters) of formation change, together with a degree of certainty (in terms of a standard deviation) is the point of departure for this model. Let us assume that there the drilling crew a priori expects  to see $N$ changes in formation. 
+This information may be erroneous, as any number of additional formation-changes (that were not expected in advance) may also occur in the ground, e.g., if a one a priori expected formation of sandstone for 100 meters, later realizing that this sediment was split into two by a small layer of shale {\bf SIGVE: Is this meaningful? I'm just inventing a story here, and do not know what shales is :-)}.
+The observation data is encoded wrt.\ \textit{time}, and but will be used with an encoding wrt.\ \textit{depth} in this application to have it aligned with the prior information at hand. The data may not necessarily be equally spaced (e.g., two neighbouring observations may be separated by 3mm, while the two next are separated by only 2mm). 
+ 
+
+Again, we think in terms of an input-output Kalman-filter, but this time the latent variables will have a predefined structure:
+\begin{itemize}
+
+\item The input variable at time $t$, Depth$_t$, is the dept of the bit at that time.
+
+\item The next chain of variables are \textit{counting-variables}, denoted FormationNo$_t$. The variable has two parents: Depth$_t$ and FormationNo$_{t-1}$. 
+The probability that the counting variable is incremented at time $t$ conditioned on the parent configuration is calculated by combining information from the prior information with the parents' configuration. Logistic or probit functions can  be imagined, but must be compared to the actual domain knowledge to give a feasible representation.
+
+\item Shift$_t$  generates a  chain of variables used for determining when   a formation-change actually occurs. It has two parents, namely  FormationNo$_{t-1}$ and  FormationNo$_t$. 
+The variable is discrete, and has three states: ``No -- As accounted for in the prior'', ``No -- But expected in prior'', ``Yes -- As accounted for in the prior'', and ``Yes -- But not expected in prior''. 
+To this end, FormationNo$_t$ only changes when expected by the prior information, while Shift$_t$ can use the data to refine these assessments. If $\mbox{FormationNo}_{t}= \mbox{FormationNo}_{t-1}$, Shift$_t$ is in the state 
+ ``No -- As accounted for in the prior'' with probability $1-\epsilon$ and in state ``Yes -- But not expected in prior'' with probability $\epsilon$. If $\mbox{FormationNo}_{ t}=\mbox{FormationNo}_{t-1}+1$, Shift$_t$ takes the state 
+``Yes -- As accounted for in the prior'' with probability $1-\delta$ and ``No -- But expected in prior'' with probability $\delta$. $\epsilon$ and $\delta$ are parameters to be determined through expert knowledge or learned from data.
+
+\item Finally, the observed variables at time $t$ only have  Switch$_t$ as parent. We will not use the actual observed sensor reading as the observed variable (``output-variable'' in the input-output Kalman-filter). Rather, the differences are used, e.g., GammaRay$_t$ - GammaRay$_{t-1}$ will be used to represent the gamma ray measurement at time $t$. These variables will, given that Switch$_t$ is in the ``No''-states, vary around zero. The variable will be significantly different from zero if the parent is in any of the ``Yes''-states.
+\end{itemize}
+
+{\bf Get a data plot of the GammaRay and its diff to show how the diff run around zero except when we have formation changes. Would not only show the idea of the model, but also indicate that the assumptions make sense. And show that data is available from day 1 and all that. SIGVE: You supply me with the data?}
+
+At the time of inference, we condition on the total number of switches, and calculate (using forward-backward) the posterior distribution of the locations. Similarly, we will also calculate the most probable explanation, that is, the most probable configuration of switches given the total number of events.
+
+
 \subsubsection{Discussion and future models}
+
+
+Not sure what to put here?!
+
+
