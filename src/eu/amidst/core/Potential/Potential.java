@@ -5,17 +5,13 @@ import java.util.List;
 /**
  * Created by afa on 03/07/14.
  */
-public class Potential {
-    public void setVariables(List variables) {
-    }
+public interface Potential {
 
-    public List getVariables() {
-        return null;
-    }
+    public void setVariables(List variables);
 
-    public void combine(Potential pot) {
-    }
+    public List getVariables();
 
-    public void marginalize(List variables) {
-    }
+    public void combine(Potential pot);
+
+    public void marginalize(List variables);
 }

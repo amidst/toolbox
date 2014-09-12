@@ -47,15 +47,12 @@ The data structures of the prototype will covered the following issues:
 models. 
 \item Potentials for the model variables.
 \item Support for processing data streams for static and dynamic models.
-\item Support for scalability.  Not sure if scalability influences the design at this stage? Is it specific of the algorithms for learning and inference that will be plugged in later? 
+\item Support f	or scalability.  Not sure if scalability influences the design at this stage? Is it specific of the algorithms for learning and inference that will be plugged in later? 
 \end{itemize}
 
 In what follows, we explain the key aspects of the different classes that have 
 been grouped by conceptual blocks for the ease of presentation, although they 
-have some classes in common where all the diagrams are linked. The diagrams have been built using the free 
-software Violet UML Editor (\url{http://alexdp.free.fr/violetumleditor/page.php}).
-
-
+have some classes in common where all the diagrams are linked. The diagrams have been built using the UML design tool included in the IntelliJ IDE.
 
 \section{Model representation}\label{sec:modelRepresentation}
 
@@ -97,7 +94,7 @@ models.
 
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{staticBN}
+\includegraphics[width=\textwidth]{staticBN.jpg}
 \caption{Class diagram for the static BNs.}
 \label{fig:classDiagramStaticBN}
 \end{figure}
@@ -171,10 +168,13 @@ is shown in Fig.~\ref{fig:dynamicBN}
 
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{DynamicBN}
+\begin{center}
+\includegraphics[width=8cm]{DynamicBN.jpg}
+\end{center}
 \caption{Class diagram for the dynamic BNs.}
 \label{fig:classDiagramDynamicBN}
 \end{figure}
+
 
 Let $X_1,\ldots,X_N$ the set of variables. In order to identity a variable in a time $t$, we use the following indexes:
 
@@ -189,11 +189,11 @@ To represent the model structure we are going to use 2 attributes:
 
 \begin{itemize}
 \item \texttt{parentsAtTimet}: a vector of ParentSet of size $N$. At each position a vector of indexes (see above) are stored. 
-\item \texttt{parentsAtTimeBellowT}: a matrix of ParentSet. The first component is devoted to identify the index of the variable (from 1 to $N$).
+\item \texttt{parentsAtTimeBeforeT}: a matrix of ParentSet. The first component is devoted to identify the index of the variable (from 1 to $N$).
 The second component identities the time. For the example of order two, the dimension of this second component is 2 ($t-1$ and $t-2$).
 \end{itemize}
 
-The same strategy is used to store the attributes \texttt{EstimatorTimet} and \texttt{EstimatorTimeBellowt}.
+The same strategy is used to store the attributes \texttt{EstimatorTimet} and \texttt{EstimatorTimeBeforet}.
 
 Similar to the static approach, we will use an interface called 
 \texttt{DynamicBayesianNetwork} and our implementation of a dynamic BN
@@ -225,14 +225,16 @@ methods for combining, marginalizing  potentials, ... In contrast to the \emph{E
 probability distributions are not modified.
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{Estimators}
+\includegraphics[width=14cm]{estimators.jpg}
+\includegraphics[width=\textwidth]{conditionalEstimator.jpg}
+\includegraphics[width=10cm]{unconditionalEstimator.jpg}
 \caption{Class diagram for the Estimators.}
 \label{fig:classDiagramEstimators}
 \end{figure}
 
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{Potential}
+\includegraphics[width=\textwidth]{potentials.jpg}
 \caption{Class diagram for the Potentials.}
 \label{fig:classDiagramPotentials}
 \end{figure}
@@ -266,7 +268,7 @@ where each $\x^{(i)}=(x_1^{(i)}, \ldots, x_n^{(i)})$ represents a data instance.
 \label{subsec:staticDatabase}
 
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{StaticDB}
+\includegraphics[width=14cm]{staticDB.jpg}
 \caption{Class diagram for the static database.}
 \label{fig:staticDB}
 \end{figure}
@@ -293,7 +295,7 @@ variable efficiently), among others.
 \subsection{Dynamic Database}
 \label{subsec:dynamicDatabase}
 \begin{figure}
-\includegraphics[width=\textwidth]{DynamicDB}
+\includegraphics[width=\textwidth]{dynamicDB.jpg}
 \caption{Class diagram for the dynamic database.}
 \label{fig:dynamicDB}
 \end{figure}
@@ -330,7 +332,6 @@ The dynamic processing of the dataset leads to a more complex design. We have id
 \begin{itemize}
 \item Consider the situation in which data stream exceeds the data processing of the system. A kind of buffer could be a solution. 
 \item Scalability inside the algorithms. Does it influence the definition of the prototype or only when including the learning/inference algorithms?
-\item Buy some licenses of IntelliJ to work with UML diagrams linked to the code. 
 \end{itemize}
 
  

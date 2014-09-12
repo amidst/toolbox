@@ -3,9 +3,13 @@ package eu.amidst.core.Potential;
 import java.util.List;
 
 /**
- * Created by afa on 03/07/14.
+ * Created by andresmasegosa on 28/08/14.
  */
-public class PotentialFunctional implements Potential {
+public class ConstantPotential implements Potential {
+    double val;
+    public ConstantPotential(double val){
+        this.val=val;
+    }
     @Override
     public void setVariables(List variables) {
 
