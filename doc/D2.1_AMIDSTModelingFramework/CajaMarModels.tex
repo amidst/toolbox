@@ -35,7 +35,7 @@ Our objective is to \textit{daily} update the risk of default for every bank cus
 \begin{figure}[htbp]
 \centering
 \includegraphics[scale=0.65]{figures/CajaMarTimeLine}
-\caption{\label{Figure:CajaMarTimeLine}Time-line showing how the evaluation and training data sets are generated.}
+\caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years.}
 \end{figure}
 
 \begin{itemize}
@@ -191,7 +191,7 @@ The solution is to use the indicator variable to condition the value of variable
 
 \end{figure}
 
-Finally, there exist some variables that, even though some dependences over time would be expected, they do not display any type of dynamic behaviour. For instance, this is the case for variables whose correllograms, shown in Figure \ref{fig:cajamarCorr}, indicate values very close to zero for all lags. These variables are hence not linked through consecutive time steps in the dynamic model, and are represented by $Y_{t+1}$ in Figure \ref{fig:component} together with the socio-demographic variables.
+Finally, there exist some variables that, even though some dependences over time would be expected, they do not display any type of dynamic behaviour. For instance, this is the case for variables\footnote{For confidentiality reasons, the names of the variables cannot be revealed.} whose correlograms, shown in Figure \ref{fig:cajamarCorr}, indicate values very close to zero for all lags. These variables are hence not linked through consecutive time steps in the dynamic model, and are represented by $Y_{t+1}$ in Figure \ref{fig:component} together with the socio-demographic variables.
 
 \begin{figure}[h]
   \centering
@@ -207,7 +207,7 @@ Finally, there exist some variables that, even though some dependences over time
 \subsubsection{Low risk profile extraction} \label{subsubsec:profileExtraction}
 %-------------------------------------------------------------------------------------------------------
 
-The marketing department at Cajamar periodically launches marketing campaigns for the recruitment of new products by customers (i.e., a new credit card, an insurance, etc.). The success of these campaigns depends greatly on the client group to which the campaign is targeted. It is also crucial to reduce as much as possible unnecessary expenses focused on non-potential customers. 
+The marketing department at Cajamar periodically launches marketing campaigns for the recruitment of new products by existing customers (i.e., a new credit card, an insurance, etc.). The success of these campaigns depends greatly on the client group to which the campaign is targeted. It is also crucial to reduce as much as possible unnecessary expenses focused on non-potential customers. 
 
 For this purpose, the marketing group proceeds as follows. First, they filter the customers based on their own marketing models and in collaboration with the risk department. Then, they select a subset of predictive variables considered relevant to be part of the final profile (mainly socio-demographic variables). For example, the age of a client is a relevant predictor when designing campaigns to attract customers for a death insurance. 
 
