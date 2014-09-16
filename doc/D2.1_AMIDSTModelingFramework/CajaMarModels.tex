@@ -34,8 +34,9 @@ Our objective is to \textit{daily} update the risk of default for every bank cus
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[scale=0.65]{figures/CajaMarTimeLine}
+\includegraphics[scale=0.4]{figures/CajaMarTimeLine}
 \caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years.}
+
 \end{figure}
 
 \begin{itemize}
@@ -110,7 +111,7 @@ Figure \ref{Figure:CajaMarStatic} shows the general structure of the static mode
 
 \begin{figure}[ht!]
   \centering
-\includegraphics[scale=0.5]{./figures/CajaMarModel0}
+\includegraphics[scale=0.35]{./figures/CajaMarModel0}
 \caption{\label{Figure:CajaMarStatic}Global structure of the static model. Each white box represents a set of variables for a particular time. The green node on top is the class variable \emph{Defaulter} that represents the probability that a customer will default within the next two years. } 
 \label{fig:CajamarStaticModel}
 \end{figure}
@@ -147,10 +148,11 @@ In summary, the process of building the static model consists of the following s
 
 In this second approach, we will consider the dynamic structure of the problem because the behaviour of the customers evolves over time (e.g., the account balance is continuously changing from one month to another, the incomes, etc.) as well as their class labels either defaulters or non-defaulters (e.g., customers can be creditworthy and, after some time, go bankrupt because they have lost their job). 
 
-Figure~\ref{fig:global_temp} represents the global idea of the proposed dynamic model. It can be compactly represented by a DBN made of components as the one displayed in 
-Figure~\ref{fig:component}. $D_t$ represents the class variable at time slice $t$ (i.e., defaulting or non-defaulting client). Each feature variable with a clear dynamic component at time $t$, denoted as $X_t$, is linked to the same variable at time $t+1$, $X_{t+1}$. Although this is a reasonable assumption for most of the variables, this first Markov order relationship however might prove insufficient for some of the variables. Figure~\ref{fig:CajamarCorrelogramsAndPartial} show a partial correlogram and a correlogram for a continuous predictive variable (see Section~\ref{SubSubSection:StructuralAsumptions})\textcolor{red}{(include label in preliminaries section)}. The partial correlogram drop to almost zero for a lag equal to $2$, making a first Markov order assumption reasonable. However, a higher order could also rise from data, meaning that even earlier samples still could have an influence on the current sample given the previous one. 
+Figure~\ref{fig:global_temp} represents the global idea of the proposed dynamic model. Each of the defaulter variable at time $t$ (from $-180$ to $-1$) represents whether a customer will default in the following 2 years from $t$. This model can be compactly represented by a DBN made of components as the one displayed in 
+Figure~\ref{fig:component}. $D_t$ represents the class variable at time slice $t$, i.e. being defaulter or non-defaulter within the next two years. Each feature variable with a clear dynamic component at time $t$, denoted as $X_t$, is linked to the same variable at time $t+1$, $X_{t+1}$. Although this is a reasonable assumption for most of the variables, this first Markov order relationship however might prove insufficient for some of the variables. Figure~\ref{fig:CajamarCorrelogramsAndPartial} show a partial correlogram and a correlogram for a continuous predictive variable (see Section~\ref{SubSubSection:StructuralAsumptions})\textcolor{red}{(include label in preliminaries section)}. The partial correlogram drop to almost zero for a lag equal to $2$, making a first Markov order assumption reasonable. However, a higher order could also rise from data, meaning that even earlier samples still could have an influence on the current sample given the previous one. 
 
-$\bar{X}_{t-1}$ and $\bar{X}_{t}$ represents memory variables at time $t$ and $t+1$ respectively. The inclusion of this type of variables might be necessary when we have evidence that first order Markov relationships does not hold and we need to account for information coming from the past. For instance, a memory variable representing the average value during the last $180$ days could capture these dependences. Another reason to include these memory variables is that, even though they are computed from others, they provide information that might be disperse in the data and hardly can be captured with other variables as a whole. Another reason to use memory variables is to avoid building complex dynamic models with high Markov orders.
+$\bar{X}_{t-1}$ and $\bar{X}_{t}$ represents memory variables at time $t$ and $t+1$ respectively. The inclusion of this type of variables might be necessary when we have evidence that first order Markov relationships does not hold and we need to account for information coming from the past. A memory variable representing the average number of transactions in the online banking system, or another with the accumulated payments using credit card, both during the last $180$ days, could, for instance, capture these past dependences. Another reason to include these memory variables is that, even though they are computed from others, they provide information that might be disperse in the data and hardly can be captured with other variables as a whole. Moreover, the use of memory variables avoids building complex dynamic models with high Markov orders. In principle, $\bar{X}_{t-1}$ and $\bar{X}_{t}$ are not connected over time as their dynamic component is somehow captured through the dynamic variables $X_{t}$ and $X_{t+1}$.
+
 
 \begin{figure}[htbp]
 \begin{center}
@@ -192,6 +194,7 @@ The solution is to use the indicator variable to condition the value of variable
 \end{figure}
 
 Finally, there exist some variables that, even though some dependences over time would be expected, they do not display any type of dynamic behaviour. For instance, this is the case for variables\footnote{For confidentiality reasons, the names of the variables cannot be revealed.} whose correlograms, shown in Figure \ref{fig:cajamarCorr}, indicate values very close to zero for all lags. These variables are hence not linked through consecutive time steps in the dynamic model, and are represented by $Y_{t+1}$ in Figure \ref{fig:component} together with the socio-demographic variables.
+
 
 \begin{figure}[h]
   \centering
