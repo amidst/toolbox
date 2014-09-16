@@ -90,8 +90,6 @@ The parameters in drilling can to some extent be seen as a control response pair
 
 To examine the relationship between ROP and TRQ further, we plot the joint density of (ROP$_t$, TRQ$_t$) and the sample correlation between ROP$_t$ and TRQ$_{t+k}$ in Figure \ref{Figure:VTTorqueRateOfPenetration}. We notice that even if a strong correlation is not apparent in the density plot, if can be seen as significant form the correlation plot, and should therefore be included in the model. We capture this through an \textit{input-output Kalman filter}, where the ``input'' at time $t$ is the rate of penetration at that point in time, the ``output'' of the Kalman filter is the (observed) torque readings, and where we have to sets of latent variables: $i)$ a discrete switching variable, which is used to signify which torque regime we are currently in, and $ii)$ a latent vector of continuous variables used to capture and model the natural behavior of the torque sequence over time. During inference, the posterior probability of the discrete latent variable at time $t$ can be used to detect whether or not the system experiences abnormal torque (that is not explained by the observed rate of penetration) over time. 
 
-Further extensions to the model, where also other predictive variables are taken into account, will be considered at a later stage. The general model structure will, however, not be changed.
-
 
 \begin{figure}
 \begin{center}
@@ -104,6 +102,19 @@ Further extensions to the model, where also other predictive variables are taken
 \caption{\label{Figure:VTTorqueRateOfPenetration}  Whatever.}
 \end{center}
 \end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{./figures/VT_Scenario1} 
+\caption{\label{Figure:VTEraticTorqueMarked}  Whatever.}
+\end{center}
+\end{figure}
+
+
+Further extensions to the model, where also other predictive variables are taken into account, will be considered at a later stage. The general model structure will, however, not be changed.
+
+
+
 
 
 
@@ -136,6 +147,13 @@ As said above the real-time parameters in drilling can to some extent be divided
 
 The measurements are continuous, but not necessarily Gaussian. We therefore propose to use an input-output Kalman filter with Gaussian mixtures at the leaves to model a data stream from a single subsequence. The normality-index for an observation ${\bm e}_t$ at time $t$ given the observations up until $t$, ${\bm e}_{1:t-1}$ will be calculated as the log conditional likelihood,  $\ell_t := \log f\left({\bm e}_t|{\bm e}_{1:t-1}\right)$. By monitoring  $\ell_t$ over time, significant departures from its ``typical behaviour'' will be noted, and marked as potential irregularities.
 
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{./figures/VT_Scenario2} 
+\caption{\label{Figure:VTEraticTorqueMarked}  Whatever.}
+\end{center}
+\end{figure}
+
 {\bf Do we need to show the input-output-KF? What about the structure of the analysis for the $\ell_t$-terms?}
 
 
@@ -143,7 +161,7 @@ The measurements are continuous, but not necessarily Gaussian. We therefore prop
 
 \begin{figure}
 \begin{center}
-\includegraphics [keepaspectratio,width = 10.7cm] {figures/lithologyGamma.png}
+\includegraphics [keepaspectratio,width = 10.7cm] {figures/VT_lithologyGamma.png}
 \caption{Lithology data shown together with petrophysical measurements such as gamma radiation and neutron/density.}
 \label{lithology}
 \end{center}
@@ -168,6 +186,14 @@ This information may be erroneous, as any number of additional formation-changes
 The observation data is encoded wrt.\ \textit{time}, and but will be used with an encoding wrt.\ \textit{depth} in this application to have it aligned with the prior information at hand. The data may not necessarily be equally spaced (e.g., two neighbouring observations may be separated by half a foot, while the two next are separated by only a tenth of a foot). 
  
 Again, we think in terms of an input-output Kalman-filter, but this time the latent variables will have a predefined structure:
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{./figures/VT_Scenario3} 
+\caption{\label{Figure:VTEraticTorqueMarked}  Whatever.}
+\end{center}
+\end{figure}
+
 \begin{itemize}
 
 \item The input variable at time $t$, Depth$_t$, is the dept of the bit at that time.
