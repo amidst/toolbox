@@ -14,7 +14,7 @@ $$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$
 
 \noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. Bayesian networks can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, is associated with a factor or conditional probability $p(X_i|Pa(X_i))$. Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
 
-Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The nodes, which correspond to variables, are coloured in green or blue to highlight their nature, i.e., discrete or continuous, respectively, according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. 
+Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The nodes, which correspond to variables, are coloured in green or blue to highlight their nature, i.e., discrete or continuous, respectively, according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. Note that the notation on the second row corresponds to how a particular subnetwork will be represented later on in this document, e.g. a subnetwork with a set of hidden discrete and continuous variables would be represented by a dotted white frame\footnote{This is indeed the only restricted subnetwork, since only links from discrete to continuous variables are allowed and not the other way around.}. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -26,8 +26,8 @@ Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The n
 
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[scale=0.4]{./figures/PreliminariesNotation}
-\caption{\label{Figure:PreliminariesNotation}Graphical notation of observed/hidden and continuous/discrete variables.
+\includegraphics[scale=0.55]{./figures/PreliminariesNotation}
+\caption{\label{Figure:PreliminariesNotation}Graphical notation of observed/hidden and continuous/discrete variables and subnetworks.
 }
 \end{center}
 \end{figure}
