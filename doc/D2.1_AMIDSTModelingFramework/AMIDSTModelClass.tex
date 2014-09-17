@@ -1,21 +1,24 @@
 \section{AMIDST model class}
 
 %---------------------------------------------------------------------
-\subsection{Introduction and notation}
+\subsection{Introduction}
 %---------------------------------------------------------------------
 
+\textcolor{red}{OUt-of-topic: Shouldn't we use Figure numbering based on section? The deliverable is expanding like the universe...}\\
 One of the main goals of AMIDST project is the definition of a general model class with the following characteristics: 
 
 \begin{itemize}
 \item It should be applicable to the three considered use-cases, i.e., Daimler, Cajamar, and Verdande,
 
+\item it should be scalable, supporting both inference and learning from massive data streams.
+
 \item it should be general enough to be applicable to any future, potentially similar, use-cases, and
 
-\item it should be scalable supporting both inference and learning from massive data streams.
+
  
 \end{itemize}
 
-Taking these three different characteristics into account, we started the definition of the general model class by finding commonalities between all models presented and discussed in Section \ref{Section:PreliminaryModels}. Let's first introduce some new ``graphical notation''  to ease the model description process. This notation is based on the use of \textit{subnetwork modules}, i.e., some parts of the DBN with common features such as all the nodes are continuous and observed. Figure \ref{Figure:ModelClass:Notation} illustrates a visual description of this notation. As it can be seen, instead of circle or eclipsed nodes used to depict single variables in a graph, we represent here the subnetwork modules using square boxes. In addition, following a similar notation used previously for the different types of nodes in (see Figure \ref{Figure:PreliminariesNotation}), square boxes rounded by dashed lines refer to hidden subnetworks (i.e., including only hidden variables), while square boxes rounded by continuous lines refer to observed subnetworks (i.e., including only observed variables). Then, depending on the colour of the square boxes, subnetworks could be either discrete (green) or continuous (blue). 
+Taking these three different characteristics into account and using the graphical notation introduced in Section \ref{Section:Preliminaries} for representing subnetworks, we will present a model for the general model class below based on commonalities between all models presented and discussed in Section \ref{Section:PreliminaryModels}. 
 % Square boxes can also be nested to represent smaller subcomponents inside a bigger subcomponent. 
 
 %\begin{figure}[ht!]
@@ -25,24 +28,60 @@ Taking these three different characteristics into account, we started the defini
 %\end{center}
 %\end{figure}
 
+
 %---------------------------------------------------------------------
-\subsection{The model classes of the three use-cases}
+\subsection{The general AMIDST model class}
 %---------------------------------------------------------------------
 
-Using the new defined graphical notation, we re-introduce in this section the model classes of the three use-cases (that have been previously presented in Section \ref{Section:PreliminaryModels}). This model reinterpretation, using high-level descriptors, is crucial in order to identify the commonalities between all models. 
+Figure \ref{Figure:AMIDSTModelClass} shows the proposed AMIDST model. This model is the result of combining all the models required by the different problem domains above presented. In order to find the commonalities between all models, higher-level descriptors have been required to reinterpret the individual models, that is, instead of all the individual variables, subnetworks have been used to group variables with similar properties.
+
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.39]{./figures/AMIDSTModelClass}
+\caption{\label{Figure:AMIDSTModelClass} Proposed AMIDST model class.}
+\end{center}
+\end{figure}
+
+
+Although the resulting model might not be very revealing at the moment, we can indeed distinguish 3 different layers. The upper layer corresponds to the continuous observed variable, namely ``Continuous 1", and we will refer to it as \textit{input layer}. The second layer corresponds to a set of interconnected discrete and continuous variables, for which only links from discrete to continuous nodes are allowed. We will refer to it as the \textit{state layer}. Finally, the bottom layer corresponds to a set of interconnected discrete and continuous observed variables, in which in principles, there exist no restrictions with respect to the direction of the links, although only links from discrete to continuous nodes are required by our use cases. This layer will be referred to as \textit{output layer}. A representation of this higher level of abstraction is shown in Figure \ref{Figure:AMIDSTModelClassHighLevel}. \textcolor{red}{Add layer names to Figure \ref{Figure:AMIDSTModelClassHighLevel}}
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.4]{./figures/AMIDSTModelClassGeneral}
+\caption{\label{Figure:AMIDSTModelClassHighLevel} The high-level AMIDST model class}
+\end{center}
+\end{figure}
+
+In the following sections, we will reason out how each particular use case fits in this global model.
+
+%---------------------------------------------------------------------
+%\subsection{The model classes of the three use-cases}
+%---------------------------------------------------------------------
+
+In the following sectionn, we will re-introduce the model classes of the three use-cases (that have been previously presented in Section \ref{Section:PreliminaryModels}) but using a higher level of abstraction. 
 
 %---------------------------------------------------------------------
 \subsubsection{Daimler model class}
 %---------------------------------------------------------------------
 
+\textcolor{blue}{To be re-written}
 Daimler's models have been previously described in Figures \ref{Figure:daimlerLEdynGeneric} and \ref{Figure:daimlerreldyn}. As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of these current models is that they contain discrete children with continuous parents, and do not fall into the conditional linear Gaussian family \cite{JensenNielsen2007}. To deal with this problem, we adopt here the same solution pursed in \cite{kasper2012object} which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
+
 
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[scale=0.4]{./figures/DaimlerModelClass}
-\caption{\label{Figure:DaimlerModelClass} Daimler model class}
+\includegraphics[scale=0.39]{./figures/AMIDSTModelClassDaimler}
+\caption{\label{Figure:AMIDSTModelClassDaimler} AMIDST model class - Daimler}
 \end{center}
 \end{figure}
+
+%\begin{figure}[ht!]
+%\begin{center}
+%\includegraphics[scale=0.4]{./figures/DaimlerModelClass}
+%\caption{\label{Figure:DaimlerModelClass} Daimler model class}
+%\end{center}
+%\end{figure}
 
 This general model is structured as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}). The static model which is repeated over time consists of four elements: 
 
@@ -60,22 +99,30 @@ In addition, we have more structure that can be exploited during inference and w
 %---------------------------------------------------------------------
 \subsubsection{CajaMar model class}
 %---------------------------------------------------------------------
-
+\textcolor{blue}{To be re-written}
 Concerning CajaMar use-case, both application scenarios share the same models, of which two versions have been previously discussed, namely, static and dynamic (see Section \ref{Section:CajaMarModels}). 
 
 At this point, we obviate the static version, because the general AMIDST model class is primarily a dynamic model class. Therefore, the high-level description of CajaMar's dynamic model is given in Figure \ref{Figure:CajaMarModelClass}. As it can be seen, CajaMar models is composed by four main subnetworks, which are expanded over time and all of them are observed. Hence, at CajaMar, there are no hidden subnetworks. 
 
+
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[scale=0.4]{./figures/CajaMarModelClass}
-\caption{\label{Figure:CajaMarModelClass} CajaMar model class}
+\includegraphics[scale=0.39]{./figures/AMIDSTModelClassCajamar.png}
+\caption{\label{Figure:AMIDSTModelClassCajamar} AMIDST model class - Cajamar.}
 \end{center}
 \end{figure}
+
+%\begin{figure}[ht!]
+%\begin{center}
+%\includegraphics[scale=0.4]{./figures/CajaMarModelClass}
+%\caption{\label{Figure:CajaMarModelClass} CajaMar model class}
+%\end{center}
+%\end{figure}
 
 %---------------------------------------------------------------------
 \subsubsection{Verdande model class}
 %---------------------------------------------------------------------
-
+\textcolor{blue}{To be re-written}
 Verdande's models were visually described in Figures ?, ? and ? for the three identified application scenarios (see Section \ref{Section:VerdandeModels}). Figure \ref{Figure:VerdandeModelClass} visually depicts the high-level model class that subsumes the different models of the three application scenarios. As it can be seen, it is possible to distinguish three interpretations each corresponding to an application scenario:
 
 \begin{itemize}
@@ -84,55 +131,32 @@ Verdande's models were visually described in Figures ?, ? and ? for the three id
 \item finally, if we keep ``Discrete 1'', ``Discrete 2'' and ``Continuous 2'', we obtain the input-output Kalman filter model for application scenario 3  (see Section \ref{SubSection:DetectionFormation}).
 \end{itemize}
 
+
+
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[scale=0.4]{./figures/VerdandeModelClass}
-\caption{\label{Figure:VerdandeModelClass} Verdande model class}
+\includegraphics[scale=0.39]{./figures/AMIDSTModelClassVerdande}
+\caption{\label{Figure:AMIDSTModelClassVerdande} AMIDST model class - Verdande.}
 \end{center}
 \end{figure}
+
+%\begin{figure}[ht!]
+%\begin{center}
+%\includegraphics[scale=0.4]{./figures/VerdandeModelClass}
+%\caption{\label{Figure:VerdandeModelClass} Verdande model class}
+%\end{center}
+%\end{figure}
 
 Similarly to the Daimler model, the general model is structured as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}). The static part which is repeated over time is composed by five subnetworks: two observed components (i.e., one discrete temporally connected on the top, and one continuous at the bottom); and three hidden components in the middle (i.e., one hidden discrete and one hidden continuous both are temporally connected, and one hidden discrete, which is not temporally connected and its function is to account for the possible conditional dependencies of the observed continuous variables).  
 
 However, contrary to Daimler, Verdande class model does not have a polytree structure that can be exploited during inference. 
 
-%---------------------------------------------------------------------
-\subsection{The general AMIDST model class}
-%---------------------------------------------------------------------
 
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.4]{./figures/AMIDSTModelClassGeneral}
-\caption{\label{Figure:AMIDSTModelClassHighLevel} The general AMIDST model class}
-\end{center}
-\end{figure}
+\subsection{Summary}
 
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.39]{./figures/AMIDSTModelClass}
-\caption{\label{Figure:AMIDSTModelClass} AMIDST model class low level}
-\end{center}
-\end{figure}
+%This section, with the high-level figure, should help to defend the third point made in the introduction, i.e., that it should be general enough to be applicable to any future, potentially similar, use-cases.
+ 
 
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.39]{./figures/AMIDSTModelClassDaimler}
-\caption{\label{Figure:AMIDSTModelClassDaimler} AMIDST model class low level - Daimler}
-\end{center}
-\end{figure}
-
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.39]{./figures/AMIDSTModelClassCajamar.png}
-\caption{\label{Figure:AMIDSTModelClassCajamar} AMIDST model class low level - Cajamar.}
-\end{center}
-\end{figure}
-
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.39]{./figures/AMIDSTModelClassVerdande}
-\caption{\label{Figure:AMIDSTModelClassVerdande} AMIDST model class low level - Verdande.}
-\end{center}
-\end{figure}
 
 %\begin{figure}[ht!]
 %\begin{center}
