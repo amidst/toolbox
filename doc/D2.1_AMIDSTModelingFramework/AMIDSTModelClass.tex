@@ -1,9 +1,5 @@
 \section{AMIDST model class}
 
-%---------------------------------------------------------------------
-\subsection{Introduction}
-%---------------------------------------------------------------------
-
 \textcolor{red}{OUt-of-topic: Shouldn't we use Figure numbering based on section? The deliverable is expanding like the universe...}\\
 One of the main goals of AMIDST project is the definition of a general model class with the following characteristics: 
 
@@ -14,26 +10,15 @@ One of the main goals of AMIDST project is the definition of a general model cla
 
 \item it should be general enough to be applicable to any future, potentially similar, use-cases, and
 
-
- 
 \end{itemize}
 
-Taking these three different characteristics into account and using the graphical notation introduced in Section \ref{Section:Preliminaries} for representing subnetworks, we will present a model for the general model class below based on commonalities between all models presented and discussed in Section \ref{Section:PreliminaryModels}. 
-% Square boxes can also be nested to represent smaller subcomponents inside a bigger subcomponent. 
-
-%\begin{figure}[ht!]
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/ModelClass0}
-%\caption{\label{Figure:ModelClass:Notation} Graphical notation for the different potential subnetworks.}
-%\end{center}
-%\end{figure}
-
+Taking these different characteristics into account, and using the subnetwork graphical notation (see Section \ref{Section:Preliminaries}), we will first present and discuss the general AMIDST model class in Section \ref{GeneralModelClass}, then its specific instantiation to each use-case in Section \ref{UseCaseModelClasses}.
 
 %---------------------------------------------------------------------
-\subsection{The general AMIDST model class}
+\subsection{The general AMIDST model class}\label{GeneralModelClass}
 %---------------------------------------------------------------------
 
-Figure \ref{Figure:AMIDSTModelClass} shows the proposed AMIDST model. This model is the result of combining all the models required by the different problem domains above presented. In order to find the commonalities between all models, higher-level descriptors have been required to reinterpret the individual models, that is, instead of all the individual variables, subnetworks have been used to group variables with similar properties.
+Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model class. This model is the result of combining all the models required by the different problem domains above presented. In order to find the commonalities between all models, higher-level descriptors have been required to reinterpret the individual models, that is, instead of all the individual variables, subnetworks have been used to group variables with similar properties.
 
 
 \begin{figure}[ht!]
@@ -56,10 +41,10 @@ Although the resulting model might not be very revealing at the moment, we can i
 In the following sections, we will reason out how each particular use case fits in this global model.
 
 %---------------------------------------------------------------------
-%\subsection{The model classes of the three use-cases}
+\subsection{The model classes of the three use-cases} \label{UseCaseModelClasses}
 %---------------------------------------------------------------------
 
-In the following sectionn, we will re-introduce the model classes of the three use-cases (that have been previously presented in Section \ref{Section:PreliminaryModels}) but using a higher level of abstraction. 
+In the following section, we will re-introduce the model classes of the three use-cases (that have been previously presented in Section \ref{Section:PreliminaryModels}) but using a higher level of abstraction. 
 
 %---------------------------------------------------------------------
 \subsubsection{Daimler model class}
