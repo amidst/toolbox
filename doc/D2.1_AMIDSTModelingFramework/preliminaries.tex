@@ -1,22 +1,6 @@
-\section{Notation and background}\label{Section:Preliminaries}
+\section{Background and notation}\label{Section:Preliminaries}
 
-In this section, we present some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use cases. First, Section \ref{SubSection:GraphicalNotation} describes the graphical notation used throughout this document. Then, Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, and Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time. Finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
-
-%------------------------------------------------------------------------------------------------------------
-\subsection{Graphical notation}\label{SubSection:GraphicalNotation}
-%------------------------------------------------------------------------------------------------------------
-
-Figure \ref{Figure:PreliminariesNotation} shows in the first row the graphical representation of the different types of variables used in AMIDST model classes. A continuous variable is depicted with an ellipse with a blue background, while a discrete variable is depicted with an ellipse with a green background. If a variable could be either continuous or discrete, the background of the ellipse is simultaneously blue and green. In addition, a hidden variable is depicted with a dashed-line ellipse, while an observed variable is depicted with a solid-line ellipse. Obviously, a continuous hidden variable, for example, would be represented with a blue dashed-line ellipse.
-
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.55]{./figures/PreliminariesNotation}
-\caption{\label{Figure:PreliminariesNotation}Graphical notation of the different types of variables and subnetworks.
-}
-\end{center}
-\end{figure}
-
-The second row of Figure \ref{Figure:PreliminariesNotation} shows the graphical representation of the different types of subnetworks. A subnetwork refers to a directed acyclic graph defined over a set of variables\footnote{In particular, a subnetwork refers in our case to a part of a dynamic Bayesian network that will be defined later on this document.}. A continuous subnetwork (i.e., including only continuous variables) is depicted with a blue rectangle, while a discrete subnetwork (i.e., including only discrete variables) is depicted with a green rectangle. If a subnetwork can be instantiated, at a specific moment, with either continuous or discrete variables (i.e., we have a continuous/discrete subnetwork), the background of the rectangle is simultaneously blue and green. Finally, a hidden subnetwork is depicted with a dashed-line rectangle, while an observed subnetwork is depicted with a solid-line rectangle.
+The following sections aim at describing some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use cases. Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time, and, finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
 
 %------------------------------------------------------------------------------------------------------------
 \subsection{Bayesian networks}\label{SubSection:HybridBNs}
@@ -30,7 +14,7 @@ $$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$
 
 \noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. Bayesian networks can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, is associated with a factor or conditional probability $p(X_i|Pa(X_i))$. Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
 
-Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The nodes, which correspond to variables, are coloured in green or blue to highlight their nature, i.e., discrete or continuous, respectively, according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. 
+Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The nodes, which correspond to variables, are coloured in green or blue to highlight their nature, i.e., discrete or continuous, respectively, according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. Note that the notation on the second row corresponds to how a particular subnetwork will be represented later on in this document, e.g. a subnetwork with a set of hidden discrete and continuous variables would be represented by a dotted white frame\footnote{This is indeed the only restricted subnetwork, since only links from discrete to continuous variables are allowed and not the other way around.}. Each \textit{subnetwork module} corresponds to a part of the DBN with common features such as all the nodes are continuous and observed. Instead of eclipsed nodes used to depict single variables in a graph, we represent here the subnetwork modules using frames. In general, dashed lines refer to hidden variables or subnetworks (i.e., those including only hidden variables), while continuous lines refer to observed variables or subnetworks (i.e., those including only observed variables). Then, depending on the background colour, variables or subnetworks can be either discrete (green), continuous (blue) or hybrid (white or green/blue).
 
 \begin{figure}[ht!]
 \begin{center}
@@ -39,6 +23,15 @@ Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The n
 }
 \end{center}
 \end{figure}
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.55]{./figures/PreliminariesNotation}
+\caption{\label{Figure:PreliminariesNotation}Graphical notation of observed/hidden and continuous/discrete variables and subnetworks.
+}
+\end{center}
+\end{figure}
+
 
 Traditionally, BNs have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}). 
 
@@ -171,16 +164,16 @@ $$ \hat{\rho}_v =\frac{\sum_{t=1}^{T-v} (x_t-\bar{x})(x_{t+v}-\bar{x})}{\sum_{t=
 
 
 %%Intuitively, ... short/long memory.
-Sample correlograms can be interpreted as a way to measure the strength of the following unconditional dependences: $X_t  \not\perp X_{t+v}$ for some lag $v \geq 1$.  When $\hat{\rho}_v$ is close to zero, this indicates that there exists a strong unconditional independence between $X_t$ and $X_{t+v}$. However, when $\hat{\rho}_v$ is close to either $1$ or $-1$, this indicates that there is a strong correlation or dependency between $X_t$ and $X_{t+v}$. However, once again, we should never forget that when computing these Pearson correlation coefficients, we are making a strong assumption about the normality of the data, which might not hold. Intuitively, they can be used to get an idea of the type of memory encoded in the time series, differentiating between short-term and long-term memory. 
+Sample correlograms can be interpreted as a way to measure the strength of the following unconditional dependences: $X_t  \not\perp X_{t+v}$ for some lag $v \geq 1$.  When $\hat{\rho}_v$ is close to zero, this indicates that there exists a strong unconditional independence between $X_t$ and $X_{t+v}$. However, when $\hat{\rho}_v$ is close to either $1$ or $-1$, this indicates that there is a strong correlation or dependency between $X_t$ and $X_{t+v}$. However, once again, we should never forget that when computing these Pearson correlation coefficients, we are making a strong assumption about the normality of the data, which might not hold. Intuitively, they can be used to get an idea of the type of the ``memory'' encoded in the time series, differentiating between short-term and long-term memory. 
 
-Figure \ref{Figure:PreliminariesCorrelograms} shows examples of sample correlograms for two different types of data sets: Figure \ref{Figure:PreliminariesCorrelograms}(a) shows a sample correlogram for a sequence of 50 i.i.d. data records sampled according to a Gaussian distribution with zero mean and unit variance $x_t\sim {\mathcal N}(0,1)$; and Figure \ref{Figure:PreliminariesCorrelograms}(b) shows a sample correlogram for a sequence of 50 data samples distributed as $x_t=x_{t-1} + \epsilon$, such that $\epsilon\sim {\mathcal N}(0,1)$. As it can be seen, the correlogram for the i.i.d. data has values close to zero for all lags. However, for time series data, the correlogram clearly identifies the presence of a temporal relationship in the data. As expected, the correlation decreases with the size of the lag, and how quickly it decreases depends on the strength of the temporal relationship, or more intuitively, the memory of the time series. 
+Figure \ref{Figure:PreliminariesCorrelograms} shows examples of sample correlograms for two different types of data sets: Figure \ref{Figure:PreliminariesCorrelograms}(a) shows a sample correlogram for a sequence of 50 i.i.d. data records sampled according to a Gaussian distribution with zero mean and unit variance $x_t\sim {\mathcal N}(0,1)$; and Figure \ref{Figure:PreliminariesCorrelograms}(b) shows a sample correlogram for a sequence of 50 data samples distributed as $x_t=x_{t-1} + \epsilon$, such that $\epsilon\sim {\mathcal N}(0,1)$. As it can be seen, the correlogram for the i.i.d. data has values close to zero for all lags. However, for time series data, the correlogram clearly identifies the presence of a temporal relationship in the data. As expected, the correlation decreases with the size of the lag, and how quickly it decreases depends on the strength of the temporal relationship, or more intuitively, the ``memory'' of the time series. In the previous example, this ``memory'' inversely depends of the variance of the ``white noise'' $\epsilon$ value.
 
 
 \item \textbf{Sample partial correlograms}: Let $X_t$ be a random variable associated to $X$ taking values at time $t$. We can build the following regression problem:
 
-$$ X_t = a_0 + a_1X_{t-1} + a_2X_{t-2} + ... a_{v-1}X_{t-v-1}$$
+$$ X_t = a_0 + a_1X_{t-1} + a_2X_{t-2} + ... a_{v-1}X_{t-v+1}$$
 
-In addition, let $e_{t,v}$ denotes the residuals of this regression problem (i.e., the error when estimating $X_t$ using a linear combination of $v-1$ previous observations). The \emph{sample partial auto-correlation coefficient} of lag $v$, denoted as  $\hat{\theta}_v$, is the standard sample auto-correlation between the series $\{x_{t-v}\}_{t-v\in\{1,...,T\}}$ and $\{e_{t,v}\}_{t\in\{1,...,T\}}$. Intuitively, the sample partial auto-correlation coefficient of lag $v$ can be seen as the correlation between $X_t$ and $X_{t+v}$ after having removed the common \emph{linear} effect of the data in between.
+In addition, let $e_{t,v}$ denotes the residuals of this regression problem (i.e., the error when estimating $X_t$ using a linear combination of $v-1$ previous observations). The \emph{sample partial auto-correlation coefficient} of lag $v$, denoted as  $\hat{\theta}_v$, is the standard sample auto-correlation between the series $\{x_{t-v}\}_{t-v\in\{1,...,T\}}$ and $\{e_{t,v}\}_{t\in\{1,...,T\}}$. Intuitively, the sample partial auto-correlation coefficient of lag $v$ can be seen as the correlation between $X_t$ and $X_{t-v}$ after having removed the common \emph{linear} effect of the data in between.
 
 As previously, we plot in Figure \ref{Figure:PreliminariesCorrelograms} (c) and (d) the sample partial correlograms for the same two data sequences presented above. In the case of i.i.d. data, we can see again that the partial correlogram does not show any sign of partial correlation between the data sequence samples. However, for time series data, the partial correlogram takes a high value for $v=1$ (for this lag value it is equal to the sample correlogram), but then becomes close to zero for $v$ values higher than 1. The sample partial correlogram can be interpreted as a way to measure the strength of the following conditional dependence: $X_t  \not\perp X_{t+v} | X_1,...,X_{t+v-1}$ for some lag $v>1$. Accordingly, the sample partial correlogram correctly identifies that we have the following conditional independencies: $X_t\perp X_{t+2}|X_{t+1}$ in the considered time series data. 
 
