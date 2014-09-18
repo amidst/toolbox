@@ -1,6 +1,22 @@
-\section{Background and notation}\label{Section:Preliminaries}
+\section{Notation and background}\label{Section:Preliminaries}
 
-The following sections aim at describing some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use cases. Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time, and, finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
+In this section, we present some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use cases. First, Section \ref{SubSection:GraphicalNotation} describes the graphical notation used throughout this document. Then, Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, and Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time. Finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
+
+%------------------------------------------------------------------------------------------------------------
+\subsection{Graphical notation}\label{SubSection:GraphicalNotation}
+%------------------------------------------------------------------------------------------------------------
+
+Figure \ref{Figure:PreliminariesNotation} shows in the first row the graphical representation of the different types of variables used in AMIDST model classes. A continuous variable is depicted with an ellipse with a blue background, while a discrete variable is depicted with an ellipse with a green background. If a variable could be either continuous or discrete, the background of the ellipse is simultaneously blue and green. In addition, a hidden variable is depicted with a dashed-line ellipse, while an observed variable is depicted with a solid-line ellipse. Obviously, a continuous hidden variable, for example, would be represented with a blue dashed-line ellipse.
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.55]{./figures/PreliminariesNotation}
+\caption{\label{Figure:PreliminariesNotation}Graphical notation of the different types of variables and subnetworks.
+}
+\end{center}
+\end{figure}
+
+The second row of Figure \ref{Figure:PreliminariesNotation} shows the graphical representation of the different types of subnetworks. A subnetwork refers to a directed acyclic graph defined over a set of variables\footnote{In particular, a subnetwork refers in our case to a part of a dynamic Bayesian network that will be defined later on this document.}. A continuous subnetwork (i.e., including only continuous variables) is depicted with a blue rectangle, while a discrete subnetwork (i.e., including only discrete variables) is depicted with a green rectangle. If a subnetwork can be instantiated, at a specific moment, with either continuous or discrete variables (i.e., we have a continuous/discrete subnetwork), the background of the rectangle is simultaneously blue and green. Finally, a hidden subnetwork is depicted with a dashed-line rectangle, while an observed subnetwork is depicted with a solid-line rectangle.
 
 %------------------------------------------------------------------------------------------------------------
 \subsection{Bayesian networks}\label{SubSection:HybridBNs}
@@ -14,7 +30,7 @@ $$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$
 
 \noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. Bayesian networks can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, is associated with a factor or conditional probability $p(X_i|Pa(X_i))$. Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
 
-Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The nodes, which correspond to variables, are coloured in green or blue to highlight their nature, i.e., discrete or continuous, respectively, according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. Note that the notation on the second row corresponds to how a particular subnetwork will be represented later on in this document, e.g. a subnetwork with a set of hidden discrete and continuous variables would be represented by a dotted white frame\footnote{This is indeed the only restricted subnetwork, since only links from discrete to continuous variables are allowed and not the other way around.}. Each \textit{subnetwork module} corresponds to a part of the DBN with common features such as all the nodes are continuous and observed. Instead of eclipsed nodes used to depict single variables in a graph, we represent here the subnetwork modules using frames. In general, dashed lines refer to hidden variables or subnetworks (i.e., those including only hidden variables), while continuous lines refer to observed variables or subnetworks (i.e., those including only observed variables). Then, depending on the background colour, variables or subnetworks can be either discrete (green), continuous (blue) or hybrid (white or green/blue).
+Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The nodes, which correspond to variables, are coloured in green or blue to highlight their nature, i.e., discrete or continuous, respectively, according to the notation depicted in Figure \ref{Figure:PreliminariesNotation}. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -23,15 +39,6 @@ Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The n
 }
 \end{center}
 \end{figure}
-
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.55]{./figures/PreliminariesNotation}
-\caption{\label{Figure:PreliminariesNotation}Graphical notation of observed/hidden and continuous/discrete variables and subnetworks.
-}
-\end{center}
-\end{figure}
-
 
 Traditionally, BNs have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}). 
 
