@@ -103,7 +103,7 @@ An extension of the HMM is the so-called \textit{input-output hidden Markov mode
 
 IOHMM is usually employed in supervised classification problems. In this case, both input and output variables are known during training, but only the former is known during testing. In fact, during testing, inference is performed to predict the output variables at each time step. In AMIDST we use this model in a different way. In our case, both set of input and output variables are always known, so that inference is only performed to predict the latent variables. The input variables $\bm Y'_{1:T}$ are introduced as a way to ``relax" the stationary assumption, by explicitly introducing a dependency to some observed information at each time slice, that is, the transition probability between $\bm X_t$ and $\bm X_{t+1}$ depends on the observed value $\bm Y_{t+1}$. 
 
-As later explained in Section \ref{Section:VerdandeModels}, we might want to further extend IOHMM model by considering a set of discrete and continuous state variables in our models. 
+%As later explained in Section \ref{Section:VerdandeModels}, we might want to further extend IOHMM model by considering a set of discrete and continuous state variables in our models. 
 
 %-----------------------------------------------------------------------------------------------
 \subsubsection{Kalman filters}\label{SubSubSection:KFs}
@@ -119,6 +119,8 @@ When modelling non-linear domains, the dynamics and observational distributions 
 \caption{\label{Figure:SKF} An example of a switching Kalman filter. $Z_t$ represents the discrete state variable modelling multiple KFs running in parallel.}
 \end{center}
 \end{figure}
+
+Similarly to HMM, these models can be extended by introducing an extra top layer of input variables to ``relax" the stationary assumption, by explicitly introducing a dependency to some observed information for the transition probability of the latent variables. These models will be better explained in Section \ref{Section:VerdandeModels}.
 
 %-----------------------------------------------------------------------------------------------
 \subsubsection{Two-time slice dynamic Bayesian networks}\label{SubSubSection:2DBNs}	
