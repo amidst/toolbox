@@ -30,7 +30,6 @@ The problem of predicting the risk of default is currently solved at Cajamar by 
 
 The methodology currently employed does not assume any dependence structure among the variables, and current predictions are made using only $27$ variables out of more than $1000$ variables available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are partly due to limitations in the available commercial software and the computing resources.
 
-<<<<<<< HEAD
 Our objective is to \textit{daily} update the risk of default for every bank customer. This daily evaluation will be performed using two data sets: \textit{the model training data set} and \textit{the model evaluation data set} (see~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem. 
 
 Next, we detail how these data sets are collected (see Figure~\ref{Figure:CajaMarTimeLine} for a better understanding).
@@ -40,14 +39,6 @@ Next, we detail how these data sets are collected (see Figure~\ref{Figure:CajaMa
 \centering
 \includegraphics[scale=0.4]{figures/CajaMarTimeLine}
 \caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years. Both in the training and test data sets, there are two groups of variables, denoted as $\X$ and $\Y$, with different past information considered, $180$ days back and $6$ semesters back, respectively.}
-=======
-Our objective is to \textit{daily} update the risk of default for every bank customer. This daily evaluation will be performed using two data sets: \textit{the model training data set} and \textit{the model evaluation data set} (see~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem. Figure~\ref{Figure:CajaMarTimeLine} illustrates the generation process of both evaluation and training data sets are collected within a time-line. The current time is denoted as $t$ and the time $2$ years back is denoted as $k$, i.e., $k=t-2$ years. 
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[scale=0.65]{figures/CajaMarTimeLine}
-\caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years.}
->>>>>>> ae2011f4779b38aa59e2d3d202d8807a8986853f
 
 \end{figure}
 
