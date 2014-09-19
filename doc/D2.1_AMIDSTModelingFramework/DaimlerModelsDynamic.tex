@@ -56,7 +56,7 @@ O(t) =O(t-1) +V(t-1)dt +\epsilon
 
 where $\epsilon$ denotes a white noise $\mathcal{N}(0,\sigma^2)$ which is assumed to be small. In order to corroborate the validity of this distributional assumption, we also analysed the hypothesis $O(t) - O(t-1) = \Delta O = V(t-1)dt +\epsilon$ on our data. Figure \ref{Figure:daimlerVvsOffs} shows the time and bivariate contour plots for $V(t-1)$ and $\Delta O$ for a randomly selected sequence (i.e., Seq 7) of an OBJ-CutOut manoeuvre. Both plots clearly prove that the assumption of a linear relationship with Gaussian noise might not be very far from reality.
 
-The avid reader may have also noticed that these approaches do not take acceleration into account, i.e., they assume that it is constant at all times. From time plots corresponding to velocity in Figure \ref{Figure:daimlerTPlot}, we can easily observe that this is an unrealistic assumption. A more detailed analysis about the possible future inclusion of acceleration in the dynamic models is included below in Section \ref{subsubsection:daimlerfuture}, where future models are discussed.
+The avid reader may have also noticed that these approaches do not take acceleration into account, i.e., they assume that velocity is constant (plus some white noise) at all times. From time plots corresponding to velocity in Figure \ref{Figure:daimlerTPlot}, we can easily observe that this is an unrealistic assumption. A more detailed analysis about the possible future inclusion of acceleration in the dynamic models is included below in Section \ref{subsubsection:daimlerfuture}, where future models are discussed.
 
 \begin{figure}[ht!]
   \centering
@@ -71,11 +71,11 @@ The avid reader may have also noticed that these approaches do not take accelera
 
 Finally, Figure \ref{Figure:daimlerLEdynGeneric} presents a rough overview of the final structure of the dynamic OOBN\footnote{Full details can not be provided for confidentiality reasons, but will be included in the confidential Deliverable 6.1.}. It illustrates how the temporal connection is only made on the top nodes (i.e., S\_REAL) involving the situation-features in consecutive time steps\footnote{Although for the sake of clarity in the representation the sensor measurement structure is only shown for S\_REAL$_1$, this is identical for all sensor variables.}. The final event or manoeuvre prediction is then determined by the combination of all possible hypotheses ($Hypothesis_1, \ldots, Hypothesis_n$). There exist hypotheses at the top level that correspond to each of the sensor measurements, and then other different layers of hypotheses that combine the different outcomes till the final event, forming a polytree structure. %and the position of the OBJ with respect to the EGO car.
 
-Similarly to the static OOBN, if we modelled V\_LAT\_REAL and O\_LAT\_REAL as continuous variables, the conditional probability distribution of the LE hypotheses given the V\_LAT\_REAL and O\_LAT\_REAL variables would not fall in the conditional linear Gaussian family \cite{JensenNielsen2007}, because we would have discrete children with continuous parents. Once again, the pursued approach to deal with this problem is the discretization of the V\_LAT\_REAL and O\_LAT\_REAL variables (hence, they are represented with a green color in Figure \ref{Figure:daimlerLEdynGeneric}). Since the remaining continuous variables S\_MEAS and S\_SIGMA are always observed, all the inferences can be implemented only over discrete potentials.
+Similarly to the static OOBN, if we modelled V\_LAT\_REAL and O\_LAT\_REAL as continuous variables, the conditional probability distribution of the LE hypotheses given the V\_LAT\_REAL and O\_LAT\_REAL variables would not fall in the conditional linear Gaussian family \cite{JensenNielsen2007}, because we would have discrete children with continuous parents. Once again, the pursued approach to deal with this problem is the discretization of the V\_LAT\_REAL and O\_LAT\_REAL variables. Hence, they are represented with a green color in Figure \ref{Figure:daimlerLEdynGeneric} and in all the more generic versions of it that will be included in Section \ref{daimlerAMIDSTModels}. Since the remaining continuous variables S\_MEAS and S\_SIGMA are always observed, all the inferences can be implemented only over discrete potentials.
 
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[scale=0.49]{./figures/DaimlerLEdynGeneric}
+\includegraphics[scale=0.39]{./figures/DaimlerLEdynGeneric}
 \end{center}
 \caption{\label{Figure:daimlerLEdynGeneric}Daimler dynamic OOBN model with several hypotheses. Although for the sake of clarity in the representation the sensor measurement structure (i.e. S\_MEAS and S\_SIGMA) is only shown for S\_REAL$_1$, this is identical for all sensor variables. S\_REAL variables are plotted in green color to highlight that they are discretized, because otherwise we would have a model with continuous parents and discrete children.}
 \end{figure}
@@ -90,7 +90,7 @@ Earlier prediction of manoeuvre intentions could be achieved before any developm
 
 A continued safe manoeuvre (of type ``lane follow'' or ``lane change'') is modelled by estimating the time to collision (TTC) with a vehicle in front (on the same lane) or eventually with an approaching vehicle (on the neighbour lane). For a safe manoeuvre, TTC should be higher than $1$ second, either when the EGO vehicle wants to change to the neighbour lane or needs to break to ensure safe driving on the same lane. We assume that using this approach will further enhance the prediction horizon for manoeuvre recognition (up to $5$ seconds).
 
-Similarly to the models described in Figure \ref{Figure:daimlerLEdyn}, a new dynamic OOBN is defined with the hypothesis ``relative dynamics'' (REL\_DYN), as shown in Figure \ref{Figure:daimlerreldyn}.  Due to confidentiality reasons, we can not give at this stage of the project further details about this model (full details will be given in the confidential Deliverable 6.1.).
+Similarly to the models described in Figure \ref{Figure:daimlerLEdyn}, the dynamic OOBN model, shown in Figure \ref{Figure:daimlerreldyn}, was defined with the hypothesis ``relative dynamics'' (REL\_DYN) \cite{SlavaThesis2014}. Due to confidentiality reasons, we can not give at this stage of the project further details about this model (full details will be given in the confidential Deliverable 6.1.).
 
 %We can see however that this model have the same general structure that the dynamic models proposed for the previous application scenario. 
 % any type of data analysis that supports this hypothesis.
@@ -99,7 +99,7 @@ Similarly to the models described in Figure \ref{Figure:daimlerLEdyn}, a new dyn
 \begin{center}
 \includegraphics[scale=0.48]{./figures/Daimlerreldyn.png}
 \end{center}
-\caption{\label{Figure:daimlerreldyn}Daimler dynamic OOBN model with relative dynamics. V\_REL\_REAL and O\_REL\_REAL refer to the relative velocity and relative distance between the EGO and the car in front, respectively. The other variables with \_MEAS and \_SIGMA suffixes refer to the measured values and the uncertainty of the measurements, respectively, as commented in the previous section for other sensor readings.}
+\caption{\label{Figure:daimlerreldyn}Daimler dynamic OOBN model with relative dynamics \cite{SlavaThesis2014}. V\_REL\_REAL and O\_REL\_REAL refer to the relative velocity and relative distance between the EGO and the car in front, respectively. The other variables with \_MEAS and \_SIGMA suffixes refer to the measured values and the uncertainty of the measurements, respectively, as commented in the previous section for other sensor readings.}
 \end{figure}
 
 
