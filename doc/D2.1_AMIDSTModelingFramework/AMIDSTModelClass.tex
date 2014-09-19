@@ -29,7 +29,7 @@ Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model cla
 \end{figure}
 
 
-In the resulting model, we can distinguish 3 different layers.:
+In the resulting 2T-DBN model, we can distinguish 3 different layers.:
 
 \begin{itemize}
 
@@ -51,18 +51,20 @@ In the following sections, we will reason out how each particular use case fits 
 \subsubsection{Daimler model class}\label{daimlerAMIDSTModels}
 %---------------------------------------------------------------------
 
-\textcolor{blue}{To be re-written}
-Daimler's models have been previously described in Figures \ref{Figure:daimlerLEdynGeneric}. With respect to the general model above described, we need the following concepts:
+%\textcolor{blue}{To be re-written}
+Daimler's resulting model has been previously displayed in Figure \ref{Figure:daimlerLEdynGeneric}. With respect to the general model above described, we need the following concepts:
 
 \begin{itemize}
 \item \textbf{Control/class layer}: is not used in this domain.
-\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables  would encode a polytree for the different hypothesis, containing LaneMarkCross, Lane Change, REL and MNVR. (\textcolor{red}{Add this information to the Class E: Event: description in Daimler}.) Connection through time is only made at the level of top sets of state variables, i.e., the signal real values (S\_REAL). Note that this model would not contemplate a possible extension in which the lower level hypothesis are connected over time. This is because this would greatly difficult the inference process. 
-\item \textbf{Observable layer: }
+
+\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables (State 2) encode a polytree \cite{JensenNielsen2007} for the different hypothesis, containing LaneMarkCross, Lane Change, REL and MNVR. (\textcolor{red}{Add this information to the Class E: Event: description in Daimler}.) This polytree structure, not explicitly encoded in the model, can indeed be exploited during inference.
+
+Connection through time is only made at the level of top sets of state variables (State 1), i.e., the signal real values (S\_REAL). Consequently, the future and past time slices of our 2T-DBN are conditionally independent given the hidden subnetwork corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete subnetworks are also conditionally independent given this hidden subnetwork. Note that this version of the AMIDST general model would not contemplate a possible extension in which the lower level hypothesis are connected over time. This is because it would greatly difficult the inference process. 
+
+
+
+\item \textbf{Observable layer:} there are two sets of observed variables in this case. On one hand, we encounter a group of variables representing the measured data (S\_MEAS), along with the variables encoding the sensor noise(S\_SIGMA). The resulting structure is again a polytree, with presents some advantages for the inference process. On the other hand, we have a single discrete node for the manoeuvre event (which can have 6 possible states for the different manoeuvres), which will be the target variable during inference. 
 \end{itemize}
-
-
-
-
 
 
 \begin{figure}[ht!]
@@ -72,27 +74,21 @@ Daimler's models have been previously described in Figures \ref{Figure:daimlerLE
 \end{center}
 \end{figure}
 
-As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of these current models is that they contain discrete children with continuous parents, and do not fall into the conditional linear Gaussian family \cite{JensenNielsen2007}. To deal with this problem, we adopt here the same solution pursed in \cite{kasper2012object} which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
+As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of this model is that it contains discrete children with continuous parents, and hence cannot be modelled with the conditional linear Gaussian family \cite{JensenNielsen2007}. In this particular case, to deal with this problem we adopt the same solution adopted in \cite{kasper2012object}, which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
 
-%\begin{figure}[ht!]
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/DaimlerModelClass}
-%\caption{\label{Figure:DaimlerModelClass} Daimler model class}
-%\end{center}
-%\end{figure}
 
-This general model is structured as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}). The static model which is repeated over time consists of four elements: 
+%This general model is structured as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}). The static model which is repeated over time consists of four elements: 
+%
+%\begin{enumerate}
+%\item ``Discrete 1'': is a discrete hidden subnetwork which is the only element temporally connected
+%\item ``Discrete 2'': is an additional discrete hidden subnetwork which is not temporally connected. It is included only for modelling purposes inside a time slice
+%\item ``Discrete 3'': is an observed discrete subnetwork directly depending on ``Discrete 2'' subnetwork
+%\item  ``Continuous 1'': is an observed continuous subnetwork which is directly depending on ``Discrete 1'' subnetwork
+%\end{enumerate}
+%
+%As commented, this 2T-DBN is only temporally connected through the hidden subnetwork on top. 
 
-\begin{enumerate}
-\item ``Discrete 1'': is a discrete hidden subnetwork which is the only element temporally connected
-\item ``Discrete 2'': is an additional discrete hidden subnetwork which is not temporally connected. It is included only for modelling purposes inside a time slice
-\item ``Discrete 3'': is an observed discrete subnetwork directly depending on ``Discrete 2'' subnetwork
-\item  ``Continuous 1'': is an observed continuous subnetwork which is directly depending on ``Discrete 1'' subnetwork
-\end{enumerate}
 
-As commented, this 2T-DBN is only temporally connected through the hidden subnetwork on top. Consequently, the future and past time slices of our 2T-DBN are conditionally independent given the hidden subnetwork corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete subnetworks are also conditionally independent given this hidden subnetwork.
-
-In addition, we have more structure that can be exploited during inference and which is not reflected in this meta-network. Specifically, the hidden and observed subnetworks may have a polytree structure \cite{JensenNielsen2007}. In this case, both static and dynamic BNs have polytree structure and this can be exploited during inference. 
 
 %---------------------------------------------------------------------
 \subsubsection{CajaMar model class}\label{cajamarAMIDSTModels}
