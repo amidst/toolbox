@@ -12,7 +12,7 @@ One of the main goals of AMIDST project is the definition of a general model cla
 
 \end{itemize}
 
-Taking these different characteristics into account, and using the subnetwork graphical notation (see Section \ref{Section:Preliminaries}), we will first present and discuss the general AMIDST model class in Section \ref{GeneralModelClass}, then its specific instantiation to each use-case in Section \ref{UseCaseModelClasses}.
+Taking these different characteristics into account and using the subnetwork graphical notation introduced in Section \ref{SubSection:GraphicalNotation}), we will first present and discuss the general AMIDST model class in Section \ref{GeneralModelClass}, then its specific instantiation to each use-case in different subsections. Finally, a summary is presented in Section \ref{summaryAMIDSTModels}.
 
 %---------------------------------------------------------------------
 \subsection{The general AMIDST model class}\label{GeneralModelClass}
@@ -23,35 +23,46 @@ Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model cla
 
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[scale=0.39]{./figures/AMIDSTModelClass}
+\includegraphics[scale=0.465]{./figures/AMIDSTModelClass}
 \caption{\label{Figure:AMIDSTModelClass} Proposed AMIDST model class.}
 \end{center}
 \end{figure}
 
 
-Although the resulting model might not be very revealing at the moment, we can indeed distinguish 3 different layers. The upper layer corresponds to the continuous observed variable, namely ``Continuous 1", and we will refer to it as \textit{input layer}. The second layer corresponds to a set of interconnected discrete and continuous variables, for which only links from discrete to continuous nodes are allowed. We will refer to it as the \textit{state layer}. Finally, the bottom layer corresponds to a set of interconnected discrete and continuous observed variables, in which in principles, there exist no restrictions with respect to the direction of the links, although only links from discrete to continuous nodes are required by our use cases. This layer will be referred to as \textit{output layer}. A representation of this higher level of abstraction is shown in Figure \ref{Figure:AMIDSTModelClassHighLevel}. \textcolor{red}{Add layer names to Figure \ref{Figure:AMIDSTModelClassHighLevel}}
+In the resulting model, we can distinguish 3 different layers.:
 
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.4]{./figures/AMIDSTModelClassGeneral}
-\caption{\label{Figure:AMIDSTModelClassHighLevel} The high-level AMIDST model class}
-\end{center}
-\end{figure}
+\begin{itemize}
+
+\item \textbf{Control/class layer:} The upper layer corresponds to a subnetwork of either discrete or continuous observed variables, that would generally act as control continuous variables or the class variable. Variables can be connected through consecutive time steps to encode temporal dependences, e.g. the probability of a particular class label at time $t$ varies with respect to the label at time $t-1$. Existing links from continuous observed links to state variables in the lower layer, will be possibly handled with logit and probit functions.
+
+\item \textbf{Hidden layer:}  The second layer corresponds to a set of interconnected discrete and continuous hidden variables, for which only links from discrete to continuous nodes are allowed. We will use the term \textit{state} variables to denote the discrete ones and the term \textit{latent}\footnote{The term \textit{latent} for variables, is generally used in statistics to refer to hidden variables, as opposed to observed ones. However we will use it here to refer exclusively to continuous hidden variables.} to denote continuous variables. This layer can contain state hidden variables that are not replicated over time and that could be used, for instance, to model mixture of Gaussian distributions for the observed continuous nodes they point to in the immediate lower layer. State and latent variables that are replicated over time can be used to model a process that is evolving over time. Note that links from latent variables to 
+
+\item \textbf{Observable layer:} Finally, the bottom layer corresponds to a set of interconnected discrete and continuous observed variables. Although in principle, there exist no restrictions with respect to the direction of the links, only links from discrete to continuous nodes are required by our use cases. It is possible to alleviate the sensor Markov assumption by including links between variables of consecutive time steps.
+
+\end{itemize} 
 
 In the following sections, we will reason out how each particular use case fits in this global model.
 
 %---------------------------------------------------------------------
-\subsection{The model classes of the three use-cases} \label{UseCaseModelClasses}
+%\subsection{The model classes of the three use-cases} \label{UseCaseModelClasses}
 %---------------------------------------------------------------------
-
-In the following section, we will re-introduce the model classes of the three use-cases (that have been previously presented in Section \ref{Section:PreliminaryModels}) but using a higher level of abstraction. 
 
 %---------------------------------------------------------------------
 \subsubsection{Daimler model class}\label{daimlerAMIDSTModels}
 %---------------------------------------------------------------------
 
 \textcolor{blue}{To be re-written}
-Daimler's models have been previously described in Figures \ref{Figure:daimlerLEdynGeneric} and \ref{Figure:daimlerreldyn}. As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of these current models is that they contain discrete children with continuous parents, and do not fall into the conditional linear Gaussian family \cite{JensenNielsen2007}. To deal with this problem, we adopt here the same solution pursed in \cite{kasper2012object} which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
+Daimler's models have been previously described in Figures \ref{Figure:daimlerLEdynGeneric}. With respect to the general model above described, we need the following concepts:
+
+\begin{itemize}
+\item \textbf{Control/class layer}: is not used in this domain.
+\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables  would encode a polytree for the different hypothesis, containing LaneMarkCross, Lane Change, REL and MNVR. (\textcolor{red}{Add this information to the Class E: Event: description in Daimler}.) Connection through time is only made at the level of top sets of state variables, i.e., the signal real values (S\_REAL). Note that this model would not contemplate a possible extension in which the lower level hypothesis are connected over time. This is because this would greatly difficult the inference process. 
+\item \textbf{Observable layer: }
+\end{itemize}
+
+
+
+
 
 
 \begin{figure}[ht!]
@@ -60,6 +71,8 @@ Daimler's models have been previously described in Figures \ref{Figure:daimlerLE
 \caption{\label{Figure:AMIDSTModelClassDaimler} AMIDST model class - Daimler}
 \end{center}
 \end{figure}
+
+As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of these current models is that they contain discrete children with continuous parents, and do not fall into the conditional linear Gaussian family \cite{JensenNielsen2007}. To deal with this problem, we adopt here the same solution pursed in \cite{kasper2012object} which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
 
 %\begin{figure}[ht!]
 %\begin{center}
@@ -82,7 +95,7 @@ As commented, this 2T-DBN is only temporally connected through the hidden subnet
 In addition, we have more structure that can be exploited during inference and which is not reflected in this meta-network. Specifically, the hidden and observed subnetworks may have a polytree structure \cite{JensenNielsen2007}. In this case, both static and dynamic BNs have polytree structure and this can be exploited during inference. 
 
 %---------------------------------------------------------------------
-\subsubsection{CajaMar model class}
+\subsubsection{CajaMar model class}\label{cajamarAMIDSTModels}
 %---------------------------------------------------------------------
 \textcolor{blue}{To be re-written}
 Concerning CajaMar use-case, both application scenarios share the same models, of which two versions have been previously discussed, namely, static and dynamic (see Section \ref{Section:CajaMarModels}). 
@@ -105,7 +118,7 @@ At this point, we obviate the static version, because the general AMIDST model c
 %\end{figure}
 
 %---------------------------------------------------------------------
-\subsubsection{Verdande model class}
+\subsubsection{Verdande model class}\label{verdandeAMIDSTModels}
 %---------------------------------------------------------------------
 \textcolor{blue}{To be re-written}
 Verdande's models were visually described in Figures ?, ? and ? for the three identified application scenarios (see Section \ref{Section:VerdandeModels}). Figure \ref{Figure:VerdandeModelClass} visually depicts the high-level model class that subsumes the different models of the three application scenarios. As it can be seen, it is possible to distinguish three interpretations each corresponding to an application scenario:
@@ -137,7 +150,17 @@ Similarly to the Daimler model, the general model is structured as a 2T-DBN (see
 However, contrary to Daimler, Verdande class model does not have a polytree structure that can be exploited during inference. 
 
 
-\subsection{Summary}
+\subsection{Summary}\label{summaryAMIDSTModels}
+
+A representation of this higher level of abstraction is shown in Figure \ref{Figure:AMIDSTModelClassHighLevel}. \textcolor{red}{Add layer names to Figure \ref{Figure:AMIDSTModelClassHighLevel}}
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.4]{./figures/AMIDSTModelClassGeneral}
+\caption{\label{Figure:AMIDSTModelClassHighLevel} The high-level AMIDST model class}
+\end{center}
+\end{figure}
+
 
 %This section, with the high-level figure, should help to defend the third point made in the introduction, i.e., that it should be general enough to be applicable to any future, potentially similar, use-cases.
  
