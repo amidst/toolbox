@@ -50,7 +50,7 @@ In the following sections, we will reason out how each particular use case fits 
 \subsubsection{Daimler model class}\label{daimlerAMIDSTModels}
 %---------------------------------------------------------------------
 
-%\textcolor{blue}{To be re-written}
+
 Daimler's resulting model has been previously displayed in Figure \ref{Figure:daimlerLEdynGeneric}. With respect to the general model above described, we need the following concepts:
 
 \begin{itemize}
@@ -90,10 +90,10 @@ Connection through time is only made at the level of top sets of state variables
 %---------------------------------------------------------------------
 \subsubsection{CajaMar model class}\label{cajamarAMIDSTModels}
 %---------------------------------------------------------------------
-\textcolor{blue}{To be re-written}
+%\textcolor{blue}{To be re-written}
 Concerning CajaMar use-case, both application scenarios share the same models, of which two versions have been previously discussed, namely, static and dynamic (see Section \ref{Section:CajaMarModels}). 
 
-At this point, we obviate the static version, because the general AMIDST model class is primarily a dynamic model class. Therefore, the high-level description of CajaMar's dynamic model is given in Figure \ref{Figure:CajaMarModelClass}. As it can be seen, CajaMar models is composed by four main subnetworks, which are expanded over time and all of them are observed. Hence, at CajaMar, there are no hidden subnetworks. 
+At this point, we obviate the static version, because the general AMIDST model class is primarily a dynamic model class. Therefore, the high-level description of CajaMar's dynamic model (previously displyed in Figure \ref{fig:component}) is given in Figure \ref{Figure:AMIDSTModelClassCajamar}. %As it can be seen, CajaMar models is composed by four main subnetworks, which are expanded over time and all of them are observed. Hence, at CajaMar, there are no hidden subnetworks. 
 
 
 \begin{figure}[ht!]
@@ -103,12 +103,19 @@ At this point, we obviate the static version, because the general AMIDST model c
 \end{center}
 \end{figure}
 
-%\begin{figure}[ht!]
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/CajaMarModelClass}
-%\caption{\label{Figure:CajaMarModelClass} CajaMar model class}
-%\end{center}
-%\end{figure}
+
+Following the layer-wise analysis used above, Cajamar's model is described as:
+\begin{itemize}
+
+\item \textbf{Control/class layer}: the top node in this layer represents the class variable for Defaulter. This is indeed the target variable in the inference process, allowing temporal links between consecutive time steps to model the dynamic nature of being a defaulter or non-defaulter.
+
+\item \textbf{Hidden layer}: is not used in this domain.
+
+\item \textbf{Observable layer:} The \textit{Observed} continuous subnetwork represents information corresponding to the socio demographics, memory variables, financial activity and past payment behaviour of a client, which in principle may or may not be connected over time. The \textit{Indicator} subnetwork, in turn, comprises the set of indicator variables, $\delta_{X_t}$, uased to model the situation in which one of the continuous variables has a large number of zeroes.
+
+\end{itemize}
+
+
 
 %---------------------------------------------------------------------
 \subsubsection{Verdande model class}\label{verdandeAMIDSTModels}
