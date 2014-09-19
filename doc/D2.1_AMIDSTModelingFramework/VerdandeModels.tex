@@ -11,17 +11,17 @@ As has been pointed out in Deliverable D1.2 \cite{Fer14b}, three main tasks have
 \item \textbf{Automatic formation detection}: which aims to predict in real time the formation tops from the MWD (measurements while drilling) data using a probabilistic graphical model. Once again, this should be performed taking the temporal dynamics of the drilling process into account. The automatic formation detection is vital for dealing with several issues such as hole instability and vibrations, and also important for reducing the costs and the overall non-productive time.
 \end{enumerate}
 
-For all tasks, the model must deal with both continuous and discrete random variables. Moreover, the oil-well data to be used has the following characteristics: 
-
-\begin{itemize}
-
-\item It has a dynamic structure consisting of \emph{long-term} patches (ranging from a couple of hundred observations and into the thousands). Inside a patch, the data is typically fairly \emph{stable} and with low noise, even if this is not always the case. Between the patches the data can vary a lot. A \emph{patch of data} typically corresponds to the implementation of one activity (like drilling, connection tripping in/out, etc.). Consequently, models may potentially be designed to operate locally inside a single patch.
-
-\item Inside one activity, many of the attributes can be strongly correlated. The observed correlation between variables $X$ and $Y$ can either be instantaneous (i.e., corr($X_t, Y_t$) is significant), or delayed to some extent (i.e., exposed through the correlation corr($X_t, Y_{t+v}$) for some fixed lag $v$).
-
-\item Physical models can to some extent be used to understand why the correlations are present, but not to quantify them. In addition, sometimes the strength, and even the sign, of the correlation may change from well to well.
-
-\end{itemize}
+%For all tasks, the model must deal with both continuous and discrete random variables. Moreover, the oil-well data to be used has the following characteristics: 
+%
+%\begin{itemize}
+%
+%\item It has a dynamic structure consisting of \emph{long-term} patches (ranging from a couple of hundred observations and into the thousands). Inside a patch, the data is typically fairly \emph{stable} and with low noise, even if this is not always the case. Between the patches the data can vary a lot. A \emph{patch of data} typically corresponds to the implementation of one activity (like drilling, connection tripping in/out, etc.). Consequently, models may potentially be designed to operate locally inside a single patch.
+%
+%\item Inside one activity, many of the attributes can be strongly correlated. The observed correlation between variables $X$ and $Y$ can either be instantaneous (i.e., corr($X_t, Y_t$) is significant), or delayed to some extent (i.e., exposed through the correlation corr($X_t, Y_{t+v}$) for some fixed lag $v$).
+%
+%\item Physical models can to some extent be used to understand why the correlations are present, but not to quantify them. In addition, sometimes the strength, and even the sign, of the correlation may change from well to well.
+%
+%\end{itemize}
 
 The following 3 subsections detail the designed models for the different use cases.
 
@@ -41,7 +41,7 @@ We will begin the following discussion by considering how to model the torque as
 \end{center}
 \end{figure}
 
-The sample correlogram and sample partial correlogram of the torque can be seen in Figure \ref{Figure:VTTorqueAutoCorr}. Note that only the data from drilling (i.e., where the torque is positive and ``moving naturally'') have been included in these calculations. It is clear that a significant autocorrelation exists, also at high lags. The figure goes up to lag $v=20$, where the correlation is still above $0.6$. Furthermore, the partial autocorrelation shows very significant contributions at lags 1 and 2, and also significant effects at lags 5 --10. A model capturing the time dynamic is therefore essential. 
+The sample correlogram and sample partial correlogram of the torque can be seen in Figure \ref{Figure:VTTorqueAutoCorr}. Note that only the data from drilling (i.e., where the torque is positive and ``moving naturally'') have been included in these calculations. It is clear that a significant autocorrelation exists, also at high lags. The figure goes up to lag $v=20$, where the correlation is still above $0.6$. Furthermore, the partial correlogram shows very significant contributions at lags 1 and 2, and also significant effects at lags 5 --10. A model capturing the time dynamic is therefore essential. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -68,9 +68,9 @@ Preliminary results using this model class, but without learning the parameters 
 
 Still, some undesired annotations remain. For instance, the two areas with small dips in the observed torque towards the end of the sequence can be explained by specific drilling activities going on, and should not be marked as abnormal. To capture this, the context of the torque observation must be included, which is what we turn to next.
 
-The parameters in drilling can to some extent be seen as control response pairs. The control parameters are the flow, the rotation speed and the position of the brake handle under drilling. The position of the break handle is usually not recorded, but the response of all this is the hook load and thereby the weight on the bit (WOB), the pressure at the top of the drill string, the torque (TRQ) and the rate of penetration (ROP). In general, the control parameters are adjusted to increase ROP as much as possible. In particular, ROP and TRQ are correlated.
+The parameters in drilling can to some extent be seen as control-response pairs. The control parameters are the flow, the rotation speed and the position of the brake handle under drilling. The position of the break handle is usually not recorded, but the response of all this is the hook load and thereby the weight on the bit (WOB), the pressure at the top of the drill string, the torque (TRQ) and the rate of penetration (ROP). In general, the control parameters are adjusted to increase ROP as much as possible. In particular, ROP and TRQ are correlated.
 
-To examine the relationship between ROP and TRQ further, we plot the joint density of (ROP$_t$, TRQ$_t$) and the sample correlogram between ROP$_t$ and TRQ$_{t+k}$ in Figure \ref{Figure:VTTorqueRateOfPenetration}. We notice that even if a strong correlation is not apparent in the density plot, it can be seen as significant from the correlogram, and should therefore be included in the model. We capture this through an \textit{input-output SKF} (IOSKF) as shown in Figure \ref{Figure:VTScenario1}. 
+To analytically examine the relationship between ROP and TRQ further, we plot the joint density of (ROP$_t$, TRQ$_t$) and the sample correlogram between ROP$_t$ and TRQ$_{t+k}$ in Figure \ref{Figure:VTTorqueRateOfPenetration}. We notice that even if a strong correlation is not apparent in the density plot, it can be seen as significant from the correlogram. Hence, ROP could give some information about TRQ. Our intention here is to exploit this information to improve the accuracy of the detection of ``abnormal torque'' readings and avoid those false positives which appeared in Figure \ref{VT_ErraticTRQ_marked}. In terms of modelling, we update the initial SKF by introducing ROP as an ``input variable'' shown in  in Figure \ref{Figure:VTScenario1}, which results in a so-called \textit{input-output SKF} (IOSKF) model. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -83,7 +83,7 @@ To examine the relationship between ROP and TRQ further, we plot the joint densi
 \end{center}
 \end{figure}
 
-In the IOSKF model, the ``input'' at time $t$ is the ROP at that point in time, the ``output'' is the (observed) TRQ readings\footnote{It is generally the case that the output variables in the input-output dynamic models correspond to the target variables and are hence not observed during inference \cite{barberBRML2012}. In our case, however, the target variables correspond to a discrete state/hidden variable whereas the output variables will be observed during inference.}, and we have two sets of latent variables: $i)$ a discrete switching variable, which is used to determine which TRQ regime we are currently in, and $ii)$ a latent vector of continuous variables used to capture and model the natural behaviour of the TRQ sequence over time. During inference, the posterior probability of the discrete latent variable at time $t$ can be used to detect whether or not the system experiences abnormal TRQ (that is, not explained by the observed ROP) over time. 
+In the IOSKF model, the ``input'' at time $t$ is the ROP at that point in time, the ``output'' is the (observed) TRQ readings\footnote{It is generally the case that the output variables in the input-output dynamic models correspond to the target variables and are hence not observed during inference \cite{barberBRML2012}. In our case, however, the target variables correspond to a discrete state/hidden variable whereas the output variables will be observed during inference. See Section \ref{SubSubSection:HMMs} for further details.}, and we have two sets of latent variables: $i)$ a discrete switching variable, which is used to determine which TRQ regime we are currently in, and $ii)$ a latent vector of continuous variables used to capture and model the natural behaviour of the TRQ sequence over time. During inference, the posterior probability of the discrete latent variable at time $t$ can be used to detect whether or not the system experiences abnormal TRQ (that is, not explained by the observed ROP) over time. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -115,9 +115,12 @@ The behaviour during each of these sequences  is fairly consistent if the proces
 
 Some of the variables in the data set are used to monitor quantities that are set externally by the drilling crew (examples include ``weight-on-bit'', ``rotations-per-minute'' and ``mud-flow-in''). Other variables, like ``torque'', ``rate-of-penetration'' and ``pressure'' can be understood as (possibly delayed) responses to the input from the geology. 
 
-As said above, the real-time parameters in drilling can to some extent be divided into control and response parameters, where the great unknown is the physical properties of the formation that is penetrated.  The cause $\rightarrow$ response relationships are mostly unknown, but some qualitative understanding exists. 
+As said above, the real-time parameters in drilling can to some extent be divided into control and response variables, where the great unknown is the physical properties of the formation that is penetrated.  The cause $\rightarrow$ response relationships are mostly unknown, but some qualitative understanding exists. 
 
-The measurements are continuous, but not necessarily Gaussian. We therefore propose to use an input-output Kalman filter with Gaussian mixtures at the leaves to model a data stream from a single subsequence (see Figure \ref{Figure:VTScenario2}). The normality-index for an observation at time $t$, denoted ${\bm e}_t$, given the observations up until $t$, denoted ${\bm e}_{1:t-1}$, will be calculated as the log conditional likelihood, $\ell_t := \log f\left({\bm e}_t|{\bm e}_{1:t-1}\right)$. By monitoring $\ell_t$ over time, significant departures from its ``typical behaviour'' will be noted, and marked as potential irregularities.
+The model we propose for this task is similar to the one proposed in the previous application scenario . It is detailed in Figure \ref{Figure:VTScenario2} and has again an \emph{input-ouput} Kalman filter structure with observed control variables on top and the observed response variables down. The main difference now is that the discrete variable is not temporally linked and does not try to capture any ``physical'' property of the process. This discrete variable is simply included to improve the modelling capacity over the observed response variables because it allows now to model mixture of Gaussians for these variables. 
+
+As commented above, this input-output SKF  will be used to model the ``normal behaviour'' of the well. The ``abnormal behaviour'' will be detected using the following protocol.  The normality-index for each observation at time $t$, denoted by ${\bm x}_t$, given the observations up until $t$, denoted by ${\bm x}_{1:t-1}$, will be calculated as the log conditional likelihood, $\ell_t := \log p\left({\bm x}_t|{\bm x}_{1:t-1}\right)$, where $p$ is the probability distribution induced by our input-output SKF. By monitoring $\ell_t$ over time, significant departures from its ``typical behaviour'' will be noted, and marked as potential irregularities.
+
 
 \begin{figure}[ht!]
 \begin{center}
@@ -154,7 +157,7 @@ The MWD data measures petrophysical properties of the rock such as gamma radiati
 Often, shifts in these graphs happen when the formation is changing. We will therefore formulate the formation detection problem as change-point detection in a multivariate data stream. 
 Indications of change-points (shifts) are to be compared with the prior belief to specifically locate the changes. The model described below is built to capture \textit{instantaneous} changes in formation, and is not made to capture gradual changes. 
 
-The prior information, giving the expected locations (depths, in meters) of formation change, together with a degree of certainty (in terms of a standard deviation) is the point of departure for this model. Let us assume that the drilling crew ,a priori, expects  to see $N$ changes in formation. 
+The prior information, giving the expected locations (depths, in meters) of formation change, together with a degree of certainty (in terms of a standard deviation) is the point of departure for this model. Let us assume that the drilling crew, a priori, expects  to see $N$ changes in formation. 
 This information may be erroneous, as any number of additional formation-changes (that were not expected in advance) may also occur in the ground, e.g., formation of sandstone can be a priori expected for 100 meters, later realizing that this sediment was split into two by a small layer of shale.
 The observation data is encoded wrt.\ \textit{time}, but will be used with an encoding wrt.\ \textit{depth} in this application to have it aligned with the prior information at hand. The data may not necessarily be equally spaced (e.g., two neighbouring observations may be separated by half a foot, while the two next are separated by only a tenth of a foot). 
  
@@ -173,14 +176,15 @@ In this case, we think in terms of an IOHMM (see Section \ref{SubSubSection:HMMs
 
 \item The next chain of variables are \textit{counting-variables}, denoted by  FormationNo$_t$. The variable has two parents: Depth$_t$ and FormationNo$_{t-1}$. 
 The probability that the counting variable is incremented at time $t$ conditioned on the parent configuration is calculated by combining information from the prior information with the parents' configuration. Logistic or probit functions can  be imagined, but must be compared to the actual domain knowledge to give a feasible representation.
-Note that the model structure, with  a continuous parent having a discrete child does not entail computational difficulties in this case: The parent is always observed, and the calculation of the conditional probability table (encoding the transfer function) can thus be done externally. The model thus, however, break with the stationarity assumption made by most  AMIDST models.
+Note that the model structure, with  a continuous parent having a discrete child does not entail computational difficulties in this case: The parent is always observed, and the calculation of the conditional probability table (encoding the transfer function) can thus be done externally. The model thus capture a non-stationary process by conditioning the transition distribution to the observed control variables. 
+
 \item Shift$_t$  generates a  chain of variables used for determining when   a formation-change actually occurs. It has two parents, namely  FormationNo$_{t-1}$ and  FormationNo$_t$. 
 The variable is discrete, and has four states: ``No -- As accounted for in the prior'', ``No -- But expected in prior'', ``Yes -- As accounted for in the prior'', and ``Yes -- But not expected in prior''. 
 To this end, FormationNo$_t$ only changes when expected by the prior information, while Shift$_t$ can use the data to refine these assessments. If $\mbox{FormationNo}_{t}= \mbox{FormationNo}_{t-1}$, Shift$_t$ is in the state 
  ``No -- As accounted for in the prior'' with probability $1-\epsilon$ and in state ``Yes -- But not expected in prior'' with probability $\epsilon$. If $\mbox{FormationNo}_{ t}=\mbox{FormationNo}_{t-1}+1$, Shift$_t$ takes the state 
 ``Yes -- As accounted for in the prior'' with probability $1-\delta$ and ``No -- But expected in prior'' with probability $\delta$. $\epsilon$ and $\delta$ are parameters to be determined through expert knowledge or learned from data.
 
-\item Finally, the observed variables at time $t$ only have  Switch$_t$ as parent. We will not use the actual observed sensor reading as the observed variable (``output-variable'' in the input-output model). Rather, the differences are considered, e.g., GammaRay$_t$ - GammaRay$_{t-1}$ will be used to represent the gamma ray measurement at time $t$. These variables will, given that Switch$_t$ is in the ``No''-states, vary around zero. The variable will be significantly different from zero if the parent is in any of the ``Yes''-states.  It is clear from figure \ref{lithology} that most formation changes are seen as clear shifts in the gamma ray data.
+\item Finally, the observed variables at time $t$ only have  Switch$_t$ as parent. We will not use the actual observed sensor reading as the observed variable (``output-variable'' in the input-output model). Rather, the differences are considered, e.g., GammaRay$_t$ - GammaRay$_{t-1}$ will be used to represent the gamma ray measurement at time $t$. These variables will, given that Switch$_t$ is in the ``No''-states, vary around zero. The variable will be significantly different from zero if the parent is in any of the ``Yes''-states.  It is clear from Figure \ref{lithology} that most formation changes are seen as clear shifts in the gamma ray data.
 \end{itemize}
 
 At the time of inference, we condition on the total number of switches, and calculate (using forward-backward) the posterior distribution of the locations. Similarly, we will also calculate the most probable explanation, that is, the most probable configuration of switches given the total number of events.
