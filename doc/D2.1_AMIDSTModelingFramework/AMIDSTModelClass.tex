@@ -35,9 +35,9 @@ In the resulting 2T-DBN model, we can distinguish 3 different layers.:
 
 \item \textbf{Control/class layer:} The upper layer corresponds to a subnetwork of either discrete or continuous observed variables, that would generally act as control continuous variables or the class variable. Variables can be connected through consecutive time steps to encode temporal dependences, e.g. the probability of a particular class label at time $t$ varies with respect to the label at time $t-1$. Existing links from continuous observed links to state variables in the lower layer, will be possibly handled with logit and probit functions.
 
-\item \textbf{Hidden layer:}  The second layer corresponds to a set of interconnected discrete and continuous hidden variables, for which only links from discrete to continuous nodes are allowed. We will use the term \textit{state} variables to denote the discrete ones and the term \textit{latent}\footnote{The term \textit{latent} for variables, is generally used in statistics to refer to hidden variables, as opposed to observed ones. However we will use it here to refer exclusively to continuous hidden variables.} to denote continuous variables. This layer can contain state hidden variables that are not replicated over time and that could be used, for instance, to model mixture of Gaussian distributions for the observed continuous nodes they point to in the immediate lower layer. State and latent variables that are replicated over time can be used to model a process that is evolving over time. Note that links from latent variables to 
+\item \textbf{Hidden layer:}  The second layer corresponds to a set of interconnected discrete and continuous hidden variables, for which only links from discrete to continuous nodes are allowed. We will use the term \textit{state} variables to denote the discrete ones and the term \textit{latent}\footnote{The term \textit{latent} for variables, is generally used in statistics to refer to hidden variables, as opposed to observed ones. However we will use it here to refer exclusively to continuous hidden variables.} to denote continuous variables. This layer can contain state hidden variables that are not connected over time and that could be used, for instance, to model mixture of Gaussian distributions for the observed continuous nodes they point to in the immediate lower layer. State and latent variables that are replicated over time can be used to model a process that is evolving over time. Note that links from latent variables to 
 
-\item \textbf{Observable layer:} Finally, the bottom layer corresponds to a set of interconnected discrete and continuous observed variables. Although in principle, there exist no restrictions with respect to the direction of the links, only links from discrete to continuous nodes are required by our use cases. It is possible to alleviate the sensor Markov assumption by including links between variables of consecutive time steps.
+\item \textbf{Observable layer:} Finally, the bottom layer corresponds to a set of interconnected discrete and continuous observed variables. Although in principle, there exist no restrictions with respect to the direction of the links, only links from discrete to continuous nodes are required by our use cases. It is possible to alleviate the sensor Markov assumption by including links between observed variables at consecutive time steps.
 
 \end{itemize} 
 
@@ -117,12 +117,16 @@ At this point, we obviate the static version, because the general AMIDST model c
 \subsubsection{Verdande model class}\label{verdandeAMIDSTModels}
 %---------------------------------------------------------------------
 \textcolor{blue}{To be re-written}
-Verdande's models were visually described in Figures ?, ? and ? for the three identified application scenarios (see Section \ref{Section:VerdandeModels}). Figure \ref{Figure:VerdandeModelClass} visually depicts the high-level model class that subsumes the different models of the three application scenarios. As it can be seen, it is possible to distinguish three interpretations each corresponding to an application scenario:
+
+Figure \ref{Figure:AMIDSTModelClassVerdande} shows how the general AMIDST model class is instantiated in the case of Verdande. This instantiated model encompasses the models of the three applications scenarios detailed in Figures \ref{Figure:VTScenario1}, \ref{Figure:VTScenario2} and \ref{Figure:VTScenario3}  (see Section \ref{Section:VerdandeModels}).  We now comment the main elements of this instantiated model.
+
 
 \begin{itemize}
-\item If we keep the subnetworks ``Discrete 2'', ``Continuous 1'' and ``Continuous 2'', we obtain the switching Kalman filter model for application scenario 1 (see Section \ref{SubSection:DetectionTorque}),
-\item If we keep ``Continuous 1'', ``Discrete 3'' and ``Continuous 2'', we obtain the input-output Kalman filter model for application scenario 2 (see Section \ref{SubSection:SemiAutomaticLabelling}), and
-\item finally, if we keep ``Discrete 1'', ``Discrete 2'' and ``Continuous 2'', we obtain the input-output Kalman filter model for application scenario 3  (see Section \ref{SubSection:DetectionFormation}).
+\item \textbf{Control/class layer}:  This element is instantiated to a set of nodes modelling the observed control variables. In the three application scenarios, the role of this control variables is to condition the transition probability of the state variables and allow the modelling of non-stationary transition probabilities.  
+
+\item \textbf{Hidden layer}: This element is directly instantiated from the general class. However, there are some differences when applied to each particular application scenario. For the first application scenario (see Figure \ref{Figure:VTScenario1}),  ``State 2'' is not needed and ``State 1'' is instantiated to the ``Normal/Abnormal'' state variable. For the second application scenario, ``State 1'' is no needed and ``State 2'' is instantiated to a single multinomial variable whose role is to model mixture of Gaussians at the leaves. In the third application scenario, ```State 2'' is no used and ``State 1'' is instantiated to a sub-network containing the FormationDetection and Switch nodes. 
+
+\item \textbf{Observable layer: } This element of the model class is similarly instantiated in the three application scenarios. In the case of application scenario 1 and 3, it is just instantiated to a single response variable. In the application scenario 2, this instantiation can be made over a set of (possibly interconnected) response variables. 
 \end{itemize}
 
 
@@ -133,17 +137,6 @@ Verdande's models were visually described in Figures ?, ? and ? for the three id
 \caption{\label{Figure:AMIDSTModelClassVerdande} AMIDST model class - Verdande.}
 \end{center}
 \end{figure}
-
-%\begin{figure}[ht!]
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/VerdandeModelClass}
-%\caption{\label{Figure:VerdandeModelClass} Verdande model class}
-%\end{center}
-%\end{figure}
-
-Similarly to the Daimler model, the general model is structured as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}). The static part which is repeated over time is composed by five subnetworks: two observed components (i.e., one discrete temporally connected on the top, and one continuous at the bottom); and three hidden components in the middle (i.e., one hidden discrete and one hidden continuous both are temporally connected, and one hidden discrete, which is not temporally connected and its function is to account for the possible conditional dependencies of the observed continuous variables).  
-
-However, contrary to Daimler, Verdande class model does not have a polytree structure that can be exploited during inference. 
 
 
 \subsection{Summary}\label{summaryAMIDSTModels}
