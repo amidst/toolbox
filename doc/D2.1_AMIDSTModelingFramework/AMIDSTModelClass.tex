@@ -1,11 +1,9 @@
 \section{AMIDST model class}\label{section:AMIDSTmodelClass}
 
-%\textcolor{red}{OUt-of-topic: Shouldn't we use Figure numbering based on section? The deliverable is expanding like the universe...}\\
-
 One of the main goals of AMIDST project is the definition of a general model class with the following characteristics: 
 
 \begin{itemize}
-\item \textbf{Feature 1:} It should be applicable to the three considered use-cases, i.e., Daimler, Cajamar, and Verdande,
+\item \textbf{Feature 1:} it should be applicable to the three considered use-cases, i.e., Daimler, Cajamar, and Verdande,
 
 \item \textbf{Feature 2:} it should be scalable, supporting both inference and learning from massive data streams and
 
@@ -13,14 +11,13 @@ One of the main goals of AMIDST project is the definition of a general model cla
 
 \end{itemize}
 
-Taking these different characteristics into account and using the subnetwork graphical notation introduced in Section \ref{SubSection:GraphicalNotation}), we will first present and discuss the general AMIDST model class in Section \ref{GeneralModelClass}, then its specific instantiation to each use-case in different subsections. Finally, a summary is presented in Section \ref{summaryAMIDSTModels}.
+Taking these different characteristics into account, and using the subnetwork graphical notation introduced in Section \ref{SubSection:GraphicalNotation}, the general AMIDST model class as well as its specific instantiation to each use case are first introduced and discussed in Section \ref{GeneralModelClass}. Then, a summary is presented in Section \ref{summaryAMIDSTModels}.
 
 %---------------------------------------------------------------------
 \subsection{The general AMIDST model class}\label{GeneralModelClass}
 %---------------------------------------------------------------------
 
-Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model class. This model is the result of combining all the models required by the different problem domains above presented. In order to find the commonalities between all models, higher-level descriptors have been required to reinterpret the individual models, that is, instead of all the individual variables, subnetworks have been used to group variables with similar properties.
-
+Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model class. This model is the result of combining all the models that have been previously defined for the different use cases. As it can be seen, subnetworks have been used to group variables with similar properties, so that the commonalities between all models are taken into account. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -30,25 +27,24 @@ Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model cla
 \end{figure}
 
 
-This model class can be seen as a 2T-DBN, i.e. it satisfies the first order Markov property and the stationary assumption. However, this model is not as general as 2T-DBN and contains much more internal structure. More precisely, the structure of this model decomposes along 3 main different layers which can be described are follows:
+The general AMIDST model class can be seen as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}), i.e., it satisfies the first order Markov property and the stationary assumption. However, this model is not as general as 2T-DBN and contains much more internal structure. More precisely, the structure of this model decomposes along three main different layers which can be described, at time $t$, as follows:
 
 \begin{itemize}
 
-\item \textbf{Control/class layer:} The upper layer corresponds to a subnetwork of either discrete or continuous observed variables, that would generally act as control continuous variables or the class variable. Variables can be connected through consecutive time steps to encode temporal dependences, e.g. the probability of a particular class label at time $t$ varies with respect to the label at time $t-1$. Existing links from continuous observed links to state variables in the lower layer, will be possibly handled with logit and probit functions.
+\item \textbf{Control/class layer:} The upper layer corresponds to a subnetwork including either discrete or continuous observed variables, that act either as control continuous variables or a class variable. These set of variables can be connected through consecutive time steps to encode temporal dependences, e.g., the probability of a particular class label at time $t+1$ varies with respect to its label at time $t$. 
 
-\item \textbf{Hidden layer:}  The second layer corresponds to a set of interconnected discrete and continuous hidden variables, for which only links from discrete to continuous nodes are allowed. We will use the term \textit{state} variables to denote the discrete ones and the term \textit{latent}\footnote{The term \textit{latent} for variables, is generally used in statistics to refer to hidden variables, as opposed to observed ones. However we will use it here to refer exclusively to continuous hidden variables.} to denote continuous variables. This layer can contain state hidden variables that are not connected over time and that could be used, for instance, to model mixture of Gaussian distributions for the observed continuous nodes they point to in the immediate lower layer. State and latent variables that are connected over time can be used to model a process that is evolving over time. Note that links from latent variables to state variables are explicitly not allowed.
+The links from the continuous observed variables to the state subnetworks in the \textit{Hidden layer} (i.e., the set of State 1 and State 2 variables) will be possibly handled with logit and probit functions.
 
-\item \textbf{Observable layer:} Finally, the bottom layer corresponds to a set of interconnected discrete and continuous observed variables. Although in principle, there exist no restrictions with respect to the direction of the links, only links from discrete to continuous nodes are required by our use cases. It is possible to alleviate the sensor Markov assumption by including links between observed variables at consecutive time steps.
+\item \textbf{Hidden layer:}  The middle layer corresponds to a set of interconnected discrete and continuous hidden subnetworks, for which only links from discrete to continuous subnetworks are allowed. We will use the term \textit{state} variables to refer to the set of discrete hidden variables in both State 1 and State 2 subnetworks, and the term \textit{latent}\footnote{The term \textit{latent} for variables is generally used in statistics to refer to hidden variables as opposed to observed ones. However, we will use it here to exclusively refer to continuous hidden variables.} variables to refer to the set of continuous hidden variables in the Latent subnetwork.
+
+This layer can contain state variables that are not connected over time, and that could be used, for instance, to model mixture of Gaussian distributions over the observed continuous variables in the \textit{Observable layer}. Moreover, state and latent variables that are connected over time can be used to model a process that is evolving and changing over time. Recall that, links from latent variables to state variables are strictly prohibited.
+
+\item \textbf{Observable layer:} The bottom layer corresponds to a subnetwork including both discrete and continuous observed variables. These variables are interconnected, and in our different use cases, only links from discrete to continuous nodes are required. However, in general, there is no restriction on the direction of the links between the variables in this layer. In addition, it is possible to alleviate the sensor Markov assumption by including links between observed variables at consecutive time steps.
 
 \end{itemize} 
 
+In the following sections, we will first prove \textbf{Feature 1} by describing how each particular use case fits in the general 2T-DBN AMIDST model. This instantiation process of the general AMIDST model to the three use-cases (all of them with different application scenarios) could be also seen as a practical example demonstrating the general applicability of the resulting AMIDST model class. This proves \textbf{Feature 3} and ensures consequently that AMIDST model class can be easily instantiated to other future use cases. Finally, the remaining task is related to \textbf{Feature 2} and consists of designing inference and learning algorithms that allow the application of the AMIDST model to massive data streams. 
 
-In the following sections, we will reason out how each particular use case fits in this global model. In that way, we will show how this model class satisfies \textbf{Feature 1}. Our assumption is that, in a similar way, this model class can be instantiated to other related problems and fulfills \textbf{Feature 3}. So, this process of instantiating this model class to the three use-cases (all of them with different application scenarios) should also be seen as pedagogical examples showing the potential applicability of this subclass of 2T-DBNs. The remaining task is to design inference and learning algorithms that allow the application of this model family to massive data streams. 
-
-
-%---------------------------------------------------------------------
-%\subsection{The model classes of the three use-cases} \label{UseCaseModelClasses}
-%---------------------------------------------------------------------
 
 %---------------------------------------------------------------------
 \subsubsection{Daimler model class}\label{daimlerAMIDSTModels}
