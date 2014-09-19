@@ -2,6 +2,26 @@
 
 The following sections aim at describing some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use cases. Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time, and, finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
 
+
+%------------------------------------------------------------------------------------------------------------
+\subsection{Graphical notation}\label{SubSection:GraphicalNotation}
+%------------------------------------------------------------------------------------------------------------
+
+Figure \ref{Figure:PreliminariesNotation} shows in the first row the graphical representation of the different types of variables used in AMIDST model classes. A continuous variable is depicted with an ellipse with a blue background, while a discrete variable is depicted with an ellipse with a green background. If a variable could be either continuous or discrete, the background of the ellipse is simultaneously blue and green. In addition, a hidden variable is depicted with a dashed-line ellipse, while an observed variable is depicted with a solid-line ellipse. Obviously, a continuous hidden variable, for example, would be represented with a blue dashed-line ellipse.
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.55]{./figures/PreliminariesNotation}
+\caption{\label{Figure:PreliminariesNotation}Graphical notation of the different types of variables and subnetworks.
+}
+\end{center}
+\end{figure}
+
+The second row of Figure \ref{Figure:PreliminariesNotation} shows the graphical representation of the different types of subnetworks. A subnetwork refers to a directed acyclic graph defined over a set of variables\footnote{In particular, a subnetwork refers in our case to a part of a dynamic Bayesian network that will be defined later on this document.}. A continuous subnetwork (i.e., including only continuous variables) is depicted with a blue rectangle, while a discrete subnetwork (i.e., including only discrete variables) is depicted with a green rectangle. 
+
+If a subnetwork can be instantiated, at a specific moment, with either continuous or discrete variables (i.e., we have a continuous or discrete subnetwork), the rectangle background is horizontally coloured with blue and green. However, if a subnetwork is simultaneously instantiated with both continuous and discrete variables (i.e., we have a continuous \& discrete subnetwork), the rectangle background is vertically coloured with blue and green. Finally, a hidden subnetwork is depicted with a dashed-line rectangle, while an observed subnetwork is depicted with a solid-line rectangle.
+
+
 %------------------------------------------------------------------------------------------------------------
 \subsection{Bayesian networks}\label{SubSection:HybridBNs}
 %------------------------------------------------------------------------------------------------------------
@@ -23,15 +43,6 @@ Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The n
 }
 \end{center}
 \end{figure}
-
-\begin{figure}[ht!]
-\begin{center}
-\includegraphics[scale=0.55]{./figures/PreliminariesNotation}
-\caption{\label{Figure:PreliminariesNotation}Graphical notation of observed/hidden and continuous/discrete variables and subnetworks.
-}
-\end{center}
-\end{figure}
-
 
 Traditionally, BNs have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}). 
 
