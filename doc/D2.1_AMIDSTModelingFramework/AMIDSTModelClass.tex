@@ -29,7 +29,7 @@ Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model cla
 \end{figure}
 
 
-In the resulting 2T-DBN model, we can distinguish 3 different layers.:
+This model class can be seen as a 2T-DBN, i.e. it satisfies the first order Markov property and the stationary assumption. However, this model is not as general as 2T-DBN and contains much more internal structure. More precisely, the structure of this model decomposes along 3 main different layers which can be described are follows:
 
 \begin{itemize}
 
@@ -41,7 +41,9 @@ In the resulting 2T-DBN model, we can distinguish 3 different layers.:
 
 \end{itemize} 
 
-In the following sections, we will reason out how each particular use case fits in this global model.
+
+In the following sections, we will reason out how each particular use case fits in this global model. In that way, we will show how this model class satisfies \textbf{Feature 1}. Our assumption is that, in a similar way, this model class can be instantiated to other related problems and fulfills \textbf{Feature 3}. So, this process of instantiating this model class to the three use-cases (all of them with different application scenarios) should also be seen as pedagogical examples showing the potential applicability of this subclass of 2T-DBNs. The remaining task is to design inference and learning algorithms that allow the application of this model family to massive data streams. 
+
 
 %---------------------------------------------------------------------
 %\subsection{The model classes of the three use-cases} \label{UseCaseModelClasses}
@@ -57,13 +59,12 @@ Daimler's resulting model has been previously displayed in Figure \ref{Figure:da
 \begin{itemize}
 \item \textbf{Control/class layer}: is not used in this domain.
 
-\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables (State 2) encode a polytree \cite{JensenNielsen2007} for the different hypothesis, containing LaneMarkCross, Lane Change, REL and MNVR. (\textcolor{red}{Add this information to the Class E: Event: description in Daimler}.) This polytree structure, not explicitly encoded in the model, can indeed be exploited during inference.
-
-Connection through time is only made at the level of top sets of state variables (State 1), i.e., the signal real values (S\_REAL). Consequently, the future and past time slices of our 2T-DBN are conditionally independent given the hidden subnetwork corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete subnetworks are also conditionally independent given this hidden subnetwork. Note that this version of the AMIDST general model would not contemplate a possible extension in which the lower level hypothesis are connected over time. This is because it would greatly difficult the inference process. 
+\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables (State 2) encode a polytree \cite{JensenNielsen2007} for the hierarchy of hypothesis. This polytree structure, not explicitly encoded in the model, can indeed be exploited during inference.
 
 
+Connection through time is only made at the level of top sets of state variables (``State 1''), i.e., the signal real values (S\_REAL \footnote{Although these variables are inherently continuous, we notice that they are discretized to avoid the inference problems derived of having continuous parents with discrete children (see Section \ref{Section:DaimlerDynamic}).}). Consequently, the future and past time slices of our 2T-DBN are conditionally independent given the S\_REAL variables corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete subnetworks are also conditionally independent given these S\_REAL variables. In the case that we wanted to contemplate a possible extension in which the lower level hypothesis are connected over time, then the ``State 1'' sub-networks of the model class would contain the S\_REAL variables and the temporally linked hypothesis. Although, as commented before, this would greatly difficult the inference process. 
 
-\item \textbf{Observable layer:} there are two sets of observed variables in this case. On one hand, we encounter a group of variables representing the measured data (S\_MEAS), along with the variables encoding the sensor noise(S\_SIGMA). The resulting structure is again a polytree, with presents some advantages for the inference process. On the other hand, we have a single discrete node for the manoeuvre event (which can have 6 possible states for the different manoeuvres), which will be the target variable during inference. 
+\item \textbf{Observable layer:} there are two sets of observed variables in this case. On one hand, we encounter a group of variables representing the measured data (S\_MEAS), along with the variables encoding the sensor noise (S\_SIGMA). The resulting structure is again a polytree, with presents some advantages for the inference process. On the other hand, we have a single discrete node for the manoeuvre event, which will be the target variable during inference. 
 \end{itemize}
 
 
@@ -74,7 +75,7 @@ Connection through time is only made at the level of top sets of state variables
 \end{center}
 \end{figure}
 
-As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of this model is that it contains discrete children with continuous parents, and hence cannot be modelled with the conditional linear Gaussian family \cite{JensenNielsen2007}. In this particular case, to deal with this problem we adopt the same solution adopted in \cite{kasper2012object}, which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
+%As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of this model is that it contains discrete children with continuous parents, and hence cannot be modelled with the conditional linear Gaussian family \cite{JensenNielsen2007}. In this particular case, to deal with this problem we adopt the same solution adopted in \cite{kasper2012object}, which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
 
 
 %This general model is structured as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}). The static model which is repeated over time consists of four elements: 
@@ -148,7 +149,10 @@ Figure \ref{Figure:AMIDSTModelClassVerdande} shows how the general AMIDST model 
 
 \subsection{Summary}\label{summaryAMIDSTModels}
 
-A representation of this higher level of abstraction is shown in Figure \ref{Figure:AMIDSTModelClassHighLevel}. \textcolor{red}{Add layer names to Figure \ref{Figure:AMIDSTModelClassHighLevel}}
+As it has been shown in the previous sections, the proposed AMIDST model class of Figure \ref{Figure:AMIDSTModelClass} encompasses the different application scenarios of the three use cases. These three use-cases come from very different domains: automotive, finance and oil-drilling. In our opinion, these are strong arguments in favour of the generality and applicability of this model class. Although, in any case, a better understanding of the faced problems and/or future applications might reveal that some elements of this model class need to be refined.  
+
+
+%A representation of this higher level of abstraction is shown in Figure \ref{Figure:AMIDSTModelClassHighLevel}. \textcolor{red}{Add layer names to Figure \ref{Figure:AMIDSTModelClassHighLevel}}
 
 \begin{figure}[ht!]
 \begin{center}
