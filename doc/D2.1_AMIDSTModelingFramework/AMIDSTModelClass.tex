@@ -56,7 +56,7 @@ Daimler's models have been previously described in Figures \ref{Figure:daimlerLE
 
 \begin{itemize}
 \item \textbf{Control/class layer}: is not used in this domain.
-\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables  would encode a polytree for the different hypothesis, containing LaneMarkCross, Lane Change, REL and MNVR. (\textcolor{red}{Add this information to the Class E: Event: description in Daimler}.) Connection through time is only made at the level of top sets of state variables, i.e., the signal real values (S\_REAL). Note that this model would not contemplate a possible extension in which the lower level hypothesis are connected over time. This is because this would greatly difficult the inference process. 
+\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables (State 2) encode a polytree for the different hypothesis, containing LaneMarkCross, Lane Change, REL and MNVR. (\textcolor{red}{Add this information to the Class E: Event: description in Daimler}.) Connection through time is only made at the level of top sets of state variables (State 1), i.e., the signal real values (S\_REAL). Note that this version of the AMIDST general model would not contemplate a possible extension in which the lower level hypothesis are connected over time. This is because it would greatly difficult the inference process. 
 \item \textbf{Observable layer: }
 \end{itemize}
 
