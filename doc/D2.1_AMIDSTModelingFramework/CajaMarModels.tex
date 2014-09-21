@@ -21,16 +21,17 @@ customer will end up as defaulter within the next two years. The second task con
 %-------------------------------------------------------------------------------------------------------
 \subsubsection{Predicting probability of default} \label{SubSection:Predicting}
 %-------------------------------------------------------------------------------------------------------
+\textcolor{red}{REFERENCE Langseth twice}
 
 In any commercial bank, every time a customer applies for a loan, the bank experts evaluate the customer's risk profile before making their decision. 
 
-At Cajamar, this risk evaluation protocol is addressed by evaluating whether the client is going to default or not within the following two years. When a client is labelled as defaulter, he/she will remain defaulter in the database at least for one more year. Then, the client could become non-defaulter again when everything has been appropriately paid during the last year. 
+At Cajamar, this risk evaluation protocol is addressed by evaluating whether the client is going to default or not within the following two years. When a client is labelled as defaulter, he/she will remain defaulter in the database at least for one more year. Then, the client could become non-defaulter again when \textcolor{red}{everything} has been appropriately paid during the last year. 
 
 The problem of predicting the risk of default is currently solved at Cajamar by an automatic supervised classification model (i.e., a logistic regression). It takes information about the recent financial activity of a customer, as well as information about recent past payment behaviour provided by other Spanish financial institutions. Finally, using this collected information, the probability that the client will default during the following two years is computed. 
 
 The methodology currently employed does not assume any dependence structure among the variables, and current predictions are made using only $27$ variables out of more than $1000$ variables available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are partly due to limitations in the available commercial software and the computing resources.
 
-Our objective is to \textit{daily} update the risk of default for every bank customer. This daily evaluation will be performed using two data sets: \textit{the model training data set} and \textit{the model evaluation data set} (see~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem. 
+Our objective is to \textit{daily} update the risk of default for every bank customer. This daily evaluation will be performed using two data sets: \textit{the model training data set} and \textit{the model evaluation data set} (see~\cite{Fer14b}). How these data sets are generated gives us some insights \textcolor{red}{into} the nature of this risk prediction problem. 
 
 Next, we detail how these data sets are collected (see Figure~\ref{Figure:CajaMarTimeLine} for a better understanding).
 %Figure~\ref{Figure:CajaMarTimeLine} illustrates how both evaluation and training data sets are collected within a time-line. The current time is denoted as $t$ and the time $2$ years back as $k$, i.e., $k=t-2$ years. 
@@ -90,7 +91,7 @@ Client$_n$  &   $r_n$  \\
 If, at some point, the probability of default of a customer rises above a predefined threshold, the bank may take preventive actions to reduce the chances of defaulting by this customer.
 
 
-\item \textbf{Model training data set:}  This data set is also built at time $t$ in a similar way as the evaluation data. It contains the same set of features as well as the target variable \textit{Defaulter} but with information referred to time $k$ instead (two years back). Thus, we have evidence of the \textit{Defaulter} variable in the period of time from $k$ to $t$. The data set for training/updating the model is depicted in Table~\ref{tab:TrainingDataset}.
+\item \textbf{Model training data set:}  This data set is also built at time $t$ in a similar way as the evaluation data. It contains the same set of features as well as the target variable \textit{Defaulter} but with information referred to time $k$ instead (two years back). Note that, at time $t$, we have information of the \textit{Defaulter} variable in the period of time from $k$ to $t$. The data set for training/updating the model is depicted in Table~\ref{tab:TrainingDataset}.
 \begin{table}[h]
 \centering
 \begin{tabular}{c|ccc|ccc|c|c}
@@ -105,10 +106,8 @@ Client$_n$  &                                                &               &  
 \label{tab:TrainingDataset} 
 \end{table}
 
-As shown in Table~\ref{tab:TrainingDataset}, each record contains a class label indicating if the customer is considered defaulter or non-defaulter at time $t$, and the values for all predictive variables. 
+Table~\ref{tab:TrainingDataset} shows the training data set where each record contains the values for all predictive variables and a class value labelled as \emph{non-defaulter} only when there is no evidence of defaulting in the period from $k$ to $t$ (2 years). 
 
-
-To decide if a customer is defaulter or not at time $t$, we look at data in a period 2 years back from the current time $t$. If during these two years, there is no evidence of defaulting and the client's payments at Cajamar have been accomplished as expected, the client is labelled as non-defaulter. Otherwise, it is labelled as defaulter.
 \end{itemize}
 
 In what follows, we propose two modelling solutions for the risk prediction problem: static and dynamic.
