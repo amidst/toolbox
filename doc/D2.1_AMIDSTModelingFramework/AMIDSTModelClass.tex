@@ -5,13 +5,15 @@ One of the main goals of AMIDST project is the definition of a general model cla
 \begin{itemize}
 \item \textbf{Feature 1:} it should be applicable to the three considered use-cases, i.e., Daimler, Cajamar, and Verdande,
 
-\item \textbf{Feature 2:} it should be scalable, supporting both inference and learning from massive data streams and
+\item \textbf{Feature 2:}  it should be general enough to be applicable to any future, potentially similar, use-cases and
 
-\item \textbf{Feature 3:}  it should be general enough to be applicable to any future, potentially similar, use-cases.
+\item \textbf{Feature 3:} it should be scalable, supporting both inference and learning from massive data streams.
+
+
 
 \end{itemize}
 
-Taking these different characteristics into account, and using the subnetwork graphical notation introduced in Section \ref{SubSection:GraphicalNotation}, the general AMIDST model class as well as its specific instantiation to each use case are first introduced and discussed in Section \ref{GeneralModelClass}. Then, a summary is presented in Section \ref{summaryAMIDSTModels}.
+Taking these different characteristics into account and using the subnetwork graphical notation introduced in Section \ref{SubSection:GraphicalNotation}, the general AMIDST model class, as well as its specific instantiation to each use case, are first introduced and discussed in Section \ref{GeneralModelClass}. A summary is finally included in Section \ref{summaryAMIDSTModels}.
 
 %---------------------------------------------------------------------
 \subsection{The general AMIDST model class}\label{GeneralModelClass}
@@ -27,11 +29,11 @@ Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model cla
 \end{figure}
 
 
-The general AMIDST model class can be seen as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}), i.e., it satisfies the first order Markov property and the stationary assumption. However, this model is not as general as 2T-DBN and contains much more internal structure. More precisely, the structure of this model decomposes along three main different layers which can be described, at time $t$, as follows:
+The general AMIDST model class can be seen as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}), i.e., it satisfies the first order Markov property and the stationary assumption. However, this model is not as general as a 2T-DBN and presents a more restricted internal structure that offers a good trade-off between expressiveness and efficiency. More precisely, the structure of this model decomposes along three main different layers which can be described, at time $t$, as follows:
 
 \begin{itemize}
 
-\item \textbf{Control/class layer:} The upper layer corresponds to a subnetwork including either discrete or continuous observed variables, that act either as control continuous variables or a class variable. These set of variables can be connected through consecutive time steps to encode temporal dependences, e.g., the probability of a particular class label at time $t+1$ varies with respect to its label at time $t$. 
+\item \textbf{Control/class layer:} The upper layer corresponds to a subnetwork including either continuous or discrete observed variables, that can act for instance as either control continuous variables or a class variable respectively. These set of variables can be connected through consecutive time steps to encode temporal dependences, e.g., the probability of a particular class label at time $t+1$ varies with respect to its label at time $t$. 
 
 The links from the continuous observed variables to the state subnetworks in the \textit{Hidden layer} (i.e., the set of State 1 and State 2 variables) will be possibly handled with logit and probit functions.
 
@@ -39,13 +41,13 @@ The links from the continuous observed variables to the state subnetworks in the
 
 This layer can contain state variables that are not connected over time, and that could be used, for instance, to model mixture of Gaussian distributions over the observed continuous variables in the \textit{Observable layer}. Moreover, state and latent variables that are connected over time can be used to model a process that is evolving and changing over time. Recall that, links from latent variables to state variables are strictly prohibited.
 
-\item \textbf{Observable layer:} The bottom layer corresponds to a subnetwork including both discrete and continuous observed variables. These variables are interconnected, and in our different use cases, only links from discrete to continuous nodes are required. However, in general, there is no restriction on the direction of the links between the variables in this layer. In addition, it is possible to alleviate the sensor Markov assumption by including links between observed variables at consecutive time steps.
+\item \textbf{Observable layer:} The bottom layer corresponds to a subnetwork including both discrete and continuous observed variables. These variables can in principle be interconnected but, in our different use cases, only links from discrete to continuous nodes are required. However, in general, there is no restriction on the direction of the links between the variables in this layer. In addition, it is possible to alleviate the sensor Markov assumption by including links between observed variables at consecutive time steps.
 
 \end{itemize} 
 
-This model class can also be parametrized in alternative ways to improve the expressibility and applicability to different problems or domains. In general, this model class falls inside the conditional linear Gaussian framework, so the conditional probability distributions are parameterized as detailed in Section \ref{SubSection:HybridBNs}. But this model class might also contain instantiations which are not covered by this general framework. More precisely, when the top layer class is instantiated to  a continuous subnetwork then the conditional probabilities of ``State 1'' and ``State 2'' will be instantiated with a logistic or probit distributions, because we have continuous parents with discrete children. Additionally, we also envision the possibility of introducing in the observable layer the use of probability distributions belonging to the MoTBF family \cite{Langseth12} to extend the modelling capacities of this model class.
+This model class can also be parametrized in alternative ways to improve the expressibility and applicability to different problems or domains. In general, this model class falls inside the conditional linear Gaussian framework, so the conditional probability distributions are parameterized as detailed in Section \ref{SubSection:HybridBNs}. But this model class might also contain instantiations which are not covered by this general framework. More precisely, when the top layer class is instantiated to  a continuous subnetwork then the conditional probabilities of ``State 1'' and ``State 2'' will be instantiated with logistic or probit distributions, because we have continuous parents with discrete children. Additionally, we also envision the possibility of introducing in the observable layer the use of probability distributions belonging to the MoTBF family \cite{Langseth12} to extend the modelling capacities of this model class.
 
-In the following sections, we will show how this model class satisfies the aforementioned \textbf{Feature 1} by describing how each particular use case fits in this restricted 2T-DBN AMIDST model. This instantiation process of the general AMIDST model to the three use-cases (all of them with different application scenarios) could be also seen as a practical example demonstrating the general applicability of the resulting AMIDST model class. This gives arguments in favour of \textbf{Feature 3} and shows how AMIDST model class can be potentially instantiated to other future use cases. Finally, the remaining task is related to \textbf{Feature 2} and consists of designing inference and learning algorithms that allow the application of the AMIDST model to massive data streams. 
+In the following sections, we will show how this model class satisfies the aforementioned \textbf{Feature 1}, by describing how each particular use case fits in this restricted 2T-DBN AMIDST model. This instantiation process of the general AMIDST model to the three use-cases (all of them with different application scenarios) can also be seen as a practical example demonstrating the general applicability of the resulting AMIDST model class. This hence gives arguments in favour of \textbf{Feature 2} and shows how the AMIDST model class can be potentially instantiated to other future use cases. Finally, the remaining task is related to \textbf{Feature 3} and consists of designing inference and learning algorithms that allow the application of the AMIDST model to massive data streams. 
 
 
 
