@@ -50,7 +50,8 @@ In the following sections, we will show how this model class satisfies the afore
 
 %-----------------------------------------------------------------------------------------------------------------------------------------
 \subsubsection{Daimler model class}\label{daimlerAMIDSTModels}
-%-----------------------------------------------------------------------------------------------------------------------------------------
+%---------------------------------------------------------------------
+
 
 Daimler's model class has been previously displayed in Figure \ref{Figure:daimlerLEdynGeneric}. Taking the general AMIDST model class into account, Daimler's model class can be reinterpreted, according to Figure \ref{Figure:AMIDSTModelClassDaimler}, as follows:
 
@@ -67,11 +68,11 @@ Daimler's model class has been previously displayed in Figure \ref{Figure:daimle
 
 \item \textbf{Hidden layer}: the two sets of state variables are required here. 
 
-The lower set of state variables (i.e., State 2 subnetwork in Figure \ref{Figure:AMIDSTModelClass}) encode a polytree \cite{JensenNielsen2007} for the hierarchy of Hypothesis. This polytree structure, not explicitly encoded in the model, can indeed be exploited during inference.
+The lower set of state variables (i.e., ``State 2'' subnetwork in Figure \ref{Figure:AMIDSTModelClass}) encode a polytree \cite{JensenNielsen2007} for the hierarchy of the Hypothesis. This polytree structure, not explicitly encoded in the model, can indeed be exploited during inference.
 
-Connection through time is only made at the top level state variables (i.e., State 1 subnetwork in Figure \ref{Figure:AMIDSTModelClass}), which correspond to the signal real values (S\_REAL\footnote{Although these variables are inherently continuous, we notice that they are discretized to avoid the inference problems derived of having continuous parents with discrete children (see Section \ref{Section:DaimlerDynamic}).}). Consequently, the future and past time slices of our 2T-DBN are conditionally independent given S\_REAL variables corresponding to the present time. 
+Connection through time is only made at the top level state variables (i.e., ``State 1'' subnetwork in Figure \ref{Figure:AMIDSTModelClass}), which corresponds to the signal real values (S\_REAL\footnote{Although these variables are inherently continuous, we notice that they are discretized to avoid the inference problems derived of having continuous parents with discrete children (see Section \ref{Section:DaimlerDynamic}).}). Consequently, the future and past time slices of our 2T-DBN are conditionally independent given S\_REAL variables corresponding to the present time. 
 
-In addition, inside a time slice, the observed continuous and hidden discrete subnetworks are also conditionally independent given S\_REAL variables. In the case that we want to contemplate a possible extension in which the lower level Hypothesis are connected over time, then State 1 subnetwork would contain both the S\_REAL variables and the temporally linked Hypothesis. However, as commented before, this would greatly complicate the inference process. 
+In addition, inside a time slice, the observed continuous and hidden discrete subnetworks are also conditionally independent given S\_REAL variables. In the case that we want to contemplate a possible extension in which the lower level Hypothesis are connected over time, then ``State 1'' subnetwork would contain both the S\_REAL variables and the temporally linked Hypothesis. However, as commented before, this would greatly complicate the inference process. 
 
 \item \textbf{Observable layer:} there are two sets of observed variables in this case. On one hand, we encounter a group of variables representing the measured data (S\_MEAS), along with the variables encoding the sensor noise (S\_SIGMA). The resulting structure is again a polytree, which presents some advantages for the inference process. On the other hand, we have a single discrete node for the manoeuvre Event, which will be the target variable during inference. 
 
