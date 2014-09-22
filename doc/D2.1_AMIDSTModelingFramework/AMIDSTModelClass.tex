@@ -9,25 +9,22 @@ One of the main goals of AMIDST project is the definition of a general model cla
 
 \item \textbf{Feature 3:} it should be scalable, supporting both inference and learning from massive data streams.
 
-
-
 \end{itemize}
 
 Taking these different characteristics into account and using the subnetwork graphical notation introduced in Section \ref{SubSection:GraphicalNotation}, the general AMIDST model class, as well as its specific instantiation to each use case, are first introduced and discussed in Section \ref{GeneralModelClass}. A summary is finally included in Section \ref{summaryAMIDSTModels}.
 
-%---------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------------------------------------------
 \subsection{The general AMIDST model class}\label{GeneralModelClass}
-%---------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------------------------------------------
 
 Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model class. This model is the result of combining all the models that have been previously defined for the different use cases. As it can be seen, subnetworks have been used to group variables with similar properties, so that the commonalities between all models are taken into account. 
 
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.465]{./figures/AMIDSTModelClass}
-\caption{\label{Figure:AMIDSTModelClass} Proposed AMIDST model class.}
+\caption{\label{Figure:AMIDSTModelClass} General AMIDST model class.}
 \end{center}
 \end{figure}
-
 
 The general AMIDST model class can be seen as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}), i.e., it satisfies the first order Markov property and the stationary assumption. However, this model is not as general as a 2T-DBN and presents a more restricted internal structure that offers a good trade-off between expressiveness and efficiency. More precisely, the structure of this model decomposes along three main different layers which can be described, at time $t$, as follows:
 
@@ -51,24 +48,12 @@ In the following sections, we will show how this model class satisfies the afore
 
 
 
-%---------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------------------------------------------
 \subsubsection{Daimler model class}\label{daimlerAMIDSTModels}
 %---------------------------------------------------------------------
 
 
-Daimler's resulting model has been previously displayed in Figure \ref{Figure:daimlerLEdynGeneric}. With respect to the general model above described, we need the following concepts:
-
-\begin{itemize}
-\item \textbf{Control/class layer}: is not used in this domain.
-
-\item \textbf{Hidden layer}: the two sets of state variables are required here. The lower set of state variables (State 2) encode a polytree \cite{JensenNielsen2007} for the hierarchy of hypothesis. This polytree structure, not explicitly encoded in the model, can indeed be exploited during inference.
-
-
-Connection through time is only made at the level of top sets of state variables (``State 1''), i.e., the signal real values (S\_REAL\footnote{Although these variables are inherently continuous, we notice that they are discretized to avoid the inference problems derived of having continuous parents with discrete children (see Section \ref{Section:DaimlerDynamic}).}). Consequently, the future and past time slices of our 2T-DBN are conditionally independent given the S\_REAL variables corresponding to the present time. Additionally, inside a time slice, the observed continuous and discrete subnetworks are also conditionally independent given these S\_REAL variables. In the case that we wanted to contemplate a possible extension in which the lower level hypothesis are connected over time, then the ``State 1'' sub-networks of the model class would contain the S\_REAL variables and the temporally linked hypothesis. Although, as commented before, this would greatly difficult the inference process. 
-
-\item \textbf{Observable layer:} there are two sets of observed variables in this case. On one hand, we encounter a group of variables representing the measured data (S\_MEAS), along with the variables encoding the sensor noise (S\_SIGMA). The resulting structure is again a polytree, with presents some advantages for the inference process. On the other hand, we have a single discrete node for the manoeuvre event, which will be the target variable during inference. 
-\end{itemize}
-
+Daimler's model class has been previously displayed in Figure \ref{Figure:daimlerLEdynGeneric}. Taking the general AMIDST model class into account, Daimler's model class can be reinterpreted, according to Figure \ref{Figure:AMIDSTModelClassDaimler}, as follows:
 
 \begin{figure}[ht!]
 \begin{center}
@@ -77,33 +62,27 @@ Connection through time is only made at the level of top sets of state variables
 \end{center}
 \end{figure}
 
+\begin{itemize}
 
+\item \textbf{Control/class layer}: is not used in this domain.
 
+\item \textbf{Hidden layer}: the two sets of state variables are required here. 
 
-%As commented in Section \ref{Section:DaimlerDynamic}, one the main issues of this model is that it contains discrete children with continuous parents, and hence cannot be modelled with the conditional linear Gaussian family \cite{JensenNielsen2007}. In this particular case, to deal with this problem we adopt the same solution adopted in \cite{kasper2012object}, which consists in discretizing these nodes. In this way, the general structure of Daimler's models corresponds to the one depicted in Figure \ref{Figure:DaimlerModelClass}, where there is no more discrete children with continuous parents, and it is possible thereby to use standard parametrizations \cite{JensenNielsen2007}. 
+The lower set of state variables (i.e., ``State 2'' subnetwork in Figure \ref{Figure:AMIDSTModelClass}) encode a polytree \cite{JensenNielsen2007} for the hierarchy of the Hypothesis. This polytree structure, not explicitly encoded in the model, can indeed be exploited during inference.
 
+Connection through time is only made at the top level state variables (i.e., ``State 1'' subnetwork in Figure \ref{Figure:AMIDSTModelClass}), which corresponds to the signal real values (S\_REAL\footnote{Although these variables are inherently continuous, we notice that they are discretized to avoid the inference problems derived of having continuous parents with discrete children (see Section \ref{Section:DaimlerDynamic}).}). Consequently, the future and past time slices of our 2T-DBN are conditionally independent given S\_REAL variables corresponding to the present time. 
 
-%This general model is structured as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}). The static model which is repeated over time consists of four elements: 
-%
-%\begin{enumerate}
-%\item ``Discrete 1'': is a discrete hidden subnetwork which is the only element temporally connected
-%\item ``Discrete 2'': is an additional discrete hidden subnetwork which is not temporally connected. It is included only for modelling purposes inside a time slice
-%\item ``Discrete 3'': is an observed discrete subnetwork directly depending on ``Discrete 2'' subnetwork
-%\item  ``Continuous 1'': is an observed continuous subnetwork which is directly depending on ``Discrete 1'' subnetwork
-%\end{enumerate}
-%
-%As commented, this 2T-DBN is only temporally connected through the hidden subnetwork on top. 
+In addition, inside a time slice, the observed continuous and hidden discrete subnetworks are also conditionally independent given S\_REAL variables. In the case that we want to contemplate a possible extension in which the lower level Hypothesis are connected over time, then ``State 1'' subnetwork would contain both the S\_REAL variables and the temporally linked Hypothesis. However, as commented before, this would greatly complicate the inference process. 
 
+\item \textbf{Observable layer:} there are two sets of observed variables in this case. On one hand, we encounter a group of variables representing the measured data (S\_MEAS), along with the variables encoding the sensor noise (S\_SIGMA). The resulting structure is again a polytree, which presents some advantages for the inference process. On the other hand, we have a single discrete node for the manoeuvre Event, which will be the target variable during inference. 
 
+\end{itemize}
 
-%---------------------------------------------------------------------
-\subsubsection{CajaMar model class}\label{cajamarAMIDSTModels}
-%---------------------------------------------------------------------
-%\textcolor{blue}{To be re-written}
-Concerning CajaMar use-case, both application scenarios share the same models, of which two versions have been previously discussed, namely, static and dynamic (see Section \ref{Section:CajaMarModels}). 
+%-----------------------------------------------------------------------------------------------------------------------------------------
+\subsubsection{Cajamar model class}\label{cajamarAMIDSTModels}
+%-----------------------------------------------------------------------------------------------------------------------------------------
 
-At this point, we obviate the static version, because the general AMIDST model class is primarily a dynamic model class. Therefore, the high-level description of CajaMar's dynamic model (previously displyed in Figure \ref{fig:component}) is given in Figure \ref{Figure:AMIDSTModelClassCajamar}. %As it can be seen, CajaMar models is composed by four main subnetworks, which are expanded over time and all of them are observed. Hence, at CajaMar, there are no hidden subnetworks. 
-
+Concerning Cajamar use-case, both application scenarios share the same models with two possible versions, namely, static and dynamic (see Section \ref{Section:CajaMarModels}). At this point, we obviate the static version, because the general AMIDST model class is primarily a dynamic model class. Therefore, the high-level description of Cajamar's dynamic model (previously displayed in Figure \ref{fig:component}) can be reinterpreted according  to Figure \ref{Figure:AMIDSTModelClassCajamar}. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -113,14 +92,14 @@ At this point, we obviate the static version, because the general AMIDST model c
 \end{figure}
 
 
-Following the layer-wise analysis used above, Cajamar's model is described as:
+Following the layer-wise analysis used above, Cajamar's model is described as follows:
 \begin{itemize}
 
 \item \textbf{Control/class layer}: the top node ``Defaulter" in this layer represents the class variable to categorize a client as defaulter or non-defaulter. There exist temporal links between consecutive time steps to model the dynamic nature of being a defaulter or non-defaulter. Note that this is indeed the target variable in the inference process.
 
 \item \textbf{Hidden layer}: is not used in this domain.
 
-\item \textbf{Observable layer:} The ``Observed" continuous subnetwork represents information corresponding to the socio demographics, memory variables, financial activity and past payment behaviour of a client, which in principle may or may not be connected over time. The ``Indicator" subnetwork, in turn, comprises the set of indicator variables, $\delta_{X_t}$, used to model the situation in which one of the continuous variables has a large number of zeroes.
+\item \textbf{Observable layer:} The ``Observed" continuous subnetwork represents information corresponding to the socio-demographic variables, memory variables, financial activity, and past payment behaviour of a client, which, in principle, may or may not be connected over time. Moreover, the ``Indicator" discrete subnetwork includes the set of indicator discrete variables denoted as $\delta_{X_t}$. These indicator variables are used for modelling situations where some variables in the ``Observed" continuous subnetwork have a large number of zeros.
 
 \end{itemize}
 
