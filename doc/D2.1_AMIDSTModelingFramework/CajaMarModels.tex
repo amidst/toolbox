@@ -227,20 +227,20 @@ The marketing department at Cajamar periodically launches marketing campaigns fo
 
 For this purpose, the marketing group will proceed as follows. Using their own marketing models, and in collaboration with the risk department, they will provide some restrictions over a subset of variables, denoted as $\Z$, to be satisfied by the targeted clients. For instance, they all must be older than 60 or the annual incomes must be higher than $30,000$ euros. 
 
-Additionally, they will select a subset of predictive variables $\Y$ considered relevant from the whole set $\X$ to be part of the final profile for a specific campaign. Mainly  socio-demographic variables will take part in this set, for example, the age of a client is a relevant predictor when designing campaigns to attract customers for a death insurance. 
+Additionally, they will select a different subset of predictive variables $\Y$ also considered relevant when computing the final profile of the specific campaign. Mainly  socio-demographic variables will take part in this set, for example, the age of a client is a relevant predictor when designing campaigns to attract customers for a death insurance. 
 
 If we denote the \emph{Defaulter} variable as $D$,  the objective is to compute the assignment $\Y = \y^{*}$ that has maximum a posteriori probability given the evidence $D=$ \texttt{no}, and also given the restrictions to be satisfied by the clients, $\Z=\z$. These restrictions will be considered as soft evidence during the inference process. 
  
- Thus, the MAP operation is defined as follows:
+Thus, the MAP operation is defined as follows:
 
 \begin{equation}
 \y^{*} = \underset{\y\in\Omega_{\Y}} {\mathrm{arg\,max}} ~ P(\Y=\y\mid D = \texttt{no}, \Z=\z)\, .
 \label{eq:MAP}
 \end{equation}
 
-Note that MAP operation will be performed over a model containing the whole set of variables $\X$. There is an open issue when performing MAP inference within continuous domains, which is the definition of the intervals of the continuous variables to conform the profiles. This issue is further considered in the discussion section. 
+Note that the MAP operation will be performed over a model containing the whole set of variables (i.e. the variables in $\Y$ and $\Z$, and the rest non-relevant variables.) There is an open issue when performing MAP inference within continuous domains, which is the definition of the intervals of the continuous variables to conform the profiles. This issue is further considered in the discussion section. 
 
-Let see a running example to clarify the process. Let consider a simple case in which three predictors $\Y$ are considered relevant for a specific campaign: \emph{Age}, \emph{Marital Status} and \emph{Gender}. Let consider also the restriction $\X$ = Age > 50 coming from the marketing department.  After carrying out the computation in Eq.~\ref{eq:MAP}, this may results in the following most probable explanation: clients in the range \emph {[60-70] years}, \emph{single status} and \emph{male}. This procedure will be used to get the $k$ best explanations or in other words the best profiles.   
+Let see a running example to clarify the process. Let us consider a simple case in which three predictors $\Y$ are considered relevant for a specific campaign: \emph{Age}, \emph{Marital Status} and \emph{Gender} which might be relevant to identify target customers for a \textit{death insurance} campaign. Let consider also the restriction $\Z = \{Age>50\}$ coming from the marketing department, which encodes the initial group of customers that, according to the knowledge of the marketing group, are potential buyers of this product.  The next step is to further refine this group of customers and identify the profile of customers which are most solvent (i.e. less likely to default). For this task we perform the computation in Eq.~\ref{eq:MAP}, this may results in the following most probable assignment: clients in the range \emph {[60-70] years}, \emph{single status} and \emph{male}. Hence, this profile identifies the most solvent customers who might be interested in purchasing a \emph{dead insurance} product. We must say that the above  procedure will be also used to get the $k$ best assignments or in other words the best set of profiles.   
 
 %-------------------------------------------------------------------------------------------------------
 %\subsubsection*{Static model}\label{sec:StaticModel}
@@ -251,9 +251,9 @@ As pointed out before, mainly socio-demographic variables will determine the cus
 %Due to complexity reasons, we should reduce this number as much as possible to make the profile extraction problem feasible.
 The structure for the proposed static model in the profile extraction is the same as for predicting the risk of defaulting (see Fig.~\ref{fig:CajamarStaticModel}). However, there will be a considerable reduction in the number of features included, since the profile extraction task does not require information about all variables included in the risk prediction, i.e., only a few variables will be part of the profiles. With this reduction, we also make the problem computationally more feasible. 
 
-In this first attempt to face the profile extraction problem, only variables within each white box (see Fig.~\ref{fig:CajamarStaticModel}) are allowed to be connected conforming a tree. In Section~\ref{subsubsec:CajamarDiscussion} we will consider more dependences among white boxes, and also having a general Bayesian network structure more than one specifically designed for classification. 
+In this first attempt to face the profile extraction problem, only variables within each white box (see Fig.~\ref{fig:CajamarStaticModel}) are allowed to be connected conforming a tree structure. In Section~\ref{subsubsec:CajamarDiscussion} we will consider more dependences among white boxes, and also having a general Bayesian network structure more than one specifically designed for classification. 
 
-In any case, what is desirable is to avoid using a na\"{\i}ve Bayes structure for this task. The reason is that, once the \emph{Defaulter} variable is evidenced to \texttt{no}, the features become independent and the analysis would be poorer (MPE in this case would correspond to the maximum probability value for each variable individually).
+In any case, what is desirable is to avoid using a na\"{\i}ve Bayes structure for this task. The reason is that, once the \emph{Defaulter} variable is evidenced to \texttt{no}, the features become independent and the analysis would be poorer (MAP in this case would correspond to the maximum probability value for each variable individually).
 
 A possible extension of the previous static model presented above including dynamic Bayesian networks will be considered in next section.
 
