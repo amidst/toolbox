@@ -104,23 +104,11 @@ Following the layer-wise analysis used above, Cajamar's model is described as fo
 \end{itemize}
 
 
-
-%---------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------------------------------------------
 \subsubsection{Verdande model class}\label{verdandeAMIDSTModels}
-%---------------------------------------------------------------------
+%-----------------------------------------------------------------------------------------------------------------------------------------
 
-Figure \ref{Figure:AMIDSTModelClassVerdande} shows how the general AMIDST model class is instantiated in the case of Verdande. This instantiated model encompasses the models of the three applications scenarios detailed in Figures \ref{Figure:VTScenario1}, \ref{Figure:VTScenario2} and \ref{Figure:VTScenario3}  (see Section \ref{Section:VerdandeModels}).  We now comment the main elements of this instantiated model.
-
-
-\begin{itemize}
-\item \textbf{Control/class layer}:  This element is instantiated to a set of nodes modelling the observed control variables. In the three application scenarios, the role of this control variables is to condition the transition probability of the state variables and allow the modelling of non-stationary transition probabilities.  
-
-\item \textbf{Hidden layer}: This element is directly instantiated from the general class. However, there are some differences when applied to each particular application scenario. For the first application scenario (see Figure \ref{Figure:VTScenario1}),  ``State 2'' is not needed and ``State 1'' is instantiated to the ``Normal/Abnormal'' state variable. For the second application scenario, ``State 1'' is no needed and ``State 2'' is instantiated to a single multinomial variable whose role is to model mixture of Gaussians at the leaves. In the third application scenario, ``State 2'' is no used and ``State 1'' is instantiated to a sub-network containing the FormationDetection and Switch nodes. 
-
-\item \textbf{Observable layer: } This element of the model class is similarly instantiated in the three application scenarios. In the case of application scenario 1 and 3, it is just instantiated to a single response variable. In the application scenario 2, this instantiation can be made over a set of (possibly interconnected) response variables. 
-\end{itemize}
-
-
+Figure \ref{Figure:AMIDSTModelClassVerdande} shows how the general AMIDST model class is instantiated in the case of Verdande. This instantiated model encompasses the models of the three application scenarios previously discussed in Section \ref{Section:VerdandeModels} and depicted in Figures \ref{Figure:VTScenario1}, \ref{Figure:VTScenario2} and \ref{Figure:VTScenario3}.
 
 \begin{figure}[ht!]
 \begin{center}
@@ -129,10 +117,29 @@ Figure \ref{Figure:AMIDSTModelClassVerdande} shows how the general AMIDST model 
 \end{center}
 \end{figure}
 
+The instantiated Verdande model class can be described as follows:
 
+\begin{itemize}
+\item \textbf{Control/class layer}:  This layer includes a subnetwork modelling the set of observed Control variables. In the three application scenarios, the role of these Control variables is to condition the transition probability of the state variables, and to ensure as well the modelling of non-stationary transition probabilities.  
+
+\item \textbf{Hidden layer}: This layer is directly instantiated from the general AMIDST model class. However, there are some differences when applied to each particular application scenario:
+
+\begin{itemize}
+\item For the first application scenario (see Figure \ref{Figure:VTScenario1}):  ``State 2'' is not needed and ``State 1'' is instantiated to the ``Normal/Abnormal'' state variable. 
+
+\item For the second application scenario (see Figure \ref{Figure:VTScenario2}): ``State 1'' is not needed and ``State 2'' is instantiated to a single multinomial variable whose role is to model mixture of Gaussians at the leaves. 
+
+\item For the third application scenario (see Figure \ref{Figure:VTScenario3}): ``State 2'' is not needed and ``State 1'' is instantiated to a subnetwork containing the ``FormationNo'' and ``Switch'' variables.
+\end{itemize}
+
+\item \textbf{Observable layer:} For both application scenarios 1 and 3, this layer is instantiated as a single response variable; while for the application scenario 2, it may be instantiated as a set of (possibly interconnected) response variables. 
+\end{itemize}
+
+%-----------------------------------------------------------------------------------------------------------------------------------------
 \subsection{Summary}\label{summaryAMIDSTModels}
+%-----------------------------------------------------------------------------------------------------------------------------------------
 
-As it has been shown in the previous sections, the proposed AMIDST model class of Figure \ref{Figure:AMIDSTModelClass} encompasses the different application scenarios of the three use cases. These three use-cases come from very different domains: automotive, finance and oil-drilling. In our opinion, these are strong arguments in favour of the generality and applicability of this model class. Although, in any case, a better understanding of the faced problems and/or future applications might reveal that some elements of this model class need to be refined.  
+As it has been shown in the previous sections, the proposed general AMIDST model class of Figure \ref{Figure:AMIDSTModelClass} encompasses the different application scenarios of the three use cases. These three use cases come from very different domains: automotive, finance and oil-drilling. In our opinion, these are strong arguments in favour of the generality and applicability of this model class. Although, in any case, a better understanding of the faced problems and/or future applications might reveal that some elements of this model class need to be refined.  
 
 A higher level view of our proposed AMIDST model is displayed in Figure \ref{Figure:AMIDSTModelClassHighLevel}. As commented before, it shows how the AMIDST model class could actually be seen as a ``restricted" 2T-DBN. It is restricted in three different ways. Firstly, all the nodes are structured in three layers, each one with clear semantics while modelling: Broadly speaking, the \textit{control/class layer} represent control variables that may affect the process homogeneity/stationarity, or represent the class variable in classification tasks; the \textit{hidden layer} includes a sufficiently rich set of hidden variables to capture the process dynamics; and the \textit{observable layer} encompasses sensor measures and predictive attributes. The second restriction states that, in opposite to general 2T-DBNs, the variables in this model class can only be temporally linked to other variables in the same layer. And, finally, the last restriction  states that continuous hidden variables cannot point to discrete (hidden or observed) nodes. This last constraint implies that our inference algorithms will not have to deal with the hard and open problem of computing posterior distributions or marginalize over continuous variables which are parents of discrete children nodes. So, in most of the cases, the network can be parameterized using the conditional linear Gaussian framework. And in those cases when this is not possible, because the instantiated model contains continuous parents with discrete children, we will have that the continuous nodes are always observed. 
 
@@ -142,29 +149,3 @@ A higher level view of our proposed AMIDST model is displayed in Figure \ref{Fig
 \caption{\label{Figure:AMIDSTModelClassHighLevel} The high-level AMIDST model class}
 \end{center}
 \end{figure}
-
-
-%This section, with the high-level figure, should help to defend the third point made in the introduction, i.e., that it should be general enough to be applicable to any future, potentially similar, use-cases.
- 
-
-
-%\begin{figure}[ht!]
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/AMIDSTModelClassHighLevel}
-%\caption{\label{Figure:AMIDSTModelClassHighLevel} AMIDST model class high level}
-%\end{center}
-%\end{figure}
-
-%\begin{figure}[ht!]
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/AMIDSTModelClassTopPart}
-%\caption{\label{Figure:AMIDSTModelClassHighLevel} AMIDST model class top part}
-%\end{center}
-%\end{figure}
-%
-%\begin{figure}[ht!]
-%\begin{center}
-%\includegraphics[scale=0.4]{./figures/AMIDSTModelClassLowPart}
-%\caption{\label{Figure:AMIDSTModelClassHighLevel} AMIDST model class low part}
-%\end{center}
-%\end{figure}
