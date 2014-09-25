@@ -1,6 +1,6 @@
 \section{Background and notation}\label{Section:Preliminaries}
 
-The following sections aim at describing some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use cases. Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time, and, finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
+The following sections aim at describing some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use-cases. First, Section \label{SubSection:GraphicalNotation} presents the graphical notation. Next, Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, and Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time. Finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
 
 
 %------------------------------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ Figure \ref{Figure:PreliminariesNotation} shows in the first row the graphical r
 \end{center}
 \end{figure}
 
-The second row of Figure \ref{Figure:PreliminariesNotation} shows the graphical representation of the different types of subnetworks. A subnetwork refers to a directed acyclic graph defined over a set of variables\footnote{In particular, a subnetwork refers in our case to a part of a dynamic Bayesian network that will be defined later on this document.}. A continuous subnetwork (i.e., including only continuous variables) is depicted with a blue rectangle, while a discrete subnetwork (i.e., including only discrete variables) is depicted with a green rectangle. 
+The second row of Figure \ref{Figure:PreliminariesNotation} shows the graphical representation of the different types of subnetworks. A subnetwork refers to a directed acyclic graph defined over a set of variables\footnote{In particular, a subnetwork refers in our case to a part of a dynamic Bayesian network that will be defined later on in this document.}. A continuous subnetwork (i.e., including only continuous variables) is depicted with a blue rectangle, while a discrete subnetwork (i.e., including only discrete variables) is depicted with a green rectangle. 
 
 If a subnetwork can be instantiated, at a specific moment, with either continuous or discrete variables (i.e., we have a continuous or discrete subnetwork), the rectangle background is horizontally coloured with blue and green. However, if a subnetwork is simultaneously instantiated with both continuous and discrete variables (i.e., we have a continuous \& discrete subnetwork), the rectangle background is vertically coloured with blue and green. Finally, a hidden subnetwork is depicted with a dashed-line rectangle, while an observed subnetwork is depicted with a solid-line rectangle.
 
@@ -48,16 +48,16 @@ Traditionally, BNs have been defined for discrete domains, where the entities of
 
 To deal with this problem, research has largely pursued three main approaches to extend BNs and support continuous variables. As a first approach, one may choose to carefully construct the model so that exact inference algorithms can still be applied. This is the case for the conditional linear Gaussian (CLG) BNs \cite{Lauritzen1992,LauritzenJensen2001}, where the local probability distributions of continuous variables are specified as conditional linear Gaussian distributions and where discrete variables can only have discrete parents. A second approach consists of considering approximate algorithms for performing inference, allowing thereby arbitrary distributions to be associated with the BN model. Examples of this approach include the Gibbs sampler \cite{Geman1984, hrycej1990gibbs} and variational inference \cite{Jordan1999}. Finally, the third approach consists of ``transforming" the original BN model into an approximate model, for which exact inference algorithms can be applied. This can be achieved either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using transformations with more expressive power, such as using mixtures of truncated exponentials \cite{Moral2001} or mixtures of truncated basis functions \cite{Langseth12}.
 
-The models presented in this deliverable, unless otherwise stated, will be parameterized according to the conditonal linear Gaussain model \cite{Lauritzen1992,LauritzenJensen2001}. That means that we will have the following conditional distributions depending of the type, continuous or discrete, of the parents and the child variables:
+The models presented in this deliverable, unless otherwise stated, will be parameterized according to the conditonal linear Gaussain model \cite{Lauritzen1992,LauritzenJensen2001}. This means that we will have the following conditional distributions depending of the type, continuous or discrete, of the parents and the child variables:
 
 \begin{itemize}
-\item \textbf{Discrete $\rightarrow$ Discrete}: The child variable follows an independent multinomial probability distribution for each configuration or assignment of the parents variables.
+\item \textbf{Discrete $\rightarrow$ Discrete}: The child variable follows an independent multinomial probability distribution for each configuration or assignment of the parent variables.
 
-\item \textbf{Continuous $\rightarrow$ Continuous}: The child variable follows a conditional linear Gaussian distribution. I.e. the mean parameter of the Gaussian distribution of the child variable is a linear combination of the parents variables while the variance is a fixed independent parameter. 
+\item \textbf{Continuous $\rightarrow$ Continuous}: The child variable follows a conditional linear Gaussian distribution. I.e. the mean parameter of the Gaussian distribution of the child variable is a linear combination of the parent variables while the variance is a fixed independent parameter. 
 
-\item \textbf{Discrete $\rightarrow$ Continuous}: In this case, the child variable is distributed as an independent Gaussian distribution for each configuration of the parents variables. 
+\item \textbf{Discrete $\rightarrow$ Continuous}: In this case, the child variable is distributed as an independent Gaussian distribution for each configuration of the parent variables. 
 
-\item \textbf{ (Discrete, Continuous) $\rightarrow$ Continuous}:  For each configuration of the discrete parents variables, the child variable follows an independent conditional Gaussian distribution depending of the continuous parents variables. I.e. the mean parameter of the Gaussian distribution of the child variable is expressed as a different linear combination of the continuous parents variables for each configuration of the discrete parents variables and, moreover, the variance of this Gaussian can also be different. 
+\item \textbf{ (Discrete, Continuous) $\rightarrow$ Continuous}:  For each configuration of the discrete parent variables, the child variable follows an independent conditional Gaussian distribution depending of the continuous parent variables. I.e. the mean parameter of the Gaussian distribution of the child variable is expressed as a different linear combination of the continuous parent variables for each configuration of the discrete parent variables and, moreover, the variance of this Gaussian can also be different. 
 
 \end{itemize}
 
@@ -90,8 +90,6 @@ $$p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-V:t-1})$$
 \end{figure}
 
 Among the different kinds of Markov chains, the \textbf{first-order Markov chains} are the most widely used. They assume that knowing the present makes the future conditionally independent from the past, that is, $p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-1})$. The problem is that this could be an unrealistic assumption in some problems leading to poor approximations of the joint distribution. One could increase the Markov order to improve the approximation at the expenses of having a more complex model. Another  alternative \cite{russelNorvig2009} would be to increase the number of variables modelling the system. This alternative is usually preferred if we have a sound understanding of the ``physics''  of the process being modelled (e.g. predicting whether it is going to rain or not tomorrow based on the raining evidence of the current day can be probably improve by considering the raining evidence of previous days. Alternatively, we can also improve this prediction by considering in the modelling the humidity and the pressure of the current day \cite{russelNorvig2009}). 
-
-%To increase the accuracy of the approximation, one could either increase the Markov order, or equivalently, increase the number of state variables, which would consequently increase the complexity of the model in both cases. Hence, our objective is to come up with models that contain a self-sufficient set of variables, which often requires to fully understand the ``physics''  of the process being modelled for the different use cases \cite{russelNorvig2009}. 
 
 An additional challenging problem is the specification of the conditional probabilities at each time step of the DBNs. To deal with this problem, we usually assume that changes in the world state are driven by a \textit{stationary process}, that is, $p(\bm X_{t+1}|\bm X_{t}) = p(\bm X_t|\bm X_{t-1})\ \forall t \in\{1,\ldots,T\}$. 
 
@@ -127,9 +125,7 @@ An extension of the HMM is the so-called \textit{input-output hidden Markov mode
 \end{center}
 \end{figure}
 
-IOHMM is usually employed in supervised classification problems. In this case, both input and output variables are known during training, but only the former is known during testing. In fact, during testing, inference is performed to predict the output variables at each time step. In AMIDST we use this model in a different way. In our case, both set of input and output variables are always known, so that inference is only performed to predict the latent variables. The input variables $\bm Y'_{1:T}$ are introduced as a way to ``relax" the stationary assumption, by explicitly introducing a dependency to some observed information at each time slice, that is, the transition probability between $\bm X_t$ and $\bm X_{t+1}$ depends on the observed value $\bm Y_{t+1}$. 
-
-%As later explained in Section \ref{Section:VerdandeModels}, we might want to further extend IOHMM model by considering a set of discrete and continuous state variables in our models. 
+IOHMMs are usually employed in supervised classification problems. In this case, both input and output variables are known during training, but only the former is known during testing. In fact, during testing, inference is performed to predict the output variables at each time step. In AMIDST we use this model in a different way. In our case, both set of input and output variables are always known, so that inference is only performed to predict the latent variables. The input variables $\bm Y'_{1:T}$ are introduced as a way to ``relax" the stationary assumption, by explicitly introducing a dependency to some observed information at each time slice, that is, the transition probability between $\bm X_t$ and $\bm X_{t+1}$ depends on the observed value $\bm Y_{t+1}$. 
 
 %-----------------------------------------------------------------------------------------------
 \subsubsection{Kalman filters}\label{SubSubSection:KFs}
@@ -175,13 +171,13 @@ DBNs obviously share the computational difficulties of regular BNs in inference 
 \subsection{Preliminary data analysis}\label{SubSection:DataAnalysis}
 %-----------------------------------------------------------------------------------------------
 
-The motivation behind using a preliminary data analysis is first to test some assumptions supporting the models elicited by the experts in the different use cases, and second, to further complement our understanding about the nature of the problem to be modelled. In the following sub-sections, we will introduce the set of tools, namely sample correlograms, sample partial correlograms, histograms, and bivariate contour plots, that allows us to get some initial insights into both structural and distributional DBN assumptions.
+The motivation behind using a preliminary data analysis is first to test some assumptions supporting the models elicited by the experts in the different use-cases, and second, to further complement our understanding about the nature of the problem to be modelled. In the following sub-sections, we will introduce the set of tools, namely sample correlograms, sample partial correlograms, histograms, and bivariate contour plots, that allows us to get some initial insights into both structural and distributional DBN assumptions.
 
 %-----------------------------------------------------------------------------------------------
 \subsubsection{Sample correlograms and sample partial correlograms}
 %-----------------------------------------------------------------------------------------------
 
-A DBN mainly aims to model complex multivariate time series. By using sample correlograms and sample partial correlograms, we will try to test if the available data supports the temporal correlation between variables assumed by the DBN model, i.e., the temporal links between variables. However, these tools will only allow us to look at univariate time series, which may strongly limit the extent of the extracted conclusions. However, despite its limitations, this analysis will give us some interesting insights which usually cannot be elicited from experts, as we will see below for the different use cases.  
+A DBN mainly aims to model complex multivariate time series. By using sample correlograms and sample partial correlograms, we will try to test if the available data supports the temporal correlation between variables assumed by the DBN model, i.e., the temporal links between variables. However, these tools will only allow us to look at univariate time series, which may strongly limit the extent of the extracted conclusions. However, despite its limitations, this analysis will give us some interesting insights which usually cannot be elicited from experts, as we will see below for the different use-cases.  
 
 \begin{itemize}
 \item \textbf{Sample correlograms}: Let ${x_1,...,x_T}$ be a univariate time series. The \emph{sample autocorrelation coefficient} at lag $v$ is given by 
@@ -190,12 +186,9 @@ $$ \hat{\rho}_v =\frac{\sum_{t=1}^{T-v} (x_t-\bar{x})(x_{t+v}-\bar{x})}{\sum_{t=
 
 \noindent where $\bar{x}$ is the sample mean and $T$ is the total length of the considered data. The plot of $\hat{p}_v$ versus $v$, for $v=1,\ldots, M$ for some maximum $M$ is called the \emph{sample correlogram} of the data. $\hat{p}_v$ corresponds to the Pearson correlation between the series $\{x_t\}_{t\in\{1,...,T\}}$ and $\{x_{t+v}\}_{t+v\in\{1,...,T\}}$.
 
-
-%%Intuitively, ... short/long memory.
 Sample correlograms can be interpreted as a way to measure the strength of the following unconditional dependences: $X_t  \not\perp X_{t+v}$ for some lag $v \geq 1$.  When $\hat{\rho}_v$ is close to zero, this indicates that there exists a strong unconditional independence between $X_t$ and $X_{t+v}$. However, when $\hat{\rho}_v$ is close to either $1$ or $-1$, this indicates that there is a strong correlation or dependency between $X_t$ and $X_{t+v}$. However, once again, we should never forget that when computing these Pearson correlation coefficients, we are making a strong assumption about the normality of the data, which might not hold. Intuitively, they can be used to get an idea of the type of the ``memory'' encoded in the time series, differentiating between short-term and long-term memory. 
 
 Figure \ref{Figure:PreliminariesCorrelograms} shows examples of sample correlograms for two different types of data sets: Figure \ref{Figure:PreliminariesCorrelograms}(a) shows a sample correlogram for a sequence of 50 i.i.d. data records sampled according to a Gaussian distribution with zero mean and unit variance $x_t\sim {\mathcal N}(0,1)$; and Figure \ref{Figure:PreliminariesCorrelograms}(b) shows a sample correlogram for a sequence of 50 data samples distributed as $x_t=x_{t-1} + \epsilon$, such that $\epsilon\sim {\mathcal N}(0,1)$. As it can be seen, the correlogram for the i.i.d. data has values close to zero for all lags. However, for time series data, the correlogram clearly identifies the presence of a temporal relationship in the data. As expected, the correlation decreases with the size of the lag, and how quickly it decreases depends on the strength of the temporal relationship, or more intuitively, the ``memory'' of the time series. In the previous example, this ``memory'' inversely depends of the variance of the ``white noise'' $\epsilon$ value.
-
 
 \item \textbf{Sample partial correlograms}: Let $X_t$ be a random variable associated to $X$ taking values at time $t$. We can build the following regression problem:
 
@@ -252,4 +245,4 @@ Thus, despite its limitations in dynamic contexts, we will resort to the use of 
 
 \end{itemize}
 
-Finally, note that the usefulness of all these tools is limited due to its generative nature. That is, they do not explicitly target the prediction problem for the different use cases. After performing a proper evaluation of the considered static and dynamic models, it will be possible to re-adjust, if needed, our current assumptions. 
+Finally, note that the usefulness of all these tools is limited due to its generative nature. That is, they do not explicitly target the prediction problem for the different use-cases. After performing a proper evaluation of the considered static and dynamic models, it will be possible to re-adjust, if needed, our current assumptions. 
