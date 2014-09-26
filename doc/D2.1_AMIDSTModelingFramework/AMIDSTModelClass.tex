@@ -1,50 +1,107 @@
-\section{AMIDST model class}\label{section:AMIDSTmodelClass}
+\section{The AMIDST modelling framework}\label{section:AMIDSTmodelClass}
 
 One of the main goals of the AMIDST project is the definition of a general model class with the following characteristics: 
 
 \begin{itemize}
 \item \textbf{Feature 1:} it should be applicable to the three considered use-cases, i.e., Daimler, Cajamar and Verdande;
 
-\item \textbf{Feature 2:}  it should be general enough to be applicable to any future, potentially similar, use-cases and
+\item \textbf{Feature 2:}  it should be general enough to be applicable to any future, potentially similar, use-cases;
 
-\item \textbf{Feature 3:} it should be scalable, supporting both inference and learning from massive data streams.
+\item \textbf{Feature 3:} it should allow the integration of domain/expert knowledge about the structure of the process being modelled, and
+
+\item \textbf{Feature 4:} it should be scalable, supporting both inference and learning from massive data streams.
 
 \end{itemize}
 
-Taking these different characteristics into account and using the graphical notation introduced in Section \ref{SubSection:GraphicalNotation}, the general AMIDST model class, as well as its specific instantiations to each use case, are first introduced and discussed in Section \ref{GeneralModelClass}. A summary with a higher level view of the AMIDST model class is finally included in Section \ref{summaryAMIDSTModels}.
+
+%When designing this model class, we also tried to define a model family that eases as much as possible the integration of domain/expert knowledge, which is a common place in the different application scenarios discussed in Section \ref{Section:PreliminaryModels}.
+
+The AMIDST modelling framework was designed with the goal of meeting these four above requirements. It is introduced in the following two sections. In Section \ref{StaticFramework}, we firstly discuss the static modelling framework that covers the static models presented for some of the application scenarios, but whose main aim is to be extended to a dynamic context. In Section \ref{GeneralModelClass}, we introduce the general AMIDST modelling framework as a dynamic extension of the previous static modelling framework and we show how this modelling framework can be instantiated to solve each of the application scenarios of the different use cases, as proof of concept of the generality of this modelling framework. The graphical notation introduced in Section \ref{SubSection:GraphicalNotation} will be employed when describing these probabilistic graphical models. Finally, a summary with a higher level view of the AMIDST modelling framework is included in Section \ref{summaryAMIDSTModels}.
+
+%Taking these different characteristics into account and using the graphical notation introduced in Section \ref{SubSection:GraphicalNotation}, the general AMIDST model class, as well as its specific instantiations to each use case, are introduced and discussed in Section \ref{GeneralModelClass}. A summary with a higher level view of the AMIDST model class is finally included in Section \ref{summaryAMIDSTModels}.
 
 %-----------------------------------------------------------------------------------------------------------------------------------------
-\subsection{The general AMIDST model class}\label{GeneralModelClass}
+\subsection{The static modelling framework}\label{StaticFramework}
 %-----------------------------------------------------------------------------------------------------------------------------------------
 
-Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST model class. This model is the result of combining all the models that have been previously defined for the different use cases. As it can be seen, subnetworks have been used to group variables with similar properties, so that the commonalities between all models are taken into account. 
+Figure \ref{Figure:StaticModellingFramework} visually shows the proposed static modelling framework. This general model is was obtained by looking at the high-level structure of the static models described in some of the application scenarios discussed in Section \ref{Section:PreliminaryModels}, but it was also designed to be extended later to a dynamic context. As it can be seen, subnetworks have been used to group variables with similar properties, so that the commonalities between all models are taken into account. 
+
+\begin{figure}[ht!]
+\begin{center}
+\includegraphics[scale=0.4]{./figures/StaticModellingFramework}
+\caption{\label{Figure:StaticModellingFramework} The static modelling framework.}
+\end{center}
+\end{figure}
+
+
+The first main characteristic of this static model is that all the modelling variables are structured in three different layers, each one with clear different semantics. In our opinion, this division of the modelling variables ease the integration of domain/expert knowledge. These three layers can be described as follows,
+
+
+\begin{itemize}
+
+\item \textbf{Control/class layer:}  This upper layer can be instantiated as a target variable for classification models. Alternatively, it can  act as a ``control'' layer, by containing specific variables in the systems that directly or causally influences the rest of variables of the model.
+
+The layer is represented by a subnetwork including either continuous or discrete observed variables. The links from the continuous observed variables to the state subnetworks in the \textit{Hidden layer} (i.e., the set of State 1 and State 2 variables) will be possibly handled with logit and probit functions.
+
+\item \textbf{Hidden layer:}  This layer attempts to capture those parts of the system/process that can not be observed or measured, but that our domain/expert knowledge knows they are part of the system/process and need to be modelled. Moreover, we can also use this layer as a way to capture the complex conditional dependencies and distributions (e.g. mixture of Gaussians) that might be present between the variables in the observable layer. 
+
+This layer is structured as a set of interconnected discrete and continuous hidden subnetworks, for which only links from discrete to continuous subnetworks are allowed. We will use the term \textit{state} variables to refer to the set of discrete hidden variables in both State 1 and State 2 subnetworks, and the term \textit{latent}\footnote{The term \textit{latent} for variables is generally used in statistics to refer to hidden variables as opposed to observed ones. However, we will use it here to exclusively refer to continuous hidden variables.} variables to refer to the set of continuous hidden variables in the Latent subnetwork. The distinction between the subnetworks ``State 1'' and ``State 2'' will be better understood in the dynamic context. 
+
+\item \textbf{Observable layer:} This layer accounts for those variables modelling the part of the system/process that can be observed/measured. These observations are conditioned by the variables in the above two layers. 
+
+This layer is represented by a subnetwork including both discrete and continuous observed variables. These variables can in principle be interconnected but, in our different use cases, only links from discrete to continuous nodes are required. However, in general, there is no restriction on the direction of the links between the variables in this layer.
+
+\end{itemize} 
+
+
+According to the discussions in Section \ref{Section:PreliminaryModels} about the distribution families governing the use cases, we designed a modelling framework that can be parametrized in alternative ways to improve the expressibility and applicability to different problems or domains. This parametrization is also influenced by the possible impact it can have in the inference and learning algorithms. In general, this modelling framework falls inside the conditional linear Gaussian framework, so the conditional probability distributions are parameterized as detailed in Section \ref{SubSection:HybridBNs}. But this modelling framework might also contain instantiations which are not covered by this general framework. More precisely, when the top layer class is instantiated to  a continuous subnetwork then the conditional probabilities of ``State 1'' and ``State 2'' will be instantiated with logistic or probit distributions, because we encounter continuous parents with discrete children. Additionally, we also envision the possibility of introducing in the observable layer, the use of probability distributions belonging to the MoTBF family \cite{Langseth12}, in order to extend the modelling capacities of this modelling framework.
+
+Full details about how this framework can be instantiated to solve the different application scenarios will be given in the next section. But, just as an illustrative example, we show in Figure \ref{Figure:StaticModellingInstantiations} how this static modelling framework can be instantiated to the static models presented for Daimler (see Section \ref{Section:Daimler:EarlyRecognition}) and CajaMar (see Section \ref{SubSection:Predicting}). In the case of Verdande, no static models were considered. 
+
+
+\begin{figure}[ht!]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[scale=0.4]{./figures/DaimlerStaticModelling}
+&
+\includegraphics[scale=0.4]{./figures/CajaMarStaticModelling}
+\\Daimler Static Model & CajaMar Static Model \\
+\end{tabular}
+\caption{\label{Figure:StaticModellingInstantiations} Illustrative example with instantiations of the static modelling framework for the Daimler and CajaMar static models, respectively.}
+\end{center}
+\end{figure}
+%-----------------------------------------------------------------------------------------------------------------------------------------
+\subsection{The general AMIDST modelling framework}\label{GeneralModelClass}
+%-----------------------------------------------------------------------------------------------------------------------------------------
+
+Figure \ref{Figure:AMIDSTModelClass} shows the proposed general AMIDST modelling framework. This general framework is the result of the temporal extension of the static modelling framework presented in the above section. It is also the result of combining all the dynamic models that have been previously defined for the different use cases. We should point out that the static modelling framework can be seen a simple instantiation of this general model when the temporal dependencies are obviated. 
 
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.465]{./figures/AMIDSTModelClass}
-\caption{\label{Figure:AMIDSTModelClass} General AMIDST model class.}
+\caption{\label{Figure:AMIDSTModelClass} The AMIDST modelling framework.}
 \end{center}
 \end{figure}
 
-The general AMIDST model class can be seen as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}), i.e., it satisfies the first order Markov property and the stationarity assumption. However, this model is not as general as a 2T-DBN and presents a more restricted internal structure that offers a good trade-off between expressiveness and efficiency. More precisely, the structure of this model decomposes along three main different layers which can be described, at time $t$, as follows:
+The general AMIDST modelling framework can be seen as a 2T-DBN (see Section \ref{SubSubSection:2DBNs}), i.e., it satisfies the first order Markov property and the stationarity assumption. However, this model is not as general as a 2T-DBN and presents a more restricted internal structure that seeks to offer a good trade-off between expressiveness and efficiency. 
+
+The main point of this temporal extension is that the inter-time slices dependencies are only allowed between variables in the same layer. We did not find any strong argument to allow for more complex instantiations. The three different layers maintain the same semantics that in the static case, although now they can additionally be interpreted from a dynamic point of view. We briefly comment which are the main consequences: 
 
 \begin{itemize}
 
-\item \textbf{Control/class layer:} The upper layer corresponds to a subnetwork including either continuous or discrete observed variables, that can act for instance as either continuous control variables or a class variable respectively. This set of variables can be connected through consecutive time steps to encode temporal dependences, e.g., the probability of a particular class label at time $t+1$ varies with respect to its label at time $t$. 
+\item \textbf{Control/class layer:} Now, this layer can be instantiated to support dynamic classification, i.e. we aim to predict a temporal sequence of labels rather than a single label. If it is instantiated as a control layer, it can be used to model the transition probabilities between the variables of the hidden layer. This can be seen as a modelling trick to smooth out the stationary assumption and to wider the applicability of the framework.
 
-The links from the continuous observed variables to the state subnetworks in the \textit{Hidden layer} (i.e., the set of State 1 and State 2 variables) will be possibly handled with logit and probit functions.
+\item \textbf{Hidden layer:}  Now, hidden variables in this layer can be temporally connected. In that way, it is easy to see that our modelling framework subsumes those basic dynamic models commented in Section \ref{SubSection:DBNs}. As in the static case, these variables aims to capture those dynamic parts of the system that can not be observed but are relevant for modelling the dynamic system/process. So, state and latent variables that are connected over time to model a process that is evolving and changing over time.
 
-\item \textbf{Hidden layer:}  The middle layer corresponds to a set of interconnected discrete and continuous hidden subnetworks, for which only links from discrete to continuous subnetworks are allowed. We will use the term \textit{state} variables to refer to the set of discrete hidden variables in both State 1 and State 2 subnetworks, and the term \textit{latent}\footnote{The term \textit{latent} for variables is generally used in statistics to refer to hidden variables as opposed to observed ones. However, we will use it here to exclusively refer to continuous hidden variables.} variables to refer to the set of continuous hidden variables in the Latent subnetwork.
+As can be seen in Figure \ref{Figure:AMIDSTModelClass}, this layer can contain state variables that are not connected over time (i.e. variables in State 2 subnetwork), and that could be used, for instance, to model mixture of Gaussian distributions over the observed continuous variables in the \textit{Observable layer}. Recall that links from latent variables to state variables are not allowed, neither in the same time step nor between consecutive ones.
 
-This layer can contain state variables that are not connected over time, and that could be used, for instance, to model mixture of Gaussian distributions over the observed continuous variables in the \textit{Observable layer}. Moreover, state and latent variables that are connected over time can be used to model a process that is evolving and changing over time. Recall that links from latent variables to state variables are not allowed, neither in the same time step nor between consecutive ones.
-
-\item \textbf{Observable layer:} The bottom layer corresponds to a subnetwork including both discrete and continuous observed variables. These variables can in principle be interconnected but, in our different use cases, only links from discrete to continuous nodes are required. However, in general, there is no restriction on the direction of the links between the variables in this layer. In addition, it is possible to include links between observed variables at consecutive time steps.
+\item \textbf{Observable layer:}  Observed variables in this layer has now the possibility of being connected over time. Again, there is no restriction on the temporal links between continuous and discrete variables. 
 
 \end{itemize} 
 
-This model class can also be parametrized in alternative ways to improve the expressibility and applicability to different problems or domains. In general, this model class falls inside the conditional linear Gaussian framework, so the conditional probability distributions are parameterized as detailed in Section \ref{SubSection:HybridBNs}. But this model class might also contain instantiations which are not covered by this general framework. More precisely, when the top layer class is instantiated to  a continuous subnetwork then the conditional probabilities of ``State 1'' and ``State 2'' will be instantiated with logistic or probit distributions, because we encounter continuous parents with discrete children. Additionally, we also envision the possibility of introducing in the observable layer, the use of probability distributions belonging to the MoTBF family \cite{Langseth12}, in order to extend the modelling capacities of this model class.
 
-In the following sections, we will show how this model class satisfies the aforementioned \textbf{Feature 1}, by describing how each particular use case fits in this restricted 2T-DBN AMIDST model. This instantiation process of the general AMIDST model to the three use-cases (all of them with different application scenarios) can also be seen as a practical example demonstrating the general applicability of the resulting AMIDST model class. This hence gives arguments in favour of \textbf{Feature 2} and shows how the AMIDST model class can be potentially instantiated to other future use cases. Finally, the remaining task is related to \textbf{Feature 3} and consists of designing inference and learning algorithms that allow the application of the AMIDST model class to massive data streams. 
+
+In the following sections, we will show how this modelling framework satisfies the aforementioned \textbf{Feature 1}, by describing how each particular use case fits in this restricted 2T-DBN AMIDST model. This instantiation process of the general AMIDST model to the three use-cases (all of them with different application scenarios) can also be seen as a practical example demonstrating the general applicability of the resulting AMIDST model class. This hence gives arguments in favour of \textbf{Feature 2} and shows how the AMIDST model class can be potentially instantiated to other future use cases. In our opinion, these different instantiations also show how the layer and components based structure of this modelling framework  might also ease the process of building other future models using domain/expert knowledge, giving also arguments in favor of \textbf{Feature 3}. Finally, the remaining task is related to \textbf{Feature 4} and consists of designing inference and learning algorithms that allow the application of the AMIDST model class to massive data streams. In that sense, we might expect that during this process we might modify some of the elements and assumptions of this modelling framework if this is needed to meet the computational and modelling performance required by the different use-case providers. 
 
 
 
@@ -139,9 +196,9 @@ Verdande's model class can then be described as follows:
 \subsection{Summary}\label{summaryAMIDSTModels}
 %-----------------------------------------------------------------------------------------------------------------------------------------
 
-As it has been shown in the previous sections, the proposed general AMIDST model class of Figure \ref{Figure:AMIDSTModelClass} encompasses the different application scenarios of the three use cases. These three use cases come from very different domains: automotive, finance and oil-drilling. In our opinion, these are strong arguments in favour of the generality and applicability of this model class. Although, in any case, a better understanding of the faced problems and/or future applications might reveal that some elements of this model class need to be refined.  
+As it has been shown in the previous sections, the proposed general AMIDST model class of Figure \ref{Figure:AMIDSTModelClass} encompasses the different application scenarios of the three use cases. These three use cases come from very different domains: automotive, finance and oil-drilling. In our opinion, these are strong arguments in favour of the generality and applicability of this model class. 
 
-A higher level view of our proposed AMIDST model class is displayed in Figure \ref{Figure:AMIDSTModelClassHighLevel}. As commented before, it shows how the AMIDST model class could actually be seen as a ``restricted" 2T-DBN. It is restricted in three different ways. Firstly, all the nodes are structured in three layers, each one with clear semantics while modelling: Broadly speaking, the \textit{control/class layer} either represents control variables that may affect the process homogeneity/stationarity, or represents the class variable in classification tasks; the \textit{hidden layer} includes a sufficiently rich set of hidden variables to capture the process dynamics; and the \textit{observable layer} encompasses sensor measurements and predictive attributes. The second restriction states that, as opposed to general 2T-DBNs, the variables in this model class can only be temporally linked to other variables in the same layer. And, finally, the third and last restriction  states that continuous hidden variables cannot point to discrete (hidden or observed) nodes. This last constraint implies that our inference algorithms will not have to deal with the hard and open problem of computing posterior distributions or marginalize over continuous variables which are parents of discrete children nodes. So, in most of the cases, the network can be parameterized using the conditional linear Gaussian framework. And in the particular cases for which this is not possible, because the instantiated model contains continuous parents with discrete children, we will encounter that the continuous nodes are always observed. 
+A higher level view of our proposed AMIDST modelling framework is displayed in Figure \ref{Figure:AMIDSTModelClassHighLevel}. As commented before, it shows how the AMIDST model class could actually be seen as a ``restricted" 2T-DBN. It is restricted in three different ways. Firstly, all the nodes are structured in three layers, each one with clear semantics while modelling: Broadly speaking, the \textit{control/class layer} either represents control variables that may affect the process homogeneity/stationarity, or represents the class variable in classification tasks; the \textit{hidden layer} includes a sufficiently rich set of hidden variables to capture the process dynamics and enhance the modelling capabilities; and the \textit{observable layer} encompasses the observables variables such as sensor measurements or predictive attributes. The second restriction states that, as opposed to general 2T-DBNs, the variables in this model class can only be temporally linked to other variables in the same layer. And, finally, the third and last restriction  states that continuous hidden variables cannot point to discrete (hidden or observed) nodes. This last constraint implies that our inference algorithms will not have to deal with the hard and open problem of computing posterior distributions or marginalize over continuous variables which are parents of discrete children nodes. So, in most of the cases, the network can be parameterized using the conditional linear Gaussian framework. And in the particular cases for which this is not possible, because the instantiated model contains continuous parents with discrete children, we will encounter that the continuous nodes are always observed. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -149,3 +206,7 @@ A higher level view of our proposed AMIDST model class is displayed in Figure \r
 \caption{\label{Figure:AMIDSTModelClassHighLevel} The high-level AMIDST model class}
 \end{center}
 \end{figure}
+
+In any case, this is an ongoing project research and a better understanding of the faced problems and/or future applications might reveal that some elements of this modelling framework need to be refined. As already commented,  we still have to work on inference and learning algorithms that make these models applicable to scenarios dealing with massive data streams. These developments might also has an impact in the current framework. On the other hand, this modelling framework has to provide solutions which achieve levels of performance (e.g. prediction accuracy) which were previously specified in the requirement analysis \cite{Fer14b}.  This also might be another factor that can impact on the final specification of this framework. For example, we are now assuming a first-order Markov assumption. One could easily envision the possibility of going to higher order Markov assumptions in the tests reveal that this first-order assumption severely limits the modelling capacities of this framework in some of the application scenarios. 
+
+
