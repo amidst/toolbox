@@ -14,7 +14,7 @@
 \subsection{Cajamar Models}
 \label{Section:CajaMarModels}
 
-There are two tasks to be solved for Cajamar's Use Case~\cite{Fer14b}. The main one is the estimation of the \emph{probability of default}, defined as the probability that a customer will end up as defaulter within the next two years. The second task consists in obtaining good customer profiles in terms of risk, so that marketing campaigns can be specifically targeted to these low risk customers. 
+There are two tasks to be solved for Cajamar's Use Case~\cite{Fer14b}. The main one is the estimation of the \emph{probability of default}, defined as the probability that a customer will end up as defaulter at any time within the next two years. The second task consists in obtaining good customer profiles in terms of risk, so that marketing campaigns can be specifically targeted to these low risk customers. 
 
 %-------------------------------------------------------------------------------------------------------
 \subsubsection{Predicting probability of default} \label{SubSection:Predicting}
@@ -26,17 +26,19 @@ At Cajamar, this risk evaluation protocol is addressed by evaluating whether the
 
 The problem of predicting the risk of default is currently solved at Cajamar by an automatic supervised classification model (in particular a logistic regression model). It takes information about the recent financial activity of a customer, as well as information about recent past payment behaviour provided by other Spanish financial institutions. Finally, using this collected information, the probability that the client will default during the following two years is computed. 
 
-The methodology currently employed does not assume any dependence structure among the variables, and current predictions are made using only $27$ variables out of more than $1000$ variables available. Updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are partly due to limitations in the available commercial software and the computing resources.
+The methodology currently employed for the risk prediction has some limitations. The model is based on logistic regression and does not assume any existing dependences among the variables. Moreover, current predictions are made using only $27$ variables out of more than $1000$ variables available, which might mean that useful information is being discarded. Finally, updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are partly due to limitations in the available commercial software and the computing resources.
 
-Our objective is to \textit{daily} update the risk of default for every bank customer. This daily evaluation will be performed using two data sets: \textit{the model training data set} and \textit{the model evaluation data set} (see~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem. 
+Our objective is to tackle the current limitations by \textit{daily} learning the predictive model and also updating the risk of default for every bank customer. Dependences among the variables will now be considered, as well as including all the variables in the analysis. 
 
-Next, we detail how these data sets are collected (see Figure~\ref{Figure:CajaMarTimeLine} for a better understanding).
+Therefore, the process consists in building a \textit{training set} as well as the set of customers to be evaluated, called \textit{evaluation set} (see~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem (see Figure~\ref{Figure:CajaMarTimeLine} for a better understanding):
+
+%Next, we detail how these data sets are collected .
 %Figure~\ref{Figure:CajaMarTimeLine} illustrates how both evaluation and training data sets are collected within a time-line. The current time is denoted as $t$ and the time $2$ years back as $k$, i.e., $k=t-2$ years. 
 
-\begin{figure}[htbp]
+\begin{figure}[ht!]
 \centering
 \includegraphics[scale=0.45]{figures/CajaMarTimeLine}
-\caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years. Both in the training and test data sets, there are two groups of variables, denoted as $\X$ and $\Y$, with different past information considered, $180$ days back and $6$ semesters back, respectively.}
+\caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years. Both in the training and test data sets, there are two disjoint groups of variables, denoted as $\X$ and $\Y$, with different past information considered, $180$ days back (daily) and $6$ semesters back (by semester), respectively.}
 
 \end{figure}
 
@@ -56,7 +58,7 @@ Therefore, similar to previous group of variables, $6$ variables for each of the
 
 %The group of variables denoted as $\Z$ mainly includes socio-demographic variables and they are not indexed over time as they remain fixed.  
 
-\begin{table}[htbp]
+\begin{table}[ht!]
 \centering
 \begin{tabular}{c|ccc|ccc|c}
 	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} \\
@@ -72,24 +74,26 @@ Client$_n$  &                                                &               &  
 
 Thus, the objective is to compute the probability of defaulting within the following two years of each record from the evaluation data set, and afterwards update the risk table in the system (see Table~\ref{tab:riskTable}).
 
-\begin{table}[h]
+\begin{table}[ht!]
 \centering
 \begin{tabular}{c|ccc|ccc|c}
-     Time $t$  & Risk of default \\  
+     Time $t$  & Risk of being defaulter \\  
 \hline
 Client$_1$  &    $r_1$  \\ 
 $\vdots$      &   $\vdots$   \\ 
 Client$_n$  &   $r_n$  \\ 
 \end{tabular} 
-\caption{Table containing the risk of defaulting for every client.}
+\caption{Table containing the probability of being defaulter for every customer.}
 \label{tab:riskTable}
 \end{table}
 
-If, at some point, the probability of default of a customer rises above a predefined threshold, the bank may take preventive actions to reduce the chances of defaulting by this customer.
+If, at some point, the probability of default of a customer rises above a predefined threshold, the bank may take preventive actions to reduce the risk of defaulting by this customer.
 
 
-\item \textbf{Model training data set:}  This data set is also built at time $t$ in a similar way as the evaluation data. It contains the same set of features as well as the target variable \textit{Defaulter} but with information referred to time $k$ instead (two years back). Note that, at time $t$, we have information of the \textit{Defaulter} variable in the period of time from $k$ to $t$. The data set for training/updating the model is depicted in Table~\ref{tab:TrainingDataset}.
-\begin{table}[h]
+\item \textbf{Model training data set:}  This data set is also built at time $t$ in a similar way as the evaluation data. It contains the same set of features as well as the target variable \textit{Defaulter} but with information referred to time $k$ instead (two years back). Note that, at time $t$, we have information of the \textit{Defaulter} variable in the period of time from $k$ to $t$. Thus,  Defaulter$^{(k)}$ indicates if at some point in this period she/he was a defaulter.
+
+The data set for training/updating the model is depicted in Table~\ref{tab:TrainingDataset}.
+\begin{table}[ht!]
 \centering
 \begin{tabular}{c|ccc|ccc|c|c}
 	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} & \\
@@ -113,9 +117,9 @@ In what follows, we propose two modelling solutions for the risk prediction prob
 \subsubsection*{Static model} 
 %-------------------------------------------------------------------------------------------------------
 
-In this first approach we do not explicitly consider some of the dynamics of the problem, meaning that we do not model that a customer can be non-defaulter and defaulter at different times (e.g., a customer can be creditworthy and, after some time, go bankrupt due to unemployment). Instead, we consider a static prediction model that predicts whether the client will default or not within the next 2 years based on the financial behaviour of the client over a recent past. This is in fact similar to the current Cajamar prediction system. 
+In this first approach we do not explicitly consider some of the dynamics of the problem, meaning that we do not model that a customer can be non-defaulter and defaulter at different times (e.g., a customer can be creditworthy and, after some time, go bankrupt due to unemployment). Instead, we consider a static model that predicts whether the client will default or not within the next 2 years based on the financial behaviour of the client over a recent past. This is in fact similar to the current Cajamar prediction system. Note that any dynamic model should be at least as good as the static one. 
 
-Figure \ref{Figure:CajaMarStatic} shows the general structure of the static model. The notation for predicting variables are the same as in previous section. Note that attributes in groups $\X$ and $\Y$ may be duplicated over the time creating the corresponding set of variables. 
+Figure~\ref{Figure:CajaMarStatic} shows the general structure of the static model. The notation for predicting variables are the same as in previous section. Note that attributes in groups $\X$ and $\Y$ may be duplicated over the time creating the corresponding set of variables. 
 
 \begin{figure}[ht!]
   \centering
@@ -139,7 +143,9 @@ It is also of major interest to analyse the type of probability distributions to
     \caption{\label{Figure:cajamarMixt}Mixture of Gaussian approximations of one predictive variable conditioned to the class variable values defaulter (left) and non-Defaulter (right).}
 \end{figure}
 
-There exist however discrete (non-ordinal) predictive attributes which impose a limitation in the structure of the conditional Gaussian network, since discrete attributes cannot have continuous parents, as pointed out in Section~\ref{SubSection:HybridBNs}. However, this might not be a problem for the semi-naive Bayesian network to be considered, and it is certainly not a problem for naive Bayes. Nonetheless, if this limitation were found to be problematic, then other probability distributions families will be explored, such as Mixture of Truncated Basis Functions~\cite{Langseth12}, which can cope with any generic model structure. 
+There exist however discrete (non-ordinal) predictive attributes which impose a limitation in the structure of the conditional Gaussian network, since discrete attributes cannot have continuous parents, as pointed out in Section~\ref{SubSection:HybridBNs}. 
+%However, this might not be a problem for the semi-naive Bayesian network to be considered, and it is certainly not a problem for naive Bayes. 
+Although, this might not be a problem for some Bayesian network structures, if this limitation were found to be problematic, then other probability distributions families will be explored, such as Mixture of Truncated Basis Functions~\cite{Langseth12}, which can cope with any generic model structure. 
 
 In summary, the process of building the static model and updating the customers' risk consists of the following steps:
 
@@ -214,7 +220,7 @@ Finally, there exist some variables for which, even though some dependences over
     \includegraphics[width=70mm]{figures/CajaMarcrl1}&
      \includegraphics[width=70mm]{figures/CajaMarcrl3}\\
   \end{tabular}
-    \caption{\label{fig:cajamarCorr}Example of correllograms for two predictive variables.  The x-axis represents the lag $v$ or time difference, and the y-axis represents the sample autocorrelation coefficient of lag $v$, denoted $\hat{\rho_v}$ (see Section \ref{Section:Preliminaries} for more details).}
+    \caption{\label{fig:cajamarCorr}Example of correllograms for two predictive variables.  The x-axis represents the lag $v$ or time difference, and the y-axis represents the sample autocorrelation coefficient of lag $v$, denoted $\hat{\rho_v}$ (see Section~\ref{Section:Preliminaries} for more details).}
 \end{figure}
 
 In summary, although the dynamic model is different from the static one, the whole process of building the model from the original relational database and updating the customers risk is exactly the same as for the static case.
@@ -229,7 +235,7 @@ For this purpose, the marketing group will proceed as follows. Using their own m
 
 Additionally, they will select a different subset of predictive variables $\Y$ also considered relevant when computing the final profile of the specific campaign. Mainly  socio-demographic variables will take part in this set, for example, the age of a client is a relevant predictor when designing campaigns to attract customers for a death insurance. 
 
-If we denote the \emph{Defaulter} variable as $D$,  the objective is to compute the assignment $\Y = \y^{*}$ that has maximum a posteriori probability given the evidence $D=$ \texttt{no}, and also given the restrictions to be satisfied by the clients, $\Z=\z$. These restrictions will be considered as soft evidence during the inference process. 
+If we denote the \emph{Defaulter} variable as $D$,  the objective is to compute the assignment $\Y = \y^{*}$ that has maximum a posteriori probability given the evidence $D=$ \texttt{no}, and also given the restrictions to be satisfied by the clients, $\Z=\z$. These restrictions will be considered as soft evidence during the inference process, meaning that we do not provide a specific evidence, but the aim is to adjust the probability according to the information provided by external agents (the marketing department). 
  
 Thus, the MAP operation is defined as follows:
 
@@ -240,22 +246,23 @@ Thus, the MAP operation is defined as follows:
 
 Note that the MAP operation will be performed over a model containing the whole set of variables (i.e. the variables in $\Y$ and $\Z$, and the rest non-relevant variables.) There is an open issue when performing MAP inference within continuous domains, which is the definition of the intervals of the continuous variables to conform the profiles. This issue is further considered in the discussion section. 
 
-Let see a running example to clarify the process. Let us consider a simple case in which three predictors $\Y$ are considered relevant for a specific campaign: \emph{Age}, \emph{Marital Status} and \emph{Gender} which might be relevant to identify target customers for a \textit{death insurance} campaign. Let consider also the restriction $\Z = \{Age>50\}$ coming from the marketing department, which encodes the initial group of customers that, according to the knowledge of the marketing group, are potential buyers of this product.  The next step is to further refine this group of customers and identify the profile of customers which are most solvent (i.e. less likely to default). For this task we perform the computation in Eq.~\ref{eq:MAP}, this may results in the following most probable assignment: clients in the range \emph {[60-70] years}, \emph{single status} and \emph{male}. Hence, this profile identifies the most solvent customers who might be interested in purchasing a \emph{dead insurance} product. We must say that the above  procedure will be also used to get the $k$ best assignments or in other words the best set of profiles.   
+Consider a simple example in which three predictors $\Y = \{ \emph{Age}, \emph{Marital Status}, \emph{Gender}\}$ are considered relevant to identity target customers for a \textit{death insurance} campaign. Consider also the restriction $\Z = \{Age>50\}$, which encodes the initial group of customers that, according to the knowledge of the marketing group, are potential buyers of this product.  The next step is to further refine this group of customers and identify the profile of customers which are most solvent (i.e. less likely to default). After computing Eq.~\ref{eq:MAP}, this may result in the following most probable assignment: clients in the range \emph {[60-70] years}, \emph{single status} and \emph{male}. Hence, this profile identifies the most solvent customers who might be interested in purchasing a \emph{death insurance} product. We must say that the above  procedure will be also used to get the $k$ best assignments or in other words the best set of profiles.   
 
 %-------------------------------------------------------------------------------------------------------
 %\subsubsection*{Static model}\label{sec:StaticModel}
 %-------------------------------------------------------------------------------------------------------
 
-As pointed out before, mainly socio-demographic variables will determine the customer profiles used in the campaigns. These variables are mostly static, as they do not change frequently over time (e.g., marital status, gender, type of job, ...). However, to enhance the analysis, a number of  variables changing over time will be included. Note that this does not mean the use of a dynamic model.
+As pointed out before, mainly socio-demographic variables will determine the customer profiles used in the campaigns. These variables are mostly static, as they do not change frequently over time (e.g., marital status, gender, type of job, ...). However, to enhance the analysis, a number of  variables changing over time will be included. 
+%Note that this does not mean the use of a dynamic model.
 
 %Due to complexity reasons, we should reduce this number as much as possible to make the profile extraction problem feasible.
-The structure for the proposed static model in the profile extraction is the same as for predicting the risk of defaulting (see Fig.~\ref{fig:CajamarStaticModel}). However, there will be a considerable reduction in the number of features included, since the profile extraction task does not require information about all variables included in the risk prediction, i.e., only a few variables will be part of the profiles. With this reduction, we also make the problem computationally more feasible. 
+The structure for the proposed static model in the profile extraction is the same as for predicting the risk of defaulting (see Figure~\ref{fig:CajamarStaticModel}). However, there will be a considerable reduction in the number of features included, since the profile extraction task does not require information about all variables included in the risk prediction, i.e., only a few variables will be part of the profiles. With this reduction, we also make the problem computationally more feasible. 
 
-In this first attempt to face the profile extraction problem, only variables within each white box (see Fig.~\ref{fig:CajamarStaticModel}) are allowed to be connected conforming a tree structure. In Section~\ref{subsubsec:CajamarDiscussion} we will consider more dependences among white boxes, and also having a general Bayesian network structure more than one specifically designed for classification. 
+In this first attempt to face the profile extraction problem, only variables within each white box (see Figure~\ref{fig:CajamarStaticModel}) are allowed to be connected conforming a tree structure. In Section~\ref{subsubsec:CajamarDiscussion} we will consider more dependences among white boxes, and also having a general Bayesian network structure more than one specifically designed for classification. 
 
 In any case, what is desirable is to avoid using a na\"{\i}ve Bayes structure for this task. The reason is that, once the \emph{Defaulter} variable is evidenced to \texttt{no}, the features become independent and the analysis would be poorer (MAP in this case would correspond to the maximum probability value for each variable individually).
 
-A possible extension of the previous static model presented above including dynamic Bayesian networks will be considered in next section.
+The static model presented above is considered as a baseline model which any dynamic model should outperform. Hence, an extension including dynamic Bayesian networks will be discussed further in the next section.
 
 %-------------------------------------------------------------------------------------------------------
 %\subsubsection*{Dynamic model}
@@ -268,7 +275,7 @@ A possible extension of the previous static model presented above including dyna
 %-------------------------------------------------------------------------------------------------------
 %\textcolor{red}{Should we discuss something about overfiting  in Figure 4.17?}
 
-The static and dynamic models presented above for the two tasks represent a first attempt to address the Cajamar use case. In this section, we will basically discuss the potential modifications and/or extensions that may occur in the subsequent phases of the AMIDST project to better meet Cajamar requirements presented in~\cite{Fer14b} or to face, for instance, other unexpected events. This discussion is also essential as we are still considering expert advice that could slightly modify some of proposals as the project moves forward.
+The static and dynamic models presented above for the two tasks represent a first attempt to address the Cajamar use case. In this section, we will discuss the potential modifications and/or extensions that may occur in the subsequent phases of the AMIDST project to better meet Cajamar requirements presented in~\cite{Fer14b} or to face, for instance, other unexpected events. This discussion is also essential as we are still considering expert advice that could slightly modify some of proposals as the project moves forward.
 
 The static model shown in Figure~\ref{fig:CajamarStaticModel} for predicting the probability of default is assumed to have only dependences among variables within each group of variables (white boxes). However, according to expert knowledge, no limitations should be imposed to the model structure among the predicting variables. Figure~\ref{fig:staticDependences} shows the modified structure of the static model when dependences among predicting variables are allowed, meaning that, variables within the dashed blue box could be connected as well. Note that, in this case, complexity grows considerably but, it is worth considering this approach to capture dependences that intuitively are not expected and, therefore, the analysis will be enriched.
 
@@ -278,7 +285,7 @@ The static model shown in Figure~\ref{fig:CajamarStaticModel} for predicting the
 \caption{\label{fig:staticDependences}Global structure of the static model allowing dependences among any variable within the dashed blue box. Each white box represents a set of variables for a particular time. The green node on top is the class variable \emph{Defaulter} that represents the probability that a customer will default within the next two years.} 
 \end{figure}
 
-In general, the model structure in Figure~\ref{fig:staticDependences} can not be modeled by CG distributions is discrete children happen to have continuous parents (see Section~\ref{SubSection:HybridBNs}). If so, other probability distributions families will be explored. Mainly, they consist in translating the probability distribution into another such that learning and inference become feasible. These approaches include discretization or more complicated families based on Mixture of Truncated Basis Functions~\cite{Langseth12}, which can cope with any generic model structure.
+In general, the model structure in Figure~\ref{fig:staticDependences} can not be modeled by CG distributions if discrete children happen to have continuous parents (see Section~\ref{SubSection:HybridBNs}). If so, other probability distributions families will be explored. Mainly, they consist in translating the probability distribution into another such that learning and inference become feasible. These approaches include discretization or more complicated families based on Mixture of Truncated Basis Functions~\cite{Langseth12}, which can cope with any generic model structure.
 
 Another issue to be considered is about complexity in the profile extraction task explained in Section~\ref{subsubsec:profileExtraction}. It is well known that abductive inference over BNs and, in particular, the computation of the most probable explanations (MPEs) is an NP-hard problem~\cite{Shi94}. Thus, the model presented in Figure~\ref{fig:staticDependences}, which is valid for the profile extraction as well, could be simplified if necessary
 by manually reducing the number of predictors in such a way that computational burden is adapted to the needs. In fact, this process is tightly connected to the expert knowledge provided by the marketing group, and this refinement should not encounter major difficulties. Moreover, we could consider having a general Bayesian network structure instead of one specifically designed for classification. In this way, dependences among the features included in the profiles might be modeled without the restrictions imposed in classifier structures.
@@ -288,7 +295,7 @@ The model for predicting the risk of default is assumed to be learnt every day. 
 %\textcolor{red}{Are we going to use a dynamic model for the profile extraction problem (to be decided)? If so, how MPE inference is performed in a dynamic BN? Which node is evidenced Defaulter(t) or Defaulter(t+1)? What does MPE means in this case?} 
 An extension of the static model proposed in Section~\ref{subsubsec:profileExtraction} for the profile extraction would involve not only considering those variables evolving over time, but also their tendency by using a dynamic Bayesian network. Initially, the model for the profile extraction will be the same as the one depicted in Figure~\ref{fig:component} but with a considerable reduction in the number of predictors as for the static case. With this model, the MPE solution would capture the tendency of change within consecutive customer profiles. 
 
-Finally, there is an open issue when performing MAP inference within continuous domains, which is the definition of the intervals of the continuous variables to conform the profiles. A first approach could be to discretize the continuous variables and then use the intervals are used to conform the profiles. 
+Finally, there is an open issue when performing MAP inference within continuous domains, which is the definition of the intervals of the continuous variables to conform the profiles. A first approach could be to discretize the continuous variables and then use the intervals to conform the profiles. 
 
 
 
