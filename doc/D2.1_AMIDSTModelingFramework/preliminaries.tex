@@ -44,18 +44,12 @@ Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The n
 \end{center}
 \end{figure}
 
-\subsection{Modelling complex empirical distributions}
+Traditionally, BNs have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}).
 
-Traditionally, BNs have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form. However, this requirement imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}). 
-
-To deal with this problem, research has largely pursued three main approaches to extend BNs and support continuous variables. As a first approach, one may choose to carefully construct the model so that exact inference algorithms can still be applied. This is the case for the conditional linear Gaussian (CLG) BNs \cite{Lauritzen1992,LauritzenJensen2001}, where the local probability distributions of continuous variables are specified as conditional linear Gaussian distributions and where discrete variables can only have discrete parents. A second approach consists of considering approximate algorithms for performing inference, allowing thereby arbitrary distributions to be associated with the BN model. Examples of this approach include the Gibbs sampler \cite{Geman1984, hrycej1990gibbs} and variational inference \cite{Jordan1999}. Finally, the third approach consists of ``transforming" the original BN model into an approximate model, for which exact inference algorithms can be applied. This can be achieved either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using transformations with more expressive power, such as using mixtures of truncated exponentials \cite{Moral2001} or mixtures of truncated basis functions \cite{Langseth12}.
-
-\textcolor{blue}{//Include a bit more information about MoTBFs.\\}
-\textcolor{blue}{//Indicate that a more detailed revision of the state-of-the-art in methods for modelling complex empirical distributions can be found in deliverables 3.1 (about inference in hybrid and dynamic models) and 4.2 (about learning in the context of the AMIDST framework). \\}
-\textcolor{blue}{//Emphasize the current limitations of these for dynamic models and streaming data.}
-
+To deal with this problem, research has largely pursued different main approaches to extend BNs and support continuous variables. One of the most straightforward approaches implies to carefully construct the model so that exact inference algorithms can still be applied. This is the case for the conditional linear Gaussian (CLG) BNs \cite{Lauritzen1992,LauritzenJensen2001}, where the local probability distributions of continuous variables are specified as conditional linear Gaussian distributions and where discrete variables can only have discrete parents. 
 
 The models presented in this deliverable, unless otherwise stated, will be parameterized according to the conditonal linear Gaussain model \cite{Lauritzen1992,LauritzenJensen2001}. This means that we will have the following conditional distributions depending of the type, continuous or discrete, of the parents and the child variables:
+
 
 \begin{itemize}
 \item \textbf{Discrete $\rightarrow$ Discrete}: The child variable follows an independent multinomial probability distribution for each configuration or assignment of the parent variables.
@@ -67,7 +61,22 @@ The models presented in this deliverable, unless otherwise stated, will be param
 \item \textbf{ (Discrete, Continuous) $\rightarrow$ Continuous}:  For each configuration of the discrete parent variables, the child variable follows an independent conditional Gaussian distribution depending of the continuous parent variables. I.e. the mean parameter of the Gaussian distribution of the child variable is expressed as a different linear combination of the continuous parent variables for each configuration of the discrete parent variables and, moreover, the variance of this Gaussian can also be different. 
 
 \end{itemize}
+ 
 
+\subsection{Modelling complex empirical distributions}
+
+
+Some of the advantages of the CLG approach include simplicity, efficiency and the use of exact inference. Its main drawbacks lies, however, in the structural limitations they impose in the BN and the Gaussian assumption made. This section touches upon other alternatives to model complex empirical distributions that can offer a higher expressive power but at the same time, contribute to greatly complicate the inference process. A more detailed analysis covering this topics can be found in the deliverables 3.1 (more specifically about inference in hybrid and dynamic models) and 4.2 (more specifically about learning in the context of the AMIDST framework).  
+
+A first simple alternative to overcome some of the structure limitations of CLGs is to resort to logit and probit models to allow for discrete children with continuous parents. These however still limit expressiveness to linear models.
+
+A second approach to model hybrid empirical distributions in probabilistic graphical models, consists of considering approximate algorithms for performing inference, allowing thereby arbitrary distributions to be associated with the BN model. Examples of this approach include the Gibbs sampler \cite{Geman1984, hrycej1990gibbs} and variational inference \cite{Jordan1999}. 
+
+Finally, a third approach consists of ``transforming" the original BN model into an approximate model, for which exact inference algorithms can be applied. This can be achieved either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using transformations with more expressive power, such as using mixtures of truncated exponentials \cite{Moral2001} or mixtures of truncated basis functions \cite{Langseth12}.
+
+\textcolor{blue}{//Include a bit more information about MoTBFs.\\}
+%\textcolor{blue}{//Indicate that a more detailed revision of the state-of-the-art in methods for modelling complex empirical distributions can be found in deliverables 3.1 (about inference in hybrid and dynamic models) and 4.2 (about learning in the context of the AMIDST framework). \\}
+\textcolor{blue}{//Emphasize the current limitations of these for dynamic models and streaming data. Still, we might be able to use MoTBFs for Cajamar, since it is a simpler model in which presumably all variables are observed.}
 
 
 %------------------------------------------------------------------------------------------------------------
