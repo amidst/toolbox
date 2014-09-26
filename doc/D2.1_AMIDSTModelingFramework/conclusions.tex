@@ -1,2 +1,9 @@
-\section{Conclusions}
+\section{Ongoing and future work}
 
+Is is important at this stage to emphasize that this is an ongoing project research and a better understanding of the faced problems and/or future applications might reveal that some elements of this modelling framework need to be refined. As already commented,  we still have to work on inference and learning algorithms that make these models applicable to scenarios dealing with massive data streams. These developments might also has an impact in the current framework, as well as the time and space complexity of the resulting models.
+
+On the other hand, this modelling framework has to provide solutions which achieve levels of performance (e.g. prediction accuracy) which were previously specified in the requirement analysis \cite{Fer14b}.  The analysis of evaluation results obtained by the implemented model, might be another factor that can impact the final specification of this framework. For example, we are now assuming a first-order Markov assumption. One could easily envision the possibility of going to higher order Markov assumptions if the tests reveal that this first-order assumption severely limits the modelling capacities of this framework in some of the application scenarios. 
+
+These refinements of the dynamic model are part of task 2.2. Additionally, we are exploring how to take advantage of certain conditional independences that may arise in the data at a particular time. If appropriately identified, they could be exploited in bounded time horizon models to maintain a fixed efficient time window without loosing expressive power.
+
+All these analysis will be included in deliverable 2.2.
