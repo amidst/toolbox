@@ -4,7 +4,7 @@
 As has been pointed out in Deliverable D1.2 \cite{Fer14b}, three main tasks have to be addressed for Verdande Technology use case:
 
 \begin{enumerate}
-\item \textbf{Automatic detection of drill string vibrations and abnormal torque states}: which aims to better diagnose the shape of the wellbore and the state of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time. To this end, a probabilistic graphical model for erratic torque monitoring and detection will be used.
+\item \textbf{Automatic detection of drill string vibrations and abnormal torque states}: This task aims to better diagnose the shape of the wellbore and the state of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time. To this end, a probabilistic graphical model for erratic torque monitoring and detection will be used.
 
 \item \textbf{Semi-automatic labelling}: Given unlabelled data streams collected over time from typical drilling conditions, semi-automatic labelling aims to compute a normality score for each considered drilling situation, then label it as either ``normal'' or ``abnormal''. As for the previous task, a probabilistic graphical model will be used, taking into account the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. 
 
@@ -18,6 +18,8 @@ The following three subsections detail the designed models for the different tas
 %-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 The hole drill string, including the bottom hole assembly and the bit, is designed to transfer as much energy as possible from the rotary table to break rock at the bit.  When this energy transfer is inefficient, the energy goes into shaking the drill string.  This involves drilling slower, a higher risk to break equipment and a lower hole quality. Automatic detection of drill string vibrations can help the drilling crew to better diagnose both the condition of the equipments and also the hole itself. Drillstring vibrations are seen as an erratic torque signal on the realtime data.  We have therefore focused on detection of erratic torque.
+
+Currently there is an algorithm in DrillEdge that is detecting erratic torque. It is simple and is based on comparing root mean squared differences in a time window between the measured torque and a smoothed version of the torque. In essence this method is measure of the local amplitude variations in the torque.  Additionaly, the algorithm is filtering out abnormal torque during connections and some other instances.  It is the intension in this task to take into account more information from the time series.
 
 Two time-windows of torque-readings are given in Figure \ref{Figure:VTTorqueValues}; the uppermost plot traces the torque over a period of 25.000 observations, the other is zoomed in to cover only 500 observations. It is evident that the torque varies over time, and often drops to zero (in particular when the drill-bit is not rotating). Furthermore, we can see from the zoomed-in trace that the variance changes over time; this time-window commences with rapidly varying torque, before the variation is reduced. The goal is to extract passages where high variance in the observed torque cannot be explained by other drilling parameters. 
 We will begin the following discussion by considering how to model the torque as a random variable developing over time, without thinking about vibration and the variable's relationship to other drilling parameters. Thereafter, a full model will be proposed.
@@ -91,7 +93,7 @@ However, the definitions of the episodes are not always crisp, and domain expert
 This can potentially lead to inconsistencies in the dataset, complicating both the automatic learning of models as well as the comparison with previous situations. 
 Additionally, it can confuse the driller to be presented with information that he/she does not relate to or agree with.
 
-Manually labelling new data sequences, or adapting the existing labelling to new definitions, can be a very time-consuming activity, and Verdande Technology therefore want to start looking into techniques for semi-automatic labelling.
+Manually labelling new data sequences, or adapting the existing labelling to new definitions, can be a very time-consuming activity.  Verdande Technology therefore wants to look into techniques for semi-automatic labelling. This is currently not part of the system.
 This process is initiated by the system being fed with unlabelled data streams from typical drilling conditions. The system should adapt to this data, and recognise what is ``normal'', both with respect to auto-correlations of each variable over time, as well as the intricate relationships between variables. Simultaneously, sub-sequences that do not fit well with the normal data should be marked as ``abnormal''.
 The abnormal sub-sequences can thereafter be examined more closely by drilling experts. It is desired that the process should be able to take back information from this examination, and update the reasoning if the sequences marked as abnormal were not correctly labelled. The benefit of the automatic tagging is that more time can be spent on scrutinizing the ``interesting'' parts of the drilling logs, and less time on the ``normal'' parts. 
 This implies the potential for further reduction in non-productive time. Specifically, the goal is to provide a ``normality'' score for historical logs to facilitate semi-automatic detection of abnormal situations. The calculations should be efficient enough to run in real time if so desired.
@@ -127,7 +129,7 @@ In many drilling operations, a precise recognition of a formation change can be 
 For instance, it is important to cement the casing in the correct formation to manage the formation pressures, as well as correctly identifying the top and the bottom of an oil reservoir. 
 Additionally, accurate knowledge of the formation allows the drilling crew to optimise drilling parameters and better diagnose the condition of the bit. 
 Knowing the formation is also an important input in how to deal with symptoms such as improper hole-cleaning, hole-instability and vibration issues. 
-A proper formation detection is therefore an important piece in the puzzle for reducing the overall non-productive time.
+A proper formation detection is therefore an important piece in the puzzle for reducing the overall non-productive time.  To Verdande Technology's knowledge, this has never been done before, neither as an academic exercise nor as in a product. 
 
 Before the well is drilled, a chart with the expected formation tops is available from the well plan. The chart is based on seismic data and drilling data from neighbouring wells and contains the best guesses on which depths the various formation tops are located. Since it is uncertain where the formation tops are, an uncertainty interval is associated with every formation top. This is called the lithology chart. 
 
