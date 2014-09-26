@@ -1,3 +1,4 @@
+%!TEX root = D2.1_AMIDSTModellingFramework.tex
 \section{Background and notation}\label{Section:Preliminaries}
 
 The following sections aim at describing some of the required concepts and basic structures to make it easier to interpret the AMIDST models that will be presented afterwards for the different use-cases. First, Section \label{SubSection:GraphicalNotation} presents the graphical notation. Next, Section \ref{SubSection:HybridBNs} briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete variables, and Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian reasoning over time. Finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used to ensure a better understanding of AMIDST models.
@@ -72,12 +73,19 @@ A first simple alternative to overcome some of the structure limitations of CLGs
 
 A second approach to model hybrid empirical distributions in probabilistic graphical models, consists of considering approximate algorithms for performing inference, allowing thereby arbitrary distributions to be associated with the BN model. Examples of this approach include the Gibbs sampler \cite{Geman1984, hrycej1990gibbs} and variational inference \cite{Jordan1999}. 
 
-Finally, a third approach consists of ``transforming" the original BN model into an approximate model, for which exact inference algorithms can be applied. This can be achieved either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using transformations with more expressive power, such as using mixtures of truncated exponentials \cite{Moral2001} or mixtures of truncated basis functions \cite{Langseth12}.
+Finally, a third approach consists in ``transforming" the original BN model into an approximate one, for which exact inference algorithms can be applied. This can be achieved either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using transformations with more expressive power. 
 
-\textcolor{blue}{//Include a bit more information about MoTBFs.\\}
-%\textcolor{blue}{//Indicate that a more detailed revision of the state-of-the-art in methods for modelling complex empirical distributions can be found in deliverables 3.1 (about inference in hybrid and dynamic models) and 4.2 (about learning in the context of the AMIDST framework). \\}
-\textcolor{blue}{//Emphasize the current limitations of these for dynamic models and streaming data. Still, we might be able to use MoTBFs for Cajamar, since it is a simpler model in which presumably all variables are observed.}
+In this sense, mixtures of truncated basis functions~\cite{Langseth12} have been recently proposed as a general framework for handling hybrid Bayesian networks. Previous hybrid models as the so-called mixtures of truncated exponentials (MTEs)~\cite{Moral2001} and mixtures of polynomials (MoPs)~\cite{} can be regarded as particular cases of MoTBFs. 
 
+Part of the success of MoTBFs is due to the fact that they can model hybrid Bayesian networks with no structural restrictions, unlike the conditional Gaussian (CG) model where discrete variables are not allowed to have continuous parents and also that the normality assumption is not required. Furthermore, MoTBFs are closed under addition, multiplication, and integration, what facilitates the use of efficient inference methods like the Shenoy-Shafer architecture~\cite{She90} or the variable elimination algorithm~\cite{Zha96}. 
+
+In what concerns MoTBFs learning, the problem has been examined using two techniques so far. In the first approach we find a kernel density estimate of the data and utilize an effective translation procedure designed for approximating any marginal or conditional distribution function (in this case a kernel density) by an MoTBF distribution. On the other hand, the empirical cumulative distribution function is used as target for the MoTBF approximation which seems to be more robust when data are scarce. In any case, MoTBF learning is computationally more expensive than previous models as it entails an iterative procedure in both cases. Therefore, the application of this distribution family will be limited to those cases computationally feasible.
+
+MoTBF-based models have not been still addressed neither within a data streaming framework nor in a dynamic BN framework. The main challenge is based on the fact that MoTBFs belong to a non-exponential family, so that, sufficient statistics can not be updated after new data arrives. The distributions in this case must be learnt from scratch, and it does not fit the streaming approach. 
+
+A more detailed revision of the state-of-the art in methods for modeling complex empirical distributions can be found in future Deliverables 3.1 (about inference in hybrid and dynamic models) and 4.2. (about learning in the context of the AMIDST framework).
+
+%\textcolor{blue}{//Emphasize the current limitations of these for dynamic models and streaming data. Still, we might be able to use MoTBFs for Cajamar, since it is a simpler model in which presumably all variables are observed. }
 
 %------------------------------------------------------------------------------------------------------------
 \subsection{Probabilistic reasoning over time}\label{SubSection:DBNs}
