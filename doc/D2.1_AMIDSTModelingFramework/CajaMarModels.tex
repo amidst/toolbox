@@ -28,7 +28,8 @@ The problem of predicting the risk of default is currently solved at Cajamar by 
 
 The methodology currently employed for the risk prediction has some limitations. The model is based on logistic regression and does not assume any existing dependences among the variables. Moreover, current predictions are made using only $27$ variables out of more than $1000$ variables available, which might mean that useful information is being discarded. Finally, updates in risk predictions are made on a monthly basis, whereas the predictive model is only updated after several years. These low update frequencies are partly due to limitations in the available commercial software and the computing resources.
 
-Our objective is to tackle the current limitations by \textit{daily} learning the predictive model and also updating the risk of default for every bank customer. Dependences among the variables will now be considered, as well as including all the variables in the analysis. 
+Our objective is to tackle the current limitations by \textit{daily} learning the predictive model and also updating the risk of default for every bank customer. Dependences among the variables will now be considered, as well as including all the variables in the analysis. With these changes, Cajamar plans to increase the quality of the prediction model by increasing the area under ROC curve significantly.
+
 
 Therefore, the process consists in building a \textit{training set} as well as the set of customers to be evaluated, called \textit{evaluation set} (see~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem (see Figure~\ref{Figure:CajaMarTimeLine} for a better understanding):
 
@@ -110,6 +111,8 @@ Client$_n$  &                                                &               &  
 Table~\ref{tab:TrainingDataset} shows the training data set where each record contains the values for all predictive variables and a class value labelled as \emph{non-defaulter} only when there is no evidence of defaulting in the period from $k$ to $t$ (2 years). 
 
 \end{itemize}
+
+
 
 In what follows, we propose two modelling solutions for the risk prediction problem: static and dynamic.
 
@@ -231,7 +234,7 @@ In summary, although the dynamic model is different from the static one, the who
 
 The marketing department at Cajamar periodically launches marketing campaigns for the recruitment of new products by existing customers (i.e., a new credit card, an insurance, etc.). The success of these campaigns depends greatly on the client group to which the campaign is targeted. It is also crucial to reduce as much as possible unnecessary expenses focused on non-potential customers. . 
 
-For this purpose, the marketing group proceed as follows. Using their own marketing models, and in collaboration with the risk department, they provide some restrictions over a subset of variables, denoted as $\Z$, to be satisfied by the targeted clients. For instance, they all must be older than 60 or the annual incomes must be higher than $30,000$ euros. 
+For this purpose, the marketing group currently proceed as follows. Using their own marketing models, and in collaboration with the risk department, they provide some restrictions over a subset of variables, denoted as $\Z$, to be satisfied by the targeted clients. For instance, they all must be older than 60 or the annual incomes must be higher than $30,000$ euros. 
 
 Additionally, they will select a different subset of predictive variables $\Y$ also considered relevant when computing the final profile of the specific campaign. Mainly  socio-demographic variables will take part in this set, for example, the age of a client is a relevant predictor when designing campaigns to attract customers for a death insurance. 
 
@@ -247,6 +250,8 @@ Thus, the MAP operation is defined as follows:
 Note that the MAP operation will be performed over a model containing the whole set of variables (i.e. the variables in $\Y$ and $\Z$, and the rest non-relevant variables.) There is an open issue when performing MAP inference within continuous domains, which is the definition of the intervals of the continuous variables to conform the profiles. This issue is further considered in the discussion section. 
 
 Consider a simple example in which three predictors $\Y = \{ \emph{Age}, \emph{Marital Status}, \emph{Gender}\}$ are considered relevant to identity target customers for a \textit{death insurance} campaign. Consider also the restriction $\Z = \{Age>50\}$, which encodes the initial group of customers that, according to the knowledge of the marketing group, are potential buyers of this product.  The next step is to further refine this group of customers and identify the profile of customers which are most solvent (i.e. less likely to default). After computing Eq.~\ref{eq:MAP}, this may result in the following most probable assignment: clients in the range \emph {[60-70] years}, \emph{single status} and \emph{male}. Hence, this profile identifies the most solvent customers who might be interested in purchasing a \emph{death insurance} product. We must say that the above  procedure will be also used to get the $k$ best assignments or in other words the best set of profiles.   
+
+With the solution presented above, Cajamar plans to reach higher benefit in credit operations starting from a campaign rather than directly from regular credit operations.  
 
 %-------------------------------------------------------------------------------------------------------
 %\subsubsection*{Static model}\label{sec:StaticModel}
