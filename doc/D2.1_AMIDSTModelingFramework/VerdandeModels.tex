@@ -1,25 +1,31 @@
 
 \subsection{Verdande models} \label{Section:VerdandeModels}
 
-As has been pointed out in Deliverable D1.2 \cite{Fer14b}, three main tasks have to be addressed for Verdande Technology use case:
+
+\subsubsection{State-of-the-art of the application scenarios}
+
+As has been pointed out in Deliverable D1.2 \cite{Fer14b}, there are three main tasks that have to be addressed for Verdande Technology use case:
 
 \begin{enumerate}
-\item \textbf{Automatic detection of drill string vibrations and abnormal torque states}: This task aims to better diagnose the shape of the wellbore and the state of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time. To this end, a probabilistic graphical model for erratic torque monitoring and detection will be used.
+\item \textbf{Automatic detection of drill string vibrations and abnormal torque states}: This task aims to better diagnose the shape of the wellbore and the state of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time. Currently, the state-of-the-art algorithm in DrillEdge \cite{GundersenSAS12} is based on detecting erratic torque. It is a simple algorithm based on comparing root mean squared differences in a time window between the measured torque and a smoothed version of the torque. In essence, this method is measure of the local amplitude variations in the torque.  Additionally, the algorithm is filtering out abnormal torque during connections and some other instances.  This simple algorithm is rather limited and does not inherently take into account the existing uncertainty in the streaming data. The main objective for this scenario is then to design a probabilistic graphical model for erratic torque monitoring and detection of abnormal situations.
 
-\item \textbf{Semi-automatic labelling}: Given unlabelled data streams collected over time from typical drilling conditions, semi-automatic labelling aims to compute a normality score for each considered drilling situation, then label it as either ``normal'' or ``abnormal''. As for the previous task, a probabilistic graphical model will be used, taking into account the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. 
+\item \textbf{Semi-automatic labelling}: The main contribution from DrillEdge during operation is that it enables the driller to see in real time if the current situation is ``similar'' to previous situations that lead to undesired circumstances. If this is the case, remedial actions can be found to avoid undesired events. At the core of the analysis are historical examples of noteworthy episodes, ranging from clearly undesired events, for instance getting stuck, to more subtle indications of evolving problems, such as abnormal readings of hook-load. Verdande Technology has already extensive datasets, where such episodes are identified. 
+However, the definitions of the episodes are not always crisp, and domain experts can at times disagree about what is happening at a certain time. 
+This can potentially lead to inconsistencies in the dataset, complicating both the automatic learning of models as well as the comparison with previous situations. 
+Additionally, it can confuse the driller to be presented with information that he/she does not relate to or agree with. Manually labelling new data sequences, or adapting the existing labelling to new definitions, can be a very time-consuming activity.  Verdande Technology is therefore interested in looking into techniques for semi-automatic labelling. This is currently not part of the DrillEdge system in Verdande. 
 
-\item \textbf{Automatic formation detection}: which aims to predict in real time the formation tops from the MWD (measurements while drilling) data using a probabilistic graphical model. Once again, this should be performed taking the temporal dynamics of the drilling process into account. The automatic formation detection is vital for dealing with several issues such as hole instability and vibrations, and also important for reducing the costs and the overall non-productive time.
+Given unlabelled data streams collected over time from typical drilling conditions, semi-automatic labelling aims to compute a normality score for each considered drilling situation, then label it as either ``normal'' or ``abnormal''. As for the previous task, a probabilistic graphical model will be designed, taking into account the temporal dynamics of the drilling process and continuously adapting to changes in the incoming streaming data. 
+
+\item \textbf{Automatic formation detection}: This task aims to predict in real time the formation tops from the MWD (measurements while drilling) data using a probabilistic graphical model. Once again, this should be performed taking the temporal dynamics of the drilling process into account. The automatic formation detection is vital for dealing with several issues such as hole instability and vibrations, and also important for reducing the costs and the overall non-productive time. To Verdande Technology's knowledge, this has never been done before, neither as an academic exercise nor as in a product.
 \end{enumerate}
 
-The following three subsections detail the designed models for the different tasks.
+The following three subsections describe the different scenarios in more depth, as well as the probabilistic graphical models proposed for the different tasks.
 
 %-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 \subsubsection{Detection of drill string vibrations and abnormal torque states}\label{SubSection:DetectionTorque}
 %-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 The hole drill string, including the bottom hole assembly and the bit, is designed to transfer as much energy as possible from the rotary table to break rock at the bit.  When this energy transfer is inefficient, the energy goes into shaking the drill string.  This involves drilling slower, a higher risk to break equipment and a lower hole quality. Automatic detection of drill string vibrations can help the drilling crew to better diagnose both the condition of the equipments and also the hole itself. Drillstring vibrations are seen as an erratic torque signal on the realtime data.  We have therefore focused on detection of erratic torque.
-
-Currently there is an algorithm in DrillEdge that is detecting erratic torque. It is simple and is based on comparing root mean squared differences in a time window between the measured torque and a smoothed version of the torque. In essence this method is measure of the local amplitude variations in the torque.  Additionaly, the algorithm is filtering out abnormal torque during connections and some other instances.  It is the intension in this task to take into account more information from the time series.
 
 Two time-windows of torque-readings are given in Figure \ref{Figure:VTTorqueValues}; the uppermost plot traces the torque over a period of 25.000 observations, the other is zoomed in to cover only 500 observations. It is evident that the torque varies over time, and often drops to zero (in particular when the drill-bit is not rotating). Furthermore, we can see from the zoomed-in trace that the variance changes over time; this time-window commences with rapidly varying torque, before the variation is reduced. The goal is to extract passages where high variance in the observed torque cannot be explained by other drilling parameters. 
 We will begin the following discussion by considering how to model the torque as a random variable developing over time, without thinking about vibration and the variable's relationship to other drilling parameters. Thereafter, a full model will be proposed.
@@ -82,18 +88,12 @@ In the IOSKF model, the ``input'' at time $t$ is the ROP at that point in time, 
 \end{center}
 \end{figure}
 
-Further extensions to the model, where also other predictive variables are taken into account, will be considered at a later stage. The general model structure will, however, not be changed.
+Further extensions to the model, where also other predictive variables are taken into account, will be considered at a later stage. The general model structure will, however, most likely not be changed.
 
 %-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 \subsubsection{Semi-automatic labelling}\label{SubSection:SemiAutomaticLabelling}
-%-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 
-The main contribution from DrillEdge during operation is that it enables the driller to see in real time if the current situation is ``similar'' to previous situations that lead to undesired circumstances. If this is the case, remedial actions can be found to avoid undesired events. At the core of the analysis are historical examples of noteworthy episodes, ranging from clearly undesired events, for instance getting stuck, to more subtle indications of evolving problems, such as abnormal readings of hook-load. Verdande Technology has already extensive datasets (made available to the project from its beginning), where such episodes are identified. 
-However, the definitions of the episodes are not always crisp, and domain experts can at times disagree about what is happening at a certain time. 
-This can potentially lead to inconsistencies in the dataset, complicating both the automatic learning of models as well as the comparison with previous situations. 
-Additionally, it can confuse the driller to be presented with information that he/she does not relate to or agree with.
-
-Manually labelling new data sequences, or adapting the existing labelling to new definitions, can be a very time-consuming activity.  Verdande Technology therefore wants to look into techniques for semi-automatic labelling. This is currently not part of the system.
 This process is initiated by the system being fed with unlabelled data streams from typical drilling conditions. The system should adapt to this data, and recognise what is ``normal'', both with respect to auto-correlations of each variable over time, as well as the intricate relationships between variables. Simultaneously, sub-sequences that do not fit well with the normal data should be marked as ``abnormal''.
 The abnormal sub-sequences can thereafter be examined more closely by drilling experts. It is desired that the process should be able to take back information from this examination, and update the reasoning if the sequences marked as abnormal were not correctly labelled. The benefit of the automatic tagging is that more time can be spent on scrutinizing the ``interesting'' parts of the drilling logs, and less time on the ``normal'' parts. 
 This implies the potential for further reduction in non-productive time. Specifically, the goal is to provide a ``normality'' score for historical logs to facilitate semi-automatic detection of abnormal situations. The calculations should be efficient enough to run in real time if so desired.
@@ -129,7 +129,7 @@ In many drilling operations, a precise recognition of a formation change can be 
 For instance, it is important to cement the casing in the correct formation to manage the formation pressures, as well as correctly identifying the top and the bottom of an oil reservoir. 
 Additionally, accurate knowledge of the formation allows the drilling crew to optimise drilling parameters and better diagnose the condition of the bit. 
 Knowing the formation is also an important input in how to deal with symptoms such as improper hole-cleaning, hole-instability and vibration issues. 
-A proper formation detection is therefore an important piece in the puzzle for reducing the overall non-productive time.  To Verdande Technology's knowledge, this has never been done before, neither as an academic exercise nor as in a product. 
+A proper formation detection is therefore an important piece in the puzzle for reducing the overall non-productive time.   
 
 Before the well is drilled, a chart with the expected formation tops is available from the well plan. The chart is based on seismic data and drilling data from neighbouring wells and contains the best guesses on which depths the various formation tops are located. Since it is uncertain where the formation tops are, an uncertainty interval is associated with every formation top. This is called the lithology chart. 
 
@@ -166,9 +166,9 @@ In this case, we think in terms of an IOHMM (see Section \ref{SubSubSection:HMMs
 
 \item The next chain of variables are \textit{counting-variables}, denoted by  FormationNo$_t$. The variable has two parents: Depth$_t$ and FormationNo$_{t-1}$. 
 The probability that the counting variable is incremented at time $t$ conditioned on the parent configuration is calculated by combining information from the prior information with the parents' configuration. Logistic or probit functions can  be imagined, but must be compared to the actual domain knowledge to give a feasible representation.
-Note that the model structure, with  a continuous parent having a discrete child does not entail computational difficulties in this case: The parent is always observed, and the calculation of the conditional probability table (encoding the transfer function) can thus be done externally. The model thus capture a non-stationary process by conditioning the transition distribution to the observed control variables. 
+Note that the model structure, with  a continuous parent having a discrete child does not entail computational difficulties in this case: The parent is always observed, and the calculation of the conditional probability table (encoding the transfer function) can thus be done externally. The model thus capture a non-stationary assumption by conditioning the transition distribution to the observed control variables.
 
-\item Shift$_t$  generates a  chain of variables used for determining when   a formation-change actually occurs. It has two parents, namely  FormationNo$_{t-1}$ and  FormationNo$_t$. 
+\item Shift$_t$  generates a  chain of variables used for determining when   a formation-change actually occurs. It remains to be further explored if consecutive Shift variables should be connected or not. It has two parents, namely  FormationNo$_{t-1}$ and  FormationNo$_t$. 
 The variable is discrete, and has four states: ``No -- As accounted for in the prior'', ``No -- But expected in prior'', ``Yes -- As accounted for in the prior'', and ``Yes -- But not expected in prior''. 
 To this end, FormationNo$_t$ only changes when expected by the prior information, while Shift$_t$ can use the data to refine these assessments. If $\mbox{FormationNo}_{t}= \mbox{FormationNo}_{t-1}$, Shift$_t$ is in the state 
  ``No -- As accounted for in the prior'' with probability $1-\epsilon$ and in state ``Yes -- But not expected in prior'' with probability $\epsilon$. If $\mbox{FormationNo}_{ t}=\mbox{FormationNo}_{t-1}+1$, Shift$_t$ takes the state 
@@ -177,13 +177,13 @@ To this end, FormationNo$_t$ only changes when expected by the prior information
 \item Finally, the observed variables at time $t$ only have  Shift$_t$ as parent. We will not use the actual observed sensor reading as the observed variable (``output-variable'' in the input-output model). Rather, the differences are considered, e.g., GammaRay$_t$ - GammaRay$_{t-1}$ will be used to represent the gamma ray measurement at time $t$. These variables will, given that Shift$_t$ is in the ``No''-states, vary around zero. The variable will be significantly different from zero if the parent is in any of the ``Yes''-states.  It is clear from Figure \ref{lithology} that most formation changes are seen as clear shifts in the gamma ray data.
 \end{itemize}
 
-At the time of inference, we condition on the total number of switches, and calculate (using forward-backward) the posterior distribution of the locations. Similarly, we will also calculate the most probable explanation, that is, the most probable configuration of switches given the total number of events.
+At the time of inference, we condition on the total number of switches, and calculate the posterior distribution of the locations. Similarly, we will also calculate the most probable explanation, that is, the most probable configuration of switches given the total number of events.
 
 %-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 \subsubsection{Discussion and future models}
 %-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-The models presented above, describe a first attempt to address the tasks involved in the Verdande problem domain. A first critical question to the model for erratic torque is that the model assumes the observations from a tach of data without erratic torque to follow a Gaussian distribution. Secondly, the assumption that erratic torque is manifested through an additive high-correlated Gaussian noise must be verified as well. A natural first step is to experiment with the model on synthetic data simulated from relevant (but non-Gaussian) distributions to quantify its robustness wrt.\ these assumptions. Secondly, a critical investigation into the results obtained when running on real data will be conducted, potentially leading to  more expressive models having to be utilized. 
+The models presented above, describe a first attempt to address the tasks involved in the Verdande problem domain. A first critical question to the model for erratic torque, is that the model assumes the observations from a batch of data without erratic torque to follow a Gaussian distribution. Secondly, the assumption that erratic torque is manifested through an additive high-correlated Gaussian noise must be verified as well. A natural first step is to experiment with the model on synthetic data simulated from relevant (but non-Gaussian) distributions to quantify its robustness wrt.\ these assumptions. Secondly, a critical investigation into the results obtained when running on real data will be conducted, potentially leading to  more expressive models having to be utilized. 
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -191,7 +191,7 @@ The semi-automatic labelling model is so far made using a general-purpose model 
 
 %%%%%%%%%%%%%%%
 
-The model for formation detection assumes that changes in the logged data happen instantaneously. Instantaneous ``jumps'' are observed for, e.g., the gamma ray measurement, but may not be equally valid for other variables, like resistivity. If required, a richer model (albeit contained inside the class of input-output models) may have to be addressed, where the observations themselves (and not their time differences) are utilized. Furthermore, we have again  assumed that the difference in an variable between two observations follows a Gaussian distribution with fixed variance. The assumption must be better validated with other data sets and amended if required.
+The model for formation detection assumes that changes in the logged data happen instantaneously. Instantaneous ``jumps'' are observed for, e.g., the gamma ray measurement, but may not be equally valid for other variables, like resistivity. If required, a richer model (albeit contained inside the class of input-output models) may have to be addressed, where the observations themselves (and not their time differences) are utilized. Furthermore, we have again  assumed that the difference in a variable between two observations follows a Gaussian distribution with fixed variance. The assumption must be better validated with other data sets and amended if required.
 
 
 
