@@ -41,6 +41,7 @@
 \numberwithin{equation}{section}
 \numberwithin{table}{section}
 
+\usepackage{pdfpages}
 
 \begin{document}
 
@@ -50,7 +51,8 @@
 %\end{abstract}
 %
 
-\newpage\null\thispagestyle{empty}\newpage
+\includepdf[pages={1}]{figures/FrontPage.pdf}
+%\newpage\null\thispagestyle{empty}\newpage
 
 % Table of contents
 \tableofcontents
