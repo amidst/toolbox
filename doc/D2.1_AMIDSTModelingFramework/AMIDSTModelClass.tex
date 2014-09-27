@@ -143,7 +143,7 @@ In addition, inside a time slice, the observed continuous and hidden discrete su
 \subsubsection{Cajamar model class}\label{cajamarAMIDSTModels}
 %-----------------------------------------------------------------------------------------------------------------------------------------
 
-Concerning the Cajamar use-case, both application scenarios share the same modelling structures for the static and dynamic models (see Section \ref{Section:CajaMarModels}). The static approach, as discussed above, can be trivially seen as a particular case of the dynamic one. At this point, we focus on the dynamic model, since the general AMIDST modelling framework is primarily a dynamic model class. Thus, the high-level description of Cajamar's dynamic model (previously displayed in Figure \ref{fig:component}) can be reinterpreted according  to Figure \ref{Figure:AMIDSTModelClassCajamar}. 
+Concerning the Cajamar use-case, both application scenarios share the same modelling structures (see Section \ref{Section:CajaMarModels}). The static approach, as discussed above, can be trivially seen as a particular case of the dynamic one. At this point, we focus on the dynamic model, since the general AMIDST modelling framework is primarily a dynamic model class. Thus, the high-level description of Cajamar's dynamic model (previously displayed in Figure \ref{fig:component}) can be reinterpreted according  to Figure \ref{Figure:AMIDSTModelClassCajamar}. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -211,6 +211,5 @@ A higher level view of our proposed AMIDST modelling framework is displayed in F
 \end{center}
 \end{figure}
 
-In any case, this is an ongoing project research and a better understanding of the faced problems and/or future applications might reveal that some elements of this modelling framework need to be refined. As already commented,  we still have to work on inference and learning algorithms that make these models applicable to scenarios dealing with massive data streams. These developments might also has an impact in the current framework. On the other hand, this modelling framework has to provide solutions which achieve levels of performance (e.g. prediction accuracy) which were previously specified in the requirement analysis \cite{Fer14b}.  This also might be another factor that can impact on the final specification of this framework. For example, we are now assuming a first-order Markov assumption. One could easily envision the possibility of going to higher order Markov assumptions in the tests reveal that this first-order assumption severely limits the modelling capacities of this framework in some of the application scenarios. 
 
 
