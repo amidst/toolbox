@@ -1,6 +1,6 @@
 package eu.amidst.core.Estimators;
 
-import eu.amidst.core.Potential.Potential;
+import eu.amidst.core.potential.Potential;
 import eu.amidst.core.StaticDataBase.DataInstance;
 
 /**

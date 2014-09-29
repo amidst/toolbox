@@ -1,4 +1,4 @@
-package eu.amidst.core.Potential;
+package eu.amidst.core.potential;
 
 
 import java.util.List;
