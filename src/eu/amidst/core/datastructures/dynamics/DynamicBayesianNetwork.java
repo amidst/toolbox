@@ -1,10 +1,9 @@
-package eu.amidst.core.DynamicBayesianNetwork;
+package eu.amidst.core.datastructures.dynamics;
 
-import eu.amidst.core.Estimators.Estimator;
-import eu.amidst.core.StaticBayesianNetwork.ParentSet;
-import eu.amidst.core.headers.DynamicModelHeader;
-import eu.amidst.core.headers.StaticModelHeader;
-import eu.amidst.core.headers.DynamicVariable;
+import eu.amidst.core.datastructures.ParentSet;
+import eu.amidst.core.estimator.Estimator;
+import eu.amidst.core.header.dynamics.DynamicModelHeader;
+import eu.amidst.core.header.dynamics.DynamicVariable;
 
 /**
  * Created by afa on 03/07/14.
