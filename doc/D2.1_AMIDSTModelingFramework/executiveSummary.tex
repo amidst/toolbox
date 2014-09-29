@@ -1,22 +1,50 @@
 \section{Executive summary}\label{section:executiveSummary}
 
-The main objective of this document is to design a probabilistic model class (AMIDST modelling framework) that addresses the different application scenarios encountered in each use-case provider, namely, Daimler AG, Cajamar, and Verdande Technology AS.
+The main objective of this document is to provide an initial design of a probabilistic model class (the AMIDST modeling
+framework) that supports the different application scenarios described for the three use-case providers: Daimler AG, Cajamar, and Verdande Technology AS.
 % but also another future similar problems dealing with massive data streams.
 
-Given the dynamic nature of the applications, as well as the data and the feedback provided by the different use cases, we found convenient to include in this document not only a static modelling framework proposal, but also, and more importantly, a dynamic modelling framework proposal that extends the static one. By considering the dynamic approach at this early stage, we can start now to evaluate how the modelling hypothesis behind this framework affects the inference and learning algorithms which are being studied in WP3 and WP4, respectively. 
-%And, hence, to refine the final modelling framework before it is presented in Deliverable 2.2.
 
-To ensure a clear understanding of the presented framework, we provide in this document a background section including required concepts about data analysis techniques, Bayesian networks and dynamic modelling. We also touch upon the state-of-the-art of modelling complex empirical distributions (which is reviewed in more depth in Deliverables 3.1 and 4.2).
+% Given the nature of the application scenarios, as well as the data and the feedback provided by the different use cases,
+% we found convenient to include in this document not only a static modelling framework proposal, but also, and more
+% importantly, a dynamic modelling framework proposal that extends the static one. By considering the dynamic approach at
+% this early stage, we can start now to evaluate how the modelling hypothesis behind this framework affects the inference
+% and learning algorithms which are being studied in WP3 and WP4, respectively. 
 
-The application scenarios identified in Deliverable 1.2 are addressed here. We firstly start giving an overview about which is the state-of-the-art for the use case providers, i.e. how they currently solve these applications scenarios. We then present the specific proposed models for each application scenario. These models are usually presented as a dynamic extension of a first static proposal. To design these models, we try to apply existing and well-studied probabilistic modelling techniques when possible, but we also introduce new elements when further modelling expressive capacity is needed. Our proposed models, at this stage, are mainly supported by the provided domain/expert knowledge and by a data analysis about the nature and the temporal structure of the distribution families governing the use cases. This data analysis is also used to validate, as much as possible, the elicited knowledge, which due to the complexity of the modelled systems/processes, sometimes is not entirely comprehensive or accurate.
+Given the nature of the application scenarios, initial investigations revealed the need for not only considering static
+model classes, but also model classes that explicitly captures the  dynamics in the application scenarios. Initial considerations on
+dynamic modeling components are therefore also included in this document, although the Description of work
+lists these activities for the ensuing Deliverable D2.2. 
+
+In order to establish a common frame of reference for the proposed framework, we provide a background section including
+concepts about data analysis methods, Bayesian networks, and dynamic modeling techniques. We also touch upon
+state-of-the-art of modeling complex empirical distributions, although this will be reviewed in more depth in Deliverables
+3.1 and 4.2. 
+
+As basis for the development of the general AMIDST modeling framework we establish preliminary models for the application scenarios identified in
+Deliverable 1.2. Specifically, we first start by giving an overview of state-of-the-art for each use case provider, i.e., how the
+application scenarios are currently being addressed. We then present preliminary candidate model classes for each
+application scenario. These models will typically be presented as dynamic extensions of an initial static model class. At
+this stage, the proposed models are mainly supported by  domain/expert knowledge elicited from the use-case providers
+as well as by analyses of the nature and temporal structure of the distribution families governing the use cases; the data
+analysis is also used to corroborate the elicited domain knowledge.
 
 %We also consider previously developed models by some of the use case providers as a starting point. 
 
-Finally, based on the commonalities among the three use-case-tailored models, we introduce the AMIDST modelling framework, which is presented as a dynamic extension of a firstly introduced static framework. We claim that this framework is able to tackle all use-cases. Moreover, the presented framework aims to ease the integration of elicited domain/expert knowledge in combination with data-driving learning methods when applied to other future similar application scenarios. 
+Finally, based on the commonalities among the three use-case-tailored model classes, we introduce the general AMIDST
+modeling framework and demonstrate that the framework is able to support the identified use-cases. The framework is
+furthermore intended to allow for a combination of data-driving learning and integration of domain/expert knowledge. This
+is partly achieved by defining the framework based on a single coherent probabilistic model class.
+
+
+%%% WHAT TO DO WITH THIS::::, and aims to ease the integration of elicited domain/expert knowledge in combination with data-driving learning methods when applied to other future similar application scenarios. 
 
 %We claim that this framework is able to tackle all use-cases and similar future problems. This framework is %designed over the basis of  by integrating the 
 %different data-driven learning methods, as well as to take advantage of structural adjustments with respect to each particular domain.
 
-It is crucial here to note that the current AMIDST modelling framework should be considered as an initial proposal. This proposal might be updated/extended in the future in the light of a better understanding of the faced problems and new feedback provided from the use case providers, as well as the impact of the study of the inference and learning techniques for dealing with massive data streams. The final AMIDST modelling framework will be presented in Deliverable 2.2.
+It is crucial here to note that the AMIDST modeling framework described in the present document should be considered an initial proposal. This
+proposal might be updated/extended in the future based on feedback provided from the use case providers as well as insights
+revealed by the inference and learning techniques and results obtained in the later work packages. The final AMIDST
+modelling framework will be presented in Deliverable 2.2. 
 
 
