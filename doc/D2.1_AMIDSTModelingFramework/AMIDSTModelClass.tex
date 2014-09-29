@@ -1,11 +1,11 @@
 \section{The AMIDST modelling framework}\label{section:AMIDSTmodelClass}
 
-One of the main goals of the AMIDST project is the definition of a general model class with the following characteristics: 
+One of the main goals of the AMIDST project is the definition of a general modelling framework with the following characteristics: 
 
 \begin{itemize}
-\item \textbf{Feature 1:} it should be applicable to the three considered use-cases, i.e., Daimler, Cajamar and Verdande;
+\item \textbf{Feature 1:} it should be applicable to the three considered use cases, i.e., Daimler, Cajamar and Verdande;
 
-\item \textbf{Feature 2:}  it should be general enough to be applicable to any future, potentially similar, use-cases;
+\item \textbf{Feature 2:}  it should be general enough to be applicable to any future, potentially similar, use cases;
 
 \item \textbf{Feature 3:} it should allow the integration of domain/expert knowledge about the structure of the process being modelled, and
 
@@ -37,7 +37,6 @@ is the result of combining the high-level structure of the static models describ
 \caption{\label{Figure:StaticModellingFramework} The static modelling framework.}
 \end{center}
 \end{figure}
-
 
 The first main characteristic of this static model is that all the modelling variables are structured in three different
 layers, each one with distinct semantics. We believe that this layered division of the modelling variables can
@@ -75,10 +74,10 @@ Gaussian framework, and so the conditional probability distributions are paramet
 covered by this general CLG framework. More precisely, when the top layer class is instantiated to  a continuous
 subnetwork, then the conditional probabilities of ``State 1'' and ``State 2'' may be instantiated with logistic or
 probit distributions, because we encounter continuous parents with discrete children. Additionally, we also envision the
-possibility of introducing in the observable layer, the use of probability distributions belonging to the MoTBF family
-\cite{Langseth12}, in order to extend the expressive power of the modelling framework.
+possibility of introducing in the observable layer, the use of probability distributions belonging to the MOTBF family
+\cite{Langseth12}, in order to extend the expressive power of the modelling framework (see Section \ref{SubSection:EmpiricalDistributions}).
 
-Full details about how this framework can be instantiated to solve the different application scenarios will be given in the next section. But, as an illustrative example, we show in Figure \ref{Figure:StaticModellingInstantiations} how this static modelling framework can be instantiated to the static models presented for Daimler (see Section \ref{Section:Daimler:EarlyRecognition}) and CajaMar (see Section \ref{SubSection:Predicting}). In the case of Verdande, no static models has been considered. 
+Full details about how this framework can be instantiated to solve the different application scenarios will be given in the next section. But, as an illustrative example, we show in Figure \ref{Figure:StaticModellingInstantiations} how this static modelling framework can be instantiated to the static models presented for Daimler (see Section \ref{Section:Daimler:EarlyRecognition}) and Cajamar (see Section \ref{SubSection:Predicting}). In the case of Verdande, no static models has been considered. 
 
 
 \begin{figure}[ht!]
@@ -89,7 +88,7 @@ Full details about how this framework can be instantiated to solve the different
 \includegraphics[scale=0.4]{./figures/CajaMarStaticModelling}
 \\Daimler Static Model & CajaMar Static Model \\
 \end{tabular}
-\caption{\label{Figure:StaticModellingInstantiations} Illustrative example with instantiations of the static modelling framework for the Daimler and CajaMar static models, respectively.}
+\caption{\label{Figure:StaticModellingInstantiations} An illustrative example with instantiations of the static modelling framework for the Daimler and Cajamar static models, respectively.}
 \end{center}
 \end{figure}
 %-----------------------------------------------------------------------------------------------------------------------------------------
@@ -139,24 +138,22 @@ Recall that links from latent variables to state variables are not allowed, neit
 
 In the following sections, we will show how this modelling framework satisfies the aforementioned \textbf{Feature 1}, by
 describing how each particular use case fits in this restricted 2T-DBN AMIDST model. This instantiation process of the
-general AMIDST model to the three use-cases (all of them with different application scenarios) can also be seen as a
+general AMIDST model to the three use cases (all of them with different application scenarios) can also be seen as a
 practical example demonstrating the general applicability of the resulting AMIDST modelling framework. This provides
 arguments in favour of \textbf{Feature 2} and shows how the AMIDST modelling framework can be potentially instantiated
 to other future use cases. In our opinion, these different instantiations also show how the layer and component based
 structure of this modelling framework might help ease the process of building other future models using domain/expert
 knowledge, thereby giving support to \textbf{Feature 3}. Finally, the remaining task is related to
-\textbf{Feature 4} and consists of designing inference and learning algorithms that enables  the AMIDST
+\textbf{Feature 4} and consists of designing inference and learning algorithms that enable the AMIDST
 modelling framework to handle massive data streams. We can envision that this latter process might result in
-modifications of
-some of the elements and assumptions of the proposed modelling framework, if this is needed to better balance the accuracy and
+modifications of some of the elements and assumptions of the proposed modelling framework, if this is needed to better balance the accuracy and
 computational performance as required by the use-case providers.  
 
 
 
 %-----------------------------------------------------------------------------------------------------------------------------------------
 \subsubsection{Daimler model class}\label{daimlerAMIDSTModels}
-%---------------------------------------------------------------------
-
+%-----------------------------------------------------------------------------------------------------------------------------------------
 
 Daimler's model class has been previously displayed in Figure \ref{Figure:daimlerLEdynGeneric}. Taking the general AMIDST modelling framework into account, Daimler's model class can be reinterpreted, according to Figure \ref{Figure:AMIDSTModelClassDaimler}, as follows:
 
@@ -193,7 +190,7 @@ level Hypotheses are connected over time, then the ``State 1'' subnetwork would 
 \subsubsection{Cajamar model class}\label{cajamarAMIDSTModels}
 %-----------------------------------------------------------------------------------------------------------------------------------------
 
-Concerning the Cajamar use-case, both application scenarios share the same modelling structures (see Section \ref{Section:CajaMarModels}). The static approach, as discussed above, can be trivially seen as a particular case of the dynamic one. At this point, we focus on the dynamic model, since the general AMIDST modelling framework is primarily a dynamic model class. Thus, the high-level description of Cajamar's dynamic model (previously displayed in Figure \ref{fig:component}) can be reinterpreted according  to Figure \ref{Figure:AMIDSTModelClassCajamar}. 
+Concerning the Cajamar use case, both application scenarios share the same modelling structures (see Section \ref{Section:CajaMarModels}). The static approach, as discussed above, can be trivially seen as a particular case of the dynamic one. At this point, we focus on the dynamic model, since the general AMIDST modelling framework is primarily a dynamic model class. Thus, the high-level description of Cajamar's dynamic model (previously displayed in Figure \ref{fig:component}) can be reinterpreted according  to Figure \ref{Figure:AMIDSTModelClassCajamar}. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -250,7 +247,7 @@ Verdande's model class can then be described as follows:
 \subsection{Summary}\label{summaryAMIDSTModels}
 %-----------------------------------------------------------------------------------------------------------------------------------------
 
-As it has been shown in the previous sections, the proposed general AMIDST modelling framework of Figure \ref{Figure:AMIDSTModelClass} encompasses the different application scenarios of the three use cases, both for static and dynamic contexts. These three use cases come from very different domains: automotive, finance and oil-drilling. In our opinion, these are strong arguments in favour of the generality and applicability of this model class. 
+As it has been shown in the previous sections, the proposed general AMIDST modelling framework of Figure \ref{Figure:AMIDSTModelClass} encompasses the different application scenarios of the three use cases, both for static and dynamic contexts. These three use cases come from very different domains: automotive, finance and oil-drilling. In our opinion, these are strong arguments in favour of the generality and applicability of this modelling framework. 
 
 A higher level view of our proposed AMIDST modelling framework is displayed in Figure
 \ref{Figure:AMIDSTModelClassHighLevel}. As commented before, it shows how the AMIDST modelling framework could actually
