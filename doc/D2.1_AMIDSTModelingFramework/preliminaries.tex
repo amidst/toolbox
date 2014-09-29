@@ -1,8 +1,8 @@
 \section{Background and notation}\label{Section:Preliminaries}
 
 The following sections aim at describing some of the required concepts and basic structures to make it easier to
-interpret the AMIDST models that will be presented afterwards for the different use-cases. First,
-Section \label{SubSection:GraphicalNotation} presents the graphical notation. Next, Section \ref{SubSection:HybridBNs}
+interpret the AMIDST models that will be presented afterwards for the different use cases. First,
+Section \ref{SubSection:GraphicalNotation} presents the graphical notation. Next, Section \ref{SubSection:HybridBNs}
 briefly introduces Bayesian networks and discusses the challenges encountered for reasoning with continuous and discrete
 variables. Section \ref{SubSection:DBNs} describes some of the basic concepts and models related to dynamic Bayesian
 reasoning over time, and, finally, Section \ref{SubSection:DataAnalysis} defines the data analysis techniques used in
@@ -52,53 +52,39 @@ Figure \ref{Figure:GeneralBayesianNetwork} shows an example of a BN model. The n
 
 Traditionally, BNs have been defined for discrete domains, where the entities of interest are modelled by discrete variables which ensures that belief updating can be performed efficiently and in closed form \cite{pearl1988probabilistic}. However, this requirement imposes severe restrictions as many domains contain entities that are more appropriately modelled by variables with continuous state spaces; such as distance and velocity measurements which are key sensor readings for identifying and interpreting traffic manoeuvres (see Daimler's requirement analysis \cite{Fer14}).
 
-To deal with this problem, research has pursued different approaches to extend BNs and support continuous variables \cite{Lauritzen1992,lauritzen1996graphical,Jordan1999,LauritzenJensen2001,Moral2001}. One of the most straightforward approaches implies to carefully construct the model so that exact inference algorithms can still be applied. This is the case for the conditional linear Gaussian (CLG) BNs \cite{Lauritzen1992,lauritzen1996graphical}, where the local probability distributions of continuous variables are specified as conditional linear Gaussian distributions and where discrete variables can only have discrete parents. 
+To deal with this problem, research has pursued different approaches to extend BNs and support continuous variables \cite{Lauritzen1992,lauritzen1996graphical,Jordan1999,LauritzenJensen2001,Moral2001}. One of the most straightforward approaches implies to carefully construct the model so that exact inference algorithms can still be applied. This is the case for the conditional linear Gaussian (CLG) BNs \cite{Lauritzen1992,lauritzen1996graphical}, where the local probability distributions of continuous variables are specified as CLG distributions and where discrete variables can only have discrete parents. 
 
-In the context of CLG BNs, we encounter the following conditional distributions depending of the type, continuous or discrete, of the parent and the child variables:
+In the context of CLG BNs, we encounter the following conditional distributions depending on the type, i.e., continuous or discrete, of the parent and child variables:
 
 \begin{itemize}
 \item \textbf{Discrete $\rightarrow$ Discrete}: The child variable follows an independent multinomial probability distribution for each configuration or assignment of the parent variables.
 
-\item \textbf{Continuous $\rightarrow$ Continuous}: The child variable follows a conditional linear Gaussian distribution. I.e. the mean parameter of the Gaussian distribution of the child variable is a linear combination of the parent variables while the variance is a fixed independent parameter. 
+\item \textbf{Continuous $\rightarrow$ Continuous}: The child variable follows a conditional linear Gaussian distribution. I.e., the mean parameter of the Gaussian distribution of the child variable is a linear combination of the parent variables while the variance is a fixed independent parameter. 
 
 \item \textbf{Discrete $\rightarrow$ Continuous}: In this case, the child variable is distributed as an independent Gaussian distribution for each configuration of the parent variables. 
 
-\item \textbf{ (Discrete, Continuous) $\rightarrow$ Continuous}:  For each configuration of the discrete parent variables, the child variable follows an independent conditional Gaussian distribution depending of the continuous parent variables. I.e. the mean parameter of the Gaussian distribution of the child variable is expressed as a different linear combination of the continuous parent variables for each configuration of the discrete parent variables and, moreover, the variance of this Gaussian can also be different. 
+\item \textbf{ (Discrete, Continuous) $\rightarrow$ Continuous}:  For each configuration of the discrete parent variables, the child variable follows an independent conditional Gaussian distribution depending of the continuous parent variables. I.e., the mean parameter of the Gaussian distribution of the child variable is expressed as a different linear combination of the continuous parent variables for each configuration of the discrete parent variables and, moreover, the variance of this Gaussian can also be different. 
 
 \end{itemize}
 
-
-The models presented in this deliverable, unless otherwise stated, will be parameterized according to the conditonal
-linear Gaussain model \cite{Lauritzen1992,LauritzenJensen2001}. Some of the advantages of the CLG approach include
-simplicity and the support of exact inference. Its main drawbacks lies, however, in the structural limitations it
-imposes on the BN and the Gaussian assumption being made. The next section touches upon other alternatives to model
-complex empirical distributions that can offer a higher expressive power but, at the same time, contribute to more complicated inference processes. A more detailed analysis covering these topics can be found in the Deliverables 3.1 (more specifically about inference in hybrid and dynamic models) and 4.2 (about learning in the context of the AMIDST framework).
+The models presented in this deliverable, unless otherwise stated, will be parameterised according to the CLG model \cite{Lauritzen1992,LauritzenJensen2001}. Some of the advantages of the CLG approach include simplicity and the support of exact inference. Its main drawbacks lie, however, in the structural limitations it imposes on the BN and the Gaussian assumption being made. The next section touches upon other alternatives to model complex empirical distributions that can offer a higher expressive power and contribute, at the same time, to more complicated inference processes. A more detailed analysis covering these topics can be found in Deliverables 3.1 (specifically dealing with state-of-the-art of inference in hybrid and dynamic models) and 4.2 (presenting the state-of-the-art for learning in the context of the AMIDST framework).
  
-
+%------------------------------------------------------------------------------------------------------------
 \subsection{Modelling complex empirical distributions}
+%------------------------------------------------------------------------------------------------------------
 
+A first alternative to overcome some of the structure limitations of CLG models is to allow more freedom in the choice of distribution families by resorting to approximate inference algorithms, such as Gibbs sampling \cite{Geman1984,hrycej1990gibbs} and variational inference \cite{Jordan1999}. This could, for example, include the use of logit and probit distributions for parametrizing networks containing discrete children with continuous parents.
 
-A first alternative to overcome some of the structure limitations of CLGs is to allow more freedom in the choice of
-distribution families by resorting to approximate inference algorithms, such as  Gibbs sampling \cite{Geman1984,
-  hrycej1990gibbs} and variational inference \cite{Jordan1999}. This could, for example, include the use of logit and probit distributions for parametrizing networks containing discrete children with continuous parents.
+A second approach consists in ``transforming'' the original BN model into an approximate one, for which exact inference algorithms can be applied. This can be achieved, for instance, either by discretizing the continuous variables \cite{KozlovKollerUAI97} or using transformations with more expressive power such as mixtures of truncated basis functions (MoTBFs)~\cite{Langseth12}. The MoTBF~\cite{Langseth12} framework was proposed as a general framework for handling hybrid BNs with no structural restrictions, unlike the CLG model. MoTBFs are furthermore closed under addition, multiplication, and integration, which facilitates the use of efficient inference methods like the Shenoy-Shafer architecture~\cite{She90} or variable elimination algorithms~\cite{Zha96}. 
 
-A second approach consists in ``transforming'' the original BN model into an approximate one, for which exact inference
-algorithms can be applied. This can be achieved, for instance, either by discretizing the continuous variables
-\cite{KozlovKollerUAI97} or using transformations with more expressive power such as mixtures of truncated basis
-functions (MoTBFs)~\cite{Langseth12}. The MoTBF~\cite{Langseth12} framework was proposed as a general framework for handling hybrid Bayesian
-networks with no structural restrictions, unlike the CLG model. MoTBFs are furthermore closed under addition, multiplication, and integration, which facilitates the use of efficient inference methods like the Shenoy-Shafer architecture~\cite{She90} or variable elimination algorithms~\cite{Zha96}. 
-
-An MOTBF can be obtained either by translating a known distribution or learning it directly from data. In the latter
-case, several approaches have been investigated utilizing either a proxy representation of the data, e.g., in the form
-or a kernel density estimate, or through direct maximum likelihood-based approaches. General MOTBF learning is, however,
-more computationally expensive than the models  previously mentioned. 
+An MOTBF can be obtained either by translating a known distribution or learning it directly from data. In the latter case, several approaches have been investigated utilising either a proxy representation of the data, e.g., in the form of a kernel density estimate, or through direct maximum likelihood-based approaches. However, general MOTBF learning is more computationally expensive than the approaches previously mentioned. 
 
 % In what concerns MoTBF learning, the problem has been examined from primarily two perspectives. The first approach finds a kernel density estimate and then utilizes an effective translation procedure designed for approximating any marginal or conditional distribution function (in this case a kernel density) by an MoTBF distribution. On the other hand, the empirical cumulative distribution function is used as a basis for the MoTBF approximation which seems to be more robust when data are scarce. In any case, MoTBF learning is computationally more expensive than previous models as it entails an iterative procedure in both cases. Therefore, the application of this distribution family is limited to those cases computationally feasible.
 
 %MoTBF-based models have not been still addressed neither within a data streaming framework nor in a dynamic modelling context. The main challenge is based on the fact that MoTBFs does not belong to the exponential family. So that, sufficient statistics can not be updated after new data arrives and the model in this case must be learnt from scratch. 
 
  %As indicated above, a more detailed revision of the state-of-the art in methods for modelling complex empirical distributions is included in Deliverables 3.1 (inference) and future Deliverable 4.2. (learning).
-As indicated above, a more detailed revision of the state-of-the art methods for modeling complex empirical distributions will be included in Deliverable 3.1 (currently in progress), and in Deliverable 4.2. These documents address, respectively, the problem of inference in hybrid and dynamic models and also learning in the context of the AMIDST framework.
+As indicated above, a more detailed revision of the state-of-the art methods for modelling complex empirical distributions will be included in Deliverable 3.1 (currently in progress), and in Deliverable 4.2. These documents address, respectively, the problem of inference in hybrid and dynamic models and also learning in the context of the AMIDST framework.
 
 
 %\textcolor{blue}{//Emphasize the current limitations of these for dynamic models and streaming data. Still, we might be able to use MoTBFs for Cajamar, since it is a simpler model in which presumably all variables are observed. }
@@ -130,9 +116,9 @@ $$p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-V:t-1})$$
 \end{center}
 \end{figure}
 
-Among the different kinds of Markov chains, the \textbf{first-order Markov chains} are the most widely used. They assume that knowing the present makes the future conditionally independent from the past, that is, $p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-1})$. The problem is that this could be an unrealistic assumption in some problems leading to poor approximations of the joint distribution. One could increase the Markov order to improve the approximation at the expenses of having a more complex model. Another  alternative \cite{russelNorvig2009} would be to increase the number of variables modelling the system. This alternative is usually preferred if we have a sound understanding of the ``physics''  of the process being modelled (e.g. predicting whether it is going to rain or not tomorrow based on the raining evidence of the current day can be probably improve by considering the raining evidence of previous days. Alternatively, we can also improve this prediction by considering in the modelling the humidity and the pressure of the current day \cite{russelNorvig2009}). 
+Among the different kinds of Markov chains, the \textbf{first-order Markov chains} are the most widely used. They assume that knowing the present makes the future conditionally independent from the past, that is, $p(\bm X_t| \bm X_{1:t-1})  = p(\bm X_t|\bm X_{t-1})$. The problem is that this could be an unrealistic assumption in some problems leading to poor approximations of the joint distribution. One could increase the Markov order to improve the approximation at the expenses of having a more complex model. Another  alternative would be to increase the number of variables modelling the system \cite{russelNorvig2009}. This alternative is usually preferred if we have a sound understanding of the ``physics''  of the process being modelled (e.g., predicting whether it is going to rain or not tomorrow based on the raining evidence of the current day can be probably improve by considering the raining evidence of the previous days. Alternatively, we can also improve this prediction by considering in the modelling the humidity and the pressure of the current day \cite{russelNorvig2009}). 
 
-An additional challenging problem is the specification of the conditional probabilities at each time step of the DBNs. To deal with this problem, we usually assume that changes in the world state are driven by the \textit{stationary assumption} (also called time invariant or time homogeneous) , that is, $p(\bm X_{t+1}|\bm X_{t}) = p(\bm X_t|\bm X_{t-1})\ \forall t \in\{1,\ldots,T\}$. 
+An additional challenging problem is the specification of the conditional probabilities at each time step of the DBNs. To deal with this problem, we usually assume that changes in the world state are driven by the \textit{stationary assumption} (also known as time invariant or time homogeneous), that is, $p(\bm X_{t+1}|\bm X_{t}) = p(\bm X_t|\bm X_{t-1})\ \forall t \in\{1,\ldots,T\}$. 
 
 In the following sub-sections, we will present in more details some basic examples of DBNs, namely, \textit{hidden Markov models} (Section \ref{SubSubSection:HMMs}), \textit{Kalman filters} (Section \ref{SubSubSection:KFs}), and \textit{two-time slice DBNs} (Section \ref{SubSubSection:2DBNs}). Let us recall here that the graphical notation employed when describing all these models is depicted in Figure \ref{Figure:PreliminariesNotation}.
 
@@ -162,11 +148,11 @@ An extension of the HMM is the so-called \textit{input-output hidden Markov mode
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.4]{./figures/PreliminariesIO-HMM}
-\caption{\label{Figure:IO-HMM}An example of a BN structure corresponding to an IO-HMM. Note that it might be also the case that $Y_t$ contains both continuous and discrete variables.}
+\caption{\label{Figure:IO-HMM}An example of a BN structure corresponding to an IOHMM. Note that it might be also the case that $Y_t$ contains both continuous and discrete variables.}
 \end{center}
 \end{figure}
 
-IOHMMs are usually employed in supervised classification problems. In this case, both input and output variables are known during training, but only the former is known during testing. In fact, during testing, inference is performed to predict the output variables at each time step. In AMIDST we use this model in a different way. In our case, both set of input and output variables are always known, so that inference is only performed to predict the latent variables. The input variables $\bm Y'_{1:T}$ are introduced as a way to ``relax" the stationary assumption, by explicitly introducing a dependency to some observed information at each time slice, that is, the transition probability between $\bm X_t$ and $\bm X_{t+1}$ depends on the observed value $\bm Y_{t+1}$. 
+IOHMMs are usually employed in supervised classification problems. In this case, both input and output variables are known during training, but only the former is known during testing. In fact, during testing, inference is performed to predict the output variables at each time step. In AMIDST project, we use the IOHMM model in a different way. In our case, both set of input and output variables are always known, so that inference is only performed to predict the latent variables. The input variables $\bm Y'_{1:T}$ are introduced as a way to ``relax" the stationary assumption, by explicitly introducing a dependency to some observed information at each time slice, that is, the transition probability between $\bm X_t$ and $\bm X_{t+1}$ depends on the observed value $\bm Y_{t+1}$. 
 
 %-----------------------------------------------------------------------------------------------
 \subsubsection{Kalman filters}\label{SubSubSection:KFs}
@@ -212,13 +198,13 @@ DBNs obviously share the computational difficulties of regular BNs in inference 
 \subsection{Preliminary data analysis}\label{SubSection:DataAnalysis}
 %-----------------------------------------------------------------------------------------------
 
-The motivation behind using a preliminary data analysis is first to test some of the expert/domain knowledge  supporting the proposed models in the different use-cases, and second, to further complement our understanding about the nature of the problem to be modelled. In the following sub-sections, we will introduce the set of tools, namely sample correlograms, sample partial correlograms, histograms, and bivariate contour plots, that allows us to get some initial insights into both structural and distributional DBN assumptions.
+The motivation behind using a preliminary data analysis is first to test some of the expert/domain knowledge  supporting the proposed models in the different use cases, and second, to further complement our understanding about the nature of the problem to be modelled. In the following sub-sections, we will introduce the set of tools, namely sample correlograms, sample partial correlograms, histograms, and bivariate contour plots, that allows us to get some initial insights into both structural and distributional DBN assumptions.
 
 %-----------------------------------------------------------------------------------------------
 \subsubsection{Sample correlograms and sample partial correlograms}
 %-----------------------------------------------------------------------------------------------
 
-A DBN mainly aims to model complex multivariate time series. By using sample correlograms and sample partial correlograms, we will try to test if the available data supports the temporal correlation between variables assumed by the DBN model, i.e., the temporal links between variables. However, these tools will mainly allow us to look at univariate time series for continuous variables, which may strongly limit the extent of the extracted conclusions. However, despite its limitations, this analysis will give us some interesting insights which usually cannot be elicited from experts, as we will see below for the different use-cases.  
+A DBN mainly aims to model complex multivariate time series. By using sample correlograms and sample partial correlograms, we will try to test if the available data supports the temporal correlation between variables assumed by the DBN model, i.e., the temporal links between variables. However, these tools will mainly allow us to look at univariate time series for continuous variables, which may strongly limit the extent of the extracted conclusions. However, despite its limitations, this analysis will give us some interesting insights which usually cannot be elicited from experts, as we will see below for the different use cases.  
 
 \begin{itemize}
 \item \textbf{Sample correlograms}: Let ${x_1,...,x_T}$ be a univariate time series. The \emph{sample autocorrelation coefficient} at lag $v$ is given by 
@@ -231,7 +217,7 @@ Sample correlograms can be interpreted as a way to measure the strength of the f
 
 Figure \ref{Figure:PreliminariesCorrelograms} shows examples of sample correlograms for two different types of data sets: Figure \ref{Figure:PreliminariesCorrelograms}(a) shows a sample correlogram for a sequence of 50 i.i.d.\ data records sampled according to a Gaussian distribution with zero mean and unit variance $x_t\sim {\mathcal N}(0,1)$; and Figure \ref{Figure:PreliminariesCorrelograms}(b) shows a sample correlogram for a sequence of 50 data samples distributed as $x_t=x_{t-1} + \epsilon$, such that $\epsilon\sim {\mathcal N}(0,1)$. As it can be seen, the correlogram for the i.i.d.\ data has values close to zero for all lags. However, for time series data, the correlogram clearly identifies the presence of a temporal relationship in the data. As expected, the correlation decreases with the size of the lag, and how quickly it decreases depends on the strength of the temporal relationship, or more intuitively, the ``memory'' of the time series. In the previous example, this ``memory'' inversely depends of the variance of the ``white noise'' $\epsilon$ value.
 
-This same procedure could be also used to test the degree of (delayed) correlation between two variables, i.e. between the series $\{x_t\}_{t\in\{1,...,T\}}$ and the series of a different variable $\{y_{t+v}\}_{t+v\in\{1,...,T\}}$.
+This same procedure could be also used to test the degree of (delayed) correlation between two variables, i.e., between the series $\{x_t\}_{t\in\{1,...,T\}}$ and the series of a different variable $\{y_{t+v}\}_{t+v\in\{1,...,T\}}$.
 
 \item \textbf{Sample partial correlograms}: Let $X_t$ be a random variable associated to $X$ taking values at time $t$. We can build the following regression problem:
 
@@ -288,4 +274,4 @@ Thus, despite its limitations in dynamic contexts, we will resort to the use of 
 
 \end{itemize}
 
-Finally, note that the usefulness of all these tools is limited due to its generative nature. That is, they do not explicitly target the prediction problem for the different use-cases. After performing a proper evaluation of the considered static and dynamic models, it will be possible to re-adjust, if needed, our current assumptions. 
+Finally, note that the usefulness of all these tools is limited due to its generative nature. That is, they do not explicitly target the prediction problem for the different use cases. After performing a proper evaluation of the considered static and dynamic models, it will be possible to re-adjust, if needed, our current assumptions. 
