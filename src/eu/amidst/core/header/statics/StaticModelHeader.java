@@ -1,4 +1,4 @@
-package eu.amidst.core.headers;
+package eu.amidst.core.header.statics;
 
 import java.util.ArrayList;
 import java.util.List;

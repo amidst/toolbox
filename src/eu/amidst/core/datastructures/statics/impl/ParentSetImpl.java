@@ -1,6 +1,6 @@
-package eu.amidst.core.StaticBayesianNetwork.impl;
+package eu.amidst.core.datastructures.statics.impl;
 
-import eu.amidst.core.StaticBayesianNetwork.ParentSet;
+import eu.amidst.core.datastructures.ParentSet;
 
 /**
  * Created by afa on 02/07/14.
