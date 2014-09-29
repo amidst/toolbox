@@ -70,7 +70,7 @@ In the context of CLG BNs, we encounter the following conditional distributions 
 The models presented in this deliverable, unless otherwise stated, will be parameterised according to the CLG model \cite{Lauritzen1992,LauritzenJensen2001}. Some of the advantages of the CLG approach include simplicity and the support of exact inference. Its main drawbacks lie, however, in the structural limitations it imposes on the BN and the Gaussian assumption being made. The next section touches upon other alternatives to model complex empirical distributions that can offer a higher expressive power and contribute, at the same time, to more complicated inference processes. A more detailed analysis covering these topics can be found in Deliverables 3.1 (specifically dealing with state-of-the-art of inference in hybrid and dynamic models) and 4.2 (presenting the state-of-the-art for learning in the context of the AMIDST framework).
  
 %------------------------------------------------------------------------------------------------------------
-\subsection{Modelling complex empirical distributions}
+\subsection{Modelling complex empirical distributions}\label{SubSection:EmpiricalDistributions}
 %------------------------------------------------------------------------------------------------------------
 
 A first alternative to overcome some of the structure limitations of CLG models is to allow more freedom in the choice of distribution families by resorting to approximate inference algorithms, such as Gibbs sampling \cite{Geman1984,hrycej1990gibbs} and variational inference \cite{Jordan1999}. This could, for example, include the use of logit and probit distributions for parametrizing networks containing discrete children with continuous parents.
@@ -120,7 +120,7 @@ Among the different kinds of Markov chains, the \textbf{first-order Markov chain
 
 An additional challenging problem is the specification of the conditional probabilities at each time step of the DBNs. To deal with this problem, we usually assume that changes in the world state are driven by the \textit{stationary assumption} (also known as time invariant or time homogeneous), that is, $p(\bm X_{t+1}|\bm X_{t}) = p(\bm X_t|\bm X_{t-1})\ \forall t \in\{1,\ldots,T\}$. 
 
-In the following sub-sections, we will present in more details some basic examples of DBNs, namely, \textit{hidden Markov models} (Section \ref{SubSubSection:HMMs}), \textit{Kalman filters} (Section \ref{SubSubSection:KFs}), and \textit{two-time slice DBNs} (Section \ref{SubSubSection:2DBNs}). Let us recall here that the graphical notation employed when describing all these models is depicted in Figure \ref{Figure:PreliminariesNotation}.
+In the following subsections, we will present in more details some basic examples of DBNs, namely, \textit{hidden Markov models} (Section \ref{SubSubSection:HMMs}), \textit{Kalman filters} (Section \ref{SubSubSection:KFs}), and \textit{two-time slice DBNs} (Section \ref{SubSubSection:2DBNs}). Let us recall here that the graphical notation employed when describing all these models is depicted in Figure \ref{Figure:PreliminariesNotation}.
 
 %-----------------------------------------------------------------------------------------------
 \subsubsection{Hidden Markov models}\label{SubSubSection:HMMs}
@@ -198,10 +198,10 @@ DBNs obviously share the computational difficulties of regular BNs in inference 
 \subsection{Preliminary data analysis}\label{SubSection:DataAnalysis}
 %-----------------------------------------------------------------------------------------------
 
-The motivation behind using a preliminary data analysis is first to test some of the expert/domain knowledge  supporting the proposed models in the different use cases, and second, to further complement our understanding about the nature of the problem to be modelled. In the following sub-sections, we will introduce the set of tools, namely sample correlograms, sample partial correlograms, histograms, and bivariate contour plots, that allows us to get some initial insights into both structural and distributional DBN assumptions.
+The motivation behind using a preliminary data analysis is first to test some of the expert/domain knowledge  supporting the proposed models in the different use cases, and second, to further complement our understanding about the nature of the problem to be modelled. In the following subsections, we will introduce the set of tools, namely sample correlograms, sample partial correlograms, histograms, and bivariate contour plots, that allows us to get some initial insights into both structural and distributional DBN assumptions.
 
 %-----------------------------------------------------------------------------------------------
-\subsubsection{Sample correlograms and sample partial correlograms}
+\subsubsection{Sample correlograms and sample partial correlograms}\label{SubSection:CorrelogramsAndPartialCorrelograms}
 %-----------------------------------------------------------------------------------------------
 
 A DBN mainly aims to model complex multivariate time series. By using sample correlograms and sample partial correlograms, we will try to test if the available data supports the temporal correlation between variables assumed by the DBN model, i.e., the temporal links between variables. However, these tools will mainly allow us to look at univariate time series for continuous variables, which may strongly limit the extent of the extracted conclusions. However, despite its limitations, this analysis will give us some interesting insights which usually cannot be elicited from experts, as we will see below for the different use cases.  
