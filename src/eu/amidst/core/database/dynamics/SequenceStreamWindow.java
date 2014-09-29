@@ -1,6 +1,7 @@
-package eu.amidst.core.DynamicDataBase;
+package eu.amidst.core.database.dynamics;
 
-import eu.amidst.core.headers.DynamicDataHeader;
+
+import eu.amidst.core.header.dynamics.DynamicDataHeader;
 
 /**
  * Created by afa on 03/07/14.

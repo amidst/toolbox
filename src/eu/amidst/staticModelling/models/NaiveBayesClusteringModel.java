@@ -1,17 +1,14 @@
-package eu.amidst.models.staticmodels;
+package eu.amidst.staticModelling.models;
 
-import eu.amidst.core.Potential.Potential;
-import eu.amidst.core.Potential.PotentialTable;
-import eu.amidst.core.StaticBayesianNetwork.BNFactory;
-import eu.amidst.core.StaticBayesianNetwork.BayesianNetwork;
-import eu.amidst.core.headers.StaticDataHeader;
-import eu.amidst.core.headers.StaticModelHeader;
-import eu.amidst.core.StaticDataBase.*;
+import eu.amidst.core.database.statics.DataInstance;
+import eu.amidst.core.datastructures.statics.BNFactory;
+import eu.amidst.core.datastructures.statics.BayesianNetwork;
+import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.statics.StaticDataHeader;
+import eu.amidst.core.header.statics.StaticModelHeader;
+import eu.amidst.core.potential.Potential;
+import eu.amidst.core.potential.PotentialTable;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.headers.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by andresmasegosa on 28/08/14.

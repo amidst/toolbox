@@ -1,6 +1,6 @@
-package eu.amidst.core.StaticDataBase;
+package eu.amidst.core.database.statics;
 
-import eu.amidst.core.headers.StaticDataHeader;
+import eu.amidst.core.header.statics.StaticDataHeader;
 
 /**
  * Created by afa on 02/07/14.

@@ -1,4 +1,6 @@
-package eu.amidst.core.headers;
+package eu.amidst.core.header.dynamics;
+
+import eu.amidst.core.header.statics.Variable;
 
 import java.util.ArrayList;
 import java.util.List;

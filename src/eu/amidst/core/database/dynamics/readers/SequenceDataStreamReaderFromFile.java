@@ -1,6 +1,7 @@
-package eu.amidst.core.DynamicDataBase.readers;
+package eu.amidst.core.database.dynamics.readers;
 
-import eu.amidst.core.DynamicDataBase.SequenceDataStream;
+
+import eu.amidst.core.database.dynamics.SequenceDataStream;
 
 /**
  * Created by andresmasegosa on 27/08/14.

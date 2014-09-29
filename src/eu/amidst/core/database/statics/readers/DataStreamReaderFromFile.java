@@ -1,6 +1,7 @@
-package eu.amidst.core.StaticDataBase.readers;
+package eu.amidst.core.database.statics.readers;
 
-import eu.amidst.core.StaticDataBase.DataStream;
+
+import eu.amidst.core.database.statics.DataStream;
 
 /**
  * Created by andresmasegosa on 27/08/14.

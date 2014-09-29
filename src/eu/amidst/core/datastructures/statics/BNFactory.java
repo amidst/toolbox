@@ -1,8 +1,8 @@
-package eu.amidst.core.StaticBayesianNetwork;
+package eu.amidst.core.datastructures.statics;
 
 
-import eu.amidst.core.StaticBayesianNetwork.impl.BayesianNetworkImpl;
-import eu.amidst.core.headers.StaticModelHeader;
+import eu.amidst.core.datastructures.statics.impl.BayesianNetworkImpl;
+import eu.amidst.core.header.statics.StaticModelHeader;
 
 /**
  * Created by andres on 11/07/14.
