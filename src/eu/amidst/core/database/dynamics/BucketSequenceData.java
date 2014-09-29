@@ -1,4 +1,4 @@
-package eu.amidst.core.DynamicDataBase;
+package eu.amidst.core.database.dynamics;
 
 /**
  * Created by afa on 03/07/14.

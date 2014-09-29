@@ -1,8 +1,8 @@
-package eu.amidst.core.DynamicBayesianNetwork;
+package eu.amidst.core.datastructures.dynamics;
 
 
-import eu.amidst.core.DynamicBayesianNetwork.impl.DynamicBayesNetworkImpl;
-import eu.amidst.core.headers.DynamicModelHeader;
+import eu.amidst.core.datastructures.dynamics.impl.DynamicBayesNetworkImpl;
+import eu.amidst.core.header.dynamics.DynamicModelHeader;
 
 /**
  * Created by andres on 11/07/14.
