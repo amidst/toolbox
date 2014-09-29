@@ -1,7 +1,7 @@
 package eu.amidst.core.Estimators.UnConditionalEstimators;
 
 import eu.amidst.core.Estimators.Estimator;
-import eu.amidst.core.Potential.Potential;
+import eu.amidst.core.potential.Potential;
 import eu.amidst.core.StaticDataBase.DataInstance;
 
 /**

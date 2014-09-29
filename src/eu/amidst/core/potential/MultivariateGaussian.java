@@ -1,4 +1,4 @@
-package eu.amidst.core.Potential;
+package eu.amidst.core.potential;
 
 /**
  * Created by afa on 03/07/14.
