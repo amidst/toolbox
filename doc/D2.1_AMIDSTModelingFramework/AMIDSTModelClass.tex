@@ -16,7 +16,9 @@ One of the main goals of the AMIDST project is the definition of a general model
 
 %When designing this model class, we also tried to define a model family that eases as much as possible the integration of domain/expert knowledge, which is a common place in the different application scenarios discussed in Section \ref{Section:PreliminaryModels}.
 
-The AMIDST modelling framework has been designed with the goal of meeting these four requirements. It is introduced in the following two sections. In Section \ref{StaticFramework}, we firstly discuss the static modelling framework that covers the static models presented for some of the application scenarios, but whose main aim is to be extended to a dynamic context. In Section \ref{GeneralModelClass}, we introduce the general AMIDST modelling framework as a dynamic extension of the previous static modelling framework and we show how this modelling framework can be instantiated to solve each of the application scenarios of the different use cases, as proof of concept of the generality of this modelling framework. The graphical notation introduced in Section \ref{SubSection:GraphicalNotation} will be employed when describing these probabilistic graphical models. Finally, a summary with a higher level view of the AMIDST modelling framework is included in Section \ref{summaryAMIDSTModels}.
+The AMIDST modelling framework has been designed with the goal of meeting these four requirements. It is introduced in
+the following two sections. In Section \ref{StaticFramework}, we firstly discuss the static modelling framework that
+covers the static models presented in a subset of the application scenarios. In Section \ref{GeneralModelClass}, we introduce the general AMIDST modelling framework as a dynamic extension of the previous static modelling framework and we show how this modelling framework can be instantiated to solve each of the application scenarios of the different use cases, as proof of concept of the generality of this modelling framework. The graphical notation introduced in Section \ref{SubSection:GraphicalNotation} will be employed when describing these probabilistic graphical models. Finally, a summary with a higher level view of the AMIDST modelling framework is included in Section \ref{summaryAMIDSTModels}.
 
 %Taking these different characteristics into account and using the graphical notation introduced in Section \ref{SubSection:GraphicalNotation}, the general AMIDST model class, as well as its specific instantiations to each use case, are introduced and discussed in Section \ref{GeneralModelClass}. A summary with a higher level view of the AMIDST model class is finally included in Section \ref{summaryAMIDSTModels}.
 
@@ -24,7 +26,8 @@ The AMIDST modelling framework has been designed with the goal of meeting these 
 \subsection{The static modelling framework}\label{StaticFramework}
 %-----------------------------------------------------------------------------------------------------------------------------------------
 
-Figure \ref{Figure:StaticModellingFramework} visually shows the proposed static modelling framework. This general model is the result of combining the high-level structure of the static models described in some of the application scenarios discussed in Section \ref{Section:PreliminaryModels}. This static modelling framework has been designed having in mind that it should be later on easily extended to a dynamic context. As it can be seen, subnetworks have been used to group variables with similar properties, so that the commonalities between all models are taken into account. 
+Figure \ref{Figure:StaticModellingFramework} visually shows the proposed static modelling framework. This general model
+is the result of combining the high-level structure of the static models described for two of the application scenarios discussed in Section \ref{Section:PreliminaryModels}. This static modelling framework has been designed having in mind that it should be later on easily extended to a dynamic context. As it can be seen, subnetworks have been used to group variables with similar properties, so that the commonalities between all models are taken into account. 
 
 \begin{figure}[ht!]
 \begin{center}
@@ -34,7 +37,9 @@ Figure \ref{Figure:StaticModellingFramework} visually shows the proposed static 
 \end{figure}
 
 
-The first main characteristic of this static model is that all the modelling variables are structured in three different layers, each one with clear different semantics. We believe that this layered division of the modelling variables can facilitate the integration of domain/expert knowledge. These three layers can be described as follows:
+The first main characteristic of this static model is that all the modelling variables are structured in three different
+layers, each one with clear different semantics. We believe that this layered division of the modelling variables can
+help facilitate the integration of domain/expert knowledge. These three layers can be described as follows:
 
 
 \begin{itemize}
