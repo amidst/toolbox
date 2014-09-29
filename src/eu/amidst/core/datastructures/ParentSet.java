@@ -1,4 +1,4 @@
-package eu.amidst.core.StaticBayesianNetwork;
+package eu.amidst.core.datastructures;
 
 /**
  * Created by afa on 02/07/14.

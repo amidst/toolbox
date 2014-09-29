@@ -1,15 +1,22 @@
-package eu.amidst.core.Potential;
+package eu.amidst.core.potential;
 
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 28/08/14.
+ * Created by afa on 03/07/14.
  */
-public class ConstantPotential implements Potential {
-    double val;
-    public ConstantPotential(double val){
-        this.val=val;
+public class PotentialTable implements Potential {
+
+    public PotentialTable(int nstates){
+
     }
+    public void setValues(double[] values) {
+    }
+
+    public double[] getValues() {
+        return null;
+    }
+
     @Override
     public void setVariables(List variables) {
 
@@ -29,4 +36,9 @@ public class ConstantPotential implements Potential {
     public void marginalize(List variables) {
 
     }
+
+    public void normalize(){
+
+    }
+
 }
