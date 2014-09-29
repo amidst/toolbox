@@ -1,13 +1,6 @@
 \section{Preliminary models}\label{Section:PreliminaryModels}
 
-This section is divided into three subsections, one for each of the three use-case providers. Each of these sections begins with a subsection explaining state-of-the-art for the various application scenarios defined in Deliverable
-1.2. In order to address the different application scenarios within the AMIDST project, use case-specific probabilistic graphical
-models classes are designed. These model classes will, in turn, form the basis for the general AMIDST model class. Finally, we include discussions and
-directions for possible further model extensions for each of the use case providers.  
-
-
-
-% This section is divided into three subsections, one for each of the three use-case providers. Each of these sections, in turn,  begins with a subsection explaining the state-of-the-art for the various applications scenarios defined in Deliverable 1.2; another subsection is then added for each application scenario (that is, two subsections for Daimler and Cajamar and three for Verdande), which includes the probabilistic graphical models designed for that particular application scenario; finally, another subsection is included at the end of each use-case provider with further discussion and future models.
+This section is divided into three main sections, one for each of the three use-case providers. Each of these sections begins with a subsection explaining state-of-the-art for the various application scenarios defined in Deliverable 1.2. The subsequent subsections address then the different application scenarios within the AMIDST project and introduce their corresponding use-case-specific probabilistic graphical model classes. These model classes will, in turn, form the basis for the general AMIDST modelling framework presented later in Section \ref{section:AMIDSTmodelClass}. Finally, the last subsections include discussions and directions for possible further model extensions for each of the use-case providers.  
 
 %-----------------------------------------------------------------------------------------------------------------------
 \subsection{Daimler models}\label{Section:DaimlerModels}
@@ -17,9 +10,9 @@ directions for possible further model extensions for each of the use case provid
 \subsubsection{State-of-the-art of the application scenarios}\label{Section:StateOfTheArt}
 %-----------------------------------------------------------------------------------------------------------------------
 
-As has been described in Deliverable 1.2 \cite{Fer14b}, the Daimler use-case is based on two application scenarios: i) early recognition of a lane change manoeuvre; and ii) earlier prediction of the need for a lane change based on the relative dynamics between two vehicles driving in the same lane at different speeds. 
+As has been described in Deliverable 1.2 \cite{Fer14b}, the Daimler use case is based on two application scenarios: i) early recognition of a lane change manoeuvre; and ii) earlier prediction of the need for a lane change based on the relative dynamics between two vehicles driving in the same lane at different speeds. 
 
-The first scenario has previously been addressed by Daimler \cite{Kasper2011,kasper2012object,KasperThesis2013}. The main result of this previous work was a static object-oriented Bayesian network (OOBN) \cite{KollerPfeffer1997} able to detect a manoeuvre 0.6 seconds before execution. The goal now is to enhance the prediction horizon for manoeuvre recognition by at least 1-2 seconds before execution, in order to further improve the quality of the on-board adaptive cruise control. 
+The first scenario has previously been addressed by Daimler \cite{Kasper2011,kasper2012object,KasperThesis2013}. The main result of this previous work was a static object-oriented Bayesian network (OOBN) \cite{KollerPfeffer1997} able to detect a manoeuvre 0.6 seconds before execution. The goal now is to enhance the prediction horizon for manoeuvre recognition by at least $1 - 2$ seconds before execution, in order to further improve the quality of the on-board adaptive cruise control. 
 
 As it will be explained later, this manoeuvre recognition improvement is expected to be achieved by introducing a dynamic extension of the previously proposed static OOBN model. We basically consider such a dynamic extension for two main reasons: First, although its limited prediction horizon, the static OOBN model has proven to be very robust for this task and it is considered as the gold-standard solution in Daimler. Second, AMIDST models are expected to be integrated in an electronic control unit (ECU) \cite{Fer14}, and we expect that the methods developed when integrating the static OOBN in this ECU \cite{Weidl2014} can also be exploited in the integration of this dynamic version. 
 
@@ -106,7 +99,7 @@ Finally, Figure \ref{Figure:DaimlerLE} shows a concrete fragment of the static O
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.48]{./figures/DaimlerLE}
-\caption{\label{Figure:DaimlerLE} Static-OOBN fragment for the lateral evidence hypothesis.}
+\caption{\label{Figure:DaimlerLE} A static OOBN fragment for the lateral evidence hypothesis.}
 \end{center}
 \end{figure}
 

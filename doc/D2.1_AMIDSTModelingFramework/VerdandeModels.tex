@@ -9,7 +9,7 @@ As has been pointed out in Deliverable D1.2 \cite{Fer14b}, there are three main 
 \begin{enumerate}
 \item \textbf{Automatic detection of drill string vibrations and abnormal torque states}: This task aims to better diagnose the shape of the wellbore and the state of the equipment, make better decisions on how to manage the well, and thereby reduce the non-productive time. Currently, the state-of-the-art algorithm in DrillEdge \cite{GundersenSAS12} is based on detecting erratic torque. It is a simple algorithm based on comparing root mean squared differences in a time window between the measured torque and a smoothed version of the torque. In essence, this method is measuring  the local amplitude variations in the torque.  Additionally, the algorithm is filtering out abnormal torque during connections and some other instances.  This simple algorithm is rather limited and does not inherently take into account the existing uncertainty in the streaming data. The main objective for this scenario is then to design a probabilistic graphical model for erratic torque monitoring and detection of abnormal situations.
 
-\item \textbf{Semi-automatic labelling}: The main contribution from DrillEdge  \cite{GundersenSAS12} during operation is that it enables the driller to see in real time if the current situation is ``similar'' to previous situations that lead to undesired circumstances. If this is the case, remedial actions can be found to avoid undesired events. At the core of the analysis are historical examples of noteworthy episodes, ranging from clearly undesired events, for instance getting stuck, to more subtle indications of evolving problems, such as abnormal readings of hook-load. Verdande Technology has already extensive datasets, where such episodes are identified. 
+\item \textbf{Semi-automatic labelling}: The main contribution from DrillEdge \cite{GundersenSAS12} during operation is that it enables the driller to see in real time if the current situation is ``similar'' to previous situations that lead to undesired circumstances. If this is the case, remedial actions can be found to avoid undesired events. At the core of the analysis are historical examples of noteworthy episodes, ranging from clearly undesired events, for instance getting stuck, to more subtle indications of evolving problems, such as abnormal readings of hook-load. Verdande Technology has already extensive datasets, where such episodes are identified. 
 However, the definitions of the episodes are not always crisp, and domain experts can at times disagree about what is happening at a certain time. 
 This can potentially lead to inconsistencies in the dataset, complicating both the automatic learning of models as well as the comparison with previous situations. 
 Additionally, it can confuse the driller to be presented with information that he/she does not relate to or agree with. Manually labelling new data sequences, or adapting the existing labelling to new definitions, can be a very time-consuming activity.  Verdande Technology is therefore interested in looking into techniques for semi-automatic labelling. This is currently not part of the DrillEdge system in Verdande. 
@@ -79,14 +79,14 @@ To analytically examine the relationship between ROP and TRQ further, we plot th
 \end{center}
 \end{figure}
 
-In the IOSKF model, the ``input'' at time $t$ is the ROP at that point in time, the ``output'' is the (observed) TRQ readings\footnote{It is generally the case that the output variables in the input-output dynamic models correspond to the target variables and are hence not observed during inference \cite{barberBRML2012}. In our case, however, the target variables correspond to a discrete state/hidden variable whereas the output variables will be observed during inference. See Section \ref{SubSubSection:HMMs} for further details.}, and we have two sets of latent variables: $i)$ a discrete switching variable, which is used to determine which TRQ regime we are currently in, and $ii)$ a latent vector of continuous variables used to capture and model the natural behaviour of the TRQ sequence over time. During inference, the posterior probability of the discrete latent variable at time $t$ can be used to detect whether or not the system experiences abnormal TRQ (that is, not explained by the observed ROP) over time. 
-
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.5]{./figures/VT_Scenario1} 
 \caption{\label{Figure:VTScenario1} Input-output SKF structure used to detect abnormal TRQ states that cannot be explained by the observed ROP.}
 \end{center}
 \end{figure}
+
+In the IOSKF model, the ``input'' at time $t$ is the ROP at that point in time, the ``output'' is the (observed) TRQ readings\footnote{It is generally the case that the output variables in the input-output dynamic models correspond to the target variables and are hence not observed during inference \cite{barberBRML2012}. In our case, however, the target variables correspond to a discrete state/hidden variable whereas the output variables will be observed during inference. See Section \ref{SubSubSection:HMMs} for further details.}, and we have two sets of latent variables: $i)$ a discrete switching variable, which is used to determine which TRQ regime we are currently in, and $ii)$ a latent vector of continuous variables used to capture and model the natural behaviour of the TRQ sequence over time. During inference, the posterior probability of the discrete latent variable at time $t$ can be used to detect whether or not the system experiences abnormal TRQ (that is, not explained by the observed ROP) over time. 
 
 Further extensions to the model, where also other predictive variables are taken into account, will be considered at a later stage. The general model structure will, however, most likely not be changed.
 
@@ -99,7 +99,7 @@ The abnormal sub-sequences can thereafter be examined more closely by drilling e
 This implies the potential for further reduction in non-productive time. Specifically, the goal is to provide a ``normality'' score for historical logs to facilitate semi-automatic detection of abnormal situations. The calculations should be efficient enough to run in real time if so desired.
 
 Drilling is performed in phases, where different activities are conducted in sequence. For instance, one can only drill the well (increase the length of the well-bore) after having transported the drill-bit to the bottom of the well (that is, performed a ``tripping-in'' activity). Similarly, a long drilling sequence is split up into smaller sequences, where each subsequence is initiated by a ``connection'' activity, where the length of the drill-string is increased.
-The division of the drilling log into subsequences containing only a single activity is done automatically by Verdande Technology's Drill Edge system. 
+The division of the drilling log into subsequences containing only a single activity is done automatically by Verdande Technology's DrillEdge system. 
 Therefore, the AMIDST system will be fed sequences where a single activity is conducted. 
 The behaviour during each of these sequences  is fairly consistent if the process runs smoothly, and the relationships between variables can be established (e.g., the amount of mud transported into the drill-string will, after stabilization, can be a strong indicative of the amount of mud coming out after circulating through the well string). 
 
@@ -109,15 +109,17 @@ As said above, the real-time parameters in drilling can to some extent be divide
 
 The model we propose for this task is similar to the one proposed in the previous application scenario . It is detailed in Figure \ref{Figure:VTScenario2} and has again an \emph{input-ouput} Kalman filter structure with observed control variables on top and the observed response variables down. The main difference now is that the discrete variable is not temporally linked and does not try to capture any ``physical'' property of the process. This discrete variable is simply included to improve the modelling capacity over the observed response variables because it allows now to model mixture of Gaussians for these variables. 
 
-As commented above, this input-output SKF  will be used to model the ``normal behaviour'' of the well. The ``abnormal behaviour'' will be detected using the following protocol.  The normality-index for each observation at time $t$, denoted by ${\bm x}_t$, given the observations up until $t$, denoted by ${\bm x}_{1:t-1}$, will be calculated as the log conditional likelihood, $\ell_t := \log p\left({\bm x}_t|{\bm x}_{1:t-1}\right)$, where $p$ is the probability distribution induced by our input-output SKF. By monitoring $\ell_t$ over time, significant departures from its ``typical behaviour'' (i.e. $\ell_t$ will take high negative values)  will be noted, and marked as potential irregularities.
-
-
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[scale=0.5]{./figures/VT_Scenario2} 
 \caption{\label{Figure:VTScenario2}  Input-output Kalman filter with Gaussian mixtures at the leaves used for semi-automatic labelling.}
 \end{center}
 \end{figure}
+
+As commented above, this input-output SKF  will be used to model the ``normal behaviour'' of the well. The ``abnormal behaviour'' will be detected using the following protocol.  The normality-index for each observation at time $t$, denoted by ${\bm x}_t$, given the observations up until $t$, denoted by ${\bm x}_{1:t-1}$, will be calculated as the log conditional likelihood, $\ell_t := \log p\left({\bm x}_t|{\bm x}_{1:t-1}\right)$, where $p$ is the probability distribution induced by our input-output SKF. By monitoring $\ell_t$ over time, significant departures from its ``typical behaviour'' (i.e. $\ell_t$ will take high negative values)  will be noted, and marked as potential irregularities.
+
+
+
 
 %\textcolor{red}{\bf Do we need to show the structure of the analysis for the $\ell_t$-terms?}
 
