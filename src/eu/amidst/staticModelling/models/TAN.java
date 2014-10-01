@@ -1,9 +1,9 @@
-package eu.amidst.models.staticmodels;
+package eu.amidst.staticModelling.models;
 
-import eu.amidst.core.Potential.Potential;
-import eu.amidst.core.StaticDataBase.DataInstance;
-import eu.amidst.core.headers.StaticDataHeader;
-import eu.amidst.core.headers.StaticModelHeader;
+
+import eu.amidst.core.database.statics.DataInstance;
+import eu.amidst.core.header.statics.StaticDataHeader;
+import eu.amidst.core.potential.Potential;
 
 /**
  * Created by afa on 02/07/14.

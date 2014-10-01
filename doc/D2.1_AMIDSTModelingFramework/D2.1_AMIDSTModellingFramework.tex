@@ -41,6 +41,7 @@
 \numberwithin{equation}{section}
 \numberwithin{table}{section}
 
+\usepackage{pdfpages}
 
 \begin{document}
 
@@ -50,7 +51,8 @@
 %\end{abstract}
 %
 
-\newpage\null\thispagestyle{empty}\newpage
+\includepdf[pages={1}]{figures/FrontPage.pdf}
+%\newpage\null\thispagestyle{empty}\newpage
 
 % Table of contents
 \tableofcontents
@@ -66,8 +68,8 @@
   \begin{tabularx}{\linewidth}{|p{13mm}| p{18mm}| X | X |} \hline
     {\bf Version} & {\bf Date} & {\bf Author (Unit)} & {\bf Description} \\ \hline
     v0.3 & 10/09/2014~ & All consortium members & The AMIDST modelling framework discussed and established \\ \hline
-    v0.6 & 22/09/2014~ & Hanen Borchani, Antonio Fern\'andez, Odd E. Gundersen, Sigve Hovda, Helge Langseth, Anders L. Madsen, Ana M. Mart\'inez, Ram\'on Mart\'inez, Andr\'es Masegosa, Thomas D. Nielsen, Antonio Salmer\'on, Frode S{\o}rmo, Galia Weidl & Initial draft finished  \\ \hline
-    v1.0 & 30/09/2014~ & Hanen Borchani, Antonio Fern\'andez, Odd E. Gundersen, Sigve Hovda, Helge Langseth, Anders L. Madsen, Ana M. Mart\'inez, Ram\'on Mart\'inez, Andr\'es Masegosa, Thomas D. Nielsen, Antonio Salmer\'on, Frode S{\o}rmo, Galia Weidl & Final version of document  \\ \hline
+    v0.6 & 22/09/2014~ & Hanen Borchani, Antonio Fern\'andez, Odd E. Gundersen, Sigve Hovda, Helge Langseth, Anders L. Madsen, Ana M. Mart\'inez, Ram\'on Mart\'inez, Andr\'es Masegosa, Thomas D. Nielsen, Antonio Salmer\'on, Frode S{\o}rmo, Galia Weidl & Initial draft finished and reviewed by the PSRG  \\ \hline
+    v1.0 & 29/09/2014~ & Hanen Borchani, Antonio Fern\'andez, Odd E. Gundersen, Sigve Hovda, Helge Langseth, Anders L. Madsen, Ana M. Mart\'inez, Ram\'on Mart\'inez, Andr\'es Masegosa, Thomas D. Nielsen, Antonio Salmer\'on, Frode S{\o}rmo, Galia Weidl & Final version of document  \\ \hline
   \end{tabularx}
 \end{table}
 
@@ -84,7 +86,7 @@
 
 \input{introduction}
 
-%\input{preliminaries}
+\input{preliminaries}
 
 
 %\input{DaimlerModels}
@@ -100,7 +102,7 @@
 
 \input{AMIDSTModelClass}
 
-%\input{conclusions}
+\input{conclusions}
 
 \bibliographystyle{splncs}
 \bibliography{biblio}
