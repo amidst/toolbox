@@ -1,7 +1,7 @@
-import eu.amidst.core.StaticDataBase.DataStream;
-import eu.amidst.core.StaticDataBase.readers.DataStreamReaderFromFile;
-import eu.amidst.models.staticmodels.NaiveBayesClassifier;
-import eu.amidst.models.staticmodels.NaiveBayesClusteringModel;
+import eu.amidst.core.database.statics.DataStream;
+import eu.amidst.core.database.statics.readers.DataStreamReaderFromFile;
+import eu.amidst.staticModelling.models.NaiveBayesClassifier;
+import eu.amidst.staticModelling.models.NaiveBayesClusteringModel;
 
 public class Main {
 
