@@ -1,9 +1,9 @@
-package eu.amidst.staticModelling.learning;
+package eu.amidst.staticmodelling.learning;
 
 
 import eu.amidst.core.database.statics.DataInstance;
 import eu.amidst.core.database.statics.DataStream;
-import eu.amidst.staticModelling.models.LearnableModel;
+import eu.amidst.staticmodelling.models.LearnableModel;
 
 /**
  * Created by andresmasegosa on 28/08/14.
