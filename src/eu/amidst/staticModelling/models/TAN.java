@@ -1,4 +1,4 @@
-package eu.amidst.staticModelling.models;
+package eu.amidst.staticmodelling.models;
 
 
 import eu.amidst.core.database.statics.DataInstance;
