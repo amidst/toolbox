@@ -1,12 +1,12 @@
-package eu.amidst.staticModelling.models;
+package eu.amidst.staticmodelling.models;
 
 import eu.amidst.core.database.statics.DataInstance;
 import eu.amidst.core.database.statics.DataStream;
-import eu.amidst.core.datastructures.statics.BayesianNetwork;
+import eu.amidst.core.modelstructure.statics.BayesianNetwork;
 import eu.amidst.core.header.statics.StaticDataHeader;
 import eu.amidst.core.potential.Potential;
-import eu.amidst.staticModelling.learning.LearningAlgorithm;
-import eu.amidst.staticModelling.learning.MaximumLikelihood;
+import eu.amidst.staticmodelling.learning.LearningAlgorithm;
+import eu.amidst.staticmodelling.learning.MaximumLikelihood;
 
 /**
  * Created by andresmasegosa on 28/08/14.
