@@ -1,12 +1,12 @@
-package eu.amidst.staticModelling.learning;
+package eu.amidst.staticmodelling.learning;
 
 
 import eu.amidst.core.database.statics.DataInstance;
 import eu.amidst.core.database.statics.DataStream;
-import eu.amidst.core.datastructures.statics.BayesianNetwork;
-import eu.amidst.core.estimator.Estimator;
+import eu.amidst.core.modelstructure.statics.BayesianNetwork;
+import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.staticModelling.models.LearnableModel;
+import eu.amidst.staticmodelling.models.LearnableModel;
 
 /**
  * Created by andresmasegosa on 28/08/14.
@@ -32,7 +32,7 @@ public class MaximumLikelihood implements LearningAlgorithm{
             if (Utils.isMissing(data.getValue(i)) && bn.getVariable(i).isLeave())
                 continue;
 
-            Estimator estimator = bn.getEstimator(i);
+            Distribution estimator = bn.getEstimator(i);
             double[]  expPara = estimator.getExpectationParameters();
             double[]  suffStatistics = estimator.getSufficientStatistics(data);
             Utils.accumulatedSumVectors(expPara, suffStatistics);
