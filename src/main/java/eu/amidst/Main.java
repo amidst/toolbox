@@ -1,7 +1,11 @@
+package eu.amidst;
+
+/*
 import eu.amidst.core.database.statics.DataStream;
 import eu.amidst.core.database.statics.readers.DataStreamReaderFromFile;
 import eu.amidst.staticmodelling.models.NaiveBayesClassifier;
 import eu.amidst.staticmodelling.models.NaiveBayesClusteringModel;
+
 
 public class Main {
 
@@ -42,3 +46,4 @@ public class Main {
         System.out.println("Hello World!");
     }
 }
+*/

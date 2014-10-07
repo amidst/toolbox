@@ -10,7 +10,7 @@ public interface DataStream<E extends Enum> extends Iterable<DataInstance<E>> {
 
     //public boolean hasMoreDataInstances();
 
-    public boolean isRestartable();
+   //public boolean isRestartable();
 
     public void restart();
 
