@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * Created by afa on 02/07/14.
  */
-public class StaticDataHeader {
+public final class StaticDataHeader {
     private ArrayList<Variable> vars;
 
     public ArrayList<Variable> getObservedVariables() {
@@ -28,7 +28,7 @@ public class StaticDataHeader {
         vars.add(dataPosition,var);
         return var;
     }
-    private class VariableImplementation implements Variable {
+    private final class VariableImplementation implements Variable {
         private String name;
         private int varID;
         private boolean observable;
