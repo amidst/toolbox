@@ -16,7 +16,7 @@ public class ArffDataStreamTest extends TestCase {
     public void testIterator() throws Exception {
 
         System.out.println(" dataStream has iterator: " );
-       // DataStream dataStream = new ArffDataStream("data/arff/hayTrain.arff");
+        DataStream dataStream = new ArffDataStream("data/arff/hayTrain.arff");
 
 
 
