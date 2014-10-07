@@ -1,5 +1,6 @@
 package eu.amidst.core.database.statics.readers.Impl;
 
+import eu.amidst.core.database.statics.DataInstance;
 import eu.amidst.core.database.statics.DataStream;
 import eu.amidst.core.header.statics.StaticDataHeader;
 
@@ -42,6 +43,21 @@ public class ArffDataStream implements DataStream{
     }
 
     @Override
+    public DataInstance nextDataInstance() {
+        return null;
+    }
+
+    @Override
+    public boolean hasMoreDataInstances() {
+        return false;
+    }
+
+    @Override
+    public boolean isRestartable() {
+        return false;
+    }
+
+    @Override
     public void restart() {
         iterator.remove();
         //TODO reload iterator
@@ -52,8 +68,4 @@ public class ArffDataStream implements DataStream{
         return staticDataHeader;
     }
 
-    @Override
-    public Iterator iterator() {
-        return iterator;
-    }
 }
