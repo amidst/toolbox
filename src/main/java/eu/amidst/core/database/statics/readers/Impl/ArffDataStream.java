@@ -26,16 +26,25 @@ public class ArffDataStream implements DataStream{
     public ArffDataStream(String fileName) throws FileNotFoundException,
                 IOException {
             CSVReader reader = new CSVReader(new FileReader(fileName));
+           char percent = '%';
+           char at = '@';
 
-            List<String []> xrows = reader.readAll();
+                List<String []> xrows = reader.readAll();
             rows =  xrows.size();
-            cols = xrows.get(0).length;
+            cols = 10;// xrows.get(0).length;
 
             data = new double[rows][cols];
             int j = 0;
             for (String[] row : xrows) {
+                //System.out.println("row length:    " + row.length);
+                if(row[0].isEmpty() ||
+                        new Character(row[0].charAt(0)).equals(percent) ||
+                        new Character(row[0].charAt(0)).equals(at)){
+                    System.out.println("iterator is:    " + j);
+                }else {
                 for (int i = 0; i < row.length; i++) {
-                    data[j][i] = Double.parseDouble(row[i]);
+                        data[j][i] = Double.parseDouble(row[i]);
+                    }
                 }
                 j = j+1;
             }
