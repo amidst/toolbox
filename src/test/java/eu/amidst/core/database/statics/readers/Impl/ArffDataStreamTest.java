@@ -79,5 +79,11 @@ public class ArffDataStreamTest {
         Assert.assertEquals( "abc,,def", ArffDataStream.lineArrayToLine( new String[]{"abc", "", "def"}) );
     }
 
+    @Test
+    public void testConstructorRelationInQuotes() throws Exception {
+        DataStream dataStream = new ArffDataStream("data/arff/testRelationInQuotes.arff");
+    }
+
+
     //System.out.println(" dataStream has iterator: " );
 }
