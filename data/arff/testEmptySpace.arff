@@ -1,9 +1,9 @@
 % Header that is to be ignored.
 % One more line to be ignored
-
-@Relation HAY-TRAIN
+    
+@relations HAY-TRAIN
 @attribute f1 real
-@ATTRIBUTE f2 real
+@attribute f2 real
 @attribute f3 real
 @attribute f4 real
 @attribute f5 real
@@ -11,7 +11,7 @@
 @attribute f7 real
 @attribute f8 real
 @attribute f9 real
-@attriBute class {1,2,3,4}
+@attribute class {1,2,3,4}
 @DATA
 290,89,624,120,21.0,114.0,37.5,29.8,1.0,1
 53,25,283,182,12.0,99.2,32.6,2.4,0.9,1
