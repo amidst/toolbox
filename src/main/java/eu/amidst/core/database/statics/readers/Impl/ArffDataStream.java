@@ -36,7 +36,12 @@ public class ArffDataStream implements DataStream{
             String[] lineAsArray = lines.get(headerIndex);
             String line = lineArrayToLine( lineAsArray );
 
-            //String firstWord = lineAsArray[0].trim().toLowerCase();
+            //TODO Replace this with String.split()
+            String[] result = "this is a test".split("\\s");
+            for (int x=0; x<result.length; x++) {
+                System.out.println(result[x]);
+            }
+
             StringTokenizer st = new StringTokenizer( line );
             if( !st.hasMoreTokens() ) {
                 headerIndex = headerIndex + 1;
