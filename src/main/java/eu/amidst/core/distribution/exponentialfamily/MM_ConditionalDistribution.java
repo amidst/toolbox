@@ -12,6 +12,11 @@ public class MM_ConditionalDistribution implements ConditionalDistribution {
     private MultinomialDistribution[] counts;
 
     @Override
+    public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
+        return null;
+    }
+
+    @Override
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
     }

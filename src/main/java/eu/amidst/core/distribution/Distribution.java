@@ -8,6 +8,8 @@ import eu.amidst.core.potential.Potential;
  */
 public interface Distribution {
 
+    Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID);
+
     Potential getRestrictedPotential(DataInstance instance);
 
     public double[] getSufficientStatistics(DataInstance instance);
