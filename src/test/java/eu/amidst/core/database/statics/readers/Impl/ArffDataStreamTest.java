@@ -33,7 +33,7 @@ public class ArffDataStreamTest {
         DataStream dataStream = new ArffDataStream("data/arff/testSpacesAndTabs.arff");
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected=ArffParserException.class)
     public void testConstructor4() throws Exception {
 
         DataStream dataStream = new ArffDataStream("data/arff/testWrongRelationName.arff");
@@ -45,6 +45,12 @@ public class ArffDataStreamTest {
         DataStream dataStream = new ArffDataStream("data/arff/testWrongAttributeName.arff");
     }
 
+
+    @Test(expected=ArffParserException.class)
+    public void testConstructor6() throws Exception {
+
+        DataStream dataStream = new ArffDataStream("data/arff/testEmptySpace.arff");
+    }
 
     //System.out.println(" dataStream has iterator: " );
 }

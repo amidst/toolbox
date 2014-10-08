@@ -27,66 +27,42 @@ public class ArffDataStream implements DataStream{
     public ArffDataStream(String fileName) throws FileNotFoundException,
             IOException, ArffParserException {
         CSVReader reader = new CSVReader(new FileReader(fileName));
-        char percent = '%';
-        char at = '@';
-
-        List<String []> rowList = reader.readAll();
+        List<String []> lines = reader.readAll();
 
         int headerIndex = 0;
         boolean isHeader = true;
         while (isHeader) {
-            String[] row = rowList.get(headerIndex);
-            if (row[0].isEmpty()) {
+            String[] line = lines.get(headerIndex);
+            String firstWord = line[0].trim().toLowerCase();
+            if ( firstWord.isEmpty()) {
                 headerIndex = headerIndex+1;
                 System.out.println("Blank line   " + headerIndex);
-            } else if (new Character(row[0].charAt(0)).equals(percent)) {
-                headerIndex = headerIndex+1;
+            } else if ( firstWord.startsWith("%") ) {
+                headerIndex = headerIndex + 1;
                 System.out.println("Comment line   " + headerIndex);
-            } else if (new Character(row[0].charAt(0)).equals(at) &&
-                    new Character(row[0].charAt(1)).equals('r')&&
-                    new Character(row[0].charAt(2)).equals('e')&&
-                    new Character(row[0].charAt(3)).equals('l')&&
-                    new Character(row[0].charAt(4)).equals('a')&&
-                    new Character(row[0].charAt(5)).equals('t')&&
-                    new Character(row[0].charAt(6)).equals('i')&&
-                    new Character(row[0].charAt(7)).equals('o')&&
-                    new Character(row[0].charAt(8)).equals('n')
-                    ) {
+            } else if ( firstWord.startsWith("@relation ") ) {
                 headerIndex = headerIndex+1;
                 System.out.println("Relation line   " + headerIndex);
-            } else if (new Character(row[0].charAt(0)).equals(at) &&
-                    new Character(row[0].charAt(1)).equals('a')&&
-                    new Character(row[0].charAt(2)).equals('t')&&
-                    new Character(row[0].charAt(3)).equals('t')&&
-                    new Character(row[0].charAt(4)).equals('r')&&
-                    new Character(row[0].charAt(5)).equals('i')&&
-                    new Character(row[0].charAt(6)).equals('b')&&
-                    new Character(row[0].charAt(7)).equals('u')&&
-                    new Character(row[0].charAt(8)).equals('t')&&
-                    new Character(row[0].charAt(9)).equals('e')
-                    ) {
+            } else if ( firstWord.startsWith("@attribute ") ) {
                 headerIndex = headerIndex+1;
                 System.out.println("Attribute line   " + headerIndex);
-            } else if (new Character(row[0].charAt(0)).equals(at) &&
-                    new Character(row[0].charAt(1)).equals('D')&&
-                    new Character(row[0].charAt(2)).equals('A')&&
-                    new Character(row[0].charAt(3)).equals('T')&&
-                    new Character(row[0].charAt(4)).equals('A')
-                    ) {
+            } else if ( firstWord.equals("@data") ) {
                 headerIndex = headerIndex+1;
                 System.out.println("Data line   " + headerIndex);
+            } else if ( firstWord.startsWith("@") ) {
+                throw new ArffParserException( "Illegal header element: " + "'" + line[0].trim() + "'" ) ;
             } else {
                 isHeader = false;
             }
         }
 
-        rowSize =  rowList.size() - headerIndex;
-        columnSize = rowList.get(headerIndex).length;
+        rowSize =  lines.size() - headerIndex;
+        columnSize = lines.get(headerIndex).length;
         data = new double[rowSize][columnSize];
 
         for (int j = 0; j < rowSize; j++) {
             for (int i = 0; i < columnSize; i++) {
-                String[] row = rowList.get(j + headerIndex);
+                String[] row = lines.get(j + headerIndex);
                 data[j][i] = Double.parseDouble(row[i]);
                 //System.out.print(", " + data[j][i]);
             }
