@@ -19,37 +19,82 @@ import au.com.bytecode.opencsv.CSVReader;
 public class ArffDataStream implements DataStream{
     private Iterator iterator;
     private StaticDataHeader staticDataHeader;
-    private int rows;
-    private int cols;
+    private int rowSize;
+    private int columnSize;
     private double[][] data;
 
     public ArffDataStream(String fileName) throws FileNotFoundException,
-                IOException {
-            CSVReader reader = new CSVReader(new FileReader(fileName));
-           char percent = '%';
-           char at = '@';
+            IOException {
+        CSVReader reader = new CSVReader(new FileReader(fileName));
+        char percent = '%';
+        char at = '@';
 
-                List<String []> xrows = reader.readAll();
-            rows =  xrows.size();
-            cols = 10;// xrows.get(0).length;
+        List<String []> rowList = reader.readAll();
 
-            data = new double[rows][cols];
-            int j = 0;
-            for (String[] row : xrows) {
-                //System.out.println("row length:    " + row.length);
-                if(row[0].isEmpty() ||
-                        new Character(row[0].charAt(0)).equals(percent) ||
-                        new Character(row[0].charAt(0)).equals(at)){
-                    System.out.println("iterator is:    " + j);
-                }else {
-                for (int i = 0; i < row.length; i++) {
-                        data[j][i] = Double.parseDouble(row[i]);
-                    }
-                }
-                j = j+1;
+        int headerIndex = 0;
+        boolean isHeader = true;
+        while (isHeader) {
+            String[] row = rowList.get(headerIndex);
+            if (row[0].isEmpty()) {
+                headerIndex = headerIndex+1;
+                System.out.println("Blank line   " + headerIndex);
+            } else if (new Character(row[0].charAt(0)).equals(percent)) {
+                headerIndex = headerIndex+1;
+                System.out.println("Comment line   " + headerIndex);
+            } else if (new Character(row[0].charAt(0)).equals(at) &&
+                    new Character(row[0].charAt(1)).equals('r')&&
+                    new Character(row[0].charAt(2)).equals('e')&&
+                    new Character(row[0].charAt(3)).equals('l')&&
+                    new Character(row[0].charAt(4)).equals('a')&&
+                    new Character(row[0].charAt(5)).equals('t')&&
+                    new Character(row[0].charAt(6)).equals('i')&&
+                    new Character(row[0].charAt(7)).equals('o')&&
+                    new Character(row[0].charAt(8)).equals('n')
+                    ) {
+                headerIndex = headerIndex+1;
+                System.out.println("Relation line   " + headerIndex);
+            } else if (new Character(row[0].charAt(0)).equals(at) &&
+                    new Character(row[0].charAt(1)).equals('a')&&
+                    new Character(row[0].charAt(2)).equals('t')&&
+                    new Character(row[0].charAt(3)).equals('t')&&
+                    new Character(row[0].charAt(4)).equals('r')&&
+                    new Character(row[0].charAt(5)).equals('i')&&
+                    new Character(row[0].charAt(6)).equals('b')&&
+                    new Character(row[0].charAt(7)).equals('u')&&
+                    new Character(row[0].charAt(8)).equals('t')&&
+                    new Character(row[0].charAt(9)).equals('e')
+                    ) {
+                headerIndex = headerIndex+1;
+                System.out.println("Attribute line   " + headerIndex);
+            } else if (new Character(row[0].charAt(0)).equals(at) &&
+                    new Character(row[0].charAt(1)).equals('D')&&
+                    new Character(row[0].charAt(2)).equals('A')&&
+                    new Character(row[0].charAt(3)).equals('T')&&
+                    new Character(row[0].charAt(4)).equals('A')
+                    ) {
+                headerIndex = headerIndex+1;
+                System.out.println("Data line   " + headerIndex);
+            } else {
+                isHeader = false;
             }
-            reader.close();
+        }
+
+        rowSize =  rowList.size() - headerIndex;
+        columnSize = rowList.get(headerIndex).length;
+        data = new double[rowSize][columnSize];
+
+        for (int j = 0; j < rowSize; j++) {
+            for (int i = 0; i < columnSize; i++) {
+                String[] row = rowList.get(j + headerIndex);
+                data[j][i] = Double.parseDouble(row[i]);
+                //System.out.print(", " + data[j][i]);
+            }
+            System.out.println();
+        }
+        reader.close();
     }
+
+
 
     @Override
     public DataInstance nextDataInstance() {
