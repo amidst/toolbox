@@ -3,6 +3,7 @@ package eu.amidst.core.database.statics.readers.Impl;
 import eu.amidst.core.database.statics.DataStream;
 //import junit.framework.TestCase;
 import eu.amidst.core.database.statics.readers.ArffParserException;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -50,6 +51,32 @@ public class ArffDataStreamTest {
     public void testConstructor6() throws Exception {
 
         DataStream dataStream = new ArffDataStream("data/arff/testEmptySpace.arff");
+    }
+
+    @Test()
+    public void testLineArrayToLineEmpty() {
+        Assert.assertEquals( null, ArffDataStream.lineArrayToLine( new String[]{}) );
+    }
+
+    @Test()
+    public void testLineArrayToLineOneEmpty() {
+        Assert.assertEquals( "", ArffDataStream.lineArrayToLine( new String[]{""}) );
+    }
+
+    @Test()
+    public void testLineArrayToLineOneString() {
+        Assert.assertEquals( "abc", ArffDataStream.lineArrayToLine( new String[]{"abc"}) );
+    }
+
+
+    @Test()
+    public void testLineArrayToLineTwoStrings() {
+        Assert.assertEquals( "abc,def", ArffDataStream.lineArrayToLine( new String[]{"abc", "def"}) );
+    }
+
+    @Test()
+    public void testLineArrayToLineThreeStringsMiddleIsEmpty() {
+        Assert.assertEquals( "abc,,def", ArffDataStream.lineArrayToLine( new String[]{"abc", "", "def"}) );
     }
 
     //System.out.println(" dataStream has iterator: " );
