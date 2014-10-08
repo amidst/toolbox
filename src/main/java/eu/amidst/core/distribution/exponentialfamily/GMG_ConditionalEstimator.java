@@ -12,6 +12,10 @@ public class GMG_ConditionalEstimator implements ConditionalDistribution {
     private GG_ConditionalEstimator[] estim;
 
     @Override
+    public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
+        return null;
+    }
+    @Override
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
     }
