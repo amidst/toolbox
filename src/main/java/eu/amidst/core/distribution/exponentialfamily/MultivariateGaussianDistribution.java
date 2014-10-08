@@ -14,6 +14,11 @@ public class MultivariateGaussianDistribution implements Distribution {
 
 
     @Override
+    public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
+        return null;
+    }
+
+    @Override
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
     }

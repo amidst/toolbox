@@ -11,8 +11,6 @@ public interface DataInstance {
 
     public double getValue(int varID);
 
-    public void setValue(int varID, double value);
-
     public DataStream getDataStream();
 }
 
