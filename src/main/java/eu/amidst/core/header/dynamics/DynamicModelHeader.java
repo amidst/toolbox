@@ -15,7 +15,7 @@ public class DynamicModelHeader {
 
     public DynamicModelHeader(DynamicDataHeader dataHeader, int markovOrder) {
         this.dataHeader = dataHeader;
-        this.allVariables = new ArrayList<DynamicVariable>();
+        this.allVariables = new ArrayList<>();
         for (DynamicVariable var : dataHeader.getObservedVariables()) {
             allVariables.add(var.getVarID(), var);
         }
