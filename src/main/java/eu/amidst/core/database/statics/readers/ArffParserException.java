@@ -1,0 +1,9 @@
+package eu.amidst.core.database.statics.readers;
+
+import java.io.IOException;
+
+/**
+ * Created by sigveh on 10/8/14.
+ */
+public class ArffParserException extends IOException {
+}
