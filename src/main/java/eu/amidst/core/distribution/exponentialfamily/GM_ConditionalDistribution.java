@@ -12,6 +12,10 @@ public class GM_ConditionalDistribution implements ConditionalDistribution {
     private GaussianDistribution[] estim;
 
     @Override
+    public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
+        return null;
+    }
+    @Override
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
     }

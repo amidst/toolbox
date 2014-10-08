@@ -25,11 +25,8 @@ public class NaiveBayesClassifier extends LearnableModel implements Classifier {
     @Override
     public double[] predict(DataInstance data) {
         double currentClass = data.getValue(this.getClassVarID());
-        if (!Utils.isMissing(currentClass)) {
-            data.setValue(this.getClassVarID(), Utils.getMissingValue());
-        }
 
-        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getEstimator(this.classID).getRestrictedPotential(data);
+        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getEstimator(this.classID).getRestrictedPotentialExceptFor(data,this.getClassVarID());
 
 
         for (int i = 0; i < this.getBayesianNetwork().getNumberOfNodes(); i++) {
@@ -39,10 +36,6 @@ public class NaiveBayesClassifier extends LearnableModel implements Classifier {
             potResult.combine(pot);
         }
         potResult.normalize();
-
-        if (!Utils.isMissing(currentClass)) {
-            data.setValue(this.getClassVarID(), currentClass);
-        }
 
         return potResult.getValues();
     }
