@@ -2,6 +2,7 @@ package eu.amidst.core.database.statics.readers.Impl;
 
 import eu.amidst.core.database.statics.DataInstance;
 import eu.amidst.core.database.statics.DataStream;
+import eu.amidst.core.database.statics.readers.ArffParserException;
 import eu.amidst.core.header.statics.StaticDataHeader;
 
 import java.io.FileNotFoundException;
@@ -24,7 +25,7 @@ public class ArffDataStream implements DataStream{
     private double[][] data;
 
     public ArffDataStream(String fileName) throws FileNotFoundException,
-            IOException {
+            IOException, ArffParserException {
         CSVReader reader = new CSVReader(new FileReader(fileName));
         char percent = '%';
         char at = '@';
