@@ -12,7 +12,7 @@ public class StaticModelHeader {
 
     public StaticModelHeader(StaticDataHeader dataHeader) {
         this.dataHeader = dataHeader;
-        this.allVariables = new ArrayList<>();
+        this.allVariables = new ArrayList<Variable>();
         for (Variable var : dataHeader.getObservedVariables()) {
             allVariables.add(var.getVarID(), var);
         }
