@@ -8,13 +8,14 @@ import java.util.*;
  * Created by afa on 02/07/14.
  */
 public class DynamicDataHeader {
-    private ArrayList<DynamicVariable> vars;
 
-    public ArrayList<DynamicVariable> getObservedVariables() {
+    private List<DynamicVariable> vars;
+
+    public List<DynamicVariable> getObservedVariables() {
         return vars;
     }
 
-    public void setObservedVariables(ArrayList<DynamicVariable> vars) {
+    public void setObservedVariables(List<DynamicVariable> vars) {
         this.vars = vars;
     }
 
