@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class DynamicModelHeader {
     private DynamicDataHeader dataHeader;
-    private ArrayList<DynamicVariable> allVariables;
+    private List<DynamicVariable> allVariables;
     private int markovOrder = 1;
 
     public DynamicModelHeader(DynamicDataHeader dataHeader, int markovOrder) {
