@@ -8,7 +8,7 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class MultinomialDistribution implements Distribution {
+public class MultinomialDistribution implements ExponentialFamilyDistribution {
     private double[] counts;
     private double sumCounts;
 

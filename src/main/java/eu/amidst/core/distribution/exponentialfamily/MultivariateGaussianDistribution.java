@@ -7,7 +7,7 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class MultivariateGaussianDistribution implements Distribution {
+public class MultivariateGaussianDistribution implements ExponentialFamilyDistribution {
 
     private double[] means;
     private double[][] covMatrix;
