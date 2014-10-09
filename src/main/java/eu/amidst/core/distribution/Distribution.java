@@ -12,14 +12,6 @@ public interface Distribution {
 
     Potential getRestrictedPotential(DataInstance instance);
 
-    public double[] getSufficientStatistics(DataInstance instance);
-
-    public double[] getExpectedSufficientStatistics(DataInstance instance, Potential pot);
-
-    public void setExpectationParameters(double[] ss);
-
-    public double[] getExpectationParameters();
-
     public double getProbability(DataInstance data);
 
     //public double[] getNaturalParameters();
