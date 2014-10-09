@@ -7,7 +7,7 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class GaussianDistribution implements Distribution {
+public class GaussianDistribution implements ExponentialFamilyDistribution {
     private double mean;
     private double sd;
     private double sumSquaredValues;

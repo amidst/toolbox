@@ -2,13 +2,13 @@ package eu.amidst.core.distribution.exponentialfamily;
 
 
 import eu.amidst.core.database.statics.DataInstance;
-import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.potential.Potential;
 
 /**
  * Created by afa on 03/07/14.
  */
-public class GMG_ConditionalEstimator implements ConditionalDistribution {
+public class GMG_ConditionalEstimator implements ExponentialFamilyDistribution {
     private GG_ConditionalEstimator[] estim;
 
     @Override
