@@ -1,4 +1,4 @@
-package eu.amidst.core.distribution.motbfs;
+package eu.amidst.core.distribution.nonexponentialfamily;
 
 /**
  * Created by afa on 09/10/14.
