@@ -1,7 +1,7 @@
 % Header that is to be ignored.
 % One more line to be ignored
     
-@relation       "asdf gjkl"
+@relations HAY-TRAIN
 @attribute f1 real
 @attribute f2 real
 @attribute f3 real
