@@ -31,16 +31,16 @@ public class MaximumMarginalLikelihood implements LearningAlgorithm{
     }
 
     @Override
-    public void updateModel(DataInstance data) {
+    public void updateModel(DataInstance dataInstance) {
         BayesianNetwork bn = model.getBayesianNetwork();
         for (int i = 0; i<bn.getNumberOfNodes(); i++){
-            if (Utils.isMissing(data.getValue(i)) && bn.getVariable(i).isLeave())
+            if (Utils.isMissing(dataInstance.getValue(i)) && bn.getVariable(i).isLeave())
                 continue;
 
             Distribution estimator = bn.getEstimator(i);
             double[]  expPara = estimator.getExpectationParameters();
-            Potential pot = model.inferenceForLearning(data, i);
-            double[]  expSuffStatistics = estimator.getExpectedSufficientStatistics(data, pot);
+            Potential pot = model.inferenceForLearning(dataInstance, i);
+            double[]  expSuffStatistics = estimator.getExpectedSufficientStatistics(dataInstance, pot);
             updateEquation(expPara, expSuffStatistics);
         }
         iteration++;
