@@ -37,9 +37,9 @@ public class ArffDataStream implements DataStream{
             String line = lineArrayToLine( lineAsArray );
 
             //TODO Replace this with String.split()
-            String[] result = "this  is a test".split("\\s+");
-            for (int x=0; x<result.length; x++) {
-                System.out.println(result[x]);
+            String[] words = line.split("\\s+");
+            for (int x=0; x<words.length; x++) {
+                System.out.println(words[x]);
             }
 
             StringTokenizer st = new StringTokenizer( line );
