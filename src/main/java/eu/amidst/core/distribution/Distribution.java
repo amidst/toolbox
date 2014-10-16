@@ -1,6 +1,7 @@
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.database.statics.DataInstance;
+import eu.amidst.core.database.statics.DataStream;
 import eu.amidst.core.potential.Potential;
 
 /**
@@ -13,6 +14,12 @@ public interface Distribution {
     Potential getRestrictedPotential(DataInstance instance);
 
     public double getProbability(DataInstance data);
+
+    public double[] getExpectationParameters();
+
+    public double[] getSufficientStatistics(DataInstance dataInstance);
+
+    public double[] getExpectedSufficientStatistics(DataInstance dataInstance, Potential potential);
 
     //public double[] getNaturalParameters();
 
