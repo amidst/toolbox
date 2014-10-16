@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class StaticModelHeader {
     private StaticDataHeader dataHeader;
-    private ArrayList<Variable> allVariables;
+    private List<Variable> allVariables;
 
     public StaticModelHeader(StaticDataHeader dataHeader) {
         this.dataHeader = dataHeader;
