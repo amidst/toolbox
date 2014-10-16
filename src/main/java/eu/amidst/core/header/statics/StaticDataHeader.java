@@ -6,13 +6,13 @@ import java.util.*;
  * Created by afa on 02/07/14.
  */
 public final class StaticDataHeader {
-    private ArrayList<Variable> vars;
+    private List<Variable> vars;
 
-    public ArrayList<Variable> getObservedVariables() {
+    public List<Variable> getObservedVariables() {
         return vars;
     }
 
-    public void setObservedVariables(ArrayList<Variable> vars) {
+    public void setObservedVariables(List<Variable> vars) {
         this.vars = vars;
     }
 
