@@ -7,13 +7,17 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class GaussianDistribution implements Distribution {
+public class GaussianDistribution implements ExponentialFamilyDistribution {
     private double mean;
     private double sd;
     private double sumSquaredValues;
     private double sumValues;
     private double intervalWidth;
 
+    @Override
+    public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
+        return null;
+    }
     @Override
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
