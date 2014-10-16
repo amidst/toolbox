@@ -1,5 +1,6 @@
 package eu.amidst.core.database.statics.readers.Impl;
 
+import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.statics.DataInstance;
 import eu.amidst.core.database.statics.DataStream;
 import eu.amidst.core.database.statics.readers.ArffParserException;
@@ -21,13 +22,17 @@ import au.com.bytecode.opencsv.CSVReader;
 public class ArffDataStream implements DataStream{
     private Iterator iterator;
     private StaticDataHeader staticDataHeader;
+    private String fileName;
+    private Attributes attributes;
     private int rowSize;
     private int columnSize;
     private double[][] data;
     private String relation;
 
-    public ArffDataStream(String fileName) throws FileNotFoundException,
+    public ArffDataStream(String fileName, Attributes attributes) throws FileNotFoundException,
             IOException, ArffParserException {
+        this.fileName = fileName;
+        this.attributes = attributes;
         CSVReader reader = new CSVReader(new FileReader(fileName));
         List<String []> lines = reader.readAll();
         int headerIndex = 0;
@@ -38,37 +43,75 @@ public class ArffDataStream implements DataStream{
 
             //TODO Replace this with String.split()
             String[] words = line.split("\\s+");
-            for (int x=0; x<words.length; x++) {
-                System.out.println(words[x]);
-            }
 
-            StringTokenizer st = new StringTokenizer( line );
-            if( !st.hasMoreTokens() ) {
+//            int wordCounter2 = 1;
+//            while( wordCounter2 < words.length) {
+//                System.out.println( "                 " + words[wordCounter2] );
+//                wordCounter2 = wordCounter2 + 1;
+//            }
+
+            // StringTokenizer st = new StringTokenizer( line );
+            if(words.length == 0 || words[0].isEmpty()) {
                 headerIndex = headerIndex + 1;
-                System.out.println("Blank line   " + headerIndex);
+                //System.out.println("Blank line   " + headerIndex);
             }
             else {
-                String firstWord = st.nextToken().toLowerCase();
+                String firstWord = words[0].toLowerCase();
                 if (firstWord.startsWith("%")) {
                     headerIndex = headerIndex + 1;
-                    System.out.println("Comment line   " + headerIndex);
+                    //System.out.println("Comment line   " + headerIndex);
                 } else if (firstWord.equals("@relation")) {
                     headerIndex = headerIndex + 1;
-                    System.out.println("Relation line   " + headerIndex);
-                    System.out.println( "    - relation stuff:");
-                    while( st.hasMoreTokens() ) {
-                        System.out.println( "                 " + st.nextToken() );
+                    String secondWord = words[1];
+                    if (secondWord.startsWith("\"")) {
+                        secondWord = secondWord.substring(1);
+                        if( secondWord.endsWith("\"")) {
+                            secondWord = secondWord.substring(0,secondWord.length()-1);
+                        }else {
+                            int i = 2;
+                            while (i < words.length) {
+                                if (!words[i].endsWith("\"")) {
+                                    secondWord = secondWord.concat(" ").concat(words[i]);
+                                    i = i + 1;
+                                } else {
+                                    secondWord = secondWord.concat(" ").concat(words[i]);
+                                    secondWord = secondWord.substring(0, secondWord.length() - 1);
+                                    i = words.length;
+                                }
+                            }
+                        }
                     }
+                    relation = secondWord;
+                    System.out.println("Relation:  " + secondWord);
                 } else if (firstWord.equals("@attribute")) {
                     headerIndex = headerIndex + 1;
-                    System.out.println("Attribute line   " + headerIndex);
-                    System.out.println( "    - attribute stuff:");
-                    while( st.hasMoreTokens() ) {
-                        System.out.println( "                 " + st.nextToken() );
+                    String secondWord = words[1];
+                    String thirdWord = words[2]; //default
+                    if (secondWord.startsWith("\"")) {
+                        secondWord = secondWord.substring(1);
+                        if( secondWord.endsWith("\"")) {
+                            secondWord = secondWord.substring(0,secondWord.length()-1);
+                        }else {
+                            int i = 2;
+                            while (i < words.length) {
+                                if (!words[i].endsWith("\"")) {
+                                    secondWord = secondWord.concat(" ").concat(words[i]);
+                                    i = i + 1;
+                                } else {
+                                    secondWord = secondWord.concat(" ").concat(words[i]);
+                                    secondWord = secondWord.substring(0, secondWord.length() - 1);
+                                    thirdWord = words[i+1];
+                                    i = words.length;
+                                }
+                            }
+                        }
+
                     }
+
+                    System.out.println("Attribute:  " + secondWord + "    Type:  " + thirdWord);
                 } else if (firstWord.equals("@data")) {
                     headerIndex = headerIndex + 1;
-                    System.out.println("Data line   " + headerIndex);
+                    //System.out.println("Data line   " + headerIndex);
                 } else if (firstWord.startsWith("@")) {
                     throw new ArffParserException("Illegal header element: " + "'" + line + "'");
                 } else {
