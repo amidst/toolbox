@@ -8,15 +8,9 @@ import eu.amidst.core.potential.Potential;
  */
 public interface Distribution {
 
+    Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID);
+
     Potential getRestrictedPotential(DataInstance instance);
-
-    public double[] getSufficientStatistics(DataInstance instance);
-
-    public double[] getExpectedSufficientStatistics(DataInstance instance, Potential pot);
-
-    public void setExpectationParameters(double[] ss);
-
-    public double[] getExpectationParameters();
 
     public double getProbability(DataInstance data);
 
