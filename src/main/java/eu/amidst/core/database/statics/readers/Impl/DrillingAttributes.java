@@ -1,25 +1,24 @@
 package eu.amidst.core.database.statics.readers.Impl;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import eu.amidst.core.database.Attributes;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sigveh on 10/16/14.
  */
 public class DrillingAttributes implements Attributes {
 
+    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", Kind.REAL);
+    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", Kind.REAL);
+    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", Kind.REAL);
 
-    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", Kind.NUMERIC);
-    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", Kind.NUMERIC);
-    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", Kind.NUMERIC);
 
-
-    private static List<Attribute> attributes;
+    private static Set<Attribute> attributes;
     {
-        attributes = ImmutableList.of(MFI, SPP, RPM);
+        attributes = ImmutableSet.of(MFI, SPP, RPM);
     }
 
     public Attribute getMFI() {
@@ -35,7 +34,7 @@ public class DrillingAttributes implements Attributes {
     }
 
     @Override
-    public List<Attribute> getParameters() {
+    public Set<Attribute> getSet() {
         return attributes;
     }
 
