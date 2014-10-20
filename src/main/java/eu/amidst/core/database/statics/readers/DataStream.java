@@ -1,4 +1,4 @@
-package eu.amidst.core.database.statics;
+package eu.amidst.core.database.statics.readers;
 
 import eu.amidst.core.header.statics.StaticDataHeader;
 
