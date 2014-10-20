@@ -1,7 +1,7 @@
 package eu.amidst.staticmodelling.models;
 
 
-import eu.amidst.core.database.statics.DataInstance;
+import eu.amidst.core.database.statics.readers.DataInstance;
 
 /**
  * Created by afa on 02/07/14.

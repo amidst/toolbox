@@ -1,7 +1,7 @@
 package eu.amidst.core.database.dynamics;
 
 
-import eu.amidst.core.database.statics.DataInstance;
+import eu.amidst.core.database.statics.readers.DataInstance;
 
 /**
  * Created by afa on 03/07/14.

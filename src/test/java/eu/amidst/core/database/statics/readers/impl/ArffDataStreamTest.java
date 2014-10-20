@@ -1,7 +1,8 @@
-package eu.amidst.core.database.statics.readers.Impl;
+package eu.amidst.core.database.statics.readers.impl;
 
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.statics.DataStream;
+import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.statics.readers.DataInstance;
+import eu.amidst.core.database.statics.readers.DataStream;
 //import junit.framework.TestCase;
 import eu.amidst.core.database.statics.readers.ArffParserException;
 import junit.framework.Assert;
@@ -133,6 +134,97 @@ public class ArffDataStreamTest {
         Attributes attributes = new ForTesting2Attributes();
         DataStream dataStream = new ArffDataStream("data/arff/testCapitalizingNames.arff", attributes );
     }
+
+
+    @Test  (expected=ArffParserException.class)
+    public void testConstructorWrongAttributesClass() throws Exception {
+        Attributes attributes = new ForTesting3Attributes();
+        DataStream dataStream = new ArffDataStream("data/arff/testSubsetOfVariables.arff", attributes );
+    }
+
+
+    @Test (expected=ArffParserException.class)
+    public void testConstructorWrongAttributesClass2()  throws Exception {
+        Attributes attributes = new ForTesting4Attributes();
+        DataStream dataStream = new ArffDataStream("data/arff/testSubsetOfVariables.arff", attributes );
+    }
+
+
+    @Test
+    public void testGetDataInstance1() throws Exception {
+        ForTesting1Attributes attributes = new ForTesting1Attributes();
+        DataStream dataStream = new ArffDataStream("data/arff/hayTrain.arff", attributes );
+        DataInstance dataInstance = dataStream.nextDataInstance();
+        int tmp = dataInstance.getInteger(attributes.getCLASS());
+        org.junit.Assert.assertEquals(1,tmp);
+
+        dataInstance = dataStream.nextDataInstance();
+        dataInstance = dataStream.nextDataInstance();
+        double f1_2 = dataInstance.getReal(attributes.getF1());
+
+        org.junit.Assert.assertTrue(153.9999 < f1_2 && f1_2 < 154.00001);
+
+        while(dataStream.hasMoreDataInstances()){
+            dataInstance = dataStream.nextDataInstance();
+            tmp = dataInstance.getInteger(attributes.getCLASS());
+          //  System.out.println("Class label;    "   + tmp );
+        }
+
+        dataStream.restart();
+        dataInstance = dataStream.nextDataInstance();
+        double f4_0 = dataInstance.getReal(attributes.getF4());
+        org.junit.Assert.assertTrue(119.9999 < f4_0 && f4_0 < 120.00001);
+
+        double f9 = 0;
+        dataStream.restart();
+        while(dataStream.hasMoreDataInstances()){
+            dataInstance = dataStream.nextDataInstance();
+            f9 = dataInstance.getReal(attributes.getF9());
+            //System.out.println("f9;    "   + f9 );
+        }
+        org.junit.Assert.assertTrue(1.099999 < f9 && f9 < 1.1000001);
+
+
+    }
+
+
+    @Test
+    public void testGetDataInstanceSubset() throws Exception {
+        ForTesting2Attributes attributes = new ForTesting2Attributes();
+        DataStream dataStream = new ArffDataStream("data/arff/testSubsetOfVariables.arff", attributes );
+        DataInstance dataInstance = dataStream.nextDataInstance();
+        int tmp = dataInstance.getInteger(attributes.getCLASS());
+        org.junit.Assert.assertEquals(1,tmp);
+
+        dataInstance = dataStream.nextDataInstance();
+        dataInstance = dataStream.nextDataInstance();
+        double two_names_2 = dataInstance.getReal(attributes.getTWO_NAMES());
+
+        org.junit.Assert.assertTrue(7.9999 < two_names_2 && two_names_2 < 8.00001);
+
+        while(dataStream.hasMoreDataInstances()){
+            dataInstance = dataStream.nextDataInstance();
+            tmp = dataInstance.getInteger(attributes.getCLASS());
+            //  System.out.println("Class label;    "   + tmp );
+        }
+
+        dataStream.restart();
+        dataInstance = dataStream.nextDataInstance();
+        double three_names_here_0 = dataInstance.getReal(attributes.getTHREE_NAMES_HERE());
+        org.junit.Assert.assertTrue(29.7999 < three_names_here_0 && three_names_here_0 < 29.80001);
+
+        double three_names_here = 0;
+        dataStream.restart();
+        while(dataStream.hasMoreDataInstances()){
+            dataInstance = dataStream.nextDataInstance();
+            three_names_here = dataInstance.getReal(attributes.getTHREE_NAMES_HERE());
+            //System.out.println("f9;    "   + f9 );
+        }
+        org.junit.Assert.assertTrue(0.399999 < three_names_here && three_names_here < 0.4000001);
+
+    }
+
+
 
     //System.out.println(" dataStream has iterator: " );
 }

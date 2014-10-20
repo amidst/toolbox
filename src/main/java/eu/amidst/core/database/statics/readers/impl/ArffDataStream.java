@@ -1,9 +1,12 @@
-package eu.amidst.core.database.statics.readers.Impl;
+package eu.amidst.core.database.statics.readers.impl;
 
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.statics.DataInstance;
-import eu.amidst.core.database.statics.DataStream;
+import eu.amidst.core.database.statics.readers.Attribute;
+import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.DataInstance;
+import eu.amidst.core.database.statics.readers.DataStream;
 import eu.amidst.core.database.statics.readers.ArffParserException;
+import eu.amidst.core.database.statics.readers.Keys;
 import eu.amidst.core.header.statics.StaticDataHeader;
 
 import java.io.FileNotFoundException;
@@ -21,13 +24,16 @@ public class ArffDataStream implements DataStream{
     private Iterator iterator;
     private StaticDataHeader staticDataHeader;
     private String fileName;
-    private Set<Attributes.Attribute> attributes;
+    private Set<Attribute> attributes;
     private int[] attributesActivation;
     private int rowSize;
-    private int columnSize;
-    private double[][] data;
+    private int doubleColumnSize;
+    private int intColumnSize;
+    private double[][] doubleData;
+    private int[][] intData;
     private String relation;
-    private List<Attributes.Attribute> attributesInHeader = new ArrayList<>();
+    private List<Attribute> attributesInHeader = new ArrayList<>();
+    private int dataInstance = 0;
 
     public ArffDataStream(String fileName, Attributes attributes) throws FileNotFoundException,
             IOException, ArffParserException {
@@ -81,7 +87,7 @@ public class ArffDataStream implements DataStream{
                         }
                     }
                     relation = secondWord;
-                    System.out.println("Relation:  " + secondWord);
+                    //System.out.println("Relation:  " + secondWord);
                 } else if (firstWord.equals("@attribute")) {
                     headerIndex = headerIndex + 1;
                     String secondWord = words[1];
@@ -105,10 +111,10 @@ public class ArffDataStream implements DataStream{
                             }
                         }
                     }
-                    Attributes.Attribute a = new Attributes.Attribute(secondWord,
-                            Attributes.Kind.parseKind(thirdWord));
+                    Attribute a = new Attribute(secondWord,
+                            Kind.parseKind(thirdWord));
                     attributesInHeader.add(a);
-                    System.out.println("Attribute:  " + secondWord + "    Type:  " + thirdWord);
+                    //System.out.println("Attribute:  " + secondWord + "    Type:  " + thirdWord);
                 } else if (firstWord.equals("@data")) {
                     headerIndex = headerIndex + 1;
                     isHeader = false;
@@ -119,7 +125,7 @@ public class ArffDataStream implements DataStream{
             }
         }
 
-        int[] keys = getHeaderKeys(attributesInHeader, attributes.getSet());
+        Keys keys = getHeaderKeys(attributesInHeader, attributes.getSet());
 
 
         if( lines.size() - headerIndex == 0){
@@ -132,14 +138,24 @@ public class ArffDataStream implements DataStream{
         }
 
         rowSize =  lines.size() - headerIndex;
-        columnSize = keys.length;
-        data = new double[rowSize][columnSize];
+        doubleColumnSize = keys.getDoubleKeys().length;
+        doubleData = new double[rowSize][doubleColumnSize];
+
+        intColumnSize = keys.getIntKeys().length;
+        intData = new int[rowSize][intColumnSize];
 
         for (int j = 0; j < rowSize; j++) {
-            for (int i = 0; i < columnSize; i++) {
-                int key = keys[i];
-                String[] row = lines.get(j + headerIndex);
-                data[j][i] = Double.parseDouble(row[key]);
+            String[] row = lines.get(j + headerIndex);
+            for (int i = 0; i < doubleColumnSize; i++) {
+                int key = keys.getDoubleKeys()[i];
+                doubleData[j][i] = Double.parseDouble(row[key]);
+                //System.out.print(", " + data[j][i]);
+            }
+
+            for (int i = 0; i < intColumnSize; i++) {
+                int key = keys.getIntKeys()[i];
+                //System.out.print("key:  " + key);
+                intData[j][i] = Integer.parseInt(row[key]);
                 //System.out.print(", " + data[j][i]);
             }
             //    System.out.println();
@@ -171,20 +187,56 @@ public class ArffDataStream implements DataStream{
         return s;
     }
 
-    private static int[] getHeaderKeys(List<Attributes.Attribute> header,
-                                       Set<Attributes.Attribute> acceptable) throws ArffParserException {
-        int[] keys = new int[acceptable.size()];
-        for (int i = 0; i < keys.length; i++) {
-            keys[i] = -1;
+    private static Keys getHeaderKeys(List<Attribute> header,
+                                       Set<Attribute> acceptable) throws ArffParserException {
+        int doubleCount = 0;
+        int intCount = 0;
+
+        for(Attribute a : acceptable){
+            switch (a.getKind()) {
+                case REAL:
+                    doubleCount = doubleCount + 1;
+                    break;
+                case INTEGER:
+                    intCount = intCount + 1;
+                    break;
+                default:
+                    throw new ArffParserException("The header contains attributes with unsupported kind.");
+            }
+        }
+
+
+
+        int[] doubleKeys = new int[doubleCount];
+        for (int i = 0; i < doubleCount; i++) {
+            doubleKeys[i] = -1;
+        }
+
+        int[] intKeys = new int[intCount];
+        for (int i = 0; i < intCount; i++) {
+            intKeys[i] = -1;
         }
 
         for (int headerIndex = 0; headerIndex < header.size(); headerIndex++) {
-            for(Attributes.Attribute a : acceptable){
+            for(Attribute a : acceptable){
                 if(a.equals(header.get(headerIndex))){
-                    if(keys[a.getIndex()] == -1) {
-                        keys[a.getIndex()] = headerIndex;
-                    } else{
-                        throw new ArffParserException("The header contains attributes with the same names.");
+                    switch (a.getKind()){
+                        case REAL:
+                            if(doubleKeys[a.getIndex()] == -1) {
+                                doubleKeys[a.getIndex()] = headerIndex;
+                            } else{
+                                throw new ArffParserException("The header contains attributes with the same names.");
+                            }
+                            break;
+                        case INTEGER:
+                            if(intKeys[a.getIndex()] == -1) {
+                                intKeys[a.getIndex()] = headerIndex;
+                            } else{
+                                throw new ArffParserException("The header contains attributes with the same names.");
+                            }
+                            break;
+                        default:
+                            throw new ArffParserException("The header contains attributes with unsupported kind.");
                     }
                 }
             }
@@ -193,40 +245,50 @@ public class ArffDataStream implements DataStream{
 //            System.out.println("index " + i + " = " + keys[i]);
 //        }
 
-        for (int i = 0; i < keys.length; i++) {
-            if(keys[i] == -1) {
-                throw new ArffParserException( "The header does not contain all attributes that " +
+        for (int i = 0; i < doubleKeys.length; i++) {
+            if(doubleKeys[i] == -1) {
+                throw new ArffParserException( "The header does not contain all attributes of the real kind that " +
                         "are specified in the attributes class.");
             }
         }
 
-        return keys;
+        for (int i = 0; i < intKeys.length; i++) {
+            if(intKeys[i] == -1) {
+                throw new ArffParserException( "The header does not contain all attributes of the integer kind that " +
+                        "are specified in the attributes class.");
+            }
+        }
+
+
+        return new Keys(doubleKeys,intKeys);
     }
 
 
     @Override
     public DataInstance nextDataInstance() {
-        return null;
+        DataInstance x = new DefaultDataInstance(dataInstance,doubleData,intData);
+        dataInstance = dataInstance + 1;
+        return x;
     }
 
     @Override
     public boolean hasMoreDataInstances() {
-        return false;
+        return dataInstance != rowSize;
     }
 
     @Override
     public boolean isRestartable() {
-        return false;
+        return true;
     }
 
     @Override
     public void restart() {
-        iterator.remove();
-        //TODO reload iterator
+        dataInstance = 0;
     }
 
     @Override
     public StaticDataHeader getStaticDataHeader() {
+        //TODO rethink this?
         return staticDataHeader;
     }
 

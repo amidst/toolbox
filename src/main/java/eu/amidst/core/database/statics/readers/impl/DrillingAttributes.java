@@ -1,9 +1,10 @@
-package eu.amidst.core.database.statics.readers.Impl;
+package eu.amidst.core.database.statics.readers.impl;
 
 import com.google.common.collect.ImmutableSet;
-import eu.amidst.core.database.Attributes;
+import eu.amidst.core.database.statics.readers.Attribute;
+import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.statics.readers.Kind;
 
-import java.util.List;
 import java.util.Set;
 
 /**
