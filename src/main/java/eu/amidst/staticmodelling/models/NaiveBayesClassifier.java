@@ -1,7 +1,7 @@
 package eu.amidst.staticmodelling.models;
 
 
-import eu.amidst.core.database.statics.DataInstance;
+import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.modelstructure.statics.BNFactory;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
 import eu.amidst.core.header.statics.StaticDataHeader;

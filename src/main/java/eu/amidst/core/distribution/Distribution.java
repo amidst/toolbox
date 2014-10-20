@@ -1,7 +1,6 @@
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.database.statics.DataInstance;
-import eu.amidst.core.database.statics.DataStream;
+import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.potential.Potential;
 
 /**
