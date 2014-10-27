@@ -8,10 +8,6 @@ import eu.amidst.core.potential.Potential;
  */
 public class MultivariateGaussianDistribution implements ExponentialFamilyDistribution {
 
-    private double[] means;
-    private double[][] covMatrix;
-
-
     @Override
     public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
         return null;
@@ -23,27 +19,35 @@ public class MultivariateGaussianDistribution implements ExponentialFamilyDistri
     }
 
     @Override
-    public double[] getSufficientStatistics(DataInstance instance) {
-        return new double[0];
+    public SufficientStatistics getSufficientStatistics(DataInstance instance) {
+        return null;
     }
 
     @Override
-    public double[] getExpectedSufficientStatistics(DataInstance instance, Potential pot) {
-        return new double[0];
+    public SufficientStatistics getExpectedSufficientStatistics(DataInstance instance, Potential pot) {
+        return null;
     }
 
     @Override
-    public void setExpectationParameters(double[] ss) {
+    public void setExpectationParameters(ExponentialFamilyDistribution.ExpectationParameters ss) {
 
     }
 
     @Override
-    public double[] getExpectationParameters() {
-        return new double[0];
+    public ExpectationParameters getExpectationParameters() {
+        return null;
     }
 
     @Override
     public double getProbability(DataInstance data) {
         return 0;
+    }
+
+    public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+        private double[] means;
+        private double[][] covMatrix;
+    }
+    public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
+
     }
 }
