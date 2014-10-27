@@ -14,11 +14,18 @@ public interface Distribution {
 
     public double getProbability(DataInstance data);
 
-    public double[] getExpectationParameters();
+    public void setExpectationParameters(ExpectationParameters ss);
 
-    public double[] getSufficientStatistics(DataInstance dataInstance);
+    public ExpectationParameters getExpectationParameters();
 
-    public double[] getExpectedSufficientStatistics(DataInstance dataInstance, Potential potential);
+    public interface SufficientStatistics {
+
+
+    }
+
+    public interface ExpectationParameters {
+
+    }
 
     //public double[] getNaturalParameters();
 
