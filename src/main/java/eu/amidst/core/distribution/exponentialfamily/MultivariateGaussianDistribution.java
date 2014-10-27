@@ -43,11 +43,15 @@ public class MultivariateGaussianDistribution implements ExponentialFamilyDistri
         return 0;
     }
 
-    public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+    public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
         private double[] means;
         private double[][] covMatrix;
     }
     public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
+        double[] params;
 
+        public double[] getExpectationParameters(){
+            return params;
+        }
     }
 }

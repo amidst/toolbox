@@ -44,7 +44,7 @@ public class GMG_ConditionalDistribution implements ExponentialFamilyDistributio
         return 0;
     }
 
-    public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+    public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
         private GG_ConditionalDistribution[] estim;
 
 
@@ -52,6 +52,10 @@ public class GMG_ConditionalDistribution implements ExponentialFamilyDistributio
     }
 
     public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
+        double[] params;
 
+        public double[] getExpectationParameters(){
+            return params;
+        }
     }
 }

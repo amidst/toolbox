@@ -42,14 +42,18 @@ public class GG_ConditionalDistribution implements ExponentialFamilyDistribution
         return 0;
     }
 
-    public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+    public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
         private double intercept;
         private double[] coeffParents;
         private double variance;
 
     }
     public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
+        double[] params;
 
+        public double[] getExpectationParameters(){
+            return params;
+        }
 
 
     }
