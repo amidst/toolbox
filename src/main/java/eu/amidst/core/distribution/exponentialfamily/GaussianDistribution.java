@@ -47,7 +47,7 @@ public class GaussianDistribution implements ExponentialFamilyDistribution {
     }
 
 
-    public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+    public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
 
         private double mean;
         private double sd;
@@ -59,7 +59,11 @@ public class GaussianDistribution implements ExponentialFamilyDistribution {
     }
 
     public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
+        double[] params;
 
+        public double[] getExpectationParameters(){
+            return params;
+        }
 
     }
 }
