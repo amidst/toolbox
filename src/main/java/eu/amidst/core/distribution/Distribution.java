@@ -18,12 +18,8 @@ public interface Distribution {
 
     public ExpectationParameters getExpectationParameters();
 
-    public interface SufficientStatistics {
-
-
-    }
-
     public interface ExpectationParameters {
+        public double[] getExpectationParameters();
 
     }
 
