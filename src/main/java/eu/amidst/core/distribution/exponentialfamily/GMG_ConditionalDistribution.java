@@ -7,22 +7,20 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class GaussianDistribution implements ExponentialFamilyDistribution {
+public class GMG_ConditionalDistribution implements ExponentialFamilyDistribution {
+
 
     @Override
     public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
         return null;
     }
-
     @Override
     public Potential getRestrictedPotential(DataInstance instance) {
-
         return null;
     }
 
     @Override
     public SufficientStatistics getSufficientStatistics(DataInstance instance) {
-
         return null;
     }
 
@@ -46,20 +44,14 @@ public class GaussianDistribution implements ExponentialFamilyDistribution {
         return 0;
     }
 
-
     public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+        private GG_ConditionalDistribution[] estim;
 
-        private double mean;
-        private double sd;
-        private double sumSquaredValues;
-        private double sumValues;
-        private double intervalWidth;
 
 
     }
 
     public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
-
 
     }
 }

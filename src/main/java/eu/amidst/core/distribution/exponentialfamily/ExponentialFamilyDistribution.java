@@ -9,12 +9,9 @@ import eu.amidst.core.potential.Potential;
  */
 public interface ExponentialFamilyDistribution extends Distribution {
 
-    public double[] getSufficientStatistics(DataInstance instance);
+    public SufficientStatistics getSufficientStatistics(DataInstance instance);
 
-    public double[] getExpectedSufficientStatistics(DataInstance instance, Potential pot);
+    public SufficientStatistics getExpectedSufficientStatistics(DataInstance instance, Potential pot);
 
-    public void setExpectationParameters(double[] ss);
-
-    public double[] getExpectationParameters();
 
 }

@@ -8,8 +8,6 @@ import eu.amidst.core.potential.Potential;
  * Created by afa on 03/07/14.
  */
 public class MultinomialDistribution implements ExponentialFamilyDistribution {
-    private double[] counts;
-    private double sumCounts;
 
     @Override
     public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
@@ -22,27 +20,36 @@ public class MultinomialDistribution implements ExponentialFamilyDistribution {
     }
 
     @Override
-    public double[] getSufficientStatistics(DataInstance instance) {
-        return new double[0];
+    public SufficientStatistics getSufficientStatistics(DataInstance instance) {
+        return null;
     }
 
     @Override
-    public double[] getExpectedSufficientStatistics(DataInstance instance, Potential pot) {
-        return new double[0];
+    public SufficientStatistics getExpectedSufficientStatistics(DataInstance instance, Potential pot) {
+        return null;
     }
 
     @Override
-    public void setExpectationParameters(double[] ss) {
+    public void setExpectationParameters(ExponentialFamilyDistribution.ExpectationParameters ss) {
 
     }
 
     @Override
-    public double[] getExpectationParameters() {
-        return new double[0];
+    public ExpectationParameters getExpectationParameters() {
+        return null;
     }
 
     @Override
     public double getProbability(DataInstance data) {
         return 0;
+    }
+
+    public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+        private double[] counts;
+        private double sumCounts;
+
+    }
+    public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters{
+
     }
 }
