@@ -13,5 +13,8 @@ public interface ExponentialFamilyDistribution extends Distribution {
 
     public SufficientStatistics getExpectedSufficientStatistics(DataInstance instance, Potential pot);
 
+    //Declare abstract because different distributions implements different methods.
+    public abstract class SufficientStatistics {
 
+    }
 }

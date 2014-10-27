@@ -44,12 +44,24 @@ public class MultinomialDistribution implements ExponentialFamilyDistribution {
         return 0;
     }
 
-    public class SufficientStatistics implements ExponentialFamilyDistribution.SufficientStatistics {
+    public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
         private double[] counts;
         private double sumCounts;
 
+        public double[] getCounts () {
+            return counts;
+        }
+        public double getSumCounts() {
+            return sumCounts;
+        }
+
     }
     public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters{
+        double[] params;
+
+        public double[] getExpectationParameters() {
+            return params;
+        }
 
     }
 }
