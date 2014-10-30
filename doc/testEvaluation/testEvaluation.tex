@@ -26,7 +26,7 @@
 
 
 
-\title{Practical Considerations for Using the Empirical Risk Function on Real World Streaming Data}
+\title{Practical Considerations for Performance Measures on Classifiers on Real World Streaming Data}
 %\author{Sigve Hovda \\
 %Norwegian University of Science and Technology\\
 %Department of Computer and Information Science,
@@ -39,46 +39,149 @@
 \maketitle
 
 \begin{abstract}
-Several real world classification problems in the domains of automobile, energy and bank are outlined.  This paper do not discuss how to solve the problems, but rather how any solution can be evaluated.  All problems involve huge data sets which have various limitations related to the question of what is the ground truth. The problems also involve streaming data and earliness of warnings need to be balanced with accuracy.  It is argued that each of the problems presented in this paper can utilize the empirical risk function in some form.  The paper includes practical considerations tailored to the specific properties of each particular problem.
+Several real world binary classification problems in the domains of automobile, energy and bank are outlined.  This paper do not discuss how to solve the problems, but rather how any solution can be evaluated.  All problems involve huge data sets which have various limitations related to the question of what is the ground truth. The problems also involve streaming data and earliness of warnings need to be balanced with accuracy.  It is argued that each of the problems presented in this paper can be discussed using two measures; concordance probability related to the output function and the empirical risk function in some forms.  The paper includes practical considerations tailored to the specific properties of each particular problem.
 \end{abstract}
 
 \section{Introduction}
 
+We consider the random variables $X$ and $Y$ with joint probability distribution $P(X,Y)$ and output spaces $\Omega_X$ and $\Omega_Y = \{0,1\}$, respectively.  We consider a continuous output function $q: \Omega_X \rightarrow \mathbb{R}^+$ and a family of hypothesis functions $\mathcal{H}$, where each element $h_T:\Omega_X \rightarrow \Omega_Y$ has the form 
+
+\begin{equation}
+\label{eq:ht}
+h_T(x) = 
+\begin{cases}
+0 \quad \mbox{for} \quad q(x) \leq T\\
+1 \quad \mbox{else}.
+\end{cases}
+\end{equation}
+Also, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.
+
+In this paper, we will discuss the continuous output function in the light of the Mann-Whitney $U$ test and the concordance probability $P(Q_1 > Q_0)$.  It is important to mention that in the context of concordance probability, the shapes of $P(Q_0)$ and $P(Q_1)$ may be different. 
+
+Also, we want to mention that the concordance probability is exactly equal to the area under the receiver operating characteristic curve (ROC) and the common language effect size of the Mann-Whitney $U$ test.
+
+In terms of discussing the family of hypothesis functions, we have chosen empirical risk as the quantity of interest.  This involves defining a loss function and the risk function is simply the expected loss in a frequentist perspective.
+
+\subsection{Mann-Whitney $U$ test}
+\label{sec:U}
+
+In statistics, the Mann-Whitney $U$ test (also called the Mann-Whitney-Wilcoxon (MWW), Wilcoxon rank-sum test, or Wilcoxon-Mann-Whitney test) is a nonparametric test of the null hypothesis that two populations are the same against an alternative hypothesis, especially that a particular population tends to have larger values than the other.  It has greater efficiency than the $t$-test on non-normal distributions and it is nearly as efficient as the $t$-test on normal distributions.
+
+We define a training set $\bu{x} \times \bv{y}$ with $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$.  From the training set we have two populations $\bv{q_0} = \{q(x_i) , | \, y_i = 0 \}$ and $\bv{q_1} = \{q(x_i) , | \, y_i = 1 \}$.  Their sizes are $n_0$ and $n_1$ so that $n_0 + n_1 = n$.  Calculating the $U$ statistics is straightforward, where these two values are obtained 
+
+\begin{equation}
+\label{eq:U}
+U_0 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H(\,q_j - q_i    \,) \quad \mbox{and} \quad 
+U_1 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H( \,q_i - q_j    \,).
+\end{equation}
+Here $H(\cdot)$ is the heaviside step function and notice that $U_0 + U_1 = n_0n_1$.  For large samples, each U is approximately normally distributed. In that case, the standardized value
+
+\begin{equation}
+\label{eq:z}
+z = \frac{U_0 - m_{U}}{\sigma_{U}},
+\end{equation}
+where $m_U$ and $\sigma_U$ are the mean and standard deviation of $U$ given by
+
+\begin{equation}
+\label{eq:z}
+m_U = \frac{n_0n_1}{2} \quad \mbox{and} \quad 
+\sigma_U = \sqrt{\frac{n_0n_1(n_0 + n_1 + 1)}{12} }.
+\end{equation}
+
+Significance of test can be checked in tables of the normal distribution.  Although, such an hypothesis test is interesting by itself, we are more interested in the concordance probability $P(Q_1 > Q_0)$ which is defined by
+
+\begin{equation}
+\label{eq:concordance}
+P(Q_1 > Q_0) = \frac{U_1}{n_0n_1}.
+\end{equation}
+
+
+\subsection{Empirical risk}
+\label{sec:empRisk}
+
 In mathematical optimization, statistics, decision theory and machine learning, a loss function or cost function is a function that maps an event or values of one or more variables onto a real number that is intuitively representing some \emph{cost} associated with the event. Loss functions can be used on optimization problems, where an algorithm or method is optimized by minimizing the loss function.  Moreover, loss functions are frequently used to diagnose and compare various algorithms or methods.  
 
-In this paper we consider the situation where we have two spaces of objects $X$ and $Y$ and a hypothesis function $h:X \rightarrow Y$, where $Y$ is discrete with $n_Y$ possible entries.  We define the \emph{loss function} as a real and lower-bounded function $L$ on $X \times Y \times Y$.  The value of the loss function at an arbitrary point $(x, h(x), y)$ is interpreted as the loss, or cost, of taking the decision $h(x)$ at $x$, when the right decision is $y$.  Notice that in this paper, the loss function is dependent on $x$ as well.  This is of high practical use, because a certain misclassification might be more expensive that another. 
+In this paper define the \emph{loss function} as a real and lower-bounded function $L$ on $\Omega_X \times \Omega_Y \times \Omega_Y$.  The value of the loss function at an arbitrary point $(x, h(x), y)$ is interpreted as the loss, or cost, of taking the decision $h(x)$ at $x$, when the right decision is $y$.  Notice that in this paper, the loss function is dependent on $x$ as well.  This is of high practical use, because a certain misclassification might be more expensive that another. 
 
-In the frequentist perspective, the expected loss is often referred to as the risk function.  It is obtained by taking the expected value over the loss function with respect to the probability distribution $P(X,Y): X\times Y \rightarrow \mathbb{R}^+$.  The \emph{risk function} is given by
+In the frequentist perspective, the expected loss is often referred to as the risk function.  It is obtained by taking the expected value over the loss function with respect to the probability distribution $P(X,Y): \Omega_X\times \Omega_Y \rightarrow \mathbb{R}^+$.  The \emph{risk function} is given by
 
 \begin{equation}
 \label{def:risk}
-R(h) = \int_{X,Y} L(x,h(x),y) dP(x,y).
+R(h) = \int_{\Omega_X,\Omega_Y} L(x,h(x),y) dP(x,y).
 \end{equation}
-In the case of a two-classification problem and there is no dependence on $x$ and also that there is no cost related to correct classification, the risk function reduces to the well known expected cost of misclassification (ECM)
+
+In the case when the costs are independent of $x$ and also that there is no cost related to correct classification, the risk function reduces to the well known expected cost of misclassification (ECM)
 
 \begin{equation}
 \label{eq:ecm}
-ECM =  c(2|1)p(2|1)p_1  + c(1|2)p(1|2)p_2.
+ECM =  c(1|0)p(1|0)p_0  + c(0|1)p(0|1)p_1.
 \end{equation}
-Here, $c(2|1)$ is the cost for misclassifying an item of class one as class two and $p(2|1)$ is the misclassification probability given class one.  The quantities $c(1|2)$ and $p(1|2)$ are defined equivalently, while $p_1$ and $p_2$ are the priors.  
+Here, $c(1|0)$ is the cost for misclassifying an item of class zero as class one and $p(1|0)$ is the misclassification probability given class zero.  The quantities $c(0|1)$ and $p(0|1)$ are defined equivalently, while $p_0$ and $p_1$ are the priors.  
 
-In general, the risk $R(h)$ cannot be computed because the distribution $P(x, y)$ is unknown.  However, we can compute an approximation, called empirical risk, by averaging the loss function on a training set given by 
+In general, the risk $R(h)$ cannot be computed because the distribution $P(x, y)$ is unknown.  However, we can compute an approximation, called empirical risk, by averaging the loss function on the training set given by 
 
 \begin{equation}
 \label{def:empRisk}
-R_{emp}(h, X) = m^{-1} \sum_{i=1}^m L(x_i, h(x_i), y_i).
+R_{emp}(h, \bv{x}) = n^{-1} \sum_{i=1}^n L(x_i, h(x_i), y_i).
 \end{equation}
-Here, the training set has $m$ input-output pairs $(x_i, y_i)$ drawn from $X \times Y$.  Notice that $L$ is an array of $m \times n_Y \times n_Y$ elements.  Many supervised learning algorithms are optimized by finding the $h$ in a hypothesis space $\mathcal{H}$ that minimizes the empirical risk.  This paper will not focus on empirical risk minimization, but rather focus on using empirical risk to compare methods.
+Notice that $L$ is an array of $n \times 2\times 2$ elements.  Many supervised learning algorithms are optimized by finding the $h$ in a hypothesis space $\mathcal{H}$ that minimizes the empirical risk.  This paper will not focus on empirical risk minimization, but rather focus on using empirical risk to compare methods.
+%
+%\subsection{Emprical risk function on practical problems}
+%\label{sec:practical}
 
-\section{Emprical risk function on practical problems}
-\label{sec:practical}
 
-In this section we will outline a number of practical uses of the empirical risk function.
+
+\section{Practical problems}
+\label{sec:practicalEmpRisk}
+
+In this section we will outline a number of practical using concordance probability and the empirical risk function.
+
+
+\subsection{Automotive use cases }
+\label{sec:automotive}
+
+There are two application scenarios here.  The first one is early recognition of lane change manoeuvre. The second is prediction of the need for lane change based on relative dynamics between two vehicles following the same lane.
+
+For the first use case scenario it is required that the concordance probability (AUROC) should be above 0.96 for prediction 1 second before lane crossing and 0.90 for the 2 second prediction.
+
+For the second use case scenario it is required that the concordance probability (AUROC) should be above 0.96 for prediction 1 second before lane crossing and 0.90 for the 2 second prediction.
+
+These two application scenarios seem straightforward to calculate.
+
+\subsubsection*{Questions: }
+\begin{enumerate}
+\item What will be the sizes of $n_0$ and $n_1$.
+\item Are each test sample completely independent?
+\item Are the shapes of $P(Q_0)$ and $P(Q_1)$ equal? If so, we can also do the hypothesis test.
+\item Are you sure that a cost invariant test is sufficient for your use?
+\end{enumerate}
+
 
 \subsection{Financial use case: Default prediction of clients}
 \label{sec:financial}
 
-The practical problem is to predict the probability $p_i$ of defaulting for certain customer $i$ that is applying for a loan in a bank.  The $y$'s can take value 1, which is non defaulting and value 2, which is defaulting.  Based on the size of the loan it is possible to reason about the cost of defaulting $c_i(1|2)$ and also the cost of declining the loan application if the customer actually would have not defaulted $c_i(2|1)$.  The classification problem reduces to weather $c_i(1|2)p_i$ is higher than $c_i(2|1)(1-p_i)$, which is the same as comparing $p_i$ with $c_i(2|1)/(c_i(1|2 + c_i(2|1))$. 
+There are two application scenarios here.  The first one is prediction of whether a client will default within two years and the second is related to the benefit of a marketing campaign.
+
+\subsubsection*{Discussion using concordance probability}
+
+In the first use case scenario, it is required that the concordance probability (AUROC) should be above 0.90.
+
+This use case involves to predict the probability $p_i$ of defaulting for certain customer $i$ that is applying for a loan in a bank.  The $y$'s can take value 0, which is non defaulting and value 1, which is defaulting.  
+In the cases where a loan is given, each $y_i$ is determined by whether the loan has defaulted or not, exactly two years later.  This means that the both $\bv{q_0}$ and $\bv{q_1}$ are severely biased.  Estimating the concordance probability will only be relevant if we use the AMIDST software as an addition to the existing software.
+
+\subsubsection*{Questions for the first use case scenario: }
+\begin{enumerate}
+\item Is it ok to test on only these samples that are known?  Should we try to make a different sample (by expert estimates or similar) that is independent on whether a loan was given to them or not. 
+\item What will be the sizes of $n_0$ and $n_1$.
+\item Are each test sample completely independent?
+\item Are the shapes of $P(Q_0)$ and $P(Q_1)$ equal? If so, we can also do the hypothesis test.
+\end{enumerate}
+
+\subsubsection*{Discussion using empirical risk}
+
+In the second use case scenario it is required that the benefit of a AMIDST induced marketing campaign should be more than 5 percent higher than a normal campaign. 
+
+Based on the size of the loan it is possible to reason about the cost of defaulting $c_i(0|1)$ and also the cost of declining the loan application if the customer actually would have not defaulted $c_i(1|0)$.  The classification problem reduces to whether $c_i(0|1)p_i$ is higher than $c_i(1|0)(1-p_i)$, which is the same as comparing $p_i$ with $c_i(1|0)/(c_i(0|1 + c_i(1|0))$. 
 
 In order to discuss the cost of using this classification method, compared to a perfect classifier, we propose this implementation of the loss function
 
@@ -86,34 +189,43 @@ In order to discuss the cost of using this classification method, compared to a 
 \label{def:empRiskBank}
 L(x_i, h(x_i), y_i) = 
 \begin{cases}
-0     &\quad \mbox{for} \quad h(x_i) = 1 \quad \& \quad y_i = 1\\
-c_i(2|1)    &\quad \mbox{for} \quad h(x_i) = 2 \quad \& \quad y_i = 1\\
-c_i(1|2)      &\quad \mbox{for} \quad h(x_i) = 1 \quad \& \quad y_i = 2\\
-0   &\quad \mbox{for} \quad h(x_i) = 2 \quad \& \quad y_i = 2.
+0     &\quad \mbox{for} \quad h(x_i) = 0 \quad \& \quad y_i = 0\\
+c_i(1|0)    &\quad \mbox{for} \quad h(x_i) = 1 \quad \& \quad y_i = 0\\
+c_i(0|1)      &\quad \mbox{for} \quad h(x_i) = 0 \quad \& \quad y_i = 1\\
+0   &\quad \mbox{for} \quad h(x_i) = 1 \quad \& \quad y_i = 1.
 \end{cases}
 \end{equation}
 
-In the cases where a loan is given, each $y_i$ is determined by weather the loan has defaulted or not, exactly two years later.  The loss function is therefore only partially known.  It is only known at the $x_i$s where a loan was actually given.  If we define a function $h_{pre}(x): X \rightarrow Y$ as the decision rule that the bank applied more than two years ago, then $y_i$ is only known given $h_{pre}(x_i) = 1$.  We define $Y_{acc} = \{y_i \in Y | h_{pre}(x_i) = 1\}$ and the size of $Y_{acc}$ is  $m_{acc}$.
+In this context, the loss function is only partially known.  It is only known at the $x_i$s where the subject was part of the default marketing campaign and a loan was actually given.  We define a function $h_{pre}(x): \Omega_X \rightarrow \Omega_Y$ as the decision rule which involves that the bank decided to offer a loan and also that the subject decided to accept the loan more than two years ago.  Consequently, $y_i$ is only known given $h_{pre}(x_i) = 1$.  We define $\bv{x_{acc}} = \{x_i \in \bv{x} | h_{pre}(x_i) = 1\}$, $\bv{y_{acc}} = \{y_i \in \bv{y} | h_{pre}(x_i) = 1\}$ and the sizes of $\bv{x_{acc}} $ and $\bv{y_{acc}} $ are equal to $n_{acc}$.
 
-If we let $y_{acc,i}$ be an element of $Y_{acc}$ and $x_{acc,i} \in X_{acc}$ be a corresponding element to $y_{acc.i}$, then an estimate of empirical risk is 
+If we let $y_{acc,i}$ be an element of $\bv{y_{acc}} $ and $x_{acc,i} \in \bv{x_{acc}} $ be a corresponding element to $y_{acc.i}$, then an estimate of empirical risk is 
 
 \begin{equation}
 \label{def:empRiskLimited}
-R_{emp}(h, X_{acc}) = m_{acc}^{-1} \sum_{i=1}^{m_{acc}} L(x_{acc,i}, h(x_{acc,i}), y_{acc,i}).
+R_{emp}(h, \bv{x_{acc}}) = n_{acc}^{-1} \sum_{i=1}^{n_{acc}} L(x_{acc,i}, h(x_{acc,i}), y_{acc,i}).
 \end{equation}
 
-This approximation must be treated with care because the $x_i$s are not taken randomly, but they are filtered by when the decision rule $h_{pre}(x_i)$ is equal to one.  However, $R_{emp}(h, X_{acc})$ has a practical interpretation.  It is the extra cost of using the decision rule $h$ instead of a perfect classifier on data that are already filtered by $h_{pre}(x_i)$.  Moreover, this number can be compared to $R_{emp}(h_{pre}, X_{acc})$, which is the cost associated with using $h_{pre}$ on $X_{acc}$.  It is therefore possible to outline if there is a financial gain of using a two stage filter, that is using $h_{pre}$ prior to $h$, compared to only using $h_{pre}$.
+This approximation must be treated with care because the $x_{acc,i}$s are not taken randomly, but they are filtered by when the decision rule $h_{pre}(x_i)$ is equal to one.  However, $R_{emp}(h, X_{acc})$ has a practical interpretation.  It is the extra cost of using the decision rule $h$ instead of a perfect classifier on data that are already filtered by $h_{pre}(x_i)$.  Moreover, this number can be compared to $R_{emp}(h_{pre}, \bv{x_{acc}})$, which is the cost associated with using $h_{pre}$ on $\bv{x_{acc}}$.  It is therefore possible to outline if there is a financial gain of using a two stage filter, that is using $h_{pre}$ prior to $h$, compared to only using $h_{pre}$.
 
-The two stage scenario is of cause an interesting scenario by itself, but it is probably more interesting to see wether it makes sense to use $h$ instead of $h_{pre}$.  If only a low percentage of customers are denied a loan, then equation \eqref{def:empRiskLimited} is a good approximation of the total empirical risk.  However, if there is a substantial amount of customers that is denied a loan, then the measure contains more uncertainty. 
+The two stage scenario is of cause an interesting scenario by itself, but it is probably more interesting to see whether it makes sense to use $h$ instead of $h_{pre}$.  
 
-One practical way to compensate for this is to randomly draw a certain subset of customers that are denied a loan two years ago $X_{dec}$ and use domain experts to reason about their abilities to not default.  After an empirical risk is found on $X_{dec}$, it would be possible to \emph{estimate} the total empirical risk by weighting by the fractions of sizes 
+%If only a low percentage of customers are denied a loan, then equation \eqref{def:empRiskLimited} is a good approximation of the total empirical risk.  However, if there is a substantial amount of customers that is denied a loan, then the measure contains more uncertainty. 
+%
+%One practical way to compensate for this is to randomly draw a certain subset of customers that are denied a loan two years ago $\bv{x_{dec}}$ and use domain experts to reason about their abilities to not default.  After an empirical risk is found on $\bv{x_{dec}}$, it would be possible to \emph{estimate} the total empirical risk by weighting by the fractions of sizes 
+%
+%\begin{equation}
+%\label{def:empRiskTotal}
+%\hat{R}_{emp}(h, \bv{x}) = \frac{n_{acc}}{n}R_{emp}(h, \bv{x_{acc}})  +  \frac{(n - n_{acc})}{n}R_{emp}(h, \bv{x_{dec}}).
+%\end{equation}
 
-\begin{equation}
-\label{def:empRiskTotal}
-\hat{R}_{emp}(h, X) = \frac{m_{acc}}{m}R_{emp}(h, X_{acc})  +  \frac{(m - m_{acc})}{m}R_{emp}(h, X_{dec}).
-\end{equation}
 
 
+\subsubsection*{Questions for the second use case scenario: }
+\begin{enumerate}
+\item How can we possibly find out which is least costly of $h$ and $h_{pre}$? This is the key problem in my opinion.
+\item What will be the sizes of $n_0$ and $n_1$.
+\item Are each test sample completely independent?
+\end{enumerate}
 
 
 
