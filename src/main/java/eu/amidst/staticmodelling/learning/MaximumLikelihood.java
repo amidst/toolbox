@@ -3,6 +3,8 @@ package eu.amidst.staticmodelling.learning;
 
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
+import eu.amidst.core.distribution.exponentialfamily.ExponentialFamilyDistribution;
+import eu.amidst.core.distribution.exponentialfamily.MultinomialDistribution;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.utils.Utils;
@@ -32,10 +34,10 @@ public class MaximumLikelihood implements LearningAlgorithm{
             if (Utils.isMissing(dataInstance.getValue(i)) && bn.getVariable(i).isLeave())
                 continue;
 
-            Distribution estimator = bn.getEstimator(i);
-            double[]  expPara = estimator.getExpectationParameters();
-            double[]  suffStatistics = estimator.getSufficientStatistics(dataInstance);
-            Utils.accumulatedSumVectors(expPara, suffStatistics);
+            ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getEstimator(i);
+            Distribution.ExpectationParameters expPara = estimator.getExpectationParameters();
+            ExponentialFamilyDistribution.SufficientStatistics suffStatistics = estimator.getSufficientStatistics(dataInstance);
+            Utils.accumulatedSumVectors(expPara.getExpectationParameters(), ((MultinomialDistribution.SufficientStatistics)suffStatistics).getCounts());
         }
     }
     @Override
