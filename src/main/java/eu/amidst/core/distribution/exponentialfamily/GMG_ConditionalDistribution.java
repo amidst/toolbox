@@ -7,13 +7,13 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class MultinomialDistribution implements ExponentialFamilyDistribution {
+public class GMG_ConditionalDistribution implements ExponentialFamilyDistribution {
+
 
     @Override
     public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
         return null;
     }
-
     @Override
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
@@ -45,23 +45,17 @@ public class MultinomialDistribution implements ExponentialFamilyDistribution {
     }
 
     public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
-        private double[] counts;
-        private double sumCounts;
+        private GG_ConditionalDistribution[] estim;
 
-        public double[] getCounts () {
-            return counts;
-        }
-        public double getSumCounts() {
-            return sumCounts;
-        }
+
 
     }
-    public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters{
+
+    public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
         double[] params;
 
-        public double[] getExpectationParameters() {
+        public double[] getExpectationParameters(){
             return params;
         }
-
     }
 }
