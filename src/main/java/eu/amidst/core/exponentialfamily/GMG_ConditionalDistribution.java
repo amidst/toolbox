@@ -1,4 +1,5 @@
-package eu.amidst.core.distribution.exponentialfamily;
+package eu.amidst.core.exponentialfamily;
+
 
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.potential.Potential;
@@ -6,13 +7,13 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class MultivariateGaussianDistribution implements ExponentialFamilyDistribution {
+public class GMG_ConditionalDistribution implements ExponentialFamilyDistribution {
+
 
     @Override
     public Potential getRestrictedPotentialExceptFor(DataInstance instance, int varID) {
         return null;
     }
-
     @Override
     public Potential getRestrictedPotential(DataInstance instance) {
         return null;
@@ -44,9 +45,12 @@ public class MultivariateGaussianDistribution implements ExponentialFamilyDistri
     }
 
     public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
-        private double[] means;
-        private double[][] covMatrix;
+        private GG_ConditionalDistribution[] estim;
+
+
+
     }
+
     public class ExpectationParameters implements ExponentialFamilyDistribution.ExpectationParameters {
         double[] params;
 
