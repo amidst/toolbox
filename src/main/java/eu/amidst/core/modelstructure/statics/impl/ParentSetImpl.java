@@ -1,5 +1,6 @@
 package eu.amidst.core.modelstructure.statics.impl;
 
+import eu.amidst.core.header.statics.Variable;
 import eu.amidst.core.modelstructure.ParentSet;
 
 /**
@@ -8,7 +9,7 @@ import eu.amidst.core.modelstructure.ParentSet;
 public class ParentSetImpl implements ParentSet{
     private int[] parentIDs;
 
-    public void addParent(int varID){
+    public void addParent(Variable variable){
 
     }
 

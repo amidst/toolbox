@@ -28,4 +28,4 @@ public interface Distribution {
     //public double[] getStandardParameters();
 
     //public void setStandardParameters(double[] par);
-}
+  }
