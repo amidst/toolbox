@@ -2,8 +2,8 @@ package eu.amidst.staticmodelling.learning;
 
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
-import eu.amidst.core.distribution.exponentialfamily.ExponentialFamilyDistribution;
-import eu.amidst.core.distribution.exponentialfamily.MultinomialDistribution;
+import eu.amidst.core.exponentialfamily.ExponentialFamilyDistribution;
+import eu.amidst.core.exponentialfamily.MultinomialDistribution;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.potential.Potential;
@@ -39,7 +39,7 @@ public class MaximumMarginalLikelihood implements LearningAlgorithm{
             if (Utils.isMissing(dataInstance.getValue(i)) && bn.getVariable(i).isLeave())
                 continue;
 
-            ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getEstimator(i);
+            ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getDistribution(i);
             Distribution.ExpectationParameters expPara = estimator.getExpectationParameters();
             Potential pot = model.inferenceForLearning(dataInstance, i);
             ExponentialFamilyDistribution.SufficientStatistics expSuffStatistics = estimator.getExpectedSufficientStatistics(dataInstance, pot);
