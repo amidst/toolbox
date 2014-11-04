@@ -30,10 +30,12 @@ public class StaticModelHeader {
     }
 
     public Variable addHiddenVariable(VariableBuilder builder) {
+
         VariableImplementation var = new VariableImplementation(builder);
         var.setVarID(allVariables.size());
         allVariables.add(var);
         return var;
+        
     }
 
     public List<Variable> getVariables() {
@@ -60,7 +62,6 @@ public class StaticModelHeader {
         public VariableImplementation(VariableBuilder builder) {
 
             this.name = builder.getName();
-            this.varID = builder.getVarID();
             this.observable = builder.isObservable();
 
 
