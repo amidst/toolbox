@@ -60,6 +60,17 @@ public class MultinomialIndex {
         return assignment;
     }
 
+    public static int getNumberOfPosssibleAssignments (List<Variable> vars){
+
+        int n=0;
+        for (Variable v:vars) {
+            n = n * v.getNumberOfStates();
+        }
+        return n;
+    }
+
+
+
 
     //TEST
 
