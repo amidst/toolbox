@@ -19,6 +19,16 @@ public class CLG implements ConditionalDistribution {
     public CLG(Variable var, List<Variable> parents) {
         this.var = var;
         this.parents = parents;
+
+        //Initialize the distribution. Is this initialization "standard"?
+        this.intercept = 0;
+        coeffParents = new double[parents.size()];
+        for(int i=0;i<parents.size();i++){
+            coeffParents[i] = 1;
+        }
+        this.sd = 1;
+
+
     }
 
     public double getIntercept() {
@@ -62,7 +72,6 @@ public class CLG implements ConditionalDistribution {
         return(univariateNormal);
     }
 
-
     @Override
     public List<Variable> getConditioningVariables() {
         return parents;
@@ -82,4 +91,6 @@ public class CLG implements ConditionalDistribution {
     public Variable getVariable() {
         return var;
     }
+
+
 }
