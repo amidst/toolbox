@@ -7,5 +7,5 @@ public interface UnivariateDistribution extends Distribution {
 
     public double getLogProbability (double value);
     public double getProbability(double value);
-    public void updateCounts(double value);
+
 }
