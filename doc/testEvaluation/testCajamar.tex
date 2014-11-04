@@ -1,0 +1,87 @@
+\documentclass{article}
+
+\usepackage{times}
+\usepackage{graphicx}
+\usepackage{latexsym}
+
+\usepackage{bm}
+\usepackage{amsbsy}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{subfigure}
+
+\usepackage{theorem}
+
+\theoremstyle{theorem}
+\newtheorem{theorem}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\bu}[1]{\mathbf{#1}}
+\newcommand{\bv}[1]{\bm{#1}}
+
+
+
+
+\title{Practical Considerations for Testing the Cajamar Use Case}
+%\author{Sigve Hovda \\
+%Norwegian University of Science and Technology\\
+%Department of Computer and Information Science,
+%Trondheim, Norway\\
+%sigveh@idi.ntnu.no}
+\date{}
+
+
+\begin{document}
+\maketitle
+
+There are two application scenarios here.  The first one is prediction of whether a client will default within two years and the second is related to the benefit of a marketing campaign.
+
+\section{Default prediction}
+
+It is our understanding that the dataset is all clients that Cajamar had within a time frame.  For clarity, we will define the \emph{time of prediction} as the time when clients are predicted.  This takes into account data from six months before the time of prediction and up to the time of prediction.  The \emph{time of evaluation} is exactly 2 years after the time of prediction.  
+
+The only criterion for being a member of the dataset is that the member has been a client continuously from six months before the time of prediction and up to the time of evaluation.  Moreover, every member of the dataset is characterised as either defaulter or not defaulter.  There are no missing values related to class labels.
+
+The dataset is divided up into a training set and a test set by a random completely process.
+
+\subsection*{Requirements}
+
+In the first use case scenario, it is required that the AUROC should be above 0.90.
+ 
+\subsection*{Questions: }
+\begin{enumerate}
+\item How many defaulters and non defaulters do we have on both the training set and the test set?
+\item Can you go though all the information and make sure that it is correct.
+\end{enumerate}
+
+
+\section{AMIDST induced marketing campaign}
+
+This use case scenario seem a bit more difficult.  In the requirement engineering document it is required that the benefit of an AMIDST induced marketing campaign should be more than 5 percent higher than a normal campaign. 
+
+To solve such a problem one would need to introduce cost functions.  For every client one need to set a cost for this client for not accepting the offer, given that he will not default.  Also a cost for the client accepting an offer, given that he will default will also need to be set.  
+
+There is an underlying flaw in reasoning here, because we only who will accept on marketing campaigns that are already done.  
+
+Currently it is our understanding that all we can do regarded to this is to test whether it makes sense to use the amidst solution as a secondary filter on top of a campaign that has already been conducted.
+
+
+%It is possible to assign set a number which reflects the cost of a particular client being classified by the system as a defaulter when he actually is not defaulting (two years later).  It is also possible to assign a cost for a particular client when the system says he will not default, when he actually will.
+
+\subsection*{Questions: }
+\begin{enumerate}
+\item How many clients are usually targeted on a campaign?
+\item Is this the same data as in user scenario one or is it new data from a new time frame?
+\item Are the marketing campaigns very different? Is it likely that information from one campaign can carry over to the next?
+\end{enumerate}
+
+\bibliographystyle{named}
+\bibliography{ijcai13}
+
+\end{document}
+
