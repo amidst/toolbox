@@ -20,7 +20,7 @@ public class BayesianNetworkImpl implements BayesianNetwork {
     }
 
     @Override
-    public ParentSet getParentSet(int varID) {
+    public ParentSet getParentSet(Variable variable) {
         return null;
     }
 
@@ -30,7 +30,7 @@ public class BayesianNetworkImpl implements BayesianNetwork {
     }
 
     @Override
-    public Distribution getEstimator(int varId) {
+    public Distribution getDistribution(int varId) {
         return null;
     }
 
