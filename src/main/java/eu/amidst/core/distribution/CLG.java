@@ -1,5 +1,6 @@
 package eu.amidst.core.distribution;
 import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.statics.Assignment;
 import java.util.List;
 
 /**
@@ -44,14 +45,14 @@ public class CLG implements ConditionalDistribution {
         this.sd = sd;
     }
 
-    public Normal getUnivariateNormal(Assignment parentAssignment){
+    public Normal getUnivariateNormal(Assignment parentsAssignment){
 
         double mean = intercept;
         Normal univariateNormal = new Normal(var);
         int i = 0;
 
         for (Variable v:parents) {
-            mean = mean + coeffParents[i] * parentAssignment.getValue(v);
+            mean = mean + coeffParents[i] * parentsAssignment.getValue(v);
             i++;
         }
 
