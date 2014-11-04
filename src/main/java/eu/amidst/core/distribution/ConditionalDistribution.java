@@ -10,9 +10,6 @@ import java.util.List;
  */
 public interface ConditionalDistribution extends Distribution {
 
-    //Is it necessary? Is the same as getParents from BN structure
-    public List<Variable> getConditioningVariables();
-
     public double getProbability (double value, Assignment parentsAssignment);
 
     public double getLogProbability (double value, Assignment parentsAssignment);

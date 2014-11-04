@@ -24,9 +24,9 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
         //Initialize the distribution uniformly for each configuration of the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(parents);
 
-        probabilities = new Normal[size];
+        this.probabilities = new Normal[size];
         for (int i=0;i<size;i++) {
-            probabilities[i] = new Normal(var);
+            this.probabilities[i] = new Normal(var);
         }
 
     }
@@ -48,9 +48,7 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
         this.setNormal(position,normalDistribution);
     }
 
-
-    @Override
-    public List<Variable> getConditioningVariables() {
+    public List<Variable> getParents() {
         return parents;
     }
 

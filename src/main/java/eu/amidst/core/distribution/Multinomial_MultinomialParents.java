@@ -25,9 +25,9 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
 
         //Initialize the distribution uniformly for each configuration of the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(parents);
-        probabilities = new Multinomial[size];
+        this.probabilities = new Multinomial[size];
         for (int i=0;i<size;i++) {
-            probabilities[i] = new Multinomial(var);
+            this.probabilities[i] = new Multinomial(var);
         }
     }
 
@@ -48,8 +48,8 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
     }
 
 
-    @Override
-    public List<Variable> getConditioningVariables() {
+
+    public List<Variable> getParents() {
         return parents;
     }
 
