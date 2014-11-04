@@ -20,13 +20,8 @@ public class BayesianNetworkImpl implements BayesianNetwork {
     }
 
     @Override
-<<<<<<< HEAD
-    public ParentSet getParentSet(Variable variable) {
-        return null;
-=======
     public ParentSet<Variable> getParentSet(Variable variable) {
         return parents[variable.getVarID()];
->>>>>>> b3b5ba83cfe63708302404628f2e9fecb1021023
     }
 
     @Override
@@ -34,14 +29,8 @@ public class BayesianNetworkImpl implements BayesianNetwork {
         return estimators[var.getVarID()];
     }
 
-    @Override
-<<<<<<< HEAD
-    public Distribution getDistribution(int varId) {
-        return null;
-=======
     public void setDistribution(Variable var, Distribution distribution){
         this.estimators[var.getVarID()]=distribution;
->>>>>>> b3b5ba83cfe63708302404628f2e9fecb1021023
     }
 
     @Override

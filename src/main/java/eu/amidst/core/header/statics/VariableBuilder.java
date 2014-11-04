@@ -5,7 +5,7 @@ import eu.amidst.core.database.statics.readers.Kind;
 /**
  * Created by andresmasegosa on 04/11/14.
  */
-public class VariableBuilder {
+public final class VariableBuilder {
     private static String name;
     private static boolean observable;
     private static int numberOfStates;
