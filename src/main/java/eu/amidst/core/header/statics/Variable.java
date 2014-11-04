@@ -15,10 +15,4 @@ public interface Variable {
 
     public int getNumberOfStates();
 
-    public boolean isLeave();
-
-    public void setLeave(boolean isLeave);
-
-    public boolean isContinuous();
-
 }
