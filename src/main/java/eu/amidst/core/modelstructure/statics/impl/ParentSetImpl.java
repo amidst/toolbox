@@ -14,11 +14,8 @@ public class ParentSetImpl implements ParentSet<Variable>{
     private ArrayList<Variable> vars;
 
     public void addParent(Variable variable){
-<<<<<<< HEAD
-=======
         vars.add(variable);
     }
->>>>>>> b3b5ba83cfe63708302404628f2e9fecb1021023
 
     @Override
     public List<Variable> getParents() {
