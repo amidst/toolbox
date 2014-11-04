@@ -10,6 +10,8 @@
 *.ear
 
 # other pdfs to ignore
+doc/testEvaluation/testCajamar.*
+doc/testEvaluation/testDaimler.*
 doc/presentations/omv_meeting.pdf
 doc/requirementEngineering/REproccess.pdf
 doc/requirementEngineering/REproccessOLD.pdf
