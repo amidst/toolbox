@@ -1,0 +1,57 @@
+package eu.amidst.core.distribution;
+
+import eu.amidst.core.header.statics.Assignment;
+import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.utils.MultinomialIndex;
+
+import java.util.List;
+
+/**
+ * Created by afa on 04/11/14.
+ */
+public class Normal_MultinomialParents implements ConditionalDistribution {
+
+    private Variable var;
+    private List<Variable> parents;
+
+    private Normal[] probabilities; //Not sure about the name. Perhaps "distribution" is better?
+
+
+    public Normal getNormal(Assignment parentsAssignment) {
+        int position =  MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
+        return probabilities[position];
+    }
+
+
+    public void setNormal(int position, Normal normalDistribution) {
+        this.probabilities[position] = normalDistribution;
+    }
+
+    public void setNormal(Assignment parentsAssignment, Normal normalDistribution) {
+        int position = MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
+        this.setNormal(position,normalDistribution);
+    }
+
+
+    @Override
+    public List<Variable> getConditioningVariables() {
+        return parents;
+    }
+
+    @Override
+    public double getProbability(double value, Assignment parentsAssignment) {
+
+       return this.getNormal(parentsAssignment).getProbability(value);
+    }
+
+    @Override
+    public double getLogProbability(double value, Assignment parentsAssignment) {
+
+        return this.getNormal(parentsAssignment).getLogProbability(value);
+    }
+
+    @Override
+    public Variable getVariable() {
+        return var;
+    }
+}
