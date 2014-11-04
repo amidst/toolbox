@@ -48,8 +48,8 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
     }
 
 
-
-    public List<Variable> getParents() {
+    @Override
+    public List<Variable> getConditioningVariables() {
         return parents;
     }
 
