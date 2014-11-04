@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface ConditionalDistribution extends Distribution {
 
+    public List<Variable> getConditioningVariables();
+
     public double getProbability (double value, Assignment parentsAssignment);
 
     public double getLogProbability (double value, Assignment parentsAssignment);
