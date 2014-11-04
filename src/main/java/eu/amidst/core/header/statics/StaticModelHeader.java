@@ -1,5 +1,8 @@
 package eu.amidst.core.header.statics;
 
+import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.statics.readers.Kind;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,12 +10,16 @@ import java.util.List;
  * Created by afa on 02/07/14.
  */
 public class StaticModelHeader {
-    private StaticDataHeader dataHeader;
+    private Attributes atts;
     private List<Variable> allVariables;
 
-    public StaticModelHeader(StaticDataHeader dataHeader) {
-        this.dataHeader = dataHeader;
+    public StaticModelHeader(Attributes atts) {
+        this.atts = atts;
         this.allVariables = new ArrayList<>();
+
+        //Create a Variable object for each att in atts. 
+
+
         for (Variable var : dataHeader.getObservedVariables()) {
             allVariables.add(var.getVarID(), var);
         }
@@ -22,10 +29,8 @@ public class StaticModelHeader {
         return dataHeader;
     }
 
-    public Variable addHiddenVariable(String name, int numberOfStates) {
-        VariableImplementation var = new VariableImplementation(name);
-        var.setNumberOfStates(numberOfStates);
-        var.setObservable(false);
+    public Variable addHiddenVariable(VariableBuilder builder) {
+        VariableImplementation var = new VariableImplementation(builder);
         var.setVarID(allVariables.size());
         allVariables.add(var);
         return var;
@@ -49,10 +54,16 @@ public class StaticModelHeader {
         private boolean observable;
         private int numberOfStates;
         private boolean isLeave = false;
+        private Kind stateSpaceKind;
 
 
-        public VariableImplementation(String name) {
-            this.name = new String(name);
+        public VariableImplementation(VariableBuilder builder) {
+
+            this.name = builder.getName();
+            this.varID = builder.getVarID();
+            this.observable = builder.isObservable();
+
+
         }
 
         public String getName() {
