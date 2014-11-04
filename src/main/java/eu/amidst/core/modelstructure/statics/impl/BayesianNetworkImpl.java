@@ -11,7 +11,7 @@ import eu.amidst.core.header.statics.StaticModelHeader;
  * Created by afa on 02/07/14.
  */
 public class BayesianNetworkImpl implements BayesianNetwork {
-    private ParentSet[] parents;
+    private ParentSet<Variable>[] parents;
     private Distribution[] estimators;
     private StaticModelHeader modelHeader;
 
@@ -20,28 +20,23 @@ public class BayesianNetworkImpl implements BayesianNetwork {
     }
 
     @Override
-    public ParentSet getParentSet(Variable variable) {
-        return null;
+    public ParentSet<Variable> getParentSet(Variable variable) {
+        return parents[variable.getVarID()];
     }
 
     @Override
-    public void initEstimators() {
-
+    public Distribution getDistribution(Variable var) {
+        return estimators[var.getVarID()];
     }
 
     @Override
-    public Distribution getDistribution(int varId) {
-        return null;
+    public void setDistribution(Variable var, Distribution distribution){
+        this.estimators[var.getVarID()]=distribution;
     }
 
     @Override
     public int getNumberOfNodes() {
         return 0;
-    }
-
-    @Override
-    public Variable getVariable(int varID) {
-        return null;
     }
 
     @Override
