@@ -1,5 +1,7 @@
 package eu.amidst.core.header.statics;
 
+import eu.amidst.core.database.statics.readers.Kind;
+
 /**
  * Created by afa on 02/07/14.
  */
