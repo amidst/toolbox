@@ -9,8 +9,5 @@ public interface DynamicVariable extends Variable {
 
     public int getTimeVarID(int previousTime);
 
-    public boolean isTemporalConnected();
-
-    public void setTemporalConnected(boolean isTemporalConnected);
-
+    public Variable getVariable();
 }
