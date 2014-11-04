@@ -28,12 +28,13 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         StaticModelHeader modelHeader =  new StaticModelHeader(dataHeader);
 
         VariableBuilder builder = new VariableBuilder();
-        builder.setName("H");
-        builder.setNumberOfStates(2);
-        builder.setStateSpaceKind(Kind.INTEGER);
-
+        VariableBuilder.setName("H");
+        VariableBuilder.setNumberOfStates(2);
+        VariableBuilder.setStateSpaceKind(Kind.INTEGER);
 
         Variable hiddenVar = modelHeader.addHiddenVariable(builder);
+
+
 
         this.hiddenClassID = hiddenVar.getVarID();
 
