@@ -14,17 +14,17 @@ public class Assignment {
         assignment_ = new HashMap(nOfVars);
     }
 
-    double getValue(Variable key){
+    public double getValue(Variable key){
         return assignment_.get(key);
     }
 
-    void setValue(Variable var, Double value){
+    public void setValue(Variable var, Double value){
         assignment_.put(var,value);
     }
 
     // Now you can use the following loop to iterate over all assignments:
     // for (Map.Entry<Variable, Double> entry : assignment_.entrySet()) return entry;
-    Set<Map.Entry<Variable,Double>> entrySet(){
+    public Set<Map.Entry<Variable,Double>> entrySet(){
         return assignment_.entrySet();
     }
 
