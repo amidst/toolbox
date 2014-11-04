@@ -47,8 +47,8 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
         int position = MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
         this.setNormal(position,normalDistribution);
     }
-
-    public List<Variable> getParents() {
+    @Override
+    public List<Variable> getConditioningVariables() {
         return parents;
     }
 
