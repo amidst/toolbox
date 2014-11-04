@@ -11,13 +11,11 @@ import eu.amidst.core.header.statics.StaticModelHeader;
  */
 public interface BayesianNetwork {
 
-    public ParentSet getParentSet(int varID);
+    public ParentSet getParentSet(Variable variable);
 
-    public Distribution getEstimator(int varId);
+    public Distribution getDistribution(Variable var);
 
-    public Variable getVariable(int varID);
-
-    public void initEstimators();
+    public void setDistribution(Distribution distribution);
 
     public int getNumberOfNodes();
 
