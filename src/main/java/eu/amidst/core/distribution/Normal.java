@@ -19,6 +19,7 @@ public class Normal implements UnivariateDistribution {
         this.sd = 1;
     }
 
+
     public double getMean() {
         return mean;
     }
@@ -42,7 +43,7 @@ public class Normal implements UnivariateDistribution {
 
     @Override
     public double getLogProbability (double x) {
-        return(Math.log(1/(sd * Math.sqrt(2 * Math.PI))) - 0.5 * Math.pow(((x-mean)/sd),2));
+        return (-Math.log(sd) - 0.5*Math.log(2*Math.PI) - 0.5 * Math.pow(((x-mean)/sd),2));
     }
 
     @Override
