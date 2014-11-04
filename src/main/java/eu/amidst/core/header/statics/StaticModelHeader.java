@@ -1,5 +1,6 @@
 package eu.amidst.core.header.statics;
 
+import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.Kind;
 
@@ -17,16 +18,23 @@ public class StaticModelHeader {
         this.atts = atts;
         this.allVariables = new ArrayList<>();
 
-        //Create a Variable object for each att in atts. 
+        for (Attribute att : atts.getSet()) {
+            VariableBuilder builder = new VariableBuilder();
 
+            VariableBuilder.setName(att.getName());
+            if (att.getKind() == Kind.INTEGER ) {
+                VariableBuilder.setNumberOfStates(2);
+            }
+            VariableBuilder.setStateSpaceKind(Kind.INTEGER);
 
-        for (Variable var : dataHeader.getObservedVariables()) {
+            VariableImplementation var = new VariableImplementation(builder);
+
             allVariables.add(var.getVarID(), var);
         }
     }
 
-    public StaticDataHeader getStaticDataHeader() {
-        return dataHeader;
+    public Attributes getStaticDataHeader() {
+        return atts;
     }
 
     public Variable addHiddenVariable(VariableBuilder builder) {
@@ -55,15 +63,11 @@ public class StaticModelHeader {
         private int varID;
         private boolean observable;
         private int numberOfStates;
-        private boolean isLeave = false;
         private Kind stateSpaceKind;
 
-
         public VariableImplementation(VariableBuilder builder) {
-
             this.name = builder.getName();
             this.observable = builder.isObservable();
-
 
         }
 
@@ -79,7 +83,9 @@ public class StaticModelHeader {
             this.varID = id;
         }
 
-        public void setObservable(boolean observable) { this.observable=observable; }
+        public void setObservable(boolean observable) {
+            this.observable = observable;
+        }
 
         public boolean isObservable() {
             return false;
@@ -93,16 +99,13 @@ public class StaticModelHeader {
             this.numberOfStates = numberOfStates;
         }
 
-        public boolean isLeave() {
-            return this.isLeave;
+        public Kind getStateSpaceKind() {
+            return stateSpaceKind;
         }
 
-        public void setLeave(boolean isLeave) {
-            this.isLeave = isLeave;
+        public void setStateSpaceKind(Kind stateSpaceKind) {
+            this.stateSpaceKind = stateSpaceKind;
         }
 
-        public boolean isContinuous(){
-            return this.numberOfStates==0;
-        }
     }
 }
