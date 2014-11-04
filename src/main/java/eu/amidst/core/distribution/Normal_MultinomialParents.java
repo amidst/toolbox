@@ -17,6 +17,22 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
     private Normal[] probabilities; //Not sure about the name. Perhaps "distribution" is better?
 
 
+    public Normal_MultinomialParents(Variable var, List<Variable> parents) {
+        this.var = var;
+        this.parents = parents;
+
+        //Initialize the distribution uniformly for each configuration of the parents.
+        int size = MultinomialIndex.getNumberOfPossibleAssignments(parents);
+
+        probabilities = new Normal[size];
+        for (int i=0;i<size;i++) {
+            probabilities[i] = new Normal(var);
+        }
+
+    }
+
+
+
     public Normal getNormal(Assignment parentsAssignment) {
         int position =  MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
         return probabilities[position];
