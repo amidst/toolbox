@@ -1,4 +1,4 @@
-package eu.amidst.core.distribution.exponentialfamily;
+package eu.amidst.core.exponentialfamily;
 
 
 import eu.amidst.core.database.statics.readers.DataInstance;

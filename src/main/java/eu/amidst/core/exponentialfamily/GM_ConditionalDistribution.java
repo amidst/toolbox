@@ -1,4 +1,4 @@
-package eu.amidst.core.distribution.exponentialfamily;
+package eu.amidst.core.exponentialfamily;
 
 
 import eu.amidst.core.database.statics.readers.DataInstance;
@@ -7,7 +7,7 @@ import eu.amidst.core.potential.Potential;
 /**
  * Created by afa on 03/07/14.
  */
-public class GMG_ConditionalDistribution implements ExponentialFamilyDistribution {
+public class GM_ConditionalDistribution implements ExponentialFamilyDistribution {
 
 
     @Override
@@ -32,7 +32,7 @@ public class GMG_ConditionalDistribution implements ExponentialFamilyDistributio
     @Override
     public void setExpectationParameters(ExponentialFamilyDistribution.ExpectationParameters ss) {
 
-    }
+     }
 
     @Override
     public ExpectationParameters getExpectationParameters() {
@@ -45,7 +45,7 @@ public class GMG_ConditionalDistribution implements ExponentialFamilyDistributio
     }
 
     public class SufficientStatistics extends ExponentialFamilyDistribution.SufficientStatistics {
-        private GG_ConditionalDistribution[] estim;
+        private GaussianDistribution[] estim;
 
 
 

@@ -1,6 +1,8 @@
 package eu.amidst.staticmodelling.models;
 
 import eu.amidst.core.database.statics.readers.DataInstance;
+import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.header.statics.VariableBuilder;
 import eu.amidst.core.modelstructure.statics.BNFactory;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
 import eu.amidst.core.header.statics.Variable;
@@ -25,7 +27,13 @@ public class NaiveBayesClusteringModel extends LearnableModel{
 
         StaticModelHeader modelHeader =  new StaticModelHeader(dataHeader);
 
-        Variable hiddenVar = modelHeader.addHiddenVariable("ClusterVar",2);
+        VariableBuilder builder = new VariableBuilder();
+        builder.setName("H");
+        builder.setNumberOfStates(2);
+        builder.setStateSpaceKind(Kind.INTEGER);
+
+
+        Variable hiddenVar = modelHeader.addHiddenVariable(builder);
 
         this.hiddenClassID = hiddenVar.getVarID();
 
@@ -47,7 +55,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
     public Potential inferenceForLearning(DataInstance data, int varID) {
 
         if (varID==this.getHiddenClassID()) {
-            return this.getBayesianNetwork().getEstimator(this.hiddenClassID).getRestrictedPotential(data);
+            return this.getBayesianNetwork().getDistribution(this.hiddenClassID).getRestrictedPotential(data);
         }
 
         PotentialTable potResult = new PotentialTable(this.getBayesianNetwork().getVariable(varID).getNumberOfStates());
@@ -58,12 +66,12 @@ public class NaiveBayesClusteringModel extends LearnableModel{
             if (Utils.isMissing(data.getValue(i)))
                 continue;
 
-            Potential pot = this.getBayesianNetwork().getEstimator(i).getRestrictedPotential(data);
+            Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
             potResult.combine(pot);
         }
 
         if (Utils.isMissing(data.getValue(varID))) {
-            Potential pot = this.getBayesianNetwork().getEstimator(varID).getRestrictedPotential(data);
+            Potential pot = this.getBayesianNetwork().getDistribution(varID).getRestrictedPotential(data);
             potResult.combine(pot);
         }
 
@@ -75,12 +83,12 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         if (!Utils.isMissing(data.getValue(this.getHiddenClassID())))
             return null;//Error
 
-        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getEstimator(this.getHiddenClassID()).getRestrictedPotential(data);
+        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getDistribution(this.getHiddenClassID()).getRestrictedPotential(data);
 
         for (int i=0; i<this.getBayesianNetwork().getNumberOfNodes(); i++) {
             if (Utils.isMissing(data.getValue(i)) || i==this.getHiddenClassID())
                 continue;
-            Potential pot = this.getBayesianNetwork().getEstimator(i).getRestrictedPotential(data);
+            Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
             potResult.combine(pot);
         }
         potResult.normalize();
