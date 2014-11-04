@@ -19,7 +19,7 @@ public class Multinomial implements UnivariateDistribution {
         this.probabilities = new double[var.getNumberOfStates()];
 
         for (int i=0;i<var.getNumberOfStates();i++){
-            this.probabilities[i]=1/var.getNumberOfStates();
+            this.probabilities[i]=1.0/var.getNumberOfStates();
         }
     }
 
