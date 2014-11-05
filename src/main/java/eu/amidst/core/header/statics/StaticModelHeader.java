@@ -2,6 +2,7 @@ package eu.amidst.core.header.statics;
 
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.statics.readers.DistType;
 import eu.amidst.core.database.statics.readers.Kind;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class StaticModelHeader {
         private boolean observable;
         private int numberOfStates;
         private Kind stateSpaceKind;
+        private DistType distributionType;
 
         public VariableImplementation(VariableBuilder builder) {
             this.name = builder.getName();
@@ -105,6 +107,14 @@ public class StaticModelHeader {
 
         public void setStateSpaceKind(Kind stateSpaceKind) {
             this.stateSpaceKind = stateSpaceKind;
+        }
+
+        public DistType getDistributionType() {
+            return distributionType;
+        }
+
+        public void setDistributionType(DistType distributionType) {
+            this.distributionType = distributionType;
         }
 
     }
