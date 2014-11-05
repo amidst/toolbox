@@ -36,13 +36,13 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
     }
 
     public void setMultinomial(Assignment parentsAssignment, Multinomial multinomialDistribution) {
-        int position = MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
+        int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents,parentsAssignment);
         this.setMultinomial(position,multinomialDistribution);
     }
 
     public Multinomial getMultinomial(Assignment parentsAssignment) {
 
-        int position = MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
+        int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents,parentsAssignment);
 
         return probabilities[position];
     }
