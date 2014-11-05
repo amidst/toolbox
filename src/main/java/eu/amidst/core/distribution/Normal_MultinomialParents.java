@@ -4,6 +4,7 @@ import eu.amidst.core.header.statics.Assignment;
 import eu.amidst.core.header.statics.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,10 +18,22 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
     private Normal[] probabilities; //Not sure about the name. Perhaps "distribution" is better?
 
 
-    public Normal_MultinomialParents(Variable var, List<Variable> parents) {
-        this.var = var;
-        this.parents = parents;
+    /**
+     * vasgs
+     *
+     * @param var
+     * @param parents
+     */
 
+    public Normal_MultinomialParents(Variable var, ArrayList<Variable> parents) {
+        this.var = var;
+        this.parents = (List<Variable>)parents.clone();
+/*
+        this.parents = new ArrayList<Variable>();
+        for (Variable v: parents){
+            this.parents.add(v);
+        }
+*/
         //Initialize the distribution uniformly for each configuration of the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(parents);
 
@@ -34,7 +47,7 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
 
 
     public Normal getNormal(Assignment parentsAssignment) {
-        int position =  MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
+        int position =  MultinomialIndex.getIndexFromVariableAssignment(this.parents,parentsAssignment);
         return probabilities[position];
     }
 
@@ -44,7 +57,7 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
     }
 
     public void setNormal(Assignment parentsAssignment, Normal normalDistribution) {
-        int position = MultinomialIndex.getIndexFromVariableAssignment(parentsAssignment);
+        int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents, parentsAssignment);
         this.setNormal(position,normalDistribution);
     }
     @Override

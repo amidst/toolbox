@@ -35,14 +35,14 @@ public class MultinomialIndex {
         return index;
     }
 
-    public static int getIndexFromVariableAssignment (Assignment assignment) {
+    public static int getIndexFromVariableAssignment (List<Variable> vars, Assignment assignment) {
 
         int lastPhiStride = 1;
         int index = 0;
 
-        for (Map.Entry<Variable,Double> pair: assignment.entrySet()){
-            index = index + (int)pair.getValue().doubleValue()*lastPhiStride;
-            lastPhiStride=lastPhiStride*pair.getKey().getNumberOfStates();
+        for (Variable var: vars){
+            index = index + (int)assignment.getValue(var)*lastPhiStride;
+            lastPhiStride=lastPhiStride*var.getNumberOfStates();
         }
         return index;
     }
