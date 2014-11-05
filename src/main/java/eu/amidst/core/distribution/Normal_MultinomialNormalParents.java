@@ -5,12 +5,13 @@ import eu.amidst.core.header.statics.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by afa on 04/11/14.
  */
-public class Normal_MultinomialNormalParents {//implements ConditionalDistribution {
+public class Normal_MultinomialNormalParents implements ConditionalDistribution {
 
     // This class can't implement the interface ConditionalDistribution because methods
     // getConditioningVariables, getProbability and getLogProbability don't have the same arguments.
@@ -19,14 +20,24 @@ public class Normal_MultinomialNormalParents {//implements ConditionalDistributi
     private Variable var;
     private List<Variable> multinomialParents;
     private List<Variable> normalParents;
+    private List<Variable> parents;
 
     private CLG[] distribution;
 
 
-    public Normal_MultinomialNormalParents (Variable var, List<Variable> multinomialParents, List<Variable> normalParents) {
+    public Normal_MultinomialNormalParents (Variable var, List<Variable> parents) {
         this.var = var;
-        this.multinomialParents = multinomialParents;
-        this.normalParents = normalParents;
+        this.multinomialParents = new ArrayList<Variable>();
+        this.normalParents = new ArrayList<Variable>();
+
+        for (Variable v:parents){
+            v.getDistributionKind();
+            if (){
+                this.multinomialParents.add(var);
+            }else{
+                this.normalParents.add(var);
+            }
+        }
 
         //Initialize the distribution with a CLG(var, normalParents) for each configuration of the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
@@ -36,16 +47,12 @@ public class Normal_MultinomialNormalParents {//implements ConditionalDistributi
         }
     }
 
-    public List<Variable> getMultinomialParents() {
-        return multinomialParents;
+    public List<Variable> getConditioningVariables() {
+        return parents;
     }
 
-    public List<Variable> getNormalParents() {
-        return normalParents;
-    }
-
-    public CLG getCLG(Assignment multinomialParentsAssignment) {
-        int position =  MultinomialIndex.getIndexFromVariableAssignment(multinomialParentsAssignment);
+    public CLG getCLG(Assignment assignment) {
+        int position =  MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
         return distribution[position];
     }
 
@@ -53,17 +60,17 @@ public class Normal_MultinomialNormalParents {//implements ConditionalDistributi
         this.distribution[position] = CLG_distribution;
     }
 
-    public void setCLG(Assignment multinomialParentsAssignment, CLG CLG_Distribution) {
-        int position = MultinomialIndex.getIndexFromVariableAssignment(multinomialParentsAssignment);
+    public void setCLG(Assignment assignment, CLG CLG_Distribution) {
+        int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
         this.setCLG(position, CLG_Distribution);
     }
 
-    public double getProbability(double value, Assignment multinomialParentsAssignment, Assignment normalParentsAssignment) {
-        return getCLG(multinomialParentsAssignment).getProbability(value, normalParentsAssignment);
+    public double getProbability(double value, Assignment assignment) {
+        return getCLG(assignment).getProbability(value, assignment);
     }
 
-    public double getLogProbability(double value, Assignment multinomialParentsAssignment, Assignment normalParentsAssignment) {
-        return getCLG(multinomialParentsAssignment).getLogProbability(value, normalParentsAssignment);
+    public double getLogProbability(double value, Assignment assignment) {
+        return getCLG(assignment).getLogProbability(value, assignment);
     }
 
     public Variable getVariable() {
