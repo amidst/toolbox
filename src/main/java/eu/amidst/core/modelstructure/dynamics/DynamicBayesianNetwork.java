@@ -3,14 +3,13 @@ package eu.amidst.core.modelstructure.dynamics;
 import eu.amidst.core.modelstructure.ParentSet;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.header.dynamics.DynamicModelHeader;
-import eu.amidst.core.header.dynamics.DynamicVariable;
+import eu.amidst.core.header.statics.Variable;
 
 /**
  * Created by afa on 03/07/14.
  */
 public interface DynamicBayesianNetwork {
 
-    public int getMarkovOrder();
 
     public void initEstimators();
 
@@ -18,9 +17,9 @@ public interface DynamicBayesianNetwork {
 
     public DynamicModelHeader getDynamicModelHeader();
 
-    public DynamicVariable getVariableById(int varID);
+    public Variable getVariableById(int varID);
 
-    public DynamicVariable getVariableByTimeId(int varTimeID);
+    public Variable getVariableByTimeId(int varTimeID);
 
     /* Methods accessing structure at time T*/
 
