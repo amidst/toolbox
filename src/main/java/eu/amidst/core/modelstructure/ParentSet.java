@@ -8,8 +8,9 @@ import java.util.List;
 /**
  * Created by afa on 02/07/14.
  */
-public interface ParentSet<E extends Variable> {
-    public void addParent(E variable);
-    public List<E> getParents();
+public interface ParentSet {
+    public void addParent(Variable variable);
+    public void removeParent(Variable variable);
+    public List<Variable> getParents();
     public int getNumberOfParents();
 }
