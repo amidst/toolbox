@@ -2,7 +2,7 @@ package eu.amidst.core.database.statics.readers.impl;
 
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
 import eu.amidst.core.database.statics.readers.ArffParserException;
@@ -112,7 +112,7 @@ public class ArffDataStream implements DataStream{
                         }
                     }
                     Attribute a = new Attribute(secondWord,
-                            Kind.parseKind(thirdWord));
+                            StateSpaceType.parseKind(thirdWord));
                     attributesInHeader.add(a);
                     //System.out.println("Attribute:  " + secondWord + "    Type:  " + thirdWord);
                 } else if (firstWord.equals("@data")) {
@@ -193,7 +193,7 @@ public class ArffDataStream implements DataStream{
         int intCount = 0;
 
         for(Attribute a : acceptable){
-            switch (a.getKind()) {
+            switch (a.getStateSpaceType()) {
                 case REAL:
                     doubleCount = doubleCount + 1;
                     break;
@@ -220,7 +220,7 @@ public class ArffDataStream implements DataStream{
         for (int headerIndex = 0; headerIndex < header.size(); headerIndex++) {
             for(Attribute a : acceptable){
                 if(a.equals(header.get(headerIndex))){
-                    switch (a.getKind()){
+                    switch (a.getStateSpaceType()){
                         case REAL:
                             if(doubleKeys[a.getIndex()] == -1) {
                                 doubleKeys[a.getIndex()] = headerIndex;

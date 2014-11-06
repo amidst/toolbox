@@ -3,7 +3,7 @@ package eu.amidst.core.header.statics;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.DistType;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,10 @@ public class StaticModelHeader {
             VariableBuilder builder = new VariableBuilder();
 
             VariableBuilder.setName(att.getName());
-            if (att.getKind() == Kind.INTEGER ) {
+            if (att.getStateSpaceType() == StateSpaceType.INTEGER ) {
                 VariableBuilder.setNumberOfStates(2);
             }
-            VariableBuilder.setStateSpaceKind(Kind.INTEGER);
+            VariableBuilder.setStateSpaceStateSpaceType(StateSpaceType.INTEGER);
 
             VariableImplementation var = new VariableImplementation(builder);
 
@@ -64,7 +64,7 @@ public class StaticModelHeader {
         private int varID;
         private boolean observable;
         private int numberOfStates;
-        private Kind stateSpaceKind;
+        private StateSpaceType stateSpaceStateSpaceType;
         private DistType distributionType;
 
         public VariableImplementation(VariableBuilder builder) {
@@ -101,12 +101,12 @@ public class StaticModelHeader {
             this.numberOfStates = numberOfStates;
         }
 
-        public Kind getStateSpaceKind() {
-            return stateSpaceKind;
+        public StateSpaceType getStateSpaceStateSpaceType() {
+            return stateSpaceStateSpaceType;
         }
 
-        public void setStateSpaceKind(Kind stateSpaceKind) {
-            this.stateSpaceKind = stateSpaceKind;
+        public void setStateSpaceStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
+            this.stateSpaceStateSpaceType = stateSpaceStateSpaceType;
         }
 
         public DistType getDistributionType() {

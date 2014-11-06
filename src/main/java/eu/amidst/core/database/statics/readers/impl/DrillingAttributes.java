@@ -3,7 +3,7 @@ package eu.amidst.core.database.statics.readers.impl;
 import com.google.common.collect.ImmutableSet;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
 
 import java.util.Set;
 
@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public class DrillingAttributes implements Attributes {
 
-    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", Kind.REAL);
-    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", Kind.REAL);
-    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", Kind.REAL);
+    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceType.REAL);
+    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceType.REAL);
+    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceType.REAL);
 
 
     private static Set<Attribute> attributes;

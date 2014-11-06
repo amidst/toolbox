@@ -1,6 +1,6 @@
 package eu.amidst.core.header.statics;
 
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
 
 /**
  * Created by andresmasegosa on 04/11/14.
@@ -10,7 +10,7 @@ public final class VariableBuilder {
     private static boolean observable;
     private static int numberOfStates;
     private static boolean isLeave = false;
-    private static Kind stateSpaceKind;
+    private static StateSpaceType stateSpaceStateSpaceType;
 
     public static String getName() {
         return name;
@@ -44,11 +44,11 @@ public final class VariableBuilder {
         VariableBuilder.isLeave = isLeave;
     }
 
-    public static Kind getStateSpaceKind() {
-        return stateSpaceKind;
+    public static StateSpaceType getStateSpaceStateSpaceType() {
+        return stateSpaceStateSpaceType;
     }
 
-    public static void setStateSpaceKind(Kind stateSpaceKind) {
-        VariableBuilder.stateSpaceKind = stateSpaceKind;
+    public static void setStateSpaceStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
+        VariableBuilder.stateSpaceStateSpaceType = stateSpaceStateSpaceType;
     }
 }
