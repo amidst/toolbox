@@ -1,5 +1,18 @@
+/**
+ ******************* ISSUES **************************
+ *
+ * 1. CODING: - this.multinomialParents or multinomialParents? Common criteria.
+ *
+ *             - methods are ordered? alphabetically?
+ *
+ *
+ * ***************************************************
+ */
+
+
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.database.statics.readers.DistType;
 import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -31,8 +44,7 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
         this.normalParents = new ArrayList<Variable>();
 
         for (Variable v:parents){
-            v.getDistributionKind();
-            if (){
+            if (v.getDistributionType().compareTo(DistType.MULTINOMIAL)==0){
                 this.multinomialParents.add(var);
             }else{
                 this.normalParents.add(var);
@@ -51,15 +63,34 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
         return parents;
     }
 
+    /**
+     * Gets a CLG distribution restricted to an assignment over a set of Multinomial parents. Let X and Y two sets of
+     * Normal variables, and Z a set of Multinomial. Then this method computes f(X|Y,Z=z).
+     * @param assignment An assignment over a set of parents. For generality reasons, apart from the Multinomial
+     *                   parents, the assignment contains values for the Normal parents as well (although they are
+     *                   not used in this case).
+     * @return a CLG distribution restricted to the assignment given as argument.
+     */
     public CLG getCLG(Assignment assignment) {
         int position =  MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
         return distribution[position];
     }
 
+    /**
+     * Sets a CLG distribution to the array of distributions in a position.
+     * @param position The position in which the CLG distribution is set.
+     * @param CLG_distribution A CLG distribution.
+     */
     public void setCLG (int position, CLG CLG_distribution){
         this.distribution[position] = CLG_distribution;
     }
 
+    /**
+     * Sets a CLG distribution to the array of distributions in the position determined by an Assignment. Note that the
+     * Assignment contains values for the Normal parents as well (although they are not used in this case).
+     * @param assignment
+     * @param CLG_Distribution
+     */
     public void setCLG(Assignment assignment, CLG CLG_Distribution) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
         this.setCLG(position, CLG_Distribution);

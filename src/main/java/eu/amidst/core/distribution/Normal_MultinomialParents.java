@@ -19,7 +19,7 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
 
 
     /**
-     * vasgs
+     *
      *
      * @param var
      * @param parents
@@ -27,13 +27,8 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
 
     public Normal_MultinomialParents(Variable var, ArrayList<Variable> parents) {
         this.var = var;
-        this.parents = (List<Variable>)parents.clone();
-/*
-        this.parents = new ArrayList<Variable>();
-        for (Variable v: parents){
-            this.parents.add(v);
-        }
-*/
+        this.parents = parents;
+
         //Initialize the distribution uniformly for each configuration of the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(parents);
 
