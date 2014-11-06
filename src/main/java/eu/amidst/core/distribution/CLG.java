@@ -1,3 +1,12 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. In the constructor, should we initialize the CLG attributes in this way?
+ *
+ *
+ * ********************************************************
+ */
+
 package eu.amidst.core.distribution;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.Assignment;
