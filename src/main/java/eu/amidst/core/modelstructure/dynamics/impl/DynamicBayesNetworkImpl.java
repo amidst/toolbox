@@ -5,7 +5,7 @@ import eu.amidst.core.modelstructure.ParentSet;
 import eu.amidst.core.modelstructure.dynamics.DynamicBayesianNetwork;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.header.dynamics.DynamicModelHeader;
-import eu.amidst.core.header.dynamics.DynamicVariable;
+import eu.amidst.core.header.statics.Variable;
 
 
 /**
@@ -24,11 +24,6 @@ public class DynamicBayesNetworkImpl implements DynamicBayesianNetwork {
 
 
     @Override
-    public int getMarkovOrder() {
-        return this.modelHeader.getMarkovOrder();
-    }
-
-    @Override
     public void initEstimators() {
 
     }
@@ -44,12 +39,12 @@ public class DynamicBayesNetworkImpl implements DynamicBayesianNetwork {
     }
 
     @Override
-    public DynamicVariable getVariableById(int varID) {
+    public Variable getVariableById(int varID) {
         return this.modelHeader.getVariableById(varID);
     }
 
     @Override
-    public DynamicVariable getVariableByTimeId(int varTimeID) {
+    public Variable getVariableByTimeId(int varTimeID) {
         return this.getVariableByTimeId(varTimeID);
     }
 
