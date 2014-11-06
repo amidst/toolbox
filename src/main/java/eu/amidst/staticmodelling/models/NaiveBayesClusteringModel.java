@@ -1,3 +1,4 @@
+/*
 package eu.amidst.staticmodelling.models;
 
 import eu.amidst.core.database.statics.readers.Attributes;
@@ -12,9 +13,11 @@ import eu.amidst.core.potential.Potential;
 import eu.amidst.core.potential.PotentialTable;
 import eu.amidst.core.utils.Utils;
 
+*/
 /**
  * Created by andresmasegosa on 28/08/14.
- */
+ *//*
+
 public class NaiveBayesClusteringModel extends LearnableModel{
 
     int hiddenClassID;
@@ -98,3 +101,4 @@ public class NaiveBayesClusteringModel extends LearnableModel{
     }
 
 }
+*/

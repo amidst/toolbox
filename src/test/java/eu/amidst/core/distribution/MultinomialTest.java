@@ -2,11 +2,12 @@ package eu.amidst.core.distribution;
 import java.util.List;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.header.statics.Variable;
-import eu.amidst.core.header.statics.VariableBuilder;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.header.Variable;
+import eu.amidst.core.header.VariableBuilder;
+import eu.amidst.core.database.statics.readers.DistType;
 import eu.amidst.core.database.statics.*;
-import eu.amidst.core.header.statics.*;
+import eu.amidst.core.header.Assignment;
+import eu.amidst.core.header.statics.StaticModelHeader;
 
 
 import eu.amidst.core.utils.MultinomialIndex;
