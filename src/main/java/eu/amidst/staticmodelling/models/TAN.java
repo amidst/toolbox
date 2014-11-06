@@ -1,8 +1,8 @@
 package eu.amidst.staticmodelling.models;
 
 
+import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.header.statics.StaticDataHeader;
 import eu.amidst.core.potential.Potential;
 
 /**
@@ -17,7 +17,7 @@ public class TAN extends LearnableModel implements Classifier {
     }
 
     @Override
-    public void buildStructure(StaticDataHeader modelHeader) {
+    public void buildStructure(Attributes atts) {
 
     }
 

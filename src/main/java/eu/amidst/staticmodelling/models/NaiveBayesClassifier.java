@@ -1,10 +1,10 @@
 package eu.amidst.staticmodelling.models;
 
 
+import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.modelstructure.statics.BNFactory;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
-import eu.amidst.core.header.statics.StaticDataHeader;
 import eu.amidst.core.header.statics.StaticModelHeader;
 import eu.amidst.core.potential.Potential;
 import eu.amidst.core.potential.PotentialTable;
@@ -56,9 +56,9 @@ public class NaiveBayesClassifier extends LearnableModel implements Classifier {
     }
 
     @Override
-    public void buildStructure(StaticDataHeader dataHeader) {
+    public void buildStructure(Attributes atts) {
 
-        StaticModelHeader modelHeader = new StaticModelHeader(dataHeader);
+        StaticModelHeader modelHeader = new StaticModelHeader(atts);
 
         BayesianNetwork net = BNFactory.createBN(modelHeader);
 

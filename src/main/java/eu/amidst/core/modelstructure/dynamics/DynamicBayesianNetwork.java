@@ -3,7 +3,7 @@ package eu.amidst.core.modelstructure.dynamics;
 import eu.amidst.core.modelstructure.ParentSet;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.header.dynamics.DynamicModelHeader;
-import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.Variable;
 
 /**
  * Created by afa on 03/07/14.

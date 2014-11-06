@@ -3,7 +3,7 @@ package eu.amidst.core.modelstructure.statics;
 
 import eu.amidst.core.modelstructure.ParentSet;
 import eu.amidst.core.distribution.Distribution;
-import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.statics.StaticModelHeader;
 
 /**

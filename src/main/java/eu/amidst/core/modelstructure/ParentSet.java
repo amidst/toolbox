@@ -1,6 +1,6 @@
 package eu.amidst.core.modelstructure;
 
-import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.Variable;
 import java.util.List;
 
 

@@ -1,4 +1,4 @@
-package eu.amidst.core.header.statics;
+package eu.amidst.core.header;
 
 import eu.amidst.core.database.statics.readers.DistType;
 import eu.amidst.core.database.statics.readers.StateSpaceType;
@@ -46,11 +46,11 @@ public final class VariableBuilder {
         VariableBuilder.isLeave = isLeave;
     }
 
-    public static StateSpaceType getStateSpaceStateSpaceType() {
+    public static StateSpaceType getStateSpaceType() {
         return stateSpaceStateSpaceType;
     }
 
-    public static void setStateSpaceStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
+    public static void setStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
         VariableBuilder.stateSpaceStateSpaceType = stateSpaceStateSpaceType;
     }
 

@@ -1,4 +1,4 @@
-package eu.amidst.core.header.statics;
+package eu.amidst.core.header;
 
 import eu.amidst.core.database.statics.readers.DistType;
 import eu.amidst.core.database.statics.readers.StateSpaceType;
@@ -16,7 +16,7 @@ public interface Variable {
 
     public int getNumberOfStates();
 
-    public StateSpaceType getStateSpaceStateSpaceType();
+    public StateSpaceType getStateSpaceType();
 
     public DistType getDistributionType();
 
