@@ -3,7 +3,6 @@ package eu.amidst.staticmodelling.models;
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
-import eu.amidst.core.header.statics.StaticDataHeader;
 import eu.amidst.core.potential.Potential;
 import eu.amidst.staticmodelling.learning.LearningAlgorithm;
 import eu.amidst.staticmodelling.learning.MaximumLikelihood;
@@ -17,7 +16,7 @@ public abstract class LearnableModel {
 
     LearningAlgorithm algorithm = new MaximumLikelihood();
 
-    public abstract void buildStructure(StaticDataHeader dataHeader);
+    //public abstract void buildStructure(StaticDataHeader dataHeader);
 
     public abstract Potential inferenceForLearning(DataInstance data, int varID);
 
@@ -37,8 +36,8 @@ public abstract class LearnableModel {
 
     public void updateModel(DataInstance data){
         //Should we check whether the data comes form where it expected to come?
-        if (data.getDataStream().getStaticDataHeader()!=this.getBayesianNetwork().getStaticModelHeader().getStaticDataHeader())
-            return;
+        //if (data.getDataStream().getStaticDataHeader()!=this.getBayesianNetwork().getStaticModelHeader().getStaticDataHeader())
+        //    return;
 
         algorithm.updateModel(data);
     }
