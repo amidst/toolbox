@@ -9,21 +9,21 @@ public final class Attribute {
     private final int index;
     private final String unit;
     private final String name;
-    private final Kind kind;
+    private final StateSpaceType stateSpaceType;
 
-    public Attribute(int index, String name, String unit, Kind kind) {
+    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType) {
         this.index = index;
         this.name = name.toUpperCase();
         this.unit = unit;
-        this.kind = kind;
+        this.stateSpaceType = stateSpaceType;
     }
 
 
-    public Attribute(String name, Kind kind) {
+    public Attribute(String name, StateSpaceType stateSpaceType) {
         this.index = -1;
         this.name = name.toUpperCase();
         this.unit = "NA";
-        this.kind = kind;
+        this.stateSpaceType = stateSpaceType;
     }
 
 
@@ -39,8 +39,8 @@ public final class Attribute {
         return name;
     }
 
-    public Kind getKind() {
-        return kind;
+    public StateSpaceType getStateSpaceType() {
+        return stateSpaceType;
     }
 
     @Override
@@ -50,7 +50,7 @@ public final class Attribute {
 
         Attribute attribute = (Attribute) o;
 
-        if (kind != attribute.kind) return false;
+        if (stateSpaceType != attribute.stateSpaceType) return false;
         if (!name.equals(attribute.name)) return false;
 
         return true;
@@ -59,7 +59,7 @@ public final class Attribute {
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + kind.hashCode();
+        result = 31 * result + stateSpaceType.hashCode();
         return result;
     }
 }
