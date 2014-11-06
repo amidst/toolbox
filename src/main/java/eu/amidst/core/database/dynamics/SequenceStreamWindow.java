@@ -1,16 +1,14 @@
 package eu.amidst.core.database.dynamics;
 
 
-import eu.amidst.core.header.dynamics.DynamicDataHeader;
+import eu.amidst.core.database.statics.readers.Attributes;
 
 /**
  * Created by afa on 03/07/14.
  */
 public interface SequenceStreamWindow {
 
-    public DynamicDataHeader getDynamicDataHeader();
-
-    public int getMarkovOrder();
+    public Attributes getDynamicAttributes();
 
     public int getWindowSize();
 
