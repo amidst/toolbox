@@ -14,6 +14,8 @@ import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.DistType;
 import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.Variable;
+import eu.amidst.core.header.VariableBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ public class StaticModelHeader {
             if (att.getStateSpaceType() == StateSpaceType.INTEGER ) {
                 VariableBuilder.setNumberOfStates(2);
             }
-            VariableBuilder.setStateSpaceStateSpaceType(StateSpaceType.INTEGER);
+            VariableBuilder.setStateSpaceType(StateSpaceType.INTEGER);
 
             VariableImplementation var = new VariableImplementation(builder);
 
@@ -76,6 +78,7 @@ public class StaticModelHeader {
         private int numberOfStates;
         private StateSpaceType stateSpaceStateSpaceType;
         private DistType distributionType;
+        private boolean isTemporalClone;
 
         public VariableImplementation(VariableBuilder builder) {
             this.name = builder.getName();
@@ -111,11 +114,11 @@ public class StaticModelHeader {
             this.numberOfStates = numberOfStates;
         }
 
-        public StateSpaceType getStateSpaceStateSpaceType() {
+        public StateSpaceType getStateSpaceType() {
             return stateSpaceStateSpaceType;
         }
 
-        public void setStateSpaceStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
+        public void setStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
             this.stateSpaceStateSpaceType = stateSpaceStateSpaceType;
         }
 
@@ -125,6 +128,14 @@ public class StaticModelHeader {
 
         public void setDistributionType(DistType distributionType) {
             this.distributionType = distributionType;
+        }
+
+        public boolean getIsTemporalClone(Variable var){
+            return true;
+        }
+
+        public void setIsTemporalClone() {
+            isTemporalClone = true;
         }
 
     }
