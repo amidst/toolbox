@@ -1,3 +1,13 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. Rename to Variables.
+ *
+ *
+ * ********************************************************
+ */
+
+
 package eu.amidst.core.header.statics;
 
 import eu.amidst.core.database.statics.readers.Attribute;

@@ -1,6 +1,22 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. Rename to DynamicVariables
+ *
+ *
+ * ********************************************************
+ */
+
+
+
 package eu.amidst.core.header.dynamics;
 
+import eu.amidst.core.database.statics.readers.Attribute;
+import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.statics.readers.DistType;
+import eu.amidst.core.database.statics.readers.Kind;
 import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.statics.VariableBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,44 +25,65 @@ import java.util.List;
  * Created by afa on 02/07/14.
  */
 public class DynamicModelHeader {
-    private DynamicDataHeader dataHeader;
-    private List<DynamicVariable> allVariables;
-    private int markovOrder = 1;
+    private Attributes atts;
+    private List<Variable> allVariables;
+    private List<Variable> temporalClones;
 
-    public DynamicModelHeader(DynamicDataHeader dataHeader, int markovOrder) {
-        this.dataHeader = dataHeader;
+    public DynamicModelHeader(Attributes atts) {
+        this.atts = atts;
+
         this.allVariables = new ArrayList<>();
-        for (DynamicVariable var : dataHeader.getObservedVariables()) {
+        for (Attribute att : atts.getSet()) {
+            VariableBuilder builder = new VariableBuilder();
+
+            VariableBuilder.setName(att.getName());
+            if (att.getKind() == Kind.INTEGER ) {
+                VariableBuilder.setNumberOfStates(2);
+            }
+            VariableBuilder.setStateSpaceKind(Kind.INTEGER);
+
+            VariableImplementation var = new VariableImplementation(builder);
+
             allVariables.add(var.getVarID(), var);
+
+            VariableImplementation temporalClone = var;
+            temporalClones.add(var.getVarID(),temporalClone);
         }
-
-        this.markovOrder=markovOrder;
     }
 
-    public int getMarkovOrder(){ return this.markovOrder; }
-
-    public DynamicDataHeader getDynamicDataHeader() {
-        return dataHeader;
+    public Variable getTemporalClone(Variable var){
+        return temporalClones.get(var.getVarID());
     }
 
-    public Variable addHiddenVariable(String name, int numberOfStates) {
-        DynamicVariableImplementation var = new DynamicVariableImplementation(name);
-        var.setNumberOfStates(numberOfStates);
-        var.setObservable(false);
+    public Variable getTemporalVar(Variable var){
+        return allVariables.get(var.getVarID());
+    }
+
+    public Attributes getAttributes() {
+        return atts;
+    }
+
+    public Variable addHiddenVariable(VariableBuilder builder) {
+
+        VariableImplementation var = new VariableImplementation(builder);
         var.setVarID(allVariables.size());
         allVariables.add(var);
+
+        VariableImplementation temporalClone = var;
+        temporalClones.add(var.getVarID(),temporalClone);
+
         return var;
     }
 
-    public List<DynamicVariable> getVariables() {
+    public List<Variable> getVariables() {
         return this.allVariables;
     }
 
-    public DynamicVariable getVariableById(int varID) {
+    public Variable getVariableById(int varID) {
         return this.allVariables.get(varID);
     }
 
-    public DynamicVariable getVariableByTimeId(int varTimeID){
+    public Variable getVariableByTimeId(int varTimeID){
         return this.allVariables.get(varTimeID%this.allVariables.size());
     }
 
@@ -54,18 +91,18 @@ public class DynamicModelHeader {
         return this.allVariables.size();
     }
 
-    private class DynamicVariableImplementation implements DynamicVariable {
+    private class VariableImplementation implements Variable {
         private String name;
         private int varID;
         private boolean observable;
         private int numberOfStates;
-        private boolean isLeave = false;
-        private boolean isTemporalConnected = true;
+        private Kind stateSpaceKind;
+        private DistType distributionType;
 
+        public VariableImplementation(VariableBuilder builder) {
+            this.name = builder.getName();
+            this.observable = builder.isObservable();
 
-
-        public DynamicVariableImplementation(String name) {
-            this.name = new String(name);
         }
 
         public String getName() {
@@ -80,10 +117,12 @@ public class DynamicModelHeader {
             this.varID = id;
         }
 
-        public void setObservable(boolean observable) { this.observable=observable; }
+        public void setObservable(boolean observable) {
+            this.observable = observable;
+        }
 
         public boolean isObservable() {
-            return false;
+            return observable;
         }
 
         public int getNumberOfStates() {
@@ -94,31 +133,21 @@ public class DynamicModelHeader {
             this.numberOfStates = numberOfStates;
         }
 
-        public boolean isLeave() {
-            return this.isLeave;
+        public Kind getStateSpaceKind() {
+            return stateSpaceKind;
         }
 
-        public void setLeave(boolean isLeave) {
-            this.isLeave = isLeave;
+        public void setStateSpaceKind(Kind stateSpaceKind) {
+            this.stateSpaceKind = stateSpaceKind;
         }
 
-        @Override
-        public int getTimeVarID(int previousTime) {
-            return DynamicModelHeader.this.getNumberOfVars()*(-previousTime) + this.getVarID();
+        public DistType getDistributionType() {
+            return distributionType;
         }
 
-        @Override
-        public boolean isTemporalConnected() {
-            return isTemporalConnected;
+        public void setDistributionType(DistType distributionType) {
+            this.distributionType = distributionType;
         }
 
-        @Override
-        public void setTemporalConnected(boolean isTemporalConnected) {
-            this.isTemporalConnected=isTemporalConnected;
-        }
-
-        public boolean isContinuous(){
-            return this.numberOfStates==0;
-        }
     }
 }
