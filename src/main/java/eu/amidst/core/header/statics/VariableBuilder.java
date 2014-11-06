@@ -1,5 +1,6 @@
 package eu.amidst.core.header.statics;
 
+import eu.amidst.core.database.statics.readers.DistType;
 import eu.amidst.core.database.statics.readers.StateSpaceType;
 
 /**
@@ -11,6 +12,7 @@ public final class VariableBuilder {
     private static int numberOfStates;
     private static boolean isLeave = false;
     private static StateSpaceType stateSpaceStateSpaceType;
+    private static DistType distributionType;
 
     public static String getName() {
         return name;
@@ -50,5 +52,13 @@ public final class VariableBuilder {
 
     public static void setStateSpaceStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
         VariableBuilder.stateSpaceStateSpaceType = stateSpaceStateSpaceType;
+    }
+
+    public static DistType getDistributionType() {
+        return distributionType;
+    }
+
+    public static void setDistributionType(DistType distributionType) {
+        VariableBuilder.distributionType = distributionType;
     }
 }
