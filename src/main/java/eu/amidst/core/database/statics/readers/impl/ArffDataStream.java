@@ -7,7 +7,6 @@ import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
 import eu.amidst.core.database.statics.readers.ArffParserException;
 import eu.amidst.core.database.statics.readers.Keys;
-import eu.amidst.core.header.statics.StaticDataHeader;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -22,7 +21,6 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 public class ArffDataStream implements DataStream{
     private Iterator iterator;
-    private StaticDataHeader staticDataHeader;
     private String fileName;
     private Set<Attribute> attributes;
     private int[] attributesActivation;
@@ -284,12 +282,6 @@ public class ArffDataStream implements DataStream{
     @Override
     public void restart() {
         dataInstance = 0;
-    }
-
-    @Override
-    public StaticDataHeader getStaticDataHeader() {
-        //TODO rethink this?
-        return staticDataHeader;
     }
 
 }

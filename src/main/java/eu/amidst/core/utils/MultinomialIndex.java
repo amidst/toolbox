@@ -1,10 +1,9 @@
 package eu.amidst.core.utils;
-import eu.amidst.core.header.statics.Assignment;
-import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.Assignment;
+import eu.amidst.core.header.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by afa on 03/11/14.

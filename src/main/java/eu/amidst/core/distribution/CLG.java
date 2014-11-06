@@ -1,6 +1,6 @@
 package eu.amidst.core.distribution;
-import eu.amidst.core.header.statics.Variable;
-import eu.amidst.core.header.statics.Assignment;
+import eu.amidst.core.header.Variable;
+import eu.amidst.core.header.Assignment;
 import java.util.List;
 
 /**

@@ -14,9 +14,9 @@ package eu.amidst.core.header.dynamics;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.DistType;
-import eu.amidst.core.database.statics.readers.Kind;
-import eu.amidst.core.header.statics.Variable;
-import eu.amidst.core.header.statics.VariableBuilder;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.Variable;
+import eu.amidst.core.header.VariableBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,17 +37,18 @@ public class DynamicModelHeader {
             VariableBuilder builder = new VariableBuilder();
 
             VariableBuilder.setName(att.getName());
-            if (att.getKind() == Kind.INTEGER ) {
+            if (att.getStateSpaceType() == StateSpaceType.INTEGER ) {
                 VariableBuilder.setNumberOfStates(2);
             }
-            VariableBuilder.setStateSpaceKind(Kind.INTEGER);
+            VariableBuilder.setStateSpaceType(StateSpaceType.INTEGER);
 
             VariableImplementation var = new VariableImplementation(builder);
 
             allVariables.add(var.getVarID(), var);
 
-            VariableImplementation temporalClone = var;
-            temporalClones.add(var.getVarID(),temporalClone);
+            VariableImplementation temporalClone = new VariableImplementation(builder);
+            temporalClone.setIsTemporalClone();
+            temporalClones.add(var.getVarID(), temporalClone);
         }
     }
 
@@ -69,7 +70,8 @@ public class DynamicModelHeader {
         var.setVarID(allVariables.size());
         allVariables.add(var);
 
-        VariableImplementation temporalClone = var;
+        VariableImplementation temporalClone = new VariableImplementation(builder);
+        temporalClone.setIsTemporalClone();
         temporalClones.add(var.getVarID(),temporalClone);
 
         return var;
@@ -96,8 +98,9 @@ public class DynamicModelHeader {
         private int varID;
         private boolean observable;
         private int numberOfStates;
-        private Kind stateSpaceKind;
+        private StateSpaceType stateSpaceType;
         private DistType distributionType;
+        private boolean isTemporalClone;
 
         public VariableImplementation(VariableBuilder builder) {
             this.name = builder.getName();
@@ -133,12 +136,13 @@ public class DynamicModelHeader {
             this.numberOfStates = numberOfStates;
         }
 
-        public Kind getStateSpaceKind() {
-            return stateSpaceKind;
+        @Override
+        public StateSpaceType getStateSpaceType() {
+            return stateSpaceType;
         }
 
-        public void setStateSpaceKind(Kind stateSpaceKind) {
-            this.stateSpaceKind = stateSpaceKind;
+        public void setStateSpaceType(StateSpaceType stateSpaceKind) {
+            this.stateSpaceType = stateSpaceType;
         }
 
         public DistType getDistributionType() {
@@ -147,6 +151,14 @@ public class DynamicModelHeader {
 
         public void setDistributionType(DistType distributionType) {
             this.distributionType = distributionType;
+        }
+
+        public boolean getIsTemporalClone(Variable var){
+            return true;
+        }
+
+        public void setIsTemporalClone() {
+            isTemporalClone = true;
         }
 
     }
