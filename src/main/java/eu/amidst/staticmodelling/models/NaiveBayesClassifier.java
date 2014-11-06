@@ -1,3 +1,4 @@
+/*
 package eu.amidst.staticmodelling.models;
 
 
@@ -11,9 +12,11 @@ import eu.amidst.core.potential.PotentialTable;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.staticmodelling.learning.MaximumLikelihood;
 
+*/
 /**
  * Created by afa on 02/07/14.
- */
+ *//*
+
 public class NaiveBayesClassifier extends LearnableModel implements Classifier {
 
     int classID = 0;
@@ -75,3 +78,4 @@ public class NaiveBayesClassifier extends LearnableModel implements Classifier {
 
 
 }
+*/

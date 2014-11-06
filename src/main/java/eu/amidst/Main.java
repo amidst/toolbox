@@ -1,3 +1,4 @@
+/*
 package eu.amidst;
 
 
@@ -46,3 +47,4 @@ public class Main {
         System.out.println("Hello World!");
     }
 }
+*/
