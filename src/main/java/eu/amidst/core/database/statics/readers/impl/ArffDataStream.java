@@ -1,3 +1,4 @@
+/*
 package eu.amidst.core.database.statics.readers.impl;
 
 import eu.amidst.core.database.statics.readers.Attribute;
@@ -16,9 +17,11 @@ import java.util.*;
 import au.com.bytecode.opencsv.CSVReader;
 
 
+*/
 /**
  * Created by sigveh on 10/7/14.
- */
+ *//*
+
 public class ArffDataStream implements DataStream{
     private Iterator iterator;
     private String fileName;
@@ -285,3 +288,4 @@ public class ArffDataStream implements DataStream{
     }
 
 }
+*/

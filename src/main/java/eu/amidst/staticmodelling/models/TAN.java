@@ -1,3 +1,4 @@
+/*
 package eu.amidst.staticmodelling.models;
 
 
@@ -5,9 +6,11 @@ import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.potential.Potential;
 
+*/
 /**
  * Created by afa on 02/07/14.
- */
+ *//*
+
 public class TAN extends LearnableModel implements Classifier {
     int classID;
 
@@ -36,3 +39,4 @@ public class TAN extends LearnableModel implements Classifier {
         this.classID=varID;
     }
 }
+*/

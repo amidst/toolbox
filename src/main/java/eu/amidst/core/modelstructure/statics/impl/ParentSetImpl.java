@@ -1,3 +1,4 @@
+/*
 package eu.amidst.core.modelstructure.statics.impl;
 
 import eu.amidst.core.header.Variable;
@@ -6,9 +7,11 @@ import eu.amidst.core.modelstructure.ParentSet;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * Created by afa on 02/07/14.
- */
+ *//*
+
 public class ParentSetImpl implements ParentSet<Variable>{
     private ArrayList<Variable> vars;
 
@@ -26,3 +29,4 @@ public class ParentSetImpl implements ParentSet<Variable>{
         return 0;
     }
 }
+*/

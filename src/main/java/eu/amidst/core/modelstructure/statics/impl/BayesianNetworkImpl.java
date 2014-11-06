@@ -1,3 +1,4 @@
+/*
 package eu.amidst.core.modelstructure.statics.impl;
 
 
@@ -7,9 +8,11 @@ import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.statics.StaticModelHeader;
 
+*/
 /**
  * Created by afa on 02/07/14.
- */
+ *//*
+
 public class BayesianNetworkImpl implements BayesianNetwork {
     private ParentSet<Variable>[] parents;
     private Distribution[] estimators;
@@ -43,3 +46,4 @@ public class BayesianNetworkImpl implements BayesianNetwork {
         return null;
     }
 }
+*/

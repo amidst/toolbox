@@ -1,3 +1,4 @@
+/*
 package eu.amidst.staticmodelling.models;
 
 import eu.amidst.core.database.statics.readers.DataInstance;
@@ -7,9 +8,11 @@ import eu.amidst.core.potential.Potential;
 import eu.amidst.staticmodelling.learning.LearningAlgorithm;
 import eu.amidst.staticmodelling.learning.MaximumLikelihood;
 
+*/
 /**
  * Created by andresmasegosa on 28/08/14.
- */
+ *//*
+
 public abstract class LearnableModel {
 
     BayesianNetwork bnet;
@@ -52,3 +55,4 @@ public abstract class LearnableModel {
     }
 
 }
+*/
