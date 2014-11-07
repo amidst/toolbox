@@ -39,7 +39,6 @@ public class DynamicModelHeader {
             VariableBuilder builder = new VariableBuilder();
 
             VariableBuilder.setName(att.getName());
-            VariableBuilder.setVarID(att.getIndex());
             VariableBuilder.setIsObservable();
 
             VariableBuilder.setStateSpaceType(att.getStateSpaceType());
@@ -56,11 +55,11 @@ public class DynamicModelHeader {
 
             VariableBuilder.setNumberOfStates(att.getNumberOfStates());
 
-            VariableImplementation var = new VariableImplementation(builder, false);
+            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
             allVariables.add(var.getVarID(), var);
 
 
-            VariableImplementation temporalClone = new VariableImplementation(builder, true);
+            VariableImplementation temporalClone = new VariableImplementation(var);
             temporalClones.add(var.getVarID(), temporalClone);
         }
     }
@@ -76,11 +75,10 @@ public class DynamicModelHeader {
 
     public Variable addHiddenVariable(VariableBuilder builder) {
 
-        VariableImplementation var = new VariableImplementation(builder, false);
-        var.setVarID(allVariables.size());
+        VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         allVariables.add(var);
 
-        VariableImplementation temporalClone = new VariableImplementation(builder, true);
+        VariableImplementation temporalClone = new VariableImplementation(var);
         temporalClones.add(var.getVarID(),temporalClone);
 
         return var;
@@ -115,14 +113,30 @@ public class DynamicModelHeader {
         private DistType distributionType;
         private final boolean isTemporalClone;
 
-        public VariableImplementation(VariableBuilder builder, boolean isTemporalClone) {
+        /*
+         * Constructor for a Variable (not a temporal clone)
+         */
+        public VariableImplementation(VariableBuilder builder, int varID) {
             this.name = builder.getName();
-            this.varID = builder.getVarID();
+            this.varID = varID;
             this.observable = builder.isObservable();
             this.numberOfStates = builder.getNumberOfStates();
             this.stateSpaceType = builder.getStateSpaceType();
             this.distributionType = builder.getDistributionType();
-            this.isTemporalClone = isTemporalClone;
+            this.isTemporalClone = false;
+        }
+
+        /*
+         * Constructor for a Temporal clone (based on a variable)
+         */
+        public VariableImplementation(Variable variable) {
+            this.name = variable.getName();
+            this.varID = variable.getVarID();
+            this.observable = variable.isObservable();
+            this.numberOfStates = variable.getNumberOfStates();
+            this.stateSpaceType = variable.getStateSpaceType();
+            this.distributionType = variable.getDistributionType();
+            this.isTemporalClone = true;
         }
 
         public String getName() {
