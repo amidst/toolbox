@@ -3,7 +3,7 @@ package eu.amidst.core.database.statics.readers.impl;
 import com.google.common.collect.ImmutableSet;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
 
 import java.util.Set;
 
@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public class ForTesting3Attributes implements Attributes {
 
-    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", Kind.INTEGER);
-    private final Attribute TWO_NAMES = new Attribute(1, "TWO NAMES", "NA", Kind.INTEGER);
-    private final Attribute THREE_NAMES_HERE = new Attribute(0, "THREE NAMES HERE", "NA", Kind.REAL);
+    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.INTEGER);
+    private final Attribute TWO_NAMES = new Attribute(1, "TWO NAMES", "NA", StateSpaceType.INTEGER);
+    private final Attribute THREE_NAMES_HERE = new Attribute(0, "THREE NAMES HERE", "NA", StateSpaceType.REAL);
 
     private static Set<Attribute> attributes;
     {

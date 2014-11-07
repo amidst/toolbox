@@ -1,9 +1,25 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. Rename to Variables.
+ * 2. We can/should remove all setters from VariableImplementation right?
+ * 3. Is there any need for the field atts? It is only used in the constructor.
+ *
+ * ********************************************************
+ */
+
+
 package eu.amidst.core.header.statics;
 
+import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.DistType;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.Variable;
+import eu.amidst.core.header.VariableBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -13,27 +29,81 @@ public class StaticModelHeader {
     private Attributes atts;
     private List<Variable> allVariables;
 
+
+    /**
+     * Constructor where the distribution type of random variables is initialized by default.
+     *
+     */
     public StaticModelHeader(Attributes atts) {
         this.atts = atts;
         this.allVariables = new ArrayList<>();
 
-        //Create a Variable object for each att in atts. 
+        for (Attribute att : this.atts.getSet()) {
+            VariableBuilder builder = new VariableBuilder();
 
+            VariableBuilder.setName(att.getName());
+            VariableBuilder.setIsObservable();
 
-        for (Variable var : dataHeader.getObservedVariables()) {
+            VariableBuilder.setStateSpaceType(att.getStateSpaceType());
+            switch (att.getStateSpaceType()) {
+                case REAL:
+                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
+                    break;
+                case INTEGER:
+                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
+                    break;
+                default:
+                    throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
+            }
+
+            VariableBuilder.setNumberOfStates(att.getNumberOfStates());
+
+            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
             allVariables.add(var.getVarID(), var);
+
         }
     }
 
-    public StaticDataHeader getStaticDataHeader() {
-        return dataHeader;
+    /**
+    * Constructor where the distribution type of random variables is provided as an argument.
+    *
+    */
+    public StaticModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists) {
+        this.atts = atts;
+        this.allVariables = new ArrayList<>();
+
+        for (Attribute att : this.atts.getSet()) {
+            VariableBuilder builder = new VariableBuilder();
+
+            VariableBuilder.setName(att.getName());
+            VariableBuilder.setIsObservable();
+
+            VariableBuilder.setStateSpaceType(att.getStateSpaceType());
+            switch (att.getStateSpaceType()) {
+                case REAL:
+                    VariableBuilder.setDistributionType(typeDists.get(att));
+                    break;
+                case INTEGER:
+                    VariableBuilder.setDistributionType(typeDists.get(att));
+                    break;
+                default:
+                    throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
+            }
+            VariableBuilder.setNumberOfStates(att.getNumberOfStates());
+
+            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
+            allVariables.add(var.getVarID(), var);
+
+        }
     }
 
+
     public Variable addHiddenVariable(VariableBuilder builder) {
-        VariableImplementation var = new VariableImplementation(builder);
-        var.setVarID(allVariables.size());
+
+        VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         allVariables.add(var);
         return var;
+        
     }
 
     public List<Variable> getVariables() {
@@ -53,17 +123,16 @@ public class StaticModelHeader {
         private int varID;
         private boolean observable;
         private int numberOfStates;
-        private boolean isLeave = false;
-        private Kind stateSpaceKind;
+        private StateSpaceType stateSpaceType;
+        private DistType distributionType;
 
-
-        public VariableImplementation(VariableBuilder builder) {
-
+        public VariableImplementation(VariableBuilder builder, int varID) {
             this.name = builder.getName();
-            this.varID = builder.getVarID();
+            this.varID = varID;
             this.observable = builder.isObservable();
-
-
+            this.numberOfStates = builder.getNumberOfStates();
+            this.stateSpaceType = builder.getStateSpaceType();
+            this.distributionType = builder.getDistributionType();
         }
 
         public String getName() {
@@ -78,8 +147,6 @@ public class StaticModelHeader {
             this.varID = id;
         }
 
-        public void setObservable(boolean observable) { this.observable=observable; }
-
         public boolean isObservable() {
             return false;
         }
@@ -88,20 +155,17 @@ public class StaticModelHeader {
             return numberOfStates;
         }
 
-        public void setNumberOfStates(int numberOfStates) {
-            this.numberOfStates = numberOfStates;
+        public StateSpaceType getStateSpaceType() {
+            return stateSpaceType;
         }
 
-        public boolean isLeave() {
-            return this.isLeave;
+        public DistType getDistributionType() {
+            return distributionType;
         }
 
-        public void setLeave(boolean isLeave) {
-            this.isLeave = isLeave;
+        public boolean isTemporalClone() throws NoSuchFieldException{
+            throw new NoSuchFieldException("In a static context a variable cannot be temporal.");
         }
 
-        public boolean isContinuous(){
-            return this.numberOfStates==0;
-        }
     }
 }

@@ -1,4 +1,7 @@
 package eu.amidst.core.utils;
+import eu.amidst.core.header.Assignment;
+import eu.amidst.core.header.Variable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,33 +10,65 @@ import java.util.List;
  */
 public class MultinomialIndex {
 
-    public static int getIndexFromVariableAssignment (List vars, double[] assignment) {
+    public static int getIndexFromVariableAssignment (List<Variable> vars, List<Double> assignment) {
 
-        int[] numStates = new int[]{2,2,3};
+        int n = vars.size();
+        int lastPhiStride = 1;
+        int index = 0;
+        for (int i=0; i<n; i++){
+            index = index + (int)assignment.get(i).doubleValue()*lastPhiStride;
+            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
+        }
+        return index;
+    }
+
+    public static int getIndexFromVariableAssignment (List<Variable> vars, double[] assignment) {
+
         int n = vars.size();
         int lastPhiStride = 1;
         int index = 0;
         for (int i=0; i<n; i++){
             index = index + (int)assignment[i]*lastPhiStride;
-            lastPhiStride=lastPhiStride*numStates[i];
+            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
         }
         return index;
     }
 
+    public static int getIndexFromVariableAssignment (List<Variable> vars, Assignment assignment) {
 
-    public static double[] getVariableAssignmentFromIndex (List vars, int index) {
+        int lastPhiStride = 1;
+        int index = 0;
+
+        for (Variable var: vars){
+            index = index + (int)assignment.getValue(var)*lastPhiStride;
+            lastPhiStride=lastPhiStride*var.getNumberOfStates();
+        }
+        return index;
+    }
+
+    public static double[] getVariableAssignmentFromIndex (List<Variable> vars, int index) {
         double[] assignment = new double[vars.size()];
 
         int n = vars.size();
         int lastPhiStride = 1;
-        int[] numStates = new int[]{2,2,3};
 
         for (int i=0; i<n; i++){
-            assignment[i]=Math.floor(index/lastPhiStride) % numStates[i];
-            lastPhiStride=lastPhiStride*numStates[i];
+            assignment[i]=Math.floor(index/lastPhiStride) % vars.get(i).getNumberOfStates();
+            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
         }
         return assignment;
     }
+
+    public static int getNumberOfPossibleAssignments (List<Variable> vars){
+
+        int n=0;
+        for (Variable v:vars) {
+            n = n * v.getNumberOfStates();
+        }
+        return n;
+    }
+
+
 
 
     //TEST

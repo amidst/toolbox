@@ -1,13 +1,13 @@
+/*
 package eu.amidst.core.database.statics.readers.impl;
 
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
 import eu.amidst.core.database.statics.readers.ArffParserException;
 import eu.amidst.core.database.statics.readers.Keys;
-import eu.amidst.core.header.statics.StaticDataHeader;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,12 +17,13 @@ import java.util.*;
 import au.com.bytecode.opencsv.CSVReader;
 
 
+*/
 /**
  * Created by sigveh on 10/7/14.
- */
+ *//*
+
 public class ArffDataStream implements DataStream{
     private Iterator iterator;
-    private StaticDataHeader staticDataHeader;
     private String fileName;
     private Set<Attribute> attributes;
     private int[] attributesActivation;
@@ -112,7 +113,7 @@ public class ArffDataStream implements DataStream{
                         }
                     }
                     Attribute a = new Attribute(secondWord,
-                            Kind.parseKind(thirdWord));
+                            StateSpaceType.parseKind(thirdWord));
                     attributesInHeader.add(a);
                     //System.out.println("Attribute:  " + secondWord + "    Type:  " + thirdWord);
                 } else if (firstWord.equals("@data")) {
@@ -193,7 +194,7 @@ public class ArffDataStream implements DataStream{
         int intCount = 0;
 
         for(Attribute a : acceptable){
-            switch (a.getKind()) {
+            switch (a.getStateSpaceType()) {
                 case REAL:
                     doubleCount = doubleCount + 1;
                     break;
@@ -220,7 +221,7 @@ public class ArffDataStream implements DataStream{
         for (int headerIndex = 0; headerIndex < header.size(); headerIndex++) {
             for(Attribute a : acceptable){
                 if(a.equals(header.get(headerIndex))){
-                    switch (a.getKind()){
+                    switch (a.getStateSpaceType()){
                         case REAL:
                             if(doubleKeys[a.getIndex()] == -1) {
                                 doubleKeys[a.getIndex()] = headerIndex;
@@ -286,10 +287,5 @@ public class ArffDataStream implements DataStream{
         dataInstance = 0;
     }
 
-    @Override
-    public StaticDataHeader getStaticDataHeader() {
-        //TODO rethink this?
-        return staticDataHeader;
-    }
-
 }
+*/
