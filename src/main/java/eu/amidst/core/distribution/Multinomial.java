@@ -1,6 +1,17 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. In general, should we clone attributes in the constructor to avoid bad uses of input variables later on?
+ *
+ * 2. How are we going to update the probabilities? Value by value? Or directly with the whole set of probabilities? or both?
+ * Two methods are included: setProbabilities(double[] probabilities) and setProbabilityAt(int index, double value)
+ *
+ * ********************************************************
+ */
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.Variable;
+
 
 /**
  * Created by afa on 03/11/14.
@@ -8,23 +19,26 @@ import eu.amidst.core.header.statics.Variable;
 public class Multinomial implements UnivariateDistribution {
 
     private Variable var;
-
-    private double[] counts;
-    private double sumCounts;
-
-    //Is this an attribute or is only computed from counts when necessary?
     private double[] probabilities;
 
 
     public Multinomial (Variable var) {
+
         this.var = var;
+
+        this.probabilities = new double[var.getNumberOfStates()];
+
+        for (int i=0;i<var.getNumberOfStates();i++){
+            this.probabilities[i]=1.0/var.getNumberOfStates();
+        }
     }
 
-    public double[] getCounts () {
-        return counts;
+    public void setProbabilities(double[] probabilities) {
+        this.probabilities = probabilities;
     }
-    public double getSumCounts() {
-        return sumCounts;
+
+    public void setProbabilityAt(int index, double value) {
+        this.probabilities[index] = value;
     }
 
     @Override
@@ -40,12 +54,6 @@ public class Multinomial implements UnivariateDistribution {
     @Override
     public Variable getVariable() {
         return var;
-    }
-
-    @Override
-    public void updateCounts(double value) {
-        counts[(int)value] += 1;
-        sumCounts += 1;
     }
 
 }

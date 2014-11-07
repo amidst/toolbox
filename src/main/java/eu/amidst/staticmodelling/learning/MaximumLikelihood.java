@@ -1,3 +1,4 @@
+/*
 package eu.amidst.staticmodelling.learning;
 
 
@@ -10,9 +11,11 @@ import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.staticmodelling.models.LearnableModel;
 
+*/
 /**
  * Created by andresmasegosa on 28/08/14.
- */
+ *//*
+
 public class MaximumLikelihood implements LearningAlgorithm{
 
     LearnableModel model;
@@ -47,3 +50,4 @@ public class MaximumLikelihood implements LearningAlgorithm{
         }
     }
 }
+*/
