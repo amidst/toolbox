@@ -1,3 +1,4 @@
+/*
 package eu.amidst.core.database.statics.readers.impl;
 
 import eu.amidst.core.database.statics.readers.Attributes;
@@ -227,4 +228,4 @@ public class ArffDataStreamTest {
 
 
     //System.out.println(" dataStream has iterator: " );
-}
+}*/
