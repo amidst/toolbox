@@ -47,7 +47,7 @@
 \begin{document}
 \maketitle
 
-There are two application scenarios here.  The first one is prediction of whether a client will default within two years and the second is related to the benefit of a marketing campaign. For clarity we have added the description about the data set from delivery 2.1.
+There are two application scenarios here.  The first one is prediction of whether a client will default within two years and the second is related to the benefit of a marketing campaign. For clarity we have added the description about the data set from delivery 2.1 without any modification.
 
 \section{Description from 2.1}
 
@@ -153,6 +153,10 @@ Moreover, every member of the dataset is characterised as either defaulter or no
 
 In the first use case scenario, it is required that the AUROC should be above 0.90.
  
+Every member $i$ of the dataset has a vector of explanatory variables\\
+$\bv{x_i} =\{ \X_i^{(k-180)},  \X_i^{(k-1)}, ...\Y_i^{(k-6)}, \Y_i^{(k-1)},\Z_i\}$.  The Bayesian network basically computes the probability $P(\mbox{Default}_i \,|\, \bv{x_i})$ and the classification rule is
+$P(\mbox{Default}_i \,|\, \bv{x_i}) \geq C$.  The ROC curve is computed by basically plotting the rate of true positives against the rate of true negatives for various choices of $C$.  AUROC is the area under the graph.  (There is also another way of computing AUROC which do not involve computing the rate of true postives and rate true negatives for various $C$, but this is omitted in this discussion.)
+
 \subsection*{Questions: }
 \begin{enumerate}
 \item How many defaulters and non defaulters do we have on both the training set and the test set?
