@@ -1,4 +1,4 @@
-\documentclass{article}
+ \documentclass{article}
 
 \usepackage{times}
 \usepackage{graphicx}
@@ -49,14 +49,16 @@ Daimler has provided us with a number of time series of approximately 5 seconds 
 
 The system shall run on these time series and provide us with information about if there is a lane change and if there is a lane change, how many seconds before the actual crossing did it happen.
 
-The number of true negatives TN is defined as the number of times the system reported lane follow when there actually was a lane follow. 
+\subsection*{Calculation of true positives and true negatives}
 
-There are two definitions of the number of true positives TP1 and TP2.  TP1 is the number of times the system reported a lane crossing more than one second before the lane crossing and TP2 is the number of times the system reported a lane crossing more than two second before the lane crossing.
+The time series are denoted $\bu{s_i}$, where each vector of measurement at timestep $j \in \{1,2, ... n\}$ is denoted $\bv{s_{i,j}}$. In essence the Bayesian network is computing an estimate of $P(\mbox{Lane Change}_j \,|\, \{ \bv{s_{i,0}}, \bv{s_{i,1}}, ... \bv{s_{i,j}} \})$ at every timestep for each timeseries $\bu{s_i}$.  Let $T_1$ and $T_2$ be corresponding to entries in the timeseries that are one and two seconds before the end of the time series.   
+
+In the experiment of detection at least one seconds before lane change, a positive is detected for time series $\bu{s_i}$, when  $P(\mbox{Lane Change}_{T_1} \,|\, \{ \bv{s_{i,0}}, \bv{s_{i,1}}, ... \bv{s_{i,T_1}} \}) \geq C$.  Otherwise a negative is detected.  By doing this on all time series, the number of true positives and true negatives can be counted. Moreover, by allowing the threshold $C$ to vary over all relevant values a ROC curve can be drawn and therefore eventually AUROC can be calculated.
+
+A similar path is followed for detecting two seconds before.  The only difference is that a positive is defined as when  $P(\mbox{Lane Change}_{T_2} \,|\, \{ \bv{s_{i,0}}, \bv{s_{i,1}}, ... \bv{s_{i,T_2}} \}) \geq C$.
 
 \subsection*{Requirements}
 Two requirements are needed.  For the first use case scenario it is required that AUROC should be above 0.96 for prediction 1 second before lane crossing and 0.90 for the 2 second prediction.  We will refer to these as AUROC1 and AUROC2.  
-
-AUROC1 is calculated from TN and TP1 and the total number of positives and negatives for various threshold settings.  AUROC2 is calculated from TN and TP2 and the total number of positives and negatives for various threshold settings.  
 
 \subsection*{Questions: }
 \begin{enumerate}
@@ -64,16 +66,18 @@ AUROC1 is calculated from TN and TP1 and the total number of positives and negat
 \end{enumerate}
 
 
-\section{Recognition of need for lane change manoeuvre}
-
-It is our understanding that Daimler has not yet provided us with data for this use case scenario.  In order to test this use case scenario, we need a set of time series where there is no need for lane change and a data set where it is actually a need for lane change. 
-
-\subsection*{Questions: }
-\begin{enumerate}
-\item Should the time series for no need for change be time series of object follow where no lane change happens?
-\item Should the time series for need for change be time series of object follow where there is a lane change at the end?
-\item If the answer is yes to both questions, can we follow a similar path to what with did in first use case scenario?
-\end{enumerate}
+%
+%
+%\section{Recognition of need for lane change manoeuvre}
+%
+%It is our understanding that Daimler has not yet provided us with data for this use case scenario.  In order to test this use case scenario, we need a set of time series where there is no need for lane change and a data set where it is actually a need for lane change. 
+%
+%\subsection*{Questions: }
+%\begin{enumerate}
+%\item Should the time series for no need for change be time series of object follow where no lane change happens?
+%\item Should the time series for need for change be time series of object follow where there is a lane change at the end?
+%\item If the answer is yes to both questions, can we follow a similar path to what with did in first use case scenario?
+%\end{enumerate}
 
 \bibliographystyle{named}
 \bibliography{ijcai13}
