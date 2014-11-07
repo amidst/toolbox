@@ -2,7 +2,8 @@
  ******************* ISSUE LIST **************************
  *
  * 1. Rename to DynamicVariables
- *
+ * 2. We can/should remove all setters from VariableImplementation right?
+ * 3. Is there any need for the field atts? It is only used in the constructor.
  *
  * ********************************************************
  */
@@ -31,47 +32,55 @@ public class DynamicModelHeader {
 
     public DynamicModelHeader(Attributes atts) {
         this.atts = atts;
-
         this.allVariables = new ArrayList<>();
+        this.temporalClones = new ArrayList<>();
+
         for (Attribute att : atts.getSet()) {
             VariableBuilder builder = new VariableBuilder();
 
             VariableBuilder.setName(att.getName());
-            if (att.getStateSpaceType() == StateSpaceType.INTEGER ) {
-                VariableBuilder.setNumberOfStates(2);
+            VariableBuilder.setVarID(att.getIndex());
+            VariableBuilder.setIsObservable();
+
+            VariableBuilder.setStateSpaceType(att.getStateSpaceType());
+            switch (att.getStateSpaceType()) {
+                case REAL:
+                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
+                    break;
+                case INTEGER:
+                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
+                    break;
+                default:
+                    throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
             }
-            VariableBuilder.setStateSpaceType(StateSpaceType.INTEGER);
 
-            VariableImplementation var = new VariableImplementation(builder);
+            VariableBuilder.setNumberOfStates(att.getNumberOfStates());
 
+            VariableImplementation var = new VariableImplementation(builder, false);
             allVariables.add(var.getVarID(), var);
 
-            VariableImplementation temporalClone = new VariableImplementation(builder);
-            temporalClone.setIsTemporalClone();
+
+            VariableImplementation temporalClone = new VariableImplementation(builder, true);
             temporalClones.add(var.getVarID(), temporalClone);
         }
     }
 
-    public Variable getTemporalClone(Variable var){
+    public Variable getTemporalCloneFromVariable(Variable var){
         return temporalClones.get(var.getVarID());
     }
 
-    public Variable getTemporalVar(Variable var){
+    public Variable getVariableFromTemporalClone(Variable var){
         return allVariables.get(var.getVarID());
     }
 
-    public Attributes getAttributes() {
-        return atts;
-    }
 
     public Variable addHiddenVariable(VariableBuilder builder) {
 
-        VariableImplementation var = new VariableImplementation(builder);
+        VariableImplementation var = new VariableImplementation(builder, false);
         var.setVarID(allVariables.size());
         allVariables.add(var);
 
-        VariableImplementation temporalClone = new VariableImplementation(builder);
-        temporalClone.setIsTemporalClone();
+        VariableImplementation temporalClone = new VariableImplementation(builder, true);
         temporalClones.add(var.getVarID(),temporalClone);
 
         return var;
@@ -81,12 +90,16 @@ public class DynamicModelHeader {
         return this.allVariables;
     }
 
+    public List<Variable> getTemporalClones() {
+        return this.temporalClones;
+    }
+
     public Variable getVariableById(int varID) {
         return this.allVariables.get(varID);
     }
 
-    public Variable getVariableByTimeId(int varTimeID){
-        return this.allVariables.get(varTimeID%this.allVariables.size());
+    public Variable getTemporalCloneById(int varID) {
+        return this.temporalClones.get(varID);
     }
 
     public int getNumberOfVars() {
@@ -100,12 +113,16 @@ public class DynamicModelHeader {
         private int numberOfStates;
         private StateSpaceType stateSpaceType;
         private DistType distributionType;
-        private boolean isTemporalClone;
+        private final boolean isTemporalClone;
 
-        public VariableImplementation(VariableBuilder builder) {
+        public VariableImplementation(VariableBuilder builder, boolean isTemporalClone) {
             this.name = builder.getName();
+            this.varID = builder.getVarID();
             this.observable = builder.isObservable();
-
+            this.numberOfStates = builder.getNumberOfStates();
+            this.stateSpaceType = builder.getStateSpaceType();
+            this.distributionType = builder.getDistributionType();
+            this.isTemporalClone = isTemporalClone;
         }
 
         public String getName() {
@@ -120,10 +137,6 @@ public class DynamicModelHeader {
             this.varID = id;
         }
 
-        public void setObservable(boolean observable) {
-            this.observable = observable;
-        }
-
         public boolean isObservable() {
             return observable;
         }
@@ -132,34 +145,19 @@ public class DynamicModelHeader {
             return numberOfStates;
         }
 
-        public void setNumberOfStates(int numberOfStates) {
-            this.numberOfStates = numberOfStates;
-        }
-
         @Override
         public StateSpaceType getStateSpaceType() {
             return stateSpaceType;
-        }
-
-        public void setStateSpaceType(StateSpaceType stateSpaceKind) {
-            this.stateSpaceType = stateSpaceType;
         }
 
         public DistType getDistributionType() {
             return distributionType;
         }
 
-        public void setDistributionType(DistType distributionType) {
-            this.distributionType = distributionType;
+        public boolean isTemporalClone(){
+            return isTemporalClone;
         }
 
-        public boolean getIsTemporalClone(Variable var){
-            return true;
-        }
-
-        public void setIsTemporalClone() {
-            isTemporalClone = true;
-        }
 
     }
 }

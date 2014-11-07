@@ -1,3 +1,13 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. The number of states should be parsed and stored.
+ *
+ *
+ * ********************************************************
+ */
+
+
 package eu.amidst.core.database.statics.readers;
 
 /**
@@ -10,6 +20,7 @@ public final class Attribute {
     private final String unit;
     private final String name;
     private final StateSpaceType stateSpaceType;
+    private final int numberOfStates = 0;
 
     public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType) {
         this.index = index;
@@ -42,6 +53,8 @@ public final class Attribute {
     public StateSpaceType getStateSpaceType() {
         return stateSpaceType;
     }
+
+    public int getNumberOfStates(){ return numberOfStates;}
 
     @Override
     public boolean equals(Object o) {

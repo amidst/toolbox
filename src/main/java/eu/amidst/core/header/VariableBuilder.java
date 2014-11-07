@@ -10,9 +10,9 @@ public final class VariableBuilder {
     private static String name;
     private static boolean observable;
     private static int numberOfStates;
-    private static boolean isLeave = false;
     private static StateSpaceType stateSpaceStateSpaceType;
     private static DistType distributionType;
+    private static int varID;
 
     public static String getName() {
         return name;
@@ -26,7 +26,7 @@ public final class VariableBuilder {
         return observable;
     }
 
-    public static void setObservable(boolean observable) {
+    public static void setIsObservable() {
         VariableBuilder.observable = observable;
     }
 
@@ -36,14 +36,6 @@ public final class VariableBuilder {
 
     public static void setNumberOfStates(int numberOfStates) {
         VariableBuilder.numberOfStates = numberOfStates;
-    }
-
-    public static boolean isIsLeave() {
-        return isLeave;
-    }
-
-    public static void setIsLeave(boolean isLeave) {
-        VariableBuilder.isLeave = isLeave;
     }
 
     public static StateSpaceType getStateSpaceType() {
@@ -60,5 +52,13 @@ public final class VariableBuilder {
 
     public static void setDistributionType(DistType distributionType) {
         VariableBuilder.distributionType = distributionType;
+    }
+
+    public static void setVarID(int varID){
+        VariableBuilder.varID = varID;
+    }
+
+    public static int getVarID(){
+        return VariableBuilder.varID;
     }
 }

@@ -2,7 +2,8 @@
  ******************* ISSUE LIST **************************
  *
  * 1. Rename to Variables.
- *
+ * 2. We can/should remove all setters from VariableImplementation right?
+ * 3. Is there any need for the field atts? It is only used in the constructor.
  *
  * ********************************************************
  */
@@ -18,6 +19,7 @@ import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.VariableBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,28 +29,76 @@ public class StaticModelHeader {
     private Attributes atts;
     private List<Variable> allVariables;
 
+
+    /**
+     * Constructor where the distribution type of random variables is initialized by default.
+     *
+     */
     public StaticModelHeader(Attributes atts) {
         this.atts = atts;
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : atts.getSet()) {
+        for (Attribute att : this.atts.getSet()) {
             VariableBuilder builder = new VariableBuilder();
 
             VariableBuilder.setName(att.getName());
-            if (att.getStateSpaceType() == StateSpaceType.INTEGER ) {
-                VariableBuilder.setNumberOfStates(2);
+            VariableBuilder.setVarID(att.getIndex());
+            VariableBuilder.setIsObservable();
+
+            VariableBuilder.setStateSpaceType(att.getStateSpaceType());
+            switch (att.getStateSpaceType()) {
+                case REAL:
+                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
+                    break;
+                case INTEGER:
+                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
+                    break;
+                default:
+                    throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
             }
-            VariableBuilder.setStateSpaceType(StateSpaceType.INTEGER);
+
+            VariableBuilder.setNumberOfStates(att.getNumberOfStates());
 
             VariableImplementation var = new VariableImplementation(builder);
-
             allVariables.add(var.getVarID(), var);
+
         }
     }
 
-    public Attributes getStaticDataHeader() {
-        return atts;
+    /**
+    * Constructor where the distribution type of random variables is provided as an argument.
+    *
+    */
+    public StaticModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists) {
+        this.atts = atts;
+        this.allVariables = new ArrayList<>();
+
+        for (Attribute att : this.atts.getSet()) {
+            VariableBuilder builder = new VariableBuilder();
+
+            VariableBuilder.setName(att.getName());
+            VariableBuilder.setVarID(att.getIndex());
+            VariableBuilder.setIsObservable();
+
+            VariableBuilder.setStateSpaceType(att.getStateSpaceType());
+            switch (att.getStateSpaceType()) {
+                case REAL:
+                    VariableBuilder.setDistributionType(typeDists.get(att));
+                    break;
+                case INTEGER:
+                    VariableBuilder.setDistributionType(typeDists.get(att));
+                    break;
+                default:
+                    throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
+            }
+            VariableBuilder.setNumberOfStates(att.getNumberOfStates());
+
+            VariableImplementation var = new VariableImplementation(builder);
+            allVariables.add(var.getVarID(), var);
+
+        }
     }
+
 
     public Variable addHiddenVariable(VariableBuilder builder) {
 
@@ -76,14 +126,16 @@ public class StaticModelHeader {
         private int varID;
         private boolean observable;
         private int numberOfStates;
-        private StateSpaceType stateSpaceStateSpaceType;
+        private StateSpaceType stateSpaceType;
         private DistType distributionType;
-        private boolean isTemporalClone;
 
         public VariableImplementation(VariableBuilder builder) {
             this.name = builder.getName();
+            this.varID = builder.getVarID();
             this.observable = builder.isObservable();
-
+            this.numberOfStates = builder.getNumberOfStates();
+            this.stateSpaceType = builder.getStateSpaceType();
+            this.distributionType = builder.getDistributionType();
         }
 
         public String getName() {
@@ -98,10 +150,6 @@ public class StaticModelHeader {
             this.varID = id;
         }
 
-        public void setObservable(boolean observable) {
-            this.observable = observable;
-        }
-
         public boolean isObservable() {
             return false;
         }
@@ -110,32 +158,16 @@ public class StaticModelHeader {
             return numberOfStates;
         }
 
-        public void setNumberOfStates(int numberOfStates) {
-            this.numberOfStates = numberOfStates;
-        }
-
         public StateSpaceType getStateSpaceType() {
-            return stateSpaceStateSpaceType;
-        }
-
-        public void setStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
-            this.stateSpaceStateSpaceType = stateSpaceStateSpaceType;
+            return stateSpaceType;
         }
 
         public DistType getDistributionType() {
             return distributionType;
         }
 
-        public void setDistributionType(DistType distributionType) {
-            this.distributionType = distributionType;
-        }
-
-        public boolean getIsTemporalClone(Variable var){
-            return true;
-        }
-
-        public void setIsTemporalClone() {
-            isTemporalClone = true;
+        public boolean isTemporalClone() throws NoSuchFieldException{
+            throw new NoSuchFieldException("In a static context a variable cannot be temporal.");
         }
 
     }
