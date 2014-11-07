@@ -1,3 +1,4 @@
+/*
 package eu.amidst.staticmodelling.learning;
 
 
@@ -5,9 +6,11 @@ import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
 import eu.amidst.staticmodelling.models.LearnableModel;
 
+*/
 /**
  * Created by andresmasegosa on 28/08/14.
- */
+ *//*
+
 public interface LearningAlgorithm {
 
     public void setLearnableModel(LearnableModel model);
@@ -19,3 +22,4 @@ public interface LearningAlgorithm {
     public void learnModelFromStream(DataStream data);
 
 }
+*/

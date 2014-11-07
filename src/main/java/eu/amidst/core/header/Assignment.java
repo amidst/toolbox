@@ -1,4 +1,4 @@
-package eu.amidst.core.header.statics;
+package eu.amidst.core.header;
 
 import java.util.HashMap;
 import java.util.Map;

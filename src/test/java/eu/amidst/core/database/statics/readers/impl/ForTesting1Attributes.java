@@ -3,7 +3,7 @@ package eu.amidst.core.database.statics.readers.impl;
 import com.google.common.collect.ImmutableSet;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.Kind;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
 
 import java.util.Set;
 
@@ -12,16 +12,16 @@ import java.util.Set;
  */
 public class ForTesting1Attributes implements Attributes {
 
-    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", Kind.INTEGER);
-    private final Attribute F1 = new Attribute(0, "F1", "NA", Kind.REAL);
-    private final Attribute F2 = new Attribute(1, "F2", "NA", Kind.REAL);
-    private final Attribute F3 = new Attribute(2, "F3", "NA", Kind.REAL);
-    private final Attribute F4 = new Attribute(3, "F4", "NA", Kind.REAL);
-    private final Attribute F5 = new Attribute(4, "F5", "NA", Kind.REAL);
-    private final Attribute F6 = new Attribute(5, "F6", "NA", Kind.REAL);
-    private final Attribute F7 = new Attribute(6, "F7", "NA", Kind.REAL);
-    private final Attribute F8 = new Attribute(7, "F8", "NA", Kind.REAL);
-    private final Attribute F9 = new Attribute(8, "F9", "NA", Kind.REAL);
+    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.INTEGER);
+    private final Attribute F1 = new Attribute(0, "F1", "NA", StateSpaceType.REAL);
+    private final Attribute F2 = new Attribute(1, "F2", "NA", StateSpaceType.REAL);
+    private final Attribute F3 = new Attribute(2, "F3", "NA", StateSpaceType.REAL);
+    private final Attribute F4 = new Attribute(3, "F4", "NA", StateSpaceType.REAL);
+    private final Attribute F5 = new Attribute(4, "F5", "NA", StateSpaceType.REAL);
+    private final Attribute F6 = new Attribute(5, "F6", "NA", StateSpaceType.REAL);
+    private final Attribute F7 = new Attribute(6, "F7", "NA", StateSpaceType.REAL);
+    private final Attribute F8 = new Attribute(7, "F8", "NA", StateSpaceType.REAL);
+    private final Attribute F9 = new Attribute(8, "F9", "NA", StateSpaceType.REAL);
 
 
     private static Set<Attribute> attributes;

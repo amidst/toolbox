@@ -1,5 +1,15 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. In the constructor, should we initialize the CLG attributes in this way?
+ *
+ *
+ * ********************************************************
+ */
+
 package eu.amidst.core.distribution;
-import eu.amidst.core.header.statics.Variable;
+import eu.amidst.core.header.Variable;
+import eu.amidst.core.header.Assignment;
 import java.util.List;
 
 /**
@@ -18,6 +28,16 @@ public class CLG implements ConditionalDistribution {
     public CLG(Variable var, List<Variable> parents) {
         this.var = var;
         this.parents = parents;
+
+        //Initialize the distribution. Is this initialization "standard"?
+        this.intercept = 0;
+        coeffParents = new double[parents.size()];
+        for(int i=0;i<parents.size();i++){
+            coeffParents[i] = 1;
+        }
+        this.sd = 1;
+
+
     }
 
     public double getIntercept() {
@@ -44,14 +64,14 @@ public class CLG implements ConditionalDistribution {
         this.sd = sd;
     }
 
-    public Normal getUnivariateNormal(Assignment parentAssignment){
+    public Normal getUnivariateNormal(Assignment parentsAssignment){
 
         double mean = intercept;
         Normal univariateNormal = new Normal(var);
         int i = 0;
 
         for (Variable v:parents) {
-            mean = mean + coeffParents[i] * parentAssignment.getValue(v);
+            mean = mean + coeffParents[i] * parentsAssignment.getValue(v);
             i++;
         }
 
@@ -60,7 +80,6 @@ public class CLG implements ConditionalDistribution {
 
         return(univariateNormal);
     }
-
 
     @Override
     public List<Variable> getConditioningVariables() {
@@ -81,4 +100,6 @@ public class CLG implements ConditionalDistribution {
     public Variable getVariable() {
         return var;
     }
+
+
 }

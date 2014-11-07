@@ -1,20 +1,23 @@
+/*
 package eu.amidst.staticmodelling.models;
 
+import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.database.statics.readers.Kind;
-import eu.amidst.core.header.statics.VariableBuilder;
+import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.VariableBuilder;
 import eu.amidst.core.modelstructure.statics.BNFactory;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
-import eu.amidst.core.header.statics.Variable;
-import eu.amidst.core.header.statics.StaticDataHeader;
+import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.statics.StaticModelHeader;
 import eu.amidst.core.potential.Potential;
 import eu.amidst.core.potential.PotentialTable;
 import eu.amidst.core.utils.Utils;
 
+*/
 /**
  * Created by andresmasegosa on 28/08/14.
- */
+ *//*
+
 public class NaiveBayesClusteringModel extends LearnableModel{
 
     int hiddenClassID;
@@ -23,17 +26,18 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         return hiddenClassID;
     }
     @Override
-    public void buildStructure(StaticDataHeader dataHeader) {
+    public void buildStructure(Attributes atts) {
 
-        StaticModelHeader modelHeader =  new StaticModelHeader(dataHeader);
+        StaticModelHeader modelHeader =  new StaticModelHeader(atts);
 
         VariableBuilder builder = new VariableBuilder();
-        builder.setName("H");
-        builder.setNumberOfStates(2);
-        builder.setStateSpaceKind(Kind.INTEGER);
-
+        VariableBuilder.setName("H");
+        VariableBuilder.setNumberOfStates(2);
+        VariableBuilder.setStateSpaceType(StateSpaceType.INTEGER);
 
         Variable hiddenVar = modelHeader.addHiddenVariable(builder);
+
+
 
         this.hiddenClassID = hiddenVar.getVarID();
 
@@ -97,3 +101,4 @@ public class NaiveBayesClusteringModel extends LearnableModel{
     }
 
 }
+*/
