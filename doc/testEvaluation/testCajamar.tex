@@ -25,6 +25,14 @@
 \newcommand{\bv}[1]{\bm{#1}}
 
 
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Y}{\mathbf{Y}}
+\newcommand{\Z}{\mathbf{Z}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\y}{\mathbf{y}}
+\newcommand{\z}{\mathbf{z}}
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
+
 
 
 \title{Practical Considerations for Testing the Cajamar Use Case}
@@ -39,17 +47,109 @@
 \begin{document}
 \maketitle
 
-There are two application scenarios here.  The first one is prediction of whether a client will default within two years and the second is related to the benefit of a marketing campaign.
+There are two application scenarios here.  The first one is prediction of whether a client will default within two years and the second is related to the benefit of a marketing campaign. For clarity we have added the description about the data set from delivery 2.1.
 
-\section{Default prediction}
+\section{Description from 2.1}
 
-It is our understanding that the dataset is all clients that Cajamar had within a time frame.  For clarity, we will define the \emph{time of prediction} as the time when clients are predicted.  This takes into account data from six months before the time of prediction and up to the time of prediction.  The \emph{time of evaluation} is exactly 2 years after the time of prediction.  
+%-------------------------------------------------------------------------------------------------------
+\subsection{Predicting probability of default} \label{SubSection:Predicting}
+%-------------------------------------------------------------------------------------------------------
 
-The only criterion for being a member of the dataset is that the member has been a client continuously from six months before the time of prediction and up to the time of evaluation.  Moreover, every member of the dataset is characterised as either defaulter or not defaulter.  There are no missing values related to class labels.
+Our objective is to tackle the current limitations of the risk prediction problem by \textit{daily} learning the predictive model and also updating the risk of default for every bank customer. Dependences among the variables will now be considered, as well as including all the variables in the analysis. With these changes, Cajamar plans to improve the quality of the prediction model by increasing the area under ROC curve significantly.
 
-The dataset is divided up into a training set and a test set by a random completely process.
 
-\subsection*{Requirements}
+Therefore, the process will consist in building a \textit{training set} as well as a set of customers to be evaluated, called \textit{evaluation set} (see Deliverable 1.2~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem (see Figure~\ref{Figure:CajaMarTimeLine} for a better understanding):
+
+%Next, we detail how these data sets are collected .
+%Figure~\ref{Figure:CajaMarTimeLine} illustrates how both evaluation and training data sets are collected within a time-line. The current time is denoted as $t$ and the time $2$ years back as $k$, i.e., $k=t-2$ years. 
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.45]{figures/CajaMarTimeLine}
+\caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years. Both in the training and test data sets, there are two disjoint groups of variables, denoted as $\X$ and $\Y$, with different past information considered, $180$ days back (daily) and $6$ semesters back (by semester), respectively.}
+
+\end{figure}
+
+\begin{itemize}
+
+\item \textbf{Model evaluation data set:} This data is created at time $t$ and contains a record for every client to be evaluated. Note that information about the predicted defaulting behaviour is missing at time $t$ and it will be obtained after performing inference on the model. Predictive variables refer here to the financial activity and payment behaviour of the customers in recent past as well as to their socio-demographic information which usually does not change over time. 
+
+There are attributes, denoted as $\X$, for which information during the last 180 days is considered. 
+%recent \textcolor{red}{{\bf financial activity}}of a customer refers to attributes such as ``account balance'', ``number of credit card operations'', etc. stored in the last 180 days. 
+These attributes usually change daily for a customer, so they are encoded by introducing a set of variables for each attribute, one for each day back from the current time $t$. Hence, the financial activity of a customer is specified by a number of variables equal to 180 times the number of attributes. For others attributes, denoted as $\Y$, we are interested in information from the last $36$ months grouped by semester. 
+%In the case of \textcolor{red}{{\bf past payment behaviour}}, the attributes refer to variables related to \textcolor{red}{payments inside Cajamar (loans, mortgages, credits, etc.).} Information from the last 36 months grouped by semester is considered for these variables. 
+Therefore, similar to previous group of variables, $6$ variables for each of these attributes will be considered. Finally, there are some other static variables, denoted as $\Z$, not included in Figure~\ref{Figure:CajaMarTimeLine} as they are not indexed over time. The data set for the evaluation of customers is depicted in Table~\ref{tab:EvaluationDataset}. 
+
+
+%with information about \textcolor{red}{payments to other financial institutions or companies (phone and electricity bills, public bodies, etc.)} 
+%are included in this group of variables. They are denoted as .
+
+%The group of variables denoted as $\Z$ mainly includes socio-demographic variables and they are not indexed over time as they remain fixed.  
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{c|ccc|ccc|c}
+	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} \\
+     Time $t$              & $\X^{(t-180)}$ & $\ldots$ & $\X^{(t-1)} $ & $\Y^{(t-6)}$  & $\ldots$ & $\Y^{(t-1)} $ & $\Z$  \\  
+\hline
+Client$_1$  &                                                  &              &                     &                               &                     &        \\ 
+$\vdots$      &                                                 &               &                     &                                &                     &      \\ 
+Client$_n$  &                                                &               &                     &                                &                     &     \\ 
+\end{tabular}
+\caption{Evaluation data set at time $t$ for all the clients. Three groups of attributes $\X$, $\Y$ and $\Z$ are distinguished according to the past information required. Current time is denoted as $t$.}
+\label{tab:EvaluationDataset} 
+\end{table}
+
+Thus, the objective is to compute the probability of defaulting within the following two years of each record from the evaluation data set, and afterwards update the risk table in the system (see Table~\ref{tab:riskTable}).
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{c|ccc|ccc|c}
+     Time $t$  & Risk of being defaulter \\  
+\hline
+Client$_1$  &    $r_1$  \\ 
+$\vdots$      &   $\vdots$   \\ 
+Client$_n$  &   $r_n$  \\ 
+\end{tabular} 
+\caption{Risk table for the bank customers where $r_i$ represents the probability of being defaulter for customer $i$.}
+\label{tab:riskTable}
+\end{table}
+
+If, at some point, the probability of default of a customer rises above a predefined threshold, the bank may take preventive actions to reduce the risk of defaulting by this customer.
+
+
+\item \textbf{Model training data set:}  This data set is also built at time $t$ in a similar way as the evaluation data. It contains the same set of features as well as the target variable \textit{Defaulter} but with information referred to time $k$ instead (two years back). Note that, at time $t$, we have information of the \textit{Defaulter} variable in the period of time from $k$ to $t$. Thus,  Defaulter$^{(k)}$ indicates if at some point in this period she/he was a defaulter.
+
+The data set for training/updating the model is depicted in Table~\ref{tab:TrainingDataset}.
+\begin{table}[ht!]
+\centering
+\begin{tabular}{c|ccc|ccc|c|c}
+	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} & \\
+     Time $t$              & $\X^{(k-180)}$ & $\ldots$ & $\X^{(k-1)} $ & $\Y^{(k-6)}$  & $\ldots$ & $\Y^{(k-1)} $ & $\Z$ & Defaulter$^{(k)}$\\  
+\hline
+Client$_1$  &                                                  &              &                     &                               &                     &        &  \\ 
+$\vdots$      &                                                 &               &                     &                                &                     &       & \\ 
+Client$_n$  &                                                &               &                     &                                &                     &     & \\ 
+\end{tabular} 
+\caption{Training data set built at time $t$ with $k=t - 2$ years.  The notation for predictive variables is the same as in Table~\ref{tab:EvaluationDataset}.}
+\label{tab:TrainingDataset} 
+\end{table}
+
+Table~\ref{tab:TrainingDataset} shows the training data set where each record contains the values for all predictive variables and a class value labelled as \emph{non-defaulter} only when there is no evidence of defaulting in the period from $k$ to $t$ (2 years). 
+
+\end{itemize}
+
+\section{Test and evaluation regime}
+
+It is our understanding that the training set above is actually the data set that we are going to train on and also test on. This may be a source to confusion, but from now on the training set above will be defined as the dataset and the evaluation set is not even considered in relation to testing. 
+
+So, we can therefore take this dataset and divide it into a training set and a test set by a completely random process and work on that.  
+
+It is our understanding that the only criterion for being a member of the dataset is that the member has been a client continuously from three years before day $k$ and up to day $t$.  
+
+Moreover, every member of the dataset is characterised as either defaulter or not defaulter.  There are no missing values related to class labels.
+
+\subsection*{Requirements for the first use case scenario: default prediction}
 
 In the first use case scenario, it is required that the AUROC should be above 0.90.
  
@@ -60,7 +160,7 @@ In the first use case scenario, it is required that the AUROC should be above 0.
 \end{enumerate}
 
 
-\section{AMIDST induced marketing campaign}
+\subsection{Requirements for the second use case scenario:  AMIDST induced marketing campaign}
 
 This use case scenario seem a bit more difficult.  In the requirement engineering document it is required that the benefit of an AMIDST induced marketing campaign should be more than 5 percent higher than a normal campaign. 
 
