@@ -10,9 +10,8 @@ public final class VariableBuilder {
     private static String name;
     private static boolean observable;
     private static int numberOfStates;
-    private static StateSpaceType stateSpaceStateSpaceType;
+    private static StateSpaceType stateSpaceType;
     private static DistType distributionType;
-    private static int varID;
 
     public static String getName() {
         return name;
@@ -39,11 +38,11 @@ public final class VariableBuilder {
     }
 
     public static StateSpaceType getStateSpaceType() {
-        return stateSpaceStateSpaceType;
+        return stateSpaceType;
     }
 
     public static void setStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
-        VariableBuilder.stateSpaceStateSpaceType = stateSpaceStateSpaceType;
+        VariableBuilder.stateSpaceType = stateSpaceStateSpaceType;
     }
 
     public static DistType getDistributionType() {
@@ -54,11 +53,4 @@ public final class VariableBuilder {
         VariableBuilder.distributionType = distributionType;
     }
 
-    public static void setVarID(int varID){
-        VariableBuilder.varID = varID;
-    }
-
-    public static int getVarID(){
-        return VariableBuilder.varID;
-    }
 }
