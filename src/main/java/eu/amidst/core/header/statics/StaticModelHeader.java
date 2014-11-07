@@ -42,7 +42,6 @@ public class StaticModelHeader {
             VariableBuilder builder = new VariableBuilder();
 
             VariableBuilder.setName(att.getName());
-            VariableBuilder.setVarID(att.getIndex());
             VariableBuilder.setIsObservable();
 
             VariableBuilder.setStateSpaceType(att.getStateSpaceType());
@@ -59,7 +58,7 @@ public class StaticModelHeader {
 
             VariableBuilder.setNumberOfStates(att.getNumberOfStates());
 
-            VariableImplementation var = new VariableImplementation(builder);
+            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
             allVariables.add(var.getVarID(), var);
 
         }
@@ -77,7 +76,6 @@ public class StaticModelHeader {
             VariableBuilder builder = new VariableBuilder();
 
             VariableBuilder.setName(att.getName());
-            VariableBuilder.setVarID(att.getIndex());
             VariableBuilder.setIsObservable();
 
             VariableBuilder.setStateSpaceType(att.getStateSpaceType());
@@ -93,7 +91,7 @@ public class StaticModelHeader {
             }
             VariableBuilder.setNumberOfStates(att.getNumberOfStates());
 
-            VariableImplementation var = new VariableImplementation(builder);
+            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
             allVariables.add(var.getVarID(), var);
 
         }
@@ -102,8 +100,7 @@ public class StaticModelHeader {
 
     public Variable addHiddenVariable(VariableBuilder builder) {
 
-        VariableImplementation var = new VariableImplementation(builder);
-        var.setVarID(allVariables.size());
+        VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         allVariables.add(var);
         return var;
         
@@ -129,9 +126,9 @@ public class StaticModelHeader {
         private StateSpaceType stateSpaceType;
         private DistType distributionType;
 
-        public VariableImplementation(VariableBuilder builder) {
+        public VariableImplementation(VariableBuilder builder, int varID) {
             this.name = builder.getName();
-            this.varID = builder.getVarID();
+            this.varID = varID;
             this.observable = builder.isObservable();
             this.numberOfStates = builder.getNumberOfStates();
             this.stateSpaceType = builder.getStateSpaceType();
