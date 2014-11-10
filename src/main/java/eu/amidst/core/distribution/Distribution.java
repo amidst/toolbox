@@ -8,19 +8,23 @@
  */
 
 
-
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.header.Variable;
 
 /**
+ * <h2>This interface generalizes the set of possible distributions.</h2>
  *
- *  This interface is for distributions.
- * Created by afa on 02/07/14.
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 2014-07-2
  */
 public interface Distribution {
 
-    public Variable getVariable();
-
+    /**
+     * Gets the variable of the distribution
+     * @return A <code>Variable</code> object.
+     */
+    Variable getVariable();
 
 }
