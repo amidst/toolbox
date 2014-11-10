@@ -16,12 +16,12 @@ import eu.amidst.core.header.Variable;
 /**
  * Created by ana@cs.aau.dk on 10/11/14.
  */
-public class DynamicDataInstace implements DataInstance{
+public class DynamicDataInstance implements DataInstance{
 
     StaticDataInstance present;
     StaticDataInstance past;
 
-    public DynamicDataInstace(StaticDataInstance past, StaticDataInstance present){
+    public DynamicDataInstance(StaticDataInstance past, StaticDataInstance present){
         this.past = new StaticDataInstance(past);
         this.present = new StaticDataInstance(present);
     }
