@@ -1,6 +1,7 @@
 package eu.amidst.core.database.dynamics;
 
 
+import eu.amidst.core.database.dynamics.readers.impl.DynamicDataInstance;
 import eu.amidst.core.database.statics.readers.Attributes;
 
 /**
@@ -13,7 +14,7 @@ public interface SequenceDataStream {
 
     public boolean hasMoreData();
 
-    public SequenceData nextSequenceData();
+    public DynamicDataInstance nextSequenceData();
 
     public void reset();
 

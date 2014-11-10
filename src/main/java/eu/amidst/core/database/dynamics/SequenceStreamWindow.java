@@ -1,6 +1,7 @@
 package eu.amidst.core.database.dynamics;
 
 
+import eu.amidst.core.database.dynamics.readers.impl.DynamicDataInstance;
 import eu.amidst.core.database.statics.readers.Attributes;
 
 /**
@@ -16,7 +17,7 @@ public interface SequenceStreamWindow {
 
     public void loadNextWindow();
 
-    public SequenceData getSequenceData(int indexInWindow);
+    public DynamicDataInstance getSequenceData(int indexInWindow);
 
     public boolean isReseteable();
 

@@ -29,14 +29,12 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
      */
     private Normal[] distribution;
 
-<<<<<<< HEAD
-=======
+
     /**
      * The class constructor.
      * @param var The variable of the distribution.
      * @param parents The set of parent variables.
      */
->>>>>>> 4e21783053c330e69f7bba2d39ec4b654d045040
     public Normal_MultinomialParents(Variable var, List<Variable> parents) {
         this.var = var;
         this.parents = parents;
