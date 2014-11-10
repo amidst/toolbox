@@ -6,34 +6,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by afa on 03/11/14.
+ * <h2>This class implements various static methods useful when indexing arrays of distributions involving multinomial
+ * variables.</h2>
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 2014-11-4
  */
 public class MultinomialIndex {
 
-    public static int getIndexFromVariableAssignment (List<Variable> vars, List<Double> assignment) {
-
-        int n = vars.size();
-        int lastPhiStride = 1;
-        int index = 0;
-        for (int i=0; i<n; i++){
-            index = index + (int)assignment.get(i).doubleValue()*lastPhiStride;
-            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
-        }
-        return index;
-    }
-
-    public static int getIndexFromVariableAssignment (List<Variable> vars, double[] assignment) {
-
-        int n = vars.size();
-        int lastPhiStride = 1;
-        int index = 0;
-        for (int i=0; i<n; i++){
-            index = index + (int)assignment[i]*lastPhiStride;
-            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
-        }
-        return index;
-    }
-
+    /**
+     * Computes the order of an assignment when indexing the set of possible values for a set of multinomial variables.
+     * <p>
+     * Example: Let X, Y and Z three multinomial variables with states {0,1}, {0,1} and {0,1,2} respectively. Then, they
+     * are indexed as:
+     *
+     *       X Y Z Index
+     *       0 0 0   0
+     *       1 0 0   1
+     *       0 1 0   2
+     *       1 1 0   3
+     *       0 0 1   4
+     *       1 0 1   5
+     *       0 1 1   6
+     *       1 1 1   7
+     *       0 0 2   8
+     *       1 0 2   9
+     *       0 1 2  10
+     *       1 1 2  11
+     *
+     * So, for instance Index(0,0,2) = 8.
+     *
+     * @param vars A <code>List</code> of variables.
+     * @param assignment A <code>Assignment</code> for a set of variables.
+     * @return The index of the corresponding assignment among the possible ones.
+     */
     public static int getIndexFromVariableAssignment (List<Variable> vars, Assignment assignment) {
 
         int lastPhiStride = 1;
@@ -46,9 +53,53 @@ public class MultinomialIndex {
         return index;
     }
 
-    public static double[] getVariableAssignmentFromIndex (List<Variable> vars, int index) {
-        double[] assignment = new double[vars.size()];
+    /**
+     * Computes the order of an assignment when indexing the set of possible values for a set of multinomial variables.
+     * @param vars A <code>List</code> of variables.
+     * @param assignment A <code>List</code> of double values for the variables in the same order.
+     * @return The index of the corresponding assignment among the possible ones.
+     */
+    public static int getIndexFromVariableAssignment (List<Variable> vars, List<Double> assignment) {
 
+        int n = vars.size();
+        int lastPhiStride = 1;
+        int index = 0;
+
+        for (int i=0; i<n; i++){
+            index = index + (int)assignment.get(i).doubleValue()*lastPhiStride;
+            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
+        }
+        return index;
+    }
+
+    /**
+     * Computes the order of an assignment when indexing the set of possible values for a set of multinomial variables.
+     * @param vars A <code>List</code> of variables.
+     * @param assignment An array of <code>double</code> with the values of variables in the same order.
+     * @return The index of the corresponding assignment among the possible ones.
+     */
+    public static int getIndexFromVariableAssignment (List<Variable> vars, double[] assignment) {
+
+        int n = vars.size();
+        int lastPhiStride = 1;
+        int index = 0;
+
+        for (int i=0; i<n; i++){
+            index = index + (int)assignment[i]*lastPhiStride;
+            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
+        }
+        return index;
+    }
+
+    /**
+     * Computes the variable assignment located in a given position.
+     * @param vars A <code>List</code> of variables.
+     * @param index The position of the <code>Assignment</code>.
+     * @return An array of <code>double</code> with the values of the variables representing the assignment.
+     */
+    public static double[] getVariableAssignmentFromIndex (List<Variable> vars, int index) {
+
+        double[] assignment = new double[vars.size()];
         int n = vars.size();
         int lastPhiStride = 1;
 
@@ -59,56 +110,17 @@ public class MultinomialIndex {
         return assignment;
     }
 
-    public static int getNumberOfPossibleAssignments (List<Variable> vars){
+    /**
+     * Computes the number of possible assignments for a list of variables
+     * @param vars The <code>List</code> of variables.
+     * @return A <code>integer</code> indicating the number of possible assignments.
+     */
+    public static int getNumberOfPossibleAssignments (List<Variable> vars) {
 
-        int n=0;
-        for (Variable v:vars) {
+        int n = 0;
+        for (Variable v : vars) {
             n = n * v.getNumberOfStates();
         }
         return n;
     }
-
-
-
-
-    //TEST
-
-    public static void main(String args[]){
-
-        ArrayList vars = new ArrayList();
-        int index = 0;
-        double[] assignment;
-        vars.add("A");  vars.add("B"); vars.add("C");
-
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{0,0,0}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{1,0,0}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{0,1,0}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{1,1,0}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{0,0,1}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{1,0,1}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{0,1,1}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{1,1,1}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{0,0,2}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{1,0,2}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{0,1,2}); System.out.println(index);
-        index = MultinomialIndex.getIndexFromVariableAssignment(vars,new double[]{1,1,2}); System.out.println(index);
-
-
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,0); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,1); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,2); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,3); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,4); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,5); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,6); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,7); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,8); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,9); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,10); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-        assignment = MultinomialIndex.getVariableAssignmentFromIndex(vars,11); System.out.print((int)assignment[0]);System.out.print((int)assignment[1]);System.out.println((int)assignment[2]);
-
-
-    }
-
-
 }

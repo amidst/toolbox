@@ -15,20 +15,17 @@ public class ParentSetImpl implements ParentSet {
 
     private ArrayList<Variable> vars;
 
-    public void addParent(Variable variable){
-        vars.add(variable);
+    public void addParent(Variable var){
+        vars.add(var);
     }
 
-    public void removeParent(Variable variable){
-        vars.remove(variable);
+    public void removeParent(Variable var){
+        vars.remove(var);
     }
 
     @Override
     public List<Variable> getParents(){
-        ArrayList<Variable> parents;
-        parents = new ArrayList<Variable>();
-        for (int i=0;i<vars.size();i++) parents.add(vars.get(i));
-        return parents;
+        return vars;
     }
 
     public int getNumberOfParents(){
