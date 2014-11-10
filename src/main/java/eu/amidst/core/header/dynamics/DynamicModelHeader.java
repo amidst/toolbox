@@ -4,6 +4,8 @@
  * 1. Rename to DynamicVariables
  * 2. We can/should remove all setters from VariableImplementation right?
  * 3. Is there any need for the field atts? It is only used in the constructor.
+ * 4. If the fields in VariableImplementation are all objects then the TemporalClone only contains
+ *    pointers, which would ensure consistency, although we are not planing to modify these values.
  *
  * ********************************************************
  */
