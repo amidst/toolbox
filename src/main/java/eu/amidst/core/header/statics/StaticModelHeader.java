@@ -163,8 +163,8 @@ public class StaticModelHeader {
             return distributionType;
         }
 
-        public boolean isTemporalClone() throws NoSuchFieldException{
-            throw new NoSuchFieldException("In a static context a variable cannot be temporal.");
+        public boolean isTemporalClone() {
+            throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
         }
 
     }

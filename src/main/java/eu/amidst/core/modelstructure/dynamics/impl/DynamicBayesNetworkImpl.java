@@ -1,3 +1,11 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. Change 0 & T by Past & Present
+ *
+ * ********************************************************
+ */
+
 package eu.amidst.core.modelstructure.dynamics.impl;
 
 
@@ -12,10 +20,10 @@ import eu.amidst.core.header.Variable;
  * Created by afa on 03/07/14.
  */
 public class DynamicBayesNetworkImpl implements DynamicBayesianNetwork {
-    private ParentSet[][] parentSetTime0;
+    private ParentSet[] parentSetTime0;
     private ParentSet[] parentSetTimeT;
-    private Distribution[][] estimatorTime0;
-    private Distribution[] estimatorTimeT;
+    private Distribution[] distributionsTime0;
+    private Distribution[] distributionsTimeT;
     private DynamicModelHeader modelHeader;
 
     public DynamicBayesNetworkImpl(DynamicModelHeader modelHeader){
@@ -24,7 +32,7 @@ public class DynamicBayesNetworkImpl implements DynamicBayesianNetwork {
 
 
     @Override
-    public void initEstimators() {
+    public void initDistributions() {
 
     }
 
@@ -44,9 +52,15 @@ public class DynamicBayesNetworkImpl implements DynamicBayesianNetwork {
     }
 
     @Override
-    public Variable getVariableByTimeId(int varTimeID) {
-        return this.getVariableByTimeId(varTimeID);
+    public Variable getTemporalCloneById(int varID) {
+        return this.modelHeader.getTemporalCloneById(varID);
     }
+
+    @Override
+    public Variable getTemporalCloneFromVariable(Variable variable) {
+        return this.modelHeader.getTemporalCloneFromVariable(variable);
+    }
+
 
     @Override
     public ParentSet getParentSetTimeT(int varID) {
@@ -54,28 +68,19 @@ public class DynamicBayesNetworkImpl implements DynamicBayesianNetwork {
     }
 
     @Override
-    public Distribution getEstimatorTimeT(int varId) {
-        return this.estimatorTimeT[varId];
+    public Distribution getDistributionTimeT(int varId) {
+        return this.distributionsTimeT[varId];
     }
+
 
     @Override
     public ParentSet getParentSetTime0(int varID) {
-        return this.parentSetTime0[0][varID];
+        return this.parentSetTime0[varID];
     }
 
     @Override
-    public Distribution getEstimatorTime0(int varId) {
-        return this.estimatorTime0[0][varId];
-    }
-
-    @Override
-    public ParentSet getParentSetTime0(int varID, int initTime) {
-        return this.parentSetTime0[initTime][varID];
-    }
-
-    @Override
-    public Distribution getEstimatorTime0(int varId, int initTime) {
-        return this.estimatorTime0[initTime][varId];
+    public Distribution getDistributionTime0(int varId) {
+        return this.distributionsTime0[varId];
     }
 
 }

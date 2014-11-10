@@ -11,33 +11,32 @@ import eu.amidst.core.header.Variable;
 public interface DynamicBayesianNetwork {
 
 
-    public void initEstimators();
+    public void initDistributions();
 
+
+    /* Methods accessing the variables in the modelHeader*/
     public int getNumberOfNodes();
 
     public DynamicModelHeader getDynamicModelHeader();
 
     public Variable getVariableById(int varID);
 
-    public Variable getVariableByTimeId(int varTimeID);
+    public Variable getTemporalCloneById(int varID);
+
+    public Variable getTemporalCloneFromVariable(Variable variable);
+
 
     /* Methods accessing structure at time T*/
 
     public ParentSet getParentSetTimeT(int varID);
 
-    public Distribution getEstimatorTimeT(int varId);
+    public Distribution getDistributionTimeT(int varId);
 
 
     /* Methods accessing structure at time 0*/
 
     public ParentSet getParentSetTime0(int varID);
 
-    public Distribution getEstimatorTime0(int varId);
-
-    /* Methods accessing structure initial times when markov order higher than 1*/
-
-    public ParentSet getParentSetTime0(int varID, int initTime);
-
-    public Distribution getEstimatorTime0(int varId, int initTime);
+    public Distribution getDistributionTime0(int varId);
 
 }
