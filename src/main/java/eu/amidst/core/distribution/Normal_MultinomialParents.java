@@ -25,7 +25,7 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
      * @param parents
      */
 
-    public Normal_MultinomialParents(Variable var, ArrayList<Variable> parents) {
+    public Normal_MultinomialParents(Variable var, List<Variable> parents) {
         this.var = var;
         this.parents = parents;
 
