@@ -20,5 +20,5 @@ public interface Variable {
 
     public DistType getDistributionType();
 
-    public boolean isTemporalClone() throws NoSuchFieldException;
+    public boolean isTemporalClone();
 }
