@@ -1,3 +1,16 @@
+/**
+ * ****************** ISSUE LIST ******************************
+ *
+ *
+ *
+ * 1. getConditioningVariables change to getParentsVariables()
+ *
+ *
+ *
+ * **********************************************************
+ */
+
+
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.header.Assignment;
