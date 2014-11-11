@@ -4,7 +4,7 @@ import java.util.List;
 import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.Assignment;
-import eu.amidst.core.header.statics.StaticModelHeader;
+import eu.amidst.core.header.StaticModelHeader;
 
 
 import eu.amidst.core.utils.MultinomialIndex;
