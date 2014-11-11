@@ -3,7 +3,7 @@
  *
  * 1. Think in using the parents of the BN to access the conditioning list.
  *
- *
+ * 2. Include exceptions in all the classes in this package
  * ********************************************************
  */
 

@@ -76,6 +76,14 @@ public class Multinomial implements UnivariateDistribution {
     }
 
     /**
+     * Gets the array of probabilities for the different states of the variable.
+     * @return An array of <code>double</code> with the probabilities.
+     */
+    public double[] getProbabilities(){
+        return probabilities;
+    }
+
+    /**
      * Computes the logarithm of the probability for a given variable state.
      * @param value The position of the variable state in the array of probabilities (represented as a
      *              <code>double</code> for generality reasons).
