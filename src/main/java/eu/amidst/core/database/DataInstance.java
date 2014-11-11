@@ -11,7 +11,7 @@ public interface DataInstance {
 
     public double getValue(Variable var);
 
-    public int getSampleID();
+    public int getSequenceID();
 
     public int getTimeID();
 

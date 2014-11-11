@@ -9,11 +9,8 @@ import eu.amidst.core.header.Variable;
 public class StaticDataInstance implements DataInstance {
 
     DataRow dataRow;
-    int sampleID;
-
-    public StaticDataInstance(DataRow dataRow_, int sampleID_){
+    public StaticDataInstance(DataRow dataRow_){
         dataRow=dataRow_;
-        this.sampleID = sampleID_;
     }
 
     @Override
@@ -22,8 +19,8 @@ public class StaticDataInstance implements DataInstance {
     }
 
     @Override
-    public int getSampleID() {
-        return sampleID;
+    public int getSequenceID() {
+        throw new UnsupportedOperationException("Invoking getSequenceID() from an data instance of static data base.");
     }
 
     @Override
