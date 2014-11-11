@@ -28,6 +28,7 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-4
  */
+
 public class Normal_MultinomialNormalParents implements ConditionalDistribution {
 
     /**
