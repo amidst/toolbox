@@ -13,7 +13,7 @@
  */
 
 
-package eu.amidst.core.header.statics;
+package eu.amidst.core.header;
 
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
@@ -44,24 +44,6 @@ public class StaticModelHeader {
 
         for (Attribute att : this.atts.getSet()) {
             VariableBuilder builder = new VariableBuilder(att);
-/*
-            VariableBuilder.setName(att.getName());
-            VariableBuilder.setIsObservable();
-
-            VariableBuilder.setStateSpaceType(att.getStateSpaceType());
-            switch (att.getStateSpaceType()) {
-                case REAL:
-                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
-                    break;
-                case MULTINOMIAL:
-                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
-                    break;
-                default:
-                    throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
-            }
-
-            VariableBuilder.setNumberOfStates(att.getNumberOfStates());
-*/
             VariableImplementation var = new VariableImplementation(builder, att.getIndex());
             allVariables.add(var.getVarID(), var);
 
@@ -77,29 +59,12 @@ public class StaticModelHeader {
         this.allVariables = new ArrayList<>();
 
         for (Attribute att : this.atts.getSet()) {
+            VariableBuilder builder;
             if (typeDists.containsKey(att)) {
-                VariableBuilder builder = new VariableBuilder(att, typeDists.get(att));
+                builder = new VariableBuilder(att, typeDists.get(att));
             }else{
-                VariableBuilder builder = new VariableBuilder(att);
+                builder = new VariableBuilder(att);
             }
-
-            /*
-            VariableBuilder.setName(att.getName());
-            VariableBuilder.setIsObservable();
-
-            VariableBuilder.setStateSpaceType(att.getStateSpaceType());
-            switch (att.getStateSpaceType()) {
-                case REAL:
-                    VariableBuilder.setDistributionType(typeDists.get(att));
-                    break;
-                case MULTINOMIAL:
-                    VariableBuilder.setDistributionType(typeDists.get(att));
-                    break;
-                default:
-                    throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
-            }
-            VariableBuilder.setNumberOfStates(att.getNumberOfStates());
-            */
 
             VariableImplementation var = new VariableImplementation(builder, att.getIndex());
             allVariables.add(var.getVarID(), var);
