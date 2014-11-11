@@ -30,23 +30,21 @@ import java.util.List;
  * Created by afa on 02/07/14.
  */
 public class StaticModelHeader {
-    private Attributes atts;
-    private List<Variable> allVariables;
 
+    private List<Variable> allVariables;
 
     /**
      * Constructor where the distribution type of random variables is initialized by default.
      *
      */
     public StaticModelHeader(Attributes atts) {
-        this.atts = atts;
+
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : this.atts.getSet()) {
+        for (Attribute att : atts.getSet()) {
             VariableBuilder builder = new VariableBuilder(att);
-            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
+            VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
-
         }
     }
 
@@ -55,10 +53,10 @@ public class StaticModelHeader {
     *
     */
     public StaticModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists) {
-        this.atts = atts;
+
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : this.atts.getSet()) {
+        for (Attribute att : atts.getSet()) {
             VariableBuilder builder;
             if (typeDists.containsKey(att)) {
                 builder = new VariableBuilder(att, typeDists.get(att));
@@ -94,12 +92,14 @@ public class StaticModelHeader {
     }
 
     private class VariableImplementation implements Variable {
+
         private String name;
         private int varID;
         private boolean observable;
         private int numberOfStates;
         private StateSpaceType stateSpaceType;
         private DistType distributionType;
+        private Attribute attribute;
 
         public VariableImplementation(VariableBuilder builder, int varID) {
             this.name = builder.getName();
@@ -108,6 +108,7 @@ public class StaticModelHeader {
             this.numberOfStates = builder.getNumberOfStates();
             this.stateSpaceType = builder.getStateSpaceType();
             this.distributionType = builder.getDistributionType();
+            this.attribute = builder.getAttribute();
         }
 
         public String getName() {
@@ -116,10 +117,6 @@ public class StaticModelHeader {
 
         public int getVarID() {
             return varID;
-        }
-
-        private void setVarID(int id) {
-            this.varID = id;
         }
 
         public boolean isObservable() {
@@ -141,6 +138,8 @@ public class StaticModelHeader {
         public boolean isTemporalClone() {
             throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
         }
+
+        public Attribute getAttribute(){return attribute;}
 
     }
 }
