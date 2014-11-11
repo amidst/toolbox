@@ -51,10 +51,10 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
     private List<Variable> parents;
 
     /**
-     * An array of <code>CLG</code> objects, one for each configuration of the multinomial parents. These objects are
+     * An array of <code>Normal_NormalParents</code> objects, one for each configuration of the multinomial parents. These objects are
      * ordered according to the criteria implemented in class utils.MultinomialIndex
      */
-    private CLG[] distribution;
+    private Normal_NormalParents[] distribution;
 
 
     /**
@@ -76,11 +76,11 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
             }
         }
 
-        //Initialize the distribution with a CLG(var, normalParents) for each configuration of the parents.
+        //Initialize the distribution with a Normal_NormalParents(var, normalParents) for each configuration of the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
-        this.distribution = new CLG[size];
+        this.distribution = new Normal_NormalParents[size];
         for (int i = 0; i < size; i++) {
-            this.distribution[i] = new CLG(var, normalParents);
+            this.distribution[i] = new Normal_NormalParents(var, normalParents);
         }
     }
 
@@ -93,36 +93,39 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
     }
 
     /**
-     * Gets a CLG distribution conditioned to an assignment over a set of Multinomial parents. Let X and Y two sets of
-     * Normal variables, and Z a set of Multinomial. Then this method computes f(X|Y,Z=z).
+     * Gets a <code>Normal_NormalParentsDistribution</code> distribution conditioned to an assignment over a set of
+     * Multinomial parents. Let X and Y two sets of Normal variables, and Z a set of Multinomial. Then this method
+     * computes f(X|Y,Z=z).
      * @param assignment An assignment over a set of parents. For generality reasons, apart from the Multinomial
      *                   parents, the assignment contains values for the Normal parents as well (although they are
      *                   not used in this case).
-     * @return a CLG distribution conditioned to the assignment given as argument.
+     * @return a <code>Normal_NormalParentsDistribution</code> distribution conditioned to the assignment given as
+     * argument.
      */
-    public CLG getCLG(Assignment assignment) {
+    public Normal_NormalParents getNormal_NormalParentsDistribution(Assignment assignment) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
         return distribution[position];
     }
 
     /**
-     * Sets a CLG distribution to a given position in the array of distributions.
-     * @param position The position in which the CLG distribution is set.
-     * @param CLGdistribution A <code>CLG</code> distribution.
+     * Sets a <code>Normal_NormalParents</code> distribution to a given position in the array of distributions.
+     * @param position The position in which the distribution is set.
+     * @param distribution A <code>Normal_NormalParents</code> distribution.
      */
-    public void setCLG(int position, CLG CLGdistribution) {
-        this.distribution[position] = CLGdistribution;
+    public void setNormal_NormalParentsDistribution(int position, Normal_NormalParents distribution) {
+        this.distribution[position] = distribution;
     }
 
     /**
-     * Sets a CLG distribution to the array of distributions in a position determined by an given Assignment. Note that
-     * this Assignment contains values for the Normal parents as well (although they are not used in this case).
+     * Sets a <code>Normal_NormalParents</code> distribution to the array of distributions in a position determined by
+     * an given <code>Assignment</code>. Note that this assignment contains values for the Normal parents as well
+     * (although they are not used in this case).
      * @param assignment An <code>Assignment</code> for the parents variables.
-     * @param CLGDistribution A <code>CLG</code> distribution.
+     * @param distribution A <code>Normal_NormalParents</code> distribution.
      */
-    public void setCLG(Assignment assignment, CLG CLGDistribution) {
+    public void setNormal_NormalParentsDistribution(Assignment assignment, Normal_NormalParents distribution) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
-        this.setCLG(position, CLGDistribution);
+        this.setNormal_NormalParentsDistribution(position, distribution);
     }
 
     /**
@@ -133,7 +136,7 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
      * @return A <code>double</code> with the corresponding density value.
      */
     public double getProbability(double value, Assignment parentAssignment) {
-        return getCLG(parentAssignment).getProbability(value, parentAssignment);
+        return getNormal_NormalParentsDistribution(parentAssignment).getProbability(value, parentAssignment);
     }
 
     /**
@@ -144,7 +147,7 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
      * @return A <code>double</code> with the logarithm of the corresponding density value.
      */
     public double getLogProbability(double value, Assignment parentAssignment) {
-        return getCLG(parentAssignment).getLogProbability(value, parentAssignment);
+        return getNormal_NormalParentsDistribution(parentAssignment).getLogProbability(value, parentAssignment);
     }
 
     /**
