@@ -34,7 +34,7 @@ public class DistributionBuilder {
                     for (Variable v : conditioningVars) {
                         if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
                             multinomialParents = true;
-                        } else if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+                        } else if (v.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
                             normalParents = true;
                         } else {
                             throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
