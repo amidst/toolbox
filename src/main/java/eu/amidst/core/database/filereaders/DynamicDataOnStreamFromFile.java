@@ -1,23 +1,29 @@
 package eu.amidst.core.database.filereaders;
 
+import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnStream;
-import eu.amidst.core.database.Attributes;
 
 /**
  *
  */
-public class StaticDataOnStreamFromFile implements DataOnStream {
+public class DynamicDataOnStreamFromFile implements DataOnStream {
 
     DataFileReader reader;
+    int sampleID = 0;
+    int timeID = 0;
+    DataRow present;
+    DataRow past;
 
-    public StaticDataOnStreamFromFile(DataFileReader reader_){
+    public DynamicDataOnStreamFromFile(DataFileReader reader_){
         this.reader=reader_;
     }
 
     @Override
     public DataInstance nextDataInstance() {
-        return new StaticDataInstance(this.reader.nextDataRow());
+        past = present;
+        present = this.reader.nextDataRow();
+        return new DynamicDataInstance(present, past, sampleID, timeID);
     }
 
     @Override
