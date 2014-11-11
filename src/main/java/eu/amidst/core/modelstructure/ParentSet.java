@@ -4,6 +4,7 @@ package eu.amidst.core.modelstructure;
 import eu.amidst.core.header.Variable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,5 +36,13 @@ public class ParentSet {
 
     public int getNumberOfParents(){
         return vars.size();
+    }
+
+    /**
+     * Is an ArrayList pointer to an ArrayList unmodifiable object still unmodifiable? I guess so right?
+     * @param variables
+     */
+    public void blockParents(ArrayList<Variable> variables) {
+        vars = variables;
     }
 }

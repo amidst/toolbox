@@ -1,7 +1,7 @@
 package eu.amidst.core.database.dynamics;
 
 
-import eu.amidst.core.database.dynamics.readers.impl.DynamicDataInstance;
+import eu.amidst.core.database.filereaders.DynamicDataInstance;
 import eu.amidst.core.database.Attributes;
 
 /**
