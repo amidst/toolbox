@@ -64,7 +64,7 @@ public class StaticModelHeader {
                 builder = new VariableBuilder(att);
             }
 
-            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
+            VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
 
         }
