@@ -42,40 +42,20 @@ public final class VariableBuilder {
         return name;
     }
 
-    public static void setName(String name) {
-        VariableBuilder.name = name;
-    }
-
     public static boolean isObservable() {
         return observable;
-    }
-
-    public static void setIsObservable() {
-        VariableBuilder.observable = observable;
     }
 
     public static int getNumberOfStates() {
         return numberOfStates;
     }
 
-    public static void setNumberOfStates(int numberOfStates) {
-        VariableBuilder.numberOfStates = numberOfStates;
-    }
-
     public static StateSpaceType getStateSpaceType() {
         return stateSpaceType;
     }
 
-    public static void setStateSpaceType(StateSpaceType stateSpaceStateSpaceType) {
-        VariableBuilder.stateSpaceType = stateSpaceStateSpaceType;
-    }
-
     public static DistType getDistributionType() {
         return distributionType;
-    }
-
-    public static void setDistributionType(DistType distributionType) {
-        VariableBuilder.distributionType = distributionType;
     }
 
 }
