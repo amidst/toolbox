@@ -3,7 +3,7 @@ package eu.amidst.core.modelstructure;
 
 import eu.amidst.core.header.DistType;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.dynamics.DynamicModelHeader;
+import eu.amidst.core.header.DynamicModelHeader;
 import eu.amidst.core.header.Variable;
 
 import java.util.ArrayList;
