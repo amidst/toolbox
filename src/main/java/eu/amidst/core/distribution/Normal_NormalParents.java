@@ -26,7 +26,7 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-4
  */
-public class CLG implements ConditionalDistribution {
+public class Normal_NormalParents implements ConditionalDistribution {
 
     /**
      * The variable of the distribution
@@ -39,12 +39,12 @@ public class CLG implements ConditionalDistribution {
     private List<Variable> parents;
 
     /**
-     * The "intercept" parameter in the CLG distribution
+     * The "intercept" parameter of the distribution
      */
     private double intercept;
 
     /**
-     * The set of coefficients in the CLG distribution, one for each parent
+     * The set of coefficients, one for each parent
      */
     private double[] coeffParents;
 
@@ -58,7 +58,7 @@ public class CLG implements ConditionalDistribution {
      * @param var The variable of the distribution.
      * @param parents The set of parents of the variable.
      */
-    public CLG(Variable var, List<Variable> parents) {
+    public Normal_NormalParents(Variable var, List<Variable> parents) {
 
         this.var = var;
         this.parents = parents;
@@ -71,15 +71,15 @@ public class CLG implements ConditionalDistribution {
     }
 
     /**
-     * Gets the intercept of the CLG distribution.
-     * @return
+     * Gets the intercept of the distribution.
+     * @return A <code>double</code> value with the intercept.
      */
     public double getIntercept() {
         return intercept;
     }
 
     /**
-     * Sets the intercept of the CLG distribution.
+     * Sets the intercept of the distribution.
      * @param intercept A <code>double</code> value with the intercept.
      */
     public void setIntercept(double intercept) {
@@ -95,7 +95,7 @@ public class CLG implements ConditionalDistribution {
     }
 
     /**
-     * Sets the coefficients of the CLG distribution
+     * Sets the coefficients of the distribution
      * @param coeffParents An array of <code>double</code> with the coefficients, one for each parent.
      */
     public void setCoeffParents(double[] coeffParents) {
@@ -119,7 +119,7 @@ public class CLG implements ConditionalDistribution {
     }
 
     /**
-     * Gets the corresponding univariate normal distribution after conditioning the CLG to a parent assignment.
+     * Gets the corresponding univariate normal distribution after conditioning the distribution to a parent assignment.
      * @param parentsAssignment An <code>Assignment</code> for the parents.
      * @return A <code>Normal</code> object with the univariate distribution.
      */
@@ -150,7 +150,7 @@ public class CLG implements ConditionalDistribution {
     }
 
     /**
-     * Evaluates the resulting univariate density function in a point after conditioning the CLG distribution to a
+     * Evaluates the resulting univariate density function in a point after conditioning the distribution to a
      * given parent <code>Assignment</code>.
      * @param value A <code>double</code> value of the variable to be evaluated.
      * @param parentAssignment An <code>Assignment</code> for the parents.
@@ -162,7 +162,7 @@ public class CLG implements ConditionalDistribution {
     }
 
     /**
-     * Computes the logarithm of the evaluated density function in a point after conditioning the CLG distribution to a
+     * Computes the logarithm of the evaluated density function in a point after conditioning the distribution to a
      * given parent <code>Assignment</code>.
      * @param value A <code>double</code> value of the variable to be evaluated.
      * @param parentAssignment An <code>Assignment</code> for the parents.
