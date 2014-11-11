@@ -16,8 +16,8 @@ package eu.amidst.core.header.dynamics;
 
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.DistType;
-import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.DistType;
+import eu.amidst.core.header.StateSpaceType;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.VariableBuilder;
 
@@ -48,8 +48,8 @@ public class DynamicModelHeader {
                 case REAL:
                     VariableBuilder.setDistributionType(DistType.GAUSSIAN);
                     break;
-                case INTEGER:
-                    VariableBuilder.setDistributionType(DistType.GAUSSIAN);
+                case MULTINOMIAL:
+                    VariableBuilder.setDistributionType(DistType.MULTINOMIAL);
                     break;
                 default:
                     throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");

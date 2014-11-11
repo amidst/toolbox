@@ -3,7 +3,7 @@ package eu.amidst.core.database.statics.readers.impl;
 import com.google.common.collect.ImmutableSet;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.StateSpaceType;
 
 import java.util.Set;
 
