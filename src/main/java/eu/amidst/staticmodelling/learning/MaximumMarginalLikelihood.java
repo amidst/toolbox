@@ -2,7 +2,7 @@
 package eu.amidst.staticmodelling.learning;
 
 import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.database.statics.readers.DataStream;
+import eu.amidst.core.database.DataStream;
 import eu.amidst.core.exponentialfamily.ExponentialFamilyDistribution;
 import eu.amidst.core.exponentialfamily.MultinomialDistribution;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
@@ -59,8 +59,8 @@ public class MaximumMarginalLikelihood implements LearningAlgorithm{
 
     @Override
     public void learnModelFromStream(DataStream data) {
-        while(data.hasMoreDataInstances()){
-            this.model.updateModel(data.nextDataInstance());
+        while(data.hasMoreDataRows()){
+            this.model.updateModel(data.nextDataRow());
         }
     }
 }
