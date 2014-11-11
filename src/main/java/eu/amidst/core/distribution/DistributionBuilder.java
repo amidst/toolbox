@@ -42,7 +42,7 @@ public class DistributionBuilder {
                     }
 
                     if (normalParents && !multinomialParents){
-                        return new CLG(mainVar, conditioningVars);
+                        return new Normal_NormalParents(mainVar, conditioningVars);
                     }else if (!normalParents & multinomialParents) {
                         return new Normal_MultinomialParents(mainVar, conditioningVars);
                     } else if (normalParents & multinomialParents) {
