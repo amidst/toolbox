@@ -1,8 +1,5 @@
 package eu.amidst.core.header;
 
-import eu.amidst.core.database.statics.readers.DistType;
-import eu.amidst.core.database.statics.readers.StateSpaceType;
-
 /**
  * Created by afa on 02/07/14.
  */

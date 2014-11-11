@@ -4,15 +4,15 @@ import com.google.common.collect.ImmutableSet;
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
 
-import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.StateSpaceType;
 
 import java.util.Set;
 
 public class AttributesForTesting implements Attributes {
 
-    private final Attribute X = new Attribute(0, "X", "NA", StateSpaceType.INTEGER);
-    private final Attribute Y = new Attribute(1, "Y", "NA", StateSpaceType.INTEGER);
-    private final Attribute Z = new Attribute(2, "Z", "NA", StateSpaceType.INTEGER);
+    private final Attribute X = new Attribute(0, "X", "NA", StateSpaceType.MULTINOMIAL);
+    private final Attribute Y = new Attribute(1, "Y", "NA", StateSpaceType.MULTINOMIAL);
+    private final Attribute Z = new Attribute(2, "Z", "NA", StateSpaceType.MULTINOMIAL);
 
     private static Set<Attribute> attributes;
     {
