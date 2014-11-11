@@ -1,28 +1,51 @@
 package eu.amidst.core.modelstructure;
 
 
-import eu.amidst.core.header.DistType;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.header.DynamicModelHeader;
 import eu.amidst.core.header.Variable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
- * Created by afa on 03/07/14.
+ * <h2>This class implements a dynamic Bayesian network.</h2>
+ *
+ * @author afalvarez@ual.es, andres@cs.aau.dk & ana@cs.aau.dk
+ * @version 1.0
+ * @since 2014-07-3
+ *
  */
 public class DynamicBayesianNetwork{
+
+    /**
+     * It contains the ParentSets for all variables at time 0.
+     */
     private ParentSet[] parentSetTime0;
+
+    /**
+    * It contains the ParentSets for all variables at time T.
+    */
     private ParentSet[] parentSetTimeT;
+
+    /**
+     * It contains the distributions for all variables at time 0.
+     */
     private Distribution[] distributionsTime0;
+
+    /**
+     * It contains the distributions for all variables at time T.
+     */
     private Distribution[] distributionsTimeT;
+
+    /**
+     * It contains a pointer to the modelHeader (list of variables).
+     */
     private DynamicModelHeader modelHeader;
 
     /**
-     *
-     * @param modelHeader
+     * The private class constructor
+     * @param modelHeader The modelHeader or list of variables
      */
     private DynamicBayesianNetwork(DynamicModelHeader modelHeader){
         this.modelHeader = modelHeader;
@@ -36,21 +59,32 @@ public class DynamicBayesianNetwork{
         }
     }
 
+    /**
+     * The class public constructor, as a factory pattern
+     * @param modelHeader The modelHeader or list of variables
+     * @return A <code>DynamicBayesianNetwork</code> with the given header (list of variables)
+     */
     public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicModelHeader modelHeader){
         return new DynamicBayesianNetwork(modelHeader);
     }
 
 
+    /**
+     * Initialize the Distributions of the variables based on their <code>StateSpaceType</code>
+     */
     public void initializeDistributions() {
         //Parents should have been assigned before calling this method (from dynamicmodelling.models)
 
         for (Variable var : modelHeader.getVariables()) {
             int varID = var.getVarID();
+
             /* Distributions at time t */
             this.distributionsTimeT[varID] = DistributionBuilder.newDistribution(var, parentSetTimeT[varID].getParents());
+            parentSetTimeT[varID].blockParents((ArrayList)Collections.unmodifiableList(parentSetTimeT[varID].getParents()));
 
             /* Distributions at time 0 */
             this.distributionsTime0[varID] = DistributionBuilder.newDistribution(var, parentSetTime0[varID].getParents());
+            parentSetTime0[varID].blockParents((ArrayList)Collections.unmodifiableList(parentSetTime0[varID].getParents()));
         }
     }
 

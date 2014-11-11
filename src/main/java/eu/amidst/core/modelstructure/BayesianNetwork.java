@@ -5,6 +5,8 @@ import eu.amidst.core.distribution.*;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.header.StaticModelHeader;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -63,8 +65,10 @@ public class BayesianNetwork {
         /* Initialize the distribution for each variable depending on its distribution type
         as well as the distribution type of its parent set (if that variable has parents)
          */
-        for(int i=0;i<vars.size();i++) {
-            this.distributions[vars.get(i).getVarID()]= DistributionBuilder.newDistribution(vars.get(i), parents[i].getParents());
+        for (Variable var : modelHeader.getVariables()) {
+            int varID = var.getVarID();
+            this.distributions[varID]= DistributionBuilder.newDistribution(var, parents[varID].getParents());
+            parents[varID].blockParents((ArrayList) Collections.unmodifiableList(parents[varID].getParents()));
         }
     }
 

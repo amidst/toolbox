@@ -17,7 +17,7 @@ public class StaticDataOnMemoryFromFile extends StaticDataOnDiskFromFile impleme
 
         int count=0;
         while(reader.hasMoreDataRows()){
-            dataInstances.add(new StaticDataInstance(reader.nextDataRow(),count++));
+            //dataInstances.add(new StaticDataInstance(reader.nextDataRow(),count++));
         }
         reader.reset();
     }
