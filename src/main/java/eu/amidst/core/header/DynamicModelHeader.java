@@ -39,7 +39,7 @@ public class DynamicModelHeader {
 
         for (Attribute att : atts.getSet()) {
             VariableBuilder builder = new VariableBuilder(att);
-            VariableImplementation var = new VariableImplementation(builder, att.getIndex());
+            VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
 
 
