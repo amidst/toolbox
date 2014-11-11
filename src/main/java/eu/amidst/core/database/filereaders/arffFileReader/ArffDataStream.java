@@ -1,28 +1,14 @@
-/*
-package eu.amidst.core.database.statics.readers.impl;
-
-import eu.amidst.core.database.statics.readers.Attribute;
-import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.header.StateSpaceType;
-import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.database.statics.readers.DataStream;
-import eu.amidst.core.database.statics.readers.ArffParserException;
-import eu.amidst.core.database.statics.readers.Keys;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
-
-import au.com.bytecode.opencsv.CSVReader;
+package eu.amidst.core.database.filereaders.arffFileReader;
 
 
-*/
 /**
  * Created by sigveh on 10/7/14.
- *//*
+ */
 
-public class ArffDataStream implements DataStream{
+public class ArffDataStream{}
+
+
+ /* implements DataFileReader{
     private Iterator iterator;
     private String fileName;
     private Set<Attribute> attributes;
@@ -266,14 +252,14 @@ public class ArffDataStream implements DataStream{
 
 
     @Override
-    public DataInstance nextDataInstance() {
+    public DataInstance nextDataRow() {
         DataInstance x = new DefaultDataInstance(dataInstance,doubleData,intData);
         dataInstance = dataInstance + 1;
         return x;
     }
 
     @Override
-    public boolean hasMoreDataInstances() {
+    public boolean hasMoreDataRows() {
         return dataInstance != rowSize;
     }
 
