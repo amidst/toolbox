@@ -10,6 +10,8 @@
 
 package eu.amidst.core.database.statics.readers;
 
+import eu.amidst.core.header.StateSpaceType;
+
 /**
  * Created by sigveh on 10/20/14.
  */

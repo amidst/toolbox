@@ -1,12 +1,8 @@
 package eu.amidst.core.distribution;
-import java.util.ArrayList;
 import java.util.List;
-import eu.amidst.core.database.statics.readers.Attribute;
+
 import eu.amidst.core.database.statics.readers.Attributes;
 import eu.amidst.core.header.Variable;
-import eu.amidst.core.header.VariableBuilder;
-import eu.amidst.core.database.statics.readers.DistType;
-import eu.amidst.core.database.statics.*;
 import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.statics.StaticModelHeader;
 
@@ -15,8 +11,6 @@ import eu.amidst.core.utils.MultinomialIndex;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class MultinomialTest {
 
