@@ -14,12 +14,8 @@
 
 package eu.amidst.core.header;
 
-import eu.amidst.core.database.statics.readers.Attribute;
-import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.header.DistType;
-import eu.amidst.core.header.StateSpaceType;
-import eu.amidst.core.header.Variable;
-import eu.amidst.core.header.VariableBuilder;
+import eu.amidst.core.database.Attribute;
+import eu.amidst.core.database.Attributes;
 
 import java.util.ArrayList;
 import java.util.List;

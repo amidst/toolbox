@@ -1,6 +1,6 @@
 package eu.amidst.core.header;
 
-import eu.amidst.core.database.statics.readers.Attribute;
+import eu.amidst.core.database.Attribute;
 
 
 /**

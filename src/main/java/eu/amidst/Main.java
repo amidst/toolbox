@@ -2,7 +2,7 @@
 package eu.amidst;
 
 
-import eu.amidst.core.database.statics.readers.DataStream;
+import eu.amidst.core.database.DataStream;
 import eu.amidst.core.database.statics.readers.DataStreamReaderFromFile;
 import eu.amidst.staticmodelling.models.NaiveBayesClassifier;
 import eu.amidst.staticmodelling.models.NaiveBayesClusteringModel;
