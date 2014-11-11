@@ -50,50 +50,6 @@ public class DynamicBayesianNetwork{
         }
     }
 
-    private void initializeDistributionsFor(Variable var, Distribution[] distributionsTimeX, ParentSet[] parentSetTimeX){
-        int varID = var.getVarID();
-        if (parentSetTimeT[varID].getNumberOfParents() == 0) {
-            switch (var.getDistributionType()) {
-                case MULTINOMIAL:
-                    distributionsTimeX[varID] = new Multinomial(var);
-                    break;
-                case GAUSSIAN:
-                    distributionsTimeX[varID] = new Normal(var);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Error in variable distribution");
-            }
-        } else {
-            List<Variable> multinomialParents = new ArrayList<Variable>();
-            List<Variable> normalParents = new ArrayList<Variable>();
-            switch (var.getDistributionType()) {
-                case MULTINOMIAL:
-                        /* The parents of a multinomial variable should always be multinomial */
-                    distributionsTimeX[varID] = new Multinomial_MultinomialParents(var, parentSetTimeX[varID].getParents());
-                case GAUSSIAN:
-                        /* The parents of a gaussian variable are either multinomial and/or normal */
-                    for (Variable v : parentSetTimeT[varID].getParents()) {
-                        if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-                            multinomialParents.add(v);
-                        } else {
-                            normalParents.add(v);
-                        }
-                    }
-
-                    if (normalParents.size() == 0) {
-                        distributionsTimeX[varID] = new Normal_MultinomialParents(var, parentSetTimeX[varID].getParents());
-                    } else if (multinomialParents.size() == 0){
-                        distributionsTimeX[varID] = new CLG(var, parentSetTimeX[varID].getParents());
-                    } else{
-                        distributionsTimeX[varID] = new Normal_MultinomialNormalParents(var, parentSetTimeX[varID].getParents());
-                    }
-
-                default:
-                    throw new IllegalArgumentException("Error in variable distribution");
-            }
-        }
-    }
-
     /* Methods accessing the variables in the modelHeader*/
     public int getNumberOfNodes() {
         return this.modelHeader.getNumberOfVars();
