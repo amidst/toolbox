@@ -20,6 +20,10 @@ public class DynamicBayesianNetwork{
     private Distribution[] distributionsTimeT;
     private DynamicModelHeader modelHeader;
 
+    /**
+     *
+     * @param modelHeader
+     */
     private DynamicBayesianNetwork(DynamicModelHeader modelHeader){
         this.modelHeader = modelHeader;
         this.parentSetTime0 = new ParentSet[modelHeader.getNumberOfVars()];
