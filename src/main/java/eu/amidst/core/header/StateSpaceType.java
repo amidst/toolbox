@@ -1,14 +1,14 @@
-package eu.amidst.core.database.statics.readers;
+package eu.amidst.core.header;
 
 /**
  * Created by sigveh on 10/20/14.
  */
-public enum StateSpaceType {REAL, INTEGER;
+public enum StateSpaceType {REAL, MULTINOMIAL;
 
         public static StateSpaceType parseKind(String s) {
             s = s.toUpperCase();
             if(s.startsWith("{") && s.endsWith("}")){
-                return INTEGER;
+                return MULTINOMIAL;
             }
 
             switch (s) {

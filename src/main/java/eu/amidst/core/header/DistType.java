@@ -1,4 +1,4 @@
-package eu.amidst.core.database.statics.readers;
+package eu.amidst.core.header;
 
 /**
  * Created by Hanen on 05/11/14.

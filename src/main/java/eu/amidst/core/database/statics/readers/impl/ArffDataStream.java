@@ -3,7 +3,7 @@ package eu.amidst.core.database.statics.readers.impl;
 
 import eu.amidst.core.database.statics.readers.Attribute;
 import eu.amidst.core.database.statics.readers.Attributes;
-import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.StateSpaceType;
 import eu.amidst.core.database.statics.readers.DataInstance;
 import eu.amidst.core.database.statics.readers.DataStream;
 import eu.amidst.core.database.statics.readers.ArffParserException;
@@ -198,7 +198,7 @@ public class ArffDataStream implements DataStream{
                 case REAL:
                     doubleCount = doubleCount + 1;
                     break;
-                case INTEGER:
+                case MULTINOMIAL:
                     intCount = intCount + 1;
                     break;
                 default:
@@ -229,7 +229,7 @@ public class ArffDataStream implements DataStream{
                                 throw new ArffParserException("The header contains attributes with the same names.");
                             }
                             break;
-                        case INTEGER:
+                        case MULTINOMIAL:
                             if(intKeys[a.getIndex()] == -1) {
                                 intKeys[a.getIndex()] = headerIndex;
                             } else{
