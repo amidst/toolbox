@@ -41,12 +41,12 @@ public class DynamicBayesianNetwork{
         //Parents should have been assigned before calling this method (from dynamicmodelling.models)
 
         for (Variable var : modelHeader.getVariables()) {
-
+            int varID = var.getVarID();
             /* Distributions at time t */
-            initializeDistributionsFor(var, distributionsTimeT, parentSetTimeT);
+            this.distributionsTimeT[varID] = DistributionBuilder.newDistribution(var, parentSetTimeT[varID].getParents());
 
             /* Distributions at time 0 */
-            initializeDistributionsFor(var, distributionsTime0, parentSetTime0);
+            this.distributionsTime0[varID] = DistributionBuilder.newDistribution(var, parentSetTime0[varID].getParents());
         }
     }
 
