@@ -8,7 +8,7 @@
  */
 
 
-package eu.amidst.core.database.statics.readers;
+package eu.amidst.core.database;
 
 import eu.amidst.core.header.StateSpaceType;
 

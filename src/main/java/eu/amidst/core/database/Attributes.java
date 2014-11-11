@@ -1,6 +1,4 @@
-package eu.amidst.core.database.statics.readers;
-
-import eu.amidst.core.database.statics.readers.Attribute;
+package eu.amidst.core.database;
 
 import java.util.Set;
 

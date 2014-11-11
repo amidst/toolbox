@@ -1,4 +1,4 @@
-package eu.amidst.core.database.statics.readers;
+package eu.amidst.core.database.filereaders.arffFileReader;
 
 /**
  * Created by sigveh on 10/20/14.
