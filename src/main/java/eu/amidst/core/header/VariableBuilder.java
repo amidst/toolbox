@@ -12,6 +12,7 @@ public final class VariableBuilder {
     private static int numberOfStates;
     private static StateSpaceType stateSpaceType;
     private static DistType distributionType;
+    private static Attribute attribute;
 
     public VariableBuilder(Attribute att){
         this.name = att.getName();
@@ -28,6 +29,7 @@ public final class VariableBuilder {
             default:
                 throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
         }
+        this.attribute = att;
     }
 
     public VariableBuilder(Attribute att, DistType typeDist){
@@ -36,6 +38,7 @@ public final class VariableBuilder {
         this.numberOfStates = att.getNumberOfStates();
         this.stateSpaceType = att.getStateSpaceType();
         this.distributionType = typeDist;
+        this.attribute = att;
     }
 
     public static String getName() {
@@ -57,5 +60,7 @@ public final class VariableBuilder {
     public static DistType getDistributionType() {
         return distributionType;
     }
+
+    public static Attribute getAttribute() { return attribute; }
 
 }

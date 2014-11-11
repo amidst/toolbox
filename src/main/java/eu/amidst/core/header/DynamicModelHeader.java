@@ -28,12 +28,12 @@ import java.util.List;
  * Created by afa on 02/07/14.
  */
 public class DynamicModelHeader {
-    private Attributes atts;
+
     private List<Variable> allVariables;
     private List<Variable> temporalClones;
 
     public DynamicModelHeader(Attributes atts) {
-        this.atts = atts;
+
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
 
@@ -95,6 +95,7 @@ public class DynamicModelHeader {
         private int numberOfStates;
         private StateSpaceType stateSpaceType;
         private DistType distributionType;
+        private Attribute attribute;
         private final boolean isTemporalClone;
 
         /*
@@ -107,6 +108,7 @@ public class DynamicModelHeader {
             this.numberOfStates = builder.getNumberOfStates();
             this.stateSpaceType = builder.getStateSpaceType();
             this.distributionType = builder.getDistributionType();
+            this.attribute = builder.getAttribute();
             this.isTemporalClone = false;
         }
 
@@ -120,6 +122,7 @@ public class DynamicModelHeader {
             this.numberOfStates = variable.getNumberOfStates();
             this.stateSpaceType = variable.getStateSpaceType();
             this.distributionType = variable.getDistributionType();
+            this.attribute = variable.getAttribute();
             this.isTemporalClone = true;
         }
 
@@ -129,10 +132,6 @@ public class DynamicModelHeader {
 
         public int getVarID() {
             return varID;
-        }
-
-        private void setVarID(int id) {
-            this.varID = id;
         }
 
         public boolean isObservable() {
@@ -156,6 +155,6 @@ public class DynamicModelHeader {
             return isTemporalClone;
         }
 
-
+        public Attribute getAttribute(){return attribute;}
     }
 }
