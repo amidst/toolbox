@@ -27,8 +27,8 @@ public class DynamicBayesianNetwork{
         this.distributionsTime0 = new Distribution[modelHeader.getNumberOfVars()];
         this.distributionsTimeT = new Distribution[modelHeader.getNumberOfVars()];
         for (int i=0;i<modelHeader.getNumberOfVars();i++) {
-            //parentSetTime0[i] = new ParentSet();
-            //parentSetTimeT[i] = new ParentSet();
+            parentSetTime0[i] = ParentSet.newParentSet();
+            parentSetTimeT[i] = ParentSet.newParentSet();
         }
     }
 
