@@ -1,5 +1,8 @@
 package eu.amidst.core.header;
 
+import eu.amidst.core.database.statics.readers.Attribute;
+
+
 /**
  * Created by andresmasegosa on 04/11/14.
  */
@@ -9,6 +12,31 @@ public final class VariableBuilder {
     private static int numberOfStates;
     private static StateSpaceType stateSpaceType;
     private static DistType distributionType;
+
+    public VariableBuilder(Attribute att){
+        this.name = att.getName();
+        this.observable = true;
+        this.numberOfStates = att.getNumberOfStates();
+        this.stateSpaceType = att.getStateSpaceType();
+        switch (att.getStateSpaceType()) {
+            case REAL:
+                this.distributionType = DistType.GAUSSIAN;
+                break;
+            case MULTINOMIAL:
+                this.distributionType = DistType.MULTINOMIAL;
+                break;
+            default:
+                throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
+        }
+    }
+
+    public VariableBuilder(Attribute att, DistType typeDist){
+        this.name = att.getName();
+        this.observable = true;
+        this.numberOfStates = att.getNumberOfStates();
+        this.stateSpaceType = att.getStateSpaceType();
+        this.distributionType = typeDist;
+    }
 
     public static String getName() {
         return name;
