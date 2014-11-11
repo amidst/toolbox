@@ -15,7 +15,7 @@ import java.util.List;
 
 public class BayesianNetwork {
 
-    private Distribution[] estimators;
+    private Distribution[] distributions;
     private StaticModelHeader modelHeader;
     private ParentSet[] parents;
 
@@ -37,11 +37,11 @@ public class BayesianNetwork {
     }
 
     public Distribution getDistribution(Variable var) {
-        return estimators[var.getVarID()];
+        return distributions[var.getVarID()];
     }
 
     public void setDistribution(Variable var, Distribution distribution){
-        this.estimators[var.getVarID()] = distribution;
+        this.distributions[var.getVarID()] = distribution;
     }
 
     public int getNumberOfNodes() {
@@ -57,11 +57,14 @@ public class BayesianNetwork {
 
         List<Variable> vars = modelHeader.getVariables(); /* the list of all variables in the BN */
 
+        this.distributions = new Distribution[vars.size()];
+
+
         /* Initialize the distribution for each variable depending on its distribution type
         as well as the distribution type of its parent set (if that variable has parents)
          */
         for(int i=0;i<vars.size();i++) {
-            this.estimators[vars.get(i).getVarID()]= DistributionBuilder.newDistribution(vars.get(i), parents[i].getParents());
+            this.distributions[vars.get(i).getVarID()]= DistributionBuilder.newDistribution(vars.get(i), parents[i].getParents());
         }
     }
 
