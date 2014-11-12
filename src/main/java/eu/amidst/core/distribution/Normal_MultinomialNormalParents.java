@@ -95,7 +95,7 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
 
     /**
      * Gets the set of conditioning variables.
-     * @return A <code>List</code> with the conditioning variables.
+     * @return A <code>unmodifiable List</code> with the conditioning variables.
      */
     public List<Variable> getConditioningVariables() {
         return parents;
