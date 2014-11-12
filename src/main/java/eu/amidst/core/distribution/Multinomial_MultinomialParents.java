@@ -17,6 +17,7 @@ import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,13 +56,18 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
         this.parents = parents;
 
         // Computes the size of the array of probabilities as the number of possible assignments for the parents.
-        int size = MultinomialIndex.getNumberOfPossibleAssignments(parents);
+        int size = MultinomialIndex.getNumberOfPossibleAssignments(this.parents);
 
         // Initialize the distribution uniformly for each configuration of the parents.
         this.probabilities = new Multinomial[size];
         for (int i = 0; i < size; i++) {
             this.probabilities[i] = new Multinomial(var);
         }
+
+
+        //Make them unmodifiable
+        this.parents = Collections.unmodifiableList(this.parents);
+
     }
 
     /**
