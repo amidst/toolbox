@@ -1,11 +1,11 @@
 /*
 package eu.amidst.core.database.statics.readers.impl;
 
-import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.database.statics.readers.DataStream;
+import eu.amidst.core.database.DataStream;
 //import junit.framework.TestCase;
-import eu.amidst.core.database.statics.readers.ArffParserException;
+import eu.amidst.core.database.filereaders.arffFileReader.ArffParserException;
 import junit.framework.Assert;
 import org.junit.Test;
 

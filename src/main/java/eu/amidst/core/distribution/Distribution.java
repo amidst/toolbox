@@ -1,26 +1,14 @@
-/**
- ******************* ISSUE LIST **************************
- *
- * 1. Think in using the parents of the BN to access the conditioning list.
- *
- *
- * ********************************************************
- */
-
-
-
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.header.Variable;
 
 /**
- *
- *  This interface is for distributions.
- * Created by afa on 02/07/14.
+ * Created by afa on 12/11/14.
  */
 public interface Distribution {
-
-    public Variable getVariable();
-
-
+    /**
+     * Gets the variable of the distribution
+     * @return A <code>Variable</code> object.
+     */
+    Variable getVariable();
 }

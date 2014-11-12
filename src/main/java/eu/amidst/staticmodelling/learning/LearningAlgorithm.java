@@ -3,7 +3,7 @@ package eu.amidst.staticmodelling.learning;
 
 
 import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.database.statics.readers.DataStream;
+import eu.amidst.core.database.DataStream;
 import eu.amidst.staticmodelling.models.LearnableModel;
 
 */
