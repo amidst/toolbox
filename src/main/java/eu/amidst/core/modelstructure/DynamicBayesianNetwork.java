@@ -80,11 +80,11 @@ public class DynamicBayesianNetwork{
 
             /* Distributions at time t */
             this.distributionsTimeT[varID] = DistributionBuilder.newDistribution(var, parentSetTimeT[varID].getParents());
-            parentSetTimeT[varID].blockParents((ArrayList)Collections.unmodifiableList(parentSetTimeT[varID].getParents()));
+            parentSetTimeT[varID].blockParents();
 
             /* Distributions at time 0 */
             this.distributionsTime0[varID] = DistributionBuilder.newDistribution(var, parentSetTime0[varID].getParents());
-            parentSetTime0[varID].blockParents((ArrayList)Collections.unmodifiableList(parentSetTime0[varID].getParents()));
+            parentSetTime0[varID].blockParents();
         }
     }
 
