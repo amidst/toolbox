@@ -14,12 +14,10 @@ public interface EFConditionalDistribution {
 
     public double getLogProbabilityConditionedTo(DataInstance instance);
 
-    public SufficientStatistics getFullSufficientStatistics(DataInstance instance);
+    public SufficientStatistics getSufficientStatistics(DataInstance instance);
 
-    public SufficientStatistics getSufficientStatisticsConditionedTo(DataInstance instance);
+    public EFUnivariateDistribution getEFUnivariateInstantiatedTo(DataInstance instance);
 
-    public NaturalParameters getNaturalParametersConditionedTo(DataInstance instance);
-
-    public MomentParameters getMomentParametersConditionedTo(DataInstance instance);
+    public EFConditionalDistribution getEFConditionalInstantiatedTo(DataInstance instance);
 
 }
