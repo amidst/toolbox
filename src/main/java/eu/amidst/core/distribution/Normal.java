@@ -9,7 +9,11 @@
 
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <h2>This class implements a univariate Normal distribution.</h2>
@@ -106,6 +110,4 @@ public class Normal implements UnivariateDistribution {
     public double getLogProbability(double value) {
         return (-Math.log(sd) - 0.5 * Math.log(2 * Math.PI) - 0.5 * Math.pow(((value - mean) / sd), 2));
     }
-
-
 }

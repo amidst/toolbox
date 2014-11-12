@@ -11,7 +11,11 @@
  */
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
+
+import java.util.List;
+import java.util.ArrayList;
 
 
 /**
@@ -64,6 +68,16 @@ public class Multinomial implements UnivariateDistribution {
         this.probabilities[index] = value;
     }
 
+
+    /**
+     * Gets the array of probabilities for the different states of the variable.
+     * @return An array of <code>double</code> with the probabilities.
+     */
+    public double[] getProbabilities(){
+        return probabilities;
+    }
+
+
     /**
      * Computes the probability of the variable for a given state.
      * @param value The position of the variable state in the array of probabilities (represented as a
@@ -75,13 +89,6 @@ public class Multinomial implements UnivariateDistribution {
         return (probabilities[(int) value]);
     }
 
-    /**
-     * Gets the array of probabilities for the different states of the variable.
-     * @return An array of <code>double</code> with the probabilities.
-     */
-    public double[] getProbabilities(){
-        return probabilities;
-    }
 
     /**
      * Computes the logarithm of the probability for a given variable state.
@@ -102,5 +109,4 @@ public class Multinomial implements UnivariateDistribution {
     public Variable getVariable() {
         return var;
     }
-
 }
