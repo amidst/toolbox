@@ -5,10 +5,18 @@ import eu.amidst.core.header.Variable;
 /**
  * Created by afa on 12/11/14.
  */
-public interface Distribution {
+public abstract class Distribution {
+
+    /**
+     * The variable of the distribution
+     */
+    protected Variable var;
+
     /**
      * Gets the variable of the distribution
      * @return A <code>Variable</code> object.
      */
-    Variable getVariable();
+    public Variable getVariable() {
+        return this.var;
+    };
 }
