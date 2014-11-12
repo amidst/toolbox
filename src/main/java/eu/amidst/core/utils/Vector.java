@@ -32,7 +32,7 @@ public class Vector {
             throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. The parameter vec has a different size. ");
 
         for (int i=0; i<this.array.length; i++){
-            this.array[i]=vec.get(i);
+            this.array[i]*=vec.get(i);
         }
     }
 
