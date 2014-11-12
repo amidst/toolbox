@@ -68,7 +68,7 @@ public class BayesianNetwork {
         for (Variable var : modelHeader.getVariables()) {
             int varID = var.getVarID();
             this.distributions[varID]= DistributionBuilder.newDistribution(var, parents[varID].getParents());
-            parents[varID].blockParents((ArrayList) Collections.unmodifiableList(parents[varID].getParents()));
+            parents[varID].blockParents();
         }
     }
 

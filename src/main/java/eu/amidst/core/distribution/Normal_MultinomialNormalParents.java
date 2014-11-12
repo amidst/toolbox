@@ -18,6 +18,7 @@ import eu.amidst.core.header.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,6 +69,8 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
         this.var = var;
         this.multinomialParents = new ArrayList<Variable>();
         this.normalParents = new ArrayList<Variable>();
+        this.parents = parents;
+
 
         for (Variable v : parents) {
             if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
@@ -83,6 +86,11 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
         for (int i = 0; i < size; i++) {
             this.distribution[i] = new Normal_NormalParents(var, normalParents);
         }
+
+        //Make them unmodifiable
+        this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
+        this.normalParents = Collections.unmodifiableList(this.normalParents);
+        this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**

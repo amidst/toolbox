@@ -16,6 +16,7 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,6 +69,9 @@ public class Normal_NormalParents implements ConditionalDistribution {
             coeffParents[i] = 1;
         }
         this.sd = 1;
+
+        //Make them unmodifiable
+        this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**

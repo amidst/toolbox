@@ -3,6 +3,8 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
+
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,6 +48,10 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
         for (int i = 0; i < size; i++) {
             this.distribution[i] = new Normal(var);
         }
+
+        //Make them unmodifiable
+        this.parents = Collections.unmodifiableList(this.parents);
+
     }
 
     /**
