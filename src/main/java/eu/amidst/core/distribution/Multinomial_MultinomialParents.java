@@ -64,7 +64,6 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
             this.probabilities[i] = new Multinomial(var);
         }
 
-
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
 
@@ -111,25 +110,23 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
 
     /**
      * Computes the probability of the variable for a given state and a parent assignment.
-     * @param value The position of the variable state in the array of probabilities (within the corresponding
-     *              Multinomial object after conditioning to the parent assignment).
-     * @param parentAssignment An <code>Assignment</code> for the parents.
+     * @param assign An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the probability.
      */
     @Override
-    public double getProbability(double value, Assignment parentAssignment) {
-        return this.getMultinomial(parentAssignment).getProbability(value);
+    public double getConditionalProbability(Assignment assign) {
+        double value = assign.getValue(this.var);
+        return this.getMultinomial(assign).getProbability(value);
     }
 
     /**
      * Computes the logarithm of the probability of the variable for a given state and a parent assignment.
-     * @param value The position of the variable state in the array of probabilities (within the corresponding
-     *              Multinomial object after conditioning to the parent assignment).
      * @param parentAssignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the logarithm of the probability.
      */
     @Override
-    public double getLogProbability(double value, Assignment parentAssignment) {
+    public double getLogConditionalProbability(Assignment parentAssignment) {
+        double value = parentAssignment.getValue(this.var);
         return this.getMultinomial(parentAssignment).getLogProbability(value);
     }
 

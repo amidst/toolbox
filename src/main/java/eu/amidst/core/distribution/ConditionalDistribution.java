@@ -23,17 +23,15 @@ public interface ConditionalDistribution extends Distribution {
 
     /**
      * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
-     * @param value The value to be evaluated.
-     * @param parentsAssignment An <code>Assignment</code> for the parents.
+     * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the evaluated distribution.
      */
-    double getProbability(double value, Assignment parentsAssignment);
+    double getConditionalProbability(Assignment assignment);
 
     /**
      * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
-     * @param value The value to be evaluated.
-     * @param parentsAssignment An <code>Assignment</code> for the parents.
+     * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
-    double getLogProbability(double value, Assignment parentsAssignment);
+    double getLogConditionalProbability(Assignment assignment);
 }
