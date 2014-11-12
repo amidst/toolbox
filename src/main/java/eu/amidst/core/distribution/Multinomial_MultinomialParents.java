@@ -27,17 +27,7 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-4
  */
-public class Multinomial_MultinomialParents implements ConditionalDistribution {
-
-    /**
-     * The variable of the distribution
-     */
-    private Variable var;
-
-    /**
-     * The list of parents of the variable
-     */
-    private List<Variable> parents;
+public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
     /**
      * An array of <code>Multinomial</code> objects, one for each configuration of the parents. These objects are ordered
@@ -100,15 +90,6 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
     }
 
     /**
-     * Gets the set of conditioning variables.
-     * @return A <code>unmodifiable List</code> with the conditioning variables.
-     */
-    @Override
-    public List<Variable> getConditioningVariables() {
-        return parents;
-    }
-
-    /**
      * Computes the probability of the variable for a given state and a parent assignment.
      * @param assign An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the probability.
@@ -128,14 +109,5 @@ public class Multinomial_MultinomialParents implements ConditionalDistribution {
     public double getLogConditionalProbability(Assignment parentAssignment) {
         double value = parentAssignment.getValue(this.var);
         return this.getMultinomial(parentAssignment).getLogProbability(value);
-    }
-
-    /**
-     * Gets the variable of the distribution.
-     * @return A <code>Variable</code> object.
-     */
-    @Override
-    public Variable getVariable() {
-        return var;
     }
 }

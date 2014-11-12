@@ -14,17 +14,7 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-4
  */
-public class Normal_MultinomialParents implements ConditionalDistribution {
-
-    /**
-     * The variable of the distribution
-     */
-    private Variable var;
-
-    /**
-     * The list of parent variables
-     */
-    private List<Variable> parents;
+public class Normal_MultinomialParents extends ConditionalDistribution {
 
     /**
      * An array of normal distribution, one for each assignment of the multinomial parents
@@ -86,15 +76,6 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
     }
 
     /**
-     * Gets the set of conditioning variables.
-     * @return A <code>unmodifiable List</code> with the conditioning variables.
-     */
-    @Override
-    public List<Variable> getConditioningVariables() {
-        return parents;
-    }
-
-    /**
      * Evaluates the resulting univariate density function in a point after conditioning the distribution to a
      * given parent <code>Assignment</code>.
      * @param assignment An <code>Assignment</code> for the parents.
@@ -117,14 +98,5 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
 
         double value = assignment.getValue(this.var);
         return this.getNormal(assignment).getLogProbability(value);
-    }
-
-    /**
-     * Gets the variable of the distribution.
-     * @return A <code>Variable</code> object.
-     */
-    @Override
-    public Variable getVariable() {
-        return var;
     }
 }
