@@ -44,5 +44,10 @@ public class DrillingAttributes implements Attributes {
 
     }
 
+    @Override
+    public Attribute getAttributeByName(String name) {
+        return null;
+    }
+
 
 }
