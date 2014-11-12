@@ -146,7 +146,7 @@ public class Normal_NormalParents implements ConditionalDistribution {
 
     /**
      * Gets the set of conditioning variables.
-     * @return A <code>List</code> with the conditioning variables.
+     * @return A <code>unmodifiable List</code> with the conditioning variables.
      */
     @Override
     public List<Variable> getConditioningVariables() {
