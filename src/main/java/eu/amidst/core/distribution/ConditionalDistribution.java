@@ -17,7 +17,7 @@ public interface ConditionalDistribution extends Distribution {
 
     /**
      * Gets the set of conditioning variables
-     * @return A <code>List</code> object with the set of conditioning variables.
+     * @return An <code>unmodifiable List</code> object with the set of conditioning variables.
      */
     List<Variable> getConditioningVariables();
 
