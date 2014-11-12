@@ -3,6 +3,7 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.header.DistType;
 import eu.amidst.core.header.Variable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,14 +11,14 @@ import java.util.List;
  */
 public class DistributionBuilder {
 
-    public static Distribution newDistribution(Variable mainVar, List<Variable> conditioningVars){
+    public static ConditionalDistribution newDistribution(Variable mainVar, List<Variable> conditioningVars){
 
         if (conditioningVars.size() == 0) {
             switch (mainVar.getDistributionType()) {
                 case MULTINOMIAL:
-                    return new Multinomial(mainVar);
+                    return new Multinomial_MultinomialParents(mainVar, new ArrayList<>());
                 case GAUSSIAN:
-                    return new Normal(mainVar);
+                    return new Normal_MultinomialParents(mainVar, new ArrayList<>());
                 default:
                     throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
             }

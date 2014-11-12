@@ -97,27 +97,26 @@ public class Normal_MultinomialParents implements ConditionalDistribution {
     /**
      * Evaluates the resulting univariate density function in a point after conditioning the distribution to a
      * given parent <code>Assignment</code>.
-     * @param value A <code>double</code> value of the variable to be evaluated.
-     * @param parentAssignment An <code>Assignment</code> for the parents.
+     * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> with the corresponding density value.
      */
     @Override
-    public double getProbability(double value, Assignment parentAssignment) {
-
-        return this.getNormal(parentAssignment).getProbability(value);
+    public double getConditionalProbability(Assignment assignment) {
+        double value = assignment.getValue(this.var);
+        return this.getNormal(assignment).getProbability(value);
     }
 
     /**
      * Computes the logarithm of the evaluated density function in a point after conditioning the distribution to a
      * given parent <code>Assignment</code>.
-     * @param value A <code>double</code> value of the variable to be evaluated.
-     * @param parentAssignment An <code>Assignment</code> for the parents.
+     * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> with the logarithm of the corresponding density value.
      */
     @Override
-    public double getLogProbability(double value, Assignment parentAssignment) {
+    public double getLogConditionalProbability(Assignment assignment) {
 
-        return this.getNormal(parentAssignment).getLogProbability(value);
+        double value = assignment.getValue(this.var);
+        return this.getNormal(assignment).getLogProbability(value);
     }
 
     /**
