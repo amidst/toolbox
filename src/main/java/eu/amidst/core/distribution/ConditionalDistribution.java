@@ -13,25 +13,31 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-3
  */
-public interface ConditionalDistribution extends Distribution {
+public abstract class ConditionalDistribution extends Distribution {
 
+    /**
+     * The list of parents of the variable
+     */
+    protected List<Variable> parents;
     /**
      * Gets the set of conditioning variables
      * @return An <code>unmodifiable List</code> object with the set of conditioning variables.
      */
-    List<Variable> getConditioningVariables();
+    public List<Variable> getConditioningVariables() {
+        return this.parents;
+    }
 
     /**
      * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
      * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the evaluated distribution.
      */
-    double getConditionalProbability(Assignment assignment);
+    abstract double getConditionalProbability(Assignment assignment);
 
     /**
      * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
      * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
-    double getLogConditionalProbability(Assignment assignment);
+    abstract double getLogConditionalProbability(Assignment assignment);
 }
