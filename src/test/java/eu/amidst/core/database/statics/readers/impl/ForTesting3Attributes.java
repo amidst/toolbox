@@ -30,4 +30,9 @@ public class ForTesting3Attributes implements Attributes {
     public void print() {
 
     }
+
+    @Override
+    public Attribute getAttributeByName(String name) {
+        return null;
+    }
 }
