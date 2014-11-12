@@ -1,14 +1,14 @@
 /*
 package eu.amidst.staticmodelling.models;
 
-import eu.amidst.core.database.statics.readers.Attributes;
+import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.database.statics.readers.StateSpaceType;
+import eu.amidst.core.header.StateSpaceType;
 import eu.amidst.core.header.VariableBuilder;
 import eu.amidst.core.modelstructure.statics.BNFactory;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
 import eu.amidst.core.header.Variable;
-import eu.amidst.core.header.statics.StaticModelHeader;
+import eu.amidst.core.header.StaticModelHeader;
 import eu.amidst.core.potential.Potential;
 import eu.amidst.core.potential.PotentialTable;
 import eu.amidst.core.utils.Utils;
@@ -33,7 +33,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         VariableBuilder builder = new VariableBuilder();
         VariableBuilder.setName("H");
         VariableBuilder.setNumberOfStates(2);
-        VariableBuilder.setStateSpaceType(StateSpaceType.INTEGER);
+        VariableBuilder.setStateSpaceType(StateSpaceType.MULTINOMIAL);
 
         Variable hiddenVar = modelHeader.addHiddenVariable(builder);
 

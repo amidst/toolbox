@@ -2,7 +2,7 @@
 package eu.amidst.staticmodelling.models;
 
 import eu.amidst.core.database.statics.readers.DataInstance;
-import eu.amidst.core.database.statics.readers.DataStream;
+import eu.amidst.core.database.DataStream;
 import eu.amidst.core.modelstructure.statics.BayesianNetwork;
 import eu.amidst.core.potential.Potential;
 import eu.amidst.staticmodelling.learning.LearningAlgorithm;
