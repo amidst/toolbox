@@ -11,4 +11,5 @@ public interface Attributes {
 
     public void print();
 
+    public Attribute getAttributeByName(String name);
 }
