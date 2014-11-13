@@ -47,7 +47,7 @@
 \begin{document}
 \maketitle
 
-There are two application scenarios here.  The first one is prediction of whether a client will default within two years and the second is related to the benefit of a marketing campaign. For clarity we have added the description about the data set from delivery 2.1 without any modification.
+There are two application scenarios here.  The first one is prediction of whether a client will default within two years or not and the second is related to the benefit of a marketing campaign. For clarity we have added the description about the data set from delivery 2.1 without any modification.
 
 \section{Description from 2.1}
 
@@ -143,9 +143,7 @@ Table~\ref{tab:TrainingDataset} shows the training data set where each record co
 
 The training set above is actually the data set that we are going to train on and also test on. This may be a source to confusion, but from now on the training set above will be defined as the dataset and the evaluation set is not even considered in relation to testing. 
 
-The only criterion for being a member of the dataset is that the member has been a client continuously from day $k$ and up to day $t$.  Every member of the dataset is characterized as either defaulter or not defaulter.  There are no missing values related to class labels.  However, there are missing values related to attributes.  In particular, some of the clients where not clients in the whole three year period before day $k$.  Cajamar will manually fill in all relevant missing values. 
-Formally, every member $i$ of the dataset has a vector of explanatory variables that is denoted by\\
-$\bv{x_i} =\{ \X_i^{(k-180)},  \X_i^{(k-1)}, ...\Y_i^{(k-6)}, \Y_i^{(k-1)},\Z_i\}$.  
+The only criterion for being a member of the dataset is that the member has been a client continuously from day $k$ and up to day $t$.  Every member of the dataset has a class label that is either non defaulter or defaulter.  There are no missing values related to class labels.  However, there are missing values related to attributes.  In particular, some of the clients where not clients in the whole three year period before day $k$.  Cajamar will manually fill in all relevant missing values.  Formally, every member $i$ of the dataset has a vector of explanatory variables that is denoted by $\bv{x_i} =\{ \X_i^{(k-180)},  \X_i^{(k-1)}, ...\Y_i^{(k-6)}, \Y_i^{(k-1)},\Z_i\}$.  
 
 We will divide this data set into a training set and a test set by a completely random process.
 
@@ -165,30 +163,32 @@ $P(\mbox{Default}_i \,|\, \bv{x_i}) \geq C$.  The ROC curve is computed by basic
 
 \subsection{Requirements for the second use case scenario:  AMIDST induced marketing campaign}
 
-In the second use case scenario it is required that the benefit of a AMIDST induced marketing campaign should be more than 5 percent higher than a normal campaign.  In order to discuss such a requirement we have to introduce a function that describes the financial loss of a certain classification compared to the correct classification. 
+In the second use case scenario it is required that the benefit of a AMIDST induced marketing campaign should be more than 5 percent higher than a normal campaign.  In order to discuss such a requirement we have to introduce a function that describes the financial loss of a certain classification rule compared to a classification rule that make no mistakes. 
 
-The AMIDST induced marketing campaign is a binary classification problem with classes $\{0,1\}$, where class one are non-defaulters that actually signs the contract and class zero is all the rest.  In a perfect campaign only the non-defaulters that actually signs the offer (for instance a credit card or a loan) are selected.  
+The AMIDST induced marketing campaign is a binary classification problem with class variable $y_i$, which can take the values $\{0,1\}$. Class one refers to non-defaulters that actually signs the contract and class zero refers to the rest of the clients.  In a perfect campaign only the non-defaulters that actually signs the offer (for instance a credit card or a loan) are selected.  
 
-In this paper, we define the \emph{loss function} as a real and lower-bounded function $L(x_i, h(x_i), y_i)$. It takes into account the explanatory variables for each client $x_i$, the predicted class $h_{C,D}(x_i)$ and the true value $y_i$. Here, the classification rule is   
+In this paper, we define the \emph{loss function} as a real and lower-bounded function $L(x_i, h(x_i), y_i)$. It takes into account the explanatory variables for each client $x_i$, the predicted class $h(x_i)$ and the true class label $y_i$. 
+
+In the current system in Cajamar the classification rule is denoted $h_{\mbox{Current},L_1,L_2}$ and is defined by
 
 \begin{equation}
 \label{def:empRisk}
-h_{C,D}(x_i) = P(\mbox{Default}_i \,|\, \bv{x_i}) \geq C \, \& \,P(\mbox{Contract}_i \,|\, \bv{x_i}) \geq D,
+h_{\mbox{Current},L_1,L_2}(x_i) = P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1 \, \& \,P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2,
 \end{equation}
-where the probability for contracting for client $i$ is $P(\mbox{Contract}_i \,|\, \bv{x_i})$.  
+where the probability for defaulting and contracting for client $i$ are $P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i})$ and $P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i})$.  Here, $L_1$ and $L_2$ are chosen classification limits. 
 
 We let the cost of excluding client $i$ that actually would contract and not default as $c_i(0|1)$.  This cost is related to the size of the potential offer.
 
-Moreover, we let $c_i(1|0)$ be the cost of offering to client $i$, provided that he either would not take the offer or would default if he took the offer.  Clearly, if client $i$ was offered, contracted but defaulted, $c_i(1|0)$ is related to how big is the offer that he/she contracted.  Otherwise, $c_i(1|0)$ is only related to the cost of making the offer.  The loss function below is of interest
+Moreover, we let $c_i(1|0)$ be the cost of offering to client $i$, provided that he either would not take the offer or would default if he took the offer.  Clearly, if client $i$ was offered and contracted but defaulted, $c_i(1|0)$ is related to the size of the contract.  Otherwise, $c_i(1|0)$ is only related to the cost of making the offer.  The loss function below is of interest
 
 \begin{equation}
 \label{def:empRiskBank}
-L(x_i, h(x_i), y_i) = 
+L(x_i, h_{\mbox{Current},L_1,L_2}(x_i) , y_i) = 
 \begin{cases}
-0     &\quad \mbox{for} \quad h_{C,D}(x_i) = 0 \quad \& \quad y_i = 0\\
-c_i(1|0)    &\quad \mbox{for} \quad h_{C,D}(x_i) = 1 \quad \& \quad y_i = 0\\
-c_i(0|1)      &\quad \mbox{for} \quad h_{C,D}(x_i) = 0 \quad \& \quad y_i = 1\\
-0   &\quad \mbox{for} \quad h_{C,D}(x_i) = 1 \quad \& \quad y_i = 1.
+0     &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 0 \quad \& \quad y_i = 0\\
+c_i(1|0)    &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 1 \quad \& \quad y_i = 0\\
+c_i(0|1)      &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 0 \quad \& \quad y_i = 1\\
+0   &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 1 \quad \& \quad y_i = 1.
 \end{cases}
 \end{equation}
 Notice that $L$ is an array of $n \times 2\times 2$ elements. Cajamar can estimate $c_i(0|1)$ and $c_i(1|0)$ for all clients in the database.
@@ -197,27 +197,74 @@ The empirical risk is found by averaging the loss function on the training set g
 
 \begin{equation}
 \label{def:empRisk}
-R_{emp}(h, \bv{x}) = n^{-1} \sum_{i=1}^n L(x_i, h_{C,D}(x_i), y_i).
+R_{emp}(h_{\mbox{Current},L_1,L_2}, \bv{x}) = n^{-1} \sum_{i=1}^n L(x_i, h_{\mbox{Current},L_1,L_2}(x_i), y_i).
 \end{equation}
 
-\subsubsection*{Discussion using empirical risk}
+\subsubsection*{Calculating empirical risk on an old campaign}
 
-In the Amidst testing regime we take into account an old campaign that was done more than two years ago. Even though costs and default/non defaults are known for all clients, the loss function is only known on the clients that was targeted in the campaign.  This makes this discussion complicated. 
+In the Amidst testing regime we take into account an old campaign that was done more than two years ago. Even though costs and default/non defaults are known for all clients, the loss function is only known on the clients that was targeted in that campaign.  This makes this discussion complicated. 
 
-The empirical risk for the old campaign is not taking into account the financial loss related to excluding a number of clients that actually would have contracted and not defaulted.  Said with other words, the empirical risk is not taking into account losses related to when $h_{C,D}(x_i) = 0$, and $y_1$.  
+The empirical risk for the old campaign is not taking into account the financial loss related to excluding a number of clients that actually would have contracted and not defaulted.  Said with other words, the empirical risk is not taking into account losses related to when $h_{\mbox{Current},L_1,L_2}(x_i) = 0$, and $y_1 = 1$.  In such a calculation none of the $c_i(0|1)$s are used.  The empirical risk will therefore be less than the true risk (which would take the above point into account).
 
-A simple test is to use the Amidst toolbox to provide an additional filter related to only defaulting on top of the old classification rule.  Mathematically this is
-
+A simple test is to use the Amidst toolbox to provide an additional filter related to default prediction on top of the old classification rule.  Mathematically this is
 
 \begin{equation}
 \begin{split}
-\label{def:empRisk}
-h_{C,D,E}(x_i) = &P_{\mbox{old}}(\mbox{Default}_i \,|\, \bv{x_i}) \geq C \, \& \,P_{\mbox{amidst}}(\mbox{Default}_i \,|\, \bv{x_i}) \geq E \, \& \,  \\
-&P(\mbox{Contract}_i \,|\, \bv{x_i}) \geq D.
+\label{eq:filter}
+h_{\mbox{Amidst filter},L_1,L_2,L_3}(x_i) = &
+P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1
+ \, \& \,
+P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2
+\, \& \,  
+\\ &
+P_{\mbox{Amidst filter}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_3.
 \end{split}
 \end{equation}
-The empirical risk is biased by the same amount as the old method and the benefit of such a filter can be quantified.
+This calculation of empirical risk is biased by the same amount as the old method.  It makes therefore sense to compare $R_{emp}(h_{\mbox{Amidst filter},L_1,L_2,L_3}, \bv{x}) $ with $R_{emp}(h_{\mbox{Current},L_1,L_2}, \bv{x}) $.
+The benefit of using the Amidst model as additional filter can therefore be quantified.
 
+It is also of interest to examine this classification rule
+
+\begin{equation}
+\begin{split}
+\label{eq:amidst}
+h_{\mbox{Amidst},L_1,L_2}(x_i) = &
+P_{\mbox{Amidst}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1
+ \, \& \,
+P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2.
+\end{split}
+\end{equation}
+The challenge related to calculating $R_{emp}(h_{\mbox{Amidst},L_1,L_2}, \bv{x})$ is that the associated loss function 
+$L(x_i, h_{\mbox{Amidst},L_1,L_2}(x_i) , y_i)$ is only known for clients satisfying the statement $h_{\mbox{Current},L_1,L_2}(x_i) = 1$.  
+
+Since different clients are added in the Amidst induced campaign, $R_{emp}(h_{\mbox{Amidst},L_1,L_2}, \bv{x})$ is biased differently than $R_{emp}(h_{\mbox{Current},L_1,L_2}, \bv{x})$. This statement holds even when the classification limits are the same. 
+
+However there is another way to compare $R_{emp}(h_{\mbox{Amidst},L_A,L_2}, \bv{x})$ and $R_{emp}(h_{\mbox{Current},L_C,L_2}, \bv{x})$, since both methods include the same rule for removing customers that will not contract, then we can make the "wild" assumption that anyone that is offered will contract.  This will give us a measure of which filter; $P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_C$ or $P_{\mbox{Amidst}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_A$, is the most appropriate, calculated on only the clients where $P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2$.  Notice, that in this setting $y_i$ takes the value 0 when the client is not defaulting and 1 when he is defaulting.
+
+It is even possible to make economical sense out of the difference in empirical risk between the two models.  This can be done by multiplying the empirical risk difference with the prior of contracting.  The prior of contracting can be estimated by the fraction of clients that accepted the offer compared to the number of clients that was offered.  (This number is obviously somewhat biased since the current model has removed some clients that are probably are more likely to default).
+
+Mathematically we can express this by making these two assumptions:
+
+\begin{enumerate}
+\item The fraction of clients that accepted the old campaign is an unbiased estimate of the prior probability of contracting, given that $P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2$, denoted by $p_{\mbox{Contract} }$.
+\item The probability of contracting, given $P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2$ is independent of independent of whether the client will default or not.
+\end{enumerate}
+
+\begin{equation}
+\begin{split}
+R_{emp}(h_{\mbox{Amidst},L_A,L_2}, \bv{x}) =& p_{\mbox{Contract}} \widehat{R_{emp}}(h_{\mbox{Amidst},L_A,L_2}, \bv{x})\\
+R_{emp}(h_{\mbox{Current},L_A,L_2}, \bv{x}) =& p_{\mbox{Contract}} \widehat{R_{emp}}(h_{\mbox{Current},L_A,L_2}, \bv{x})\\
+\end{split}
+\end{equation}
+where $\widehat{R_{emp}}(h_{\mbox{Amidst},L_A,L_2}$ and $\widehat{R_{emp}}(h_{\mbox{Current},L_A,L_2}$ are calculated as if everyone that was offered would actually contract.
+
+\subsection*{Testing of profiling}
+
+In the DoW we have also promised to do profiling. This is basically propagating the Bayesian network backwards to give a profile of the clients that generally do not default. In essence the Amidst solution recognizes a list of top clients that is prone to not default.  A simple evaluation criterion, is that the marketing department evaluate the amidst list of clients and give their best opinion about it, for instance by comparing to a list of clients that already have participated in a campaign.
+
+However, there is a flaw in reasoning here because the point of marketing campaigns is to find clients that have a high probability of signing the contract in addition to having a low probability of defaulting.  
+
+The current method for estimating the probability for contracting is a forward propagating function.  An idea here is to create a Bayesian network that estimates the estimate of probability for contracting, by using the current contracting probabilities to train against.  This Bayesian network can be propagated backwards to give profiles for good clients.  After using the Amidst default filter the top list can manually be inspected by the marketing department. 
 
 %
 %The contracting probabilities are given for all clients from the marketing department.  We take the same $D$ as before, but we use a different defaulting probability.  
@@ -247,9 +294,9 @@ The empirical risk is biased by the same amount as the old method and the benefi
 
 \subsection*{Questions: }
 \begin{enumerate}
-\item How many clients are usually targeted on a campaign?
-\item Is this the same data as in user scenario one or is it new data from a new time frame?
-\item Are the marketing campaigns very different? Is it likely that information from one campaign can carry over to the next?
+\item Do you see any flaw in reasoning?
+\item What more should we do?
+\item What do you think about the profiling ideas?
 \end{enumerate}
 
 \bibliographystyle{named}
