@@ -1,3 +1,12 @@
+/**
+ * ************ ISSUE LIST ***************
+ *
+ * 1. (Andres) Add a "close" method to close the possible linked file or whatever.
+ *
+ */
+
+
+
 package eu.amidst.core.database;
 
 

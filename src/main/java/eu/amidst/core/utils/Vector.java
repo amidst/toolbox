@@ -36,17 +36,16 @@ public class Vector {
         }
     }
 
-    public static Vector dotProduct(Vector vec1, Vector vec2){
+    public static double dotProduct(Vector vec1, Vector vec2){
         if (vec1.size()!=vec2.size())
             throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. Parameters have a different size. ");
 
-        Vector newVec = new Vector(vec1.size());
-
+        double sum=0;
         for (int i=0; i<vec1.size(); i++){
-            newVec.set(i,vec1.get(i)*vec2.size());
+            sum += vec1.get(i)*vec2.size();
         }
 
-        return newVec;
+        return sum;
     }
 
 }
