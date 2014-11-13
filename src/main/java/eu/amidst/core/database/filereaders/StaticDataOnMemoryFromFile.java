@@ -51,16 +51,16 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
 
     @Override
     public DataInstance nextDataInstance() {
-        pointer++;
-        if (pointer > getNumberOfDataInstances()) {
-            throw new UnsupportedOperationException("You must call restart() to go sequentially through the dataset again");
+        if (pointer >= getNumberOfDataInstances()) {
+            throw new UnsupportedOperationException("Make sure to call hasMoreDataInstances() to know when the sequence " +
+                    "has finished (restart() moves the reader pointer to the beginning");
         }
-        return dataInstances[pointer];
+        return dataInstances[pointer++];
     }
 
     @Override
     public boolean hasMoreDataInstances() {
-        return pointer == getNumberOfDataInstances();
+        return pointer < getNumberOfDataInstances();
     }
 
     public void restart() {
