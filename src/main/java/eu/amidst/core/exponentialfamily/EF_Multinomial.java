@@ -17,7 +17,7 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
 
     @Override
-    public double computeBaseMeasure(double val) {
+    public double computeLogBaseMeasure(double val) {
         return 0;
     }
 
@@ -32,7 +32,12 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     }
 
     @Override
-    public SufficientStatistics getExpectedSufficientStatistics() {
+    public NaturalParameters getNaturalFromMomentParameters(MomentParameters momentParameters) {
+        return null;
+    }
+
+    @Override
+    public MomentParameters getMomentFromNaturalParameters(NaturalParameters naturalParameters) {
         return null;
     }
 }
