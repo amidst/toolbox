@@ -90,17 +90,6 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     }
 
     /**
-     * Computes the probability of the variable for a given state and a parent assignment.
-     * @param assign An <code>Assignment</code> for the parents.
-     * @return A <code>double</code> value with the probability.
-     */
-    @Override
-    public double getConditionalProbability(Assignment assign) {
-        double value = assign.getValue(this.var);
-        return this.getMultinomial(assign).getProbability(value);
-    }
-
-    /**
      * Computes the logarithm of the probability of the variable for a given state and a parent assignment.
      * @param parentAssignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the logarithm of the probability.

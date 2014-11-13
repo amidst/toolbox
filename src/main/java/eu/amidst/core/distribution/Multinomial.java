@@ -74,18 +74,6 @@ public class Multinomial extends UnivariateDistribution {
 
 
     /**
-     * Computes the probability of the variable for a given state.
-     * @param value The position of the variable state in the array of probabilities (represented as a
-     *              <code>double</code> for generality reasons).
-     * @return A <code>double</code> value with the probability.
-     */
-    @Override
-    public double getProbability(double value) {
-        return (probabilities[(int) value]);
-    }
-
-
-    /**
      * Computes the logarithm of the probability for a given variable state.
      * @param value The position of the variable state in the array of probabilities (represented as a
      *              <code>double</code> for generality reasons).
