@@ -30,9 +30,15 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
 
         List<DynamicDataInstance> dataInstancesList = new ArrayList<>();
 
-        DataRow present;
-        DataRow past;
-        present = this.reader.nextDataRow();
+        DataRow present = null;
+        DataRow past = null;
+        try {
+            if (reader.hasMoreDataRows())
+                past = this.reader.nextDataRow();
+            if (reader.hasMoreDataRows())
+                present = this.reader.nextDataRow();
+        }catch (UnsupportedOperationException e){System.err.println("There are insufficient instances to learn a model.");}
+
         attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
         if (attSequenceID == null){
             /* This value should not be modified */
@@ -45,33 +51,32 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
         }
 
         while (reader.hasMoreDataRows()) {
-            past = present;
-            present = this.reader.nextDataRow();
 
-         /* Not sequenceID nor TimeID are provided*/
-            if(attSequenceID == null && attTimeID == null){
-                dataInstancesList.add(new DynamicDataInstance(present, past, sequenceID, ++timeIDcounter));
+            /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
+            /* 1 = true,  false, i.e., TimeID is provided */
+            /* 2 = false, true,  i.e., SequenceID is provided */
+            /* 3 = true,  true,  i.e., SequenceID is provided*/
+            int option = (attTimeID == null) ? 1 : 0 + 2 * ((attSequenceID == null) ? 1 : 0);
 
-         /* TimeID is provided*/
-            }else if(attSequenceID == null){
-                dataInstancesList.add(new DynamicDataInstance(present, past, sequenceID, (int)present.getValue(attTimeID)));
+            switch (option) {
 
-         /* SequenceID is provided*/
-            }else if(attTimeID == null){
-                double pastSequenceID = past.getValue(attSequenceID);
-                double presentSequenceID = present.getValue(attSequenceID);
-                if(pastSequenceID==presentSequenceID){
-                    dataInstancesList.add(new DynamicDataInstance(present, past, (int)presentSequenceID, ++timeIDcounter));
-                }
-         /* SequenceID and TimeID are provided*/
-            }else {
+            /* Not sequenceID nor TimeID are provided*/
+                case 0:
+                    dataInstancesList.add(Utils.nextDataInstance_NoTimeID_NoSeq(reader, present, past, sequenceID, timeIDcounter));
 
-                double pastSequenceID = past.getValue(attSequenceID);
-                double presentSequenceID = present.getValue(attSequenceID);
-                double pastTimeID = past.getValue(attTimeID);
-                double presentTimeID = present.getValue(attTimeID);
-                dataInstancesList.add(new DynamicDataInstance(present, past, (int) presentSequenceID, (int) presentTimeID));
+             /* Only TimeID is provided*/
+                case 1:
+                    dataInstancesList.add(Utils.nextDataInstance_NoSeq(reader, present, past, sequenceID, timeIDcounter, attTimeID));
+
+             /* Only SequenceID is provided*/
+                case 2:
+                    dataInstancesList.add(Utils.nextDataInstance_NoTimeID(reader, present, past, sequenceID, timeIDcounter, attSequenceID));
+
+             /* SequenceID and TimeID are provided*/
+                case 3:
+                    dataInstancesList.add(Utils.nextDataInstance(reader, present, past, sequenceID, timeIDcounter, attSequenceID, attTimeID));
             }
+            throw new IllegalArgumentException();
         }
         reader.reset();
 

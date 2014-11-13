@@ -11,6 +11,10 @@ public interface DataFileReader {
 
     public DataRow nextDataRow();
 
+    /***
+     * This method is expected to return true if at least two rows with the same sequence ID are left
+     * @return
+     */
     public boolean hasMoreDataRows();
 
     public void reset();
