@@ -18,6 +18,7 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
 
     public void setNaturalParameters(NaturalParameters parameters){
         this.naturalParameters=parameters;
+        this.setMomentParameters(this.getMomentFromNaturalParameters(parameters));
     }
 
     public MomentParameters getMomentParameters(){
@@ -26,9 +27,10 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
 
     public void setMomentParameters(MomentParameters parameters){
         this.momentParameters=parameters;
+        this.setNaturalParameters(this.getNaturalFromMomentParameters(parameters));
     }
 
-    public abstract double computeBaseMeasure(double val);
+    public abstract double computeLogBaseMeasure(double val);
 
     public abstract double computeLogNormalizer(NaturalParameters parameters);
 
@@ -37,7 +39,7 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     }
 
     public double getLogProbability(double val){
-        return Vector.dotProduct(this.naturalParameters,this.getSufficientStatistics(val)) + this.computeBaseMeasure(val) + this.computeLogNormalizer(this.naturalParameters);
+        return Vector.dotProduct(this.naturalParameters,this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) + this.computeLogNormalizer(this.naturalParameters);
     }
 
     public SufficientStatistics getSufficientStatistics(DataInstance data){
@@ -46,6 +48,8 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
 
     public abstract SufficientStatistics getSufficientStatistics(double val);
 
-    public abstract SufficientStatistics getExpectedSufficientStatistics();
+    public abstract NaturalParameters getNaturalFromMomentParameters(MomentParameters momentParameters);
+
+    public abstract MomentParameters getMomentFromNaturalParameters(NaturalParameters naturalParameters);
 
 }
