@@ -1,0 +1,188 @@
+net
+{
+    node_size = (110 54);
+    HRUNTIME_Monitor_InitStates = "5";
+    HRUNTIME_Monitor_OpenGraph = "0";
+    HRUNTIME_Monitor_GraphPrecision = "100";
+    HRUNTIME_Monitor_AutoUpdGraph = "0";
+    HRUNTIME_Compile_ApproxEpsilon = "0.00001";
+    HRUNTIME_Compile_Approximate = "0";
+    HRUNTIME_Compile_Compress = "0";
+    HRUNTIME_Compile_TriangMethod = "0";
+    HRUNTIME_Propagate_AutoNormal = "1";
+    HRUNTIME_Propagate_AutoSum = "1";
+    HRUNTIME_Propagate_Auto = "0";
+    HRUNTIME_Font_Italic = "0";
+    HRUNTIME_Font_Weight = "400";
+    HRUNTIME_Font_Size = "-12";
+    HRUNTIME_Font_Name = "Arial";
+    HRUNTIME_Grid_GridShow = "0";
+    HRUNTIME_Grid_GridSnap = "1";
+    HRUNTIME_Grid_Y = "10";
+    HRUNTIME_Grid_X = "10";
+}
+
+node K
+{
+    label = "";
+    position = (522 391);
+    states = ("Carrier" "Pure");
+}
+
+node John
+{
+    label = "John";
+    position = (260 0);
+    states = ("Sick" "Carrier" "Pure");
+}
+
+node Gwenn
+{
+    label = "";
+    position = (457 262);
+    states = ("Carrier" "Pure");
+}
+
+node Irene
+{
+    label = "";
+    position = (392 131);
+    states = ("Carrier" "Pure");
+}
+
+node Dorothy
+{
+    label = "";
+    position = (195 262);
+    states = ("Carrier" "Pure");
+}
+
+node Henry
+{
+    label = "";
+    position = (130 131);
+    states = ("Carrier" "Pure");
+}
+
+node Brian
+{
+    label = "";
+    position = (260 391);
+    states = ("Carrier" "Pure");
+}
+
+node Eric
+{
+    label = "";
+    position = (327 262);
+    states = ("Carrier" "Pure");
+}
+
+node Ann
+{
+    label = "";
+    position = (130 391);
+    states = ("Carrier" "Pure");
+}
+
+node Fred
+{
+    label = "";
+    position = (65 262);
+    states = ("Carrier" "Pure");
+}
+
+node Cecily
+{
+    label = "";
+    position = (392 391);
+    states = ("Carrier" "Pure");
+}
+
+node L
+{
+    label = "";
+    position = (0 391);
+    states = ("Carrier" "Pure");
+}
+
+potential (K |)
+{
+ data = ( 0.01 0.99 );
+}
+
+potential (John | Henry Irene)
+{
+ data = ((( 0.25 0.5 0.25 )	%  Carrier  Carrier
+	  ( 0 0.5 0.5 ))	%  Carrier  Pure
+	 (( 0 0.5 0.5 )	%  Pure  Carrier
+	  ( 0 0 1 )));	%  Pure  Pure
+}
+
+potential (Gwenn | Ann K)
+{
+ data = ((( 0.666667 0.333333 )	%  Carrier  Carrier
+	  ( 0.5 0.5 ))	%  Carrier  Pure
+	 (( 0.5 0.5 )	%  Pure  Carrier
+	  ( 0 1 )));	%  Pure  Pure
+}
+
+potential (Irene | Eric Gwenn)
+{
+ data = ((( 0.666667 0.333333 )	%  Carrier  Carrier
+	  ( 0.5 0.5 ))	%  Carrier  Pure
+	 (( 0.5 0.5 )	%  Pure  Carrier
+	  ( 0 1 )));	%  Pure  Pure
+}
+
+potential (Dorothy | Ann Brian)
+{
+ data = ((( 0.666667 0.333333 )	%  Carrier  Carrier
+	  ( 0.5 0.5 ))	%  Carrier  Pure
+	 (( 0.5 0.5 )	%  Pure  Carrier
+	  ( 0 1 )));	%  Pure  Pure
+}
+
+potential (Henry | Fred Dorothy)
+{
+ data = ((( 0.666667 0.333333 )	%  Carrier  Carrier
+	  ( 0.5 0.5 ))	%  Carrier  Pure
+	 (( 0.5 0.5 )	%  Pure  Carrier
+	  ( 0 1 )));	%  Pure  Pure
+}
+
+potential (Brian |)
+{
+ data = ( 0.01 0.99 );
+}
+
+potential (Eric | Brian Cecily)
+{
+ data = ((( 0.666667 0.333333 )	%  Carrier  Carrier
+	  ( 0.5 0.5 ))	%  Carrier  Pure
+	 (( 0.5 0.5 )	%  Pure  Carrier
+	  ( 0 1 )));	%  Pure  Pure
+}
+
+potential (Ann |)
+{
+ data = ( 0.01 0.99 );
+}
+
+potential (Fred | L Ann)
+{
+ data = ((( 0.666667 0.333333 )	%  Carrier  Carrier
+	  ( 0.5 0.5 ))	%  Carrier  Pure
+	 (( 0.5 0.5 )	%  Pure  Carrier
+	  ( 0 1 )));	%  Pure  Pure
+}
+
+potential (Cecily |)
+{
+ data = ( 0.01 0.99 );
+}
+
+potential (L |)
+{
+ data = ( 0.01 0.99 );
+}
