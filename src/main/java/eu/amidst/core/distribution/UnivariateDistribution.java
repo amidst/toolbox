@@ -7,19 +7,21 @@ package eu.amidst.core.distribution;
  * @version 1.0
  * @since 2014-11-3
  */
-public interface UnivariateDistribution extends Distribution {
+public abstract class UnivariateDistribution extends Distribution {
 
     /**
      * Evaluates the distribution in a given point.
      * @param value The point to be evaluated.
      * @return A <code>double</code> value with the evaluated distribution.
      */
-    double getProbability(double value);
+    public double getProbability(double value){
+        return Math.exp(this.getLogProbability(value));
+    }
 
     /**
      * Evaluates the distribution in a given point.
      * @param value The point to be evaluated.
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
-    double getLogProbability(double value);
+    public abstract double getLogProbability(double value);
 }

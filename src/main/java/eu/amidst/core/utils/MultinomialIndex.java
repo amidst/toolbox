@@ -1,4 +1,5 @@
 package eu.amidst.core.utils;
+import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
 
@@ -68,6 +69,18 @@ public class MultinomialIndex {
         for (int i=0; i<n; i++){
             index = index + (int)assignment.get(i).doubleValue()*lastPhiStride;
             lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
+        }
+        return index;
+    }
+
+    public static int getIndexFromDataInstance (List<Variable> vars, DataInstance dataInstance) {
+
+        int lastPhiStride = 1;
+        int index = 0;
+
+        for (Variable var: vars){
+            index = index + (int)dataInstance.getValue(var)*lastPhiStride;
+            lastPhiStride=lastPhiStride*var.getNumberOfStates();
         }
         return index;
     }
