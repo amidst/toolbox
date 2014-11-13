@@ -14,12 +14,14 @@ public abstract class UnivariateDistribution extends Distribution {
      * @param value The point to be evaluated.
      * @return A <code>double</code> value with the evaluated distribution.
      */
-    abstract double getProbability(double value);
+    public double getProbability(double value){
+        return Math.exp(this.getLogProbability(value));
+    }
 
     /**
      * Evaluates the distribution in a given point.
      * @param value The point to be evaluated.
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
-    abstract double getLogProbability(double value);
+    public abstract double getLogProbability(double value);
 }

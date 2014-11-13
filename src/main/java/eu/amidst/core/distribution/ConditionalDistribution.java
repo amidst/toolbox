@@ -32,12 +32,14 @@ public abstract class ConditionalDistribution extends Distribution {
      * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the evaluated distribution.
      */
-    abstract double getConditionalProbability(Assignment assignment);
+    public double getConditionalProbability(Assignment assignment){
+        return Math.exp(this.getLogConditionalProbability(assignment));
+    }
 
     /**
      * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
      * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
-    abstract double getLogConditionalProbability(Assignment assignment);
+    public abstract double getLogConditionalProbability(Assignment assignment);
 }
