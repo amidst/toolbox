@@ -9,11 +9,7 @@
 
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <h2>This class implements a univariate Normal distribution.</h2>
@@ -22,12 +18,7 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-3
  */
-public class Normal implements UnivariateDistribution {
-
-    /**
-     * The variable of the distribution
-     */
-    private Variable var;
+public class Normal extends UnivariateDistribution {
 
     /**
      * The mean of the Normal distribution.
@@ -48,7 +39,6 @@ public class Normal implements UnivariateDistribution {
         this.mean = 0;
         this.sd = 1;
     }
-
 
     /**
      * Gets the mean of the distribution.
@@ -80,15 +70,6 @@ public class Normal implements UnivariateDistribution {
      */
     public void setSd(double sd) {
         this.sd = sd;
-    }
-
-    /**
-     * Gets the variable of the distribution.
-     * @return A <code>Variable</code> object.
-     */
-    @Override
-    public Variable getVariable() {
-        return var;
     }
 
     /**

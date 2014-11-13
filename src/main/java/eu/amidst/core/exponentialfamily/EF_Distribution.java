@@ -1,12 +1,12 @@
-package eu.amidst.core.distribution;
+package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.header.Variable;
 
 /**
- * Created by afa on 12/11/14.
+ * Created by andresmasegosa on 13/11/14.
  */
-public abstract class Distribution {
-
+public abstract class EF_Distribution {
     /**
      * The variable of the distribution
      */
@@ -19,4 +19,5 @@ public abstract class Distribution {
     public Variable getVariable() {
         return this.var;
     };
+
 }

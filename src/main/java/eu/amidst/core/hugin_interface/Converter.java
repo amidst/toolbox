@@ -1,20 +1,21 @@
-package eu.amidst.core.hugin;
-
-/**
- * Created by afa on 12/11/14.
- */
-
-import COM.hugin.HAPI.*;
-
-import java.util.ListIterator;
-
+package eu.amidst.core.hugin_interface;
 import COM.hugin.HAPI.*;
 import java.util.ListIterator;
 
 
 
-public class Converters
+
+public class Converter
 {
+
+
+
+
+
+
+
+
+
     /**
      * This function parses the given NET file, compiles the network,
      * and prints the prior beliefs and expected utilities of all
@@ -47,46 +48,37 @@ public class Converters
                 parents = node.getParents();
 
                 if(node.getKind().compareTo(NetworkModel.H_KIND_DISCRETE)==0){
-                    if (parents.size()==0){
-                        System.out.println("Multinomial distribution");
-                    }
-                    else {
-                        System.out.println("Multinomial_MultinomialParents distribution");
-                    }
+                     System.out.println("Multinomial_MultinomialParents distribution");
                 }
                 else {
-                    if (parents.size()==0){
-                        System.out.println("Normal distribution");
+                    continuousParents=false;
+                    discreteParents=false;
+                    it2 = parents.listIterator();
+
+                    while (it2.hasNext()) {
+                        parent = (Node) it2.next();
+                        if (parent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE)==0){
+                            discreteParents=true;
+                        }
+                        else {
+                            continuousParents=true;
+                        }
                     }
-                    else {
-                        continuousParents=false;
-                        discreteParents=false;
-                        it2 = parents.listIterator();
-                        while (it2.hasNext()) {
-                            parent = (Node) it2.next();
-                            if (parent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE)==0){
-                                discreteParents=true;
-                            }
-                            else {
-                                continuousParents=true;
-                            }
-                        }
-                        if(discreteParents & !continuousParents){
-                            System.out.println("Normal_MultinomialParents distribution");
-                        }
-                        if(!discreteParents & continuousParents){
-                            System.out.println("Normal_NormalParents distribution");
-                        }
-                        if(discreteParents & continuousParents){
-                            System.out.println("Normal_MultinomialNormalParents distribution");
-                        }
+
+                    if(discreteParents & !continuousParents){
+                        System.out.println("Normal_MultinomialParents distribution");
+                    }
+                    if(!discreteParents & continuousParents){
+                        System.out.println("Normal_NormalParents distribution");
+                    }
+                    if(discreteParents & continuousParents){
+                        System.out.println("Normal_MultinomialNormalParents distribution");
                     }
                 }
                 System.out.print(" (" + node.getName() + ")");
                 System.out.println(" -  Parents: "+ node.getParents().toString());
                 System.out.println();
             }
-
 
             System.out.println("CONDITIONAL DISTRIBUTIONS");
 
@@ -246,4 +238,3 @@ public class Converters
             System.err.println ("Usage: <netName> [<caseName>]");
     }
 }
-

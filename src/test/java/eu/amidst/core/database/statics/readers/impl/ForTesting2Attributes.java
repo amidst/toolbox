@@ -31,6 +31,11 @@ public class ForTesting2Attributes implements Attributes {
 
     }
 
+    @Override
+    public Attribute getAttributeByName(String name) {
+        return null;
+    }
+
 
     public Attribute getCLASS() {
         return CLASS;

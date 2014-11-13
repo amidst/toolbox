@@ -20,23 +20,19 @@ public class BayesianNetwork {
     private ConditionalDistribution[] distributions;
     private StaticModelHeader modelHeader;
     private ParentSet[] parents;
+    private DAG dag;
 
-    public static BayesianNetwork newBayesianNetwork(StaticModelHeader modelHeader){
-        return new BayesianNetwork(modelHeader);
+
+
+    public static BayesianNetwork newBayesianNetwork(DAG dag){
+        return new BayesianNetwork(dag);
     }
 
-    private BayesianNetwork(StaticModelHeader modelHeader) {
-        this.modelHeader = modelHeader;
-        this.parents = new ParentSet[modelHeader.getNumberOfVars()];
-
-        for (int i=0;i<modelHeader.getNumberOfVars();i++) {
-            parents[i] = ParentSet.newParentSet();
-        }
+    private BayesianNetwork(DAG dag) {
+        this.dag = dag;
     }
 
-    public ParentSet getParentSet(Variable var) {
-        return parents[var.getVarID()];
-    }
+
 
     public ConditionalDistribution getDistribution(Variable var) {
         return distributions[var.getVarID()];
@@ -72,9 +68,7 @@ public class BayesianNetwork {
         }
     }
 
-    public boolean containCycles(){
-        return false;
-    }
+
 }
 
 

@@ -25,12 +25,7 @@ import java.util.ArrayList;
  * @version 1.0
  * @since 2014-11-3
  */
-public class Multinomial implements UnivariateDistribution {
-
-    /**
-     * The variable of the distribution
-     */
-    private Variable var;
+public class Multinomial extends UnivariateDistribution {
 
     /**
      * A set of probabilities, one for each state of the variable
@@ -79,18 +74,6 @@ public class Multinomial implements UnivariateDistribution {
 
 
     /**
-     * Computes the probability of the variable for a given state.
-     * @param value The position of the variable state in the array of probabilities (represented as a
-     *              <code>double</code> for generality reasons).
-     * @return A <code>double</code> value with the probability.
-     */
-    @Override
-    public double getProbability(double value) {
-        return (probabilities[(int) value]);
-    }
-
-
-    /**
      * Computes the logarithm of the probability for a given variable state.
      * @param value The position of the variable state in the array of probabilities (represented as a
      *              <code>double</code> for generality reasons).
@@ -101,12 +84,4 @@ public class Multinomial implements UnivariateDistribution {
         return (Math.log(this.getProbability(value)));
     }
 
-    /**
-     * Gets the variable of the distribution.
-     * @return A <code>Variable</code> object.
-     */
-    @Override
-    public Variable getVariable() {
-        return var;
-    }
 }

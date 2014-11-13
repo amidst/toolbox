@@ -30,12 +30,7 @@ import java.util.List;
  * @since 2014-11-4
  */
 
-public class Normal_MultinomialNormalParents implements ConditionalDistribution {
-
-    /**
-     * The variable of the distribution
-     */
-    private Variable var;
+public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
     /**
      * The list of multinomial parents
@@ -46,11 +41,6 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
      * The list of normal parents
      */
     private List<Variable> normalParents;
-
-    /**
-     * The set of parents
-     */
-    private List<Variable> parents;
 
     /**
      * An array of <code>Normal_NormalParents</code> objects, one for each configuration of the multinomial parents. These objects are
@@ -94,14 +84,6 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
     }
 
     /**
-     * Gets the set of conditioning variables.
-     * @return A <code>unmodifiable List</code> with the conditioning variables.
-     */
-    public List<Variable> getConditioningVariables() {
-        return parents;
-    }
-
-    /**
      * Gets a <code>Normal_NormalParentsDistribution</code> distribution conditioned to an assignment over a set of
      * Multinomial parents. Let X and Y two sets of Normal variables, and Z a set of Multinomial. Then this method
      * computes f(X|Y,Z=z).
@@ -137,16 +119,6 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
         this.setNormal_NormalParentsDistribution(position, distribution);
     }
 
-    /**
-     * Evaluates the resulting univariate density function in a point after restricting the distribution to a
-     * given parent <code>Assignment</code>.
-     * @param assignment An <code>Assignment</code> for the parents.
-     * @return A <code>double</code> with the corresponding density value.
-     */
-    public double getConditionalProbability(Assignment assignment) {
-        double value = assignment.getValue(this.var);
-        return getNormal_NormalParentsDistribution(assignment).getConditionalProbability(assignment);
-    }
 
     /**
      * Computes the logarithm of the evaluated density function in a point after restricting the distribution to a
@@ -155,15 +127,7 @@ public class Normal_MultinomialNormalParents implements ConditionalDistribution 
      * @return A <code>double</code> with the logarithm of the corresponding density value.
      */
     public double getLogConditionalProbability(Assignment assignment) {
-        double value = assignment.getValue(this.var);
+        double value = assignment.getValue(this.getVariable());
         return getNormal_NormalParentsDistribution(assignment).getLogConditionalProbability(assignment);
-    }
-
-    /**
-     * Gets the variable of the distribution.
-     * @return A <code>Variable</code> object.
-     */
-    public Variable getVariable() {
-        return var;
     }
 }
