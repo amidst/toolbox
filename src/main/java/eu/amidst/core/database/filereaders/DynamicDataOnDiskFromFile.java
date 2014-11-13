@@ -2,31 +2,35 @@ package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.*;
 
+import eu.amidst.core.database.filereaders.Utils;
+
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
 public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
     DataFileReader reader;
-    /**
-     * Only used in case the sequenceID is not in the datafile
-     */
+    /* Only used in case the sequenceID is not in the datafile */
     int sequenceID = 0;
-    /**
-     * Only used in case the timeID is not in the datafile, time ID of the Present.
-     */
+    /* timeIDcounter is used to keep track of missing values*/
     int timeIDcounter = 0;
     DataRow present;
     DataRow past;
     Attribute attSequenceID;
     Attribute attTimeID;
 
+
     public DynamicDataOnDiskFromFile(DataFileReader reader){
         this.reader=reader;
         /**
-         * We read the first row now, to create the first couple in nextDataInstance
+         * We read the two first rows now, to create the first couple in nextDataInstance
          */
-        this.present = this.reader.nextDataRow();
+        try {
+            if (reader.hasMoreDataRows())
+                past = this.reader.nextDataRow();
+            if (reader.hasMoreDataRows())
+                present = this.reader.nextDataRow();
+        }catch (UnsupportedOperationException e){System.err.println("There are insufficient instances to learn a model.");}
 
         attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
         if (attSequenceID == null){
@@ -35,40 +39,37 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         }
 
         attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
-        if(attTimeID == null){
-            this.timeIDcounter = 1;
-        }
+        this.timeIDcounter = 1;
     }
 
     @Override
     public DataInstance nextDataInstance() {
 
-        past = present;
-        present = this.reader.nextDataRow();
+        /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
+        /* 1 = true,  false, i.e., TimeID is provided */
+        /* 2 = false, true,  i.e., SequenceID is provided */
+        /* 3 = true,  true,  i.e., SequenceID is provided*/
+        int option = (attTimeID == null) ? 1 : 0 + 2 * ((attSequenceID == null) ? 1 : 0);
 
-        /* Not sequenceID nor TimeID are provided*/
-        if(attSequenceID == null && attTimeID == null){
-            return new DynamicDataInstance(present, past, sequenceID, ++timeIDcounter);
+        switch (option) {
 
-         /* TimeID is provided*/
-        }else if(attSequenceID == null){
-            return new DynamicDataInstance(present, past, sequenceID, (int)present.getValue(attTimeID));
+            /* Not sequenceID nor TimeID are provided*/
+            case 0:
+                Utils.nextDataInstance_NoTimeID_NoSeq(reader, present, past, sequenceID, timeIDcounter);
 
-         /* SequenceID is provided*/
-        }else if(attTimeID == null){
-            double pastSequenceID = past.getValue(attSequenceID);
-            double presentSequenceID = present.getValue(attSequenceID);
-            if(pastSequenceID==presentSequenceID){
-                return new DynamicDataInstance(present, past, (int)presentSequenceID, ++timeIDcounter);
-            }
+             /* Only TimeID is provided*/
+            case 1:
+                Utils.nextDataInstance_NoSeq(reader, present, past, sequenceID, timeIDcounter, attTimeID);
+
+             /* Only SequenceID is provided*/
+            case 2:
+                Utils.nextDataInstance_NoTimeID(reader, present, past, sequenceID, timeIDcounter, attSequenceID);
+
+             /* SequenceID and TimeID are provided*/
+            case 3:
+                Utils.nextDataInstance(reader, present, past, sequenceID, timeIDcounter, attSequenceID, attTimeID);
         }
-         /* SequenceID and TimeID are provided*/
-        double pastSequenceID = past.getValue(attSequenceID);
-        double presentSequenceID = present.getValue(attSequenceID);
-        double pastTimeID = past.getValue(attTimeID);
-        double presentTimeID = present.getValue(attTimeID);
-        return new DynamicDataInstance(present, past, (int) presentSequenceID, (int) presentTimeID);
-
+        throw new IllegalArgumentException();
     }
 
     @Override
