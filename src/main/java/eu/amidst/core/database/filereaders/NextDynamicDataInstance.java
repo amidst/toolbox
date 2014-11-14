@@ -1,23 +1,35 @@
 package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.DataInstance;
 
 /**
  * Created by ana@cs.aau.dk on 13/11/14.
  */
-public class Utils {
+public final class NextDynamicDataInstance {
 
-    public static DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(DataFileReader reader, DataRow present,
-                                                                      DataRow past, int sequenceID, int timeIDcounter){
+    private DataRow present;
+    private DataRow past;
+
+    /* Only used in case the sequenceID is not in the datafile */
+    private int sequenceID = 0;
+    /* timeIDcounter is used to keep track of missing values*/
+    private int timeIDcounter = 0;
+
+    public NextDynamicDataInstance(DataRow past, DataRow present){
+        this.past = past;
+        this.present = present;
+
+        this.sequenceID = 1;
+        this.timeIDcounter = 1;
+    }
+    public  DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(DataFileReader reader){
         DynamicDataInstance dynDataInst = new DynamicDataInstance(present, past, sequenceID, ++timeIDcounter);
         past = present;
         present = reader.nextDataRow();
         return dynDataInst;
     }
 
-    public static DynamicDataInstance nextDataInstance_NoSeq(DataFileReader reader, DataRow present, DataRow past,
-                                                      int sequenceID, int timeIDcounter, Attribute attTimeID){
+    public DynamicDataInstance nextDataInstance_NoSeq(DataFileReader reader, Attribute attTimeID){
         double pastTimeID = past.getValue(attTimeID);
 
         /*Missing values of the form (X,?), where X can also be ?*/
@@ -40,13 +52,12 @@ public class Utils {
         }else{
             present = reader.nextDataRow();
             /*Recursive call to this method taking into account the past DataRow*/
-            return nextDataInstance_NoSeq(reader, present, past, sequenceID, timeIDcounter, attTimeID);
+            return nextDataInstance_NoSeq(reader, attTimeID);
         }
 
     }
 
-    public static DynamicDataInstance nextDataInstance_NoTimeID(DataFileReader reader, DataRow present, DataRow past,
-                                                         int sequenceID, int timeIDcounter, Attribute attSequenceID){
+    public DynamicDataInstance nextDataInstance_NoTimeID(DataFileReader reader, Attribute attSequenceID){
         double pastSequenceID = past.getValue(attSequenceID);
         double presentSequenceID = present.getValue(attSequenceID);
         if (pastSequenceID == presentSequenceID) {
@@ -60,12 +71,12 @@ public class Utils {
              past = present;
              present = reader.nextDataRow();
              /* Recursive call */
-             return nextDataInstance_NoTimeID(reader, present, past, sequenceID, timeIDcounter, attSequenceID);
+             timeIDcounter = 0;
+             return nextDataInstance_NoTimeID(reader, attSequenceID);
         }
     }
 
-    public static DynamicDataInstance nextDataInstance(DataFileReader reader, DataRow present, DataRow past, int sequenceID,
-                                                int timeIDcounter, Attribute attSequenceID, Attribute attTimeID){
+    public DynamicDataInstance nextDataInstance(DataFileReader reader, Attribute attSequenceID, Attribute attTimeID){
         double pastSequenceID = past.getValue(attSequenceID);
         double pastTimeID = past.getValue(attTimeID);
 
@@ -91,12 +102,13 @@ public class Utils {
             double presentSequenceID = present.getValue(attSequenceID);
             if (pastSequenceID == presentSequenceID) {
                 /*Recursive call to this method taking into account the past DataRow*/
-                return nextDataInstance(reader, present, past, sequenceID, timeIDcounter, attSequenceID, attTimeID);
+                return nextDataInstance(reader, attSequenceID, attTimeID);
             }else{
                 past = present;
                 present = reader.nextDataRow();
                 /* Recursive call discarding the past DataRow*/
-                return nextDataInstance(reader, present, past, sequenceID, timeIDcounter,  attSequenceID, attTimeID);
+                timeIDcounter = 0;
+                return nextDataInstance(reader, attSequenceID, attTimeID);
             }
         }
     }

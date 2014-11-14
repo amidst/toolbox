@@ -11,16 +11,12 @@ import java.util.List;
 public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
 
     DataFileReader reader;
-    /**
-     * Only used in case the sequenceID is not in the datafile
-     */
-    int sequenceID = 0;
-    /**
-     * Only used in case the timeID is not in the datafile, time ID of the Present.
-     */
-    int timeIDcounter = 0;
+
     Attribute attSequenceID;
     Attribute attTimeID;
+
+    NextDynamicDataInstance nextDynamicDataInstance;
+
     DynamicDataInstance[] dataInstances;
     int pointer = 0;
 
@@ -40,15 +36,9 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
         }catch (UnsupportedOperationException e){System.err.println("There are insufficient instances to learn a model.");}
 
         attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
-        if (attSequenceID == null){
-            /* This value should not be modified */
-            this.sequenceID = 1;
-        }
-
         attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
-        if(attTimeID == null){
-            this.timeIDcounter = 1;
-        }
+
+        nextDynamicDataInstance = new NextDynamicDataInstance(past, present);
 
         while (reader.hasMoreDataRows()) {
 
@@ -62,19 +52,19 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
 
             /* Not sequenceID nor TimeID are provided*/
                 case 0:
-                    dataInstancesList.add(Utils.nextDataInstance_NoTimeID_NoSeq(reader, present, past, sequenceID, timeIDcounter));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(reader));
 
              /* Only TimeID is provided*/
                 case 1:
-                    dataInstancesList.add(Utils.nextDataInstance_NoSeq(reader, present, past, sequenceID, timeIDcounter, attTimeID));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoSeq(reader, attTimeID));
 
              /* Only SequenceID is provided*/
                 case 2:
-                    dataInstancesList.add(Utils.nextDataInstance_NoTimeID(reader, present, past, sequenceID, timeIDcounter, attSequenceID));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID(reader, attSequenceID));
 
              /* SequenceID and TimeID are provided*/
                 case 3:
-                    dataInstancesList.add(Utils.nextDataInstance(reader, present, past, sequenceID, timeIDcounter, attSequenceID, attTimeID));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance(reader, attSequenceID, attTimeID));
             }
             throw new IllegalArgumentException();
         }
