@@ -1,0 +1,21 @@
+package eu.amidst.core.database.filereaders.arffWekaReader;
+
+import eu.amidst.core.database.Attribute;
+import eu.amidst.core.database.filereaders.DataRow;
+import weka.core.Instance;
+
+/**
+ * Created by ana@cs.aau.dk on 14/11/14.
+ */
+public class DataRowWeka implements DataRow{
+
+    Instance dataRow;
+
+    public DataRowWeka(Instance dataRow){
+        this.dataRow = new Instance(dataRow);
+    }
+    @Override
+    public double getValue(Attribute att) {
+        return dataRow.value(att.getIndex());
+    }
+}
