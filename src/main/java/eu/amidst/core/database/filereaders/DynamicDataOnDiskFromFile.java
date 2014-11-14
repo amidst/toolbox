@@ -2,29 +2,27 @@ package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.*;
 
-import eu.amidst.core.database.filereaders.Utils;
-
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
 public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
     DataFileReader reader;
-    /* Only used in case the sequenceID is not in the datafile */
-    int sequenceID = 0;
-    /* timeIDcounter is used to keep track of missing values*/
-    int timeIDcounter = 0;
-    DataRow present;
-    DataRow past;
+
     Attribute attSequenceID;
     Attribute attTimeID;
+
+    NextDynamicDataInstance nextDynamicDataInstance;
 
 
     public DynamicDataOnDiskFromFile(DataFileReader reader){
         this.reader=reader;
+
         /**
          * We read the two first rows now, to create the first couple in nextDataInstance
          */
+        DataRow present = null;
+        DataRow past = null;
         try {
             if (reader.hasMoreDataRows())
                 past = this.reader.nextDataRow();
@@ -33,13 +31,9 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         }catch (UnsupportedOperationException e){System.err.println("There are insufficient instances to learn a model.");}
 
         attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
-        if (attSequenceID == null){
-            /* This value should not be modified */
-            this.sequenceID = 1;
-        }
-
         attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
-        this.timeIDcounter = 1;
+
+        nextDynamicDataInstance = new NextDynamicDataInstance(past, present);
     }
 
     @Override
@@ -55,19 +49,19 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
             /* Not sequenceID nor TimeID are provided*/
             case 0:
-                Utils.nextDataInstance_NoTimeID_NoSeq(reader, present, past, sequenceID, timeIDcounter);
+                nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(reader);
 
              /* Only TimeID is provided*/
             case 1:
-                Utils.nextDataInstance_NoSeq(reader, present, past, sequenceID, timeIDcounter, attTimeID);
+                nextDynamicDataInstance.nextDataInstance_NoSeq(reader, attTimeID);
 
              /* Only SequenceID is provided*/
             case 2:
-                Utils.nextDataInstance_NoTimeID(reader, present, past, sequenceID, timeIDcounter, attSequenceID);
+                nextDynamicDataInstance.nextDataInstance_NoTimeID(reader, attSequenceID);
 
              /* SequenceID and TimeID are provided*/
             case 3:
-                Utils.nextDataInstance(reader, present, past, sequenceID, timeIDcounter, attSequenceID, attTimeID);
+                nextDynamicDataInstance.nextDataInstance(reader, attSequenceID, attTimeID);
         }
         throw new IllegalArgumentException();
     }
