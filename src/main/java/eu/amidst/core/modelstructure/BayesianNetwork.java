@@ -50,6 +50,14 @@ public class BayesianNetwork {
         return modelHeader;
     }
 
+    public DAG getDAG (){
+        return dag;
+    }
+
+    public ConditionalDistribution[] getDistributions(){
+        return distributions;
+    }
+
 
     public void initializeDistributions(){
 
