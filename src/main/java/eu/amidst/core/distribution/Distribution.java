@@ -14,9 +14,12 @@ public abstract class Distribution {
 
     /**
      * Gets the variable of the distribution
+     *
      * @return A <code>Variable</code> object.
      */
     public Variable getVariable() {
         return this.var;
-    };
+    }
+
+
 }

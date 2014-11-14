@@ -59,6 +59,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
     }
 
+    public Multinomial[] getProbabilities(){
+        return this.probabilities;
+    }
+
     /**
      * Sets a <code>Multinomial</code> distribution in a given position in the array of probabilities.
      * @param position The position in which the distribution is set.
@@ -99,4 +103,5 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         double value = parentAssignment.getValue(this.var);
         return this.getMultinomial(parentAssignment).getLogProbability(value);
     }
+
 }

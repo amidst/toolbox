@@ -63,4 +63,11 @@ public class DAG {
         return false;
     }
 
+    public StaticModelHeader getModelHeader(){
+        return this.modelHeader;
+    }
+
+
+
+
 }
