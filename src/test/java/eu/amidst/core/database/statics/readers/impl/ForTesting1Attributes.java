@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * Created by sigveh on 10/16/14.
  */
-public class ForTesting1Attributes implements Attributes {
+public class ForTesting1Attributes extends Attributes {
 
     private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.MULTINOMIAL);
     private final Attribute F1 = new Attribute(0, "F1", "NA", StateSpaceType.REAL);
@@ -24,14 +24,18 @@ public class ForTesting1Attributes implements Attributes {
     private final Attribute F9 = new Attribute(8, "F9", "NA", StateSpaceType.REAL);
 
 
-    private static Set<Attribute> attributes;
+    private static Set<Attribute> attributesTesting1;
     {
-    attributes = ImmutableSet.of(CLASS, F1, F2, F3, F4, F5, F6, F7, F8, F9);
+        attributesTesting1 = ImmutableSet.of(CLASS, F1, F2, F3, F4, F5, F6, F7, F8, F9);
+    }
+
+    public ForTesting1Attributes(){
+        super(attributesTesting1);
     }
 
     @Override
     public Set<Attribute> getSet(){
-        return attributes;
+        return attributesTesting1;
     }
 
     @Override
