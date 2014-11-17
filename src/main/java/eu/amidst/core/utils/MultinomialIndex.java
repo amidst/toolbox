@@ -130,7 +130,7 @@ public class MultinomialIndex {
      */
     public static int getNumberOfPossibleAssignments (List<Variable> vars) {
 
-        int n = 0;
+        int n = 1;
         for (Variable v : vars) {
             n = n * v.getNumberOfStates();
         }
