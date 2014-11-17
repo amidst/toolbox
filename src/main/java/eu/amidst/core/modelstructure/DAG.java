@@ -67,7 +67,7 @@ public class DAG {
         return this.modelHeader;
     }
 
-
-
-
+    public void addParent(Variable child, Variable parent) {
+        this.getParentSet(child).addParent(parent);
+    }
 }
