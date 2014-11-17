@@ -10,16 +10,20 @@ import java.util.Set;
 /**
  * Created by sigveh on 10/16/14.
  */
-public class DrillingAttributes implements Attributes {
+public class DrillingAttributes extends Attributes {
 
     private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceType.REAL);
     private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceType.REAL);
     private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceType.REAL);
 
 
-    private static Set<Attribute> attributes;
+    private static Set<Attribute> attributesDrilling;
     {
-        attributes = ImmutableSet.of(MFI, SPP, RPM);
+        attributesDrilling = ImmutableSet.of(MFI, SPP, RPM);
+    }
+
+    public DrillingAttributes(){
+        super(attributesDrilling);
     }
 
     public Attribute getMFI() {
@@ -36,7 +40,7 @@ public class DrillingAttributes implements Attributes {
 
     @Override
     public Set<Attribute> getSet() {
-        return attributes;
+        return attributesDrilling;
     }
 
     @Override

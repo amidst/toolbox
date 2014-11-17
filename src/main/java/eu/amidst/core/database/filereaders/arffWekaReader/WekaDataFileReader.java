@@ -21,7 +21,7 @@ public class WekaDataFileReader implements DataFileReader{
 
     ArffLoader arffLoader = null;
     Instances dataStructure;
-    WekaAttributes attributes;
+    Attributes attributes;
     /* We need to read an instance in advance to know if we have reached the EOF*/
     Instance present = null;
 
@@ -49,7 +49,7 @@ public class WekaDataFileReader implements DataFileReader{
             Attribute att = new Attribute(attrWeka.index(),attrWeka.name(),stateSpaceTypeAtt);
             attrs.add(att);
         }
-        attributes = new WekaAttributes(attrs);
+        attributes = new Attributes(attrs);
 
         /*Read one instance*/
         try {
@@ -65,7 +65,7 @@ public class WekaDataFileReader implements DataFileReader{
 
     @Override
     public DataRow nextDataRow() {
-        Instance inst = new Instance(present);
+        Instance inst = present;
         try {
             present = arffLoader.getNextInstance(dataStructure);
         }catch(IOException e){};
@@ -86,6 +86,7 @@ public class WekaDataFileReader implements DataFileReader{
 
     @Override
     public boolean doesItReadThisFileExtension(String fileExtension) {
-        return false;
+        return fileExtension.equals(".arff");
     }
+
 }

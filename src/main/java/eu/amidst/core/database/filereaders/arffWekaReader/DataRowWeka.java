@@ -12,7 +12,7 @@ public class DataRowWeka implements DataRow{
     Instance dataRow;
 
     public DataRowWeka(Instance dataRow){
-        this.dataRow = new Instance(dataRow);
+        this.dataRow = dataRow;
     }
     @Override
     public double getValue(Attribute att) {
