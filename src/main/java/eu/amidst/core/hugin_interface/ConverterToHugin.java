@@ -1,21 +1,15 @@
 package eu.amidst.core.hugin_interface;
 
 import COM.hugin.HAPI.*;
+
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.DistType;
-import eu.amidst.core.header.StaticModelHeader;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.modelstructure.BayesianNetwork;
 import eu.amidst.core.modelstructure.DAG;
+import eu.amidst.core.utils.MultinomialIndex;
 
-import eu.amidst.core.modelstructure.ParentSet;
-import org.omg.DynamicAny.DynSequence;
-
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class ConverterToHugin {
 
@@ -75,76 +69,100 @@ public class ConverterToHugin {
     }
 
 
-
-    public void setDistributions(ConditionalDistribution[] distributions) {
+    //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
+    public void setMultinomial_MultinomialParents(ConditionalDistribution dist) {
 
         try {
-            for (ConditionalDistribution dist: distributions) {
+            Variable amidstVar = dist.getVariable();
+            int idVar = amidstVar.getVarID();
+            Node huginVar = (Node)this.huginNetwork.getNodes().get(idVar);
 
-                Variable amidstVar = dist.getVariable();
+            Multinomial[] probabilities = ((Multinomial_MultinomialParents)dist).getProbabilities();
+            List<Variable> conditioningVariables = dist.getConditioningVariables();
+            int numParents = conditioningVariables.size();
 
-                switch (amidstVar.getDistributionType()) {
-                    case MULTINOMIAL: //This covers Multinomial and Multinomial_Parents distributions
-                        int idVar = amidstVar.getVarID();
-                        Node huginVar = (Node)this.huginNetwork.getNodes().get(idVar);
-                        //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
+            double[] finalArray = new double[0];
+            int sourcePosition = 0;
+            int finalPosition;
 
-                        int numParents = dist.getConditioningVariables().size();
+            for(int i=0;i<numParents;i++){
 
-                        Multinomial[] probabilities = ((Multinomial_MultinomialParents)dist).getProbabilities();
+                double[] sourceArray = probabilities[i].getProbabilities();
+                finalPosition = finalArray.length + sourceArray.length;
+                System.arraycopy(sourceArray, sourcePosition, finalArray,finalPosition,1);
+                sourcePosition = finalPosition +1;
+            }
+            huginVar.getTable().setData(finalArray);
 
-                        double[] finalArray = new double[0];
+        }
+        catch (ExceptionHugin e) {
+            System.out.println("Exception caught: " + e.getMessage());
+        }
 
-                        int sourcePosition = 0;
-                        int finalPosition;
+    }
 
-                        for(int i=0;i<numParents;i++){
+    //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
+    public void setNormal_NormalParents(ConditionalDistribution dist, int i) {
 
-                            double[] sourceArray = probabilities[i].getProbabilities();
-                            finalPosition = finalArray.length + sourceArray.length;
-                            System.arraycopy(sourceArray, sourcePosition, finalArray,finalPosition,1);
-                            sourcePosition = finalPosition +1;
-                        }
-                        huginVar.getTable().setData(finalArray);
+        try {
+            Variable amidstVar = dist.getVariable();
+            int idVar = amidstVar.getVarID();
+            Node huginVar = (Node)this.huginNetwork.getNodes().get(idVar);
+            List<Variable> conditioningVariables = dist.getConditioningVariables();
+            int numParents = conditioningVariables.size();
 
-                    case GAUSSIAN:
+            double variance = Math.pow(((Normal_NormalParents) amidstVar).getSd(), 2);
+            ((ContinuousChanceNode)huginVar).setGamma(variance,i);
 
-
-
-//                        //  NORMAL, NORMAL_NORMAL and NORMAL_MULTIMOMIALNORMAL
-//                    case GAUSSIAN:
-//                        boolean multinomialParents = false;
-//                        boolean normalParents = false;
-//                        /* The parents of a gaussian variable are either multinomial and/or normal */
-//
-//
-//
-//                        for(Variable parent:parents.getParents()){
-//                            if (parent.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-//                                multinomialParents = true;
-//                            } else if (parent.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
-//                                normalParents = true;
-//                            } else {
-//                                throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
-//                            }
-//                        }
-//                        if (normalParents && !multinomialParents){
-//                            System.out.println("Normal_NormalParents");
-//                        }else if ((!normalParents & multinomialParents)|| (parents.getNumberOfParents()==0)){
-//                            System.out.println("Normal_MultinomialParents");
-//                        } else if (normalParents & multinomialParents) {
-//                            System.out.println("Normal_MultinomialNormalParents");
-//                        } else {
-//                            throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
-//                        }
-//                    default:
-//                        throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
-//                }
+            double intercept = ((Normal_NormalParents)amidstVar).getIntercept();
+            ((ContinuousChanceNode)huginVar).setAlpha(intercept,i);
 
 
-                    default:
-                        throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
-                }
+            double[] coeffParents = ((Normal_NormalParents)amidstVar).getCoeffParents();
+            for(int j=0;j<numParents;j++) {
+                Node p = (Node)huginVar.getParents().get(j);
+                ((ContinuousChanceNode)huginVar).setBeta(coeffParents[j],(ContinuousChanceNode)p,j);
+            }
+        }
+        catch (ExceptionHugin e) {
+            System.out.println("Exception caught: " + e.getMessage());
+        }
+
+    }
+
+    public void setNormal(Normal dist, int i) {
+
+        try {
+            Variable amidstVar = dist.getVariable();
+            int idVar = amidstVar.getVarID();
+            Node huginVar = (Node)this.huginNetwork.getNodes().get(idVar);
+
+            double mean =  dist.getMean();
+            double sd = dist.getSd();
+
+            ((ContinuousChanceNode)huginVar).setAlpha(mean, i);
+            ((ContinuousChanceNode)huginVar).setGamma(Math.pow(sd,2),i);
+        }
+        catch (ExceptionHugin e) {
+            System.out.println("Exception caught: " + e.getMessage());
+        }
+    }
+
+    //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
+
+    public void setNormal_MultinomialParents(ConditionalDistribution dist) {
+
+        try {
+            Variable amidstVar = dist.getVariable();
+            int idVar = amidstVar.getVarID();
+            Node huginVar = (Node)this.huginNetwork.getNodes().get(idVar);
+            List<Variable> conditioningVariables = dist.getConditioningVariables();
+
+            int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
+
+            for(int i=0;i<numParentAssignments;i++) {
+                Normal normal =  ((Normal_MultinomialParents)dist).getNormal(i);
+                this.setNormal(normal, i );
             }
         }
         catch (ExceptionHugin e) {
@@ -153,7 +171,69 @@ public class ConverterToHugin {
     }
 
 
+    public void setNormal_MultinomialNormalParents(ConditionalDistribution dist){
 
+        try {
+            Variable amidstVar = dist.getVariable();
+            int idVar = amidstVar.getVarID();
+            Node huginVar = (Node)this.huginNetwork.getNodes().get(idVar);
+
+            List<Variable> multinomialParents = ((Normal_MultinomialNormalParents)dist).getMultinomialParents();
+
+            int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
+
+            for(int i=0;i<numParentAssignments;i++) {
+                ConditionalDistribution normal_normalParents = ((Normal_MultinomialNormalParents)dist).getNormal_NormalParentsDistribution(i);
+                this.setNormal_NormalParents(normal_normalParents,i);
+            }
+        }
+        catch (ExceptionHugin e) {
+            System.out.println("Exception caught: " + e.getMessage());
+        }
+  }
+
+   public void setDistributions(ConditionalDistribution[] distributions) {
+
+        for (ConditionalDistribution dist: distributions) {
+
+            Variable amidstVar = dist.getVariable();
+            List<Variable> conditioningVariables = dist.getConditioningVariables();
+
+            switch (amidstVar.getDistributionType()) {
+                case MULTINOMIAL:
+                   this.setMultinomial_MultinomialParents(dist);
+                case GAUSSIAN:
+                    boolean multinomialParents = false;
+                    boolean normalParents = false;
+
+                    for (Variable v : conditioningVariables) {
+                        if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+                            multinomialParents = true;
+                        } else if (v.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
+                            normalParents = true;
+                        } else {
+                            throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
+                        }
+                    }
+
+                    if (normalParents && !multinomialParents){
+                           this.setNormal_NormalParents(dist,0);
+                    }
+                    else if ((!normalParents & multinomialParents) || (conditioningVariables.size() == 0)) {
+                            this.setNormal_MultinomialParents(dist);
+                    }
+                    else if (normalParents & multinomialParents) {
+                          this.setNormal_MultinomialNormalParents(dist);
+                    }
+                    else {
+                       throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
+                    }
+
+                default:
+                    throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
+            }
+        }
+    }
 
     public void setBayesianNetwork(BayesianNetwork bn) {
         this.setNodes(bn.getStaticModelHeader().getVariables());
