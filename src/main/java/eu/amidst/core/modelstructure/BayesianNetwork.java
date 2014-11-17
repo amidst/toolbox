@@ -18,11 +18,8 @@ import java.util.List;
 public class BayesianNetwork {
 
     private ConditionalDistribution[] distributions;
-    private StaticModelHeader modelHeader;
-    private ParentSet[] parents;
+
     private DAG dag;
-
-
 
     public static BayesianNetwork newBayesianNetwork(DAG dag){
         return new BayesianNetwork(dag);
@@ -31,8 +28,6 @@ public class BayesianNetwork {
     private BayesianNetwork(DAG dag) {
         this.dag = dag;
     }
-
-
 
     public ConditionalDistribution getDistribution(Variable var) {
         return distributions[var.getVarID()];
@@ -43,11 +38,11 @@ public class BayesianNetwork {
     }
 
     public int getNumberOfNodes() {
-        return modelHeader.getNumberOfVars();
+        return this.getDAG().getModelHeader().getNumberOfVars();
     }
 
     public StaticModelHeader getStaticModelHeader() {
-        return modelHeader;
+        return this.getDAG().getModelHeader();
     }
 
     public DAG getDAG (){
@@ -61,7 +56,7 @@ public class BayesianNetwork {
 
     public void initializeDistributions(){
 
-        List<Variable> vars = modelHeader.getVariables(); /* the list of all variables in the BN */
+        List<Variable> vars = getStaticModelHeader().getVariables(); /* the list of all variables in the BN */
 
         this.distributions = new ConditionalDistribution[vars.size()];
 
@@ -69,10 +64,12 @@ public class BayesianNetwork {
         /* Initialize the distribution for each variable depending on its distribution type
         as well as the distribution type of its parent set (if that variable has parents)
          */
-        for (Variable var : modelHeader.getVariables()) {
+        for (Variable var : getStaticModelHeader().getVariables()) {
+            ParentSet parentSet = this.getDAG().getParentSet(var);
+
             int varID = var.getVarID();
-            this.distributions[varID]= DistributionBuilder.newDistribution(var, parents[varID].getParents());
-            parents[varID].blockParents();
+            this.distributions[varID]= DistributionBuilder.newDistribution(var, parentSet.getParents());
+            parentSet.blockParents();
         }
     }
 
