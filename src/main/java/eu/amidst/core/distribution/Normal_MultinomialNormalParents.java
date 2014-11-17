@@ -32,6 +32,7 @@ import java.util.List;
 
 public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
+
     /**
      * The list of multinomial parents
      */
@@ -97,6 +98,10 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
         return distribution[position];
     }
+    public Normal_NormalParents getNormal_NormalParentsDistribution(int i) {
+        return distribution[i];
+
+    }
 
     /**
      * Sets a <code>Normal_NormalParents</code> distribution to a given position in the array of distributions.
@@ -130,4 +135,17 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         double value = assignment.getValue(this.getVariable());
         return getNormal_NormalParentsDistribution(assignment).getLogConditionalProbability(assignment);
     }
+
+    public List<Variable> getMultinomialParents() {
+        return multinomialParents;
+    }
+
+    public List<Variable> getNormalParents() {
+        return normalParents;
+    }
+
+    public Normal_NormalParents[] getDistribution() {
+        return distribution;
+    }
+
 }

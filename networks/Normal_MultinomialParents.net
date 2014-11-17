@@ -79,4 +79,13 @@ potential (C2)
     data = ( 0.25 0.75 );
 }
 
-potential (C1 | C3 C2) {}
+potential (C1 | C3 C2)
+{
+    data
+     = (( normal ( 0.3, 1.2 )	%  C3=State 1  C2=State 1
+	  normal ( 0.7, 0.8 ) )	%  C3=State 1  C2=State 2
+	( normal ( 0.7, 1.2 )	%  C3=State 2  C2=State 1
+	  normal ( -0.5, 0.9 ) )	%  C3=State 2  C2=State 2
+	( normal ( -1.5, 1.2 )	%  C3=State 3  C2=State 1
+	  normal ( 0.4, 2 ) ));	%  C3=State 3  C2=State 2
+}
