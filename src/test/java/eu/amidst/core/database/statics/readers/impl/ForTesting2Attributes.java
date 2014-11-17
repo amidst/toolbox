@@ -10,20 +10,24 @@ import java.util.Set;
 /**
  * Created by sigveh on 10/16/14.
  */
-public class ForTesting2Attributes implements Attributes {
+public class ForTesting2Attributes extends Attributes {
 
     private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.MULTINOMIAL);
     private final Attribute TWO_NAMES = new Attribute(0, "TWO NAMES", "NA", StateSpaceType.REAL);
     private final Attribute THREE_NAMES_HERE = new Attribute(1, "THREE NAMES HERE", "NA", StateSpaceType.REAL);
 
-    private static Set<Attribute> attributes;
+    private static Set<Attribute> attributesTesting2;
     {
-        attributes = ImmutableSet.of(CLASS, TWO_NAMES, THREE_NAMES_HERE);
+        attributesTesting2 = ImmutableSet.of(CLASS, TWO_NAMES, THREE_NAMES_HERE);
+    }
+
+    public ForTesting2Attributes(){
+        super(attributesTesting2);
     }
 
     @Override
     public Set<Attribute> getSet(){
-        return attributes;
+        return attributesTesting2;
     }
 
     @Override
