@@ -56,7 +56,6 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
-
     }
 
     public Multinomial[] getProbabilities(){
