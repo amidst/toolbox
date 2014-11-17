@@ -31,6 +31,13 @@ public final class Attribute {
         this.stateSpaceType = stateSpaceType;
     }
 
+    public Attribute(int index, String name, StateSpaceType stateSpaceType) {
+        this.index = index;
+        this.name = name.toUpperCase();
+        this.unit = "NA";
+        this.stateSpaceType = stateSpaceType;
+    }
+
 
     public Attribute(String name, StateSpaceType stateSpaceType) {
         this.index = -1;
