@@ -62,12 +62,12 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         this.normalParents = new ArrayList<Variable>();
         this.parents = parents;
 
+        for (Variable parent : parents) {
 
-        for (Variable v : parents) {
-            if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-                this.multinomialParents.add(var);
+            if (parent.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+                this.multinomialParents.add(parent);
             } else {
-                this.normalParents.add(var);
+                this.normalParents.add(parent);
             }
         }
 
