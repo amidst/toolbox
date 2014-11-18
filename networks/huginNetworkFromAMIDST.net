@@ -5,7 +5,7 @@ net
 
 node E
 {
-    states = ("");
+    states = ("E0" "E1");
 }
 
 continuous node I
@@ -26,7 +26,7 @@ continuous node G
 
 node B
 {
-    states = ("");
+    states = ("B0" "B1" "B2");
 }
 
 continuous node H
@@ -35,21 +35,54 @@ continuous node H
 
 node A
 {
-    states = ("");
+    states = ("A0" "A1");
 }
 
-potential (E | B A) {}
+potential (E | B A)
+{
+    data
+     = ((( 0.5 0.5 )	%  B=B0  A=A0
+	 ( 0.5 0.5 ))	%  B=B0  A=A1
+	(( 0.5 0.5 )	%  B=B1  A=A0
+	 ( 0.5 0.5 ))	%  B=B1  A=A1
+	(( 0.5 0.5 )	%  B=B2  A=A0
+	 ( 0.5 0.5 )));	%  B=B2  A=A1
+}
 
 potential (I | B A C D) {}
 
-potential (C) {}
+potential (C)
+{
+    data = normal ( 0, 1 );
+}
 
-potential (D) {}
+potential (D)
+{
+    data = normal ( 0, 1 );
+}
 
-potential (G | C D) {}
+potential (G | C D)
+{
+    data = normal ( C + D, 1 );
+}
 
-potential (B) {}
+potential (B)
+{
+    data = ( 0.333333 0.333333 0.333333 );
+}
 
-potential (H | B A) {}
+potential (H | B A)
+{
+    data
+     = (( normal ( 0, 1 )	%  B=B0  A=A0
+	  normal ( 0, 1 ) )	%  B=B0  A=A1
+	( normal ( 0, 1 )	%  B=B1  A=A0
+	  normal ( 0, 1 ) )	%  B=B1  A=A1
+	( normal ( 0, 1 )	%  B=B2  A=A0
+	  normal ( 0, 1 ) ));	%  B=B2  A=A1
+}
 
-potential (A) {}
+potential (A)
+{
+    data = ( 0.5 0.5 );
+}
