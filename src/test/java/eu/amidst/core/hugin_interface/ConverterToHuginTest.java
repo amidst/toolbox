@@ -2,12 +2,11 @@ package eu.amidst.core.hugin_interface;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.header.StaticModelHeader;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.modelstructure.BayesianNetwork;
 import eu.amidst.core.modelstructure.DAG;
-import org.junit.Test;
-
 import java.util.List;
 
 /**
@@ -20,9 +19,7 @@ public class ConverterToHuginTest {
 
         //**************************************** Synthetic data ******************************************************
 
-        WekaDataFileReader fileReader = new WekaDataFileReader(
-                new String("/Users/afa/Dropbox/AMIDST-AFA/core/datasets/syntheticData.arff"));
-
+        WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
         StaticModelHeader modelHeader = new StaticModelHeader(fileReader.getAttributes());
 
         //***************************************** Network structure **************************************************
@@ -32,15 +29,17 @@ public class ConverterToHuginTest {
         List<Variable> variables = dag.getModelHeader().getVariables();
 
         Variable A, B, C, D, E, G, H, I;
-        A = variables.get(0);
-        B = variables.get(1);
-        C = variables.get(2);
-        D = variables.get(3);
-        E = variables.get(4);
-        G = variables.get(5);
-        H = variables.get(6);
-        I = variables.get(7);
 
+        A = variables.get(3);
+        B = variables.get(2);
+        C = variables.get(4);
+        D = variables.get(5);
+        E = variables.get(1);
+        G = variables.get(6);
+        H = variables.get(7);
+        I = variables.get(0);
+
+        //Example
 
         dag.getParentSet(E).addParent(A);
         dag.getParentSet(E).addParent(B);
@@ -62,35 +61,96 @@ public class ConverterToHuginTest {
 
         bn.initializeDistributions();
 
+        /* IMPORTANT: The parents are indexed according to Koller (Chapter 10. Pag. 358). Example:
+           Parents: A = {A0,A1} and B = {B0,B1,B2}.
+           NumberOfPossibleAssignments = 6
+
+           Index   A    B
+             0     A0   B0
+             1     A1   B1
+             2     A0   B2
+             3     A1   B0
+             4     A0   B1
+             5     A1   B2
+        */
+
+        // Variable A
+        ((Multinomial_MultinomialParents)bn.getDistribution(A)).getMultinomial(0).setProbabilities(new double[]{0.3,0.7});
+
+        // Variable B
+        ((Multinomial_MultinomialParents)bn.getDistribution(B)).getMultinomial(0).setProbabilities(new double[]{0.4,0.1,0.5});
+
+        // Variable C
+        ((Normal_MultinomialParents)bn.getDistribution(C)).getNormal(0).setMean(0.8);
+        ((Normal_MultinomialParents)bn.getDistribution(C)).getNormal(0).setSd(1.5);
+
+        // Variable D
+        ((Normal_MultinomialParents)bn.getDistribution(D)).getNormal(0).setMean(1.3);
+        ((Normal_MultinomialParents)bn.getDistribution(D)).getNormal(0).setSd(0.9);
+
+        // Variable E
+        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(0).setProbabilities(new double[]{0.2,0.8});
+        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(1).setProbabilities(new double[]{0.1,0.9});
+        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(2).setProbabilities(new double[]{0.8,0.2});
+        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(3).setProbabilities(new double[]{0.45,0.55});
+        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(4).setProbabilities(new double[]{0.35,0.65});
+        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(5).setProbabilities(new double[]{0.9,0.1});
+
+        // Variable H
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(0).setMean(2);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(0).setSd(1.5);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(1).setMean(-1);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(1).setSd(0.5);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(2).setMean(3);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(2).setSd(0.8);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(3).setMean(2);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(3).setSd(1);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(4).setMean(5);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(4).setSd(0.8);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(5).setMean(1.5);
+        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(5).setSd(0.7);
+
+        //Variable I
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(0).setIntercept(0.5);
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.25,0.4});
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(0).setSd(0.9);
+
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(1).setIntercept(-0.1);
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-0.5,0.2});
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(1).setSd(0.6);
+
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(2).setIntercept(2.1);
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(2).setCoeffParents(new double[]{1.2,-0.3});
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(2).setSd(1.1);
+
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(3).setIntercept(2.1);
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(3).setCoeffParents(new double[]{1.25,0.9});
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(3).setSd(0.95);
+
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(4).setIntercept(1.5);
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(4).setCoeffParents(new double[]{-0.41,0.5});
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(4).setSd(1.5);
+
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(5).setIntercept(0);
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(5).setCoeffParents(new double[]{0.0,0.3});
+        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(5).setSd(0.25);
+
+        //Variable G
+        ((Normal_NormalParents)bn.getDistribution(G)).setIntercept(0.7);
+        ((Normal_NormalParents)bn.getDistribution(G)).setCoeffParents(new double[]{0.3,-0.8});
+        ((Normal_NormalParents)bn.getDistribution(G)).setSd(0.9);
+
         //**************************************************************************************************************
 
+
+        System.out.println("\nConverting the AMIDST network into Hugin format ...");
         ConverterToHugin converter = new ConverterToHugin();
         converter.setBayesianNetwork(bn);
-        converter.getHuginNetwork().saveAsNet(new String("/Users/afa/Dropbox/AMIDST-AFA/core/networks/huginNetworkFromAMIDST.net"));
 
+
+        String outFile = new String("networks/huginNetworkFromAMIDST.net");
+        converter.getHuginNetwork().saveAsNet(new String(outFile));
+        System.out.println("Hugin network saved in \"" + outFile + "\""+".");
 
     }
-
-    //*********************************************************************************
-//            //Simulate a sample from a Hugin network
-//            int nsamples = 100;
-//            for (int j=0;j< nodeList.size();j++) {
-//                System.out.print(((Node)nodeList.get(j)).getName());
-//                if(j<nodeList.size()-1)
-//                    System.out.print(",");
-//            }
-//            System.out.println();
-//            for (int i=0;i<nsamples;i++){
-//                domain.simulate();
-//                for (int j=0;j<nodeList.size();j++){
-//                    System.out.print(((ContinuousChanceNode)nodeList.get(j)).getSampledValue());
-//                    if(j<nodeList.size()-1)
-//                        System.out.print(",");
-//                }
-//                System.out.println();
-//            }
-//            //*********************************************************************************
-
-
-
 }
