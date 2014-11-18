@@ -3,6 +3,8 @@ package eu.amidst.core.modelstructure;
 import eu.amidst.core.header.StaticModelHeader;
 import eu.amidst.core.header.Variable;
 
+import java.util.List;
+
 /**
  * Created by Hanen on 13/11/14.
  */
@@ -27,7 +29,6 @@ public class DAG {
     public ParentSet getParentSet(Variable var) {
         return parents[var.getVarID()];
     }
-
 
     public boolean containCycles(){
        /* check whether there are cycles in the BN */
@@ -69,5 +70,21 @@ public class DAG {
 
     public void addParent(Variable child, Variable parent) {
         this.getParentSet(child).addParent(parent);
+        this.m_bits[parent.getVarID() + child.getVarID() * modelHeader.getNumberOfVars()] = true;
+    }
+
+    public void removeParent(Variable child, Variable parent) {
+        this.getParentSet(child).removeParent(parent);
+        this.m_bits[parent.getVarID() + child.getVarID() * modelHeader.getNumberOfVars()] = false;
+    }
+
+    public int getNumberOfArcs(){
+        int counter = 0;
+        for (int i = 0; i < m_bits.length; i++) {
+                if (m_bits[i]) {
+                    counter++;
+                }
+        }
+        return counter;
     }
 }
