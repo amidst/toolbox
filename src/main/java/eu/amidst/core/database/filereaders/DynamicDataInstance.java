@@ -8,8 +8,8 @@ import eu.amidst.core.header.Variable;
  */
 public class DynamicDataInstance implements DataInstance {
 
-    DataRow dataRowPresent;
-    DataRow dataRowPast;
+    private DataRow dataRowPresent;
+    private DataRow dataRowPast;
 
     int sequenceID;
     /**

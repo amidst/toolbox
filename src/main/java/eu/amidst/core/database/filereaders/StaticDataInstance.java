@@ -8,7 +8,7 @@ import eu.amidst.core.header.Variable;
  */
 public class StaticDataInstance implements DataInstance {
 
-    DataRow dataRow;
+    private DataRow dataRow;
     public StaticDataInstance(DataRow dataRow_){
         dataRow=dataRow_;
     }
