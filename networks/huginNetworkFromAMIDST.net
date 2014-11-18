@@ -1,0 +1,55 @@
+net
+{
+    node_size = (0 0);
+}
+
+node E
+{
+    states = ("");
+}
+
+continuous node I
+{
+}
+
+continuous node C
+{
+}
+
+continuous node D
+{
+}
+
+continuous node G
+{
+}
+
+node B
+{
+    states = ("");
+}
+
+continuous node H
+{
+}
+
+node A
+{
+    states = ("");
+}
+
+potential (E | B A) {}
+
+potential (I | B A C D) {}
+
+potential (C) {}
+
+potential (D) {}
+
+potential (G | C D) {}
+
+potential (B) {}
+
+potential (H | B A) {}
+
+potential (A) {}
