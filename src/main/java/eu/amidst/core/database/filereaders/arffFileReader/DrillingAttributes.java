@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public class DrillingAttributes extends Attributes {
 
-    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceType.REAL);
-    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceType.REAL);
-    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceType.REAL);
+    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceType.REAL, 0);
+    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceType.REAL, 0);
+    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceType.REAL, 0);
 
 
     private static Set<Attribute> attributesDrilling;
