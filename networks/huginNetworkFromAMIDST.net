@@ -3,6 +3,32 @@ net
     node_size = (0 0);
 }
 
+continuous node H
+{
+}
+
+continuous node G
+{
+}
+
+continuous node D
+{
+}
+
+continuous node C
+{
+}
+
+node A
+{
+    states = ("A0" "A1");
+}
+
+node B
+{
+    states = ("B0" "B1" "B2");
+}
+
 node E
 {
     states = ("E0" "E1");
@@ -12,58 +38,26 @@ continuous node I
 {
 }
 
-continuous node C
-{
-}
+potential (H | A B E I) {}
 
-continuous node D
-{
-}
+potential (G | E I) {}
 
-continuous node G
-{
-}
-
-node B
-{
-    states = ("B0" "B1" "B2");
-}
-
-continuous node H
-{
-}
-
-node A
-{
-    states = ("A0" "A1");
-}
-
-potential (E | B A)
+potential (D | A B)
 {
     data
-     = ((( 0.5 0.5 )	%  B=B0  A=A0
-	 ( 0.5 0.5 ))	%  B=B0  A=A1
-	(( 0.5 0.5 )	%  B=B1  A=A0
-	 ( 0.5 0.5 ))	%  B=B1  A=A1
-	(( 0.5 0.5 )	%  B=B2  A=A0
-	 ( 0.5 0.5 )));	%  B=B2  A=A1
+     = (( normal ( 0, 1 )	%  A=A0  B=B0
+	  normal ( 0, 1 )	%  A=A0  B=B1
+	  normal ( 0, 1 ) )	%  A=A0  B=B2
+	( normal ( 0, 1 )	%  A=A1  B=B0
+	  normal ( 0, 1 )	%  A=A1  B=B1
+	  normal ( 0, 1 ) ));	%  A=A1  B=B2
 }
 
-potential (I | B A C D) {}
+potential (C | E I) {}
 
-potential (C)
+potential (A)
 {
-    data = normal ( 0, 1 );
-}
-
-potential (D)
-{
-    data = normal ( 0, 1 );
-}
-
-potential (G | C D)
-{
-    data = normal ( C + D, 1 );
+    data = ( 0.5 0.5 );
 }
 
 potential (B)
@@ -71,18 +65,12 @@ potential (B)
     data = ( 0.333333 0.333333 0.333333 );
 }
 
-potential (H | B A)
-{
-    data
-     = (( normal ( 0, 1 )	%  B=B0  A=A0
-	  normal ( 0, 1 ) )	%  B=B0  A=A1
-	( normal ( 0, 1 )	%  B=B1  A=A0
-	  normal ( 0, 1 ) )	%  B=B1  A=A1
-	( normal ( 0, 1 )	%  B=B2  A=A0
-	  normal ( 0, 1 ) ));	%  B=B2  A=A1
-}
-
-potential (A)
+potential (E)
 {
     data = ( 0.5 0.5 );
+}
+
+potential (I)
+{
+    data = normal ( 0, 1 );
 }
