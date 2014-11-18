@@ -22,28 +22,31 @@ public final class Attribute {
     private final String unit;
     private final String name;
     private final StateSpaceType stateSpaceType;
-    private final int numberOfStates = 0;
+    private final int numberOfStates;
 
-    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType) {
+    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType, int numberOfStates) {
         this.index = index;
         this.name = name.toUpperCase();
         this.unit = unit;
         this.stateSpaceType = stateSpaceType;
+        this.numberOfStates = numberOfStates;
     }
 
-    public Attribute(int index, String name, StateSpaceType stateSpaceType) {
+    public Attribute(int index, String name, StateSpaceType stateSpaceType, int numberOfStates) {
         this.index = index;
         this.name = name.toUpperCase();
         this.unit = "NA";
         this.stateSpaceType = stateSpaceType;
+        this.numberOfStates = numberOfStates;
     }
 
 
-    public Attribute(String name, StateSpaceType stateSpaceType) {
+    public Attribute(String name, StateSpaceType stateSpaceType, int numberOfStates) {
         this.index = -1;
         this.name = name.toUpperCase();
         this.unit = "NA";
         this.stateSpaceType = stateSpaceType;
+        this.numberOfStates = numberOfStates;
     }
 
 

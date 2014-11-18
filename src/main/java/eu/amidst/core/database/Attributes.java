@@ -27,6 +27,6 @@ public class Attributes {
             if(att.getName().equals(name))
                 return att;
         }
-        throw new UnsupportedOperationException("Attribute "+name+" is not part of the set of Attributes");
+        throw new UnsupportedOperationException("Attribute "+name+" is not part of the set of Attributes (try uppercase)");
     }
 }
