@@ -46,7 +46,7 @@ public class WekaDataFileReader implements DataFileReader{
             }else{
                 stateSpaceTypeAtt = StateSpaceType.REAL;
             }
-            Attribute att = new Attribute(attrWeka.index(),attrWeka.name(),stateSpaceTypeAtt);
+            Attribute att = new Attribute(attrWeka.index(),attrWeka.name(),stateSpaceTypeAtt, attrWeka.numValues());
             attrs.add(att);
         }
         attributes = new Attributes(attrs);
