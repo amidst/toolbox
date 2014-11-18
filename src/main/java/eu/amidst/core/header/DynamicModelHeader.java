@@ -33,7 +33,7 @@ public class DynamicModelHeader {
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
 
-        for (Attribute att : atts.getSet()) {
+        for (Attribute att : atts.getList()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);

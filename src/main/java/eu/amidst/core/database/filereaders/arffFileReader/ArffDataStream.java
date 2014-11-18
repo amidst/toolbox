@@ -25,8 +25,8 @@ public class ArffDataStream{}
     public ArffDataStream(String fileName, Attributes attributes) throws FileNotFoundException,
             IOException, ArffParserException {
         this.fileName = fileName;
-        this.attributes = attributes.getSet();
-        this.attributesActivation = new int[attributes.getSet().size()];
+        this.attributes = attributes.getList();
+        this.attributesActivation = new int[attributes.getList().size()];
 
         CSVReader reader = new CSVReader(new FileReader(fileName));
         List<String []> lines = reader.readAll();
@@ -112,7 +112,7 @@ public class ArffDataStream{}
             }
         }
 
-        Keys keys = getHeaderKeys(attributesInHeader, attributes.getSet());
+        Keys keys = getHeaderKeys(attributesInHeader, attributes.getList());
 
 
         if( lines.size() - headerIndex == 0){
