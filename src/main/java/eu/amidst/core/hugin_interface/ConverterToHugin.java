@@ -37,26 +37,29 @@ public class ConverterToHugin {
     public void setNodes(List<Variable> amidstVars) {
 
         try {
-             for (Variable amidstVar: amidstVars) {
+            for (Variable amidstVar: amidstVars) {
                 System.out.print(amidstVar.getName()+ " ");
-                 if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-                      LabelledDCNode n = new LabelledDCNode(this.huginNetwork);
-                      n.setName(amidstVar.getName());
-                      n.setNumberOfStates(amidstVar.getNumberOfStates());
+                if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+                    LabelledDCNode n = new LabelledDCNode(this.huginNetwork);
+                    n.setName(amidstVar.getName());
+                    n.setNumberOfStates(amidstVar.getNumberOfStates());
 
-                     for (int i=0;i<n.getNumberOfStates();i++){
-                         n.setStateLabel(i,amidstVar.getName()+i);
-                     }
-                 } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
-                     ContinuousChanceNode c = new ContinuousChanceNode(this.huginNetwork);
-                     c.setName(amidstVar.getName());
+                    for (int i=0;i<n.getNumberOfStates();i++){
+                        n.setStateLabel(i,amidstVar.getName()+i);
+                    }
 
-                 } else {
-                     throw new IllegalArgumentException("Error in class ConverterToHugin. " +
-                             "Unrecognized DistributionType. ");
-                 }
-             }
-               System.out.println();
+
+
+                } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
+                    ContinuousChanceNode c = new ContinuousChanceNode(this.huginNetwork);
+                    c.setName(amidstVar.getName());
+
+                } else {
+                    throw new IllegalArgumentException("Error in class ConverterToHugin. " +
+                            "Unrecognized DistributionType. ");
+                }
+            }
+            System.out.println();
         }
         catch (ExceptionHugin e) {
             System.out.println("Exception caught: " + e.getMessage());
@@ -139,7 +142,7 @@ public class ConverterToHugin {
             ((ContinuousChanceNode)huginVar).setGamma(variance,assign_i);
 
             double intercept = ((Normal_NormalParents) dist).getIntercept();
-                    ((ContinuousChanceNode) huginVar).setAlpha(intercept, assign_i);
+            ((ContinuousChanceNode) huginVar).setAlpha(intercept, assign_i);
 
             double[] coeffParents = ((Normal_NormalParents)dist).getCoeffParents();
 
@@ -198,11 +201,11 @@ public class ConverterToHugin {
             ConditionalDistribution normal_normalParents = ((Normal_MultinomialNormalParents)dist).getNormal_NormalParentsDistribution(i);
             this.setNormal_NormalParents(normal_normalParents,i);
         }
-  }
+    }
 
-   public void setDistributions(ConditionalDistribution[] distributions) {
+    public void setDistributions(ConditionalDistribution[] distributions) {
 
-       for (ConditionalDistribution dist: distributions) {
+        for (ConditionalDistribution dist: distributions) {
 
             Variable amidstVar = dist.getVariable();
             List<Variable> conditioningVariables = dist.getConditioningVariables();
@@ -238,10 +241,10 @@ public class ConverterToHugin {
                 else {
                     throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
                 }
-           }
-           else {
+            }
+            else {
                 throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
-           }
+            }
         }
     }
 
@@ -287,17 +290,16 @@ public class ConverterToHugin {
         WekaDataFileReader fileReader = new WekaDataFileReader(
                 new String("/Users/afa/Dropbox/AMIDST-AFA/core/datasets/syntheticData.arff"));
 
-
         StaticModelHeader modelHeader = new StaticModelHeader(fileReader.getAttributes());
 
-       //***************************************** Network structure **************************************************
+        //***************************************** Network structure **************************************************
 
         DAG dag = new DAG(modelHeader);
         List<Variable> variables =  dag.getModelHeader().getVariables();
 
         Variable A,B,C,D,E,G,H,I;
-        A = variables.get(0); H = variables.get(1); B = variables.get(2); G = variables.get(3);
-        D = variables.get(4); C = variables.get(5); I = variables.get(6); E = variables.get(7);
+        A = variables.get(0); B = variables.get(1); C = variables.get(2); D = variables.get(3);
+        E = variables.get(4); G = variables.get(5); H = variables.get(6); I = variables.get(7);
 
 
         dag.getParentSet(E).addParent(A);
