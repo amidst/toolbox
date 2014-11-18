@@ -33,7 +33,7 @@ public class DynamicModelHeader {
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
 
-        for (Attribute att : atts.getSet()) {
+        for (Attribute att : atts.getList()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
@@ -78,6 +78,22 @@ public class DynamicModelHeader {
 
     public Variable getTemporalCloneById(int varID) {
         return this.temporalClones.get(varID);
+    }
+
+    public Variable getVariableByName(String name) {
+        for(Variable var: getVariables()){
+            if(var.getName().equals(name))
+                return var;
+        }
+        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
+    }
+
+    public Variable getTemporalCloneByName(String name) {
+        for(Variable var: getTemporalClones()){
+            if(var.getName().equals(name))
+                return var;
+        }
+        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
     }
 
     public int getNumberOfVars() {
