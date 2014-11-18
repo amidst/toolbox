@@ -92,6 +92,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return probabilities[position];
     }
 
+    public Multinomial getMultinomial(int position) {
+        return probabilities[position];
+    }
+
     /**
      * Computes the logarithm of the probability of the variable for a given state and a parent assignment.
      * @param parentAssignment An <code>Assignment</code> for the parents.
