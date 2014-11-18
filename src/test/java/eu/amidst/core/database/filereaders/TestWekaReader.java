@@ -32,7 +32,7 @@ public class TestWekaReader {
 
         Attributes attributes = reader.getAttributes();
 
-        assertEquals(17,attributes.getSet().size());
+        assertEquals(17,attributes.getList().size());
 
         DataRow datarow = null;
         StaticDataInstance nextInstance = null;
@@ -41,16 +41,17 @@ public class TestWekaReader {
             nextInstance = new StaticDataInstance(datarow);
         }
 
-        for(Attribute att: attributes.getSet()){
-            System.out.println(att.getName());
+        for(Attribute att: attributes.getList()){
+            System.out.println(att.getName()+", "+att.getIndex());
         }
 
         /* Numeric attribute */
         assertEquals(5,(int)datarow.getValue(attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR")));
         int index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
         StaticModelHeader modelHeader = new StaticModelHeader(attributes);
-        //Variable var = modelHeader.getVariable(index);
-        //assertEquals(5, (int)nextInstance.getValue(var));
+        Variable var = modelHeader.getVariable(index);
+        System.out.println(var.getName());
+        assertEquals(5, (int) nextInstance.getValue(var));
 
         /* Discrete attribute */
         assertEquals(1,(int)datarow.getValue(attributes.getAttributeByName("VACATION")));
@@ -58,7 +59,7 @@ public class TestWekaReader {
         /* Missing values */
         /* Get the 3rd instance */
         if(reader.hasMoreDataRows()) {
-            datarow = reader.nextDataRow();
+            reader.nextDataRow();
             datarow = reader.nextDataRow();
             nextInstance = new StaticDataInstance(datarow);
         }

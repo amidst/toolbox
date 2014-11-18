@@ -1,11 +1,11 @@
 package eu.amidst.core.database.statics.readers.impl;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.header.StateSpaceType;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by sigveh on 10/16/14.
@@ -24,9 +24,9 @@ public class ForTesting1Attributes extends Attributes {
     private final Attribute F9 = new Attribute(8, "F9", "NA", StateSpaceType.REAL, 0);
 
 
-    private static Set<Attribute> attributesTesting1;
+    private static List<Attribute> attributesTesting1;
     {
-        attributesTesting1 = ImmutableSet.of(CLASS, F1, F2, F3, F4, F5, F6, F7, F8, F9);
+        attributesTesting1 = ImmutableList.of(CLASS, F1, F2, F3, F4, F5, F6, F7, F8, F9);
     }
 
     public ForTesting1Attributes(){
@@ -34,7 +34,7 @@ public class ForTesting1Attributes extends Attributes {
     }
 
     @Override
-    public Set<Attribute> getSet(){
+    public List<Attribute> getList(){
         return attributesTesting1;
     }
 

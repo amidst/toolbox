@@ -1,32 +1,32 @@
 package eu.amidst.core.database;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by sigveh on 10/16/14.
  */
 public class Attributes {
 
-    Set<Attribute> attributes;
+    List<Attribute> attributes;
 
 
 
-    public Attributes(Set<Attribute> attributes){
-        this.attributes = Collections.unmodifiableSet(attributes);
+    public Attributes(List<Attribute> attributes){
+        this.attributes = Collections.unmodifiableList(attributes);
     }
 
-    public Set<Attribute> getSet(){
+    public List<Attribute> getList(){
         return attributes;
     }
 
     public void print(){}
 
     public Attribute getAttributeByName(String name){
-        for(Attribute att: getSet()){
+        for(Attribute att: getList()){
             if(att.getName().equals(name))
                 return att;
         }
-        throw new UnsupportedOperationException("Attribute "+name+" is not part of the set of Attributes (try uppercase)");
+        throw new UnsupportedOperationException("Attribute "+name+" is not part of the list of Attributes (try uppercase)");
     }
 }

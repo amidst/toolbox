@@ -3,21 +3,16 @@ package eu.amidst.core.hugin_interface;
 import COM.hugin.HAPI.*;
 
 //import COM.hugin.HAPI.Attribute;
-import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.header.DistType;
-import eu.amidst.core.header.StateSpaceType;
 import eu.amidst.core.header.StaticModelHeader;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.modelstructure.BayesianNetwork;
 import eu.amidst.core.modelstructure.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class ConverterToHugin {
@@ -289,17 +284,17 @@ public class ConverterToHugin {
 
         StaticModelHeader modelHeader = new StaticModelHeader(fileReader.getAttributes());
 
-        Attribute at = fileReader.getAttributes().getSet().iterator().next();
+        Attribute at = fileReader.getAttributes().getList().iterator().next();
         System.out.println("STATES" + at.getNumberOfStates());
-         at = fileReader.getAttributes().getSet().iterator().next();
+         at = fileReader.getAttributes().getList().iterator().next();
         System.out.println("STATES" + at.getNumberOfStates());
-         at = fileReader.getAttributes().getSet().iterator().next();
+         at = fileReader.getAttributes().getList().iterator().next();
         System.out.println("STATES" + at.getNumberOfStates());
-         at = fileReader.getAttributes().getSet().iterator().next();
+         at = fileReader.getAttributes().getList().iterator().next();
         System.out.println("STATES" + at.getNumberOfStates());
-         at = fileReader.getAttributes().getSet().iterator().next();
+         at = fileReader.getAttributes().getList().iterator().next();
         System.out.println("STATES" + at.getNumberOfStates());
-         at = fileReader.getAttributes().getSet().iterator().next();
+         at = fileReader.getAttributes().getList().iterator().next();
         System.out.println("STATES" + at.getNumberOfStates());
         //***************************************** Network structure **************************************************
 
