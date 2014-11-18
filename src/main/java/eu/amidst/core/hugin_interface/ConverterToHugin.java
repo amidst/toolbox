@@ -2,36 +2,29 @@ package eu.amidst.core.hugin_interface;
 
 import COM.hugin.HAPI.*;
 
-//import COM.hugin.HAPI.Attribute;
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.header.DistType;
-import eu.amidst.core.header.StateSpaceType;
-import eu.amidst.core.header.StaticModelHeader;
 import eu.amidst.core.header.Variable;
 import eu.amidst.core.modelstructure.BayesianNetwork;
 import eu.amidst.core.modelstructure.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 public class ConverterToHugin {
 
     private Domain huginNetwork;
 
-
     public ConverterToHugin(){
         try {
             this.huginNetwork = new Domain();
         }
         catch (ExceptionHugin e) {
-            System.out.println("Exception caught: " + e.getMessage());
+            System.out.print("Exception caught: " + e.getMessage());
         }
+    }
+
+    public Domain getHuginNetwork(){
+        return this.huginNetwork;
     }
 
     public void setNodes(List<Variable> amidstVars) {
@@ -47,9 +40,6 @@ public class ConverterToHugin {
                     for (int i=0;i<n.getNumberOfStates();i++){
                         n.setStateLabel(i,amidstVar.getName()+i);
                     }
-
-
-
                 } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
                     ContinuousChanceNode c = new ContinuousChanceNode(this.huginNetwork);
                     c.setName(amidstVar.getName());
@@ -92,28 +82,12 @@ public class ConverterToHugin {
         System.out.print(" (Multinomial_MultinomialParents)\n");
         try {
             Variable amidstVar = dist.getVariable();
-
             Node huginVar = this.huginNetwork.getNodeByName(amidstVar.getName());
-
             Multinomial[] probabilities = ((Multinomial_MultinomialParents)dist).getProbabilities();
-
             List<Variable> conditioningVariables = dist.getConditioningVariables();
-
-            int numParents = conditioningVariables.size();
-
-            //System.out.println("    Number of parents:" + numParents);
-
-
             int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
-            //System.out.println("Number of parent assignment:" + numParentAssignments);
-
             int nStates = amidstVar.getNumberOfStates();
-            //System.out.println("Number of states:" + nStates);
-
             int sizeArray = numParentAssignments * nStates;
-
-            //System.out.println("sizeArray:" + nStates);
-
             double[] finalArray  = new double[sizeArray];
 
             for(int i=0;i<numParentAssignments;i++){
@@ -125,10 +99,8 @@ public class ConverterToHugin {
         catch (ExceptionHugin e) {
             System.out.println("Exception caught: " + e.getMessage());
         }
-
     }
 
-    //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
     public void setNormal_NormalParents(ConditionalDistribution dist, int assign_i) {
 
         System.out.print(" (Normal_NormalParents)\n");
@@ -154,7 +126,6 @@ public class ConverterToHugin {
         catch (ExceptionHugin e) {
             System.out.println("Exception caught: " + e.getMessage());
         }
-
     }
 
     public void setNormal(Normal dist, int i) {
@@ -255,77 +226,5 @@ public class ConverterToHugin {
         this.setModelStructure(bn.getDAG());
         System.out.println("================= SET DISTRIBUTIONS ========================");
         this.setDistributions(bn.getDistributions());
-    }
-
-
-
-
-    //*********************************************************************************
-//            //Simulate a sample from a Hugin network
-//            int nsamples = 100;
-//            for (int j=0;j< nodeList.size();j++) {
-//                System.out.print(((Node)nodeList.get(j)).getName());
-//                if(j<nodeList.size()-1)
-//                    System.out.print(",");
-//            }
-//            System.out.println();
-//            for (int i=0;i<nsamples;i++){
-//                domain.simulate();
-//                for (int j=0;j<nodeList.size();j++){
-//                    System.out.print(((ContinuousChanceNode)nodeList.get(j)).getSampledValue());
-//                    if(j<nodeList.size()-1)
-//                        System.out.print(",");
-//                }
-//                System.out.println();
-//            }
-//            //*********************************************************************************
-
-
-
-
-    public static void main (String args[]) throws ExceptionHugin {
-
-        //**************************************** Synthetic data ******************************************************
-
-        WekaDataFileReader fileReader = new WekaDataFileReader(
-                new String("/Users/afa/Dropbox/AMIDST-AFA/core/datasets/syntheticData.arff"));
-
-        StaticModelHeader modelHeader = new StaticModelHeader(fileReader.getAttributes());
-
-        //***************************************** Network structure **************************************************
-
-        DAG dag = new DAG(modelHeader);
-        List<Variable> variables =  dag.getModelHeader().getVariables();
-
-        Variable A,B,C,D,E,G,H,I;
-        A = variables.get(0); B = variables.get(1); C = variables.get(2); D = variables.get(3);
-        E = variables.get(4); G = variables.get(5); H = variables.get(6); I = variables.get(7);
-
-
-        dag.getParentSet(E).addParent(A);
-        dag.getParentSet(E).addParent(B);
-
-        dag.getParentSet(H).addParent(A);
-        dag.getParentSet(H).addParent(B);
-
-        dag.getParentSet(I).addParent(A);
-        dag.getParentSet(I).addParent(B);
-        dag.getParentSet(I).addParent(C);
-        dag.getParentSet(I).addParent(D);
-
-        dag.getParentSet(G).addParent(C);
-        dag.getParentSet(G).addParent(D);
-
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
-
-        //****************************************** Distributions *****************************************************
-
-        bn.initializeDistributions();
-
-        //**************************************************************************************************************
-
-        ConverterToHugin converter = new ConverterToHugin();
-        converter.setBayesianNetwork(bn);
-        converter.huginNetwork.saveAsNet(new String("/Users/afa/Dropbox/AMIDST-AFA/core/networks/huginNetworkFromAMIDST.net"));
     }
 }
