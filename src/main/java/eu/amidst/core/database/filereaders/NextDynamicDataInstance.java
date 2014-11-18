@@ -113,4 +113,8 @@ public final class NextDynamicDataInstance {
         }
     }
 
+    public boolean isNull(){
+        return (present==null || past==null);
+    }
+
 }

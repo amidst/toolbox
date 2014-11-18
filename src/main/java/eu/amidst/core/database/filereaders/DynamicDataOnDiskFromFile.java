@@ -23,15 +23,22 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
          */
         DataRow present = null;
         DataRow past = null;
-        try {
-            if (reader.hasMoreDataRows())
-                past = this.reader.nextDataRow();
-            if (reader.hasMoreDataRows())
-                present = this.reader.nextDataRow();
-        }catch (UnsupportedOperationException e){System.err.println("There are insufficient instances to learn a model.");}
 
-        attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
-        attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
+        if (reader.hasMoreDataRows()) {
+            past = this.reader.nextDataRow();
+        }if (reader.hasMoreDataRows()) {
+            present = this.reader.nextDataRow();
+        }else {
+            throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
+        }
+
+        try {
+            attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
+            attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
+        }catch (UnsupportedOperationException e){
+            attSequenceID = null;
+            attTimeID = null;
+        }
 
         nextDynamicDataInstance = new NextDynamicDataInstance(past, present);
     }
@@ -43,32 +50,32 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         /* 1 = true,  false, i.e., TimeID is provided */
         /* 2 = false, true,  i.e., SequenceID is provided */
         /* 3 = true,  true,  i.e., SequenceID is provided*/
-        int option = (attTimeID == null) ? 1 : 0 + 2 * ((attSequenceID == null) ? 1 : 0);
+        int option = (attTimeID == null) ? 0 : 1 + 2 * ((attSequenceID == null) ? 0 : 1);
 
         switch (option) {
 
             /* Not sequenceID nor TimeID are provided*/
             case 0:
-                nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(reader);
+                return nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(reader);
 
              /* Only TimeID is provided*/
             case 1:
-                nextDynamicDataInstance.nextDataInstance_NoSeq(reader, attTimeID);
+                return nextDynamicDataInstance.nextDataInstance_NoSeq(reader, attTimeID);
 
              /* Only SequenceID is provided*/
             case 2:
-                nextDynamicDataInstance.nextDataInstance_NoTimeID(reader, attSequenceID);
+                return nextDynamicDataInstance.nextDataInstance_NoTimeID(reader, attSequenceID);
 
              /* SequenceID and TimeID are provided*/
             case 3:
-                nextDynamicDataInstance.nextDataInstance(reader, attSequenceID, attTimeID);
+                return nextDynamicDataInstance.nextDataInstance(reader, attSequenceID, attTimeID);
         }
         throw new IllegalArgumentException();
     }
 
     @Override
     public boolean hasMoreDataInstances() {
-        return reader.hasMoreDataRows();
+        return !nextDynamicDataInstance.isNull();
     }
 
     @Override

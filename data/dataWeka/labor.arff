@@ -157,8 +157,8 @@
 3,3.5,4,4.5,'tcf',35,?,?,?,?,13,'generous',?,?,'yes','full','good'
 3,4,3.5,?,'none',40,'empl_contr',?,6,?,11,'average','yes','full',?,'full','good'
 3,5,4.4,?,'none',38,'empl_contr',10,6,?,11,'generous','yes',?,?,'full','good'
-3,5,5,5,?,40,?,?,?,?,12,'average',?,'half','yes','half','good'
-3,6,6,4,?,35,?,?,14,?,9,'generous','yes','full','yes','full','good'
+3,5,5,5,?,88,?,?,?,?,12,'average',?,'half','yes','half','good'
+3,6,6,4,?,89,?,?,14,?,9,'generous','yes','full','yes','full','good'
 %
 %
 %
