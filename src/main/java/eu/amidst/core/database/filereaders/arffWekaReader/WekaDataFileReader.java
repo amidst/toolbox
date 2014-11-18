@@ -10,9 +10,7 @@ import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by ana@cs.aau.dk on 14/11/14.
@@ -37,7 +35,7 @@ public class WekaDataFileReader implements DataFileReader{
         /*Convert attributes to AMIDST format*/
         weka.core.Attribute attrWeka;
         Enumeration attributesWeka = dataStructure.enumerateAttributes();
-        Set<Attribute> attrs = new HashSet<>();
+        List<Attribute> attrs = new ArrayList<>();
         while (attributesWeka.hasMoreElements()) {
             attrWeka = (weka.core.Attribute) attributesWeka.nextElement();
             StateSpaceType stateSpaceTypeAtt;
