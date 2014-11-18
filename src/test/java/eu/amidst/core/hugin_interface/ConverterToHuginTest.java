@@ -28,16 +28,21 @@ public class ConverterToHuginTest {
         DAG dag = new DAG(modelHeader);
         List<Variable> variables = dag.getModelHeader().getVariables();
 
+        System.out.print("\nVariables: ");
+        for(Variable v: variables){
+            System.out.print(v.getName()+ " ");
+        }
+
         Variable A, B, C, D, E, G, H, I;
 
-        A = variables.get(3);
-        B = variables.get(2);
-        C = variables.get(4);
-        D = variables.get(5);
-        E = variables.get(1);
-        G = variables.get(6);
-        H = variables.get(7);
-        I = variables.get(0);
+        A = variables.get(0);
+        B = variables.get(1);
+        C = variables.get(2);
+        D = variables.get(3);
+        E = variables.get(4);
+        G = variables.get(5);
+        H = variables.get(6);
+        I = variables.get(7);
 
         //Example
 
@@ -143,7 +148,7 @@ public class ConverterToHuginTest {
         //**************************************************************************************************************
 
 
-        System.out.println("\nConverting the AMIDST network into Hugin format ...");
+        System.out.println("\n\nConverting the AMIDST network into Hugin format ...");
         ConverterToHugin converter = new ConverterToHugin();
         converter.setBayesianNetwork(bn);
 
