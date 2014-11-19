@@ -37,7 +37,7 @@ public class BayesianNetwork {
         this.distributions[var.getVarID()] = distribution;
     }
 
-    public int getNumberOfNodes() {
+    public int getNumberOfVars() {
         return this.getDAG().getModelHeader().getNumberOfVars();
     }
 
@@ -52,11 +52,6 @@ public class BayesianNetwork {
     public List<Variable> getVariables() {
         return this.getStaticModelHeader().getVariables();
     }
-
-    public ConditionalDistribution[] getDistributions(){
-        return distributions;
-    }
-
 
     public void initializeDistributions(){
 

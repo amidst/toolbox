@@ -54,7 +54,7 @@ public class ConverterToHugin {
         }
     }
 
-    public void setModelStructure (DAG dag) {
+    public void setStructure (DAG dag) {
 
         List<Variable> variables = dag.getModelHeader().getVariables();
 
@@ -168,11 +168,14 @@ public class ConverterToHugin {
         }
     }
 
-    public void setDistributions(ConditionalDistribution[] distributions) {
+    public void setDistributions(BayesianNetwork bn) {
 
-        for (ConditionalDistribution dist: distributions) {
+        List<Variable> amidstVars = bn.getVariables();
 
-            Variable amidstVar = dist.getVariable();
+        for(Variable amidstVar:amidstVars) {
+            ConditionalDistribution dist = bn.getDistribution(amidstVar);
+
+
             List<Variable> conditioningVariables = dist.getConditioningVariables();
 
             if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL)==0){
@@ -214,7 +217,7 @@ public class ConverterToHugin {
     public void setBayesianNetwork(BayesianNetwork bn) {
 
         this.setNodes(bn.getDAG().getModelHeader().getVariables());
-        this.setModelStructure(bn.getDAG());
-        this.setDistributions(bn.getDistributions());
+        this.setStructure(bn.getDAG());
+        this.setDistributions(bn);
     }
 }
