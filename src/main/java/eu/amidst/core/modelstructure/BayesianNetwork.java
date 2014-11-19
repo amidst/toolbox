@@ -49,6 +49,10 @@ public class BayesianNetwork {
         return dag;
     }
 
+    public List<Variable> getVariables() {
+        return this.getStaticModelHeader().getVariables();
+    }
+
     public ConditionalDistribution[] getDistributions(){
         return distributions;
     }
