@@ -26,21 +26,32 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
 
         List<DynamicDataInstance> dataInstancesList = new ArrayList<>();
 
-        DataRow present = null;
-        DataRow past = null;
+        DataRow present;
+        DataRow past = new DataRowMissing();
 
-        if (reader.hasMoreDataRows())
-            past = this.reader.nextDataRow();
+        int timeID = 1;
+        int sequenceID = 1;
+
         if (reader.hasMoreDataRows())
             present = this.reader.nextDataRow();
         else {
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
 
-        attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
-        attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
+        try {
+            attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
+            sequenceID = (int)present.getValue(attSequenceID);
+        }catch (UnsupportedOperationException e){
+            attSequenceID = null;
+        }
+        try {
+            attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
+            timeID = (int)present.getValue(attSequenceID);
+        }catch (UnsupportedOperationException e){
+            attTimeID = null;
+        }
 
-        nextDynamicDataInstance = new NextDynamicDataInstance(past, present);
+        nextDynamicDataInstance = new NextDynamicDataInstance(past, present, sequenceID, timeID);
 
         while (reader.hasMoreDataRows()) {
 
