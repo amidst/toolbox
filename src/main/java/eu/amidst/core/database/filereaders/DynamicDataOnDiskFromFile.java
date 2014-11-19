@@ -81,7 +81,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
     @Override
     public boolean hasMoreDataInstances() {
-        return !nextDynamicDataInstance.isNull();
+        return reader.hasMoreDataRows();
     }
 
     @Override
