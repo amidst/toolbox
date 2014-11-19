@@ -30,6 +30,47 @@ public class DAG {
         return parents[var.getVarID()];
     }
 
+
+    public boolean containCycles2(){
+
+        boolean[] bDone = new boolean[this.modelHeader.getNumberOfVars()];
+
+        for (Variable var: this.modelHeader.getVariables()){
+            bDone[var.getVarID()] = false;
+        }
+
+        for (Variable var: this.modelHeader.getVariables()){
+
+            // find a node for which all parents are 'done'
+            boolean bFound = false;
+
+            for (Variable variable2: this.modelHeader.getVariables()){
+                if (!bDone[variable2.getVarID()]) {
+                    boolean bHasNoParents = true;
+
+                    for (Variable parent: this.getParentSet(variable2).getParents()){
+                        if (!bDone[parent.getVarID()]) {
+                            bHasNoParents = false;
+                        }
+                    }
+
+                    if (bHasNoParents) {
+                        bDone[variable2.getVarID()] = true;
+                        bFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!bFound) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     public boolean containCycles(){
        /* check whether there are cycles in the BN */
 
