@@ -1,5 +1,6 @@
 package eu.amidst.core.database;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,6 +19,17 @@ public class Attributes {
 
     public List<Attribute> getList(){
         return attributes;
+    }
+
+    public List<Attribute> getListExceptTimeAndSeq(){
+        List<Attribute> attributeList = new ArrayList<>();
+        for(Attribute att: getList()){
+            String name = att.getName();
+            if(!name.equals("TIME_ID") && !name.equals("SEQUENCE_ID")){
+                attributeList.add(att);
+            }
+        }
+        return attributeList;
     }
 
     public void print(){}
