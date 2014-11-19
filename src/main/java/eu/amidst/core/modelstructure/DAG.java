@@ -12,9 +12,6 @@ public class DAG {
 
     private StaticModelHeader modelHeader;
     private ParentSet[] parents;
-    private boolean[] m_bits;
-    /* bit representation of parent sets m_bits[parentNode + childNode * totalNbrOfNodes]
-    represents the directed arc from the parentNode to the childNode */
 
     public DAG(StaticModelHeader modelHeader) {
         this.modelHeader = modelHeader;
@@ -23,7 +20,10 @@ public class DAG {
         for (int i=0;i<modelHeader.getNumberOfVars();i++) {
             parents[i] = ParentSet.newParentSet();
         }
-        this.m_bits = new boolean [modelHeader.getNumberOfVars() * modelHeader.getNumberOfVars()];
+    }
+
+    public StaticModelHeader getModelHeader(){
+        return this.modelHeader;
     }
 
     public ParentSet getParentSet(Variable var) {
@@ -31,60 +31,41 @@ public class DAG {
     }
 
     public boolean containCycles(){
-       /* check whether there are cycles in the BN */
 
-        int nbrNodes = modelHeader.getNumberOfVars();
+        boolean[] bDone = new boolean[this.modelHeader.getNumberOfVars()];
 
-        boolean[] checked = new boolean[nbrNodes];
+        for (Variable var: this.modelHeader.getVariables()){
+            bDone[var.getVarID()] = false;
+        }
 
-        for(int i= 0; i<nbrNodes; i++){
+        for (Variable var: this.modelHeader.getVariables()){
 
-            boolean isCycle = false;
+            // find a node for which all parents are 'done'
+            boolean bFound = false;
 
-            for( int j =0; (!isCycle && j < nbrNodes); j++){
+            for (Variable variable2: this.modelHeader.getVariables()){
+                if (!bDone[variable2.getVarID()]) {
+                    boolean bHasNoParents = true;
 
-                if (!checked[j]){
-                    boolean hasNoParents = true;
-                    for (int par = 0; par < nbrNodes; par++){
-                        if (m_bits[par + j * nbrNodes] && !checked[par]){
-                            hasNoParents = false;
+                    for (Variable parent: this.getParentSet(variable2).getParents()){
+                        if (!bDone[parent.getVarID()]) {
+                            bHasNoParents = false;
                         }
                     }
-                    if(hasNoParents){
-                        checked[j] = true;
-                        isCycle = true;
+
+                    if (bHasNoParents) {
+                        bDone[variable2.getVarID()] = true;
+                        bFound = true;
+                        break;
                     }
                 }
             }
 
-            if(!isCycle){
+            if (!bFound) {
                 return true;
             }
         }
+
         return false;
-    }
-
-    public StaticModelHeader getModelHeader(){
-        return this.modelHeader;
-    }
-
-    public void addParent(Variable child, Variable parent) {
-        this.getParentSet(child).addParent(parent);
-        this.m_bits[parent.getVarID() + child.getVarID() * modelHeader.getNumberOfVars()] = true;
-    }
-
-    public void removeParent(Variable child, Variable parent) {
-        this.getParentSet(child).removeParent(parent);
-        this.m_bits[parent.getVarID() + child.getVarID() * modelHeader.getNumberOfVars()] = false;
-    }
-
-    public int getNumberOfArcs(){
-        int counter = 0;
-        for (int i = 0; i < m_bits.length; i++) {
-                if (m_bits[i]) {
-                    counter++;
-                }
-        }
-        return counter;
     }
 }

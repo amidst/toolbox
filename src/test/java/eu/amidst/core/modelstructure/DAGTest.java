@@ -35,19 +35,18 @@ public class DAGTest {
 
         /* test cyclic dag */
 
-        dag.addParent(A,C);
-        dag.addParent(B,A);
-        dag.addParent(C,B);
-        dag.addParent(D,B);
-        dag.addParent(E,B);
+        dag.getParentSet(A).addParent(C);
+        dag.getParentSet(B).addParent(A);
+        dag.getParentSet(C).addParent(B);
+        dag.getParentSet(D).addParent(B);
+        dag.getParentSet(E).addParent(B);
 
         assertTrue(dag.containCycles());
 
-
         /*remove the cycle and test again */
 
-        dag.removeParent(A,C);
-        dag.addParent(C,A);
+        dag.getParentSet(A).removeParent(C);
+        dag.getParentSet(C).addParent(A);
 
         assertFalse(dag.containCycles());
 
@@ -56,20 +55,6 @@ public class DAGTest {
 
         assertEquals(2, dag.getParentSet(C).getNumberOfParents());
         assertEquals(0, dag.getParentSet(A).getNumberOfParents());
-
-
-        /*test number of arcs*/
-
-        assertEquals(5, dag.getNumberOfArcs());
-
-        try {
-            dag.removeParent(C,A);
-        } catch (Exception e) {
-            fail("Should not throw Exception:" + e);
-        }
-        assertEquals(4, dag.getNumberOfArcs());
-
-        assertEquals(0, (new DAG(modelheader)).getNumberOfArcs());
 
     }
 
