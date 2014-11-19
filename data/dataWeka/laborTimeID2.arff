@@ -104,10 +104,10 @@
 @attribute 'class' {'bad','good'}
 @data
 1,1,5,?,?,?,40,?,?,2,?,11,'average',?,?,'yes',?,'good'
-2,2,4.5,5.8,?,?,35,'ret_allw',?,?,'yes',11,'below_average',?,'full',?,'full','good'
-3,?,?,?,?,?,38,'empl_contr',?,5,?,11,'generous','yes','half','yes','half','good'
-5,3,3.7,4,5,'tc',?,?,?,?,'yes',?,?,?,?,'yes',?,'good'
-6,3,4.5,4.5,5,?,40,?,?,?,?,12,'average',?,'half','yes','half','good'
+5,2,4.5,5.8,?,?,35,'ret_allw',?,?,'yes',11,'below_average',?,'full',?,'full','good'
+6,?,?,?,?,?,38,'empl_contr',?,5,?,11,'generous','yes','half','yes','half','good'
+7,3,3.7,4,5,'tc',?,?,?,?,'yes',?,?,?,?,'yes',?,'good'
+8,3,4.5,4.5,5,?,40,?,?,?,?,12,'average',?,'half','yes','half','good'
 9,2,2,2.5,?,?,35,?,?,6,'yes',12,'average',?,?,?,?,'good'
 10,3,4,5,5,'tc',?,'empl_contr',?,?,?,12,'generous','yes','none','yes','half','good'
 11,3,6.9,4.8,2.3,?,40,?,?,3,?,12,'below_average',?,?,?,?,'good'
