@@ -18,6 +18,7 @@ import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class DynamicModelHeader {
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
 
-        for (Attribute att : atts.getList()) {
+        for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
@@ -41,6 +42,32 @@ public class DynamicModelHeader {
 
             VariableImplementation temporalClone = new VariableImplementation(var);
             temporalClones.add(var.getVarID(), temporalClone);
+        }
+    }
+
+    /**
+     * Constructor where the distribution type of random variables is provided as an argument.
+     *
+     */
+    public DynamicModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists) {
+
+        this.allVariables = new ArrayList<>();
+        this.temporalClones = new ArrayList<>();
+
+        for (Attribute att : atts.getListExceptTimeAndSeq()) {
+            VariableBuilder builder;
+            if (typeDists.containsKey(att)) {
+                builder = new VariableBuilder(att, typeDists.get(att));
+            }else{
+                builder = new VariableBuilder(att);
+            }
+
+            VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+            allVariables.add(var.getVarID(), var);
+
+            VariableImplementation temporalClone = new VariableImplementation(var);
+            temporalClones.add(var.getVarID(), temporalClone);
+
         }
     }
 

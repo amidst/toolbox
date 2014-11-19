@@ -37,7 +37,7 @@ public class StaticModelHeader {
 
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : atts.getList()) {
+        for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
@@ -52,7 +52,7 @@ public class StaticModelHeader {
 
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : atts.getList()) {
+        for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder;
             if (typeDists.containsKey(att)) {
                 builder = new VariableBuilder(att, typeDists.get(att));
