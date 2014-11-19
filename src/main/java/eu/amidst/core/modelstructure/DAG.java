@@ -20,7 +20,10 @@ public class DAG {
         for (int i=0;i<modelHeader.getNumberOfVars();i++) {
             parents[i] = ParentSet.newParentSet();
         }
+    }
 
+    public StaticModelHeader getModelHeader(){
+        return this.modelHeader;
     }
 
     public ParentSet getParentSet(Variable var) {
@@ -64,18 +67,5 @@ public class DAG {
         }
 
         return false;
-    }
-
-
-    public StaticModelHeader getModelHeader(){
-        return this.modelHeader;
-    }
-
-    public void addParent(Variable child, Variable parent) {
-        this.getParentSet(child).addParent(parent);
-    }
-
-    public void removeParent(Variable child, Variable parent) {
-        this.getParentSet(child).removeParent(parent);
     }
 }
