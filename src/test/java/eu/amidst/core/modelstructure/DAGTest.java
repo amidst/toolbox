@@ -35,22 +35,26 @@ public class DAGTest {
 
         /* test cyclic dag */
 
-        dag.addParent(A,C);
-        dag.addParent(B,A);
-        dag.addParent(C,B);
-        dag.addParent(D,B);
-        dag.addParent(E,B);
+        dag.getParentSet(A).addParent(C);
+        dag.getParentSet(B).addParent(A);
+        dag.getParentSet(C).addParent(B);
+        dag.getParentSet(D).addParent(B);
+        dag.getParentSet(E).addParent(B);
 
         assertTrue(dag.containCycles());
 
         /*remove the cycle and test again */
 
-        dag.removeParent(A,C);
-        dag.addParent(C,A);
+        dag.getParentSet(A).removeParent(C);
+        dag.getParentSet(C).addParent(A);
 
         assertFalse(dag.containCycles());
 
 
+        /*test the parent set*/
+
+        assertEquals(2, dag.getParentSet(C).getNumberOfParents());
+        assertEquals(0, dag.getParentSet(A).getNumberOfParents());
 
     }
 
