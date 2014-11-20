@@ -1,33 +1,35 @@
-\subsection{Distributions}
-\label{Functionality:ID}
+\subsection{D - Distributions}
+\label{Distributions:D}
 
 \begin{description}
-\item[Priority:] Must/Should/Could
-\item[Deadline:] M?
-\item[Responsible:]
-\item[Code-Package:]
+\item[Deadline:] M15
+\item[Responsible:] Antonio Fern\'andez
+\item[Code-Package:] \texttt{eu.amidst.core.distributions}
 \end{description}
 
 \subsubsection*{Description}
 
-Enter a textual description of the functionality. Link to other functionalities if needed. 
+This functionality addresses the set of conditional probability distributions considered to be included in the toolbox. Variables with Gaussian and multinomial distributions are modeled. The variables arrangement in the model structure gives rise to the different probability distributions, one for each variable in the network. 
+
+This functionality is tightly connected to Variable (and also
 
 
-\subsubsection*{Must-Requirements List}
 
-\begin{itemize}
-\item \textbf{Requirement-ID:} Short Description
-\end{itemize}
+\subsubsection*{Detailed functionality}
 
-\subsubsection*{Should-Requirements List}
-
-\begin{itemize}
-\item \textbf{Requirement-ID:} Short Description
-\end{itemize}
-
-\subsubsection*{Could-Requirements List}
+The kind of each variable and its parents determined the differents probabability distributions detailed next:+
 
 \begin{itemize}
-\item \textbf{Requirement-ID:} Short Description
+\item Multinomial variable with no parents
+\item Multinomial variable with multinomial parents.
+\item Gaussian variable with no parents.
+\item Gaussian variable with multinomial parents.
+\item Gaussian variable with Gaussian parents. 
+\item Gaussian variable with a mixture of multinomial and Gaussian parents. 
+
 \end{itemize}
+
+Note that a multinomial variable is not allowed to have Gaussian parents and therefore it has not been included in the list above.
+Multinomial parents are only used for indexing the distribution of the variable, so the functionality for those variables without multinomial parents reduces to the general case.
+
 
