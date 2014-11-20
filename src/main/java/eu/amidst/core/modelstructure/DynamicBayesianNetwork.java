@@ -2,8 +2,8 @@ package eu.amidst.core.modelstructure;
 
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.DynamicVariables;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.DynamicVariables;
+import eu.amidst.core.variables.Variable;
 
 
 /**

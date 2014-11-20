@@ -3,8 +3,8 @@ package eu.amidst.core.huginlink;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.StaticModelHeader;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.core.modelstructure.BayesianNetwork;
 import eu.amidst.core.modelstructure.DAG;
 import java.util.List;
@@ -20,7 +20,7 @@ public class ConverterToHuginTest {
         //**************************************** Synthetic data ******************************************************
 
         WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
-        StaticModelHeader modelHeader = new StaticModelHeader(fileReader.getAttributes());
+        StaticVariables modelHeader = new StaticVariables(fileReader.getAttributes());
 
         //***************************************** Network structure **************************************************
         //Create the structure by hand

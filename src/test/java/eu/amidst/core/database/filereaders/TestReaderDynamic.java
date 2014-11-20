@@ -4,8 +4,8 @@ import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
-import eu.amidst.core.header.DynamicVariables;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.DynamicVariables;
+import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
 import java.util.List;

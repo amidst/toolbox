@@ -9,7 +9,7 @@
 
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.Variable;
 
 /**
  * <h2>This class implements a univariate Normal distribution.</h2>
