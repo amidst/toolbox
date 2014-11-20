@@ -27,6 +27,7 @@ public class BayesianNetwork {
 
     private BayesianNetwork(DAG dag) {
         this.dag = dag;
+        initializeDistributions();
     }
 
     public ConditionalDistribution getDistribution(Variable var) {
@@ -53,7 +54,7 @@ public class BayesianNetwork {
         return this.getStaticModelHeader().getVariables();
     }
 
-    public void initializeDistributions(){
+    private void initializeDistributions(){
 
         List<Variable> vars = getStaticModelHeader().getVariables(); /* the list of all variables in the BN */
 

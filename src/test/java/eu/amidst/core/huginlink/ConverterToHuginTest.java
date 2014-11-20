@@ -64,8 +64,6 @@ public class ConverterToHuginTest {
 
         //****************************************** Distributions *****************************************************
 
-        bn.initializeDistributions();
-
         /* IMPORTANT: The parents are indexed according to Koller (Chapter 10. Pag. 358). Example:
            Parents: A = {A0,A1} and B = {B0,B1,B2}.
            NumberOfPossibleAssignments = 6
@@ -78,6 +76,8 @@ public class ConverterToHuginTest {
              4     A0   B1
              5     A1   B2
         */
+
+        
 
         // Variable A
         ((Multinomial_MultinomialParents)bn.getDistribution(A)).getMultinomial(0).setProbabilities(new double[]{0.3,0.7});
