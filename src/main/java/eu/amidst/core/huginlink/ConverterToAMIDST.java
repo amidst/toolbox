@@ -65,8 +65,8 @@ public class ConverterToAMIDST {
             System.out.println("Exception caught: " + e.getMessage());
         }
 
-        StaticVariables modelHeader = new StaticVariables(new Attributes(atts));
-        DAG dag = new DAG(modelHeader);
+        StaticVariables staticVariables = new StaticVariables(new Attributes(atts));
+        DAG dag = new DAG(staticVariables);
         this.amidstNetwork = BayesianNetwork.newBayesianNetwork(dag);
     }
 

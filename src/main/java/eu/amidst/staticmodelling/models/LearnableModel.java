@@ -39,7 +39,7 @@ public abstract class LearnableModel {
 
     public void updateModel(DataInstance data){
         //Should we check whether the data comes form where it expected to come?
-        //if (data.getDataStream().getStaticDataHeader()!=this.getBayesianNetwork().getStaticModelHeader().getStaticDataHeader())
+        //if (data.getDataStream().getStaticDataHeader()!=this.getBayesianNetwork().getStaticVariables().getStaticDataHeader())
         //    return;
 
         algorithm.updateModel(data);
