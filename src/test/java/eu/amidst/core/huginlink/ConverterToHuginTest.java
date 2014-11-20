@@ -26,7 +26,7 @@ public class ConverterToHuginTest {
         //Create the structure by hand
 
         DAG dag = new DAG(staticVariables);
-        List<Variable> variables = dag.getVariables().getVariables();
+        List<Variable> variables = dag.getStaticVariables().getListOfVariables();
 
         System.out.print("\nVariables: ");
         for(Variable v: variables){

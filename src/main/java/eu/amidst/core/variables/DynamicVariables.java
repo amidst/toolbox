@@ -91,7 +91,7 @@ public class DynamicVariables {
         return var;
     }
 
-    public List<Variable> getVariables() {
+    public List<Variable> getDynamicVariables() {
         return this.allVariables;
     }
 
@@ -108,7 +108,7 @@ public class DynamicVariables {
     }
 
     public Variable getVariableByName(String name) {
-        for(Variable var: getVariables()){
+        for(Variable var: getDynamicVariables()){
             if(var.getName().equals(name))
                 return var;
         }
