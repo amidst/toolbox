@@ -1,10 +1,9 @@
 
 package eu.amidst.core.modelstructure;
 
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

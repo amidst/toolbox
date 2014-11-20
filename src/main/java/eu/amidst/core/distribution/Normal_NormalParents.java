@@ -13,8 +13,8 @@
 
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.Assignment;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.Variable;
 
 import java.util.Collections;
 import java.util.List;

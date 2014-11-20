@@ -12,6 +12,8 @@
 \usepackage{tabularx}
 \usepackage{fancyheadings}
 \usepackage{lastpage}
+\usepackage{float}
+\restylefloat{table}
 
 \parskip 6pt % 1pt = 0.351 mm
 \parindent 0pt
@@ -71,13 +73,19 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% USE CASE  DATA BASES (DB) %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{DataBases_DB/UseCase_DB_DataBases}
-\include{DataBases_DB/DataOnMemory}
-\include{DataBases_DB/DataOnDisk}
-\include{DataBases_DB/DataOnStream}
-
+\include{DataBases_DB/Attributes}
+\include{DataBases_DB/DataFileReader}
+\include{DataBases_DB/DataInstance}
+\include{DataBases_DB/ScalableDataInstanceManagement}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% USE CASE  BASIC DATA STRUCTURES (BS) %%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{BasicStructures_BS/UseCase_BS_BasicStructures}
 \input{BasicStructures_BS/Variable}
 \input{BasicStructures_BS/StaticModelHeader}
@@ -86,12 +94,24 @@
 \input{BasicStructures_BS/Distributions}
 \input{BasicStructures_BS/BayesianNetwork}
 \input{BasicStructures_BS/2TDBN}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Time Tables}
+\subsection{Use Case DB}
+\include{DataBases_DB/TimeTable-Attributes}
+\include{DataBases_DB/TimeTable-DataFileReader}
+\include{DataBases_DB/TimeTable-DataInstance}
+\include{DataBases_DB/TimeTable-ScalableDataInstanceManagement}
+
+\subsection{Use Case BS}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%º%%%%%%%%%%%%%
 
 \bibliographystyle{splncs}
 %\bibliography{re}

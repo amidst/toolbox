@@ -1,4 +1,4 @@
-package eu.amidst.core.header;
+package eu.amidst.core.variables;
 
 /**
  * Created by sigveh on 10/20/14.

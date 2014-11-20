@@ -2,11 +2,9 @@
 package eu.amidst.core.modelstructure;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.Variable;
-import eu.amidst.core.header.StaticModelHeader;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -42,7 +40,7 @@ public class BayesianNetwork {
         return this.getDAG().getModelHeader().getNumberOfVars();
     }
 
-    public StaticModelHeader getStaticModelHeader() {
+    public StaticVariables getStaticModelHeader() {
         return this.getDAG().getModelHeader();
     }
 
