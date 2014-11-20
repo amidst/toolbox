@@ -19,6 +19,7 @@ public class ParentSet {
     private ParentSet(){
         this.vars = new ArrayList<Variable>();
     }
+
     public static ParentSet newParentSet(){
         return new ParentSet();
     }
