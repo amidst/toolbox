@@ -21,7 +21,7 @@ public class DAGTest {
 
     @Test
     public void testingDAG(){
-        List<Variable> variables =  dag.getVariables().getVariables();
+        List<Variable> variables =  dag.getStaticVariables().getListOfVariables();
         Variable A = variables.get(0);
         Variable B = variables.get(1);
         Variable C = variables.get(2);
