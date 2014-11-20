@@ -1,18 +1,3 @@
-/**
- ******************* ISSUE LIST **************************
- *
- * 1. Rename to Variables.
- * 2. We can/should remove all setters from VariableImplementation right?
- * 3. Is there any need for the field atts? It is only used in the constructor.
- * 4. The implementation of  "public StaticModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists)"
- * you need to specify for each attribute the disttype. We might think some default rule only violiated by those explict
- * assingments (Andres).
-
- *
- * ********************************************************
- */
-
-
 package eu.amidst.core.variables;
 
 import eu.amidst.core.database.Attribute;

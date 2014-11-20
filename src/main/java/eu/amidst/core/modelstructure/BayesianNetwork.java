@@ -37,11 +37,11 @@ public class BayesianNetwork {
     }
 
     public int getNumberOfVars() {
-        return this.getDAG().getModelHeader().getNumberOfVars();
+        return this.getDAG().getVariables().getNumberOfVars();
     }
 
-    public StaticVariables getStaticModelHeader() {
-        return this.getDAG().getModelHeader();
+    public StaticVariables getStaticVariables() {
+        return this.getDAG().getVariables();
     }
 
     public DAG getDAG (){
@@ -49,12 +49,12 @@ public class BayesianNetwork {
     }
 
     public List<Variable> getVariables() {
-        return this.getStaticModelHeader().getVariables();
+        return this.getStaticVariables().getVariables();
     }
 
     private void initializeDistributions(){
 
-        List<Variable> vars = getStaticModelHeader().getVariables(); /* the list of all variables in the BN */
+        List<Variable> vars = getStaticVariables().getVariables(); /* the list of all variables in the BN */
 
         this.distributions = new ConditionalDistribution[vars.size()];
 
@@ -62,7 +62,7 @@ public class BayesianNetwork {
         /* Initialize the distribution for each variable depending on its distribution type
         as well as the distribution type of its parent set (if that variable has parents)
          */
-        for (Variable var : getStaticModelHeader().getVariables()) {
+        for (Variable var : getStaticVariables().getVariables()) {
             ParentSet parentSet = this.getDAG().getParentSet(var);
 
             int varID = var.getVarID();
