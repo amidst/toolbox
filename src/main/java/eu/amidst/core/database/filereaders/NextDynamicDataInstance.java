@@ -74,21 +74,28 @@ public final class NextDynamicDataInstance {
     }
 
     public DynamicDataInstance nextDataInstance_NoTimeID(DataFileReader reader, Attribute attSequenceID){
+        DynamicDataInstance dynDataInst = null;
+        if(timeIDcounter == 1) {
+            dynDataInst =  new DynamicDataInstance(past, present, (int) present.getValue(attSequenceID), timeIDcounter);
+            timeIDcounter++;
+            return dynDataInst;
+        }
+        past = present;
+        present = reader.nextDataRow();
         double pastSequenceID = past.getValue(attSequenceID);
         double presentSequenceID = present.getValue(attSequenceID);
-        if (pastSequenceID == presentSequenceID) {
+        if (Double.isNaN(pastSequenceID) || pastSequenceID == presentSequenceID) {
+            dynDataInst =  new DynamicDataInstance(past, present, (int) presentSequenceID, timeIDcounter);
             timeIDcounter++;
-            DynamicDataInstance dynDataInst = new DynamicDataInstance(past, present, (int) presentSequenceID, timeIDcounter);
-            past = present;
-            present = reader.nextDataRow();
             return dynDataInst;
         }
         else{
-             past = present;
-             present = reader.nextDataRow();
+             past = new DataRowMissing();
              /* Recursive call */
-             timeIDcounter = 0;
-             return nextDataInstance_NoTimeID(reader, attSequenceID);
+             timeIDcounter = 1;
+            dynDataInst =  new DynamicDataInstance(past, present, (int) presentSequenceID, timeIDcounter);
+            timeIDcounter++;
+            return dynDataInst;
         }
     }
 
