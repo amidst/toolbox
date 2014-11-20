@@ -2,10 +2,8 @@ package eu.amidst.core.modelstructure;
 
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.DynamicModelHeader;
+import eu.amidst.core.header.DynamicVariables;
 import eu.amidst.core.header.Variable;
-
-import java.util.*;
 
 
 /**
@@ -41,13 +39,13 @@ public class DynamicBayesianNetwork{
     /**
      * It contains a pointer to the modelHeader (list of variables).
      */
-    private DynamicModelHeader modelHeader;
+    private DynamicVariables modelHeader;
 
     /**
      * The private class constructor
      * @param modelHeader The modelHeader or list of variables
      */
-    private DynamicBayesianNetwork(DynamicModelHeader modelHeader){
+    private DynamicBayesianNetwork(DynamicVariables modelHeader){
         this.modelHeader = modelHeader;
         this.parentSetTime0 = new ParentSet[modelHeader.getNumberOfVars()];
         this.parentSetTimeT = new ParentSet[modelHeader.getNumberOfVars()];
@@ -64,7 +62,7 @@ public class DynamicBayesianNetwork{
      * @param modelHeader The modelHeader or list of variables
      * @return A <code>DynamicBayesianNetwork</code> with the given header (list of variables)
      */
-    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicModelHeader modelHeader){
+    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicVariables modelHeader){
         return new DynamicBayesianNetwork(modelHeader);
     }
 
@@ -93,7 +91,7 @@ public class DynamicBayesianNetwork{
         return this.modelHeader.getNumberOfVars();
     }
 
-    public DynamicModelHeader getDynamicModelHeader() {
+    public DynamicVariables getDynamicModelHeader() {
         return this.modelHeader;
     }
 
