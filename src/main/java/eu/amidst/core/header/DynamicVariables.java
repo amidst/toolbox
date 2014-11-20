@@ -24,12 +24,12 @@ import java.util.List;
 /**
  * Created by afa on 02/07/14.
  */
-public class DynamicModelHeader {
+public class DynamicVariables {
 
     private List<Variable> allVariables;
     private List<Variable> temporalClones;
 
-    public DynamicModelHeader(Attributes atts) {
+    public DynamicVariables(Attributes atts) {
 
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
@@ -49,7 +49,7 @@ public class DynamicModelHeader {
      * Constructor where the distribution type of random variables is provided as an argument.
      *
      */
-    public DynamicModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists) {
+    public DynamicVariables(Attributes atts, HashMap<Attribute, DistType> typeDists) {
 
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
