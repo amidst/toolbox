@@ -4,7 +4,7 @@ import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
-import eu.amidst.core.header.DynamicModelHeader;
+import eu.amidst.core.header.DynamicVariables;
 import eu.amidst.core.header.Variable;
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ public class TestReaderDynamic {
     private static final double DELTA = 1e-15;
     private static WekaDataFileReader reader;
     private static Attributes attributes;
-    private static DynamicModelHeader dynamicModelHeader;
+    private static DynamicVariables dynamicModelHeader;
     private static DataRow datarow = null;
     private static DataInstance nextInstance = null;
     private static int index;
@@ -34,7 +34,7 @@ public class TestReaderDynamic {
         reader = new WekaDataFileReader(s);
         attributes = reader.getAttributes();
         dataOnDisk = new DynamicDataOnDiskFromFile(reader);
-        dynamicModelHeader = new DynamicModelHeader(attributes);
+        dynamicModelHeader = new DynamicVariables(attributes);
         obsVars = dynamicModelHeader.getVariables();
         temporalClones = dynamicModelHeader.getTemporalClones();
     }
