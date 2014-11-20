@@ -56,7 +56,7 @@ public class ConverterToHugin {
 
     public void setStructure (DAG dag) {
 
-        List<Variable> variables = dag.getVariables().getVariables();
+        List<Variable> variables = dag.getStaticVariables().getListOfVariables();
 
         try {
             for (Variable amidstChild: variables) {
@@ -214,7 +214,7 @@ public class ConverterToHugin {
 
     public void setBayesianNetwork(BayesianNetwork bn) {
 
-        this.setNodes(bn.getDAG().getVariables().getVariables());
+        this.setNodes(bn.getDAG().getStaticVariables().getListOfVariables());
         this.setStructure(bn.getDAG());
         this.setDistributions(bn);
     }

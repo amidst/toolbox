@@ -20,7 +20,7 @@ public class DAG {
         }
     }
 
-    public StaticVariables getVariables(){
+    public StaticVariables getStaticVariables(){
         return this.variables;
     }
 
@@ -32,16 +32,16 @@ public class DAG {
 
         boolean[] bDone = new boolean[this.variables.getNumberOfVars()];
 
-        for (Variable var: this.variables.getVariables()){
+        for (Variable var: this.variables.getListOfVariables()){
             bDone[var.getVarID()] = false;
         }
 
-        for (Variable var: this.variables.getVariables()){
+        for (Variable var: this.variables.getListOfVariables()){
 
             // find a node for which all parents are 'done'
             boolean bFound = false;
 
-            for (Variable variable2: this.variables.getVariables()){
+            for (Variable variable2: this.variables.getListOfVariables()){
                 if (!bDone[variable2.getVarID()]) {
                     boolean bHasNoParents = true;
 

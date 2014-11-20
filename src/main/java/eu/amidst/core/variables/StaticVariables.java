@@ -60,7 +60,7 @@ public class StaticVariables {
 
     }
 
-    public List<Variable> getVariables() {
+    public List<Variable> getListOfVariables() {
         return this.allVariables;
     }
 
@@ -69,7 +69,7 @@ public class StaticVariables {
     }
 
     public Variable getVariable(String name) {
-        for(Variable var: getVariables()){
+        for(Variable var: getListOfVariables()){
             if(var.getName().equals(name))
                 return var;
         }
