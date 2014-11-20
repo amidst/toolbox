@@ -322,6 +322,14 @@ public class TestReaderDynamic {
         //[5,6] (Every time we change sequence we add a missing row)
         assertEquals(Double.NaN, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(4.5, nextInstance.getValue(dynamicModelHeader.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //[7,8]
+        assertEquals(4.5, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+        assertEquals(2, nextInstance.getValue(dynamicModelHeader.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
     }
 
     @Test
@@ -374,6 +382,106 @@ public class TestReaderDynamic {
         assertEquals(17, obsVars.size());
         assertEquals(17, temporalClones.size());
         assertEquals(17, dynamicModelHeader.getNumberOfVars());
+    }
+
+    @Test
+    public void attributeValue_TimeID_SeqID() {
+        loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //Seq 1: Instances 1-5
+        //[?,1]
+        assertEquals(Double.NaN, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WORKING-HOURS")), DELTA);
+        assertEquals(40, (int) nextInstance.getValue(dynamicModelHeader.getVariableByName("WORKING-HOURS")));
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //[1,2]
+        assertEquals(40, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WORKING-HOURS")), DELTA);
+        assertEquals(35, (int) nextInstance.getValue(dynamicModelHeader.getVariableByName("WORKING-HOURS")));
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //[2,3]
+        assertEquals(4.5, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+        assertEquals(Double.NaN, nextInstance.getValue(dynamicModelHeader.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //[3,?]
+        assertEquals(Double.NaN, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+        assertEquals(Double.NaN, nextInstance.getValue(dynamicModelHeader.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //[?,5]
+        assertEquals(Double.NaN, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+        assertEquals(3.7, nextInstance.getValue(dynamicModelHeader.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //Seq 2: Instances 1-13 (5-17)
+        //[6,7] (Every time we change sequence we add a missing row)
+        assertEquals(Double.NaN, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+        assertEquals(4.5, nextInstance.getValue(dynamicModelHeader.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+
+        if (dataOnDisk.hasMoreDataInstances()) {
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        //[7,8] (Every time we change sequence we add a missing row)
+        assertEquals(4.5, nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+        assertEquals(2, nextInstance.getValue(dynamicModelHeader.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
+    }
+
+    @Test
+    public void reachEOF_TimeID_SeqID(){
+        loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
+
+        while(dataOnDisk.hasMoreDataInstances()){
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        /*Test values for the last instance*/
+        assertEquals(88,(int)nextInstance.getValue(dynamicModelHeader.getTemporalCloneByName("WORKING-HOURS")));
+        assertEquals(89,(int)nextInstance.getValue(dynamicModelHeader.getVariableByName("WORKING-HOURS")));
+    }
+
+    @Test
+    public void checkAutomaticTimeID_TimeID_SeqID(){
+        loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
+
+        while(dataOnDisk.hasMoreDataInstances()){
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        /*Test values for the last instance*/
+        assertEquals(40,(int)nextInstance.getTimeID());
+    }
+
+    @Test
+    public void checkAutomaticSeq_TimeID_SeqID(){
+        loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
+
+        while(dataOnDisk.hasMoreDataInstances()){
+            nextInstance = dataOnDisk.nextDataInstance();
+        }
+
+        /*Test values for the last instance*/
+        assertEquals(3,(int)nextInstance.getSequenceID());
     }
 
 
