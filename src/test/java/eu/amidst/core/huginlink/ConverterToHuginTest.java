@@ -1,4 +1,4 @@
-package eu.amidst.core.hugin_interface;
+package eu.amidst.core.huginlink;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;

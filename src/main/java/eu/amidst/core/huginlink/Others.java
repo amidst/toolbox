@@ -1,4 +1,4 @@
-package eu.amidst.core.hugin_interface;
+package eu.amidst.core.huginlink;
 
 /**
  * Created by afa on 18/11/14.
