@@ -1,4 +1,4 @@
-package eu.amidst.core.header;
+package eu.amidst.core.variables;
 
 import eu.amidst.core.database.Attribute;
 

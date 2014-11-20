@@ -3,8 +3,8 @@ package eu.amidst.core.huginlink;
 import COM.hugin.HAPI.*;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.DistType;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.DistType;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.core.modelstructure.BayesianNetwork;
 import eu.amidst.core.modelstructure.DAG;
 import eu.amidst.core.utils.MultinomialIndex;

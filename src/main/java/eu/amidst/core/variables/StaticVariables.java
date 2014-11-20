@@ -1,18 +1,19 @@
 /**
  ******************* ISSUE LIST **************************
  *
- * 1. Rename to DynamicVariables
+ * 1. Rename to Variables.
  * 2. We can/should remove all setters from VariableImplementation right?
  * 3. Is there any need for the field atts? It is only used in the constructor.
- * 4. If the fields in VariableImplementation are all objects then the TemporalClone only contains
- *    pointers, which would ensure consistency, although we are not planing to modify these values.
+ * 4. The implementation of  "public StaticModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists)"
+ * you need to specify for each attribute the disttype. We might think some default rule only violiated by those explict
+ * assingments (Andres).
+
  *
  * ********************************************************
  */
 
 
-
-package eu.amidst.core.header;
+package eu.amidst.core.variables;
 
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
@@ -24,24 +25,22 @@ import java.util.List;
 /**
  * Created by afa on 02/07/14.
  */
-public class DynamicVariables {
+public class StaticVariables {
 
     private List<Variable> allVariables;
-    private List<Variable> temporalClones;
 
-    public DynamicVariables(Attributes atts) {
+    /**
+     * Constructor where the distribution type of random variables is initialized by default.
+     *
+     */
+    public StaticVariables(Attributes atts) {
 
         this.allVariables = new ArrayList<>();
-        this.temporalClones = new ArrayList<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
-
-
-            VariableImplementation temporalClone = new VariableImplementation(var);
-            temporalClones.add(var.getVarID(), temporalClone);
         }
     }
 
@@ -49,10 +48,9 @@ public class DynamicVariables {
      * Constructor where the distribution type of random variables is provided as an argument.
      *
      */
-    public DynamicVariables(Attributes atts, HashMap<Attribute, DistType> typeDists) {
+    public StaticVariables(Attributes atts, HashMap<Attribute, DistType> typeDists) {
 
         this.allVariables = new ArrayList<>();
-        this.temporalClones = new ArrayList<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder;
@@ -65,18 +63,7 @@ public class DynamicVariables {
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
 
-            VariableImplementation temporalClone = new VariableImplementation(var);
-            temporalClones.add(var.getVarID(), temporalClone);
-
         }
-    }
-
-    public Variable getTemporalCloneFromVariable(Variable var){
-        return temporalClones.get(var.getVarID());
-    }
-
-    public Variable getVariableFromTemporalClone(Variable var){
-        return allVariables.get(var.getVarID());
     }
 
 
@@ -84,39 +71,20 @@ public class DynamicVariables {
 
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         allVariables.add(var);
-
-        VariableImplementation temporalClone = new VariableImplementation(var);
-        temporalClones.add(var.getVarID(),temporalClone);
-
         return var;
+
     }
 
     public List<Variable> getVariables() {
         return this.allVariables;
     }
 
-    public List<Variable> getTemporalClones() {
-        return this.temporalClones;
-    }
-
-    public Variable getVariableById(int varID) {
+    public Variable getVariable(int varID) {
         return this.allVariables.get(varID);
     }
 
-    public Variable getTemporalCloneById(int varID) {
-        return this.temporalClones.get(varID);
-    }
-
-    public Variable getVariableByName(String name) {
+    public Variable getVariable(String name) {
         for(Variable var: getVariables()){
-            if(var.getName().equals(name))
-                return var;
-        }
-        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
-    }
-
-    public Variable getTemporalCloneByName(String name) {
-        for(Variable var: getTemporalClones()){
             if(var.getName().equals(name))
                 return var;
         }
@@ -128,6 +96,7 @@ public class DynamicVariables {
     }
 
     private class VariableImplementation implements Variable {
+
         private String name;
         private int varID;
         private boolean observable;
@@ -135,11 +104,7 @@ public class DynamicVariables {
         private StateSpaceType stateSpaceType;
         private DistType distributionType;
         private Attribute attribute;
-        private final boolean isTemporalClone;
 
-        /*
-         * Constructor for a Variable (not a temporal clone)
-         */
         public VariableImplementation(VariableBuilder builder, int varID) {
             this.name = builder.getName();
             this.varID = varID;
@@ -148,21 +113,6 @@ public class DynamicVariables {
             this.stateSpaceType = builder.getStateSpaceType();
             this.distributionType = builder.getDistributionType();
             this.attribute = builder.getAttribute();
-            this.isTemporalClone = false;
-        }
-
-        /*
-         * Constructor for a Temporal clone (based on a variable)
-         */
-        public VariableImplementation(Variable variable) {
-            this.name = variable.getName();
-            this.varID = variable.getVarID();
-            this.observable = variable.isObservable();
-            this.numberOfStates = variable.getNumberOfStates();
-            this.stateSpaceType = variable.getStateSpaceType();
-            this.distributionType = variable.getDistributionType();
-            this.attribute = variable.getAttribute();
-            this.isTemporalClone = true;
         }
 
         public String getName() {
@@ -174,14 +124,13 @@ public class DynamicVariables {
         }
 
         public boolean isObservable() {
-            return observable;
+            return false;
         }
 
         public int getNumberOfStates() {
             return numberOfStates;
         }
 
-        @Override
         public StateSpaceType getStateSpaceType() {
             return stateSpaceType;
         }
@@ -190,10 +139,11 @@ public class DynamicVariables {
             return distributionType;
         }
 
-        public boolean isTemporalClone(){
-            return isTemporalClone;
+        public boolean isTemporalClone() {
+            throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
         }
 
         public Attribute getAttribute(){return attribute;}
+
     }
 }
