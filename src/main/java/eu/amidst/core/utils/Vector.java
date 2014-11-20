@@ -3,36 +3,20 @@ package eu.amidst.core.utils;
 /**
  * Created by andresmasegosa on 12/11/14.
  */
-public class Vector {
+public interface Vector {
 
-    double[] array;
+    public double get(int i);
 
-    public Vector(int size){
-        this.array = new double[size];
-    }
+    public void set(int i, double val);
 
-    public Vector(double[] vec){
-        this.array=vec;
-    }
+    public int size();
 
-    public double get(int i){
-        return this.array[i];
-    }
-
-    public void set(int i, double val){
-        this.array[i]=val;
-    }
-
-    public int size(){
-        return this.array.length;
-    }
-
-    public void dotProduct(Vector vec){
+    public default void dotProduct(Vector vec){
         if (vec.size()!=this.size())
             throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. The parameter vec has a different size. ");
 
-        for (int i=0; i<this.array.length; i++){
-            this.array[i]*=vec.get(i);
+        for (int i=0; i<this.size(); i++){
+            this.set(i, this.get(i)*vec.get(i));
         }
     }
 

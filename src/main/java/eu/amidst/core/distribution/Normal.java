@@ -1,7 +1,7 @@
 /**
  ******************* ISSUE LIST **************************
  *
- * 1. Do we need here the min and max of the variable, for instance, to check that the input value in getProbability(value) is in the range [min,max]?
+ * 1. Do we need here the min and max of the variable, for instance, to check that the input value in computeProbabilityOf(value) is in the range [min,max]?
  *
  *
  * ********************************************************
