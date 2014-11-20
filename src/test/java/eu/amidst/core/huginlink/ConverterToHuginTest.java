@@ -20,13 +20,13 @@ public class ConverterToHuginTest {
         //**************************************** Synthetic data ******************************************************
 
         WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
-        StaticVariables modelHeader = new StaticVariables(fileReader.getAttributes());
+        StaticVariables staticVariables = new StaticVariables(fileReader.getAttributes());
 
         //***************************************** Network structure **************************************************
         //Create the structure by hand
 
-        DAG dag = new DAG(modelHeader);
-        List<Variable> variables = dag.getModelHeader().getVariables();
+        DAG dag = new DAG(staticVariables);
+        List<Variable> variables = dag.getVariables().getVariables();
 
         System.out.print("\nVariables: ");
         for(Variable v: variables){
