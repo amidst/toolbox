@@ -56,7 +56,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         /* 1 = true,  false, i.e., TimeID is provided */
         /* 2 = false, true,  i.e., SequenceID is provided */
         /* 3 = true,  true,  i.e., SequenceID is provided*/
-        int option = (attTimeID == null) ? 0 : 1 + 2 * ((attSequenceID == null) ? 0 : 1);
+        int option = ((attTimeID == null) ? 0 : 1) + 2 * ((attSequenceID == null) ? 0 : 1);
 
         switch (option) {
 
