@@ -77,73 +77,81 @@ public class ConverterToHuginTest {
              5     A1   B2
         */
 
-        
+
 
         // Variable A
-        ((Multinomial_MultinomialParents)bn.getDistribution(A)).getMultinomial(0).setProbabilities(new double[]{0.3,0.7});
+        Multinomial_MultinomialParents distA = bn.getDistribution(A);
+        distA.getMultinomial(0).setProbabilities(new double[]{0.3,0.7});
 
         // Variable B
-        ((Multinomial_MultinomialParents)bn.getDistribution(B)).getMultinomial(0).setProbabilities(new double[]{0.4,0.1,0.5});
+        Multinomial_MultinomialParents distB = bn.getDistribution(B);
+        distB.getMultinomial(0).setProbabilities(new double[]{0.4,0.1,0.5});
 
         // Variable C
-        ((Normal_MultinomialParents)bn.getDistribution(C)).getNormal(0).setMean(0.8);
-        ((Normal_MultinomialParents)bn.getDistribution(C)).getNormal(0).setSd(1.5);
+        Normal_MultinomialParents distC = bn.getDistribution(C);
+        distC.getNormal(0).setMean(0.8);
+        distC.getNormal(0).setSd(1.5);
 
         // Variable D
-        ((Normal_MultinomialParents)bn.getDistribution(D)).getNormal(0).setMean(1.3);
-        ((Normal_MultinomialParents)bn.getDistribution(D)).getNormal(0).setSd(0.9);
+        Normal_MultinomialParents distD = bn.getDistribution(D);
+        distD.getNormal(0).setMean(1.3);
+        distD.getNormal(0).setSd(0.9);
 
         // Variable E
-        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(0).setProbabilities(new double[]{0.2,0.8});
-        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(1).setProbabilities(new double[]{0.1,0.9});
-        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(2).setProbabilities(new double[]{0.8,0.2});
-        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(3).setProbabilities(new double[]{0.45,0.55});
-        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(4).setProbabilities(new double[]{0.35,0.65});
-        ((Multinomial_MultinomialParents)bn.getDistribution(E)).getMultinomial(5).setProbabilities(new double[]{0.9,0.1});
+        Multinomial_MultinomialParents distE=bn.getDistribution(E);
+        distE.getMultinomial(0).setProbabilities(new double[]{0.2,0.8});
+        distE.getMultinomial(1).setProbabilities(new double[]{0.1,0.9});
+        distE.getMultinomial(2).setProbabilities(new double[]{0.8,0.2});
+        distE.getMultinomial(3).setProbabilities(new double[]{0.45,0.55});
+        distE.getMultinomial(4).setProbabilities(new double[]{0.35,0.65});
+        distE.getMultinomial(5).setProbabilities(new double[]{0.9,0.1});
 
         // Variable H
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(0).setMean(2);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(0).setSd(1.5);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(1).setMean(-1);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(1).setSd(0.5);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(2).setMean(3);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(2).setSd(0.8);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(3).setMean(2);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(3).setSd(1);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(4).setMean(5);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(4).setSd(0.8);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(5).setMean(1.5);
-        ((Normal_MultinomialParents)bn.getDistribution(H)).getNormal(5).setSd(0.7);
+        Normal_MultinomialParents distH = bn.getDistribution(H);
+        distH.getNormal(0).setMean(2);
+        distH.getNormal(0).setSd(1.5);
+        distH.getNormal(1).setMean(-1);
+        distH.getNormal(1).setSd(0.5);
+        distH.getNormal(2).setMean(3);
+        distH.getNormal(2).setSd(0.8);
+        distH.getNormal(3).setMean(2);
+        distH.getNormal(3).setSd(1);
+        distH.getNormal(4).setMean(5);
+        distH.getNormal(4).setSd(0.8);
+        distH.getNormal(5).setMean(1.5);
+        distH.getNormal(5).setSd(0.7);
 
         //Variable I
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(0).setIntercept(0.5);
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.25,0.4});
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(0).setSd(0.9);
+        Normal_MultinomialNormalParents distI = bn.getDistribution(I);
+        distI.getNormal_NormalParentsDistribution(0).setIntercept(0.5);
+        distI.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.25,0.4});
+        distI.getNormal_NormalParentsDistribution(0).setSd(0.9);
 
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(1).setIntercept(-0.1);
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-0.5,0.2});
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(1).setSd(0.6);
+        distI.getNormal_NormalParentsDistribution(1).setIntercept(-0.1);
+        distI.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-0.5,0.2});
+        distI.getNormal_NormalParentsDistribution(1).setSd(0.6);
 
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(2).setIntercept(2.1);
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(2).setCoeffParents(new double[]{1.2,-0.3});
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(2).setSd(1.1);
+        distI.getNormal_NormalParentsDistribution(2).setIntercept(2.1);
+        distI.getNormal_NormalParentsDistribution(2).setCoeffParents(new double[]{1.2,-0.3});
+        distI.getNormal_NormalParentsDistribution(2).setSd(1.1);
 
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(3).setIntercept(2.1);
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(3).setCoeffParents(new double[]{1.25,0.9});
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(3).setSd(0.95);
+        distI.getNormal_NormalParentsDistribution(3).setIntercept(2.1);
+        distI.getNormal_NormalParentsDistribution(3).setCoeffParents(new double[]{1.25,0.9});
+        distI.getNormal_NormalParentsDistribution(3).setSd(0.95);
 
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(4).setIntercept(1.5);
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(4).setCoeffParents(new double[]{-0.41,0.5});
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(4).setSd(1.5);
+        distI.getNormal_NormalParentsDistribution(4).setIntercept(1.5);
+        distI.getNormal_NormalParentsDistribution(4).setCoeffParents(new double[]{-0.41,0.5});
+        distI.getNormal_NormalParentsDistribution(4).setSd(1.5);
 
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(5).setIntercept(0);
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(5).setCoeffParents(new double[]{0.0,0.3});
-        ((Normal_MultinomialNormalParents)bn.getDistribution(I)).getNormal_NormalParentsDistribution(5).setSd(0.25);
+        distI.getNormal_NormalParentsDistribution(5).setIntercept(0);
+        distI.getNormal_NormalParentsDistribution(5).setCoeffParents(new double[]{0.0,0.3});
+        distI.getNormal_NormalParentsDistribution(5).setSd(0.25);
 
         //Variable G
-        ((Normal_NormalParents)bn.getDistribution(G)).setIntercept(0.7);
-        ((Normal_NormalParents)bn.getDistribution(G)).setCoeffParents(new double[]{0.3,-0.8});
-        ((Normal_NormalParents)bn.getDistribution(G)).setSd(0.9);
+        Normal_NormalParents distG  = bn.getDistribution(G);
+        distG.setIntercept(0.7);
+        distG.setCoeffParents(new double[]{0.3,-0.8});
+        distG.setSd(0.9);
 
         //**************************************************************************************************************
 
