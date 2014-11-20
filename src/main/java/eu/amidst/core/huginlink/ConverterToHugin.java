@@ -1,4 +1,4 @@
-package eu.amidst.core.hugin_interface;
+package eu.amidst.core.huginlink;
 
 import COM.hugin.HAPI.*;
 
@@ -71,7 +71,6 @@ public class ConverterToHugin {
             System.out.println("Exception caught: " + e.getMessage());
         }
     }
-
 
     //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
     public void setMultinomial_MultinomialParents(ConditionalDistribution dist) {
@@ -174,7 +173,6 @@ public class ConverterToHugin {
 
         for(Variable amidstVar:amidstVars) {
             ConditionalDistribution dist = bn.getDistribution(amidstVar);
-
 
             List<Variable> conditioningVariables = dist.getConditioningVariables();
 
