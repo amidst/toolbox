@@ -16,12 +16,12 @@ public class DAGTest {
 /* Very simple example to test the DAG class*/
 
     WekaDataFileReader reader = new WekaDataFileReader("data/dataWeka/contact-lenses.arff");
-    StaticVariables modelheader = new StaticVariables(reader.getAttributes());
-    DAG dag = new DAG(modelheader);
+    StaticVariables variables = new StaticVariables(reader.getAttributes());
+    DAG dag = new DAG(variables);
 
     @Test
     public void testingDAG(){
-        List<Variable> variables =  dag.getModelHeader().getVariables();
+        List<Variable> variables =  dag.getVariables().getVariables();
         Variable A = variables.get(0);
         Variable B = variables.get(1);
         Variable C = variables.get(2);
