@@ -112,7 +112,8 @@ public class ConverterToAMIDST {
             int pos=0;
             for(int i=0;i<numParentAssignments;i++){
                 double[] amidstProbabilities_i = Arrays.copyOfRange(huginProbabilities, pos, numStates*(i+1)-1);
-                ((Multinomial_MultinomialParents)this.amidstNetwork.getDistribution(amidstVar)).getMultinomial(i).setProbabilities(amidstProbabilities_i);
+                Multinomial_MultinomialParents dist = this.amidstNetwork.getDistribution(amidstVar);
+                dist.getMultinomial(i).setProbabilities(amidstProbabilities_i);
                 pos = numStates*(i+1);
             }
         }
@@ -124,8 +125,6 @@ public class ConverterToAMIDST {
     public void setDistributions(NodeList huginNodes){
 
         List<Variable> amidstVariables = this.amidstNetwork.getVariables();
-
-        this.amidstNetwork.initializeDistributions();
 
         for (int i = 0; i < huginNodes.size(); i++) {
 

@@ -30,8 +30,8 @@ public class BayesianNetwork {
         initializeDistributions();
     }
 
-    public ConditionalDistribution getDistribution(Variable var) {
-        return distributions[var.getVarID()];
+    public <E extends ConditionalDistribution> E getDistribution(Variable var) {
+        return (E)distributions[var.getVarID()];
     }
 
     public void setDistribution(Variable var, ConditionalDistribution distribution){
