@@ -4,7 +4,7 @@ import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.filereaders.DataFileReader;
 import eu.amidst.core.database.filereaders.DataRow;
-import eu.amidst.core.header.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceType;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;

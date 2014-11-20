@@ -11,11 +11,7 @@
  */
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.Assignment;
-import eu.amidst.core.header.Variable;
-
-import java.util.List;
-import java.util.ArrayList;
+import eu.amidst.core.variables.Variable;
 
 
 /**

@@ -16,8 +16,8 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 
-import eu.amidst.core.header.StaticModelHeader;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -29,7 +29,7 @@ public class TestReaderStatic {
     private static final double DELTA = 1e-15;
     private static WekaDataFileReader reader;
     private static Attributes attributes;
-    private static StaticModelHeader modelHeader;
+    private static StaticVariables modelHeader;
     private static DataRow datarow = null;
     private static DataInstance nextInstance = null;
     private static int index;
@@ -40,7 +40,7 @@ public class TestReaderStatic {
         reader = new WekaDataFileReader("data/dataWeka/labor.arff");
         dataOnDiskReader = new StaticDataOnDiskFromFile(reader);
         attributes = dataOnDiskReader.getAttributes();
-        modelHeader = new StaticModelHeader(attributes);
+        modelHeader = new StaticVariables(attributes);
     }
 
     @Test

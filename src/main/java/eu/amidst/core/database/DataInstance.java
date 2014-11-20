@@ -1,8 +1,6 @@
 package eu.amidst.core.database;
 
-import eu.amidst.core.header.Variable;
-
-import java.util.Set;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by ana@cs.aau.dk on 10/11/14.

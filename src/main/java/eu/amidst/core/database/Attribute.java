@@ -10,7 +10,7 @@
 
 package eu.amidst.core.database;
 
-import eu.amidst.core.header.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceType;
 
 /**
  * Created by sigveh on 10/20/14.

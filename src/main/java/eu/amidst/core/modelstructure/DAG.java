@@ -1,19 +1,17 @@
 package eu.amidst.core.modelstructure;
 
-import eu.amidst.core.header.StaticModelHeader;
-import eu.amidst.core.header.Variable;
-
-import java.util.List;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by Hanen on 13/11/14.
  */
 public class DAG {
 
-    private StaticModelHeader modelHeader;
+    private StaticVariables modelHeader;
     private ParentSet[] parents;
 
-    public DAG(StaticModelHeader modelHeader) {
+    public DAG(StaticVariables modelHeader) {
         this.modelHeader = modelHeader;
         this.parents = new ParentSet[modelHeader.getNumberOfVars()];
 
@@ -22,7 +20,7 @@ public class DAG {
         }
     }
 
-    public StaticModelHeader getModelHeader(){
+    public StaticVariables getModelHeader(){
         return this.modelHeader;
     }
 
