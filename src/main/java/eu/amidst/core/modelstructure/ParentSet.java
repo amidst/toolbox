@@ -39,6 +39,25 @@ public class ParentSet {
         return vars.size();
     }
 
+    public String toString() {
+
+        int numParents = getNumberOfParents();
+        String str = new String("{ ");
+
+
+        for(int i=0;i<numParents;i++){
+            Variable parent = getParents().get(i);
+            str = str + parent.getName();
+            if (i<numParents-1)
+                str = str + ", ";
+        }
+
+
+
+        str = str + " }";
+        return str;
+    }
+
     /**
      * Is an ArrayList pointer to an ArrayList unmodifiable object still unmodifiable? I guess so right?
      */
