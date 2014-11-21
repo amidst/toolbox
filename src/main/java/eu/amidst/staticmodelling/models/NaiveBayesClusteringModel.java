@@ -43,7 +43,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
 
         BayesianNetwork net = BNFactory.createBN(modelHeader);
 
-        for (int i=0; i<net.getNumberOfNodes(); i++){
+        for (int i=0; i<net.getNumberOfDynamicVars(); i++){
             if (i==this.getHiddenClassID())
                 continue;
             net.getParentSet(i).addParent(this.getHiddenClassID());
@@ -64,7 +64,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
 
         PotentialTable potResult = new PotentialTable(this.getBayesianNetwork().getVariable(varID).getNumberOfStates());
 
-        for (int i=0; i<this.getBayesianNetwork().getNumberOfNodes(); i++) {
+        for (int i=0; i<this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
             if (i==this.getHiddenClassID())
                 continue;
             if (Utils.isMissing(data.getValue(i)))
@@ -89,7 +89,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
 
         PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getDistribution(this.getHiddenClassID()).getRestrictedPotential(data);
 
-        for (int i=0; i<this.getBayesianNetwork().getNumberOfNodes(); i++) {
+        for (int i=0; i<this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
             if (Utils.isMissing(data.getValue(i)) || i==this.getHiddenClassID())
                 continue;
             Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
