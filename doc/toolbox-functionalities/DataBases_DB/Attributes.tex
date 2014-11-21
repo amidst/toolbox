@@ -10,12 +10,13 @@
 
 \subsubsection*{Description}
 
-Enter a textual description of the functionality. Link to other functionalities if needed. 
+Attributes serve as an intermediary to build the Static or Dynamic Variables from the dataset that are parsed from the dataset and/or specified by the user (precisely by a class that extends this class). 
 
 \subsubsection*{Detailed functionality}
 
 \begin{itemize}
-\item Short Description
+\item List of objects of the type Attribute. This list becomes Unmodifiable after construction.
+\item There can be two special attributes, namely "TIME\_ID" AND "SEQUENCE\_ID". The former refers to a temporal identifier whereas the second identifies a particular sequence (e.g. a client in CajaMar or a drill in Verdande). They only exist if they explicitly appear in the dataset with that particular names.
 \end{itemize}
 
 \subsubsection*{Code Example}
