@@ -2,6 +2,7 @@ package eu.amidst.core.huginlink;
 
 import COM.hugin.HAPI.*;
 
+import COM.hugin.HAPI.Node;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
@@ -30,15 +31,21 @@ public class ConverterToHugin {
 
     public void setNodes(List<Variable> amidstVars) {
 
+        int size = amidstVars.size();
+
         try {
-            for (Variable amidstVar: amidstVars) {
+            //for (Variable amidstVar: amidstVars) {
+            for(int i=1;i<=size;i++){
+                //Hugin always inserts variables in position 0, i.e, for an order A,B,C, it stores C,B,A !!!
+                //A reverse order of the variables is used instead.
+                Variable amidstVar = amidstVars.get(size-i);
                 if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
                     LabelledDCNode n = new LabelledDCNode(this.huginNetwork);
                     n.setName(amidstVar.getName());
                     n.setNumberOfStates(amidstVar.getNumberOfStates());
 
-                    for (int i=0;i<n.getNumberOfStates();i++){
-                        n.setStateLabel(i,amidstVar.getName()+i);
+                    for (int j=0;j<n.getNumberOfStates();j++){
+                        n.setStateLabel(j,amidstVar.getName()+j);
                     }
                 } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
                     ContinuousChanceNode c = new ContinuousChanceNode(this.huginNetwork);
@@ -59,6 +66,7 @@ public class ConverterToHugin {
         List<Variable> variables = dag.getStaticVariables().getListOfVariables();
 
         try {
+
             for (Variable amidstChild: variables) {
                 for (Variable amidstParent: dag.getParentSet(amidstChild).getParents()) {
                     Node huginChild = this.huginNetwork.getNodeByName(amidstChild.getName());
@@ -212,7 +220,7 @@ public class ConverterToHugin {
         }
     }
 
-    public void setBayesianNetwork(BayesianNetwork bn) {
+    public void convertToHuginBN(BayesianNetwork bn) {
 
         this.setNodes(bn.getDAG().getStaticVariables().getListOfVariables());
         this.setStructure(bn.getDAG());
