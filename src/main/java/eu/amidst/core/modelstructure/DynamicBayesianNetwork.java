@@ -2,10 +2,8 @@ package eu.amidst.core.modelstructure;
 
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.DynamicModelHeader;
-import eu.amidst.core.header.Variable;
-
-import java.util.*;
+import eu.amidst.core.variables.DynamicVariables;
+import eu.amidst.core.variables.Variable;
 
 
 /**
@@ -39,21 +37,21 @@ public class DynamicBayesianNetwork{
     private Distribution[] distributionsTimeT;
 
     /**
-     * It contains a pointer to the modelHeader (list of variables).
+     * It contains a pointer to the variables (list of variables).
      */
-    private DynamicModelHeader modelHeader;
+    private DynamicVariables variables;
 
     /**
      * The private class constructor
-     * @param modelHeader The modelHeader or list of variables
+     * @param variables The variables or list of variables
      */
-    private DynamicBayesianNetwork(DynamicModelHeader modelHeader){
-        this.modelHeader = modelHeader;
-        this.parentSetTime0 = new ParentSet[modelHeader.getNumberOfVars()];
-        this.parentSetTimeT = new ParentSet[modelHeader.getNumberOfVars()];
-        this.distributionsTime0 = new Distribution[modelHeader.getNumberOfVars()];
-        this.distributionsTimeT = new Distribution[modelHeader.getNumberOfVars()];
-        for (int i=0;i<modelHeader.getNumberOfVars();i++) {
+    private DynamicBayesianNetwork(DynamicVariables variables){
+        this.variables = variables;
+        this.parentSetTime0 = new ParentSet[variables.getNumberOfVars()];
+        this.parentSetTimeT = new ParentSet[variables.getNumberOfVars()];
+        this.distributionsTime0 = new Distribution[variables.getNumberOfVars()];
+        this.distributionsTimeT = new Distribution[variables.getNumberOfVars()];
+        for (int i=0;i<variables.getNumberOfVars();i++) {
             parentSetTime0[i] = ParentSet.newParentSet();
             parentSetTimeT[i] = ParentSet.newParentSet();
         }
@@ -61,11 +59,11 @@ public class DynamicBayesianNetwork{
 
     /**
      * The class public constructor, as a factory pattern
-     * @param modelHeader The modelHeader or list of variables
-     * @return A <code>DynamicBayesianNetwork</code> with the given header (list of variables)
+     * @param variables The variables or list of variables
+     * @return A <code>DynamicBayesianNetwork</code> with the given list of variables
      */
-    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicModelHeader modelHeader){
-        return new DynamicBayesianNetwork(modelHeader);
+    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicVariables variables){
+        return new DynamicBayesianNetwork(variables);
     }
 
 
@@ -75,7 +73,7 @@ public class DynamicBayesianNetwork{
     public void initializeDistributions() {
         //Parents should have been assigned before calling this method (from dynamicmodelling.models)
 
-        for (Variable var : modelHeader.getVariables()) {
+        for (Variable var : variables.getDynamicVariables()) {
             int varID = var.getVarID();
 
             /* Distributions at time t */
@@ -88,25 +86,25 @@ public class DynamicBayesianNetwork{
         }
     }
 
-    /* Methods accessing the variables in the modelHeader*/
+    /* Methods accessing the variables in the variables*/
     public int getNumberOfNodes() {
-        return this.modelHeader.getNumberOfVars();
+        return this.variables.getNumberOfVars();
     }
 
-    public DynamicModelHeader getDynamicModelHeader() {
-        return this.modelHeader;
+    public DynamicVariables getDynamicVariables() {
+        return this.variables;
     }
 
     public Variable getVariableById(int varID) {
-        return this.modelHeader.getVariableById(varID);
+        return this.variables.getVariableById(varID);
     }
 
     public Variable getTemporalCloneById(int varID) {
-        return this.modelHeader.getTemporalCloneById(varID);
+        return this.variables.getTemporalCloneById(varID);
     }
 
     public Variable getTemporalCloneFromVariable(Variable variable) {
-        return this.modelHeader.getTemporalCloneFromVariable(variable);
+        return this.variables.getTemporalCloneFromVariable(variable);
     }
 
     /* Methods accessing structure at time T*/

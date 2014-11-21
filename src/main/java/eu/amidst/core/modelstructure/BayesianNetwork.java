@@ -2,11 +2,9 @@
 package eu.amidst.core.modelstructure;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.header.Variable;
-import eu.amidst.core.header.StaticModelHeader;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -27,10 +25,11 @@ public class BayesianNetwork {
 
     private BayesianNetwork(DAG dag) {
         this.dag = dag;
+        initializeDistributions();
     }
 
-    public ConditionalDistribution getDistribution(Variable var) {
-        return distributions[var.getVarID()];
+    public <E extends ConditionalDistribution> E getDistribution(Variable var) {
+        return (E)distributions[var.getVarID()];
     }
 
     public void setDistribution(Variable var, ConditionalDistribution distribution){
@@ -38,11 +37,11 @@ public class BayesianNetwork {
     }
 
     public int getNumberOfVars() {
-        return this.getDAG().getModelHeader().getNumberOfVars();
+        return this.getDAG().getStaticVariables().getNumberOfVars();
     }
 
-    public StaticModelHeader getStaticModelHeader() {
-        return this.getDAG().getModelHeader();
+    public StaticVariables getStaticVariables() {
+        return this.getDAG().getStaticVariables();
     }
 
     public DAG getDAG (){
@@ -50,12 +49,12 @@ public class BayesianNetwork {
     }
 
     public List<Variable> getVariables() {
-        return this.getStaticModelHeader().getVariables();
+        return this.getStaticVariables().getListOfVariables();
     }
 
-    public void initializeDistributions(){
+    private void initializeDistributions(){
 
-        List<Variable> vars = getStaticModelHeader().getVariables(); /* the list of all variables in the BN */
+        List<Variable> vars = getStaticVariables().getListOfVariables(); /* the list of all variables in the BN */
 
         this.distributions = new ConditionalDistribution[vars.size()];
 
@@ -63,7 +62,7 @@ public class BayesianNetwork {
         /* Initialize the distribution for each variable depending on its distribution type
         as well as the distribution type of its parent set (if that variable has parents)
          */
-        for (Variable var : getStaticModelHeader().getVariables()) {
+        for (Variable var : getStaticVariables().getListOfVariables()) {
             ParentSet parentSet = this.getDAG().getParentSet(var);
 
             int varID = var.getVarID();

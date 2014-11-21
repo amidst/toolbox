@@ -16,8 +16,8 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 
-import eu.amidst.core.header.StaticModelHeader;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -29,7 +29,7 @@ public class TestReaderStatic {
     private static final double DELTA = 1e-15;
     private static WekaDataFileReader reader;
     private static Attributes attributes;
-    private static StaticModelHeader modelHeader;
+    private static StaticVariables staticVariables;
     private static DataRow datarow = null;
     private static DataInstance nextInstance = null;
     private static int index;
@@ -40,7 +40,7 @@ public class TestReaderStatic {
         reader = new WekaDataFileReader("data/dataWeka/labor.arff");
         dataOnDiskReader = new StaticDataOnDiskFromFile(reader);
         attributes = dataOnDiskReader.getAttributes();
-        modelHeader = new StaticModelHeader(attributes);
+        staticVariables = new StaticVariables(attributes);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class TestReaderStatic {
         /* Numeric attribute */
         assertEquals(5, (int) datarow.getValue(attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR")));
         index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
-        var = modelHeader.getVariable(index);
+        var = staticVariables.getVariable(index);
         System.out.println(var.getName());
         assertEquals(5, (int) nextInstance.getValue(var));
     }
@@ -88,7 +88,7 @@ public class TestReaderStatic {
         }
 
         /* Numeric attribute */
-        assertEquals(5, (int) nextInstance.getValue(modelHeader.getVariable("WAGE-INCREASE-FIRST-YEAR")));
+        assertEquals(5, (int) nextInstance.getValue(staticVariables.getVariable("WAGE-INCREASE-FIRST-YEAR")));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class TestReaderStatic {
         /* Discrete attribute */
         assertEquals(1, (int) datarow.getValue(attributes.getAttributeByName("VACATION")));
         /* Number of states */
-        assertEquals(3, modelHeader.getVariable("PENSION").getNumberOfStates());
+        assertEquals(3, staticVariables.getVariable("PENSION").getNumberOfStates());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class TestReaderStatic {
             nextInstance = new StaticDataInstance(datarow);
         }
         index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
-        var = modelHeader.getVariable("WAGE-INCREASE-FIRST-YEAR");
+        var = staticVariables.getVariable("WAGE-INCREASE-FIRST-YEAR");
         assertEquals(Double.NaN, nextInstance.getValue(var), DELTA);
     }
 
