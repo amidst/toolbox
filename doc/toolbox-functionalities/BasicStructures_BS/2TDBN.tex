@@ -4,21 +4,20 @@
 \begin{description}
 \item[Deadline:] M12
 \item[Responsible:]
-\item[Code-Package:] \texttt{core.modelstructure}
+\item[Code-Package:] \texttt{core.models}
 \end{description}
 
 \subsubsection*{Description}
 
-Similarly to \ref{BNs:ID} but for dynamic Bayesian networks, this functionality aims to serve as the representation of a 2-time dynamic BN. It handles the structure (Dynamic DAG) and the distributions of a 2TDNB a Time 0 and Time T. 
-
+This functionality is similar to the one defined for Bayesian network (see \ref{BNs:ID}), but it aims here to represent instead a two slice-time dynamic Bayesian network (2T-DBN). It handles its structure (dynamic DAG defined over a set of dynamic variables) and the set of its distributions at time 0 and time T. 
 
 \subsubsection*{Detailed functionality}
 
 \begin{itemize}
-\item This functionality is presumably going to need a DynamicDAG.
+
+\item The distributions of each dynamic variable at both time 0 and time T are initialised and specified according to the variable type and the type of its potentiel parent set. 
+
+\item After this step, the set of parents of each dynamic variable becomes unmodifiable.
+
 \end{itemize}
 
-\subsubsection*{Code Example}
-
-
-\subsubsection*{Detailed functionality}
