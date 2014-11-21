@@ -1,0 +1,62 @@
+This directory contains several library files:
+
+o libhugin.a and libhugin2.a are library archives (static libraries) for
+  the C API for Hugin Decision Engine v8.0.
+
+  - libhugin.a uses single-precision floating-point numbers to represent
+    discrete probability data
+
+  - libhugin2.a uses double-precision floating-point numbers to represent
+    discrete probability data
+
+  [Both versions use double-precision floating-point numbers to represent
+  means and (co)variances.]
+
+  To use the single-precision version of the library, link with the
+	-L$HUGINHOME/Libraries -lhugin -lz
+  options.
+
+  To use the double-precision version of the library, link with the
+	-L$HUGINHOME/Libraries -lhugin2 -lz
+  options *and* add the
+	-DH_DOUBLE
+  flag when compiling source files that include the "hugin.h" header file.
+
+  Refer to the "Hugin API Reference Manual" for more information.
+
+o libhugin.dylib and libhugin2.dylib are shared libraries for the C API
+  for Hugin Decision Engine v8.0.  The usage instructions are the same
+  as for the static libraries.
+
+o libhugincpp.dylib and libhugincpp2.dylib are shared libraries for the
+  C++ API for Hugin Decision Engine v8.0.
+
+  - libhugincpp.dylib uses single-precision floating-point numbers to
+    represent discrete probability data
+
+  - libhugincpp2.dylib uses double-precision floating-point numbers to
+    represent discrete probability data
+
+  [Both versions use double-precision floating-point numbers to represent
+  means and (co)variances.]
+
+  To use the single-precision version of the library, link with the
+	-L$HUGINHOME/Libraries -lhugincpp
+  options.
+
+  To use the double-precision version of the library, link with the
+	-L$HUGINHOME/Libraries -lhugincpp2
+  options *and* add the
+	-DH_DOUBLE
+  flag when compiling source files that include the "hugin" header file.
+
+  Refer to the "Hugin C++ API" documentation and the "Hugin API Reference
+  Manual" for more information.
+
+o libhapi80-64.jnilib is the native code for the Java API for Hugin Decision
+  Engine v8.0.
+
+  Refer to the "Hugin Java API" documentation and the "Hugin API Reference
+  Manual" for more information.
+
+All documentation are located in the ../Documentation directory.
