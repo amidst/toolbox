@@ -1,5 +1,12 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. (Andres) getListOfVariables should return a Set instead of a List.
+ *
+ * ********************************************************
+ */
 
-package eu.amidst.core.modelstructure;
+package eu.amidst.core.models;
 
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.StaticVariables;
@@ -48,7 +55,7 @@ public class BayesianNetwork {
         return dag;
     }
 
-    public List<Variable> getVariables() {
+    public List<Variable> getListOfVariables() {
         return this.getStaticVariables().getListOfVariables();
     }
 
