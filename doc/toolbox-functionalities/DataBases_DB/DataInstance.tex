@@ -10,16 +10,15 @@
 
 \subsubsection*{Description}
 
-Enter a textual description of the functionality. Link to other functionalities if needed. 
-\begin{itemize}
-\item StaticDataInstance.
-\item DynamicDataInstance: TimeID, SequenceID.
-\end{itemize}
+DataInstance is an interface that can be implemented by a StaticDataInstance and a DynamicDataInstance. The former stores one row (DataRow) of the dataset at a time, whereas the second contains two rows of the dataset. 
 
 \subsubsection*{Detailed functionality}
 
+A DynamicDataInstance always has a TimeID and a SequenceID. If this two attributes, or any of the two, are not in the dataset then they are automatically filled in, incrementally for the TimeID and with a value of $1$ for the SequenceID.
+
 \begin{itemize}
-\item Short Description
+\item StaticDataInstance: contains one DataRow
+\item DynamicDataInstance: contains a past and a present DataRow, a TimeID and a SequenceID. The TimeID attribute in the dataset can be used to represent missing samples (stored as DataRowMissing), in which all attribute values are NaN.
 \end{itemize}
 
 \subsubsection*{Code Example}
