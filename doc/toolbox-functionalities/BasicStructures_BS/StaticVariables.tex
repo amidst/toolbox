@@ -1,22 +1,27 @@
-\newpage
-\subsection{Static Variables}
+\subsection{Static variables}
 \label{Functionality:ID}
 
 \begin{description}
 \item[Deadline:] M12
 \item[Responsible:]
-\item[Code-Package:] \texttt{core.variables}
+\item[Code-Package:] \texttt{eu.amidst.core.variables}
 \end{description}
 
 \subsubsection*{Description}
 
-Enter a textual description of the functionality. Link to other functionalities if needed. 
+Static variables define the list of static variables to be used in the static BN models.  
 
 \subsubsection*{Detailed functionality}
 
 \begin{itemize}
-\item Short Description
+\item List of objects of the type Variable. 
+
+\item A static variable is characterised by its name, ID, the number of states, the state space type, the distribution type, as well as if it is observable or not.
+
+\item The state space type could be either Multinomial or Real.
+
+\item The distribution type could be either Multinomial or Gaussian.
+
+\item The list of observable static variables is initialised using the list of Attributes (that are already parsed from the dataset or specified by the user), then hidden variables can be also added.
+
 \end{itemize}
-
-\subsubsection*{Code Example}
-
