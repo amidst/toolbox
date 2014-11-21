@@ -56,7 +56,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
+    }
 
+    public Multinomial[] getProbabilities(){
+        return this.probabilities;
     }
 
     /**
@@ -89,6 +92,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return probabilities[position];
     }
 
+    public Multinomial getMultinomial(int position) {
+        return probabilities[position];
+    }
+
     /**
      * Computes the logarithm of the probability of the variable for a given state and a parent assignment.
      * @param parentAssignment An <code>Assignment</code> for the parents.
@@ -99,4 +106,5 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         double value = parentAssignment.getValue(this.var);
         return this.getMultinomial(parentAssignment).getLogProbability(value);
     }
+
 }
