@@ -91,11 +91,11 @@ public class DynamicVariables {
         return var;
     }
 
-    public List<Variable> getDynamicVariables() {
+    public List<Variable> getListOfDynamicVariables() {
         return this.allVariables;
     }
 
-    public List<Variable> getTemporalClones() {
+    public List<Variable> getListOfTemporalClones() {
         return this.temporalClones;
     }
 
@@ -108,7 +108,7 @@ public class DynamicVariables {
     }
 
     public Variable getVariableByName(String name) {
-        for(Variable var: getDynamicVariables()){
+        for(Variable var: getListOfDynamicVariables()){
             if(var.getName().equals(name))
                 return var;
         }
@@ -116,7 +116,7 @@ public class DynamicVariables {
     }
 
     public Variable getTemporalCloneByName(String name) {
-        for(Variable var: getTemporalClones()){
+        for(Variable var: getListOfTemporalClones()){
             if(var.getName().equals(name))
                 return var;
         }
