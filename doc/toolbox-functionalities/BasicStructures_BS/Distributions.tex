@@ -1,5 +1,3 @@
-%!TEX root = ../MainDoc.tex
-\newpage
 \subsection{Distributions}
 \label{Distributions:D}
 
@@ -13,13 +11,11 @@
 
 This functionality addresses the set of conditional probability distributions considered to be included in the toolbox. Variables with Gaussian and multinomial distributions are modeled. The variables arrangement in the model structure gives rise to the different types of probability distributions, one for each variable in the network. 
 
-This functionality is tightly connected to functionality \texttt{Variable (REF)} and \texttt{DAG, StaticModelHeader REF} to know both the nature of the variables and also the set of parents involved.
-
-
+This functionality is tightly connected to functionality \texttt{Variable} and \texttt{DAG} to know both the type and the set of parents of each variable.
 
 \subsubsection*{Detailed functionality}
 
-The type of each variable and its parents determine the different probability distributions detailed next:
+The type and the set of parents of each variable determine the different defined probability distributions as follows:
 
 \begin{itemize}
 \item Multinomial variable with no parents
@@ -28,10 +24,10 @@ The type of each variable and its parents determine the different probability di
 \item Gaussian variable with multinomial parents.
 \item Gaussian variable with Gaussian parents. 
 \item Gaussian variable with a mixture of multinomial and Gaussian parents. 
-
 \end{itemize}
 
 Note that a multinomial variable is not allowed to have Gaussian parents and therefore it has not been included in the list above.
+
 Multinomial parents are only used for indexing the set of possible distributions of the variable, so the functionality when no multinomial parents reduces to the general case.
 
 
