@@ -68,7 +68,9 @@
 
 % Document History
 
-\section{Executive summary}
+\section*{Executive summary}
+\label{sec:summary}
+\addcontentsline{toc}{section}{\nameref{sec:summary}}
 
 The aim of this document is to track the development of the coding of the AMIDST toolbox. The document is structured by the different use cases of the toolbox.  For each use case (included in independent sections),  we include a description of the purpose of the use case as well as a categorized list of the associated requirements. We then associate to each use case a list of so-called \textit{\textbf{functionalities}} (included in independent subsections) that are coded in the toolbox to cover the specific use case and their associated requirements. A \textit{functionality}, or also called a \textit{feature}, is a set of java classes which allow to perform a specific task or which define a coherent concept within the toolbox. For example, the creation and managing of random variables, reading a data set from a file, building and handling dynamic Bayesian networks, the maximum likelihood estimation etc. The set of \textit{functionalities} identify those key parts of the toolbox that any developer or toolbox user need to understand in order to make a proper use of the software tool
 
@@ -80,6 +82,9 @@ In the last section we detail the class diagram of each code package of the tool
 We highlight that the contents detailed here can be later transformed or reorganized to create the different deliverables and the final user-manual of this toolbox. 
  
 \newpage
+
+\input{allUseCases}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% USE CASE  DATA BASES (DB) %%%%%%%%%%%%%%%%
@@ -193,7 +198,7 @@ We highlight that the contents detailed here can be later transformed or reorgan
 
 
 
-%\includepdf{doxygenPDF/refman.pdf}
+\includepdf{doxygenPDF/refman.pdf}
 
 \bibliographystyle{splncs}
 %\bibliography{re}
