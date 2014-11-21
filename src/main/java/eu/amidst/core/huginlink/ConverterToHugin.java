@@ -6,8 +6,8 @@ import COM.hugin.HAPI.Node;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.modelstructure.BayesianNetwork;
-import eu.amidst.core.modelstructure.DAG;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.List;
@@ -174,7 +174,7 @@ public class ConverterToHugin {
 
     public void setDistributions(BayesianNetwork bn) {
 
-        List<Variable> amidstVars = bn.getVariables();
+        List<Variable> amidstVars = bn.getListOfVariables();
 
         for(Variable amidstVar:amidstVars) {
 
