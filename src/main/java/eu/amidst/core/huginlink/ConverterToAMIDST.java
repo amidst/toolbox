@@ -5,8 +5,8 @@ import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.variables.*;
-import eu.amidst.core.modelstructure.BayesianNetwork;
-import eu.amidst.core.modelstructure.DAG;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class ConverterToAMIDST {
     public void setStructure(){
 
 
-        List<Variable> amidstVariables = this.amidstNetwork.getVariables();
+        List<Variable> amidstVariables = this.amidstNetwork.getListOfVariables();
 
         try {
             NodeList huginNodes = this.huginNetwork.getNodes();
@@ -101,7 +101,7 @@ public class ConverterToAMIDST {
 
         try {
             int indexNode = this.huginNetwork.getNodes().indexOf(huginVar);
-            Variable amidstVar = this.amidstNetwork.getVariables().get(indexNode);
+            Variable amidstVar = this.amidstNetwork.getListOfVariables().get(indexNode);
             int numStates = amidstVar.getNumberOfStates();
 
             double[] huginProbabilities = huginVar.getTable().getData();
@@ -124,7 +124,7 @@ public class ConverterToAMIDST {
 
     public void setDistributions(NodeList huginNodes){
 
-        List<Variable> amidstVariables = this.amidstNetwork.getVariables();
+        List<Variable> amidstVariables = this.amidstNetwork.getListOfVariables();
 
         for (int i = 0; i < huginNodes.size(); i++) {
 
