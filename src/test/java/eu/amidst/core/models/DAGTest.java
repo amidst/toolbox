@@ -1,4 +1,4 @@
-package eu.amidst.core.modelstructure;
+package eu.amidst.core.models;
 
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.variables.*;

@@ -32,7 +32,7 @@ public class NaiveBayesClassifier extends LearnableModel implements Classifier {
         PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getDistribution(this.classID).getRestrictedPotentialExceptFor(data,this.getClassVarID());
 
 
-        for (int i = 0; i < this.getBayesianNetwork().getNumberOfNodes(); i++) {
+        for (int i = 0; i < this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
             if (Utils.isMissing(data.getValue(i)) || i==this.getClassVarID())
                 continue;
             Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
@@ -65,7 +65,7 @@ public class NaiveBayesClassifier extends LearnableModel implements Classifier {
 
         BayesianNetwork net = BNFactory.createBN(modelHeader);
 
-        for (int i = 0; i < net.getNumberOfNodes(); i++) {
+        for (int i = 0; i < net.getNumberOfDynamicVars(); i++) {
             if (i == this.getClassVarID())
                 continue;
             net.getParentSet(i).addParent(this.getClassVarID());
