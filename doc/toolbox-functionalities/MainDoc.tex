@@ -68,7 +68,9 @@
 
 % Document History
 
-\section{Executive summary}
+\section*{Executive summary}
+\label{sec:summary}
+\addcontentsline{toc}{section}{\nameref{sec:summary}}
 
 The aim of this document is to track the development process of the AMIDST toolbox. 
 
@@ -85,6 +87,9 @@ Finally, the document is concluded with an appendix which contains a pdf documen
 We highlight that the contents detailed here can be later modified or re-organized to create the different deliverables and the final user-manual of the AMIDST toolbox. 
  
 \newpage
+
+\input{allUseCases}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% USE CASE  DATA BASES (DB) %%%%%%%%%%%%%%%%
@@ -115,6 +120,8 @@ We highlight that the contents detailed here can be later modified or re-organiz
 %%%%%%%%% USE CASE  HUGIN LINK (HL) %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{HuginLink_HL/UseCase_HL_HuginLink}
+\input{HuginLink_HL/BayesianNetworkConverter}
+\input{HuginLink_HL/TimeTable-HuginLink}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -129,6 +136,8 @@ We highlight that the contents detailed here can be later modified or re-organiz
 %%%%%%%%% USE CASE  MAXIMUM LIKELIHOOD (ML) %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{MaximumLikelihood_ML/UseCase_ML_MaximumLikelihood}
+\input{MaximumLikelihood_ML/ExponentialFaimilyDistributions}
+\input{MaximumLikelihood_ML/TimeTable-ML}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -194,7 +203,7 @@ We highlight that the contents detailed here can be later modified or re-organiz
 
 
 
-%\includepdf{doxygenPDF/refman.pdf}
+\includepdf{doxygenPDF/refman.pdf}
 
 \bibliographystyle{splncs}
 %\bibliography{re}
