@@ -37,7 +37,7 @@ public class StaticModelHeader {
 
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : atts.getSet()) {
+        for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             allVariables.add(var.getVarID(), var);
@@ -45,14 +45,14 @@ public class StaticModelHeader {
     }
 
     /**
-    * Constructor where the distribution type of random variables is provided as an argument.
-    *
-    */
+     * Constructor where the distribution type of random variables is provided as an argument.
+     *
+     */
     public StaticModelHeader(Attributes atts, HashMap<Attribute, DistType> typeDists) {
 
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : atts.getSet()) {
+        for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder;
             if (typeDists.containsKey(att)) {
                 builder = new VariableBuilder(att, typeDists.get(att));
@@ -72,7 +72,7 @@ public class StaticModelHeader {
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         allVariables.add(var);
         return var;
-        
+
     }
 
     public List<Variable> getVariables() {
@@ -81,6 +81,14 @@ public class StaticModelHeader {
 
     public Variable getVariable(int varID) {
         return this.allVariables.get(varID);
+    }
+
+    public Variable getVariable(String name) {
+        for(Variable var: getVariables()){
+            if(var.getName().equals(name))
+                return var;
+        }
+        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
     }
 
     public int getNumberOfVars() {

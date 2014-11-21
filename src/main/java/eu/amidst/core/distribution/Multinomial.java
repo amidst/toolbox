@@ -84,4 +84,5 @@ public class Multinomial extends UnivariateDistribution {
         return (Math.log(this.getProbability(value)));
     }
 
+
 }
