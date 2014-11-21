@@ -8,7 +8,7 @@ import eu.amidst.core.header.Variable;
  */
 public class StaticDataInstance implements DataInstance {
 
-    DataRow dataRow;
+    private DataRow dataRow;
     public StaticDataInstance(DataRow dataRow_){
         dataRow=dataRow_;
     }
@@ -27,4 +27,5 @@ public class StaticDataInstance implements DataInstance {
     public int getTimeID() {
         throw new UnsupportedOperationException("Invoking getTimeID() from an data instance of static data base.");
     }
+
 }

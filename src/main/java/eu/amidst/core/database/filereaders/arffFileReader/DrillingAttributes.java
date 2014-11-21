@@ -1,25 +1,29 @@
 package eu.amidst.core.database.filereaders.arffFileReader;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.header.StateSpaceType;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by sigveh on 10/16/14.
  */
-public class DrillingAttributes implements Attributes {
+public class DrillingAttributes extends Attributes {
 
-    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceType.REAL);
-    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceType.REAL);
-    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceType.REAL);
+    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceType.REAL, 0);
+    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceType.REAL, 0);
+    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceType.REAL, 0);
 
 
-    private static Set<Attribute> attributes;
+    private static List<Attribute> attributesDrilling;
     {
-        attributes = ImmutableSet.of(MFI, SPP, RPM);
+        attributesDrilling = ImmutableList.of(MFI, SPP, RPM);
+    }
+
+    public DrillingAttributes(){
+        super(attributesDrilling);
     }
 
     public Attribute getMFI() {
@@ -35,8 +39,8 @@ public class DrillingAttributes implements Attributes {
     }
 
     @Override
-    public Set<Attribute> getSet() {
-        return attributes;
+    public List<Attribute> getList() {
+        return attributesDrilling;
     }
 
     @Override
