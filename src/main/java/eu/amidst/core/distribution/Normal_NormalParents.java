@@ -3,7 +3,7 @@
  *
  * 1. In the constructor, should we initialize the CLG attributes in this way?
  *
- * 2. The name of the method getProbability(..) is a bit confusing for continuous domains. It does not compute probabilities but the
+ * 2. The name of the method computeProbabilityOf(..) is a bit confusing for continuous domains. It does not compute probabilities but the
  * value for the density function which is not a probability. However as this class implements this method of ConditionalDistribution,
  * we could leave like this.
  *
@@ -13,8 +13,8 @@
 
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.Assignment;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.Variable;
 
 import java.util.Collections;
 import java.util.List;

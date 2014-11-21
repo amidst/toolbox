@@ -1,10 +1,8 @@
 package eu.amidst.core.utils;
 import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.header.Assignment;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

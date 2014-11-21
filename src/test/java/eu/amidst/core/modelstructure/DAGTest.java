@@ -1,14 +1,9 @@
 package eu.amidst.core.modelstructure;
 
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.header.*;
+import eu.amidst.core.variables.*;
 import java.util.*;
-import eu.amidst.core.database.filereaders.arffFileReader.*;
-import eu.amidst.core.database.filereaders.arffWekaReader.*;
-import eu.amidst.core.database.dynamics.readers.*;
-import eu.amidst.core.modelstructure.DAG;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -21,12 +16,12 @@ public class DAGTest {
 /* Very simple example to test the DAG class*/
 
     WekaDataFileReader reader = new WekaDataFileReader("data/dataWeka/contact-lenses.arff");
-    StaticModelHeader modelheader = new StaticModelHeader(reader.getAttributes());
-    DAG dag = new DAG(modelheader);
+    StaticVariables variables = new StaticVariables(reader.getAttributes());
+    DAG dag = new DAG(variables);
 
     @Test
     public void testingDAG(){
-        List<Variable> variables =  dag.getModelHeader().getVariables();
+        List<Variable> variables =  dag.getStaticVariables().getListOfVariables();
         Variable A = variables.get(0);
         Variable B = variables.get(1);
         Variable C = variables.get(2);
