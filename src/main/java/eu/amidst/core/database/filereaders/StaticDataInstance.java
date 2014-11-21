@@ -1,7 +1,7 @@
 package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 11/11/14.
