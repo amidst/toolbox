@@ -35,8 +35,8 @@ public class TestReaderDynamic {
         attributes = reader.getAttributes();
         dataOnDisk = new DynamicDataOnDiskFromFile(reader);
         dynamicVariables = new DynamicVariables(attributes);
-        obsVars = dynamicVariables.getDynamicVariables();
-        temporalClones = dynamicVariables.getTemporalClones();
+        obsVars = dynamicVariables.getListOfDynamicVariables();
+        temporalClones = dynamicVariables.getListOfTemporalClones();
     }
 
     /**********************************************************

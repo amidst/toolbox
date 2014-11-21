@@ -3,18 +3,17 @@ package eu.amidst.core.huginlink;
 import COM.hugin.HAPI.*;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.modelstructure.ParentSet;
+import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.modelstructure.BayesianNetwork;
-import eu.amidst.core.modelstructure.DAG;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -194,7 +193,7 @@ public class ConverterToHuginTest {
         int numVars = amidstBN.getNumberOfVars();
         for (int i = 0; i < numVars; i++) {
 
-            Variable amidstVar = amidstBN.getVariables().get(i);
+            Variable amidstVar = amidstBN.getListOfVariables().get(i);
             Node huginVar = (Node) huginBN.getNodes().get(i);
 
             // Variable names
