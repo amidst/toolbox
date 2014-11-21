@@ -4,18 +4,14 @@
  * 1. In general, should we clone attributes in the constructor to avoid bad uses of input variables later on?
  *
  * 2. How are we going to update the probabilities? Value by value? Or directly with the whole set of probabilities? or both?
- * Two methods are included: setProbabilities(double[] probabilities) and setProbabilityAt(int index, double value)
+ * Two methods are included: setProbabilities(double[] probabilities) and setProbabilityOfState(int index, double value)
  *
- * 3. Is needed the method setProbabilityAt ?
+ * 3. Is needed the method setProbabilityOfState ?
  * ********************************************************
  */
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.Assignment;
-import eu.amidst.core.header.Variable;
-
-import java.util.List;
-import java.util.ArrayList;
+import eu.amidst.core.variables.Variable;
 
 
 /**
@@ -56,13 +52,21 @@ public class Multinomial extends UnivariateDistribution {
 
     /**
      * Set a probability value in a given position in the array of probabilities.
-     * @param index The position in which the probability is set.
-     * @param value A probability value.
+     * @param state The position in which the probability is set.
+     * @param prob A probability value.
      */
-    public void setProbabilityAt(int index, double value) {
-        this.probabilities[index] = value;
+    public void setProbabilityOfState(int state, double prob) {
+        this.probabilities[state] = prob;
     }
 
+    /**
+     *
+     * @param state
+     * @return
+     */
+    public double getProbabilityOfState(int state) {
+        return this.probabilities[state];
+    }
 
     /**
      * Gets the array of probabilities for the different states of the variable.

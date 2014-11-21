@@ -4,7 +4,7 @@ import COM.hugin.HAPI.*;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.header.*;
+import eu.amidst.core.variables.*;
 import eu.amidst.core.modelstructure.BayesianNetwork;
 import eu.amidst.core.modelstructure.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -65,8 +65,8 @@ public class ConverterToAMIDST {
             System.out.println("Exception caught: " + e.getMessage());
         }
 
-        StaticModelHeader modelHeader = new StaticModelHeader(new Attributes(atts));
-        DAG dag = new DAG(modelHeader);
+        StaticVariables staticVariables = new StaticVariables(new Attributes(atts));
+        DAG dag = new DAG(staticVariables);
         this.amidstNetwork = BayesianNetwork.newBayesianNetwork(dag);
     }
 
@@ -112,7 +112,8 @@ public class ConverterToAMIDST {
             int pos=0;
             for(int i=0;i<numParentAssignments;i++){
                 double[] amidstProbabilities_i = Arrays.copyOfRange(huginProbabilities, pos, numStates*(i+1)-1);
-                ((Multinomial_MultinomialParents)this.amidstNetwork.getDistribution(amidstVar)).getMultinomial(i).setProbabilities(amidstProbabilities_i);
+                Multinomial_MultinomialParents dist = this.amidstNetwork.getDistribution(amidstVar);
+                dist.getMultinomial(i).setProbabilities(amidstProbabilities_i);
                 pos = numStates*(i+1);
             }
         }
@@ -124,8 +125,6 @@ public class ConverterToAMIDST {
     public void setDistributions(NodeList huginNodes){
 
         List<Variable> amidstVariables = this.amidstNetwork.getVariables();
-
-        this.amidstNetwork.initializeDistributions();
 
         for (int i = 0; i < huginNodes.size(); i++) {
 

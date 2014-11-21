@@ -3,7 +3,7 @@ package eu.amidst.core.database.filereaders.arffFileReader;
 import com.google.common.collect.ImmutableList;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
-import eu.amidst.core.header.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceType;
 
 import java.util.List;
 

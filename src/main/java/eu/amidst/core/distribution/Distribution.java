@@ -1,6 +1,6 @@
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.header.Variable;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by afa on 12/11/14.
