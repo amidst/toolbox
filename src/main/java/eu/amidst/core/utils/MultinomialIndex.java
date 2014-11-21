@@ -1,5 +1,6 @@
 package eu.amidst.core.utils;
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.header.Assignment;
 import eu.amidst.core.header.Variable;
 
@@ -130,7 +131,7 @@ public class MultinomialIndex {
      */
     public static int getNumberOfPossibleAssignments (List<Variable> vars) {
 
-        int n = 0;
+        int n = 1;
         for (Variable v : vars) {
             n = n * v.getNumberOfStates();
         }

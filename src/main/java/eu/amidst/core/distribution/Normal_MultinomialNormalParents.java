@@ -32,6 +32,7 @@ import java.util.List;
 
 public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
+
     /**
      * The list of multinomial parents
      */
@@ -61,12 +62,12 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         this.normalParents = new ArrayList<Variable>();
         this.parents = parents;
 
+        for (Variable parent : parents) {
 
-        for (Variable v : parents) {
-            if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-                this.multinomialParents.add(var);
+            if (parent.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+                this.multinomialParents.add(parent);
             } else {
-                this.normalParents.add(var);
+                this.normalParents.add(parent);
             }
         }
 
@@ -96,6 +97,10 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     public Normal_NormalParents getNormal_NormalParentsDistribution(Assignment assignment) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
         return distribution[position];
+    }
+    public Normal_NormalParents getNormal_NormalParentsDistribution(int i) {
+        return distribution[i];
+
     }
 
     /**
@@ -130,4 +135,17 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         double value = assignment.getValue(this.getVariable());
         return getNormal_NormalParentsDistribution(assignment).getLogConditionalProbability(assignment);
     }
+
+    public List<Variable> getMultinomialParents() {
+        return multinomialParents;
+    }
+
+    public List<Variable> getNormalParents() {
+        return normalParents;
+    }
+
+    public Normal_NormalParents[] getDistribution() {
+        return distribution;
+    }
+
 }

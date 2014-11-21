@@ -44,16 +44,27 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
 
     }
 
+    public Normal getNormal(int position) {
+        return distribution[position];
+    }
+
+
+
     /**
      * Gets the corresponding univariate normal distribution after conditioning the distribution to a multinomial
      * parent assignment.
      * @param parentsAssignment An <code>Assignment</code> for the parents.
      * @return A <code>Normal</code> object with the univariate distribution.
      */
-    public Normal getNormal(Assignment parentsAssignment) {
+     public Normal getNormal(Assignment parentsAssignment) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents, parentsAssignment);
-        return distribution[position];
+        return this.getNormal(position);
     }
+
+
+
+
+
 
     /**
      * Sets a <code>Normal</code> distribution in a given position in the array of distributions.
@@ -87,4 +98,6 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         double value = assignment.getValue(this.var);
         return this.getNormal(assignment).getLogProbability(value);
     }
+
+
 }
