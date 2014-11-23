@@ -107,4 +107,11 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return this.getMultinomial(parentAssignment).getLogProbability(value);
     }
 
+    public String label(){
+        if (this.getConditioningVariables().size()==0)
+            return "Multinomial";
+        else
+            return "Multinomial|Multinomial";
+    }
+
 }
