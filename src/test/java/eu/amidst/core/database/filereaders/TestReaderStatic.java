@@ -1,7 +1,7 @@
 /**
  ******************* ISSUE LIST **************************
  *
- * 1. Do we need a getVariable(String s) in StaticModelHeader?
+ * 1. Do we need a getVariableByName(String s) in StaticModelHeader?
 
  *
  * ********************************************************
@@ -69,7 +69,7 @@ public class TestReaderStatic {
         /* Numeric attribute */
         assertEquals(5, (int) datarow.getValue(attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR")));
         index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
-        var = staticVariables.getVariable(index);
+        var = staticVariables.getVariableById(index);
         System.out.println(var.getName());
         assertEquals(5, (int) nextInstance.getValue(var));
     }
@@ -88,7 +88,7 @@ public class TestReaderStatic {
         }
 
         /* Numeric attribute */
-        assertEquals(5, (int) nextInstance.getValue(staticVariables.getVariable("WAGE-INCREASE-FIRST-YEAR")));
+        assertEquals(5, (int) nextInstance.getValue(staticVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")));
     }
 
     @Test
@@ -102,7 +102,7 @@ public class TestReaderStatic {
         /* Discrete attribute */
         assertEquals(1, (int) datarow.getValue(attributes.getAttributeByName("VACATION")));
         /* Number of states */
-        assertEquals(3, staticVariables.getVariable("PENSION").getNumberOfStates());
+        assertEquals(3, staticVariables.getVariableByName("PENSION").getNumberOfStates());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class TestReaderStatic {
             nextInstance = new StaticDataInstance(datarow);
         }
         index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
-        var = staticVariables.getVariable("WAGE-INCREASE-FIRST-YEAR");
+        var = staticVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR");
         assertEquals(Double.NaN, nextInstance.getValue(var), DELTA);
     }
 
