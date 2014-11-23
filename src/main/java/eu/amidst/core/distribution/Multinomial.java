@@ -85,8 +85,10 @@ public class Multinomial extends UnivariateDistribution {
      */
     @Override
     public double getLogProbability(double value) {
-        return (Math.log(this.getProbability(value)));
+        return Math.log(this.probabilities[(int)value]);
     }
 
-
+    public String label(){
+        return "Multinomial";
+    }
 }

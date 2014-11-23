@@ -7,6 +7,8 @@
  * 4. If the fields in VariableImplementation are all objects then the TemporalClone only contains
  *    pointers, which would ensure consistency, although we are not planing to modify these values.
  *
+ * 5. Remove method getVariableByVarID();
+ *
  * ********************************************************
  */
 
@@ -29,14 +31,26 @@ public class DynamicVariables {
     private List<Variable> allVariables;
     private List<Variable> temporalClones;
 
+    private HashMap<String, Integer> mapping;
+
+    public DynamicVariables() {
+        this.allVariables = new ArrayList<>();
+        this.temporalClones = new ArrayList<>();
+        this.mapping = new HashMap<>();
+    }
+
     public DynamicVariables(Attributes atts) {
 
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
+        this.mapping = new HashMap<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+            if (mapping.containsKey(var.getName()))
+                throw new IllegalArgumentException("Attribute list contains duplicated names");
+            this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
 
 
@@ -63,6 +77,9 @@ public class DynamicVariables {
             }
 
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+            if (mapping.containsKey(var.getName()))
+                throw new IllegalArgumentException("Attribute list contains duplicated names");
+            this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
 
             VariableImplementation temporalClone = new VariableImplementation(var);
@@ -71,7 +88,7 @@ public class DynamicVariables {
         }
     }
 
-    public Variable getTemporalCloneFromVariable(Variable var){
+    public Variable getTemporalClone(Variable var){
         return temporalClones.get(var.getVarID());
     }
 
@@ -79,10 +96,64 @@ public class DynamicVariables {
         return allVariables.get(var.getVarID());
     }
 
+    public Variable addIndicatorDynamicVariable(Variable var) {
+        if (!var.isObservable())
+            throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
 
-    public Variable addHiddenVariable(VariableBuilder builder) {
+        if (var.getStateSpaceType()!=StateSpaceType.REAL)
+            throw new IllegalArgumentException("An indicator variable should be created from an real variable");
+
+        VariableBuilder builder = new VariableBuilder(var.getAttribute());
+        builder.setName(var.getName()+"_Indicator");
+        builder.setDistributionType(DistType.INDICATOR);
+
+        VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(varNew.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(varNew.getName(), varNew.getVarID());
+        allVariables.add(varNew);
+
+        VariableImplementation temporalClone = new VariableImplementation(varNew);
+        temporalClones.add(varNew.getVarID(),temporalClone);
+
+        return varNew;
+
+    }
+
+    public Variable addObservedDynamicVariable(Attribute att) {
+
+        VariableImplementation var = new VariableImplementation(new VariableBuilder(att), allVariables.size());
+        if (mapping.containsKey(var.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(var.getName(), var.getVarID());
+        allVariables.add(var);
+
+        VariableImplementation temporalClone = new VariableImplementation(var);
+        temporalClones.add(var.getVarID(),temporalClone);
+
+        return var;
+    }
+
+    public Variable addObservedDynamicVariable(Attribute att, DistType distType) {
+        VariableBuilder variableBuilder = new VariableBuilder(att);
+        variableBuilder.setDistributionType(distType);
+        VariableImplementation var = new VariableImplementation(variableBuilder, allVariables.size());
+        if (mapping.containsKey(var.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(var.getName(), var.getVarID());
+        allVariables.add(var);
+
+        VariableImplementation temporalClone = new VariableImplementation(var);
+        temporalClones.add(var.getVarID(),temporalClone);
+
+        return var;
+    }
+    public Variable addHiddenDynamicVariable(VariableBuilder builder) {
 
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(var.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
         VariableImplementation temporalClone = new VariableImplementation(var);
@@ -103,28 +174,34 @@ public class DynamicVariables {
         return this.allVariables.get(varID);
     }
 
-    public Variable getTemporalCloneById(int varID) {
-        return this.temporalClones.get(varID);
-    }
+
+    //public Variable getTemporalCloneById(int varID) {
+    //    return this.temporalClones.get(varID);
+    //}
 
     public Variable getVariableByName(String name) {
+        Integer index = this.mapping.get(name);
+        if (index==null)
+            throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
+        else
+            return this.getVariableById(index.intValue());
+    }
+
+    public Variable getTemporalCloneByName(String name) {
+        return this.getTemporalClone(this.getVariableByName(name));
+    }
+
+    public int getNumberOfVars() {
+        return this.allVariables.size();
+    }
+
+
+    public Variable getVariable(String name) {
         for(Variable var: getListOfDynamicVariables()){
             if(var.getName().equals(name))
                 return var;
         }
         throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
-    }
-
-    public Variable getTemporalCloneByName(String name) {
-        for(Variable var: getListOfTemporalClones()){
-            if(var.getName().equals(name))
-                return var;
-        }
-        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
-    }
-
-    public int getNumberOfVars() {
-        return this.allVariables.size();
     }
 
     private class VariableImplementation implements Variable {
@@ -155,7 +232,7 @@ public class DynamicVariables {
          * Constructor for a Temporal clone (based on a variable)
          */
         public VariableImplementation(Variable variable) {
-            this.name = variable.getName();
+            this.name = variable.getName()+"_TClone";
             this.varID = variable.getVarID();
             this.observable = variable.isObservable();
             this.numberOfStates = variable.getNumberOfStates();
@@ -195,5 +272,20 @@ public class DynamicVariables {
         }
 
         public Attribute getAttribute(){return attribute;}
+
+        public boolean isDynamicVariable(){
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Variable var = (Variable) o;
+
+            return this.getName().equals(var.getName());
+        }
+
     }
 }
