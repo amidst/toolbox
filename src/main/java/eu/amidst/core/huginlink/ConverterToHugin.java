@@ -29,7 +29,7 @@ public class ConverterToHugin {
         return this.huginNetwork;
     }
 
-    public void setNodes(List<Variable> amidstVars) {
+    private void setNodes(List<Variable> amidstVars) {
 
         int size = amidstVars.size();
 
@@ -60,7 +60,7 @@ public class ConverterToHugin {
         }
     }
 
-    public void setStructure (DAG dag) {
+    private void setStructure (DAG dag) {
 
         List<Variable> variables = dag.getStaticVariables().getListOfVariables();
 
@@ -80,7 +80,7 @@ public class ConverterToHugin {
     }
 
     //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
-    public void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) {
+    private void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) {
 
 
         try {
@@ -104,7 +104,7 @@ public class ConverterToHugin {
         }
     }
 
-    public void setNormal_NormalParents(Normal_NormalParents dist, int assign_i) {
+    private void setNormal_NormalParents(Normal_NormalParents dist, int assign_i) {
 
         try {
             Variable amidstVar = dist.getVariable();
@@ -132,7 +132,7 @@ public class ConverterToHugin {
         }
     }
 
-    public void setNormal(Normal dist, int i) {
+    private void setNormal(Normal dist, int i) {
 
         try {
             Variable amidstVar = dist.getVariable();
@@ -149,7 +149,7 @@ public class ConverterToHugin {
         }
     }
 
-    public void setNormal_MultinomialParents(Normal_MultinomialParents dist) {
+    private void setNormal_MultinomialParents(Normal_MultinomialParents dist) {
 
         List<Variable> conditioningVariables = dist.getConditioningVariables();
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
@@ -161,7 +161,7 @@ public class ConverterToHugin {
     }
 
 
-    public void setNormal_MultinomialNormalParents(Normal_MultinomialNormalParents dist){
+    private void setNormal_MultinomialNormalParents(Normal_MultinomialNormalParents dist){
 
         List<Variable> multinomialParents = dist.getMultinomialParents();
 
@@ -172,7 +172,7 @@ public class ConverterToHugin {
         }
     }
 
-    public void setDistributions(BayesianNetwork bn) {
+    private void setDistributions(BayesianNetwork bn) {
 
         List<Variable> amidstVars = bn.getListOfVariables();
 

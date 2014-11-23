@@ -34,7 +34,7 @@ public class MaximumLikelihood implements LearningAlgorithm{
     public void updateModel(DataInstance dataInstance) {
         BayesianNetwork bn = model.getBayesianNetwork();
         for (int i = 0; i<bn.getNumberOfDynamicVars(); i++){
-            if (Utils.isMissing(dataInstance.getValue(i)) && bn.getVariable(i).isLeave())
+            if (Utils.isMissing(dataInstance.getValue(i)) && bn.getVariableByName(i).isLeave())
                 continue;
 
             ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getDistribution(i);

@@ -1,3 +1,11 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. Remove method getVariableByVarID()!!
+ *
+ * ********************************************************
+ */
+
 package eu.amidst.core.variables;
 
 import eu.amidst.core.database.Attribute;
@@ -14,6 +22,13 @@ public class StaticVariables {
 
     private List<Variable> allVariables;
 
+    private HashMap<String, Integer> mapping;
+
+    public StaticVariables() {
+        this.allVariables = new ArrayList<>();
+        this.mapping = new HashMap<>();
+    }
+
     /**
      * Constructor where the distribution type of random variables is initialized by default.
      *
@@ -21,10 +36,14 @@ public class StaticVariables {
     public StaticVariables(Attributes atts) {
 
         this.allVariables = new ArrayList<>();
+        this.mapping = new HashMap<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+            if (mapping.containsKey(var.getName()))
+                throw new IllegalArgumentException("Attribute list contains duplicated names");
+            this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
         }
     }
@@ -46,15 +65,58 @@ public class StaticVariables {
             }
 
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+            if (mapping.containsKey(var.getName()))
+                throw new IllegalArgumentException("Attribute list contains duplicated names");
+            this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
 
         }
     }
+    public Variable addIndicatorVariable(Variable var) {
+        if (!var.isObservable())
+            throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
 
+        VariableBuilder builder = new VariableBuilder(var.getAttribute());
+        builder.setName(var.getName()+"_Indicator");
+        builder.setDistributionType(DistType.INDICATOR);
+
+        VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(varNew.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(varNew.getName(), varNew.getVarID());
+        allVariables.add(varNew);
+        return varNew;
+    }
+
+    public Variable addObservedVariable(Attribute att) {
+
+        VariableImplementation var = new VariableImplementation(new VariableBuilder(att), allVariables.size());
+        if (mapping.containsKey(var.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(var.getName(), var.getVarID());
+        allVariables.add(var);
+        return var;
+
+    }
+
+    public Variable addObservedVariable(Attribute att, DistType distType) {
+        VariableBuilder builder = new VariableBuilder(att);
+        builder.setDistributionType(distType);
+        VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(var.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(var.getName(), var.getVarID());
+        allVariables.add(var);
+        return var;
+
+    }
 
     public Variable addHiddenVariable(VariableBuilder builder) {
 
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(var.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
         return var;
 
@@ -64,16 +126,16 @@ public class StaticVariables {
         return this.allVariables;
     }
 
-    public Variable getVariable(int varID) {
+    public Variable getVariableById(int varID) {
         return this.allVariables.get(varID);
     }
 
-    public Variable getVariable(String name) {
-        for(Variable var: getListOfVariables()){
-            if(var.getName().equals(name))
-                return var;
-        }
-        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
+    public Variable getVariableByName(String name) {
+        Integer index = this.mapping.get(name);
+        if (index==null)
+            throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
+        else
+            return this.getVariableById(index.intValue());
     }
 
     public int getNumberOfVars() {
@@ -129,6 +191,20 @@ public class StaticVariables {
         }
 
         public Attribute getAttribute(){return attribute;}
+
+        public boolean isDynamicVariable(){
+            return false;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Variable var = (Variable) o;
+
+            return this.getName().equals(var.getName());
+        }
 
     }
 }
