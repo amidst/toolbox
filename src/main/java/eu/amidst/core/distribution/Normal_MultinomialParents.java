@@ -99,11 +99,5 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         return this.getNormal(assignment).getLogProbability(value);
     }
 
-    public String label(){
-        if (this.getConditioningVariables().size()==0)
-            return "Normal";
-        else
-            return "Normal|Multinomial";
-    }
 
 }

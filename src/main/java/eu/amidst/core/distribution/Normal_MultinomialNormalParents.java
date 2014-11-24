@@ -148,7 +148,4 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         return distribution;
     }
 
-    public String label(){
-        return "Normal|Multinomial,Normal";
-    }
 }
