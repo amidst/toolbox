@@ -62,7 +62,7 @@ public class WekaDataFileReader implements DataFileReader{
     }
 
     @Override
-    public DataRow next() {
+    public DataRow nextDataRow() {
         Instance inst = present;
         if(inst==null)
             return null;
@@ -73,7 +73,7 @@ public class WekaDataFileReader implements DataFileReader{
     }
 
     @Override
-    public boolean hasNext() {
+    public boolean hasMoreDataRows() {
         return present!=null;
     }
 
@@ -89,8 +89,4 @@ public class WekaDataFileReader implements DataFileReader{
         return fileExtension.equals(".arff");
     }
 
-    @Override
-    public Iterator<DataRow> iterator() {
-        return this;
-    }
 }

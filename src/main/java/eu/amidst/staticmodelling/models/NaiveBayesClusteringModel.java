@@ -35,7 +35,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         VariableBuilder.setNumberOfStates(2);
         VariableBuilder.setStateSpaceType(StateSpaceType.MULTINOMIAL);
 
-        Variable hiddenVar = modelHeader.addHiddenDynamicVariable(builder);
+        Variable hiddenVar = modelHeader.addHiddenVariable(builder);
 
 
 
@@ -62,7 +62,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
             return this.getBayesianNetwork().getDistribution(this.hiddenClassID).getRestrictedPotential(data);
         }
 
-        PotentialTable potResult = new PotentialTable(this.getBayesianNetwork().getVariableByName(varID).getNumberOfStates());
+        PotentialTable potResult = new PotentialTable(this.getBayesianNetwork().getVariable(varID).getNumberOfStates());
 
         for (int i=0; i<this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
             if (i==this.getHiddenClassID())

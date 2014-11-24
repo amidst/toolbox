@@ -9,13 +9,9 @@
 package eu.amidst.core.models;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -41,6 +37,10 @@ public class BayesianNetwork {
 
     public <E extends ConditionalDistribution> E getDistribution(Variable var) {
         return (E)distributions[var.getVarID()];
+    }
+
+    public void setDistribution(Variable var, ConditionalDistribution distribution){
+        this.distributions[var.getVarID()] = distribution;
     }
 
     public int getNumberOfVars() {
@@ -78,39 +78,7 @@ public class BayesianNetwork {
         }
     }
 
-    public double getLogProbabiltyOfFullAssignment(Assignment assignment){
-        double logProb = 0;
-        for (Variable var: this.getListOfVariables()){
-            if (assignment.getValue(var)== Utils.missingValue())
-                throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
 
-            logProb += this.distributions[var.getVarID()].getLogConditionalProbability(assignment);
-        }
-        return logProb;
-    }
-
-
-    public String toString(){
-        String str = "Bayesian Network:\n";
-        for (Variable var: this.getStaticVariables().getListOfVariables()){
-
-            if (this.getDAG().getParentSet(var).getNumberOfParents()==0){
-                str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";
-                str+=this.getDistribution(var).toString()+"\n";
-            }else {
-
-                str += "P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ";
-
-                for (Variable parent : this.getDAG().getParentSet(var).getParents()) {
-                    str += parent.getName() + " [" + parent.getDistributionType().toString() + "], ";
-                }
-                if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) str = str.substring(0, str.length() - 2);
-                str += ") follows a ";
-                str += this.getDistribution(var).label() + "\n";
-            }
-        }
-        return str;
-    }
 }
 
 

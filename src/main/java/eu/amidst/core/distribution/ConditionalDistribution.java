@@ -19,7 +19,6 @@ public abstract class ConditionalDistribution extends Distribution {
      * The list of parents of the variable
      */
     protected List<Variable> parents;
-
     /**
      * Gets the set of conditioning variables
      * @return An <code>unmodifiable List</code> object with the set of conditioning variables.
