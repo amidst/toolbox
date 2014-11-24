@@ -21,5 +21,5 @@ public abstract class Distribution {
         return this.var;
     }
 
-
+    public abstract String label();
 }

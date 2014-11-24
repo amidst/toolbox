@@ -252,14 +252,14 @@ public class ArffDataStream{}
 
 
     @Override
-    public DataInstance nextDataRow() {
+    public DataInstance next() {
         DataInstance x = new DefaultDataInstance(dataInstance,doubleData,intData);
         dataInstance = dataInstance + 1;
         return x;
     }
 
     @Override
-    public boolean hasMoreDataRows() {
+    public boolean hasNext() {
         return dataInstance != rowSize;
     }
 
