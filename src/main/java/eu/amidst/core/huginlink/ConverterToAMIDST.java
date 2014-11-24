@@ -10,7 +10,6 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class ConverterToAMIDST {
             Node n = (Node)huginNodes.get(i);
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 int numStates = (int)((DiscreteChanceNode)n).getNumberOfStates();
-                atts.add(new Attribute(i, n.getName(), "", StateSpaceType.MULTINOMIAL, numStates));
+                atts.add(new Attribute(i, n.getName(), "", StateSpaceType.FINITE_SET, numStates));
             }
             else if (n.getKind().compareTo(NetworkModel.H_KIND_CONTINUOUS) == 0) {
                 atts.add(new Attribute(i, n.getName(), "", StateSpaceType.REAL, 0));

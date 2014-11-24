@@ -26,7 +26,7 @@ public final class VariableBuilder {
             case REAL:
                 this.distributionType = DistType.GAUSSIAN;
                 break;
-            case MULTINOMIAL:
+            case FINITE_SET:
                 this.distributionType = DistType.MULTINOMIAL;
                 break;
             default:

@@ -13,10 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class contains examples about how we can create CajaMar's dynamic models using the AMIDST Toolbox.
+ * It show how to create 2T-DBNs over discrete,
+ *
  * Created by andresmasegosa on 22/11/14.
  */
 public class CajaMarModels {
 
+    /**
+     * In this example, we create the first proposed dynamic model for making predictions
+     */
     public static void CajaMarDefaulterPredictor(){
 
         DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataCajaMar.arff")));
