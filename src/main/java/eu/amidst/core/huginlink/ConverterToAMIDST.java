@@ -72,21 +72,9 @@ public class ConverterToAMIDST {
 
             for(int j=0;j<huginParents.size();j++) {
                 Node huginParent = (Node) huginParents.get(j);
-                int indexParent;
-                if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
-                     indexParent = positionsMultinomialParents.get(j);
-                }
-                else {
-                     indexParent = huginNodes.indexOf(huginParent);
-                }
-                Variable amidstParent = amidstVariables.getVariableByName(huginChild.getName());
+                Variable amidstParent = amidstVariables.getVariableByName(huginParent.getName());
                 dag.getParentSet(amidstChild).addParent(amidstParent);
             }
-            System.out.print(amidstChild.getName() + " - Parents: ");
-
-            for(Variable var:dag.getParentSet(amidstChild))
-                System.out.print(var.getName()+ " ");
-            System.out.println();
         }
         this.amidstBN = BayesianNetwork.newBayesianNetwork(dag);
     }
