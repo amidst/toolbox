@@ -106,7 +106,7 @@ public class StaticVariables implements Iterable<Variable>{
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName()))
             throw new IllegalArgumentException("Attribute list contains duplicated names");
-        this.mapping.put(var.getName(), var.getVarID());git
+        this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
         return var;
 
@@ -123,9 +123,9 @@ public class StaticVariables implements Iterable<Variable>{
 
     }
 
-    public List<Variable> getListOfVariables() {
-        return this.allVariables;
-    }
+    //public List<Variable> getListOfVariables() {
+    //    return this.allVariables;
+    //}
 
     public Variable getVariableById(int varID) {
         return this.allVariables.get(varID);
