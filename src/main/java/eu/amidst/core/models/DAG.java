@@ -84,18 +84,17 @@ public class DAG {
         if (this.variables.getNumberOfVars() != dag.variables.getNumberOfVars()){
             return false;
         } else{
-            int i = 0;
-            boolean iguales = true;
-            while (i < this.variables.getNumberOfVars() && iguales){
-                if (this.getParentSet(this.getStaticVariables().getVariableById(i)).equals(dag.getParentSet(dag.getStaticVariables().getVariableById(i)))){
-                   i++;
-                }else{
-                    iguales = false;
+            boolean eqs = true;
+            for(Variable var: this.getStaticVariables()){
+                if (! this.getParentSet(var).equals(dag.getParentSet(dag.getStaticVariables().getVariableByName(var.getName())))) {
+                    eqs = false;
+                    break;
                 }
             }
-        return iguales;
+        return eqs;
+        }
    }
-}
+
 
     public String toString(){
         String str = "DAG\n";
@@ -183,15 +182,15 @@ public class DAG {
                 return false;
             } else{
                 int i = 0;
-                boolean iguales = true;
-                while (i < this.getNumberOfParents() && iguales){
+                boolean eqs = true;
+                while (i < this.getNumberOfParents() && eqs){
                     if (this.getParents().get(i).equals(parentset.getParents().get(i))){
                         i++;
                     }else{
-                        iguales = false;
+                        eqs = false;
                     }
                 }
-                return iguales;
+                return eqs;
             }
         }
     }
