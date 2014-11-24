@@ -1,5 +1,6 @@
 package eu.amidst.examples;
 
+import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
@@ -55,8 +56,8 @@ public class StaticBayesianNetworks {
         System.out.println(bn.toString());
 
         double logProb = 0;
-        while (data.hasMoreDataInstances()){
-            logProb += bn.getLogProbabiltyOfFullAssignment(data.nextDataInstance());
+        for (DataInstance instance: data){
+            logProb += bn.getLogProbabiltyOfFullAssignment(instance);
         }
 
         System.out.println(logProb);
