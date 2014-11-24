@@ -1,0 +1,97 @@
+net
+{
+    node_size = (0 0);
+}
+
+node A
+{
+    states = ("A0" "A1");
+}
+
+node B
+{
+    states = ("B0" "B1" "B2");
+}
+
+continuous node C
+{
+}
+
+continuous node D
+{
+}
+
+node E
+{
+    states = ("E0" "E1");
+}
+
+continuous node G
+{
+}
+
+continuous node H
+{
+}
+
+continuous node I
+{
+}
+
+potential (A)
+{
+    data = ( 0.5 0.5 );
+}
+
+potential (B)
+{
+    data = ( 0.333333 0.333333 0.333333 );
+}
+
+potential (C)
+{
+    data = normal ( 0, 1 );
+}
+
+potential (D)
+{
+    data = normal ( 0, 1 );
+}
+
+potential (E | B A)
+{
+    data
+     = ((( 0.5 0.5 )	%  B=B0  A=A0
+	 ( 0.5 0.5 ))	%  B=B0  A=A1
+	(( 0.5 0.5 )	%  B=B1  A=A0
+	 ( 0.5 0.5 ))	%  B=B1  A=A1
+	(( 0.5 0.5 )	%  B=B2  A=A0
+	 ( 0.5 0.5 )));	%  B=B2  A=A1
+}
+
+potential (G | C D)
+{
+    data = normal ( C + D, 1 );
+}
+
+potential (H | B A)
+{
+    data
+     = (( normal ( 0, 1 )	%  B=B0  A=A0
+	  normal ( 0, 1 ) )	%  B=B0  A=A1
+	( normal ( 0, 1 )	%  B=B1  A=A0
+	  normal ( 0, 1 ) )	%  B=B1  A=A1
+	( normal ( 0, 1 )	%  B=B2  A=A0
+	  normal ( 0, 1 ) ));	%  B=B2  A=A1
+}
+
+potential (I | B A C D)
+{
+    data
+     = (( normal ( C + D, 1 )	%  B=B0  A=A0
+	  normal ( C + D, 1 ) )	%  B=B0  A=A1
+	( normal ( C + D, 1 )	%  B=B1  A=A0
+	  normal ( C + D, 1 ) )	%  B=B1  A=A1
+	( normal ( C + D, 1 )	%  B=B2  A=A0
+	  normal ( C + D, 1 ) ));	%  B=B2  A=A1
+}
