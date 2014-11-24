@@ -51,7 +51,7 @@ public class DAG {
                 if (!bDone[variable2.getVarID()]) {
                     boolean bHasNoParents = true;
 
-                    for (Variable parent: this.getParentSet(variable2).getParents()){
+                    for (Variable parent: this.getParentSet(variable2)){
                         if (!bDone[parent.getVarID()]) {
                             bHasNoParents = false;
                         }
