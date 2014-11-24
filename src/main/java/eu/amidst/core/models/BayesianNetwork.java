@@ -96,7 +96,7 @@ public class BayesianNetwork {
 
             if (this.getDAG().getParentSet(var).getNumberOfParents()==0){
                 str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";
-                str+=this.getDistribution(var).toString()+"\n";
+                str+=this.getDistribution(var).label()+"\n";
             }else {
 
                 str += "P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ";
