@@ -22,12 +22,12 @@ public class DAGTest {
 
     @Test
     public void testingDAG() {
-        List<Variable> variables = dag.getStaticVariables().getListOfVariables();
-        Variable A = variables.get(0);
-        Variable B = variables.get(1);
-        Variable C = variables.get(2);
-        Variable D = variables.get(3);
-        Variable E = variables.get(4);
+        StaticVariables variables = dag.getStaticVariables();
+        Variable A = variables.getVariableById(0);
+        Variable B = variables.getVariableById(1);
+        Variable C = variables.getVariableById(2);
+        Variable D = variables.getVariableById(3);
+        Variable E = variables.getVariableById(4);
 
         /* test cyclic dag */
 
