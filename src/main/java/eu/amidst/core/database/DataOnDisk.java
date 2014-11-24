@@ -17,11 +17,7 @@ import java.util.Iterator;
 /**
  * Created by afa on 02/07/14.
  */
-public interface DataOnDisk {
-
-    public DataInstance nextDataInstance();
-
-    public boolean hasMoreDataInstances();
+public interface DataOnDisk extends Iterable<DataInstance>, Iterator<DataInstance> {
 
     public Attributes getAttributes();
 
