@@ -1,12 +1,12 @@
 \section{Test and evaluation methodology}
 \label{sec:methodology}
 
-As discussed in the introduction, finding appropriate performance measures on streaming data is more difficult than finding performance measures on static data.  We will therefore start by discussing some relevant performance measures on static data.  A brief section of state of the art methods on streaming data is included is before a justification of our approach is exposed.  
+As discussed in the introduction, finding appropriate performance measures on streaming data is more difficult than finding performance measures on static data.  We will therefore start by discussing some relevant performance measures for classification on static data.  A brief section of state of the art methods on streaming data is included is before a justification of our approach is exposed.  
 
 \subsection{Performance measures for classification on static data}
 \label{sec:static}
 
-On static data, one can assume that we have a dataset of fixed size $n$, where each instance is independently drawn from a joint probability distribution $P(X,Y)$, where $X$ and $Y$ are random variables. The $X$ variable is known as the explanatory variable and $Y$ is the class label.  These two variables have output spaces $\Omega_X$ and $\Omega_Y$, respectively.  For instance in a binary classification problem  $\Omega_Y$ can either be true or false, while $\Omega_X$ is a space of all possible explanatory vectors.  
+On static data, we assume that the dataset has a fixed size $n$, where each instance is independently drawn from a joint probability distribution $P(X,Y)$, where $X$ and $Y$ are random variables. The $X$ variable is known as the explanatory variable and $Y$ is the class label.  These two variables have output spaces $\Omega_X$ and $\Omega_Y$, respectively.  For instance in a binary classification problem $\Omega_Y$ can either be true or false, while $\Omega_X$ is a space of all possible explanatory vectors.  
 
 In classification, we typically consider a hypothesis function $h\Omega_X \rightarrow \Omega_Y$.  In terms of evaluating the performance of $h$, we use a dataset of $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$. The result of such an experiment can be shown in a confusion matrix.  An example is shown table \ref{tab:catdograbbit}, there the classifier is trying to distinguish cats, dogs and rabbits. 
 
@@ -32,9 +32,9 @@ In classification, we typically consider a hypothesis function $h\Omega_X \right
 \end{table}
 \vspace{1ex}
 
-In this example one can see that it is easy to distinguish cats from rabbits and vice versa, while it is much harder to distinguish cats from dogs and vice versa.   A more global measure of the classification algorithm is the classification accuracy which is basically the diagonal elements divided by the total number (in this case 19/27).  It is important to note that the accuracy is not telling the whole story of the classification rule.  For instance, when there are a lot more instances of one class compared to the others, a naive classification rule that always predict the majority class will get a high accuracy, even though the method is not using the information in the explanatory variables at all.  This is why we need to show the full matrix to interpret the status of the classification rule.
+In this example one can see that it is easy to distinguish cats from rabbits and vice versa, while it is much harder to distinguish cats from dogs and vice versa.   A more global measure of the classification algorithm is the classification accuracy which is basically the diagonal elements divided by the total number (in this case 19/27).  It is important to note that the accuracy is not telling the whole story of the classification rule.  For instance, when there are a lot more instances of one class compared to the others, a naive classification rule that always predict the majority class will get a high accuracy, even though the method is not using any of the information that is contianed in the explanatory variables.  This is why we need to show the full confusion matrix to interpret the status of the classification rule.
 
-When the classification is a binary, such as classifying cats and non-cats, the confusion matrix becomes two dimensional as shown in \ref{tab:binary}.  In binary classification, it is common to introduce positives and negatives, instead of the real class names.  A true positive is therefore an actual cat that has been predicted to be a cat by a classifier.  False positives, true negative and false negatives is defined in a similar manner.  The results are commonly shown in confusion tables, such as table \ref{tab:confusionTable}.  
+When the classification is a binary, such as classifying cats and non-cats, the confusion matrix becomes two dimensional as shown in \ref{tab:binary}.  In binary classification, it is common to introduce positives and negatives, instead of the class labels.  A true positive is therefore an actual cat that has been predicted to be a cat by a classifier.  False positives, true negative and false negatives is defined in a similar manner.  The results are commonly shown in a confusion table, which is not the same as a confusion matrix.  An example is shown in table \ref{tab:confusionTable}.  
 
 \vspace{1ex}
 \begin{table}
@@ -77,12 +77,13 @@ When the classification is a binary, such as classifying cats and non-cats, the 
 \end{table}
 \vspace{1ex}
 
-From a confusion table it is easy to calculate numerous numbers that describes the classification rule.  We mention here
-the true positive rates, also known as recall, which is the number of true positives divided by the total number actual positives.  Another important value is the false positive rates, also known as fall-out, which is the number of false positives divided by the total number actual positives. 
+From a confusion table it is easy to calculate numerous numbers that describes the classification rule.  Specifically we mention the true positive and false positive rates.  True positive rates, also known as recall, is the number of true positives divided by the total number actual positives.  The false positive rates, also known as fall-out, is the number of false positives divided by the total number actual positives. 
 
 \todo{Possibly add a bit more about other measures based on the confusion table, that could be considered.}
 
-By investigating various numbers that can be deduced from the confusion table it is possible to discuss classification rules when the datasets are highly skewed as well.  However, these numbers do not take into account that some misclassifications might be more costly than others.  On one side, a false positive might be more costly than a false negative.  For instance, if we are detecting cancer on patients it might be more costly to not detect a sick person than saying that a not sick patient is sick.  Moreover, the cost of each false positives may not be constant either.  For instance, if the classifier is predicting whether a client in a bank will default a loan or not, the cost is clearly related to the size of that loan.  The next subsection includes a procedure to include such costs in the performance measures.
+By investigating various numbers that can be deduced from the confusion table, it is possible to discuss classification rules, even when the datasets are highly skewed.  
+
+However, these numbers do not take into account that some misclassifications might be more costly than others.  For instance, a false positive might be more costly than a false negative, such as in the case of cancer detection.   It might be more costly to not threat a person that is sick, compared to starting threatment on a healthy person.  Moreover, the cost of each false positives (or false negatives) may not be constant either.  For instance, if the classifier is predicting whether a client in a bank will default a loan or not, the cost is clearly related to the size of that loan.  The next subsection includes a procedure to include such costs in a performance measure.
 
 \subsubsection{Empirical risk}
 \label{sec:empRisk}
@@ -131,20 +132,29 @@ h_T(x) =
 \end{cases}
 \end{equation}
 
-It is of interest to evaluate all these classification rules.  The receiver operating characteristic ROC is a plot of true positive rate as a function of false positive rate, as $T$ is allowed to vary over all relevant variables.  ROC analysis provides tools to select possibly optimal models and to discard suboptimal ones independently from (and prior to specifying) the cost context or the class distribution. ROC analysis is related in a direct and natural way to cost/benefit analysis of diagnostic decision making.
+It is of interest to evaluate all these classification rules.  The receiver operating characteristic ROC is a plot of the true positive rate as a function of the false positive rate, as $T$ vary over all relevant variables.  ROC analysis provides tools to select possibly optimal models and to discard suboptimal ones independently from (and prior to specifying) the cost context or the class distribution. ROC analysis is related in a direct and natural way to cost/benefit analysis of diagnostic decision making.
 
 \todo{Add a ROC plot.}
 
-\todo{Improve the Relation to the Mann-Whitney U test below}
+The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  However, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUROC, is such a number.  
 
+AUROC is independent of $T$ and also the priors.  It may be difficult to comprehend what AUROC is at this point, but we will return to it afterward.
 
-Also, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.
+First, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.  To summarize, $Q_0$ is basically a random variable that is related to when you pick a random sample of class zero and run the system and then you get an output value (usually a probability of something happening).  The same thing can be said for $Q_1$.  
 
-In this paper, we will discuss the continuous output function in the light of the Mann-Whitney $U$ test and the concordance probability $P(Q_1 > Q_0)$.  It is important to mention that in the context of concordance probability, the shapes of $P(Q_0)$ and $P(Q_1)$ may be different. 
+The probability $P(Q_1 > Q_0)$ is of interest, because this says what is the probability that if you take one sample from each of the populations, what is the chance that the sample from population one is the highest.  This question is independent of $T$, meaning that the discussion about priors and costs are not needed. This probability is called the concordance probability.
 
-Also, we want to mention that the concordance probability is exactly equal to the area under the receiver operating characteristic curve (ROC) and the common language effect size of the Mann-Whitney $U$ test.
+Without giving you the details, it is possible to show that 
 
-In terms of discussing the family of hypothesis functions, we have chosen empirical risk as the quantity of interest.  This involves defining a loss function and the risk function is simply the expected loss in a frequentist perspective.
+\begin{equation}
+\label{eq:concurrent}
+\mbox{AUROC} = P(Q_1 > Q_0).
+\end{equation}
+It is also worth mentioning that nothing need to be assumed about the probability distributions of $Q_0$ and $Q_1$ (this is related to the Mann-Whitney $U$ test). 
+
+The concordance probability or the AUROC measure is therefore a measure that can be discussed without relating discussing the priors or costs of misclassification. 
+
+Also, we want to mention that the concordance probability is exactly equal to the area under the receiver operating characteristic curve (ROC) and the common language effect size of the Mann-Whitney $U$ test.  We have therefore chosen to add a section of the Mann-Whitney $U$ test.
 
 \subsubsection{Mann-Whitney $U$ test}
 \label{sec:U}
@@ -179,10 +189,19 @@ Significance of test can be checked in tables of the normal distribution.  Altho
 P(Q_1 > Q_0) = \frac{U_1}{n_0n_1}.
 \end{equation}
 
+\subsection{Performance measures for classification on streaming data}
+\label{sec:stream}
+
+In contrast to for instance \cite{Gam12}, we can generally not assume that data is locally i.i.d.  A data instance at a certain time step has to be seen in context of the preceding time steps.  Our approach for testing is to manually select a number of time windows or substreams that are labeled as either negatives or positives.  For instance, a positive is when something is happening towards the end of the substream, while a negative is a substream where nothing happens.  
+
+When the AMIDST software is run, the output function is evaluated at each time step.  Depending of the problem, a heuristic algorithm is chosen to output a single number for each substream.  This can for instance be the maximum value of the output function on an interval that is prior to an event.  
 
 
 
 
+
+
+ 
 
 %\emph{Here we should cover general methods for doing test and evaluation of models in a streaming
 %  context. These methods will subsequently be instantiated in relation to the three use case providers so I
