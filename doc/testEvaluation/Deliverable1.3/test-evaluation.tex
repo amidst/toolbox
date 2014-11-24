@@ -1,15 +1,193 @@
 \section{Test and evaluation methodology}
 \label{sec:methodology}
 
-As discussed in the introduction, finding appropriate performance measures on streaming data is more difficult than finding performance measures on static data.  We will therefore start the discussion on discussing some relevant performance measures on static data.  A brief section of state of the art methods on streaming data is included is also included before a justification of our approach is exposed.  
+As discussed in the introduction, finding appropriate performance measures on streaming data is more difficult than finding performance measures on static data.  We will therefore start by discussing some relevant performance measures on static data.  A brief section of state of the art methods on streaming data is included is before a justification of our approach is exposed.  
+
+\subsection{Performance measures for classification on static data}
+\label{sec:static}
+
+On static data, one can assume that we have a dataset of fixed size $n$, where each instance is independently drawn from a joint probability distribution $P(X,Y)$, where $X$ and $Y$ are random variables. The $X$ variable is known as the explanatory variable and $Y$ is the class label.  These two variables have output spaces $\Omega_X$ and $\Omega_Y$, respectively.  For instance in a binary classification problem  $\Omega_Y$ can either be true or false, while $\Omega_X$ is a space of all possible explanatory vectors.  
+
+In classification, we typically consider a hypothesis function $h\Omega_X \rightarrow \Omega_Y$.  In terms of evaluating the performance of $h$, we use a dataset of $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$. The result of such an experiment can be shown in a confusion matrix.  An example is shown table \ref{tab:catdograbbit}, there the classifier is trying to distinguish cats, dogs and rabbits. 
+
+\vspace{1ex}
+\begin{table}
+\centering
+\begin{tabular}{ll|r|r|r|}
+\cline{3-5}
+&&  \multicolumn{3}{c|}{Predicted class}\\
+\cline{3-5}
+&& Cat & Dog & Rabbit\\ 
+\cline{1-5}
+\multicolumn{1}{ |c| }{\multirow{3}{*}{Actual class} }
+ & Cat & 5 & 3& 0\\
+\cline{2-5}
+\multicolumn{1}{ |c| }{} & Dog & 2 & 3 & 1\\
+\cline{2-5}
+\multicolumn{1}{ |c| }{} & Rabbit & 0 & 2 & 11\\
+\cline{1-5}
+\end{tabular}
+\caption{Example of a confusion matrix.  A classifier is labelling instances as either cats, dogs or rabbits.  The accuracy is the sum of the diagonal elements divided by the total number (in this case 19/27).}
+\label{tab:catdograbbit}
+\end{table}
+\vspace{1ex}
+
+In this example one can see that it is easy to distinguish cats from rabbits and vice versa, while it is much harder to distinguish cats from dogs and vice versa.   A more global measure of the classification algorithm is the classification accuracy which is basically the diagonal elements divided by the total number (in this case 19/27).  It is important to note that the accuracy is not telling the whole story of the classification rule.  For instance, when there are a lot more instances of one class compared to the others, a naive classification rule that always predict the majority class will get a high accuracy, even though the method is not using the information in the explanatory variables at all.  This is why we need to show the full matrix to interpret the status of the classification rule.
+
+When the classification is a binary, such as classifying cats and non-cats, the confusion matrix becomes two dimensional as shown in \ref{tab:binary}.  In binary classification, it is common to introduce positives and negatives, instead of the real class names.  A true positive is therefore an actual cat that has been predicted to be a cat by a classifier.  False positives, true negative and false negatives is defined in a similar manner.  The results are commonly shown in confusion tables, such as table \ref{tab:confusionTable}.  
+
+\vspace{1ex}
+\begin{table}
+\centering
+\begin{tabular}{ll|r|r|}
+\cline{3-4}
+&&  \multicolumn{2}{c|}{Predicted class}\\
+\cline{3-4}
+&& Cat & Not cat\\ 
+\cline{1-4}
+\multicolumn{1}{ |c| }{\multirow{3}{*}{Actual class} }
+& Cat & 5 & 3\\
+\cline{2-4}
+\multicolumn{1}{ |c| }{} & Not cat & 2 & 17 \\
+\cline{1-4}
+\end{tabular}
+\caption{Example of a confusion matrix for a classifier of cats and not cats. The accuracy is 22/27.}
+\label{tab:binary}
+\end{table}
+\vspace{1ex}
+
+
+\vspace{1ex}
+\begin{table}
+\centering
+\begin{tabular}{ll|r|r|}
+\cline{3-4}
+&&  \multicolumn{2}{c|}{Actual Condition}\\
+\cline{3-4}
+&& Positive & Negative\\ 
+\cline{1-4}
+\multicolumn{1}{ |c| }{\multirow{3}{*}{Test outcome} }
+& Positive & 5 & 2\\
+\cline{2-4}
+\multicolumn{1}{ |c| }{} & Negative & 3 & 17 \\
+\cline{1-4}
+\end{tabular}
+\caption{Example of a confusion table for a classifier of cats and not cats. The true positives and true negatives are on the diagonal, while the two other numbers are the false positives and the false negatives.}
+\label{tab:confusionTable}
+\end{table}
+\vspace{1ex}
+
+From a confusion table it is easy to calculate numerous numbers that describes the classification rule.  We mention here
+the true positive rates, also known as recall, which is the number of true positives divided by the total number actual positives.  Another important value is the false positive rates, also known as fall-out, which is the number of false positives divided by the total number actual positives. 
+
+\todo{Possibly add a bit more about other measures based on the confusion table, that could be considered.}
+
+By investigating various numbers that can be deduced from the confusion table it is possible to discuss classification rules when the datasets are highly skewed as well.  However, these numbers do not take into account that some misclassifications might be more costly than others.  On one side, a false positive might be more costly than a false negative.  For instance, if we are detecting cancer on patients it might be more costly to not detect a sick person than saying that a not sick patient is sick.  Moreover, the cost of each false positives may not be constant either.  For instance, if the classifier is predicting whether a client in a bank will default a loan or not, the cost is clearly related to the size of that loan.  The next subsection includes a procedure to include such costs in the performance measures.
+
+\subsubsection{Empirical risk}
+\label{sec:empRisk}
+
+\todo{Go over the notation again.}
+
+In mathematical optimization, statistics, decision theory and machine learning, a loss function or cost function is a function that maps an event or values of one or more variables onto a real number that is intuitively representing some \emph{cost} associated with the event. Loss functions can be used on optimization problems, where an algorithm or method is optimized by minimizing the loss function.  Moreover, loss functions are frequently used to diagnose and compare various algorithms or methods.  
+
+In this paper define the \emph{loss function} as a real and lower-bounded function $L$ on $\Omega_X \times \Omega_Y \times \Omega_Y$.  The value of the loss function at an arbitrary point $(x, h(x), y)$ is interpreted as the loss, or cost, of taking the decision $h(x)$ at $x$, when the right decision is $y$.  Notice that in this paper, the loss function is dependent on $x$ as well.  This is of high practical use, because a certain misclassification might be more expensive than another. 
+
+In the frequentist perspective, the expected loss is often referred to as the risk function.  It is obtained by taking the expected value over the loss function with respect to the probability distribution $P(X,Y): \Omega_X\times \Omega_Y \rightarrow \mathbb{R}^+$.  The \emph{risk function} is given by
+
+\begin{equation}
+\label{def:risk}
+R(h) = \int_{\Omega_X,\Omega_Y} L(x,h(x),y) dP(x,y).
+\end{equation}
+
+In the case when the costs are independent of $x$ and also that there is no cost related to correct classification, the risk function reduces to the well known expected cost of misclassification (ECM)
+
+\begin{equation}
+\label{eq:ecm}
+ECM =  c(1|0)p(1|0)p_0  + c(0|1)p(0|1)p_1.
+\end{equation}
+Here, $c(1|0)$ is the cost for misclassifying an item of class zero as class one and $p(1|0)$ is the misclassification probability given class zero.  The quantities $c(0|1)$ and $p(0|1)$ are defined equivalently, while $p_0$ and $p_1$ are the priors.  
+
+In general, the risk $R(h)$ cannot be computed because the distribution $P(x, y)$ is unknown.  However, we can compute an approximation, called empirical risk, by averaging the loss function on the training set given by 
+
+\begin{equation}
+\label{def:empRisk}
+R_{emp}(h, \bv{x}) = n^{-1} \sum_{i=1}^n L(x_i, h(x_i), y_i).
+\end{equation}
+Notice that $L$ is an array of $n \times 2\times 2$ elements.  Many supervised learning algorithms are optimized by finding the $h$ in a hypothesis space $\mathcal{H}$ that minimizes the empirical risk.  This paper will not focus on empirical risk minimization, but rather focus on using empirical risk to compare methods.
+
+
+\subsubsection{Evaluation of families of classification rules}
+\label{sec:hypothesisSpace}
+
+So far we have discussed how to evaluate a single classification rule.  However, most classification rules in the AMIDST framework is based on comparing an estimated probability to a certain threshold.  We call this estimated probability the output function $q: \Omega_X \rightarrow \mathbb{R}^+$.  The classification rules are the family of hypothesis functions $\mathcal{H}$, where each element $h_T:\Omega_X \rightarrow \Omega_Y$ has the form 
+
+\begin{equation}
+\label{eq:ht}
+h_T(x) = 
+\begin{cases}
+0 \quad \mbox{for} \quad q(x) \leq T\\
+1 \quad \mbox{else}.
+\end{cases}
+\end{equation}
+
+It is of interest to evaluate all these classification rules.  The receiver operating characteristic ROC is a plot of true positive rate as a function of false positive rate, as $T$ is allowed to vary over all relevant variables.  ROC analysis provides tools to select possibly optimal models and to discard suboptimal ones independently from (and prior to specifying) the cost context or the class distribution. ROC analysis is related in a direct and natural way to cost/benefit analysis of diagnostic decision making.
+
+\todo{Add a ROC plot.}
+
+\todo{Improve the Relation to the Mann-Whitney U test below}
+
+
+Also, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.
+
+In this paper, we will discuss the continuous output function in the light of the Mann-Whitney $U$ test and the concordance probability $P(Q_1 > Q_0)$.  It is important to mention that in the context of concordance probability, the shapes of $P(Q_0)$ and $P(Q_1)$ may be different. 
+
+Also, we want to mention that the concordance probability is exactly equal to the area under the receiver operating characteristic curve (ROC) and the common language effect size of the Mann-Whitney $U$ test.
+
+In terms of discussing the family of hypothesis functions, we have chosen empirical risk as the quantity of interest.  This involves defining a loss function and the risk function is simply the expected loss in a frequentist perspective.
+
+\subsubsection{Mann-Whitney $U$ test}
+\label{sec:U}
+
+In statistics, the Mann-Whitney $U$ test (also called the Mann-Whitney-Wilcoxon (MWW), Wilcoxon rank-sum test, or Wilcoxon-Mann-Whitney test) is a nonparametric test of the null hypothesis that two populations are the same against an alternative hypothesis, especially that a particular population tends to have larger values than the other.  It has greater efficiency than the $t$-test on non-normal distributions and it is nearly as efficient as the $t$-test on normal distributions.
+
+We define a training set $\bu{x} \times \bv{y}$ with $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$.  From the training set we have two populations $\bv{q_0} = \{q(x_i) , | \, y_i = 0 \}$ and $\bv{q_1} = \{q(x_i) , | \, y_i = 1 \}$.  Their sizes are $n_0$ and $n_1$ so that $n_0 + n_1 = n$.  Calculating the $U$ statistics is straightforward, where these two values are obtained 
+
+\begin{equation}
+\label{eq:U}
+U_0 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H(\,q_j - q_i    \,) \quad \mbox{and} \quad 
+U_1 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H( \,q_i - q_j    \,).
+\end{equation}
+Here $H(\cdot)$ is the heaviside step function and notice that $U_0 + U_1 = n_0n_1$.  For large samples, each U is approximately normally distributed. In that case, the standardized value
+
+\begin{equation}
+\label{eq:z}
+z = \frac{U_0 - m_{U}}{\sigma_{U}},
+\end{equation}
+where $m_U$ and $\sigma_U$ are the mean and standard deviation of $U$ given by
+
+\begin{equation}
+\label{eq:z}
+m_U = \frac{n_0n_1}{2} \quad \mbox{and} \quad 
+\sigma_U = \sqrt{\frac{n_0n_1(n_0 + n_1 + 1)}{12} }.
+\end{equation}
+
+Significance of test can be checked in tables of the normal distribution.  Although, such an hypothesis test is interesting by itself, we are more interested in the concordance probability $P(Q_1 > Q_0)$ which is defined by
+
+\begin{equation}
+\label{eq:concordance}
+P(Q_1 > Q_0) = \frac{U_1}{n_0n_1}.
+\end{equation}
 
 
 
-%
+
+
+
 %\emph{Here we should cover general methods for doing test and evaluation of models in a streaming
 %  context. These methods will subsequently be instantiated in relation to the three use case providers so I
 %  guess that we should primarily consider the methods that are directly related to the needs of the use case
 %  providers, but (taking the back ground of one of the reviewers into account) we might probably benefit from
 %  going a bit beyond the immediate needs and put all this stuff into a broader context ...}
 %
-\cite{Kap14}, \cite{Gam09}, \cite{Gam09_2}, \cite{Gam12}, 
+%\cite{Kap14}, \cite{Gam09}, \cite{Gam09_2}, \cite{Gam12}, 
