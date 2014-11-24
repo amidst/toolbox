@@ -17,13 +17,13 @@ import java.util.List;
 /**
  * Created by afa on 14/11/14.
  */
-public class ConverterToAmidst {
+public class ConverterToAMIDST {
 
 
     private BayesianNetwork amidstBN;
     private Domain huginBN;
 
-    public ConverterToAmidst(Domain huginNetwork){
+    public ConverterToAMIDST(Domain huginNetwork){
         this.huginBN = huginNetwork;
     }
 
