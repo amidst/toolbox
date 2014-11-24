@@ -75,11 +75,6 @@ public class ConverterToAMIDST {
                 Variable amidstParent = amidstVariables.getVariableByName(huginParent.getName());
                 dag.getParentSet(amidstChild).addParent(amidstParent);
             }
-            System.out.print(amidstChild.getName() + " - Parents: ");
-
-            for(Variable var:dag.getParentSet(amidstChild))
-                System.out.print(var.getName()+ " ");
-            System.out.println();
         }
         this.amidstBN = BayesianNetwork.newBayesianNetwork(dag);
     }
