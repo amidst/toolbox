@@ -21,12 +21,13 @@ import eu.amidst.core.database.Attributes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by afa on 02/07/14.
  */
-public class DynamicVariables {
+public class DynamicVariables  implements Iterable<Variable>{
 
     private List<Variable> allVariables;
     private List<Variable> temporalClones;
@@ -170,8 +171,8 @@ public class DynamicVariables {
         return this.temporalClones;
     }
 
-    public Variable getVariableById(int varID) {
-        return this.allVariables.get(varID);
+    private Variable getVariableById(int varID) {
+       return this.allVariables.get(varID);
     }
 
 
@@ -197,11 +198,16 @@ public class DynamicVariables {
 
 
     public Variable getVariable(String name) {
-        for(Variable var: getListOfDynamicVariables()){
+        for(Variable var: this){
             if(var.getName().equals(name))
                 return var;
         }
         throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
+    }
+
+    @Override
+    public Iterator<Variable> iterator() {
+        return this.allVariables.iterator();
     }
 
     private class VariableImplementation implements Variable {
