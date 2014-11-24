@@ -17,9 +17,8 @@ public class ConverterToAmidstTest {
     @Before
     public void setUp() throws ExceptionHugin {
 
-        String netName = new String("networks/huginNetworkFromAMIDST");
         ParseListener parseListener = new DefaultClassParseListener();
-        this.huginBN = new Domain (netName + ".net", parseListener);
+        this.huginBN = new Domain ("networks/huginNetworkFromAMIDST.net", parseListener);
         System.out.println("\n\nConverting the Hugin network into AMIDST format ...");
         ConverterToAMIDST converter = new ConverterToAMIDST(this.huginBN);
         converter.convertToAmidstBN();
