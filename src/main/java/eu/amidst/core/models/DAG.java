@@ -75,28 +75,26 @@ public class DAG {
 
     @Override
     public boolean equals(Object o) {
-//        if (this == o) return true;
-//
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        DAG dag = (DAG) o;
-//
-//    if (this.variables.getNumberOfVars() != dag.variables.getNumberOfVars()){
-//        return false;
-//    } else{
-//        int i = 0;
-//        boolean iguales = true;
-//        while (i < this.variables.getNumberOfVars() && iguales){
-//            if (this.getParentSet(this.variables.getListOfVariables().get(i)).equals(dag.getParentSet(dag.variables.getListOfVariables().get(i)))){
-//                i++;
-//            }else{
-//                iguales = false;
-//            }
-//        }
-//        return iguales;
- //   }
-        return false;
+        if (this == o) return true;
 
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DAG dag = (DAG) o;
+
+        if (this.variables.getNumberOfVars() != dag.variables.getNumberOfVars()){
+            return false;
+        } else{
+            int i = 0;
+            boolean iguales = true;
+            while (i < this.variables.getNumberOfVars() && iguales){
+                if (this.getParentSet(this.getStaticVariables().getVariableById(i)).equals(dag.getParentSet(dag.getStaticVariables().getVariableById(i)))){
+                   i++;
+                }else{
+                    iguales = false;
+                }
+            }
+        return iguales;
+   }
 }
 
     public String toString(){
