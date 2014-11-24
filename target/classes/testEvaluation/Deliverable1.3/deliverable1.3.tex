@@ -1,0 +1,197 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geom\dagetry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{array}							% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb,amsmath}
+\usepackage{cite}
+\usepackage[final]{fixme}
+\usepackage{pdfpages}
+\usepackage{tabularx}
+\usepackage{fancyheadings}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{url}
+
+\parskip 6pt % 1pt = 0.351 mm
+\parindent 0pt
+
+%\title{Requirement Engineering Process in AMIDST}
+%\author{The handsome AMIDST guys et. al.}
+%\date{Latest version, \today}							% Activate to display a given date or no date
+
+\pagestyle{fancy}
+\lhead{\tiny FP7-ICT 619209 / AMIDST}
+\chead{\tiny Page {\thepage} of \pageref{LastPage} \\}
+\rhead{\tiny Public}
+\renewcommand{\footrulewidth}{0.4pt}
+\cfoot{}
+
+
+%\setcounter{page}{2}
+\newcommand{\drop}[1]{}
+\newcommand{\bm}{\mathbf}
+
+\numberwithin{figure}{section}
+\numberwithin{equation}{section}
+\numberwithin{table}{section}
+
+\usepackage{pdfpages}
+
+\begin{document}
+
+%\maketitle
+%
+%\begin{abstract}
+%\end{abstract}
+%
+
+%\includepdf[pages={1}]{figures/FrontPage.pdf}
+%\newpage\null\thispagestyle{empty}\newpage
+
+% Table of contents
+\tableofcontents
+
+\newpage
+
+% Document History
+
+\section*{Document history}
+
+\begin{table}[htbp]
+  \centering
+  \begin{tabularx}{\linewidth}{|p{13mm}| p{18mm}| X | X |} \hline
+    {\bf Version} & {\bf Date} & {\bf Author (Unit)} & {\bf Description} \\ \hline
+    v0.3 &  &  & The test and evaluation framework discussed and established \\ \hline
+    v0.6 &  &  & Initial draft finished and reviewed by the PSRG  \\ \hline
+    v1.0 &  & & Final version of document  \\ \hline
+  \end{tabularx}
+\end{table}
+
+\newpage
+
+
+
+
+% Executive summary
+%\input{executiveSummary}
+
+% Introduction
+\input{introduction}
+
+
+% Test and evaluation methodology
+\input{test-evaluation.tex}
+
+
+
+% Use cases: test and evaluation
+\input{usecases-test-evaluation}
+
+\section{Cajamar: test and evaluation}
+
+\subsection{Use case requirements}
+
+\emph{Summarize the use case requirements for the different application scenarios. This information should be
+  derived from Deliverable 1.2.}
+
+\subsection{Model and data characteristics}
+
+\emph{Describe aspects of the model and data relevant for the ensuing test and evaluation discussion. Much of
+  this information can be synthesized from the existing documents, and should serve to make the document more
+  self-contained. }
+
+%\subsubsection{Application scenario 2: test and evaluation}
+
+
+
+\subsection{Predictive performance: test and evaluation}
+
+\subsubsection{Application scenario 1}
+
+\subsubsection{Application scenario 2}
+
+\subsection{Run-time performance: test and evaluation}
+
+\subsubsection{Application scenario 1}
+
+\subsubsection{Application scenario 2}
+
+
+
+\section{Daimler: test and evaluation}
+
+\subsection{Use case requirements}
+
+\emph{Summarize the use case requirements for the different application scenarios. This information should be
+  derived from Deliverable 1.2.}
+
+\subsection{Model and data characteristics}
+
+\emph{Describe aspects of the model and data relevant for the ensuing test and evaluation discussion. Much of
+  this information can be synthesized from the existing documents, and should serve to make the document more
+  self-contained. }
+
+%\subsubsection{Application scenario 2: test and evaluation}
+
+
+
+\subsection{Predictive performance: test and evaluation}
+
+\subsubsection{Application scenario 1}
+
+\subsubsection{Application scenario 2}
+
+\subsection{Run-time performance: test and evaluation}
+
+\subsubsection{Application scenario 1}
+
+\subsubsection{Application scenario 2}
+
+
+
+\section{Verdande: test and evaluation}
+
+\subsection{Use case requirements}
+
+\emph{Summarize the use case requirements for the different application scenarios. This information should be
+  derived from Deliverable 1.2.}
+
+\subsection{Model and data characteristics}
+
+\emph{Describe aspects of the model and data relevant for the ensuing test and evaluation discussion. Much of
+  this information can be synthesized from the existing documents, and should serve to make the document more
+  self-contained. }
+
+%\subsubsection{Application scenario 2: test and evaluation}
+
+
+
+\subsection{Predictive performance: test and evaluation}
+
+\subsubsection{Application scenario 1}
+
+\subsubsection{Application scenario 2}
+
+\subsection{Run-time performance: test and evaluation}
+
+\subsubsection{Application scenario 1}
+
+\subsubsection{Application scenario 2}
+
+
+\input{conclusion}
+
+\bibliographystyle{splncs}
+\bibliography{test}
+
+
+
+
+
+\end{document}
