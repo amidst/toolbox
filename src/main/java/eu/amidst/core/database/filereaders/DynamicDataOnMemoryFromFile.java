@@ -30,8 +30,8 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
         DataRow present;
         DataRow past = new DataRowMissing();
 
-        int timeID = 1;
-        int sequenceID = 1;
+        int timeID = 0;
+        int sequenceID = 0;
 
         if (reader.hasNext())
             present = this.reader.next();
