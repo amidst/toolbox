@@ -13,12 +13,13 @@ import eu.amidst.core.database.Attributes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by afa on 02/07/14.
  */
-public class StaticVariables {
+public class StaticVariables implements Iterable<Variable>{
 
     private List<Variable> allVariables;
 
@@ -141,6 +142,12 @@ public class StaticVariables {
     public int getNumberOfVars() {
         return this.allVariables.size();
     }
+
+    @Override
+    public Iterator<Variable> iterator() {
+        return this.allVariables.iterator();
+    }
+
 
     private class VariableImplementation implements Variable {
 
