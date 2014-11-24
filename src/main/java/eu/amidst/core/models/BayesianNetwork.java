@@ -55,21 +55,21 @@ public class BayesianNetwork {
         return dag;
     }
 
-    public List<Variable> getListOfVariables() {
-        return this.getStaticVariables().getListOfVariables();
-    }
+   // public List<Variable> getListOfVariables() {
+   //     return this.getStaticVariables().getListOfVariables();
+   // }
 
     private void initializeDistributions(){
 
-        List<Variable> vars = getStaticVariables().getListOfVariables(); /* the list of all variables in the BN */
 
-        this.distributions = new ConditionalDistribution[vars.size()];
+
+        this.distributions = new ConditionalDistribution[this.getNumberOfVars()];
 
 
         /* Initialize the distribution for each variable depending on its distribution type
         as well as the distribution type of its parent set (if that variable has parents)
          */
-        for (Variable var : getStaticVariables().getListOfVariables()) {
+        for (Variable var : getStaticVariables()) {
             ParentSet parentSet = this.getDAG().getParentSet(var);
 
             int varID = var.getVarID();
@@ -80,7 +80,7 @@ public class BayesianNetwork {
 
     public double getLogProbabiltyOfFullAssignment(Assignment assignment){
         double logProb = 0;
-        for (Variable var: this.getListOfVariables()){
+        for (Variable var: this.getStaticVariables()){
             if (assignment.getValue(var)== Utils.missingValue())
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
 
@@ -92,7 +92,7 @@ public class BayesianNetwork {
 
     public String toString(){
         String str = "Bayesian Network:\n";
-        for (Variable var: this.getStaticVariables().getListOfVariables()){
+        for (Variable var: this.getStaticVariables()){
 
             if (this.getDAG().getParentSet(var).getNumberOfParents()==0){
                 str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";

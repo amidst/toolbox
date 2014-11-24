@@ -5,6 +5,7 @@ import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Node;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.DistType;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -33,14 +34,14 @@ public class ConverterToHugin {
 
     public void setNodes() {
 
-        List<Variable> amidstVars = amidstBN.getListOfVariables();
-        int size = amidstVars.size();
+        StaticVariables amidstVars = amidstBN.getStaticVariables();
+        int size = amidstVars.getNumberOfVars();
 
         try {
             //Hugin always inserts variables in position 0, i.e, for an order A,B,C, it stores C,B,A !!!
             //A reverse order of the variables is used instead.
             for(int i=1;i<=size;i++){
-                Variable amidstVar = amidstVars.get(size-i);
+                Variable amidstVar = amidstVars.getVariableById(size-i);
                 if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
                     LabelledDCNode n = new LabelledDCNode(this.huginBN);
                     n.setName(amidstVar.getName());
@@ -68,10 +69,8 @@ public class ConverterToHugin {
 
         DAG dag = amidstBN.getDAG();
 
-        List<Variable> variables = amidstBN.getListOfVariables();
-
         try {
-            for (Variable amidstChild: variables) {
+            for (Variable amidstChild: amidstBN.getStaticVariables()) {
                 for (Variable amidstParent: dag.getParentSet(amidstChild).getParents()) {
                     Node huginChild = this.huginBN.getNodeByName(amidstChild.getName());
                     Node huginParent = this.huginBN.getNodeByName(amidstParent.getName());
@@ -155,7 +154,7 @@ public class ConverterToHugin {
 
         for(int i=0;i<numParentAssignments;i++) {
             Normal normal =  dist.getNormal(i);
-            this.setNormal(normal, i );
+            this.setNormal(normal, i);
         }
     }
 
@@ -175,9 +174,8 @@ public class ConverterToHugin {
 
     public void setDistributions() throws ExceptionHugin {
 
-        List<Variable> amidstVars = amidstBN.getListOfVariables();
 
-        for (Variable amidstVar : amidstVars) {
+        for (Variable amidstVar : amidstBN.getStaticVariables()) {
 
             switch (Utils.getConditionalDistributionType(amidstVar, amidstBN)) {
                 case 0:
