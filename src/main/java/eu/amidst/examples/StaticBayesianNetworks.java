@@ -106,10 +106,10 @@ public class StaticBayesianNetworks {
         /**
          * 1. We iterate over the data set sample by sample.
          *
-         * 2. For sample or DataInstance object, we compute the log of the probability that the BN object
+         * 2. For each sample or DataInstance object, we compute the log of the probability that the BN object
          * assigns to this observation.
          *
-         * 3. We accumulate this log-probs and finally we print the log-prob of the data set.
+         * 3. We accumulate these log-probs and finally we print the log-prob of the data set.
          */
         double logProb = 0;
         for (DataInstance instance : data) {
@@ -217,7 +217,7 @@ public class StaticBayesianNetworks {
         /**
          * 1. We now create the Bayesian network from the previous DAG.
          *
-         * 2. The BN object is created from the DAG. It automatically looks at the distribution tye
+         * 2. The BN object is created from the DAG. It automatically looks at the distribution type
          * of each variable and their parents to initialize the Distributions objects that are stored
          * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are
          * properly initialized.
