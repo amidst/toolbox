@@ -1,0 +1,103 @@
+%$% USC IRIS/SIPI TeX/LaTeX Macro Library
+%%% 
+%$% subfigure.sty
+%$% Subfigure command for use with the LaTeX figure environment.
+%%%
+%$% $Header: subfigure.doc,v 1.1 88/11/02 11:03:46 cochran Exp $
+%%%
+%$% $Log:	subfigure.doc,v $
+%$%  Revision 1.1  88/11/02  11:03:46  cochran
+%$%  Initial revision
+%$%  
+%$%  05 Mar 86  cochran @ dworkin.usc.edu (USC-IRIS)
+%$%  Created.
+%%%  
+%$% Usage:  \documentstyle[...,subfigure,...]{...}
+%%%
+%$%         \subfigure[CAPTIONtext]{FIGUREbox}
+%%%
+%%% Creates a subfigure box with an optional CAPTION under a FIGURE.  The 
+%%% FIGURE is centered with \subfigtopskip of vertical space added above
+%%% and \subfigcapskip vertical space added below it followed by the
+%%% CAPTION.  The subfigure is followed by another \subfigtopskip of
+%%% vertical space added at the bottom.
+%%%
+%%% If a CAPTION is given (including a null CAPTION '[]') then the subfigure
+%%% is labeled with a counter supplied by the macro '\thesubfigure' which
+%%% returns '(a) ', '(b) ', etc.  If desired, this macro may be redefined.
+%%% The counter used for labeling the subfigures is 'subfigure' and in
+%%% incremented for each subfigure regardless of whether a CAPTION was
+%%% printed.
+%%%
+%%% One example of use is to surround the figure in a tabular environment:
+%%%      \begin{figure}
+%%%        \begin{center}
+%%%          \begin{tabular}[t]{c}
+%%%            \subfigure[First]{...}
+%%%            \subfigure[Second]{...} \\
+%%%            \subfigure[Third]{...}
+%%%          \end{tabular}
+%%%        \end{center}
+%%%      \caption{Three Subfigures}
+%%%      \end{figure}
+
+%% Subfigure counter.
+\newcounter{subfigure}[figure]
+
+%% Generate CAPTION preface.
+\def\thesubfigure{(\alph{subfigure})\space}
+
+%% Size of the CAPTION font.
+\def\subcapsize{\footnotesize} 
+
+%% Length from the top of the subfigure box to the begining of the FIGURE
+%% box.  Also from the bottom of the CAPTION to the bottom of the subfigure.
+\def\subfigtopskip{10pt}
+
+%% Length from the bottom of the FIGURE to the begining of the CAPTION.
+\def\subfigcapskip{10pt}
+
+%% Indentation of the caption from the sides of the subfigure box.
+\def\subfigcapmargin{10pt} 
+
+%%
+%% Define the subfigure command
+%%
+\def\subfigure{%
+  \leavevmode
+  \@ifnextchar [%
+    \@subfigure
+    {\@subfigure[\@empty]}}
+
+\long\def\@subfigure[#1]#2{%
+  \stepcounter{subfigure}%
+  \setbox\@tempboxa \hbox{#2}%
+  \@tempdima=\wd\@tempboxa
+  \vtop{%
+    \vbox{%   Put the figure in the top box
+      \vskip\subfigtopskip
+      \box\@tempboxa}
+    %% Now skip down and add the caption paragraph.
+    \vskip\subfigcapskip
+    \begingroup
+      \@parboxrestore
+      \setbox\@tempboxa
+      \ifx #1\@empty
+        \hbox{\subcapsize\strut\hfil}%
+      \else
+        \hbox{\subcapsize\strut\thesubfigure#1}%
+      \fi
+      \@tempdimb=-\subfigcapmargin
+      \multiply\@tempdimb\tw@
+      \advance\@tempdimb\@tempdima
+      \hbox to\@tempdima{%
+        \hfil
+        \ifdim \wd\@tempboxa >\@tempdimb %   (Comment too wide for one line)
+          \parbox{\@tempdimb}{\subcapsize\thesubfigure#1}%
+        \else
+          \box\@tempboxa
+        \fi
+        \hfil}
+    \endgroup
+  \vskip\subfigtopskip}}
+
