@@ -9,7 +9,7 @@ import org.junit.Test;
 /**
  * Created by afa on 19/11/14.
  */
-public class ConverterToAMIDSTTest {
+public class ConverterToAmidstTest {
 
     private BayesianNetwork amidstBN;
     private Domain huginBN;
