@@ -107,7 +107,10 @@ public class BayesianNetwork {
                 if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) str = str.substring(0, str.length() - 2);
                 str += ") follows a ";
                 str += this.getDistribution(var).label() + "\n";
+
             }
+            //Variable distribution
+            str += this.getDistribution(var).toString()+ "\n";
         }
         return str;
     }
