@@ -101,7 +101,7 @@ public class BayesianNetwork {
 
                 str += "P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ";
 
-                for (Variable parent : this.getDAG().getParentSet(var).getParents()) {
+                for (Variable parent : this.getDAG().getParentSet(var)) {
                     str += parent.getName() + " [" + parent.getDistributionType().toString() + "], ";
                 }
                 if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) str = str.substring(0, str.length() - 2);

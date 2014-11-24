@@ -248,7 +248,7 @@ public class ConverterToHuginTest {
     private void testParents(Variable amidstVar, Node huginVar) throws ExceptionHugin {
         ParentSet parentsAmidstVar = amidstBN.getDAG().getParentSet(amidstVar);
         NodeList parentsHuginVar = huginVar.getParents();
-        int numParentsAmidstVar = parentsAmidstVar.getParents().size();
+        int numParentsAmidstVar = parentsAmidstVar.getNumberOfParents();
         int numParentsHuginVar = parentsHuginVar.size();
 
         // Number of parents
