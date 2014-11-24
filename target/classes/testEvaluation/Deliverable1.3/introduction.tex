@@ -1,0 +1,34 @@
+\section{Introduction}
+
+Even though the number of algorithms designed for learning on streaming data is increasing, there is still not a unified and well accepted way for evaluating them.  This is because testing and evaluating algorithms that are designed to work on streaming data are more difficult than testing and evaluating those that are designed to work on static data.  There are both statistical and computational reasons for this.  
+
+On streaming data, one can often not assume that data are identically and independently distributed i.i.d as one often can assume on static data.  Moreover, the algorithms are often designed to take weight measurements that are close to the actual time step higher than measurements that are further back.  On streaming data, we must therefore assume that data are generated from underlying distributions that are time dependent and also that the algorithms themselves are time dependent.  
+
+Computational challenges are related to the fact that the data come from an open-ended data stream, conceptually infinitely long, which imposes practical challenges related to restrictions on cpu-time and memory allocation.  
+
+Various error measures related to stream data has been proposed in the papers of Gama et. al. \cite{Gam09}, \cite{Gam09_2}, \cite{Gam12}.  A loss function is defined as the penalty of a certain misclassification or residual in a regression model.  The holdout error is basically the average loss on a holdout dataset of fixed size, while the predictive sequential, or \emph{prequential} error is defined as the average loss function up to time step $i$, where $i$ is the current time step.  Moreover, it was also suggested to use a prequental error measure, which involved a forgetting factor such as using a time window or fading factors.  In paper \cite{Gam12}, convergence towards the Bayes error was shown for all these performance measures provided that the learners are consistent.  
+
+
+
+
+
+
+In this paper we will establish formal procedures for testing and evaluating the developed models and algorithms. This includes specification what metrics are relevant to use to quantify the ability of the AMIDST system, such as relevant formalization of loss functions, maximum response-times, memory limits and output format.  The paper will also include 
+considerations about what quantitative improvements AMIDST should obtain over state of the art.
+
+In section \ref{sec:methodology}, AMIDST relevant methodologies for evaluation of both batch and streaming algorithms are identified and discussed.  This section forms the foundation of the subsequent sections, where the exact evaluation routines for each use case provider is given. These sections contains a description of the requirements related to evaluation as described in Delivery 1.2, a short description of the algorithms and the data and finally methods for evaluating predictive and runtime performances.  Section \ref{sec:conclusion} concludes the report.
+
+
+%\quote{\emph{Task description: In this task we will establish formal procedures for testing and evaluating the
+%    developed models and algorithms. This includes specification of maximum response-times, output format,
+%    relevant formalization of loss functions, investigations into what metrics are relevant to use to quantify
+%    the ability of the AMIDST system, and considerations about what quantitative improvements AMIDST should
+%    obtain over state of the art.}}
+%
+%
+%From Helge's slides at the WP 3 kickoff meeting:
+%\begin{itemize}
+%\item Massive datasets: find relevant techniques, ensure scalability, etc.
+%\item Online evaluation of streams: find relevant techniques, ensure scalability, define behavior in changing environment, etc.
+%\item Significance of results, e.g., considering changing environment vs. ``reproducability'', distribution for test-statistic, significance levels/sizes of test-sets, etc.
+%\end{itemize}
