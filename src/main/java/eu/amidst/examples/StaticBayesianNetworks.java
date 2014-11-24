@@ -1,5 +1,6 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
@@ -15,7 +16,8 @@ import eu.amidst.core.variables.Variable;
  */
 public class StaticBayesianNetworks {
 
-    public static void main(String[] args) throws Exception{
+
+    public static void staticBNNoHidden() throws Exception {
         //**************************************** Synthetic data ******************************************************
         DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticData.arff")));
 
@@ -56,17 +58,21 @@ public class StaticBayesianNetworks {
         System.out.println(bn.toString());
 
         double logProb = 0;
-        for (DataInstance instance: data){
+        for (DataInstance instance : data) {
             logProb += bn.getLogProbabiltyOfFullAssignment(instance);
         }
 
         System.out.println(logProb);
 
 
-        ConverterToHugin converterToHugin = new ConverterToHugin();
-        converterToHugin.convertToHuginBN(bn);
+        ConverterToHugin converterToHugin = new ConverterToHugin(bn);
+        converterToHugin.convertToHuginBN();
         String outFile = new String("networks/huginStaticBNExample.net");
         converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
 
+    }
+
+    public static void main(String[] args) throws Exception {
+        StaticBayesianNetworks.staticBNNoHidden();
     }
 }
