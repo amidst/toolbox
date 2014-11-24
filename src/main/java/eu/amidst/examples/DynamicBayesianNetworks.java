@@ -76,9 +76,8 @@ public class DynamicBayesianNetworks {
 
         double logProb = 0;
 
-        while (data.hasMoreDataInstances()){
-            DataInstance dataInstance = data.nextDataInstance();
-            if (dataInstance.getTimeID()==1) {
+        for (DataInstance dataInstance: data){
+            if (dataInstance.getTimeID()==0) {
                 logProb += dynamicBayesianNetwork.getLogProbabiltyOfFullAssignmentTime0(dataInstance);
             }else{
                 logProb += dynamicBayesianNetwork.getLogProbabiltyOfFullAssignmentTimeT(dataInstance);

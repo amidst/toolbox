@@ -39,7 +39,7 @@ public final class NextDynamicDataInstance {
             dynDataInst = new DynamicDataInstance(past, present, sequenceID, timeIDcounter++);
         }else {
             past = present;
-            present = reader.nextDataRow();
+            present = reader.next();
             dynDataInst = new DynamicDataInstance(past, present, sequenceID, timeIDcounter++);
         }
         return dynDataInst;
@@ -66,7 +66,7 @@ public final class NextDynamicDataInstance {
 
         /*Read a new DataRow*/
         }else{
-            present = reader.nextDataRow();
+            present = reader.next();
             /*Recursive call to this method taking into account the past DataRow*/
             return nextDataInstance_NoSeq(reader, attTimeID);
         }
@@ -81,7 +81,7 @@ public final class NextDynamicDataInstance {
             return dynDataInst;
         }
         past = present;
-        present = reader.nextDataRow();
+        present = reader.next();
         double pastSequenceID = past.getValue(attSequenceID);
         double presentSequenceID = present.getValue(attSequenceID);
         if (Double.isNaN(pastSequenceID) || pastSequenceID == presentSequenceID) {
@@ -121,7 +121,7 @@ public final class NextDynamicDataInstance {
 
         /*Read a new DataRow*/
         }else{
-            present = reader.nextDataRow();
+            present = reader.next();
             double presentSequenceID = present.getValue(attSequenceID);
             if (pastSequenceID == presentSequenceID) {
                 /*Recursive call to this method taking into account the past DataRow*/
@@ -132,7 +132,7 @@ public final class NextDynamicDataInstance {
                 DynamicDataInstance dynDataInst = new DynamicDataInstance(past, present, (int) presentSequenceID,
                         (int) present.getValue(attTimeID));
                 past = present;
-                present = reader.nextDataRow();
+                present = reader.next();
                 timeIDcounter = 2;
                 return dynDataInst;
             }
