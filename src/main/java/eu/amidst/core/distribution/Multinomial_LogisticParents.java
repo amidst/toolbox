@@ -16,22 +16,23 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
 
     /**
      * The class constructor.
-     * @param var_ The variable of the distribution.
+     *
+     * @param var_     The variable of the distribution.
      * @param parents_ The set of parents of the variable.
      */
     public Multinomial_LogisticParents(Variable var_, List<Variable> parents_) {
 
-        if (parents_.size()==0)
+        if (parents_.size() == 0)
             throw new UnsupportedOperationException("A multinomial logistic distribution can not be creadted from a empty set of parents.");
 
         this.var = var_;
         this.parents = parents_;
-        this.intercept = new double[var.getNumberOfStates()-1];
-        this.coeffParents = new double[var.getNumberOfStates()-1][parents.size()];
+        this.intercept = new double[var.getNumberOfStates() - 1];
+        this.coeffParents = new double[var.getNumberOfStates() - 1][parents.size()];
 
-        for (int k=0; k<var.getNumberOfStates()-1; k++) {
+        for (int k = 0; k < var.getNumberOfStates() - 1; k++) {
             intercept[k] = 0;
-            coeffParents[k] = new double[parents.size()+1];
+            coeffParents[k] = new double[parents.size() + 1];
             for (int i = 0; i < parents.size(); i++) {
                 coeffParents[k][i] = 1;
             }
@@ -61,8 +62,8 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
 
         double[] probs = new double[this.var.getNumberOfStates()];
 
-        for (int i=0; i<var.getNumberOfStates()-1; i++) {
-            probs[i]=intercept[i];
+        for (int i = 0; i < var.getNumberOfStates() - 1; i++) {
+            probs[i] = intercept[i];
             int cont = 0;
             for (Variable v : parents) {
                 probs[i] += coeffParents[i][cont] * parentsAssignment.getValue(v);
@@ -85,7 +86,21 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
     }
 
     @Override
-    public String label(){
+    public String label() {
         return "Multinomial Logistic";
+    }
+
+    public String toString() {
+
+        String str = "";
+
+        for (int i = 0; i < this.var.getNumberOfStates() - 1; i++) {
+            str = str + "[ alpha = " + this.getIntercept(i);
+            for (int j = 0; j < this.getCoeffParents(i).length; j++) {
+                str = str + ", beta = " + this.getCoeffParents(i)[j];
+            }
+            str = str + "]\n";
+        }
+        return str;
     }
 }
