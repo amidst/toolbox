@@ -195,9 +195,9 @@ public class ConverterToHuginTest {
         converter2.convertToAmidstBN();
         this.amidstBN = converter2.getAmidstNetwork();
         System.out.println("\nAMIDST network object created.");
+*/
 
-
-
+/*
         System.out.println("\n\nConverting the AMIDST network into Hugin format ...");
         ConverterToHugin converter3 = new ConverterToHugin(this.amidstBN);
         converter3.convertToHuginBN();
@@ -285,7 +285,7 @@ public class ConverterToHuginTest {
     private void testConditionalDistribution(Variable amidstVar, Node huginVar) throws ExceptionHugin {
         int type = Utils.getConditionalDistributionType(amidstVar, amidstBN);
 
-        System.out.println("Testing distribution for " +amidstVar.getName());
+
         switch (type) {
             case 0:
                 this.testMultinomial_MultinomialParents(huginVar, amidstVar);
@@ -313,8 +313,6 @@ public class ConverterToHuginTest {
         int nStates = amidstVar.getNumberOfStates();
         int numParentAssignments =
                 MultinomialIndex.getNumberOfPossibleAssignments(dist0.getConditioningVariables());
-
-        System.out.println(numParentAssignments);
 
         for (int j = 0; j < numParentAssignments; j++) {
             double[] amidstProbabilitiesAssignment_j = probabilities[j].getProbabilities();
