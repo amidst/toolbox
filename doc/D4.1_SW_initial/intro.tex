@@ -1,0 +1,72 @@
+% !TEX root = D41-report.tex
+\section{HL -- Introduction}
+
+\comment{This is just the first couple of pages from D3.1, terminated as quickly as possible, basically. Need to define BNs and such stuff here\ldots }
+
+
+Probabilistic graphical models provide a well-founded and principled approach for performing inference 
+in complex domains endowed with uncertainty. A probabilistic graphical model is a framework consisting 
+of two parts: a qualitative component in the form of a graphical model encoding conditional independence 
+assertions about the domain being modelled as well as a quantitative component consisting of a collection of local 
+probability distributions adhering to the independence properties specified in the graphical model. Collectively, the 
+two components provide a compact representation of the joint probability distribution over the domain being modelled. 
+
+Bayesian networks (BNs) \cite{Pearl88} are a particular type of
+probabilistic graphical model that has enjoyed widespread attention in
+the last two decades. Figure~\ref{fig:sampleBN} shows a BN representing
+the joint distribution of variables $X_1,\ldots,X_5$. Attached to each node, there is a conditional probability
+distribution given its parents in the network, so that the joint distribution factorises as
+
+\[
+p(X_1,\ldots,X_5) = p(X_1) p(X_2|X_1) p(X_3|X_1) p(X_4|X_2,X_3) p(X_5|X_3).
+\]
+
+In general, for a BN with $n$ variables $\bX=\{X_1,\ldots,X_N\}$, the joint distribution factorises as
+
+\begin{equation}
+\label{eq:factorisation}
+p(\bX) = \prod_{i=1}^N p(X_i|\pa{X_i}) ,
+\end{equation}
+where $\pa{X_i}$ denotes the set of parents of $X_i$ in the network. 
+
+\begin{figure}[htb]
+  \begin{center}
+   \scalebox{0.75}{
+    \begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,
+      node distance=2cm,semithick,
+      every state/.style={fill=blue!50,ellipse,draw}]
+      \node[state] (X1) {$X_1$};
+      \node[state] (X2) [below left of=X1] {$X_2$};
+      \node[state] (X3) [below right of=X1] {$X_3$};
+      \node[state] (X4) [below right of=X2] {$X_4$};
+      \node[state] (X5) [below right of=X3] {$X_5$};
+      \draw (X1) to (X2);
+      \draw (X1) to (X3);
+      \draw (X2) to (X4);
+      \draw (X3) to (X4);
+      \draw (X3) to (X5);
+    \end{tikzpicture}
+    }
+  \end{center}
+  \caption{A Bayesian network with five variables.}
+  \label{fig:sampleBN}
+\end{figure}
+
+
+We will use lowercase letters to refer to
+values or configurations of values, so that $x$ denotes a value of $X$ and $\bx$ is a configuration of the
+variables in $\bX$. 
+Given a set of observed variables $\bX_E\subset \bX$ and a set of variables of interest $\bX_I\subset \bX \setminus \bX_E$,
+\emph{probabilistic inference} consists of computing the posterior distribution
+$
+p(x_i|\bx_E)
+$
+for each $i\in I$. A thorough introduction to the state of the art for inference in Bayesian networks was given in \cite{D3.1}. In this document we assume that inference techniques for a given Bayesian network is available, and will rather consider how to define a Bayesian network model that fits a data set \calD\ as good as possible?   
+
+\bit
+\item Learning parameters
+\item Learning structure
+\eit
+
+
+

@@ -27,4 +27,7 @@ public interface ParentSet {
 
     public boolean contains(Variable var);
 
+    @Override
+    public boolean equals(Object o);
+
 }
