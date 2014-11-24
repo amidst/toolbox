@@ -57,8 +57,8 @@ public class TestReaderStatic {
 
         loadFileAndInitializeStatic();
 
-        if (reader.hasMoreDataRows()) {
-            datarow = reader.nextDataRow();
+        if (reader.hasNext()) {
+            datarow = reader.next();
             nextInstance = new StaticDataInstance(datarow);
         }
 
@@ -94,8 +94,8 @@ public class TestReaderStatic {
     @Test
     public void discreteAttributeValue() {
         loadFileAndInitializeStatic();
-        if (reader.hasMoreDataRows()) {
-            datarow = reader.nextDataRow();
+        if (reader.hasNext()) {
+            datarow = reader.next();
             nextInstance = new StaticDataInstance(datarow);
         }
 
@@ -111,10 +111,10 @@ public class TestReaderStatic {
         loadFileAndInitializeStatic();
 
         /* Missing values (Get the 3rd instance) */
-        if (reader.hasMoreDataRows()) {
-            reader.nextDataRow();
-            reader.nextDataRow();
-            datarow = reader.nextDataRow();
+        if (reader.hasNext()) {
+            reader.next();
+            reader.next();
+            datarow = reader.next();
             nextInstance = new StaticDataInstance(datarow);
         }
         index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
@@ -143,9 +143,8 @@ public class TestReaderStatic {
 
         /* Number of instances */
         int instanceCounter = 0;
-        while (reader.hasMoreDataRows()) {
+        for (DataRow row: reader){
             instanceCounter++;
-            reader.nextDataRow();
         }
         assertEquals(57, instanceCounter);
     }
@@ -157,10 +156,10 @@ public class TestReaderStatic {
         loadFileAndInitializeStatic();
 
         int instanceCounter = 57;
-        /* nexDataRow without calling hasMoreDataRows */
+        /* nexDataRow without calling hasNext */
         while(instanceCounter>=0){
             instanceCounter--;
-            datarow = reader.nextDataRow();
+            datarow = reader.next();
         }
         //Actually, datarow is not null, but the weka Instance inside datarow. I am not sure what should be the
         //expected behavour here.
@@ -173,7 +172,7 @@ public class TestReaderStatic {
         loadFileAndInitializeStatic();
 
         int instanceCounter = 57;
-        /* nexDataRow without calling hasMoreDataRows */
+        /* nexDataRow without calling hasNext */
         while(instanceCounter>=0){
             instanceCounter--;
             nextInstance = dataOnDiskReader.nextDataInstance();
