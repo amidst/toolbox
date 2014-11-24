@@ -1,0 +1,14 @@
+% !TEX root = D41-report.tex
+
+
+\section{HL -- Learning as inference} \label{sec:learningAsInference}
+
+
+Say that we recommend the use of a fully Bayesian approach. Approximate inference techniques (VB / EP, importance sampling, etc) can be optimized for the model class. Maximum likelihood based approaches do not go well hand in hand with approximate inference techniques...
+
+Parameter learning in Bayesian networks generally comes in two different shapes: 
+
+\textit{Maximum likelihood} learning attempts to find the model parameters that maximizes the likelihood. Let $\bmtheta$ denote the combination of all parameters of the model. Then $\mathcal{L}(\bmtheta \given \calD) = P(\calD | \bmtheta)$ is the \textit{likelihood} of the parameters given the data set $\calD$, and the maximum likelihood estimator is $\hat{\bmtheta}=\arg\max_{\bmtheta} \mathcal{L}(\bmtheta \given \calD)$. Maximum likelihood learning in a model with missing data or latent variables (that are present in the AMIDST model class) is typically implemented using the Expectation Maximization (EM) algorithm or generalizations thereof. Implementations of the (generalized) EM algorithm typically iterates over the following two steps that are repeated until convergence: $i)$ E-step: Inference in the model given parameter estimates; $ii)$ M-step: Updates of the parameters using inferred states of the variables not observed in the dataset. The EM algorithm is a greedy algorithm that at each iteration guarantees that the likelihood of the present parameter estimates is not lower than the likelihood of the previous estimate as long as the inference algorithm employed by the E-step is exact. Convergence is therefore monitored by keeping track of the likelihood function. If approximate inference is used, no such guarantees exist.  OR AM I MISTAKEN? \url{http://papers.nips.cc/paper/2404-approximate-expectation-maximization.pdf} looks interesting.
+
+
+\textit{Bayesian learning} hyper-parameters. Conjugate exponential model restriction. Learning as inference. ``Dirty'' inference is not a problem for convergence of learning (converges if and only if inference algo converges, obviously).
