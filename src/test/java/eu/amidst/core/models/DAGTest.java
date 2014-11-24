@@ -18,10 +18,11 @@ public class DAGTest {
     WekaDataFileReader reader = new WekaDataFileReader("data/dataWeka/contact-lenses.arff");
     StaticVariables variables = new StaticVariables(reader.getAttributes());
     DAG dag = new DAG(variables);
+    DAG dag2 = new DAG(variables);
 
     @Test
-    public void testingDAG(){
-        List<Variable> variables =  dag.getStaticVariables().getListOfVariables();
+    public void testingDAG() {
+        List<Variable> variables = dag.getStaticVariables().getListOfVariables();
         Variable A = variables.get(0);
         Variable B = variables.get(1);
         Variable C = variables.get(2);
@@ -50,6 +51,20 @@ public class DAGTest {
 
         assertEquals(2, dag.getParentSet(C).getNumberOfParents());
         assertEquals(0, dag.getParentSet(A).getNumberOfParents());
+
+        /* test if dag and dag2 (no arcs) are equals*/
+
+        assertFalse(dag.equals(dag2));
+
+        /* define dag2 as a copy of dag and test again */
+
+        dag2.getParentSet(B).addParent(A);
+        dag2.getParentSet(C).addParent(B);
+        dag2.getParentSet(D).addParent(B);
+        dag2.getParentSet(E).addParent(B);
+        dag2.getParentSet(C).addParent(A);
+
+        assertTrue(dag.equals(dag2));
 
     }
 
