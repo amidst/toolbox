@@ -22,8 +22,8 @@ public class ConverterToAMIDST {
     private BayesianNetwork amidstBN;
     private Domain huginBN;
 
-    public ConverterToAMIDST(Domain huginNetwork){
-        this.huginBN = huginNetwork;
+    public ConverterToAMIDST(Domain huginBN_){
+        this.huginBN = huginBN_;
     }
 
     public BayesianNetwork getAmidstNetwork() {
@@ -123,7 +123,6 @@ public class ConverterToAMIDST {
 
         double huginVariance = ((ContinuousChanceNode)huginVar).getGamma(0);
         dist.setSd(Math.sqrt(huginVariance));
-
     }
 
     private void setNormal(Node huginVar, Normal normal, int i) throws ExceptionHugin {
@@ -214,7 +213,6 @@ public class ConverterToAMIDST {
     }
 
     public void convertToAmidstBN() throws ExceptionHugin {
-
         this.setNodesAndParents();
         this.setDistributions();
     }
