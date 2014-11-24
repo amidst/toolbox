@@ -71,7 +71,7 @@ public class ConverterToHugin {
 
         try {
             for (Variable amidstChild: amidstBN.getStaticVariables()) {
-                for (Variable amidstParent: dag.getParentSet(amidstChild).getParents()) {
+                for (Variable amidstParent: dag.getParentSet(amidstChild)) {
                     Node huginChild = this.huginBN.getNodeByName(amidstChild.getName());
                     Node huginParent = this.huginBN.getNodeByName(amidstParent.getName());
                     huginChild.addParent(huginParent);
