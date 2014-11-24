@@ -36,7 +36,7 @@ public class TestReaderDynamic {
         dataOnDisk = new DynamicDataOnDiskFromFile(reader);
         dynamicVariables = new DynamicVariables(attributes);
         obsVars = dynamicVariables.getListOfDynamicVariables();
-        temporalClones = dynamicVariables.getListOfTemporalClones();
+        //temporalClones = dynamicVariables.getListOfTemporalClones();
     }
 
     /**********************************************************
@@ -49,7 +49,7 @@ public class TestReaderDynamic {
 
         assertEquals(17, attributes.getList().size());
         assertEquals(17, obsVars.size());
-        assertEquals(17, temporalClones.size());
+        //assertEquals(17, temporalClones.size());
         assertEquals(17, dynamicVariables.getNumberOfVars());
     }
 
@@ -86,7 +86,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(57,(int)nextInstance.getTimeID());
+        assertEquals(56,(int)nextInstance.getTimeID());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(1,(int)nextInstance.getSequenceID());
+        assertEquals(0,(int)nextInstance.getSequenceID());
     }
 
     /**********************************************************
@@ -111,7 +111,7 @@ public class TestReaderDynamic {
 
         assertEquals(18, attributes.getList().size());
         assertEquals(17, obsVars.size());
-        assertEquals(17, temporalClones.size());
+        //assertEquals(17, temporalClones.size());
         assertEquals(17, dynamicVariables.getNumberOfVars());
     }
 
@@ -247,7 +247,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(60,(int)nextInstance.getTimeID());
+        assertEquals(59,(int)nextInstance.getTimeID());
     }
 
     @Test
@@ -259,7 +259,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(1,(int)nextInstance.getSequenceID());
+        assertEquals(0,(int)nextInstance.getSequenceID());
     }
 
 
@@ -273,7 +273,7 @@ public class TestReaderDynamic {
 
         assertEquals(18, attributes.getList().size());
         assertEquals(17, obsVars.size());
-        assertEquals(17, temporalClones.size());
+        //assertEquals(17, temporalClones.size());
         assertEquals(17, dynamicVariables.getNumberOfVars());
     }
 
@@ -354,7 +354,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(40,(int)nextInstance.getTimeID());
+        assertEquals(39,(int)nextInstance.getTimeID());
     }
 
     @Test
@@ -366,7 +366,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(3,(int)nextInstance.getSequenceID());
+        assertEquals(2,(int)nextInstance.getSequenceID());
     }
 
 
@@ -380,7 +380,7 @@ public class TestReaderDynamic {
 
         assertEquals(19, attributes.getList().size());
         assertEquals(17, obsVars.size());
-        assertEquals(17, temporalClones.size());
+        //assertEquals(17, temporalClones.size());
         assertEquals(17, dynamicVariables.getNumberOfVars());
     }
 
@@ -469,7 +469,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(40,(int)nextInstance.getTimeID());
+        assertEquals(39,(int)nextInstance.getTimeID());
     }
 
     @Test
@@ -481,7 +481,7 @@ public class TestReaderDynamic {
         }
 
         /*Test values for the last instance*/
-        assertEquals(3,(int)nextInstance.getSequenceID());
+        assertEquals(2,(int)nextInstance.getSequenceID());
     }
 
 
