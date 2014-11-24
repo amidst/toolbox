@@ -63,8 +63,8 @@ public class StaticBayesianNetworks {
         System.out.println(logProb);
 
 
-        ConverterToHugin converterToHugin = new ConverterToHugin();
-        converterToHugin.convertToHuginBN(bn);
+        ConverterToHugin converterToHugin = new ConverterToHugin(bn);
+        converterToHugin.convertToHuginBN();
         String outFile = new String("networks/huginStaticBNExample.net");
         converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
 
