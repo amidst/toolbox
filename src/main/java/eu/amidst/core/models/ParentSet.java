@@ -11,57 +11,20 @@ import java.util.List;
  * Created by afa on 02/07/14.
  */
 
-public class ParentSet {
+public interface ParentSet {
 
-    private List<Variable> vars;
+    public void addParent(Variable var);
 
-    private ParentSet(){
-        this.vars = new ArrayList<Variable>();
-    }
+    public void removeParent(Variable var);
 
-    public static ParentSet newParentSet(){
-        return new ParentSet();
-    }
+    public List<Variable> getParents();
 
-    public void addParent(Variable var){
-        vars.add(var);
-    }
+    public int getNumberOfParents();
 
-    public void removeParent(Variable var){
-        vars.remove(var);
-    }
+    public String toString();
 
-    public List<Variable> getParents(){
-        return vars;
-    }
+    public void blockParents();
 
-    public int getNumberOfParents(){
-        return vars.size();
-    }
+    public boolean contains(Variable var);
 
-    public String toString() {
-
-        int numParents = getNumberOfParents();
-        String str = new String("{ ");
-
-
-        for(int i=0;i<numParents;i++){
-            Variable parent = getParents().get(i);
-            str = str + parent.getName();
-            if (i<numParents-1)
-                str = str + ", ";
-        }
-
-
-
-        str = str + " }";
-        return str;
-    }
-
-    /**
-     * Is an ArrayList pointer to an ArrayList unmodifiable object still unmodifiable? I guess so right?
-     */
-    public void blockParents() {
-        vars = Collections.unmodifiableList(vars);
-    }
 }
