@@ -79,8 +79,8 @@ public class TestReaderStatic {
 
         loadFileAndInitializeStatic();
 
-        if (dataOnDiskReader.hasMoreDataInstances()) {
-            nextInstance = dataOnDiskReader.nextDataInstance();
+        if (dataOnDiskReader.hasNext()) {
+            nextInstance = dataOnDiskReader.next();
         }
 
         for (Attribute att : attributes.getList()) {
@@ -129,9 +129,8 @@ public class TestReaderStatic {
 
         /* Number of instances */
         int instanceCounter = 0;
-        while (dataOnDiskReader.hasMoreDataInstances()) {
+        for (DataInstance dataInstance: dataOnDiskReader){
             instanceCounter++;
-            dataOnDiskReader.nextDataInstance();
         }
         assertEquals(57, instanceCounter);
     }
@@ -175,7 +174,7 @@ public class TestReaderStatic {
         /* nexDataRow without calling hasNext */
         while(instanceCounter>=0){
             instanceCounter--;
-            nextInstance = dataOnDiskReader.nextDataInstance();
+            nextInstance = dataOnDiskReader.next();
         }
         //I am not sure what should be the expected behavour here.
         //assertNull(nextInstance);
