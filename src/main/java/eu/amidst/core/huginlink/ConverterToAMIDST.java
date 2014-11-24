@@ -51,13 +51,13 @@ public class ConverterToAmidst {
         StaticVariables staticVariables = new StaticVariables(new Attributes(atts));
         DAG dag = new DAG(staticVariables);
 
-        List<Variable> amidstVariables = staticVariables.getListOfVariables();
+        StaticVariables amidstVariables = staticVariables;
 
         for(int i=0;i<huginNodes.size();i++){
 
             Node huginChild = (Node)huginNodes.get(i);
             NodeList huginParents = huginChild.getParents();
-            Variable amidstChild = amidstVariables.get(i);
+            Variable amidstChild = amidstVariables.getVariableByName(huginChild.getName());
 
             //Only multinomial parents are indexed in Hugin in a reverse order!!
             List<Integer> positionsMultinomialParents = new ArrayList<>();
@@ -79,7 +79,7 @@ public class ConverterToAmidst {
                 else {
                      indexParent = huginNodes.indexOf(huginParent);
                 }
-                Variable amidstParent = amidstVariables.get(indexParent);
+                Variable amidstParent = amidstVariables.getVariableByName(huginChild.getName());
                 dag.getParentSet(amidstChild).addParent(amidstParent);
             }
         }
@@ -89,7 +89,7 @@ public class ConverterToAmidst {
     private void setMultinomial_MultinomialParents(Node huginVar) throws ExceptionHugin {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
-        Variable amidstVar = this.amidstBN.getListOfVariables().get(indexNode);
+        Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
         int numStates = amidstVar.getNumberOfStates();
 
         double[] huginProbabilities = huginVar.getTable().getData();
@@ -113,7 +113,7 @@ public class ConverterToAmidst {
     private void setNormal_NormalParents(Node huginVar) throws ExceptionHugin {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
-        Variable amidstVar = this.amidstBN.getListOfVariables().get(indexNode);
+        Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
         Normal_NormalParents dist = this.amidstBN.getDistribution(amidstVar);
 
         double huginIntercept = ((ContinuousChanceNode)huginVar).getAlpha(0);
@@ -145,7 +145,7 @@ public class ConverterToAmidst {
     private void setNormal_MultinomialParents(Node huginVar) throws ExceptionHugin {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
-        Variable amidstVar = this.amidstBN.getListOfVariables().get(indexNode);
+        Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
         Normal_MultinomialParents dist = this.amidstBN.getDistribution(amidstVar);
 
         List<Variable> conditioningVariables = dist.getConditioningVariables();
@@ -160,7 +160,7 @@ public class ConverterToAmidst {
     private void setNormal_MultinomialNormalParents(Node huginVar) throws ExceptionHugin {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
-        Variable amidstVar = this.amidstBN.getListOfVariables().get(indexNode);
+        Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
         Normal_MultinomialNormalParents dist = this.amidstBN.getDistribution(amidstVar);
 
         List<Variable> multinomialParents = dist.getMultinomialParents();
@@ -193,11 +193,11 @@ public class ConverterToAmidst {
      private void setDistributions() throws ExceptionHugin {
 
         NodeList huginNodes = this.huginBN.getNodes();
-        List<Variable> amidstVariables = this.amidstBN.getListOfVariables();
+        StaticVariables amidstVariables = this.amidstBN.getStaticVariables();
 
         for (int i = 0; i < huginNodes.size(); i++) {
 
-            Variable amidstVar = amidstVariables.get(i);
+            Variable amidstVar = amidstVariables.getVariableById(i);
             Node huginVar = (Node)huginNodes.get(i);
 
             int type = Utils.getConditionalDistributionType(amidstVar, amidstBN);

@@ -39,18 +39,18 @@ public class ConverterToHuginTest {
         //Create the structure by hand
 
         DAG dag = new DAG(modelHeader);
-        List<Variable> variables = dag.getStaticVariables().getListOfVariables();
+        StaticVariables variables = dag.getStaticVariables();
 
         Variable A, B, C, D, E, G, H, I;
 
-        A = variables.get(0);
-        B = variables.get(1);
-        C = variables.get(2);
-        D = variables.get(3);
-        E = variables.get(4);
-        G = variables.get(5);
-        H = variables.get(6);
-        I = variables.get(7);
+        A = variables.getVariableById(0);
+        B = variables.getVariableById(1);
+        C = variables.getVariableById(2);
+        D = variables.getVariableById(3);
+        E = variables.getVariableById(4);
+        G = variables.getVariableById(5);
+        H = variables.getVariableById(6);
+        I = variables.getVariableById(7);
 
         //Example
 
@@ -217,7 +217,7 @@ public class ConverterToHuginTest {
 
         for (int i = 0; i < numVars; i++) {
 
-            Variable amidstVar = amidstBN.getListOfVariables().get(i);
+            Variable amidstVar = amidstBN.getStaticVariables().getVariableById(i);
             Node huginVar = (Node) huginBN.getNodes().get(i);
 
             this.testName(amidstVar,huginVar);
