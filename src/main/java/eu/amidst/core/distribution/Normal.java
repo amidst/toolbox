@@ -91,8 +91,4 @@ public class Normal extends UnivariateDistribution {
     public double getLogProbability(double value) {
         return (-Math.log(sd) - 0.5 * Math.log(2 * Math.PI) - 0.5 * Math.pow(((value - mean) / sd), 2));
     }
-
-    public String label(){
-        return "Normal";
-    }
 }

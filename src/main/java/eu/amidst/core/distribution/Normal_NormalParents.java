@@ -145,8 +145,4 @@ public class Normal_NormalParents extends ConditionalDistribution {
         double value = assignment.getValue(this.var);
         return (getUnivariateNormal(assignment).getLogProbability(value));
     }
-
-    public String label(){
-        return "Normal|Normal";
-    }
 }
