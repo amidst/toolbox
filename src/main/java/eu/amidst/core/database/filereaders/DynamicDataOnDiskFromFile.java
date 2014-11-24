@@ -2,6 +2,8 @@ package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.*;
 
+import java.util.Iterator;
+
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
@@ -50,7 +52,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
     }
 
     @Override
-    public DataInstance nextDataInstance() {
+    public DataInstance next() {
 
         /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
         /* 1 = true,  false, i.e., TimeID is provided */
@@ -80,7 +82,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
     }
 
     @Override
-    public boolean hasMoreDataInstances() {
+    public boolean hasNext() {
         return reader.hasNext();
     }
 
@@ -92,5 +94,10 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
     @Override
     public void restart() {
         this.reader.reset();
+    }
+
+    @Override
+    public Iterator<DataInstance> iterator() {
+        return this;
     }
 }

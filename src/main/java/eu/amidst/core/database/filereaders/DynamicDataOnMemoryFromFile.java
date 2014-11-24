@@ -3,6 +3,7 @@ package eu.amidst.core.database.filereaders;
 import eu.amidst.core.database.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -108,7 +109,7 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     }
 
     @Override
-    public DataInstance nextDataInstance() {
+    public DataInstance next() {
         if (pointer >= getNumberOfDataInstances()) {
             throw new UnsupportedOperationException("Make sure to call hasNext() to know when the sequence " +
                     "has finished (restart() moves the reader pointer to the beginning");
@@ -117,12 +118,17 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     }
 
     @Override
-    public boolean hasMoreDataInstances() {
+    public boolean hasNext() {
         return pointer < getNumberOfDataInstances();
     }
 
     @Override
     public void restart() {
         pointer = 0;
+    }
+
+    @Override
+    public Iterator<DataInstance> iterator() {
+        return this;
     }
 }
