@@ -3,6 +3,7 @@ package eu.amidst.core.database.filereaders;
 import eu.amidst.core.database.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,8 +26,8 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
 
         List<StaticDataInstance> dataInstancesList = new ArrayList<>();
 
-        while (reader.hasMoreDataRows()) {
-            dataInstancesList.add(new StaticDataInstance(reader.nextDataRow()));
+        for (DataRow row: reader){
+            dataInstancesList.add(new StaticDataInstance(row));
         }
         reader.reset();
 
@@ -50,16 +51,16 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
     }
 
     @Override
-    public DataInstance nextDataInstance() {
+    public DataInstance next() {
         if (pointer >= getNumberOfDataInstances()) {
-            throw new UnsupportedOperationException("Make sure to call hasMoreDataInstances() to know when the sequence " +
+            throw new UnsupportedOperationException("Make sure to call hasNext() to know when the sequence " +
                     "has finished (restart() moves the reader pointer to the beginning");
         }
         return dataInstances[pointer++];
     }
 
     @Override
-    public boolean hasMoreDataInstances() {
+    public boolean hasNext() {
         return pointer < getNumberOfDataInstances();
     }
 
@@ -68,4 +69,9 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
     }
 
     public Attributes getAttributes(){ return reader.getAttributes();}
+
+    @Override
+    public Iterator<DataInstance> iterator() {
+        return this;
+    }
 }
