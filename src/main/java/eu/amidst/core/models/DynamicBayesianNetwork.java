@@ -2,6 +2,8 @@ package eu.amidst.core.models;
 
 
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -31,28 +33,15 @@ public class DynamicBayesianNetwork{
 
     private DynamicDAG dynamicDAG;
 
-    /**
-     * The private class constructor
-     * @param dynamicDAG_
-     */
     private DynamicBayesianNetwork(DynamicDAG dynamicDAG_){
         dynamicDAG = dynamicDAG_;
         this.initializeDistributions();
     }
 
-    /**
-     * The class public constructor, as a factory pattern
-     * @param dynamicDAG_
-     * @return A <code>DynamicBayesianNetwork</code> with the given list of variables
-     */
     public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicDAG dynamicDAG_){
         return new DynamicBayesianNetwork(dynamicDAG_);
     }
 
-
-    /**
-     * Initialize the Distributions of the variables based on their <code>StateSpaceType</code>
-     */
     private void initializeDistributions() {
         //Parents should have been assigned before calling this method (from dynamicmodelling.models)
 
@@ -67,8 +56,8 @@ public class DynamicBayesianNetwork{
             this.dynamicDAG.getParentSetTimeT(var).blockParents();
 
             /* Distributions at time 0 */
-            this.distributionsTime0[varID] = DistributionBuilder.newDistribution(var, this.dynamicDAG.getParentSetTime0(var).getParents());
-            this.dynamicDAG.getParentSetTime0(var).blockParents();
+            this.distributionsTime0[varID] = DistributionBuilder.newDistribution(var, this.dynamicDAG.getListOfParentsTime0(var));
+            //this.dynamicDAG.getParentSetTime0(var).blockParents();
         }
     }
 
@@ -80,35 +69,12 @@ public class DynamicBayesianNetwork{
         return this.dynamicDAG.getDynamicVariables();
     }
 
-    /*
-    public Variable getVariableById(int varID) {
-        return this.getListOfDynamicVariables().getVariableById(varID);
-    }
-
-    public Variable getTemporalCloneById(int varID) {
-        return this.getListOfDynamicVariables().getTemporalCloneById(varID);
-    }
-
-    public Variable getTemporalCloneFromVariable(Variable variable) {
-        return this.getListOfDynamicVariables().getTemporalCloneFromVariable(variable);
-    }
-    */
-
-
     public <E extends ConditionalDistribution> E getDistributionTimeT(Variable var) {
         return (E) this.distributionsTimeT[var.getVarID()];
     }
 
     public <E extends ConditionalDistribution> E getDistributionTime0(Variable var) {
         return (E) this.distributionsTime0[var.getVarID()];
-    }
-
-    public void setDistributionsTimeT(Variable var, ConditionalDistribution distribution){
-        this.distributionsTimeT[var.getVarID()] = distribution;
-    }
-
-    public void setDistributionsTime0(Variable var, ConditionalDistribution distribution){
-        this.distributionsTime0[var.getVarID()] = distribution;
     }
 
     public DynamicDAG getDynamicDAG (){
@@ -122,4 +88,83 @@ public class DynamicBayesianNetwork{
     public List<Variable> getListOfDynamicVariables() {
         return this.getDynamicVariables().getListOfDynamicVariables();
     }
+
+    public double getLogProbabiltyOfFullAssignmentTimeT(Assignment assignment){
+        double logProb = 0;
+        for (Variable var: this.getListOfDynamicVariables()){
+            if (assignment.getValue(var)== Utils.missingValue())
+                throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
+            logProb += this.distributionsTimeT[var.getVarID()].getLogConditionalProbability(assignment);
+        }
+        return logProb;
+    }
+
+    public double getLogProbabiltyOfFullAssignmentTime0(Assignment assignment){
+        double logProb = 0;
+        for (Variable var: this.getListOfDynamicVariables()){
+            if (assignment.getValue(var) == Utils.missingValue())
+                throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
+            logProb += this.distributionsTime0[var.getVarID()].getLogConditionalProbability(assignment);
+        }
+        return logProb;
+    }
+
+
+    /*
+    public Variable getVariableById(int varID) {
+        return this.getListOfDynamicVariables().getVariableById(varID);
+    }
+
+    public Variable getTemporalCloneById(int varID) {
+        return this.getListOfDynamicVariables().getTemporalCloneById(varID);
+    }
+
+    public Variable getTemporalClone(Variable variable) {
+        return this.getListOfDynamicVariables().getTemporalClone(variable);
+    }
+    */
+
+
+    public String toString(){
+        String str = "Dynamic Bayesian Network Time 0:\n";
+        for (Variable var: this.getDynamicVariables().getListOfDynamicVariables()){
+
+            if (this.getDynamicDAG().getListOfParentsTime0(var).size()==0){
+                str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";
+                str+=this.getDistributionTime0(var).label()+"\n";
+            }else {
+                str += "P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ";
+
+                for (Variable parent : this.getDynamicDAG().getListOfParentsTime0(var)) {
+                    str += parent.getName() + " [" + parent.getDistributionType().toString() + "], ";
+                }
+                if (this.getDynamicDAG().getListOfParentsTime0(var).size() > 0) str = str.substring(0, str.length() - 2);
+                str += ") follows a ";
+                str += this.getDistributionTime0(var).label() + "\n";
+            }
+
+        }
+
+        str += "\nDynamic Bayesian Network Time T:\n";
+
+        for (Variable var: this.getDynamicVariables().getListOfDynamicVariables()){
+
+            if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents()==0){
+                str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";
+                str+=this.getDistributionTimeT(var).label()+"\n";
+            }else {
+                str += "P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ";
+
+                for (Variable parent : this.getDynamicDAG().getParentSetTimeT(var).getParents()) {
+                    str += parent.getName() + " [" + parent.getDistributionType().toString() + "], ";
+                }
+                if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents() > 0) str = str.substring(0, str.length() - 2);
+                str += ") follows a ";
+                str += this.getDistributionTimeT(var).label() + "\n";
+            }
+
+        }
+        return str;
+    }
+
 }

@@ -1,5 +1,7 @@
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.variables.Variable;
+
 /**
  * <h2>This interface generalizes the set of univariate distributions.</h2>
  *
