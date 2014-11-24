@@ -46,13 +46,13 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
     /**
      * The class constructor.
-     * @param var The variable of the distribution.
-     * @param parents The set of parents of the variable.
+     * @param var_ The variable of the distribution.
+     * @param parents_ The set of parents of the variable.
      */
-    public Normal_NormalParents(Variable var, List<Variable> parents) {
+    public Normal_NormalParents(Variable var_, List<Variable> parents_) {
 
-        this.var = var;
-        this.parents = parents;
+        this.var = var_;
+        this.parents = parents_;
         this.intercept = 0;
         coeffParents = new double[parents.size()];
         for (int i = 0; i < parents.size(); i++) {
@@ -74,10 +74,10 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
     /**
      * Sets the intercept of the distribution.
-     * @param intercept A <code>double</code> value with the intercept.
+     * @param intercept_ A <code>double</code> value with the intercept.
      */
-    public void setIntercept(double intercept) {
-        this.intercept = intercept;
+    public void setIntercept(double intercept_) {
+        this.intercept = intercept_;
     }
 
     /**
@@ -90,10 +90,10 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
     /**
      * Sets the coefficients of the distribution
-     * @param coeffParents An array of <code>double</code> with the coefficients, one for each parent.
+     * @param coeffParents_ An array of <code>double</code> with the coefficients, one for each parent.
      */
-    public void setCoeffParents(double[] coeffParents) {
-        this.coeffParents = coeffParents;
+    public void setCoeffParents(double[] coeffParents_) {
+        this.coeffParents = coeffParents_;
     }
 
     /**
@@ -106,10 +106,10 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
     /**
      * Sets the standard deviation of the variable.
-     * @param sd A <code>double</code> value with the standard deviation.
+     * @param sd_ A <code>double</code> value with the standard deviation.
      */
-    public void setSd(double sd) {
-        this.sd = sd;
+    public void setSd(double sd_) {
+        this.sd = sd_;
     }
 
     /**
@@ -148,5 +148,18 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
     public String label(){
         return "Normal|Normal";
+    }
+
+
+    public String toString(){
+
+        String str = "[ alpha = " +this.getIntercept() + ", ";
+
+        for (int i=0;i<this.getCoeffParents().length;i++){
+            str = str + "beta"+(i+1)+" = "+ this.getCoeffParents()[i] + ", ";
+        }
+        str = str + "sd = " + this.getSd() + " ]";
+
+        return str;
     }
 }

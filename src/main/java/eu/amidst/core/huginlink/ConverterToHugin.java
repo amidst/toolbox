@@ -18,49 +18,39 @@ public class ConverterToHugin {
     private Domain huginBN;
     private BayesianNetwork amidstBN;
 
-    public ConverterToHugin(BayesianNetwork amidstBN){
-        try {
-            this.huginBN = new Domain();
-        }
-        catch (ExceptionHugin e) {
-            System.out.print("Exception caught: " + e.getMessage());
-        }
-        this.amidstBN = amidstBN;
+    public ConverterToHugin(BayesianNetwork amidstBN_) throws ExceptionHugin {
+
+        this.huginBN = new Domain();
+        this.amidstBN = amidstBN_;
     }
 
     public Domain getHuginNetwork(){
         return this.huginBN;
     }
 
-    public void setNodes() {
+    public void setNodes() throws ExceptionHugin {
 
         StaticVariables amidstVars = amidstBN.getStaticVariables();
         int size = amidstVars.getNumberOfVars();
 
-        try {
-            //Hugin always inserts variables in position 0, i.e, for an order A,B,C, it stores C,B,A !!!
-            //A reverse order of the variables is used instead.
-            for(int i=1;i<=size;i++){
-                Variable amidstVar = amidstVars.getVariableById(size-i);
-                if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-                    LabelledDCNode n = new LabelledDCNode(this.huginBN);
-                    n.setName(amidstVar.getName());
-                    n.setNumberOfStates(amidstVar.getNumberOfStates());
+        //Hugin always inserts variables in position 0, i.e, for an order A,B,C, it stores C,B,A !!!
+        //A reverse order of the variables is used instead.
+        for(int i=1;i<=size;i++){
+            Variable amidstVar = amidstVars.getVariableById(size-i);
+            if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+                LabelledDCNode n = new LabelledDCNode(this.huginBN);
+                n.setName(amidstVar.getName());
+                n.setNumberOfStates(amidstVar.getNumberOfStates());
 
-                    for (int j=0;j<n.getNumberOfStates();j++){
-                        n.setStateLabel(j,amidstVar.getName()+j);
-                    }
-                } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
-                    ContinuousChanceNode c = new ContinuousChanceNode(this.huginBN);
-                    c.setName(amidstVar.getName());
-                } else {
-                    throw new IllegalArgumentException("Unrecognized DistributionType.");
+                for (int j=0;j<n.getNumberOfStates();j++){
+                    n.setStateLabel(j,amidstVar.getName()+j);
                 }
+            } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
+                ContinuousChanceNode c = new ContinuousChanceNode(this.huginBN);
+                c.setName(amidstVar.getName());
+            } else {
+                throw new IllegalArgumentException("Unrecognized DistributionType.");
             }
-            System.out.println();
-        }
-        catch (ExceptionHugin e) {
-            System.out.println("Exception caught: " + e.getMessage());
         }
     }
 
@@ -130,7 +120,6 @@ public class ConverterToHugin {
         ((ContinuousChanceNode)huginVar).setAlpha(mean, i);
         ((ContinuousChanceNode)huginVar).setGamma(Math.pow(sd,2),i);
     }
-
 
     public void setNormal_MultinomialParents(Normal_MultinomialParents dist) throws ExceptionHugin {
 
