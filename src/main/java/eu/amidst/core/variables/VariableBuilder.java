@@ -14,6 +14,9 @@ public final class VariableBuilder {
     private static DistType distributionType;
     private static Attribute attribute;
 
+    public VariableBuilder() {
+    }
+
     public VariableBuilder(Attribute att){
         this.name = att.getName();
         this.observable = true;
@@ -63,4 +66,27 @@ public final class VariableBuilder {
 
     public static Attribute getAttribute() { return attribute; }
 
+    public static void setName(String name) {
+        VariableBuilder.name = name;
+    }
+
+    public static void setObservable(boolean observable) {
+        VariableBuilder.observable = observable;
+    }
+
+    public static void setNumberOfStates(int numberOfStates) {
+        VariableBuilder.numberOfStates = numberOfStates;
+    }
+
+    public static void setStateSpaceType(StateSpaceType stateSpaceType) {
+        VariableBuilder.stateSpaceType = stateSpaceType;
+    }
+
+    public static void setDistributionType(DistType distributionType) {
+        VariableBuilder.distributionType = distributionType;
+    }
+
+    public static void setAttribute(Attribute attribute) {
+        VariableBuilder.attribute = attribute;
+    }
 }

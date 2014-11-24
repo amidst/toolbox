@@ -1,7 +1,7 @@
 /**
  ******************* ISSUE LIST **************************
  *
- * 1. Do we need a getVariable(String s) in StaticModelHeader?
+ * 1. Do we need a getVariableByName(String s) in StaticModelHeader?
 
  *
  * ********************************************************
@@ -57,8 +57,8 @@ public class TestReaderStatic {
 
         loadFileAndInitializeStatic();
 
-        if (reader.hasMoreDataRows()) {
-            datarow = reader.nextDataRow();
+        if (reader.hasNext()) {
+            datarow = reader.next();
             nextInstance = new StaticDataInstance(datarow);
         }
 
@@ -69,7 +69,7 @@ public class TestReaderStatic {
         /* Numeric attribute */
         assertEquals(5, (int) datarow.getValue(attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR")));
         index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
-        var = staticVariables.getVariable(index);
+        var = staticVariables.getVariableById(index);
         System.out.println(var.getName());
         assertEquals(5, (int) nextInstance.getValue(var));
     }
@@ -79,8 +79,8 @@ public class TestReaderStatic {
 
         loadFileAndInitializeStatic();
 
-        if (dataOnDiskReader.hasMoreDataInstances()) {
-            nextInstance = dataOnDiskReader.nextDataInstance();
+        if (dataOnDiskReader.hasNext()) {
+            nextInstance = dataOnDiskReader.next();
         }
 
         for (Attribute att : attributes.getList()) {
@@ -88,21 +88,21 @@ public class TestReaderStatic {
         }
 
         /* Numeric attribute */
-        assertEquals(5, (int) nextInstance.getValue(staticVariables.getVariable("WAGE-INCREASE-FIRST-YEAR")));
+        assertEquals(5, (int) nextInstance.getValue(staticVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")));
     }
 
     @Test
     public void discreteAttributeValue() {
         loadFileAndInitializeStatic();
-        if (reader.hasMoreDataRows()) {
-            datarow = reader.nextDataRow();
+        if (reader.hasNext()) {
+            datarow = reader.next();
             nextInstance = new StaticDataInstance(datarow);
         }
 
         /* Discrete attribute */
         assertEquals(1, (int) datarow.getValue(attributes.getAttributeByName("VACATION")));
         /* Number of states */
-        assertEquals(3, staticVariables.getVariable("PENSION").getNumberOfStates());
+        assertEquals(3, staticVariables.getVariableByName("PENSION").getNumberOfStates());
     }
 
     @Test
@@ -111,14 +111,14 @@ public class TestReaderStatic {
         loadFileAndInitializeStatic();
 
         /* Missing values (Get the 3rd instance) */
-        if (reader.hasMoreDataRows()) {
-            reader.nextDataRow();
-            reader.nextDataRow();
-            datarow = reader.nextDataRow();
+        if (reader.hasNext()) {
+            reader.next();
+            reader.next();
+            datarow = reader.next();
             nextInstance = new StaticDataInstance(datarow);
         }
         index = attributes.getAttributeByName("WAGE-INCREASE-FIRST-YEAR").getIndex();
-        var = staticVariables.getVariable("WAGE-INCREASE-FIRST-YEAR");
+        var = staticVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR");
         assertEquals(Double.NaN, nextInstance.getValue(var), DELTA);
     }
 
@@ -129,9 +129,8 @@ public class TestReaderStatic {
 
         /* Number of instances */
         int instanceCounter = 0;
-        while (dataOnDiskReader.hasMoreDataInstances()) {
+        for (DataInstance dataInstance: dataOnDiskReader){
             instanceCounter++;
-            dataOnDiskReader.nextDataInstance();
         }
         assertEquals(57, instanceCounter);
     }
@@ -143,9 +142,8 @@ public class TestReaderStatic {
 
         /* Number of instances */
         int instanceCounter = 0;
-        while (reader.hasMoreDataRows()) {
+        for (DataRow row: reader){
             instanceCounter++;
-            reader.nextDataRow();
         }
         assertEquals(57, instanceCounter);
     }
@@ -157,10 +155,10 @@ public class TestReaderStatic {
         loadFileAndInitializeStatic();
 
         int instanceCounter = 57;
-        /* nexDataRow without calling hasMoreDataRows */
+        /* nexDataRow without calling hasNext */
         while(instanceCounter>=0){
             instanceCounter--;
-            datarow = reader.nextDataRow();
+            datarow = reader.next();
         }
         //Actually, datarow is not null, but the weka Instance inside datarow. I am not sure what should be the
         //expected behavour here.
@@ -173,10 +171,10 @@ public class TestReaderStatic {
         loadFileAndInitializeStatic();
 
         int instanceCounter = 57;
-        /* nexDataRow without calling hasMoreDataRows */
+        /* nexDataRow without calling hasNext */
         while(instanceCounter>=0){
             instanceCounter--;
-            nextInstance = dataOnDiskReader.nextDataInstance();
+            nextInstance = dataOnDiskReader.next();
         }
         //I am not sure what should be the expected behavour here.
         //assertNull(nextInstance);
