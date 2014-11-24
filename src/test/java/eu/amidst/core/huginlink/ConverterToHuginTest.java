@@ -185,7 +185,7 @@ public class ConverterToHuginTest {
         this.huginBN = converter.getHuginNetwork();
 
 
-
+/*
         String netName = new String("networks/huginNetworkFromAMIDST");
 
         ParseListener parseListener2 = new DefaultClassParseListener();
@@ -196,7 +196,7 @@ public class ConverterToHuginTest {
         this.amidstBN = converter2.getAmidstNetwork();
         System.out.println("\nAMIDST network object created.");
 
-/*
+
 
         System.out.println("\n\nConverting the AMIDST network into Hugin format ...");
         ConverterToHugin converter3 = new ConverterToHugin(this.amidstBN);
