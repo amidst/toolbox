@@ -21,14 +21,5 @@ public interface Variable {
 
     public boolean isTemporalClone();
 
-    public boolean isDynamicVariable();
-
     public Attribute getAttribute();
-
-    @Override
-    public int hashCode();
-
-    @Override
-    public boolean equals(Object o);
-
 }

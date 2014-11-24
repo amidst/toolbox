@@ -14,23 +14,30 @@ import java.util.List;
 
 public class ConverterToHugin {
 
-    private Domain huginNetwork;
+    private Domain huginBN;
+    private BayesianNetwork amidstBN;
 
-    public ConverterToHugin(){
+    public ConverterToHugin(BayesianNetwork amidstBN){
         try {
-            this.huginNetwork = new Domain();
+            this.huginBN = new Domain();
         }
         catch (ExceptionHugin e) {
             System.out.print("Exception caught: " + e.getMessage());
         }
+        this.amidstBN = amidstBN;
     }
 
     public Domain getHuginNetwork(){
-        return this.huginNetwork;
+        return this.huginBN;
     }
 
+<<<<<<< HEAD
+    public void setNodes() {
+=======
     private void setNodes(List<Variable> amidstVars) {
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
 
+        List<Variable> amidstVars = amidstBN.getListOfVariables();
         int size = amidstVars.size();
 
         try {
@@ -39,7 +46,7 @@ public class ConverterToHugin {
             for(int i=1;i<=size;i++){
                 Variable amidstVar = amidstVars.get(size-i);
                 if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-                    LabelledDCNode n = new LabelledDCNode(this.huginNetwork);
+                    LabelledDCNode n = new LabelledDCNode(this.huginBN);
                     n.setName(amidstVar.getName());
                     n.setNumberOfStates(amidstVar.getNumberOfStates());
 
@@ -47,7 +54,7 @@ public class ConverterToHugin {
                         n.setStateLabel(j,amidstVar.getName()+j);
                     }
                 } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
-                    ContinuousChanceNode c = new ContinuousChanceNode(this.huginNetwork);
+                    ContinuousChanceNode c = new ContinuousChanceNode(this.huginBN);
                     c.setName(amidstVar.getName());
                 } else {
                     throw new IllegalArgumentException("Unrecognized DistributionType.");
@@ -60,16 +67,21 @@ public class ConverterToHugin {
         }
     }
 
+<<<<<<< HEAD
+    public void setStructure () {
+=======
     private void setStructure (DAG dag) {
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
 
-        List<Variable> variables = dag.getStaticVariables().getListOfVariables();
+        DAG dag = amidstBN.getDAG();
+
+        List<Variable> variables = amidstBN.getListOfVariables();
 
         try {
-
             for (Variable amidstChild: variables) {
                 for (Variable amidstParent: dag.getParentSet(amidstChild).getParents()) {
-                    Node huginChild = this.huginNetwork.getNodeByName(amidstChild.getName());
-                    Node huginParent = this.huginNetwork.getNodeByName(amidstParent.getName());
+                    Node huginChild = this.huginBN.getNodeByName(amidstChild.getName());
+                    Node huginParent = this.huginBN.getNodeByName(amidstParent.getName());
                     huginChild.addParent(huginParent);
                 }
             }
@@ -79,13 +91,17 @@ public class ConverterToHugin {
         }
     }
 
+<<<<<<< HEAD
+    public void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) {
+=======
     //GOOD NEWS: Hugin indexes the multinomial parents assignments as we do (Koller)
     private void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) {
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
 
 
         try {
             Variable amidstVar = dist.getVariable();
-            Node huginVar = this.huginNetwork.getNodeByName(amidstVar.getName());
+            Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
             Multinomial[] probabilities = dist.getProbabilities();
             List<Variable> conditioningVariables = dist.getConditioningVariables();
             int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
@@ -104,52 +120,54 @@ public class ConverterToHugin {
         }
     }
 
+<<<<<<< HEAD
+    public void setNormal_NormalParents(Normal_NormalParents dist, int assign_i) throws ExceptionHugin {
+=======
     private void setNormal_NormalParents(Normal_NormalParents dist, int assign_i) {
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
 
-        try {
-            Variable amidstVar = dist.getVariable();
-            List<Variable> normalParents = dist.getConditioningVariables();
-            int numNormalParents = normalParents.size();
+        Variable amidstVar = dist.getVariable();
+        List<Variable> normalParents = dist.getConditioningVariables();
+        int numNormalParents = normalParents.size();
 
-            Node huginVar = this.huginNetwork.getNodeByName(amidstVar.getName());
+        Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
 
-            double variance = Math.pow(dist.getSd(), 2);
-            ((ContinuousChanceNode)huginVar).setGamma(variance,assign_i);
+        double variance = Math.pow(dist.getSd(), 2);
+        ((ContinuousChanceNode)huginVar).setGamma(variance,assign_i);
 
-            double intercept = dist.getIntercept();
-            ((ContinuousChanceNode) huginVar).setAlpha(intercept, assign_i);
+        double intercept = dist.getIntercept();
+        ((ContinuousChanceNode) huginVar).setAlpha(intercept, assign_i);
 
-            double[] coeffParents = dist.getCoeffParents();
+        double[] coeffParents = dist.getCoeffParents();
 
-            for(int i=0;i<numNormalParents;i++) {
-                ContinuousChanceNode huginParent =
-                        (ContinuousChanceNode)this.huginNetwork.getNodeByName(normalParents.get(i).getName());
-                ((ContinuousChanceNode)huginVar).setBeta(coeffParents[i],huginParent,assign_i);
-            }
-        }
-        catch (ExceptionHugin e) {
-            System.out.println("Exception caught: " + e.getMessage());
+        for(int i=0;i<numNormalParents;i++) {
+            ContinuousChanceNode huginParent =
+                    (ContinuousChanceNode)this.huginBN.getNodeByName(normalParents.get(i).getName());
+            ((ContinuousChanceNode)huginVar).setBeta(coeffParents[i],huginParent,assign_i);
         }
     }
 
+<<<<<<< HEAD
+    public void setNormal(Normal dist, int i) throws ExceptionHugin {
+=======
     private void setNormal(Normal dist, int i) {
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
 
-        try {
             Variable amidstVar = dist.getVariable();
-            Node huginVar = this.huginNetwork.getNodeByName(amidstVar.getName());
+            Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
 
             double mean =  dist.getMean();
             double sd = dist.getSd();
 
             ((ContinuousChanceNode)huginVar).setAlpha(mean, i);
             ((ContinuousChanceNode)huginVar).setGamma(Math.pow(sd,2),i);
-        }
-        catch (ExceptionHugin e) {
-            System.out.println("Exception caught: " + e.getMessage());
-        }
     }
 
+<<<<<<< HEAD
+    public void setNormal_MultinomialParents(Normal_MultinomialParents dist) throws ExceptionHugin {
+=======
     private void setNormal_MultinomialParents(Normal_MultinomialParents dist) {
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
 
         List<Variable> conditioningVariables = dist.getConditioningVariables();
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
@@ -160,8 +178,12 @@ public class ConverterToHugin {
         }
     }
 
+<<<<<<< HEAD
+    public void setNormal_MultinomialNormalParents(Normal_MultinomialNormalParents dist) throws ExceptionHugin {
+=======
 
     private void setNormal_MultinomialNormalParents(Normal_MultinomialNormalParents dist){
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
 
         List<Variable> multinomialParents = dist.getMultinomialParents();
 
@@ -172,6 +194,28 @@ public class ConverterToHugin {
         }
     }
 
+<<<<<<< HEAD
+    public void setDistributions() throws ExceptionHugin {
+
+        List<Variable> amidstVars = amidstBN.getListOfVariables();
+
+        for (Variable amidstVar : amidstVars) {
+
+            switch (Utils.getConditionalDistributionType(amidstVar, amidstBN)) {
+                case 0:
+                    this.setMultinomial_MultinomialParents(amidstBN.getDistribution(amidstVar));
+                    break;
+                case 1:
+                    this.setNormal_NormalParents(amidstBN.getDistribution(amidstVar), 0);
+                    break;
+                case 2:
+                    this.setNormal_MultinomialParents(amidstBN.getDistribution(amidstVar));
+                    break;
+                case 3:
+                    this.setNormal_MultinomialNormalParents(amidstBN.getDistribution(amidstVar));
+                    break;
+                default:
+=======
     private void setDistributions(BayesianNetwork bn) {
 
         List<Variable> amidstVars = bn.getListOfVariables();
@@ -208,19 +252,20 @@ public class ConverterToHugin {
                     this.setNormal_MultinomialNormalParents(bn.getDistribution(amidstVar));
                 }
                 else {
+>>>>>>> 854b35daa4f9ad232e61133d34ff4f925975ddb0
                     throw new IllegalArgumentException("Unrecognized DistributionType. ");
-                }
-            }
-            else {
-                throw new IllegalArgumentException("Unrecognized DistributionType. ");
             }
         }
     }
 
-    public void convertToHuginBN(BayesianNetwork bn) {
+    public void convertToHuginBN() throws ExceptionHugin {
 
-        this.setNodes(bn.getDAG().getStaticVariables().getListOfVariables());
-        this.setStructure(bn.getDAG());
-        this.setDistributions(bn);
+
+        this.setNodes();
+        this.setStructure();
+        this.setDistributions();
+
+
+
     }
 }

@@ -3,8 +3,6 @@
  *
  * 1. (Andres) Add a "close" method to close the possible linked file or whatever.
  *
- * 2. (Andres) Implements as Iterable();
- *
  */
 
 
@@ -12,12 +10,14 @@
 package eu.amidst.core.database;
 
 
-import java.util.Iterator;
-
 /**
  * Created by afa on 02/07/14.
  */
-public interface DataOnDisk extends Iterable<DataInstance>, Iterator<DataInstance> {
+public interface DataOnDisk{
+
+    public DataInstance nextDataInstance();
+
+    public boolean hasMoreDataInstances();
 
     public Attributes getAttributes();
 

@@ -3,7 +3,6 @@ package eu.amidst.core.database.filereaders;
 import eu.amidst.core.database.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -33,8 +32,8 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
         int timeID = 1;
         int sequenceID = 1;
 
-        if (reader.hasNext())
-            present = this.reader.next();
+        if (reader.hasMoreDataRows())
+            present = this.reader.nextDataRow();
         else {
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
@@ -54,7 +53,7 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
 
         nextDynamicDataInstance = new NextDynamicDataInstance(past, present, sequenceID, timeID);
 
-        while (reader.hasNext()) {
+        while (reader.hasMoreDataRows()) {
 
             /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
             /* 1 = true,  false, i.e., TimeID is provided */
@@ -109,26 +108,21 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     }
 
     @Override
-    public DataInstance next() {
+    public DataInstance nextDataInstance() {
         if (pointer >= getNumberOfDataInstances()) {
-            throw new UnsupportedOperationException("Make sure to call hasNext() to know when the sequence " +
+            throw new UnsupportedOperationException("Make sure to call hasMoreDataInstances() to know when the sequence " +
                     "has finished (restart() moves the reader pointer to the beginning");
         }
         return dataInstances[pointer++];
     }
 
     @Override
-    public boolean hasNext() {
+    public boolean hasMoreDataInstances() {
         return pointer < getNumberOfDataInstances();
     }
 
     @Override
     public void restart() {
         pointer = 0;
-    }
-
-    @Override
-    public Iterator<DataInstance> iterator() {
-        return this;
     }
 }

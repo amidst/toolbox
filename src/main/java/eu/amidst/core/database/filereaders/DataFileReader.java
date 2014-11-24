@@ -2,22 +2,20 @@ package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.Attributes;
 
-import java.util.Iterator;
-
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public interface DataFileReader extends Iterable<DataRow>, Iterator<DataRow> {
+public interface DataFileReader {
 
     public Attributes getAttributes();
 
-    public DataRow next();
+    public DataRow nextDataRow();
 
     /***
      * This method is expected to return true if at least two rows with the same sequence ID are left
      * @return
      */
-    public boolean hasNext();
+    public boolean hasMoreDataRows();
 
     public void reset();
 
