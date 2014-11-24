@@ -36,7 +36,7 @@ public class DynamicDAG {
         this.parentSetTime0 = new ParentSetImpl[dynamicVariables.getNumberOfVars()];
         this.parentSetTimeT = new ParentSetImpl[dynamicVariables.getNumberOfVars()];
 
-        for (Variable var: dynamicVariables.getListOfDynamicVariables()){
+        for (Variable var: dynamicVariables){
             parentSetTime0[var.getVarID()] = new ParentSetImpl(var);
             parentSetTimeT[var.getVarID()] = new ParentSetImpl(var);
         }
@@ -76,20 +76,20 @@ public class DynamicDAG {
         boolean[] bDone = new boolean[this.dynamicVariables.getNumberOfVars()];
 
 
-        for (Variable var: this.dynamicVariables.getListOfDynamicVariables()){
+        for (Variable var: this.dynamicVariables){
             bDone[var.getVarID()] = false;
         }
 
-        for (Variable var: this.dynamicVariables.getListOfDynamicVariables()){
+        for (Variable var: this.dynamicVariables){
 
             // find a node for which all parents are 'done'
             boolean bFound = false;
 
-            for (Variable variable2: this.dynamicVariables.getListOfDynamicVariables()){
+            for (Variable variable2: this.dynamicVariables){
                 if (!bDone[variable2.getVarID()]) {
                     boolean bHasNoParents = true;
 
-                    for (Variable parent: this.getParentSetTimeT(variable2).getParents()){
+                    for (Variable parent: this.getParentSetTimeT(variable2)){
                         if (!bDone[parent.getVarID()]) {
                             bHasNoParents = false;
                         }
@@ -113,12 +113,12 @@ public class DynamicDAG {
 
     public String toString(){
         String str = "DAG Time 0\n";
-        for (Variable var: this.getDynamicVariables().getListOfDynamicVariables()){
+        for (Variable var: this.getDynamicVariables()){
             str+=var.getName() +" : "+this.parentSetTime0[var.getVarID()].toString() + "\n";
         }
 
         str += "\nDAG Time T\n";
-        for (Variable var: this.getDynamicVariables().getListOfDynamicVariables()){
+        for (Variable var: this.getDynamicVariables()){
             str+=var.getName() +" : "+this.getParentSetTimeT(var).toString() + "\n";
         }
         return str;

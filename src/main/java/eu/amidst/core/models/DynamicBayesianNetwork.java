@@ -48,7 +48,7 @@ public class DynamicBayesianNetwork{
         this.distributionsTime0 = new ConditionalDistribution[this.getDynamicVariables().getNumberOfVars()];
         this.distributionsTimeT = new ConditionalDistribution[this.getDynamicVariables().getNumberOfVars()];
 
-        for (Variable var : this.getDynamicVariables().getListOfDynamicVariables()) {
+        for (Variable var : this.getDynamicVariables()) {
             int varID = var.getVarID();
 
             /* Distributions at time t */
@@ -85,13 +85,13 @@ public class DynamicBayesianNetwork{
         return this.getDynamicVariables().getNumberOfVars();
     }
 
-    public List<Variable> getListOfDynamicVariables() {
-        return this.getDynamicVariables().getListOfDynamicVariables();
-    }
+    //public List<Variable> getListOfDynamicVariables() {
+    //    return this.getDynamicVariables().getListOfDynamicVariables();
+    //}
 
     public double getLogProbabiltyOfFullAssignmentTimeT(Assignment assignment){
         double logProb = 0;
-        for (Variable var: this.getListOfDynamicVariables()){
+        for (Variable var: this.getDynamicVariables()){
             if (assignment.getValue(var)== Utils.missingValue())
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
             logProb += this.distributionsTimeT[var.getVarID()].getLogConditionalProbability(assignment);
@@ -101,7 +101,7 @@ public class DynamicBayesianNetwork{
 
     public double getLogProbabiltyOfFullAssignmentTime0(Assignment assignment){
         double logProb = 0;
-        for (Variable var: this.getListOfDynamicVariables()){
+        for (Variable var: this.getDynamicVariables()){
             if (assignment.getValue(var) == Utils.missingValue())
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
             logProb += this.distributionsTime0[var.getVarID()].getLogConditionalProbability(assignment);
@@ -127,7 +127,7 @@ public class DynamicBayesianNetwork{
 
     public String toString(){
         String str = "Dynamic Bayesian Network Time 0:\n";
-        for (Variable var: this.getDynamicVariables().getListOfDynamicVariables()){
+        for (Variable var: this.getDynamicVariables()){
 
             if (this.getDynamicDAG().getListOfParentsTime0(var).size()==0){
                 str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";
@@ -147,7 +147,7 @@ public class DynamicBayesianNetwork{
 
         str += "\nDynamic Bayesian Network Time T:\n";
 
-        for (Variable var: this.getDynamicVariables().getListOfDynamicVariables()){
+        for (Variable var: this.getDynamicVariables()){
 
             if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents()==0){
                 str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";
@@ -155,7 +155,7 @@ public class DynamicBayesianNetwork{
             }else {
                 str += "P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ";
 
-                for (Variable parent : this.getDynamicDAG().getParentSetTimeT(var).getParents()) {
+                for (Variable parent : this.getDynamicDAG().getParentSetTimeT(var)) {
                     str += parent.getName() + " [" + parent.getDistributionType().toString() + "], ";
                 }
                 if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents() > 0) str = str.substring(0, str.length() - 2);
