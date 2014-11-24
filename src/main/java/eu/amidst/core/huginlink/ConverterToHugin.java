@@ -65,48 +65,36 @@ public class ConverterToHugin {
     }
 
 
-    public void setStructure () {
+    public void setStructure () throws ExceptionHugin {
 
         DAG dag = amidstBN.getDAG();
 
-        try {
-            for (Variable amidstChild: amidstBN.getStaticVariables()) {
-                for (Variable amidstParent: dag.getParentSet(amidstChild)) {
-                    Node huginChild = this.huginBN.getNodeByName(amidstChild.getName());
-                    Node huginParent = this.huginBN.getNodeByName(amidstParent.getName());
-                    huginChild.addParent(huginParent);
-                }
+        for (Variable amidstChild: amidstBN.getStaticVariables()) {
+            for (Variable amidstParent: dag.getParentSet(amidstChild)) {
+                Node huginChild = this.huginBN.getNodeByName(amidstChild.getName());
+                Node huginParent = this.huginBN.getNodeByName(amidstParent.getName());
+                huginChild.addParent(huginParent);
             }
-        }
-        catch (ExceptionHugin e) {
-            System.out.println("Exception caught: " + e.getMessage());
         }
     }
 
-    public void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) {
+    public void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) throws ExceptionHugin {
 
+        Variable amidstVar = dist.getVariable();
+        Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
+        Multinomial[] probabilities = dist.getProbabilities();
+        List<Variable> conditioningVariables = dist.getConditioningVariables();
+        int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
+        int nStates = amidstVar.getNumberOfStates();
+        int sizeArray = numParentAssignments * nStates;
+        double[] finalArray  = new double[sizeArray];
 
-        try {
-            Variable amidstVar = dist.getVariable();
-            Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
-            Multinomial[] probabilities = dist.getProbabilities();
-            List<Variable> conditioningVariables = dist.getConditioningVariables();
-            int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
-            int nStates = amidstVar.getNumberOfStates();
-            int sizeArray = numParentAssignments * nStates;
-            double[] finalArray  = new double[sizeArray];
-
-            for(int i=0;i<numParentAssignments;i++){
-                double[] sourceArray = probabilities[i].getProbabilities();
-                System.arraycopy(sourceArray, 0, finalArray, i*nStates, nStates);
-            }
-            huginVar.getTable().setData(finalArray);
+        for(int i=0;i<numParentAssignments;i++){
+            double[] sourceArray = probabilities[i].getProbabilities();
+            System.arraycopy(sourceArray, 0, finalArray, i*nStates, nStates);
         }
-        catch (ExceptionHugin e) {
-            System.out.println("Exception caught: " + e.getMessage());
-        }
+        huginVar.getTable().setData(finalArray);
     }
-
 
     public void setNormal_NormalParents(Normal_NormalParents dist, int assign_i) throws ExceptionHugin {
 
@@ -131,23 +119,20 @@ public class ConverterToHugin {
         }
     }
 
-
     public void setNormal(Normal dist, int i) throws ExceptionHugin {
 
+        Variable amidstVar = dist.getVariable();
+        Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
 
-            Variable amidstVar = dist.getVariable();
-            Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
+        double mean =  dist.getMean();
+        double sd = dist.getSd();
 
-            double mean =  dist.getMean();
-            double sd = dist.getSd();
-
-            ((ContinuousChanceNode)huginVar).setAlpha(mean, i);
-            ((ContinuousChanceNode)huginVar).setGamma(Math.pow(sd,2),i);
+        ((ContinuousChanceNode)huginVar).setAlpha(mean, i);
+        ((ContinuousChanceNode)huginVar).setGamma(Math.pow(sd,2),i);
     }
 
 
     public void setNormal_MultinomialParents(Normal_MultinomialParents dist) throws ExceptionHugin {
-
 
         List<Variable> conditioningVariables = dist.getConditioningVariables();
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
@@ -161,7 +146,6 @@ public class ConverterToHugin {
 
     public void setNormal_MultinomialNormalParents(Normal_MultinomialNormalParents dist) throws ExceptionHugin {
 
-
         List<Variable> multinomialParents = dist.getMultinomialParents();
 
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
@@ -173,7 +157,6 @@ public class ConverterToHugin {
 
 
     public void setDistributions() throws ExceptionHugin {
-
 
         for (Variable amidstVar : amidstBN.getStaticVariables()) {
 
@@ -201,8 +184,5 @@ public class ConverterToHugin {
         this.setNodes();
         this.setStructure();
         this.setDistributions();
-
-
-
     }
 }
