@@ -40,7 +40,7 @@ public class WekaDataFileReader implements DataFileReader{
             attrWeka = (weka.core.Attribute) attributesWeka.nextElement();
             StateSpaceType stateSpaceTypeAtt;
             if(attrWeka.isNominal()){
-                stateSpaceTypeAtt = StateSpaceType.MULTINOMIAL;
+                stateSpaceTypeAtt = StateSpaceType.FINITE_SET;
             }else{
                 stateSpaceTypeAtt = StateSpaceType.REAL;
             }

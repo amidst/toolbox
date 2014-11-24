@@ -1,7 +1,6 @@
 package eu.amidst.examples;
 
 import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
@@ -53,7 +52,7 @@ public class VerdandeModels {
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Normal_Abnormal");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.MULTINOMIAL);
+        variableBuilder.setStateSpaceType(StateSpaceType.FINITE_SET);
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
         variableBuilder.setNumberOfStates(2);
         Variable normal_Abnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
