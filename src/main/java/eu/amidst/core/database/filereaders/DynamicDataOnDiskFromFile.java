@@ -19,7 +19,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         this.reader=reader;
 
         /**
-         * We read the two first rows now, to create the first couple in nextDataInstance
+         * We read the two first rows now, to create the first couple in next
          */
         DataRow present;
         DataRow past = new DataRowMissing();
@@ -27,8 +27,8 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         int timeID = 1;
         int sequenceID = 1;
 
-        if (reader.hasMoreDataRows()) {
-            present = this.reader.nextDataRow();
+        if (reader.hasNext()) {
+            present = this.reader.next();
         }else {
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
@@ -81,7 +81,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
     @Override
     public boolean hasMoreDataInstances() {
-        return reader.hasMoreDataRows();
+        return reader.hasNext();
     }
 
     @Override
