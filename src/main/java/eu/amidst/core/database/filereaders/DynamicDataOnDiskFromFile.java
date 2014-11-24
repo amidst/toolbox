@@ -2,6 +2,8 @@ package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.*;
 
+import java.util.Iterator;
+
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
@@ -19,7 +21,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         this.reader=reader;
 
         /**
-         * We read the two first rows now, to create the first couple in nextDataInstance
+         * We read the two first rows now, to create the first couple in next
          */
         DataRow present;
         DataRow past = new DataRowMissing();
@@ -27,8 +29,8 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         int timeID = 1;
         int sequenceID = 1;
 
-        if (reader.hasMoreDataRows()) {
-            present = this.reader.nextDataRow();
+        if (reader.hasNext()) {
+            present = this.reader.next();
         }else {
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
@@ -50,7 +52,7 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
     }
 
     @Override
-    public DataInstance nextDataInstance() {
+    public DataInstance next() {
 
         /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
         /* 1 = true,  false, i.e., TimeID is provided */
@@ -80,8 +82,8 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
     }
 
     @Override
-    public boolean hasMoreDataInstances() {
-        return reader.hasMoreDataRows();
+    public boolean hasNext() {
+        return reader.hasNext();
     }
 
     @Override
@@ -92,5 +94,10 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
     @Override
     public void restart() {
         this.reader.reset();
+    }
+
+    @Override
+    public Iterator<DataInstance> iterator() {
+        return this;
     }
 }

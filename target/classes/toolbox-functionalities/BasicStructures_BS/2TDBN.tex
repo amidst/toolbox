@@ -1,0 +1,23 @@
+\subsection{2T-DBN}
+\label{2TDBN:ID}
+
+\begin{description}
+\item[Deadline:] M12
+\item[Responsible:]
+\item[Code-Package:] \texttt{core.models}
+\end{description}
+
+\subsubsection*{Description}
+
+This functionality is similar to the one defined for Bayesian network (see \ref{BNs:ID}), but it aims here to represent instead a two slice-time dynamic Bayesian network (2T-DBN). It handles its structure (dynamic DAG defined over a set of dynamic variables) and the set of its distributions at time 0 and time T. 
+
+\subsubsection*{Detailed functionality}
+
+\begin{itemize}
+
+\item The distributions of each dynamic variable at both time 0 and time T are initialised and specified according to the variable type and the type of its potentiel parent set. 
+
+\item After this step, the set of parents of each dynamic variable becomes unmodifiable.
+
+\end{itemize}
+
