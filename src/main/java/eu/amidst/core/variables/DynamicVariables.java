@@ -163,6 +163,28 @@ public class DynamicVariables  implements Iterable<Variable>{
         return var;
     }
 
+    public Variable addRealDynamicVariable(Variable var){
+        if (!var.isObservable())
+            throw new IllegalArgumentException("A Real variable should be created from an observed variable");
+
+        if (var.getStateSpaceType()!=StateSpaceType.REAL)
+            throw new IllegalArgumentException("An Real variable should be created from a real variable");
+
+        VariableBuilder builder = new VariableBuilder(var.getAttribute());
+        builder.setName(var.getName()+"_Real");
+
+        VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(varNew.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(varNew.getName(), varNew.getVarID());
+        allVariables.add(varNew);
+
+        VariableImplementation temporalClone = new VariableImplementation(varNew);
+        temporalClones.add(varNew.getVarID(),temporalClone);
+
+        return varNew;
+    }
+
     public List<Variable> getListOfDynamicVariables() {
         return this.allVariables;
     }
