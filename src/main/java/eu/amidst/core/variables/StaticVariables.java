@@ -154,19 +154,23 @@ public class StaticVariables implements Iterable<Variable>{
         private String name;
         private int varID;
         private boolean observable;
-        private int numberOfStates;
-        private StateSpaceType stateSpaceType;
+        private StateSpace stateSpace;
         private DistType distributionType;
         private Attribute attribute;
+        private int numberOfStates = -1;
+
 
         public VariableImplementation(VariableBuilder builder, int varID) {
             this.name = builder.getName();
             this.varID = varID;
             this.observable = builder.isObservable();
-            this.numberOfStates = builder.getNumberOfStates();
-            this.stateSpaceType = builder.getStateSpaceType();
+            this.stateSpace = builder.getStateSpace();
             this.distributionType = builder.getDistributionType();
             this.attribute = builder.getAttribute();
+
+            if (this.getStateSpace().getStateSpaceType() == StateSpaceType.FINITE_SET)
+                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+
         }
 
         public String getName() {
@@ -181,12 +185,8 @@ public class StaticVariables implements Iterable<Variable>{
             return false;
         }
 
-        public int getNumberOfStates() {
-            return numberOfStates;
-        }
-
-        public StateSpaceType getStateSpaceType() {
-            return stateSpaceType;
+        public <E extends StateSpace> E getStateSpace() {
+            return (E) stateSpace;
         }
 
         public DistType getDistributionType() {
@@ -197,9 +197,11 @@ public class StaticVariables implements Iterable<Variable>{
             throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
         }
 
-        public Attribute getAttribute(){return attribute;}
+        public Attribute getAttribute() {
+            return attribute;
+        }
 
-        public boolean isDynamicVariable(){
+        public boolean isDynamicVariable() {
             return false;
         }
 
@@ -213,5 +215,9 @@ public class StaticVariables implements Iterable<Variable>{
             return this.getName().equals(var.getName());
         }
 
+        @Override
+        public int getNumberOfStates() {
+            return this.numberOfStates;
+        }
     }
 }

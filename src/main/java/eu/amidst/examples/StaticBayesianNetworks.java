@@ -9,6 +9,9 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  *  This class contains examples with the creation of different static BNs models. The are illustrative
  *  examples on how the AMIDST toolbox works when creating static BN Models.
@@ -183,10 +186,8 @@ public class StaticBayesianNetworks {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.FINITE_SET);
-        variableBuilder.setNumberOfStates(2);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("TRUE","FALSE")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL);
-
         Variable hidden = variables.addHiddenVariable(variableBuilder);
 
         /**

@@ -10,6 +10,9 @@
 
 package eu.amidst.core.database;
 
+import eu.amidst.core.variables.MultinomialStateSpace;
+import eu.amidst.core.variables.RealStateSpace;
+import eu.amidst.core.variables.StateSpace;
 import eu.amidst.core.variables.StateSpaceType;
 
 /**
@@ -19,54 +22,54 @@ import eu.amidst.core.variables.StateSpaceType;
 public final class Attribute {
 
     private final int index;
-    private final String unit;
     private final String name;
-    private final StateSpaceType stateSpaceType;
-    private final int numberOfStates;
+    private final StateSpace stateSpace;
 
-    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType, int numberOfStates) {
+    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType_, int numberOfStates) {
+
         this.index = index;
         this.name = name.toUpperCase();
-        this.unit = unit;
-        this.stateSpaceType = stateSpaceType;
-        this.numberOfStates = numberOfStates;
+        if (stateSpaceType_==StateSpaceType.FINITE_SET) {
+            this.stateSpace = new MultinomialStateSpace(numberOfStates);
+            this.stateSpace.setUnit(unit);
+        }else if (stateSpaceType_== StateSpaceType.REAL) {
+            this.stateSpace = new RealStateSpace();
+            this.stateSpace.setUnit(unit);
+        }else {
+            throw new IllegalArgumentException("State Space not defined");
+        }
     }
 
-    public Attribute(int index, String name, StateSpaceType stateSpaceType, int numberOfStates) {
+    public Attribute(int index, String name, StateSpaceType stateSpaceType_, int numberOfStates) {
+
         this.index = index;
         this.name = name.toUpperCase();
-        this.unit = "NA";
-        this.stateSpaceType = stateSpaceType;
-        this.numberOfStates = numberOfStates;
+        if (stateSpaceType_==StateSpaceType.FINITE_SET) {
+            this.stateSpace = new MultinomialStateSpace(numberOfStates);
+        }else if (stateSpaceType_== StateSpaceType.REAL) {
+            this.stateSpace = new RealStateSpace();
+        }else {
+            throw new IllegalArgumentException("State Space not defined");
+        }
     }
 
-
-    public Attribute(String name, StateSpaceType stateSpaceType, int numberOfStates) {
-        this.index = -1;
+    public Attribute(int index, String name, StateSpace stateSpace_) {
+        this.index = index;
         this.name = name.toUpperCase();
-        this.unit = "NA";
-        this.stateSpaceType = stateSpaceType;
-        this.numberOfStates = numberOfStates;
+        this.stateSpace = stateSpace_;
     }
-
 
     public int getIndex() {
         return index;
-    }
-
-    public String getUnit() {
-        return unit;
     }
 
     public String getName() {
         return name;
     }
 
-    public StateSpaceType getStateSpaceType() {
-        return stateSpaceType;
+    public <E extends StateSpace> E getStateSpace() {
+        return (E)stateSpace;
     }
-
-    public int getNumberOfStates(){ return numberOfStates;}
 
     @Override
     public boolean equals(Object o) {
@@ -75,7 +78,7 @@ public final class Attribute {
 
         Attribute attribute = (Attribute) o;
 
-        if (stateSpaceType != attribute.stateSpaceType) return false;
+        if (stateSpace.getStateSpaceType() != attribute.stateSpace.getStateSpaceType()) return false;
         if (!name.equals(attribute.name)) return false;
 
         return true;
@@ -84,7 +87,7 @@ public final class Attribute {
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + stateSpaceType.hashCode();
+        result = 31 * result + stateSpace.hashCode();
         return result;
     }
 }
