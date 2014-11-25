@@ -1,22 +1,33 @@
 \section{Introduction}
 
-Even though the number of algorithms designed for learning on streaming data is increasing, there is still not a unified and well accepted way for evaluating them.  This is because testing and evaluating algorithms that are designed to work on streaming data are more difficult than testing and evaluating those that are designed to work on static data.  There are both statistical and computational reasons for this.  
+Even though the number of algorithms designed for learning on streaming data is increasing, there is still not a unified and well accepted way for evaluating them.  This is because testing and evaluating algorithms that are designed to work on streaming data are generally more complicated than those designed to work on static data.  There are both statistical and computational reasons for this.  
 
-On streaming data, one can often not assume that data are identically and independently distributed i.i.d as one often can assume on static data.  Moreover, the algorithms are often designed to take weight measurements that are close to the actual time step higher than measurements that are further back.  On streaming data, we must therefore assume that data are generated from underlying distributions that are time dependent and also that the algorithms themselves are time dependent.  
+Static data is data, where each instance can be assumed to be identically and independently distributed i.i.d. 
+If the data instances in the data stream is i.i.d., then the only new challenge compared to static data is that the data streams are open ended.  It can be seen as a static data that is always growing in size.  One way to deal with this is to take out a data set of fixed size, a holdout data set, and perform tests on this.  Another way is to let the performance measures be "accumulating" as the data set is growing.  
+
+Various error measures related to stream data has been proposed in the papers of Gama et. al. \cite{Gam09}, \cite{Gam09_2}, \cite{Gam12}.  A loss function is typically related to the penalty of misclassifications on classification problems or residuals in regression models.  The holdout error is basically the average loss on a holdout dataset of fixed size.  The predictive sequential, or \emph{prequential} error is defined as the average loss function up to time step $i$, where $i$ is the current time step. 
+
+There exist also data streams where the data points are locally i.i.d., but on a larger time scale they seem to drift.  To deal with, prequental error measures with forgetting mechnisms are suggested in \cite{Gam12}. The forgetting mechanisms involves either using a time window or fading factors.  In paper \cite{Gam12}, convergence towards the Bayes error was shown for all these performance measures provided that the learners are consistent and data is i.i.d.  Moreover, it was shown that if data was allowed to drift over time, meaning that samples are only locally i.i.d, then the prequental error measures with forgetting mechanisms were favourable.
+
+There also exist data streams, where this local i.i.d. is far from being true.  In fact it may even be so that the covariance structure between neighboring measurements is really the information carrier in the streams.  In  this paper we will refer to such streams as locally dependent.  The main contribution of the paper is to describe new performance measures that are taylored to work on such streams.
+
+\todo{Relate locally dependent streams to literature.}
+
+In a worst case scenario, the locally dependent streams have dependences on larger time scales as well.  In this case, not much can be done a single data stream because a repetitive pattern is needed in any data driven approach.  However, there are opportunities if we can assume that there exist multiple streams that can be seen as i.i.d.  When we refer to a stream here, we mean an ordered list of elements at each time step.  For instance, the data for a client in a bank can be described by a data stream, where at each time step, the balance on his savings account is the first element and the loan in the second place in the list.  An example of multiple streams would be all the clients in the bank.   
+
+Another interesting scenario is when the locally dependent streams are stationary on a longer time scale.  In this case small time windows, or substreams could be taken out for testing.  Provided that these substreams are far enough apart, these substreams are i.i.d.  
+
+It is also improtant to note that the algorithms themselves are often designed to weight measurements that are close to the actual time step higher than measurements that are further back.  On locally dependent streams, we must therefore not only assume that data are generated from underlying distributions that are time dependent, but also that the algorithms themselves are time dependent.  
 
 Computational challenges are related to the fact that the data come from an open-ended data stream, conceptually infinitely long, which imposes practical challenges related to restrictions on cpu-time and memory allocation.  
 
-Various error measures related to stream data has been proposed in the papers of Gama et. al. \cite{Gam09}, \cite{Gam09_2}, \cite{Gam12}.  A loss function is defined as the penalty of a certain misclassification or residual in a regression model.  The holdout error is basically the average loss on a holdout dataset of fixed size, while the predictive sequential, or \emph{prequential} error is defined as the average loss function up to time step $i$, where $i$ is the current time step.  Moreover, it was also suggested to use a prequental error measure, which involved a forgetting factor such as using a time window or fading factors.  In paper \cite{Gam12}, convergence towards the Bayes error was shown for all these performance measures provided that the learners are consistent.  
+\todo{Elaborate more on computational challenges.}
 
+In this paper we will establish formal procedures for testing and evaluating the developed models and algorithms. The applications that are covered in this paper is related to locally dependent streams.  Most test and evaluation procedures in this paper, involve chopping data streams into small substreams (of fixed size) that are i.i.d and labeled as either a positive or a negative. 
 
+The test and evaluation procedure includes specification of what metrics are relevant to use to quantify the ability of the AMIDST system, such as loss functions, maximum response-times, memory limits and output format.  The paper also includes considerations about quantitative improvements AMIDST should obtain over the state of the art.
 
-
-
-
-In this paper we will establish formal procedures for testing and evaluating the developed models and algorithms. This includes specification what metrics are relevant to use to quantify the ability of the AMIDST system, such as relevant formalization of loss functions, maximum response-times, memory limits and output format.  The paper will also include 
-considerations about what quantitative improvements AMIDST should obtain over state of the art.
-
-In section \ref{sec:methodology}, AMIDST relevant methodologies for evaluation of both batch and streaming algorithms are identified and discussed.  This section forms the foundation of the subsequent sections, where the exact evaluation routines for each use case provider is given. These sections contains a description of the requirements related to evaluation as described in Delivery 1.2, a short description of the algorithms and the data and finally methods for evaluating predictive and runtime performances.  Section \ref{sec:conclusion} concludes the report.
+In section \ref{sec:methodology}, AMIDST relevant methodologies for evaluation of both batch and streaming algorithms are identified and discussed.  This section forms the foundation of the next three sections, where the exact evaluation routines for each use case provider is given. These sections contains a description of the requirements related to evaluation as described in Delivery 1.2 and a short description of the algorithms and the data.  At the end of these sections, the methods for evaluating predictive and runtime performances ae exposed and discussed.  Section \ref{sec:conclusion} concludes the report.
 
 
 %\quote{\emph{Task description: In this task we will establish formal procedures for testing and evaluating the

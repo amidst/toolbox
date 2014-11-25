@@ -76,6 +76,8 @@ public class VerdandeModels {
          * Gaussian or Multinomial_Logistic (i.e. a multinomial variable with continuous parents).
          *
          * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
+         *
+         * 4. Variables RealTRQ and HiddenVar are part of the continuous sub-netwok of figure 4.28 of Deliverable 2.1
          */
         Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);//This variable is part of the Continuous subnetwork in Fig. 4.28.
 
