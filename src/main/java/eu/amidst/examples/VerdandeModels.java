@@ -81,21 +81,21 @@ public class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("realTRQ"); //This variable is part of the Dynamic subnetwork in Fig. 4.28.
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(StateSpaceType.REAL);
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable realTRQ = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(StateSpaceType.REAL);
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Normal_Abnormal");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.FINITE_SET);
+        variableBuilder.setStateSpace(StateSpaceType.FINITE_SET);
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
         variableBuilder.setNumberOfStates(2);
         Variable normal_Abnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
@@ -233,35 +233,35 @@ public class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("realWOB");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(StateSpaceType.REAL);
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable realTRQ = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("realRPM");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(StateSpaceType.REAL);
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable realROP = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("realMFI");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(StateSpaceType.REAL);
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable realPRESSURE = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(StateSpaceType.REAL);
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Mixture");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.FINITE_SET);
+        variableBuilder.setStateSpace(StateSpaceType.FINITE_SET);
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
         variableBuilder.setNumberOfStates(2);
         Variable mixture = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
