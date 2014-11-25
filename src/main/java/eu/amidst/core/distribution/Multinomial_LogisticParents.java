@@ -23,7 +23,7 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
     public Multinomial_LogisticParents(Variable var_, List<Variable> parents_) {
 
         if (parents_.size() == 0)
-            throw new UnsupportedOperationException("A multinomial logistic distribution can not be creadted from a empty set of parents.");
+            throw new UnsupportedOperationException("A multinomial logistic distribution can not be created from a empty set of parents.");
 
         this.var = var_;
         this.parents = parents_;
