@@ -16,6 +16,8 @@ import java.util.List;
  * This class contains examples about how we can create Verdande's dynamic models using the AMIDST Toolbox.
  * It show how to create 2T-DBNs over Multinomial, Gassuian and Logistic variables.
  *
+ * The models here included can be found on Figures 4.28 and 4.29 of Deliverable 2.1.
+ *
  * Created by andresmasegosa on 22/11/14.
  */
 public class VerdandeModels {
@@ -81,7 +83,7 @@ public class VerdandeModels {
          * 4. Variables RealTRQ and HiddenVar are part of the continuous sub-netwok of figure 4.28 of Deliverable 2.1
          */
 
-        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);//This variable is part of the Continuous subnetwork in Fig. 4.28.
+        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);
 
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
