@@ -21,7 +21,7 @@ public class DAG {
         this.variables = variables;
         this.parents = new ParentSet[variables.getNumberOfVars()];
 
-        for (Variable var: variables.getListOfVariables()){
+        for (Variable var: variables){
             parents[var.getVarID()] = new ParentSetImpl(var);
         }
     }
@@ -38,20 +38,20 @@ public class DAG {
 
         boolean[] bDone = new boolean[this.variables.getNumberOfVars()];
 
-        for (Variable var: this.variables.getListOfVariables()){
+        for (Variable var: this.variables){
             bDone[var.getVarID()] = false;
         }
 
-        for (Variable var: this.variables.getListOfVariables()){
+        for (Variable var: this.variables){
 
             // find a node for which all parents are 'done'
             boolean bFound = false;
 
-            for (Variable variable2: this.variables.getListOfVariables()){
+            for (Variable variable2: this.variables){
                 if (!bDone[variable2.getVarID()]) {
                     boolean bHasNoParents = true;
 
-                    for (Variable parent: this.getParentSet(variable2).getParents()){
+                    for (Variable parent: this.getParentSet(variable2)){
                         if (!bDone[parent.getVarID()]) {
                             bHasNoParents = false;
                         }
@@ -73,13 +73,39 @@ public class DAG {
         return false;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DAG dag = (DAG) o;
+
+        if (this.variables.getNumberOfVars() != dag.variables.getNumberOfVars()){
+            return false;
+        } else{
+            boolean eqs = true;
+            for(Variable var: this.getStaticVariables()){
+                if (! this.getParentSet(var).equals(dag.getParentSet(dag.getStaticVariables().getVariableByName(var.getName())))) {
+                    eqs = false;
+                    break;
+                }
+            }
+        return eqs;
+        }
+   }
+
+
     public String toString(){
         String str = "DAG\n";
-        for (Variable var: this.getStaticVariables().getListOfVariables()){
+        for (Variable var: this.getStaticVariables()){
             str+=var.getName() +" : "+this.getParentSet(var).toString() + "\n";
         }
         return str;
     }
+
+
+
 
     private class ParentSetImpl implements ParentSet {
 
@@ -144,5 +170,28 @@ public class DAG {
             return this.vars.contains(var);
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ParentSet parentset = (ParentSet) o;
+
+            if (this.getNumberOfParents() != parentset.getNumberOfParents()){
+                return false;
+            } else{
+                int i = 0;
+                boolean eqs = true;
+                while (i < this.getNumberOfParents() && eqs){
+                    if (this.getParents().get(i).equals(parentset.getParents().get(i))){
+                        i++;
+                    }else{
+                        eqs = false;
+                    }
+                }
+                return eqs;
+            }
+        }
     }
 }

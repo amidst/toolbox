@@ -37,13 +37,13 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
     /**
      * The class constructor.
-     * @param var The variable of the distribution.
-     * @param parents The set of parents of the variable.
+     * @param var_ The variable of the distribution.
+     * @param parents_ The set of parents of the variable.
      */
-    public Multinomial_MultinomialParents(Variable var, List<Variable> parents) {
+    public Multinomial_MultinomialParents(Variable var_, List<Variable> parents_) {
 
-        this.var = var;
-        this.parents = parents;
+        this.var = var_;
+        this.parents = parents_;
 
         // Computes the size of the array of probabilities as the number of possible assignments for the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(this.parents);
@@ -51,7 +51,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         // Initialize the distribution uniformly for each configuration of the parents.
         this.probabilities = new Multinomial[size];
         for (int i = 0; i < size; i++) {
-            this.probabilities[i] = new Multinomial(var);
+            this.probabilities[i] = new Multinomial(this.var);
         }
 
         //Make them unmodifiable
@@ -114,4 +114,18 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
             return "Multinomial|Multinomial";
     }
 
+    public int getNumberOfParentAssignments(){
+        return this.getProbabilities().length;
+    }
+
+    public String toString() {
+
+        String str ="";
+        for (int i=0;i<getNumberOfParentAssignments();i++){
+            str = str + this.getMultinomial(i).toString();
+            if (getNumberOfParentAssignments()>1 && i< getNumberOfParentAssignments()-1)
+                str = str +"\n";
+        }
+        return str;
+    }
 }

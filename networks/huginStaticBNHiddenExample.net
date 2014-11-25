@@ -1,0 +1,105 @@
+net
+{
+    node_size = (0 0);
+}
+
+node A
+{
+    states = ("A0" "A1");
+}
+
+node B
+{
+    states = ("B0" "B1" "B2");
+}
+
+continuous node C
+{
+}
+
+continuous node D
+{
+}
+
+node E
+{
+    states = ("E0" "E1");
+}
+
+continuous node G
+{
+}
+
+continuous node H
+{
+}
+
+continuous node I
+{
+}
+
+node HiddenVar
+{
+    states = ("HiddenVar0" "HiddenVar1");
+}
+
+potential (A | HiddenVar)
+{
+    data
+     = (( 0.5 0.5 )	%  HiddenVar=HiddenVar0
+	( 0.5 0.5 ));	%  HiddenVar=HiddenVar1
+}
+
+potential (B | HiddenVar)
+{
+    data
+     = (( 0.333333 0.333333 0.333333 )	%  HiddenVar=HiddenVar0
+	( 0.333333 0.333333 0.333333 ));	%  HiddenVar=HiddenVar1
+}
+
+potential (C | HiddenVar)
+{
+    data
+     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
+	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+}
+
+potential (D | HiddenVar)
+{
+    data
+     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
+	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+}
+
+potential (E | HiddenVar)
+{
+    data
+     = (( 0.5 0.5 )	%  HiddenVar=HiddenVar0
+	( 0.5 0.5 ));	%  HiddenVar=HiddenVar1
+}
+
+potential (G | HiddenVar)
+{
+    data
+     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
+	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+}
+
+potential (H | HiddenVar)
+{
+    data
+     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
+	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+}
+
+potential (I | HiddenVar)
+{
+    data
+     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
+	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+}
+
+potential (HiddenVar)
+{
+    data = ( 0.5 0.5 );
+}
