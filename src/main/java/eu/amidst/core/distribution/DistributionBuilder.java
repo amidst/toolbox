@@ -44,6 +44,9 @@ public class DistributionBuilder {
                    }
                 }
 
+                if (!indicatorVar.getAttribute().equals(mainVar.getAttribute()))
+                    throw new IllegalArgumentException("The indicator var does not correspond to the main var.");
+
                 ConditionalDistribution dist = newDistribution(mainVar,newconditioningVars);
 
                 return new Indicator(indicatorVar,dist);
