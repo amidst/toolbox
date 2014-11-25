@@ -101,7 +101,7 @@ public class DynamicVariables  implements Iterable<Variable>{
         if (!var.isObservable())
             throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
 
-        if (var.getStateSpaceType()!=StateSpaceType.REAL)
+        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL)
             throw new IllegalArgumentException("An indicator variable should be created from an real variable");
 
         VariableBuilder builder = new VariableBuilder(var.getAttribute());
@@ -214,8 +214,7 @@ public class DynamicVariables  implements Iterable<Variable>{
         private String name;
         private int varID;
         private boolean observable;
-        private int numberOfStates;
-        private StateSpaceType stateSpaceType;
+        private StateSpace stateSpace;
         private DistType distributionType;
         private Attribute attribute;
         private final boolean isTemporalClone;
@@ -227,8 +226,7 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.name = builder.getName();
             this.varID = varID;
             this.observable = builder.isObservable();
-            this.numberOfStates = builder.getNumberOfStates();
-            this.stateSpaceType = builder.getStateSpaceType();
+            this.stateSpace = builder.getStateSpace();
             this.distributionType = builder.getDistributionType();
             this.attribute = builder.getAttribute();
             this.isTemporalClone = false;
@@ -241,8 +239,7 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.name = variable.getName()+"_TClone";
             this.varID = variable.getVarID();
             this.observable = variable.isObservable();
-            this.numberOfStates = variable.getNumberOfStates();
-            this.stateSpaceType = variable.getStateSpaceType();
+            this.stateSpace = variable.getStateSpace();
             this.distributionType = variable.getDistributionType();
             this.attribute = variable.getAttribute();
             this.isTemporalClone = true;
@@ -260,13 +257,9 @@ public class DynamicVariables  implements Iterable<Variable>{
             return observable;
         }
 
-        public int getNumberOfStates() {
-            return numberOfStates;
-        }
-
         @Override
-        public StateSpaceType getStateSpaceType() {
-            return stateSpaceType;
+        public <E extends StateSpace> E getStateSpace() {
+            return (E)stateSpace;
         }
 
         public DistType getDistributionType() {
