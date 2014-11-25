@@ -65,7 +65,8 @@ public class VerdandeModels {
 
 
         /**
-         * 1. We now create the hidden variables. For doing that we make use of the class VariableBuilder. When
+         * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
+         * we use addRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this VariableBuilder to provide this information to
@@ -76,14 +77,9 @@ public class VerdandeModels {
          *
          * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
          */
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realTRQ"); //This variable is part of the Dynamic subnetwork in Fig. 4.28.
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realTRQ = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);//This variable is part of the Continuous subnetwork in Fig. 4.28.
 
-        variableBuilder = new VariableBuilder();
+        VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpaceType(StateSpaceType.REAL);
@@ -134,6 +130,7 @@ public class VerdandeModels {
          * 2. The printed graph is structured in two layers. We first display the graph structure for time 0 (no
          * temporal dependencies) and, the, we time t (with temporal dependencies).
          */
+        System.out.println("Input-output SKF (Figure 4.28 of D2.1)");
         System.out.println(dynamicDAG.toString());
 
         /**
@@ -210,46 +207,30 @@ public class VerdandeModels {
         Variable observedWOB = dynamicVariables.addObservedDynamicVariable(attWOB);
         Variable observedRPMB = dynamicVariables.addObservedDynamicVariable(attRPM);
         Variable observedMFI = dynamicVariables.addObservedDynamicVariable(attMFI);
-        Variable observedROP = dynamicVariables.addObservedDynamicVariable(attTRQ);
-        Variable observedTRQ = dynamicVariables.addObservedDynamicVariable(attROP);
+        Variable observedTRQ = dynamicVariables.addObservedDynamicVariable(attTRQ);
+        Variable observedROP = dynamicVariables.addObservedDynamicVariable(attROP);
         Variable observedPRESSURE = dynamicVariables.addObservedDynamicVariable(attPRESSURE);
 
         /**
-         * 1. We now create the hidden variables. For doing that we make use of the class VariableBuilder. When
+         * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
+         * we use addRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this VariableBuilder to provide this information to
          * DynamicVariables object.
          *
-         * 2. Using VariableBuilder, we define the hidden variables and we explicitly indicate if they are Multinomial,
+         * 2. Using VariableBuilder, we define the hidden variables and we explicitly indicate if the are Multinomial,
          * Gaussian or Multinomial_Logistic (i.e. a multinomial variable with continuous parents).
          *
          * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
          */
 
-        /* In Figure 4.29, these 3 variables are part of the subnetwork Continuous */
+        /* In Figure 4.29, these 3 variables are part of the Continuous subnetwork */
+        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);
+        Variable realROP = dynamicVariables.addRealDynamicVariable(observedROP);
+        Variable realPRESSURE = dynamicVariables.addRealDynamicVariable(observedPRESSURE);
+
         VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realWOB");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realTRQ = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
-
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realRPM");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realROP = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
-
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realMFI");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realPRESSURE = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
-
-        variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpaceType(StateSpaceType.REAL);
@@ -320,10 +301,11 @@ public class VerdandeModels {
         dynamicDAG.getParentSetTimeT(hidden).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(hidden).addParent(observedMFI);
 
-        dynamicDAG.getParentSetTimeT(mixture).addParent(dynamicVariables.getTemporalClone(mixture));
         dynamicDAG.getParentSetTimeT(mixture).addParent(observedWOB);
         dynamicDAG.getParentSetTimeT(mixture).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(mixture).addParent(observedMFI);
+
+
 
 
         /**
@@ -332,6 +314,8 @@ public class VerdandeModels {
          * 2. The printed graph is structured in two layers. We first display the graph structure for time 0 (no
          * temporal dependencies) and, the, we time t (with temporal dependencies).
          */
+        System.out.println("-------------------------------------\n");
+        System.out.println("Input-output KF (Figure 4.29 of D2.1)\n");
         System.out.println(dynamicDAG.toString());
 
         /**
