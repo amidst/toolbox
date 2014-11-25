@@ -9,6 +9,7 @@ import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -85,16 +86,15 @@ public class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(new RealStateSpace());
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Normal_Abnormal");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(StateSpaceType.FINITE_SET);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("Normal", "Abnormal")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
-        variableBuilder.setNumberOfStates(2);
         Variable normal_Abnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
 
@@ -236,16 +236,15 @@ public class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(new RealStateSpace());
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Mixture");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(StateSpaceType.FINITE_SET);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
-        variableBuilder.setNumberOfStates(2);
         Variable mixture = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         /**

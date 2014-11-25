@@ -167,7 +167,7 @@ public class DynamicVariables  implements Iterable<Variable>{
         if (!var.isObservable())
             throw new IllegalArgumentException("A Real variable should be created from an observed variable");
 
-        if (var.getStateSpaceType()!=StateSpaceType.REAL)
+        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL)
             throw new IllegalArgumentException("An Real variable should be created from a real variable");
 
         VariableBuilder builder = new VariableBuilder(var.getAttribute());
@@ -240,6 +240,7 @@ public class DynamicVariables  implements Iterable<Variable>{
         private DistType distributionType;
         private Attribute attribute;
         private final boolean isTemporalClone;
+        private int numberOfStates = -1;
 
         /*
          * Constructor for a Variable (not a temporal clone)
@@ -252,6 +253,9 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.distributionType = builder.getDistributionType();
             this.attribute = builder.getAttribute();
             this.isTemporalClone = false;
+
+            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET)
+                this.numberOfStates = ((MultinomialStateSpace)this.stateSpace).getNumberOfStates();
         }
 
         /*
@@ -265,6 +269,9 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.distributionType = variable.getDistributionType();
             this.attribute = variable.getAttribute();
             this.isTemporalClone = true;
+
+            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET)
+                this.numberOfStates = ((MultinomialStateSpace)this.stateSpace).getNumberOfStates();
         }
 
         public String getName() {
@@ -282,6 +289,11 @@ public class DynamicVariables  implements Iterable<Variable>{
         @Override
         public <E extends StateSpace> E getStateSpace() {
             return (E)stateSpace;
+        }
+
+        @Override
+        public int getNumberOfStates() {
+            return this.numberOfStates;
         }
 
         public DistType getDistributionType() {

@@ -4,6 +4,9 @@ import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.filereaders.DataFileReader;
 import eu.amidst.core.database.filereaders.DataRow;
+import eu.amidst.core.variables.MultinomialStateSpace;
+import eu.amidst.core.variables.RealStateSpace;
+import eu.amidst.core.variables.StateSpace;
 import eu.amidst.core.variables.StateSpaceType;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -38,13 +41,16 @@ public class WekaDataFileReader implements DataFileReader{
         List<Attribute> attrs = new ArrayList<>();
         while (attributesWeka.hasMoreElements()) {
             attrWeka = (weka.core.Attribute) attributesWeka.nextElement();
-            StateSpaceType stateSpaceTypeAtt;
+            StateSpace stateSpaceAtt=null;
             if(attrWeka.isNominal()){
-                stateSpaceTypeAtt = StateSpaceType.FINITE_SET;
+                String[] vals = new String[attrWeka.numValues()];
+                for (int i=0; i<attrWeka.numValues(); i++)
+                    vals[i]=attrWeka.value(i);
+                stateSpaceAtt = new MultinomialStateSpace(attrWeka.numValues());
             }else{
-                stateSpaceTypeAtt = StateSpaceType.REAL;
+                stateSpaceAtt = new RealStateSpace();
             }
-            Attribute att = new Attribute(attrWeka.index(),attrWeka.name(),stateSpaceTypeAtt, attrWeka.numValues());
+            Attribute att = new Attribute(attrWeka.index(),attrWeka.name(),stateSpaceAtt);
             attrs.add(att);
         }
         attributes = new Attributes(attrs);

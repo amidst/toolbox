@@ -180,7 +180,7 @@ public class ArffDataStream{}
         int intCount = 0;
 
         for(Attribute a : acceptable){
-            switch (a.getStateSpaceType()) {
+            switch (a.getStateSpace()) {
                 case REAL:
                     doubleCount = doubleCount + 1;
                     break;
@@ -207,7 +207,7 @@ public class ArffDataStream{}
         for (int headerIndex = 0; headerIndex < header.size(); headerIndex++) {
             for(Attribute a : acceptable){
                 if(a.equals(header.get(headerIndex))){
-                    switch (a.getStateSpaceType()){
+                    switch (a.getStateSpace()){
                         case REAL:
                             if(doubleKeys[a.getIndex()] == -1) {
                                 doubleKeys[a.getIndex()] = headerIndex;
