@@ -21,7 +21,7 @@ public class VerdandeModels {
 
 
     /**
-     * In this example we show how to create an input-output SKF.
+     * In this example we show how to create the input-output SKF of Figure 4.28 in Deliverable 2.1
      */
     public static void VerdandeInputOutputSKF(){
 
@@ -75,6 +75,8 @@ public class VerdandeModels {
          * Gaussian or Multinomial_Logistic (i.e. a multinomial variable with continuous parents).
          *
          * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
+         *
+         * 4. Variables RealTRQ and HiddenVar are part of the continuous sub-netwok of figure 4.28 of Deliverable 2.1
          */
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("realTRQ");
