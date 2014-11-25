@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ForTesting1Attributes extends Attributes {
 
-    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.MULTINOMIAL, 2);
+    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.FINITE_SET, 2);
     private final Attribute F1 = new Attribute(0, "F1", "NA", StateSpaceType.REAL, 0);
     private final Attribute F2 = new Attribute(1, "F2", "NA", StateSpaceType.REAL, 0);
     private final Attribute F3 = new Attribute(2, "F3", "NA", StateSpaceType.REAL, 0);
