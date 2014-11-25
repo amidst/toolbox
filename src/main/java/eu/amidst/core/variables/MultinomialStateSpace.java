@@ -31,9 +31,9 @@ public class MultinomialStateSpace extends StateSpace implements Iterable<String
         }
     }
 
-    /*public int getNumberOfStates() {
+    public int getNumberOfStates() {
         return numberOfStates;
-    }*/
+    }
 
     public String getStatesName(int state) {
         return statesNames.get(state);
