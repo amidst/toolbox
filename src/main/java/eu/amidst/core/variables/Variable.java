@@ -13,9 +13,9 @@ public interface Variable {
 
     public boolean isObservable();
 
-    public int getNumberOfStates();
+    public <E extends StateSpace> E getStateSpace();
 
-    public StateSpaceType getStateSpaceType();
+    public int getNumberOfStates();
 
     public DistType getDistributionType();
 
