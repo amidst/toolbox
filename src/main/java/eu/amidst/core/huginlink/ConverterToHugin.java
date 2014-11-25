@@ -42,6 +42,7 @@ public class ConverterToHugin {
                 LabelledDCNode n = new LabelledDCNode(this.huginBN);
                 n.setName(amidstVar.getName());
                 n.setNumberOfStates(amidstVar.getNumberOfStates());
+                n.setLabel(amidstVar.getName());
                 for (int j=0;j<n.getNumberOfStates();j++){
                     String stateName = ((MultinomialStateSpace)amidstVar.getStateSpace()).getStatesName(j);
                     n.setStateLabel(j, stateName);
@@ -174,5 +175,6 @@ public class ConverterToHugin {
         this.setNodes();
         this.setStructure();
         this.setDistributions();
+
     }
 }
