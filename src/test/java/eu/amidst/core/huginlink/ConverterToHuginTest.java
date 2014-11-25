@@ -1,9 +1,11 @@
 package eu.amidst.core.huginlink;
 
 import COM.hugin.HAPI.*;
+
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.models.ParentSet;
+import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
@@ -37,18 +39,18 @@ public class ConverterToHuginTest {
         //Create the structure by hand
 
         DAG dag = new DAG(modelHeader);
-        List<Variable> variables = dag.getStaticVariables().getListOfVariables();
+        StaticVariables variables = dag.getStaticVariables();
 
         Variable A, B, C, D, E, G, H, I;
 
-        A = variables.get(0);
-        B = variables.get(1);
-        C = variables.get(2);
-        D = variables.get(3);
-        E = variables.get(4);
-        G = variables.get(5);
-        H = variables.get(6);
-        I = variables.get(7);
+        A = variables.getVariableById(0);
+        B = variables.getVariableById(1);
+        C = variables.getVariableById(2);
+        D = variables.getVariableById(3);
+        E = variables.getVariableById(4);
+        G = variables.getVariableById(5);
+        H = variables.getVariableById(6);
+        I = variables.getVariableById(7);
 
         //Example
 
@@ -171,105 +173,192 @@ public class ConverterToHuginTest {
         //AMIDST Bayesian network built by hand. Update the attribute amidstBN used next for the tests.
         this.amidstBN = getAmidstBayesianNetworkExample();
 
+        //--------------------------------------------------------------------------------------------------------------
         //Conversion from AMIDST network into a Hugin network.
         System.out.println("\n\nConverting the AMIDST network into Hugin format ...");
-        ConverterToHugin converter = new ConverterToHugin();
-        converter.convertToHuginBN(amidstBN);
+        ConverterToHugin converter = new ConverterToHugin(this.amidstBN);
+        converter.convertToHuginBN();
         String outFile = new String("networks/huginNetworkFromAMIDST.net");
         converter.getHuginNetwork().saveAsNet(new String(outFile));
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
 
         //Update the attribute huginBN used next for the tests.
-        this.setHuginBN(converter.getHuginNetwork());
+        this.huginBN = converter.getHuginNetwork();
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        ParseListener parseListener2 = new DefaultClassParseListener();
+        this.huginBN = new Domain (outFile, parseListener2);
+        System.out.println("\n\nConverting the previous Hugin network into AMIDST format ...");
+        ConverterToAMIDST converter2 = new ConverterToAMIDST(this.huginBN);
+        converter2.convertToAmidstBN();
+        this.amidstBN = converter2.getAmidstNetwork();
+        System.out.println("\nAMIDST network object created.");
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        System.out.println("\n\nConverting the previous AMIDST network into Hugin format ...");
+        ConverterToHugin converter3 = new ConverterToHugin(this.amidstBN);
+        converter3.convertToHuginBN();
+        String outFile2 = new String("networks/huginNetworkFromAMIDST2.net");
+        converter3.getHuginNetwork().saveAsNet(new String(outFile2));
+        System.out.println("Hugin network saved in \"" + outFile2 + "\"" + ".");
+
+        //--------------------------------------------------------------------------------------------------------------
+
+        System.out.println("\n\n¡¡¡ LOOKING AT THE HUGIN INTERFACE BOTH huginNetworkFromAMIDST.net AND " +
+                "huginNetworkFromAMIDST2.net ARE EXACTLY THE SAME !!!");
+
+        //--------------------------------------------------------------------------------------------------------------
+
     }
 
     @Test
-    public void compareHuginAndAmidstModels() throws ExceptionHugin {
+    public void testHuginAndAmidstModels() throws ExceptionHugin {
 
-        // Number of variables
-        assertEquals(amidstBN.getNumberOfVars(), huginBN.getNodes().size());
-
-
+        this.testNumberOfVariables();
         int numVars = amidstBN.getNumberOfVars();
+
         for (int i = 0; i < numVars; i++) {
 
-            Variable amidstVar = amidstBN.getListOfVariables().get(i);
+            Variable amidstVar = amidstBN.getStaticVariables().getVariableById(i);
             Node huginVar = (Node) huginBN.getNodes().get(i);
+            this.testName(amidstVar,huginVar);
+            this.testVariableType(amidstVar,huginVar);
+            this.testParents(amidstVar, huginVar);
+            this.testConditionalDistribution(amidstVar,huginVar);
+        }
+    }
 
-            // Variable names
-            assertEquals(amidstVar.getName(), huginVar.getName());
+    private void testNumberOfVariables() throws ExceptionHugin {
+        assertEquals(amidstBN.getNumberOfVars(), huginBN.getNodes().size());
+    }
 
-            boolean amidstMultinomialVar = amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL)==0;
-            boolean amidstNormalVar = amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN)==0;
-            boolean huginMultinomialVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_DISCRETE)==0;
-            boolean huginNormalVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_CONTINUOUS)==0;
+    private void testName(Variable amidstVar, Node huginVar) throws ExceptionHugin {
+        assertEquals(amidstVar.getName(), huginVar.getName());
+    }
 
-            // Variable types
-            assertEquals(amidstMultinomialVar,huginMultinomialVar);
-            assertEquals(amidstNormalVar,huginNormalVar);
+    private void testVariableType(Variable amidstVar, Node huginVar) throws ExceptionHugin {
+        boolean amidstMultinomialVar = amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0;
+        boolean amidstNormalVar = amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0;
+        boolean huginMultinomialVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0;
+        boolean huginNormalVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_CONTINUOUS) == 0;
 
-            ParentSet parentsAmidstVar = amidstBN.getDAG().getParentSet(amidstVar);
-            NodeList parentsHuginVar = huginVar.getParents();
-            int numParentsAmidstVar = parentsAmidstVar.getParents().size();
-            int numParentsHuginVar = parentsHuginVar.size();
+        assertEquals(amidstMultinomialVar, huginMultinomialVar);
+        assertEquals(amidstNormalVar, huginNormalVar);
+    }
 
-            // Number of parents
-            assertEquals(numParentsAmidstVar,numParentsHuginVar);
+    private void testParents(Variable amidstVar, Node huginVar) throws ExceptionHugin {
+        ParentSet parentsAmidstVar = amidstBN.getDAG().getParentSet(amidstVar);
+        NodeList parentsHuginVar = huginVar.getParents();
+        int numParentsAmidstVar = parentsAmidstVar.getNumberOfParents();
+        int numParentsHuginVar = parentsHuginVar.size();
 
-            // IMPORTANT: Hugin stores the multinomial parents in a reverse order wrt. AMIDST whilst the Normal parents
-            // are stored in the same order.
-            System.out.println("\n HUGIN: "+ huginVar.getName() + " - " +huginVar.getParents().toString());
-            System.out.println("AMIDST: "+ amidstVar.getName() + " - " +parentsAmidstVar.toString());
+        // Number of parents
+        assertEquals(numParentsAmidstVar, numParentsHuginVar);
 
-            ArrayList<String> namesAmidstParents = new ArrayList<String>();
-            ArrayList<String> namesHuginParents = new ArrayList<String>();
+        for (int j = 0; j < numParentsAmidstVar; j++) {
+            Variable parentAmidstVar = parentsAmidstVar.getParents().get(j);
+            String parentNameHuginVar = ((Node) parentsHuginVar.get(j)).getName();
+            String parentNameAmidstVar = parentAmidstVar.getName();
+            assertEquals(parentNameAmidstVar, parentNameHuginVar);
+        }
+    }
 
-            for (int j=0;j<numParentsAmidstVar;j++) {
+    private void testConditionalDistribution(Variable amidstVar, Node huginVar) throws ExceptionHugin {
+        int type = Utils.getConditionalDistributionType(amidstVar, amidstBN);
 
-                 Variable parentAmidstVar = parentsAmidstVar.getParents().get(j);
+        switch (type) {
+            case 0:
+                this.testMultinomial_MultinomialParents(huginVar, amidstVar);
+                break;
+            case 1:
+                Normal_NormalParents dist1 = amidstBN.getDistribution(amidstVar);
+                this.testNormal_NormalParents(huginVar, dist1, 0);
+                break;
+            case 2:
+                this.testNormal_MultinomialParents (huginVar, amidstVar);
+                break;
+            case 3:
+                this.testNormal_MultinomialNormalParents(huginVar, amidstVar);
+                break;
+            default:
+                throw new IllegalArgumentException("Unrecognized DistributionType. ");
+        }
+    }
 
-                 String parentNameHuginVar = ((Node)parentsHuginVar.get(j)).getName();
-                 String parentNameAmidstVar= parentAmidstVar.getName();
+    private void testMultinomial_MultinomialParents(Node huginVar, Variable amidstVar) throws ExceptionHugin{
+        Multinomial_MultinomialParents dist = amidstBN.getDistribution(amidstVar);
+        double[] huginProbabilities = huginVar.getTable().getData();
+        Multinomial[] probabilities = dist.getProbabilities();
 
-                 if(parentAmidstVar.getDistributionType().compareTo(DistType.GAUSSIAN)==0){
-                     assertEquals(parentNameAmidstVar, parentNameHuginVar);
-                 }
-                 else if (parentAmidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL)==0){
-                     namesAmidstParents.add(parentNameAmidstVar);
-                     namesHuginParents.add(parentNameHuginVar);
-                 }
-                 else {
-                     throw new IllegalArgumentException("Unrecognized DistributionType.");
-                 }
+        int nStates = amidstVar.getNumberOfStates();
+        int numParentAssignments =
+                MultinomialIndex.getNumberOfPossibleAssignments(dist.getConditioningVariables());
+
+        for (int j = 0; j < numParentAssignments; j++) {
+            double[] amidstProbabilitiesAssignment_j = probabilities[j].getProbabilities();
+            for (int k = 0; k < nStates; k++) {
+                // Probability of the state k for the j assignment of the parents
+                assertEquals(amidstProbabilitiesAssignment_j[k], huginProbabilities[j * nStates + k], 0.0);
             }
-            Collections.reverse(namesHuginParents);
-            assertEquals(namesAmidstParents,namesHuginParents);
-      }
+        }
     }
 
-// Test the distributions!!!!!
+    private void testNormal_NormalParents(Node huginVar, Normal_NormalParents dist1, int assign_j) throws ExceptionHugin {
 
 
+        // Intercept
+        double interceptHugin = ((ContinuousChanceNode)huginVar).getAlpha(assign_j);
+        double interceptAmidst = dist1.getIntercept();
+        assertEquals(interceptHugin,interceptAmidst ,0.0);
 
+        // Parents coefficients
+        List<Variable> normalParents = dist1.getConditioningVariables();
+        int numNormalParents = normalParents.size();
 
+        for(int i=0;i<numNormalParents;i++) {
+            ContinuousChanceNode huginParent =
+                    (ContinuousChanceNode)this.huginBN.getNodeByName(normalParents.get(i).getName());
+            double coeff_iHugin = ((ContinuousChanceNode)huginVar).getBeta(huginParent,assign_j);
+            double coeff_iAmidst = dist1.getCoeffParents()[i];
+            assertEquals(coeff_iHugin,coeff_iAmidst,0);
+        }
 
-
-
-
-    public BayesianNetwork getAmidstBN() {
-        return amidstBN;
+        // Variance
+        double varianceAmidst = Math.pow(dist1.getSd(),2);
+        double varianceHugin = ((ContinuousChanceNode)huginVar).getGamma(assign_j);
+        assertEquals(varianceAmidst,varianceHugin ,0.0000001);
     }
 
-    public void setAmidstBN(BayesianNetwork amidstBN) {
-        this.amidstBN = amidstBN;
+    private void testNormal_MultinomialParents (Node huginVar, Variable amidstVar) throws ExceptionHugin  {
+
+        Normal_MultinomialParents dist = amidstBN.getDistribution(amidstVar);
+        List<Variable> conditioningVariables = dist.getConditioningVariables();
+        int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
+
+        for(int j=0;j<numParentAssignments;j++) {
+            Normal normal =  dist.getNormal(j);
+            double mean_jAmidst = normal.getMean();
+            double mean_jHugin = ((ContinuousChanceNode)huginVar).getAlpha(j);
+            assertEquals(mean_jAmidst, mean_jHugin,0);
+
+            double variance_jAmidst = Math.pow(normal.getSd(),2);
+            double variance_jHugin = ((ContinuousChanceNode)huginVar).getGamma(j);
+            assertEquals(variance_jAmidst, variance_jHugin,0.0000001);
+        }
     }
 
-    public Domain getHuginBN() {
-        return huginBN;
-    }
+    private void testNormal_MultinomialNormalParents(Node huginVar, Variable amidstVar)throws ExceptionHugin {
 
-    public void setHuginBN(Domain huginBN) {
-        this.huginBN = huginBN;
-    }
+        Normal_MultinomialNormalParents dist = amidstBN.getDistribution(amidstVar);
 
+        List<Variable> multinomialParents = dist.getMultinomialParents();
+        int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
+
+        for(int j=0;j <numParentAssignments;j++) {
+            Normal_NormalParents dist1 = dist.getNormal_NormalParentsDistribution(j);
+            this.testNormal_NormalParents(huginVar, dist1 ,j);
+        }
+    }
 }

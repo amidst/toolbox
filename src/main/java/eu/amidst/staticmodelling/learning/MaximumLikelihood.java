@@ -45,8 +45,8 @@ public class MaximumLikelihood implements LearningAlgorithm{
     }
     @Override
     public void learnModelFromStream(DataStream data) {
-        while(data.hasMoreDataRows()){
-            this.model.updateModel(data.nextDataRow());
+        while(data.hasNext()){
+            this.model.updateModel(data.next());
         }
     }
 }
