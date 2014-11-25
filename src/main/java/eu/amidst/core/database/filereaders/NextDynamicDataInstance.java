@@ -35,11 +35,11 @@ public final class NextDynamicDataInstance {
     }
     public  DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(DataFileReader reader){
         DynamicDataInstance dynDataInst = null;
-        if(timeIDcounter == 1) {
+        if(timeIDcounter == 0) {
             dynDataInst = new DynamicDataInstance(past, present, sequenceID, timeIDcounter++);
         }else {
             past = present;
-            present = reader.nextDataRow();
+            present = reader.next();
             dynDataInst = new DynamicDataInstance(past, present, sequenceID, timeIDcounter++);
         }
         return dynDataInst;
@@ -66,7 +66,7 @@ public final class NextDynamicDataInstance {
 
         /*Read a new DataRow*/
         }else{
-            present = reader.nextDataRow();
+            present = reader.next();
             /*Recursive call to this method taking into account the past DataRow*/
             return nextDataInstance_NoSeq(reader, attTimeID);
         }
@@ -75,13 +75,13 @@ public final class NextDynamicDataInstance {
 
     public DynamicDataInstance nextDataInstance_NoTimeID(DataFileReader reader, Attribute attSequenceID){
         DynamicDataInstance dynDataInst = null;
-        if(timeIDcounter == 1) {
+        if(timeIDcounter == 0) {
             dynDataInst =  new DynamicDataInstance(past, present, (int) present.getValue(attSequenceID), timeIDcounter);
             timeIDcounter++;
             return dynDataInst;
         }
         past = present;
-        present = reader.nextDataRow();
+        present = reader.next();
         double pastSequenceID = past.getValue(attSequenceID);
         double presentSequenceID = present.getValue(attSequenceID);
         if (Double.isNaN(pastSequenceID) || pastSequenceID == presentSequenceID) {
@@ -92,7 +92,7 @@ public final class NextDynamicDataInstance {
         else{
              past = new DataRowMissing();
              /* Recursive call */
-             timeIDcounter = 1;
+             timeIDcounter = 0;
             dynDataInst =  new DynamicDataInstance(past, present, (int) presentSequenceID, timeIDcounter);
             timeIDcounter++;
             return dynDataInst;
@@ -121,7 +121,7 @@ public final class NextDynamicDataInstance {
 
         /*Read a new DataRow*/
         }else{
-            present = reader.nextDataRow();
+            present = reader.next();
             double presentSequenceID = present.getValue(attSequenceID);
             if (pastSequenceID == presentSequenceID) {
                 /*Recursive call to this method taking into account the past DataRow*/
@@ -132,8 +132,8 @@ public final class NextDynamicDataInstance {
                 DynamicDataInstance dynDataInst = new DynamicDataInstance(past, present, (int) presentSequenceID,
                         (int) present.getValue(attTimeID));
                 past = present;
-                present = reader.nextDataRow();
-                timeIDcounter = 2;
+                present = reader.next();
+                timeIDcounter = 1;
                 return dynDataInst;
             }
         }

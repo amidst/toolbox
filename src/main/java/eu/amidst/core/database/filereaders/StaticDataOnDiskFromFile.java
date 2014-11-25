@@ -5,6 +5,8 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.DataOnStream;
 
+import java.util.Iterator;
+
 /**
  * Created by andresmasegosa on 11/11/14.
  */
@@ -17,13 +19,13 @@ public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream{
     }
 
     @Override
-    public DataInstance nextDataInstance() {
-        return new StaticDataInstance(this.reader.nextDataRow());
+    public DataInstance next() {
+        return new StaticDataInstance(this.reader.next());
     }
 
     @Override
-    public boolean hasMoreDataInstances() {
-        return reader.hasMoreDataRows();
+    public boolean hasNext() {
+        return reader.hasNext();
     }
 
     @Override
@@ -34,5 +36,10 @@ public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream{
     @Override
     public void restart() {
         this.reader.reset();
+    }
+
+    @Override
+    public Iterator<DataInstance> iterator() {
+        return this;
     }
 }

@@ -184,7 +184,7 @@ public class ArffDataStream{}
                 case REAL:
                     doubleCount = doubleCount + 1;
                     break;
-                case MULTINOMIAL:
+                case FINITE_SET:
                     intCount = intCount + 1;
                     break;
                 default:
@@ -215,7 +215,7 @@ public class ArffDataStream{}
                                 throw new ArffParserException("The header contains attributes with the same names.");
                             }
                             break;
-                        case MULTINOMIAL:
+                        case FINITE_SET:
                             if(intKeys[a.getIndex()] == -1) {
                                 intKeys[a.getIndex()] = headerIndex;
                             } else{
@@ -252,14 +252,14 @@ public class ArffDataStream{}
 
 
     @Override
-    public DataInstance nextDataRow() {
+    public DataInstance next() {
         DataInstance x = new DefaultDataInstance(dataInstance,doubleData,intData);
         dataInstance = dataInstance + 1;
         return x;
     }
 
     @Override
-    public boolean hasMoreDataRows() {
+    public boolean hasNext() {
         return dataInstance != rowSize;
     }
 
