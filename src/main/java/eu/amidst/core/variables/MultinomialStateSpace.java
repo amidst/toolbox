@@ -17,7 +17,7 @@ public class MultinomialStateSpace extends StateSpace implements Iterable<String
         super(StateSpaceType.FINITE_SET);
         this.numberOfStates=numberOfStates_;
         this.statesNames = new ArrayList<>();
-        for (int i=0; i<this.statesNames.size(); i++){
+        for (int i=0; i<numberOfStates_; i++){
             this.statesNames.add("State_"+i);
         }
     }
@@ -31,9 +31,9 @@ public class MultinomialStateSpace extends StateSpace implements Iterable<String
         }
     }
 
-    public int getNumberOfStates() {
+    /*public int getNumberOfStates() {
         return numberOfStates;
-    }
+    }*/
 
     public String getStatesName(int state) {
         return statesNames.get(state);
