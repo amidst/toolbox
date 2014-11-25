@@ -171,7 +171,8 @@ public class StaticBayesianNetworks {
         /**
          * 1. We create the hidden variable. For doing that we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
-         * the name, the type, etc). We use now this VariableBuilder to provide this information to
+         * the name, the type, etc). But hidden variables does not have an associated attribute
+         * and, for this reason, we use now this VariableBuilder to provide this information to
          * StaticVariables object.
          *
          * 2. Using VariableBuilder, we define a variable called HiddenVar, which is not observable (i.e. hidden), its state

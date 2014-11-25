@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * This class contains examples about how we can create CajaMar's dynamic models using the AMIDST Toolbox.
- * It show how to create 2T-DBNs over discrete,
+ * It show how to create 2T-DBNs over multinomial, Gassuian and Indicator variables.
  *
  * Created by andresmasegosa on 22/11/14.
  */
@@ -54,7 +54,7 @@ public class CajaMarModels {
          * 3. We can extract the Variable objects by using the method getVariableByName();
          *
          * 4. The created variables are dynamic. Here in AMIDST toolbox, it implies they have a temporal clone (similarly to Hugin).
-         * This temporal clone is automatically created for each dynamic variablle
+         * This temporal clone is automatically created for each dynamic variable.
          */
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
 
