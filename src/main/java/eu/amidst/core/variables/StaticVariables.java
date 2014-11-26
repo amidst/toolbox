@@ -116,7 +116,7 @@ public class StaticVariables implements Iterable<Variable>{
 
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName()))
-            throw new IllegalArgumentException("Attribute list contains duplicated names");
+            throw new IllegalArgumentException("Attribute list contains duplicated names: "+var.getName());
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
         return var;
