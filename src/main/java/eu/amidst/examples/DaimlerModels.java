@@ -1,9 +1,13 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.huginlink.ConverterToHugin;
+import eu.amidst.core.huginlink.Utils;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
@@ -25,7 +29,7 @@ public class DaimlerModels {
      * In this example we show how to create an OOBN fragment for the LE hypothesis with a hidden node for acceleration
      * (as in Figure 4.14 of D2.1).
      */
-    public static void Daimler_LE_acceleration(){
+    public static void Daimler_LE_acceleration() throws ExceptionHugin {
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
@@ -161,11 +165,24 @@ public class DaimlerModels {
         System.out.println(dynamicBayesianNetwork.toString());
 
 
+        /**
+         * 1. The DBN is now converted to Hugin format and stored on a file.
+         *
+         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
+         */
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginDaimlerLEAcceleration.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+
+
     }
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExceptionHugin {
         DaimlerModels.Daimler_LE_acceleration();
     }
 }
