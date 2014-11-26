@@ -1,9 +1,13 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.huginlink.ConverterToHugin;
+import eu.amidst.core.huginlink.Utils;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
@@ -26,7 +30,7 @@ public class VerdandeModels {
     /**
      * In this example we show how to create an input-output SKF (as in Figure 4.28 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputSKF(){
+    public static void VerdandeInputOutputSKF() throws ExceptionHugin {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -152,12 +156,25 @@ public class VerdandeModels {
         DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
+
+
+        /**
+         * 1. The DBN is now converted to Hugin format and stored on a file.
+         *
+         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
+         */
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginVerdandeIOSKF.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
     }
 
     /**
      * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputKFwithMG(){
+    public static void VerdandeInputOutputKFwithMG() throws ExceptionHugin {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -336,12 +353,25 @@ public class VerdandeModels {
         DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
+        /**
+         * 1. The DBN is now converted to Hugin format and stored on a file.
+         *
+         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
+         */
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginVerdandeIOSKFwithMG.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+
+
     }
 
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExceptionHugin {
         VerdandeModels.VerdandeInputOutputSKF();
         VerdandeModels.VerdandeInputOutputKFwithMG();
     }

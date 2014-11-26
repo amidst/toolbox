@@ -51,7 +51,7 @@ public class ConverterToHugin {
                 ContinuousChanceNode c = new ContinuousChanceNode(this.huginBN);
                 c.setName(amidstVar.getName());
             } else {
-                throw new IllegalArgumentException("Unrecognized DistributionType.");
+                throw new IllegalArgumentException("Unrecognized DistributionType:" + amidstVar.getDistributionType().toString());
             }
         }
     }
