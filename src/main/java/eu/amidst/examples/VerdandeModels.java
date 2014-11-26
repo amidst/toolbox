@@ -368,6 +368,18 @@ public class VerdandeModels {
 
     }
 
+    /**
+     * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
+     */
+    public static void VerdandeInputOutputHMM() throws ExceptionHugin {
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataVerdandeScenario3.arff")));
+
+        Attribute attDepth = data.getAttributes().getAttributeByName("DEPTH");
+        Attribute attGammaDiff = data.getAttributes().getAttributeByName("GAMMADIFF");
+
+
+    }
+
 
 
 
