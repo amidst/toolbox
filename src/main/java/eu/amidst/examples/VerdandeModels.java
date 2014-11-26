@@ -216,14 +216,6 @@ public class VerdandeModels {
         Attribute attROP = data.getAttributes().getAttributeByName("ROP");
         Attribute attPRESSURE = data.getAttributes().getAttributeByName("PRESSURE");
 
-        List<Attribute> attributeList = new ArrayList();
-        attributeList.add(attWOB);
-        attributeList.add(attRPM);
-        attributeList.add(attMFI);
-        attributeList.add(attTRQ);
-        attributeList.add(attROP);
-        attributeList.add(attPRESSURE);
-
         DynamicVariables dynamicVariables = new DynamicVariables();
 
         Variable observedWOB = dynamicVariables.addObservedDynamicVariable(attWOB);
@@ -377,7 +369,51 @@ public class VerdandeModels {
         Attribute attDepth = data.getAttributes().getAttributeByName("DEPTH");
         Attribute attGammaDiff = data.getAttributes().getAttributeByName("GAMMADIFF");
 
+        DynamicVariables dynamicVariables = new DynamicVariables();
 
+        Variable observedDepth = dynamicVariables.addObservedDynamicVariable(attDepth);
+        Variable observedGammaDiff = dynamicVariables.addObservedDynamicVariable(attGammaDiff);
+
+        VariableBuilder variableBuilder = new VariableBuilder();
+        variableBuilder.setName("FormationNo");
+        variableBuilder.setObservable(false);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
+        variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
+        Variable formationNo = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+
+        variableBuilder = new VariableBuilder();
+        variableBuilder.setName("Shift");
+        variableBuilder.setObservable(false);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
+        variableBuilder.setDistributionType(DistType.MULTINOMIAL);
+        Variable shift = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+
+
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+
+        dynamicDAG.getParentSetTimeT(formationNo).addParent(observedDepth);
+        dynamicDAG.getParentSetTimeT(formationNo).addParent(dynamicVariables.getTemporalClone(formationNo));
+
+        dynamicDAG.getParentSetTimeT(shift).addParent(formationNo);
+        dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(formationNo));
+        dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(shift));
+
+        dynamicDAG.getParentSetTimeT(observedGammaDiff).addParent(shift);
+
+        System.out.println("-------------------------------------\n");
+        System.out.println("Input-output HMM (Figure 4.31 of D2.1)\n");
+        System.out.println(dynamicDAG.toString());
+
+
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        System.out.println(dynamicBayesianNetwork.toString());
+
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginVerdandeIOHMM.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
     }
 
 
@@ -386,5 +422,6 @@ public class VerdandeModels {
     public static void main(String[] args) throws ExceptionHugin {
         VerdandeModels.VerdandeInputOutputSKF();
         VerdandeModels.VerdandeInputOutputKFwithMG();
+        VerdandeModels.VerdandeInputOutputHMM();
     }
 }
