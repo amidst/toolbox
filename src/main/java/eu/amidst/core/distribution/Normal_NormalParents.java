@@ -134,6 +134,14 @@ public class Normal_NormalParents extends ConditionalDistribution {
         return (univariateNormal);
     }
 
+
+    @Override
+    //Note that the intercept has not been included as a free parameter.
+    public int getNumberOfFreeParameters() {
+        return(coeffParents.length + 1);
+    }
+
+
     /**
      * Computes the logarithm of the evaluated density function in a point after conditioning the distribution to a
      * given parent <code>Assignment</code>.

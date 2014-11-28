@@ -72,11 +72,18 @@ public class Normal extends UnivariateDistribution {
         this.sd = sd_;
     }
 
+    @Override
+    public int getNumberOfFreeParameters() {
+        return 2;
+    }
+
     /**
      * Evaluates the density function in a given point.
      * @param value An value for the variable.
      * @return A <code>double</code> with the value of the density.
      */
+
+
     @Override
     public double getProbability(double value) {
         return (1 / (sd * Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * Math.pow(((value - mean) / sd), 2)));
