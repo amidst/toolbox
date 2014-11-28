@@ -1,14 +1,14 @@
 \section{Test and evaluation methodology}
 \label{sec:methodology}
 
-As discussed in the introduction, finding appropriate performance measures on streaming data is more difficult than finding performance measures on static data.  We will therefore start by discussing some relevant performance measures for classification on static data.  A brief section follow where evaluation methods on locally dependent streams is exposed.
+As discussed in the introduction, finding appropriate performance measures on streaming data is more difficult than finding performance measures on non streaming data.  We will therefore start by discussing some relevant performance measures for classification on non streaming data that is i.i.d. 
 
-\subsection{Performance measures for classification on static data}
+\subsection{Performance measures for classification on i.i.d. data}
 \label{sec:static}
 
-On static data, we assume that the dataset has a fixed size $n$, where each instance is independently drawn from a joint probability distribution $P(X,Y)$, where $X$ and $Y$ are random variables. The $X$ variable is known as the explanatory variable and $Y$ is the class label.  These two variables have output spaces $\Omega_X$ and $\Omega_Y$, respectively.  For instance in a binary classification problem $\Omega_Y$ can either be true or false, while $\Omega_X$ is a space of all possible explanatory vectors.  
+We assume that the dataset has a fixed size $n$, where each instance is independently drawn from a joint probability distribution $P(X,Y)$, where $X$ and $Y$ are random variables. The $X$ variable is known as the explanatory variable and $Y$ is the class label.  These two variables have output spaces $\Omega_X$ and $\Omega_Y$, respectively.  For instance in a binary classification problem $\Omega_Y$ can either be true or false, while $\Omega_X$ is a space of all possible explanatory vectors.  
 
-In classification, we typically consider a hypothesis function $h: \, \Omega_X \rightarrow \Omega_Y$.  In terms of evaluating the performance of $h$, we use a dataset of $n$ input-output pairs $(x_i, y_i)$ that are independently drawn from $P(X,Y)$. The result of such an experiment can be shown in a confusion matrix.  An example is shown table \ref{tab:catdograbbit}, where the classifier is attempting to distinguish cats, dogs and rabbits. 
+In classification, we typically consider a hypothesis function $h: \, \Omega_X \rightarrow \Omega_Y$.  In terms of evaluating the performance of $h$, we use a dataset of $n$ input-output pairs $(x_i, y_i)$ that are independently drawn from $X \times Y$. The result of such an experiment can be shown in a confusion matrix.  An example is shown table \ref{tab:catdograbbit}, where the classifier is attempting to distinguish cats, dogs and rabbits. 
 
 \vspace{1ex}
 \begin{table}
@@ -32,9 +32,11 @@ In classification, we typically consider a hypothesis function $h: \, \Omega_X \
 \end{table}
 \vspace{1ex}
 
-A global measure of the classification algorithm is the classification accuracy which is basically the diagonal elements divided by the total number (in this case 19/27).  It is important to note that the accuracy is not telling the whole story of the classification rule.  For instance, by looking at the table it is seen that the algorithm distinguishes distinguish cats from rabbits quite easily, but it is much harder to distinguish cats from dogs.  This information can not be found from only looking at accuracy.  Moreover, accuracy is also very dependent on how evenly the classes are distributed.   For instance, when there are a lot more instances of one class compared to the others, a naive classification rule that always predict the majority class will get a high accuracy, even though the method is not using any of the information that is contained in the explanatory variables.  These are some reasons for showing the full confusion matrix to interpret the status of the classification rule.  However, there are more numbers that can be derived from the confusion matrix.  To simplify this exposition we have chosen to limit the discussion to binary classification.  
+A global measure of the classification algorithm is the classification accuracy which is basically the diagonal elements divided by the total number (in this case 19/27).  It is important to note that the accuracy is not telling the whole story of the classification rule.  For instance, by looking at the table it is seen that the algorithm distinguishes cats from rabbits quite easily, but it is much harder to distinguish cats from dogs.  This information can not be found by only looking at accuracy.  
 
-When the classification is a binary, such as classifying cats and non-cats, the confusion matrix becomes two dimensional as shown in \ref{tab:binary}.  In binary classification, it is common to introduce positives and negatives, instead of the class labels.  A true positive is therefore an actual cat that has been predicted to be a cat by the classifier of interest.  False positives, true negative and false negatives are defined in an equivalent manner.  The results are commonly shown in a confusion table (see table \ref{tab:confusionTable}), which is not the same as a confusion matrix.  
+Moreover, accuracy is also very dependent on how evenly the classes are distributed.   For instance, when there are a lot more instances of one class compared to the others, a naive classification rule that always predict the majority class will get a high accuracy, even though the method is not using any of the information that is contained in the explanatory variables.  These are reasons for inspecting the full confusion matrix for interpreting the classification rule.  There are also more numbers that can be derived from the confusion matrix, but to simplify the exposition, we have chosen to limit the discussion to binary classification.  
+
+For a binary classifier, such as classifying cats and non-cats, the confusion matrix is two dimensional as shown in table \ref{tab:binary}.  In binary classification, it is common to introduce positives and negatives, instead of the class labels.  A true positive is therefore an actual cat that has been predicted to be a cat.  False positives, true negative and false negatives are defined in an equivalent manner.  The results are commonly shown in a confusion table (see table \ref{tab:confusionTable}), which is not the same as a confusion matrix.  
 
 \vspace{1ex}
 \begin{table}
@@ -77,13 +79,11 @@ When the classification is a binary, such as classifying cats and non-cats, the 
 \end{table}
 \vspace{1ex}
 
-From a confusion table it is easy to calculate numerous numbers that describes the classification rule.  Specifically we mention the true positive and false positive rates.  True positive rates, also known as recall, is the number of true positives divided by the total number actual positives.  The false positive rates, also known as fall-out, is the number of false positives divided by the total number actual positives. 
-
-\todo{Possibly add a bit more about other measures based on the confusion table.}
+From a confusion table it is easy to calculate numerous numbers that describes the classification rule.  Specifically, we mention the true positive and false positive rates.  True positive rates, also known as recall, is the number of true positives divided by the total number actual positives.  The false positive rates, also known as fall-out, is the number of false positives divided by the total number actual positives. 
 
 By investigating various numbers that can be deduced from the confusion table, it is possible to discuss classification rules, even when the datasets are unevenly distributed.  That is, when some class label have more instances than others.
 
-However, these numbers do not take into account that some misclassifications might be more costly than others.  For instance, a false positive might be more costly than a false negative, such as in the case of cancer diagnostics.   It might be more costly to not threat a person that is sick, compared to threating a healthy person.  Moreover, the cost of each false positive (or false negative) may not be constant either.  For instance, if the classifier is predicting whether a client in a bank will default a loan or not, the cost is clearly related to the size of the loan in question.  The next subsection includes a procedure to include such costs in a performance measure.
+However, these numbers do not take into account that some misclassifications might be more costly than others.  For instance, a false positive might be more costly than a false negative, such as in the case of cancer diagnostics.   It might be more costly to not treat a person that is sick, compared to treating a healthy person.  Moreover, the cost of each false positive (or false negative) may not be constant either.  For instance, if the classifier is predicting whether a client in a bank will default a loan or not, the cost is clearly related to the size of the loan in question.  The next subsection includes a procedure to include such costs in a performance measure.
 
 \subsubsection{Empirical risk}
 \label{sec:empRisk}
@@ -137,7 +137,7 @@ It is of interest to evaluate all these classification rules.  The receiver oper
 The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  However, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUROC, is such a number.  
 AUROC is independent of $T$ and also the priors.  It may be difficult to comprehend what AUROC is at this point, but we will return to it afterward.
 
-First, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.  To summarize, $Q_0$ is basically a random variable that is related to when you pick a random sample of class zero and run the system and then you get an output value (usually a probability of something happening).  The same thing can be said for $Q_1$.  
+First, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.  To summarize, $Q_0$ is basically the output value you get when you pick a random sample of class zero. The same thing can be said for $Q_1$.  
 
 The probability $P(Q_1 > Q_0)$ is of interest, because this says what is the probability that if you take one sample from each of the populations, what is the chance that the output value from sample one is higher than the output value of sample zero.  This question is independent of $T$, meaning that the discussion about priors and costs are not needed. This probability is called the concordance probability.
 
@@ -161,7 +161,7 @@ We define a training set $\bu{x} \times \bv{y}$ with $n$ input-output pairs $(x_
 U_0 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H(\,q_j - q_i    \,) \quad \mbox{and} \quad 
 U_1 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H( \,q_i - q_j    \,).
 \end{equation}
-Here $H(\cdot)$ is the heaviside step function and notice that $U_0 + U_1 = n_0n_1$.  For large samples, each U is approximately normally distributed. In that case, the standardized value
+Here, $H(\cdot)$ is the heaviside step function and notice that $U_0 + U_1 = n_0n_1$.  For large samples, each U is approximately normally distributed. In that case, the standardized value
 
 \begin{equation}
 \label{eq:z}
@@ -187,13 +187,11 @@ It is important to note that even though the Mann-Whitney $U$ test is dependent 
 \subsection{Performance measures for classification on streaming data}
 \label{sec:stream}
 
-In the use case scenarios in the Amidst software there are generally two paths for evaluating the methods.  The multi class classifiers are generally evaluated by accuracy, while the binary classifiers involve dividing data into substreams.
+In the use case scenarios in the Amidst software, all problems are binary classifiers, which involve dividing the streams into sub streams that are labeled as either positives or negatives.  There are two important approaches here.
 
-In contrast to for instance \cite{Gam12}, we can generally not assume that data is locally i.i.d.  A data instance at a certain time step has to be seen in context of the preceding time steps.  Our approach for testing is to manually select a number of time windows or substreams that are labeled as either negatives or positives.  There are two important approaches here.
+The first approach deals with multiple streams and the global time dependence is removed by sampling all these streams into multiple sub streams, which are starting and ending at the same time steps.  Each sub stream is labeled as either a positive or negative based on the data at the end time.  An evaluation time step that is a fixed between the start and the end is also defined.  The explanatory variables are derived from the data between the start and the evaluation time step.  In this sense, the data is basically i.i.d.
 
-The first approach deals with multiple streams and the global time dependence is removed by sampling all these streams into multiple substreams, which are starting and ending at the same time steps.  Each substream is labeled as either a positive or negative based on the data at the end time.  An evaluation time step that is a fixed between the start and the end is also defined.  The explanatory variables are derived from the data between the start and the evaluation time step.  In this sense, this problem is reduced to a problem of static data, where each i.i.d. instance is labeled.
-
-The second approach is when there is basically one stream where one can assume stationarity on a global scale.  Substreams with large enough distance to other substreams are taken out of the stream.  These substreams are labeled as either a positive or a negative.  For instance, a positive is when something is happening towards the end of the substream, while a negative is a substream where nothing happens.  When the AMIDST software run, the output function is evaluated at each time step.  Depending of the problem, a heuristic algorithm is chosen to output a single number for each substream based on the output values.  This can for instance be the maximum value of the output function on an interval that is prior to an event.  
+The second approach is when there is basically one stream where one can assume stationarity on a global scale.  Sub streams with large enough distance to other sub streams are taken out of the stream.  These sub streams are labeled as either a positive or a negative.  For instance, a positive is when something is happening towards the end of the sub stream, while a negative is a sub stream where nothing happens.  When the AMIDST software run, the output function is evaluated at each time step.  Depending of the problem, a heuristic algorithm is chosen to output a single number for each sub stream based on the output values.  This can for instance be the maximum value of the output function on an interval that is prior to an event.  
 
 
 
@@ -208,4 +206,4 @@ The second approach is when there is basically one stream where one can assume s
 %  providers, but (taking the back ground of one of the reviewers into account) we might probably benefit from
 %  going a bit beyond the immediate needs and put all this stuff into a broader context ...}
 %
-%\cite{Kap14}, \cite{Gam09}, \cite{Gam09_2}, \cite{Gam12}, 
+%\cite{Kap14}, \cite{Gam09}, \cite{Gam09_2}, \cite{Gam13}, 
