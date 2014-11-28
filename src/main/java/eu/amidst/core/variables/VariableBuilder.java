@@ -9,8 +9,7 @@ import eu.amidst.core.database.Attribute;
 public final class VariableBuilder {
     private static String name;
     private static boolean observable;
-    private static int numberOfStates;
-    private static StateSpaceType stateSpaceType;
+    private static StateSpace stateSpace;
     private static DistType distributionType;
     private static Attribute attribute;
 
@@ -20,9 +19,8 @@ public final class VariableBuilder {
     public VariableBuilder(Attribute att){
         this.name = att.getName();
         this.observable = true;
-        this.numberOfStates = att.getNumberOfStates();
-        this.stateSpaceType = att.getStateSpaceType();
-        switch (att.getStateSpaceType()) {
+        this.stateSpace = att.getStateSpace();
+        switch (att.getStateSpace().getStateSpaceType()) {
             case REAL:
                 this.distributionType = DistType.GAUSSIAN;
                 break;
@@ -30,7 +28,7 @@ public final class VariableBuilder {
                 this.distributionType = DistType.MULTINOMIAL;
                 break;
             default:
-                throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
+                throw new IllegalArgumentException(" The string \"" + att.getStateSpace() + "\" does not map to any Type.");
         }
         this.attribute = att;
     }
@@ -38,8 +36,7 @@ public final class VariableBuilder {
     public VariableBuilder(Attribute att, DistType typeDist){
         this.name = att.getName();
         this.observable = true;
-        this.numberOfStates = att.getNumberOfStates();
-        this.stateSpaceType = att.getStateSpaceType();
+        this.stateSpace = att.getStateSpace();
         this.distributionType = typeDist;
         this.attribute = att;
     }
@@ -52,12 +49,8 @@ public final class VariableBuilder {
         return observable;
     }
 
-    public static int getNumberOfStates() {
-        return numberOfStates;
-    }
-
-    public static StateSpaceType getStateSpaceType() {
-        return stateSpaceType;
+    public static StateSpace getStateSpace() {
+        return stateSpace;
     }
 
     public static DistType getDistributionType() {
@@ -74,12 +67,8 @@ public final class VariableBuilder {
         VariableBuilder.observable = observable;
     }
 
-    public static void setNumberOfStates(int numberOfStates) {
-        VariableBuilder.numberOfStates = numberOfStates;
-    }
-
-    public static void setStateSpaceType(StateSpaceType stateSpaceType) {
-        VariableBuilder.stateSpaceType = stateSpaceType;
+    public static void setStateSpace(StateSpace stateSpace) {
+        VariableBuilder.stateSpace = stateSpace;
     }
 
     public static void setDistributionType(DistType distributionType) {
