@@ -44,6 +44,11 @@ public class Multinomial extends UnivariateDistribution {
         }
     }
 
+    @Override
+    public int getNumberOfFreeParameters() {
+        return probabilities.length-1;
+    }
+
     /**
      * Sets the probability values to the distribution.
      *
