@@ -132,9 +132,15 @@ h_T(x) =
 
 It is of interest to evaluate all these classification rules.  The receiver operating characteristic ROC is a plot of the true positive rate as a function of the false positive rate, as $T$ vary over all relevant variables.  ROC analysis provides tools to select possibly optimal models and to discard suboptimal ones independently from (and prior to specifying) the cost context or the class distribution. ROC analysis is related in a direct and natural way to cost/benefit analysis of diagnostic decision making.
 
-\todo{Add a ROC plot.}
 
-The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  However, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUROC, is such a number.  
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.70]{fig/ROC}
+\caption{\label{fig:ROC}Receiver operating characteristics curve.  True positive or hit rate is shown as a function of false positive or false alarms rate.  The dashed line shows the ROC curve of the random guess.}
+\end{figure}
+
+
+The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  In particular, it is easy to see which threshold is needed for a certain hit rate or true positive rate.  Moreover, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUROC, is such a number.  
 AUROC is independent of $T$ and also the priors.  It may be difficult to comprehend what AUROC is at this point, but we will return to it afterward.
 
 First, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.  To summarize, $Q_0$ is basically the output value you get when you pick a random sample of class zero. The same thing can be said for $Q_1$.  
