@@ -101,7 +101,7 @@ public class DynamicVariables  implements Iterable<Variable>{
         if (!var.isObservable())
             throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
 
-        if (var.getStateSpaceType()!=StateSpaceType.REAL)
+        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL)
             throw new IllegalArgumentException("An indicator variable should be created from an real variable");
 
         VariableBuilder builder = new VariableBuilder(var.getAttribute());
@@ -163,6 +163,28 @@ public class DynamicVariables  implements Iterable<Variable>{
         return var;
     }
 
+    public Variable addRealDynamicVariable(Variable var){
+        if (!var.isObservable())
+            throw new IllegalArgumentException("A Real variable should be created from an observed variable");
+
+        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL)
+            throw new IllegalArgumentException("An Real variable should be created from a real variable");
+
+        VariableBuilder builder = new VariableBuilder(var.getAttribute());
+        builder.setName(var.getName()+"_Real");
+
+        VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(varNew.getName()))
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        this.mapping.put(varNew.getName(), varNew.getVarID());
+        allVariables.add(varNew);
+
+        VariableImplementation temporalClone = new VariableImplementation(varNew);
+        temporalClones.add(varNew.getVarID(),temporalClone);
+
+        return varNew;
+    }
+
     public List<Variable> getListOfDynamicVariables() {
         return this.allVariables;
     }
@@ -214,11 +236,11 @@ public class DynamicVariables  implements Iterable<Variable>{
         private String name;
         private int varID;
         private boolean observable;
-        private int numberOfStates;
-        private StateSpaceType stateSpaceType;
+        private StateSpace stateSpace;
         private DistType distributionType;
         private Attribute attribute;
         private final boolean isTemporalClone;
+        private int numberOfStates = -1;
 
         /*
          * Constructor for a Variable (not a temporal clone)
@@ -227,11 +249,13 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.name = builder.getName();
             this.varID = varID;
             this.observable = builder.isObservable();
-            this.numberOfStates = builder.getNumberOfStates();
-            this.stateSpaceType = builder.getStateSpaceType();
+            this.stateSpace = builder.getStateSpace();
             this.distributionType = builder.getDistributionType();
             this.attribute = builder.getAttribute();
             this.isTemporalClone = false;
+
+            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET)
+                this.numberOfStates = ((MultinomialStateSpace)this.stateSpace).getNumberOfStates();
         }
 
         /*
@@ -241,11 +265,13 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.name = variable.getName()+"_TClone";
             this.varID = variable.getVarID();
             this.observable = variable.isObservable();
-            this.numberOfStates = variable.getNumberOfStates();
-            this.stateSpaceType = variable.getStateSpaceType();
+            this.stateSpace = variable.getStateSpace();
             this.distributionType = variable.getDistributionType();
             this.attribute = variable.getAttribute();
             this.isTemporalClone = true;
+
+            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET)
+                this.numberOfStates = ((MultinomialStateSpace)this.stateSpace).getNumberOfStates();
         }
 
         public String getName() {
@@ -260,13 +286,14 @@ public class DynamicVariables  implements Iterable<Variable>{
             return observable;
         }
 
-        public int getNumberOfStates() {
-            return numberOfStates;
+        @Override
+        public <E extends StateSpace> E getStateSpace() {
+            return (E)stateSpace;
         }
 
         @Override
-        public StateSpaceType getStateSpaceType() {
-            return stateSpaceType;
+        public int getNumberOfStates() {
+            return this.numberOfStates;
         }
 
         public DistType getDistributionType() {

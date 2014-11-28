@@ -1,10 +1,14 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.huginlink.ConverterToHugin;
+import eu.amidst.core.huginlink.Utils;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
@@ -29,7 +33,7 @@ public class CajaMarModels {
      * We finally compute the log-likelihood of the data according to the created model (i.e. the probabilty distributions
      * are randomly initialized, there is no parametric learning). The data is a single long temporal sequence.
      */
-    public static void CajaMarDefaulterPredictor(){
+    public static void CajaMarDefaulterPredictor() throws ExceptionHugin {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -165,8 +169,23 @@ public class CajaMarModels {
         }
 
         System.out.println(logProb);
+
+
+        /**
+         * 1. The DBN is now converted to Hugin format and stored on a file.
+         *
+         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
+         */
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginCajaMarDefaulterPredictor.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+
+
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExceptionHugin {
         CajaMarModels.CajaMarDefaulterPredictor();
     }
 }
