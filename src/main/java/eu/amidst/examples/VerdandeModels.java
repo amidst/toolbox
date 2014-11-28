@@ -1,19 +1,26 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.huginlink.ConverterToHugin;
+import eu.amidst.core.huginlink.Utils;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * This class contains examples about how we can create Verdande's dynamic models using the AMIDST Toolbox.
  * It show how to create 2T-DBNs over Multinomial, Gassuian and Logistic variables.
+ *
+ * The models here included can be found on Figures 4.28 and 4.29 of Deliverable 2.1.
  *
  * Created by andresmasegosa on 22/11/14.
  */
@@ -23,7 +30,7 @@ public class VerdandeModels {
     /**
      * In this example we show how to create an input-output SKF (as in Figure 4.28 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputSKF(){
+    public static void VerdandeInputOutputSKF() throws ExceptionHugin {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -65,7 +72,8 @@ public class VerdandeModels {
 
 
         /**
-         * 1. We now create the hidden variables. For doing that we make use of the class VariableBuilder. When
+         * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
+         * we use addRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this VariableBuilder to provide this information to
@@ -78,26 +86,21 @@ public class VerdandeModels {
          *
          * 4. Variables RealTRQ and HiddenVar are part of the continuous sub-netwok of figure 4.28 of Deliverable 2.1
          */
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realTRQ"); //This variable is part of the Dynamic subnetwork in Fig. 4.28.
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realTRQ = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
-        variableBuilder = new VariableBuilder();
+        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);
+
+        VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(new RealStateSpace());
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Normal_Abnormal");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.FINITE_SET);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("Normal", "Abnormal")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
-        variableBuilder.setNumberOfStates(2);
         Variable normal_Abnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
 
@@ -136,6 +139,7 @@ public class VerdandeModels {
          * 2. The printed graph is structured in two layers. We first display the graph structure for time 0 (no
          * temporal dependencies) and, the, we time t (with temporal dependencies).
          */
+        System.out.println("Input-output SKF (Figure 4.28 of D2.1)");
         System.out.println(dynamicDAG.toString());
 
         /**
@@ -152,12 +156,25 @@ public class VerdandeModels {
         DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
+
+
+        /**
+         * 1. The DBN is now converted to Hugin format and stored on a file.
+         *
+         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
+         */
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginVerdandeIOSKF.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
     }
 
     /**
      * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputKFwithMG(){
+    public static void VerdandeInputOutputKFwithMG() throws ExceptionHugin {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -199,71 +216,46 @@ public class VerdandeModels {
         Attribute attROP = data.getAttributes().getAttributeByName("ROP");
         Attribute attPRESSURE = data.getAttributes().getAttributeByName("PRESSURE");
 
-        List<Attribute> attributeList = new ArrayList();
-        attributeList.add(attWOB);
-        attributeList.add(attRPM);
-        attributeList.add(attMFI);
-        attributeList.add(attTRQ);
-        attributeList.add(attROP);
-        attributeList.add(attPRESSURE);
-
         DynamicVariables dynamicVariables = new DynamicVariables();
 
         Variable observedWOB = dynamicVariables.addObservedDynamicVariable(attWOB);
         Variable observedRPMB = dynamicVariables.addObservedDynamicVariable(attRPM);
         Variable observedMFI = dynamicVariables.addObservedDynamicVariable(attMFI);
-        Variable observedROP = dynamicVariables.addObservedDynamicVariable(attTRQ);
-        Variable observedTRQ = dynamicVariables.addObservedDynamicVariable(attROP);
+        Variable observedTRQ = dynamicVariables.addObservedDynamicVariable(attTRQ);
+        Variable observedROP = dynamicVariables.addObservedDynamicVariable(attROP);
         Variable observedPRESSURE = dynamicVariables.addObservedDynamicVariable(attPRESSURE);
 
         /**
-         * 1. We now create the hidden variables. For doing that we make use of the class VariableBuilder. When
+         * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
+         * we use addRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this VariableBuilder to provide this information to
          * DynamicVariables object.
          *
-         * 2. Using VariableBuilder, we define the hidden variables and we explicitly indicate if they are Multinomial,
+         * 2. Using VariableBuilder, we define the hidden variables and we explicitly indicate if the are Multinomial,
          * Gaussian or Multinomial_Logistic (i.e. a multinomial variable with continuous parents).
          *
          * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
          */
 
-        /* In Figure 4.29, these 3 variables are part of the subnetwork Continuous */
+        /* In Figure 4.29, these 3 variables are part of the Continuous subnetwork */
+        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);
+        Variable realROP = dynamicVariables.addRealDynamicVariable(observedROP);
+        Variable realPRESSURE = dynamicVariables.addRealDynamicVariable(observedPRESSURE);
+
         VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realWOB");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realTRQ = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
-
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realRPM");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realROP = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
-
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("realMFI");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable realPRESSURE = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
-
-        variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.REAL);
+        variableBuilder.setStateSpace(new RealStateSpace());
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Mixture");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(StateSpaceType.FINITE_SET);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
-        variableBuilder.setNumberOfStates(2);
         Variable mixture = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         /**
@@ -322,10 +314,11 @@ public class VerdandeModels {
         dynamicDAG.getParentSetTimeT(hidden).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(hidden).addParent(observedMFI);
 
-        dynamicDAG.getParentSetTimeT(mixture).addParent(dynamicVariables.getTemporalClone(mixture));
         dynamicDAG.getParentSetTimeT(mixture).addParent(observedWOB);
         dynamicDAG.getParentSetTimeT(mixture).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(mixture).addParent(observedMFI);
+
+
 
 
         /**
@@ -334,6 +327,8 @@ public class VerdandeModels {
          * 2. The printed graph is structured in two layers. We first display the graph structure for time 0 (no
          * temporal dependencies) and, the, we time t (with temporal dependencies).
          */
+        System.out.println("-------------------------------------\n");
+        System.out.println("Input-output KF (Figure 4.29 of D2.1)\n");
         System.out.println(dynamicDAG.toString());
 
         /**
@@ -350,13 +345,83 @@ public class VerdandeModels {
         DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
+        /**
+         * 1. The DBN is now converted to Hugin format and stored on a file.
+         *
+         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
+         */
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginVerdandeIOSKFwithMG.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+
+
+    }
+
+    /**
+     * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
+     */
+    public static void VerdandeInputOutputHMM() throws ExceptionHugin {
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataVerdandeScenario3.arff")));
+
+        Attribute attDepth = data.getAttributes().getAttributeByName("DEPTH");
+        Attribute attGammaDiff = data.getAttributes().getAttributeByName("GAMMADIFF");
+
+        DynamicVariables dynamicVariables = new DynamicVariables();
+
+        Variable observedDepth = dynamicVariables.addObservedDynamicVariable(attDepth);
+        Variable observedGammaDiff = dynamicVariables.addObservedDynamicVariable(attGammaDiff);
+
+        VariableBuilder variableBuilder = new VariableBuilder();
+        variableBuilder.setName("FormationNo");
+        variableBuilder.setObservable(false);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
+        variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
+        Variable formationNo = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+
+        variableBuilder = new VariableBuilder();
+        variableBuilder.setName("Shift");
+        variableBuilder.setObservable(false);
+        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
+        variableBuilder.setDistributionType(DistType.MULTINOMIAL);
+        Variable shift = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+
+
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+
+        dynamicDAG.getParentSetTimeT(formationNo).addParent(observedDepth);
+        dynamicDAG.getParentSetTimeT(formationNo).addParent(dynamicVariables.getTemporalClone(formationNo));
+
+        dynamicDAG.getParentSetTimeT(shift).addParent(formationNo);
+        dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(formationNo));
+        dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(shift));
+
+        dynamicDAG.getParentSetTimeT(observedGammaDiff).addParent(shift);
+
+        System.out.println("-------------------------------------\n");
+        System.out.println("Input-output HMM (Figure 4.31 of D2.1)\n");
+        System.out.println(dynamicDAG.toString());
+
+
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        System.out.println(dynamicBayesianNetwork.toString());
+
+        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+
+        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
+        converterToHugin.convertToHuginBN();
+        String outFile = new String("networks/HuginVerdandeIOHMM.net");
+        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
     }
 
 
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExceptionHugin {
         VerdandeModels.VerdandeInputOutputSKF();
         VerdandeModels.VerdandeInputOutputKFwithMG();
+        VerdandeModels.VerdandeInputOutputHMM();
     }
 }
