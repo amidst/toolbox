@@ -107,11 +107,11 @@ ECM =  c(1|0)p(1|0)p_0  + c(0|1)p(0|1)p_1.
 \end{equation}
 Here, $c(1|0)$ is the cost for misclassifying an item of class zero as class one and $p(1|0)$ is the misclassification probability given class zero.  The quantities $c(0|1)$ and $p(0|1)$ are defined equivalently, while $p_0$ and $p_1$ are the priors.  
 
-In general, the risk $R(h)$ cannot be computed because the distribution $P(x, y)$ is unknown.  However, we can compute an approximation, called empirical risk, by averaging the loss function on the training set $\bu{x} \times \bv{y}$ of size $n$, where each element is $(x_i, y_i)$.  The empirical risk is given by 
+In general, the risk $R(h)$ cannot be computed because the distribution $P(x, y)$ is unknown.  However, we can compute an approximation, called empirical risk, by averaging the loss function on the data set $Z$ of size $n$, where each element is $(x_i, y_i)$.  The empirical risk is given by 
 
 \begin{equation}
 \label{def:empRisk}
-R_{emp}(h, \bu{x} \times \bv{y}) = n^{-1} \sum_{i=1}^n L(x_i, h(x_i), y_i).
+R_{emp}(h, Z) = n^{-1} \sum_{i=1}^n L(x_i, h(x_i), y_i).
 \end{equation}
 Notice that $L$ is an array of $n \times 2\times 2$ elements.  Many supervised learning algorithms are optimized by finding the $h$ in a hypothesis space $\mathcal{H}$ that minimizes the empirical risk.  This paper will not focus on empirical risk minimization, but rather focus on using the empirical risk to compare methods.
 
@@ -140,18 +140,18 @@ It is of interest to evaluate all these classification rules.  The receiver oper
 \end{figure}
 
 
-The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  In particular, it is easy to see which threshold is needed for a certain hit rate or true positive rate.  Moreover, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUROC, is such a number.  
-AUROC is independent of $T$ and also the priors.  It may be difficult to comprehend what AUROC is at this point, but we will return to it afterward.
+The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  In particular, it is easy to see which threshold is needed for a certain hit rate or true positive rate.  Moreover, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUC, is such a number.  
+AUC is independent of $T$ and also the priors.  It may be difficult to comprehend what AUC is at this point, but we will return to it afterward.
 
 First, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.  To summarize, $Q_0$ is basically the output value you get when you pick a random sample of class zero. The same thing can be said for $Q_1$.  
 
 The probability $P(Q_1 > Q_0)$ is of interest, because this says what is the probability that if you take one sample from each of the populations, what is the chance that the output value from sample one is higher than the output value of sample zero.  This question is independent of $T$, meaning that the discussion about priors and costs are not needed. This probability is called the concordance probability.
 
-Without exposing the details, it is possible to show that 
+Without exposing the details, it is possible to show that in the case that the data set is i.i.d.
 
 \begin{equation}
 \label{eq:concurrent}
-\mbox{AUROC} = P(Q_1 > Q_0).
+\mbox{AUC} = P(Q_1 > Q_0).
 \end{equation}
 It is important to note that nothing need to be assumed about the probability distributions of $Q_0$ and $Q_1$.  Furthermore, it is worth noting that the concordance probability is exactly equal the common language effect size of the Mann-Whitney $U$ test.  We have therefore chosen to add a section of the Mann-Whitney $U$ test.
 
@@ -160,7 +160,7 @@ It is important to note that nothing need to be assumed about the probability di
 
 In statistics, the Mann-Whitney $U$ test (also called the Mann-Whitney-Wilcoxon (MWW), Wilcoxon rank-sum test, or Wilcoxon-Mann-Whitney test) is a nonparametric test of the null hypothesis that two populations are the same against an alternative hypothesis, especially that a particular population tends to have larger values than the other.  It has greater efficiency than the $t$-test on non-normal distributions and it is nearly as efficient as the $t$-test on normal distributions.
 
-We define a training set $\bu{x} \times \bv{y}$ with $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$.  From the training set we have two populations $\bv{q_0} = \{q(x_i) , | \, y_i = 0 \}$ and $\bv{q_1} = \{q(x_i) , | \, y_i = 1 \}$.  Their sizes are $n_0$ and $n_1$ so that $n_0 + n_1 = n$.  Calculating the $U$ statistics is straightforward, where these two values are obtained 
+We define a data set $Z$ with $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$.  From the data set we have two populations $\bv{q_0} = \{q(x_i) , | \, y_i = 0 \}$ and $\bv{q_1} = \{q(x_i) , | \, y_i = 1 \}$.  Their sizes are $n_0$ and $n_1$ so that $n_0 + n_1 = n$.  Calculating the $U$ statistics is straightforward, where these two values are obtained 
 
 \begin{equation}
 \label{eq:U}
@@ -188,17 +188,35 @@ Significance of test can be checked in tables of the normal distribution.  Altho
 P(Q_1 > Q_0) = \frac{U_1}{n_0n_1}.
 \end{equation}
 
-It is important to note that even though the Mann-Whitney $U$ test is dependent on wether the shapes of the probability distributions of $Q_0$ and $Q_1$ are similar, this requirement is not necessary for the concordance probability.  Also. equation \eqref{eq:concordance} shows a simple way of calculating $P(Q_1 > Q_0)$ and AUROC.
+It is important to note that even though the Mann-Whitney $U$ test is dependent on wether the shapes of the probability distributions of $Q_0$ and $Q_1$ are similar, this requirement is not necessary for the concordance probability.  Also. equation \eqref{eq:concordance} shows a simple way of calculating $P(Q_1 > Q_0)$ and AUC.
 
 \subsection{Performance measures for classification on streaming data}
 \label{sec:stream}
 
-In the use case scenarios in the Amidst software, all problems are binary classifiers, which involve dividing the streams into sub streams that are labeled as either positives or negatives.  There are two important approaches here.
+This section includes various evaluation methods for classification on data streams.  Central to choices of evaluation methods are stationarity versus consept-drift, class imbalance, wether a scoring function exist, computational constraints and also the importance of earliness of warnings.
 
-The first approach deals with multiple streams and the global time dependence is removed by sampling all these streams into multiple sub streams, which are starting and ending at the same time steps.  Each sub stream is labeled as either a positive or negative based on the data at the end time.  An evaluation time step that is a fixed between the start and the end is also defined.  The explanatory variables are derived from the data between the start and the evaluation time step.  In this sense, the data is basically i.i.d.
+\subsubsection{Stationary data streams}
+Definition of stationarity.
+Prequential loss function
+Prequential AUC
+Computational constraints
+\subsubsection{Data streams that involve concept-drift}
+More details on concept-drift
+Prequential loss function with forgetting mechanism
+Prequential AUC with forgetting mechanism
+\subsubsection{Division into i.i.d. substreams} 
+Statistical interpretability (The concordance probability)
+\subsubsection{Early and late warnings}
+Methods or reflections on how to incorporate
+The substream method
 
-The second approach is when there is basically one stream where one can assume stationarity on a global scale.  Sub streams with large enough distance to other sub streams are taken out of the stream.  These sub streams are labeled as either a positive or a negative.  For instance, a positive is when something is happening towards the end of the sub stream, while a negative is a sub stream where nothing happens.  When the AMIDST software run, the output function is evaluated at each time step.  Depending of the problem, a heuristic algorithm is chosen to output a single number for each sub stream based on the output values.  This can for instance be the maximum value of the output function on an interval that is prior to an event.  
-
+%
+%In the use case scenarios in the Amidst software, all problems are binary classifiers, which involve dividing the streams into sub streams that are labeled as either positives or negatives.  There are two important approaches here.
+%
+%The first approach deals with multiple streams and the global time dependence is removed by sampling all these streams into multiple sub streams, which are starting and ending at the same time steps.  Each sub stream is labeled as either a positive or negative based on the data at the end time.  An evaluation time step that is a fixed between the start and the end is also defined.  The explanatory variables are derived from the data between the start and the evaluation time step.  In this sense, the data is basically i.i.d.
+%
+%The second approach is when there is basically one stream where one can assume stationarity on a global scale.  Sub streams with large enough distance to other sub streams are taken out of the stream.  These sub streams are labeled as either a positive or a negative.  For instance, a positive is when something is happening towards the end of the sub stream, while a negative is a sub stream where nothing happens.  When the AMIDST software run, the output function is evaluated at each time step.  Depending of the problem, a heuristic algorithm is chosen to output a single number for each sub stream based on the output values.  This can for instance be the maximum value of the output function on an interval that is prior to an event.  
+%
 
 
 
