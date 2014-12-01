@@ -9,8 +9,11 @@ import java.util.List;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class DistributionBuilder {
+public final class DistributionBuilder {
 
+    private DistributionBuilder(){
+        //Not called
+    }
     public static ConditionalDistribution newDistribution(Variable mainVar, List<Variable> conditioningVars){
 
         if (mainVar.getDistributionType().compareTo(DistType.MULTINOMIAL)==0){
