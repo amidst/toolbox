@@ -6,7 +6,11 @@ import eu.amidst.core.variables.Variable;
 /**
  * Created by andresmasegosa on 28/08/14.
  */
-public class Utils {
+public final class Utils {
+
+    private Utils(){
+        //Not called
+    }
 
     public static double missingValue(){
         return Double.NaN;
