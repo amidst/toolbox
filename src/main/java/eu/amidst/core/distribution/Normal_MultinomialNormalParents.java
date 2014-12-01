@@ -125,6 +125,15 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     }
 
 
+    @Override
+    public int getNumberOfFreeParameters() {
+        int n=0;
+        for(Normal_NormalParents dist:this.getDistribution()){
+            n+= dist.getNumberOfFreeParameters();
+        }
+        return n;
+    }
+
     /**
      * Computes the logarithm of the evaluated density function in a point after restricting the distribution to a
      * given parent <code>Assignment</code>.
