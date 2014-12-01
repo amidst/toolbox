@@ -132,7 +132,6 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
      * @return A <code>double</code> with the logarithm of the corresponding density value.
      */
     public double getLogConditionalProbability(Assignment assignment) {
-        double value = assignment.getValue(this.getVariable());
         return getNormal_NormalParentsDistribution(assignment).getLogConditionalProbability(assignment);
     }
 
