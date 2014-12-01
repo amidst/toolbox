@@ -116,7 +116,7 @@ CAJ.U6.O3&	Testing	&Expected benefits of a marketing campaign using obtained pro
 
 \subsubsection{The data generation process}
 
-Both application scenarios use the same dataset, showing the defaulting behaviour of the Cajamar clients. We now briefly describe the data generation process (the description is adapted from D2.1, where a more comprehensive description can be found). Please refer to \figref{CajaMarTimeLineReduced} for the timeline. 
+Both application scenarios use the same dataset, showing the defaulting behaviour of the Cajamar clients\footnote{The second application scenario will use only a subset of the total number of features.}. We now briefly describe the data generation process (the description is adapted from D2.1, where a more comprehensive description can be found). Please refer to \figref{CajaMarTimeLineReduced} for the timeline. 
 
 
 \begin{figure}[ht!]
@@ -160,7 +160,12 @@ The data set was generated at $t$ equal to December 31$^\text{st}$ 2013, thus si
 The dataset includes all customers who have been a client of Cajamar in the period  $k$ and up to day $t$, corresponding to $n=4.5\text{M}$ customers. 
 
 Every member of the dataset has been classified as either non defaulter or defaulter (no missing entries). 
-Customers can have missing attribute values in their description. In particular, some of the clients where not clients in the whole three year period before day $k$. If a customer was not associated to Cajamar at time $k - 6 \mbox{ semesters}$ e will not have direct access to the variables $\Y^{(k-6)}$. However, Cajamar will manually fill in all relevant missing values using other data sources.  Formally, every member $i$ of the dataset therefore has a vector of explanatory variables denoted by $\W_i=\{ \X_i^{(k-180)}, \ldots, \X_i^{(k-1)}, \Y_i^{(k-6)},\ldots, \Y_i^{(k-1)},\Z_i\}$ without missing values. In total, each customer is described using $7036$ variables.
+Customers can have missing attribute values in their description. In particular, some of the clients where not clients in the whole three year period before day $k$. If a customer was not associated to Cajamar at time $k - 6 \mbox{ semesters}$ e will not have direct access to the variables $\Y^{(k-6)}$. 
+ %RAMON: This is not true. I therefore deleted the statement. NB! Inconsistency with D2.1, where we say it is so.
+ % However, Cajamar will manually fill in all relevant missing values using other data sources. 
+%Formally, every member $i$ of the dataset therefore has a vector of explanatory variables denoted by $\W_i=\{ \X_i^{(k-180)}, \ldots, \X_i^{(k-1)}, \Y_i^{(k-6)},\ldots, \Y_i^{(k-1)},\Z_i\}$ without missing values. In total, each customer is described using $7036$ variables.
+Formally, every member $i$ of the dataset  has a vector of explanatory variables denoted by $\W_i=\{ \X_i^{(k-180)}, \ldots, \X_i^{(k-1)}, \Y_i^{(k-6)},\ldots, \Y_i^{(k-1)},\Z_i\}$, potentially with some missing values. 
+In total, each customer can be described using $7036$ variables; missing values are encoded using a special code.
 
 Of all the customers in the dataset, $76\%$ are considered to be of no risk because they do not have a loan in the bank, approximately $20\%$ of the customers wee exposed but did not default, and $3.79\%$ of the customers  defaulted in the two-year period of interest. 
 
@@ -201,9 +206,10 @@ Client$_n$  &   $r_n$  \\
 According to requirement CAJ.U3.D3, the risk prediction quality should be assessed using the area under the receiver operating characteristic (ROC) curve. 
 The classification rule is that a customer $i$ is classified as a defaulter if $r_i \geq C$ for some constant $C$, and the ROC curve is computed by  plotting the rate of true positives against the rate of true negatives for various choices of $C$.  The requested area can then be found directly, and is according to the requirement to be larger than $0.90$. 
 
-There are three main issues with the outlined approach:
+There are two main issues with the outlined approach:
 \bde
-\item[Relevance of the data:]  All the customers' data made available to the project for training and testing belong to people already associated with Cajamar, and their economic status (e.g., regarding whether or not they have obtained a loan) is a consequence of Cajamar's current system being employed to remove the customers not deemed appropriate. The dataset we have access to may therefore not reflect the distribution of customers that approach Cajamar in the first place (and which AMIDST will be exposed to if employed in production).
+% RAMON: this is not a problem. The AMIDST system will only be used for monitoring customers who have already been granted a loan, not for the grant-decision in itself
+%\item[Relevance of the data:]  All the customers' data made available to the project for training and testing belong to people already associated with Cajamar, and their economic status (e.g., regarding whether or not they have obtained a loan) is a consequence of Cajamar's current system being employed to remove the customers not deemed appropriate. The dataset we have access to may therefore not reflect the distribution of customers that approach Cajamar in the first place (and which AMIDST will be exposed to if employed in production).
 
 \item[Changes in the economic climate:]  A Cajamar customer's chance of defaulting is to some  extent determined by external factors, like the economic climate in Spain. During the economic crises the rate of defaulters was significantly higher than what was observed prior to the onset of the crisis. The data set we work with is from the period of the crisis, and it is natural to expect that the relationships found by the model are optimized for that economic climate. The AUC criteria is chosen to remedy global effects that affect all customers in a similar way, but we can still not guarantee that the model will perform at a similar level for fundamentally different economic climate.
 
@@ -211,10 +217,9 @@ There are three main issues with the outlined approach:
 
 \ede
 
-To partly account for these shortcomings of the test procedure we have collected another dataset with $k$ equal to December 31st 2013, and where the correct class labels will be discovered two years later (December 31st 2015). 
+To partly account for these shortcomings of the test procedure we have collected another dataset with $k$ equal to December 31st 2013, and where the correct class labels will be discovered two years later (December 31st 2015).
+As of today, the class labels for this dataset are unknown, but will be supplied at the end of 2015, and is therefore available for the formal testing in Task 8.3. 
 An AUC of more than $90\%$ when using this new dataset for testing (and the original dataset for training) would be seen as a strong indication of the applicability of AMIDST in production.
-
-\comment{Remove this part, or will we have the extra data? I am writing that the data has already been generated just to comply with the ``Data available from Day 1''-requirement from our friends in EU.}
 
 
 
@@ -228,35 +233,37 @@ An AUC of more than $90\%$ when using this new dataset for testing (and the orig
 
 A marketing campaign in Cajamar involves two steps.  The first step is conducted by the marketing department, and results in a list of candidate customers. 
 The list contains clients that have a high probability of signing what is offered (for instance a credit card).  The second step, conducted by the risk modellers, is to filter out clients that are risky in terms of defaulting.
-The task described in Use case 4 is to find relevant users profiles to conduct marketing campaigns. The profiles should contain customers that are like to be non-defaulters, and cover only attributes that are found to be relevant by the domain experts. It is required (CA.U6.O3) that the expected benefits of a marketing campaign using obtained profiles should be $5\%$ higher than with current methods. 
+The task described in Use case 4 is to find relevant users profiles. The profiles can, for instance, be used to conduct marketing campaigns. The profiles should contain customers that are like to be non-defaulters, and cover only attributes that are found to be relevant by the domain experts. It is required (CA.U6.O3) that the expected benefits of a marketing campaign using obtained profiles should be $5\%$ higher than with current methods. 
 
 Direct quantitative evaluation of the AMIDST-generated profiles is difficult to perform in a formal way. The first issue is that the application scenarios generates \textit{user profiles} and not \textit{set of user}. 
-We cannot value a profile in itself; it is the application of the profile to generate user sets that potentially can be monetized. The second problem is that the AMIDST profile defines users that are not likely to default, not users that are likely to contract (and therefore not necessarily users who are valuable as marketing objects). For instance, it seems natural to expect the AMIDST profile to prefer solvent customers living in their own homes without any mortgage and with a sizable cash-account. On the other hand, a customer like that may not be relevant to target for a campaign selling small-sized cash-loans without security requirements. We therefore propose that the project extraction is evaluated qualitatively as follows:
+We cannot value a profile in itself; it is the application of the profile to generate user sets that potentially can be monetized. The second problem is that the AMIDST profile defines users that are not likely to default, not users that are likely to contract (and therefore not necessarily users who are valuable as marketing objects). For instance, it seems natural to expect the AMIDST profile to prefer solvent customers living in their own homes without any mortgage and with a sizable cash-account. On the other hand, a customer like that may not be relevant to target for a campaign selling small-sized cash-loans without security requirements. 
 
-\bit
+Cajamar uses theoretical measurement for evaluating marketing campaigns. Let $s_i=P(\mbox{Signs}_i \,|\, \w_i)$ be the probability that the same customer signs on an offer presented to him (calculated by an existing system used by Cajamar) and, as before, let $r_i=P(\mbox{Default}_i^k \,|\, \w_i)$ be the probability that customer $i$ defaults on a loan within the next two years (given that the offer is accepted). Furthermore, let $\gamma_i$ be the net present value for the bank of that offer given that the customer does not default, and  $\Gamma_i$ the cost of the offer if customer defaulting. Then, the loss of a customer would be
+\begin{equation}
+ L(\w_i,s_i,r_i) = \left\{\begin{array}{ll}
+ s_i r_i\Gamma_i +   (1-s_i) (1-r_i)\gamma_i & \text{ if a loan is offered;} \\
+s_i (1-r_i)\gamma_i & \text{ otherwise.} \\ \end{array}\right.   \label{equ:cajamarTheoretical}
+ \end{equation}
+
+We therefore propose that the profile extraction is evaluated as follows:
+
+\ben
 \item A historical marketing campaign is selected, and the set of customers contacted are listed. The set of customers is called $\calC$.
 \item The AMIDST system is used to generate a profile for non-defaulting customers, and a fixed number of  customers fitting the profile (comparable to the number of elements in $\calC$) are selected.
 \item The marketing department selects a subset of the customers in this set based on their probability to contract. Call this reduced set of customers $\calA$.
 \item The two sets $\calC$ and $\calA$ are compared qualitatively.
-\eit
+\item The two sets $\calC$ and $\calA$ are compared quantitatively, using a theoretical measure of \equref{cajamarTheoretical}.
+\een
 
-To target the quantitative requirement, we also propose to utilize the AMIDST risk prediction capability from application scenario 1 in the marketing setting, where the following procedure will be performed:
+To target the quantitative requirement without using the theoretical probabilities $P(\mbox{Default}_i^k \,|\, \w_i)$ and $P(\mbox{Signs}_i \,|\, \w_i)$ we also propose to utilize the AMIDST risk prediction capability from application scenario 1 in the marketing setting, where the following procedure will be performed:
 \bit
-\item Select a historical marketing campaign that is at least two years old. The set of customers is called $\calC$.
-\item Obtain the empirical risk of the campaign during the two year period (see Section XX). \comment{Sigve will write about empirical loss etc in another part of the overall document.} 
-\item  Filter clients that the AMIDST system deems too risky. The set of customers is called $\calA$. Note that $\calA\subseteq\calC$.
-\item Calculate the empirical risk of the set $\calA$. The risk of $\calA$ should be at least $5\%$ lower than the risk of the set $\calC$.
+\item Select a historical marketing campaign that is at least two years old, and remove all customers that did not sign. The remaining set of customers is called $\calC$.
+\item  Filter clients that the AMIDST system deem too risky. The set of customers is called $\calA$. Note that $\calA\subseteq\calC$.
+\item Calculate the empirical loss of the set $\calA$ compared to that of $\calC$. The requirement that the loss of $\calA$ should be at least $5\%$ lower than the loss of the set $\calC$. Note that for a direct comparison, only the difference in the two sets,  $\calC\setminus\calA$, will contribute, and the costs of applying the AMIDST solution will be $\gamma_i$ for the customers that do not default and $-\Gamma_i$ for those that do. 
 \eit
-It should be noted that this procedure only evaluates the AMIDST system's ability to remove poor customers from the list of customers that were included in the campaign, and we are not able to determine the effect of AMIDST potentially wanting to send marketing material to customers that were not selected for the historical campaign. 
+It should be noted that this procedure only evaluates the AMIDST system's ability to remove poor customers from the list of customers that were included in the original campaign, as we are unable to quantify the effect of AMIDST potentially wanting to send marketing material to customers that were not selected for the historical campaign without using the theoretical construct of \equref{cajamarTheoretical}.  The two approaches must be seen in combination to give the full picture of the system's ability.
 
-
-\comment{From Ramon:
-
-\bit
-\item Another thing that can be done is to estimate the benefit of clients that AMIDST would have included (using expected income and expected loss) and add it to the benefit of the virtual AMIDST campaign.
-\eit
-
-Should we add that?}
+\vekk{
 
 
 
@@ -364,17 +371,29 @@ The benefit of using the Amidst model as additional filter can therefore be quan
 \end{enumerate}
 
 
-
+}
 
 \subsection{Run-time performance: test and evaluation}
 \subsubsection{Application scenario 1}
 
 According to the requirement procedure, the full process starting with SQL statements and ending with validation of the new risks should be complicated in no more than three hours (CAJ.U1.O1, CAJ.U2.O1, CAJ.U4.D1, CAJ.U5.O1).
 
+The AMIDST solution will be installed in a server (IBM System x3690 X5) with the following characteristics:\bit
+\item 2 Intel Xeon 10C Processors (Model E7-2870 130w 2.40GHz/30MB)\item 256GBRAM,16x16GB(1x16GB,4Rx4,1.35V)PC3L-8500CL7ECCDDR31066MHz LP RDIMM\item 2 internal disks SAS “IBM 146 GB 2.5in SFF Slim-HS 15K 6Gbps SAS HDD” RAID, one of them “hot swap”. 10 Disks IBM 600GB 2.5in SFF 10K 6Gbps HS SAS HDD.
+\eitThis server is mainly used by credit risk models and marketing models departments. Data will be obtained via SQL queries. The current Information Center database management system is Oracle, but is being changed to a Teradata solution.
 
-\comment{Testing procedure/how strictly we will look at this must be evaluated.}
 
-\comment{Mention the hardware specified in R1.2, p. 9?}
+
+\comment{Testing procedure/how strictly we will look at this must be evaluated.
+\bit 
+\item What happens if we finish only 95\% of the customers? RAMON: We need 100\%. \item Will there be variations in the run-time e,g, do to other users of the system? RAMON: Yes!. However, cannot state how much load the server will have. Solution?
+\item Is the *max* time required to be less than 3hrs, median, \ldots RAMON: Max\item Scalability through more hardware if we fail to meet the three hrs demand? RAMON: This is an option, but not for the short time-span
+\eit
+
+To me, this seems under-specified. If the system is using 99\%\ of the resources elsewhere we cannot get all the customers done in 3 hrs., but this is what he wants?
+
+}
+
 
 
 \subsubsection{Application scenario 2}
