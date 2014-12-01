@@ -12,6 +12,9 @@ public abstract class Distribution {
      */
     protected Variable var;
 
+
+    public abstract int getNumberOfFreeParameters();
+
     /**
      * Gets the variable of the distribution
      *

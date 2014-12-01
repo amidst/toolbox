@@ -40,7 +40,16 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
     }
+    //TODO: I'm not sure about the free parameters in this distribution.
+    @Override
+    public int getNumberOfFreeParameters() {
 
+        int n=0;
+        for(int i=0;i<this.coeffParents.length;i++){
+            n+=this.getCoeffParents(i).length;
+        }
+        return n;
+    }
 
     public double getIntercept(int state) {
         return intercept[state];
