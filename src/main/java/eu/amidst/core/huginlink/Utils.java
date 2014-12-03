@@ -14,7 +14,11 @@ import java.util.List;
 /**
  * Created by afa on 18/11/14.
  */
-public class Utils {
+public final class Utils {
+
+    private Utils(){
+        //Not called
+    }
 
     public static int getConditionalDistributionType(Variable amidstVar, BayesianNetwork amidstBN) {
 
