@@ -161,7 +161,7 @@ public class DynamicDAG {
         public String toString() {
 
             int numParents = getNumberOfParents();
-            String str = new String("{ ");
+            String str = "{ ";
 
 
             for(int i=0;i<numParents;i++){

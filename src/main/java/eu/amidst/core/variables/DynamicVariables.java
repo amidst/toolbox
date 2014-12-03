@@ -232,7 +232,7 @@ public class DynamicVariables  implements Iterable<Variable>{
         return this.allVariables.iterator();
     }
 
-    private class VariableImplementation implements Variable {
+    private static class VariableImplementation implements Variable {
         private String name;
         private int varID;
         private boolean observable;
