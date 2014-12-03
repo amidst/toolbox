@@ -5,7 +5,11 @@ import eu.amidst.core.distribution.*;
 /**
  * Created by andresmasegosa on 12/11/14.
  */
-public class EF_DistributionBuilder {
+public final class EF_DistributionBuilder {
+
+    private EF_DistributionBuilder(){
+        //Not called
+    }
 
     public static EF_BaseDistribution_MultinomialParents newEFFromConditionalDistribution(Multinomial_MultinomialParents dist){
 
