@@ -1,3 +1,4 @@
+% !TEX TS-program = pdflatex
 \documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
 \usepackage{hl_short}
 \usepackage{geometry}                		% See geom\dagetry.pdf to learn the layout options. There are lots.
@@ -60,6 +61,10 @@
 \newcommand{\drop}[1]{}
 
 
+\usepackage{tikz}
+\usetikzlibrary{bayesnet}
+
+
 \begin{document}
 
 
@@ -99,13 +104,15 @@ The aim of this document is to describe the progress of the software development
 % 1. Welcome. This is a BN, and we want to learn it.
 \input{intro}
 
-% 2. How the design of the toolbox (open-source system) is made to enable (simplify) the later implementation of learning.
-%This is just the parts of the document on requirements analysis related to learning.
-\input{design}
 
-% 3. The idea of using a Bayesian approach, where the parameters we will learn are explicitly represented and inference
+% 2. The idea of using a Bayesian approach, where the parameters we will learn are explicitly represented and inference
 %  (VB etc) in fact superimposes parameter-learning.
 \input{inference}
+
+
+% 3. How the design of the toolbox (open-source system) is made to enable (simplify) the later implementation of learning.
+%This is just the parts of the document on requirements analysis related to learning.
+\input{design}
 
 % 4. Updates from Task 4.1, with focus on the actual tool-box implementation of parallel PC. We have two sources of information/ideas how to proceed: 
 % a) The slideset/poster we discussed some time ago.
@@ -123,7 +130,10 @@ The aim of this document is to describe the progress of the software development
  
 \input{otherTasks}
 
+\section{Conclusion}
 
+This document summarizes the progress of the software development related to learning functionality in the AMIDST toolbox. Parameter learning functionality rests heavily upon efficient design and implementation of core components and inference engines, and these parts were therefore discussed in some detail. Structural learning is ongoing (in Task 4.1) and will be finalized in Month 15. A preliminary discussion of the results was given.
+Implementation of dedicated functionality for parameter learning (Em algorithm and similar) has not yet started, and is not discussed.
 
 \addcontentsline{toc}{section}{\numberline{}\textbf{References}}
 
