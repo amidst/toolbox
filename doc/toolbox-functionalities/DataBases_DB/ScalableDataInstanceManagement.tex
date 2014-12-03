@@ -1,17 +1,22 @@
-\subsection{Scalable DataInstance management}
+\newpage
+\subsection{Scalable data base management}
 \label{ScalableDataInstanceManagement:ID}
 
 \begin{description}
 \item[Deadline:] M12
 \item[Responsible:] Sigve
-\item[Code-Package:] \texttt{core.database}
+\item[Package:] \texttt{eu.amidst.core.database}
 \end{description}
 
+%--------------------------------------------------------------------------------------------
 \subsubsection*{Description}
+%--------------------------------------------------------------------------------------------
 
-It is used to manage the output of the reader (DataRows) and convert them into DataInstances. We need to distinguish between static and dynamic and whether the data can be load into memory or read from disk.
+This functionality basically define how to manage the output of the data file reader (i.e., the DataRows) and convert them into DataInstances. It is crucial to distinguish here between whether we are dealing with the static or dynamic case, as well as whether the data could be loaded into memory, read from disk, or processed as a stream.
 
+%--------------------------------------------------------------------------------------------
 \subsubsection*{Detailed functionality}
+%--------------------------------------------------------------------------------------------
 
 \begin{itemize}
 \item Static:
@@ -19,12 +24,19 @@ It is used to manage the output of the reader (DataRows) and convert them into D
 \begin{itemize}
 \item Data on memory
 \item Data on disk
-\item Data on stream.
+\item Data on stream
 \end{itemize}
+
 \item Dynamic:
+
 \begin{itemize}
 \item Data on memory
 \item Data on disk
-\item Data on stream.
+\item Data on stream
 \end{itemize}
+
 \end{itemize}
+
+%--------------------------------------------------------------------------------------------
+\subsubsection*{Code example}
+%--------------------------------------------------------------------------------------------
