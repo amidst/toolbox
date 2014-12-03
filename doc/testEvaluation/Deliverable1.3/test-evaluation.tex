@@ -196,6 +196,36 @@ It is important to note that even though the Mann-Whitney $U$ test is dependent 
 This section includes various evaluation methods for classification on data streams.  Central to choices of evaluation methods are stationarity versus concept-drift, class imbalance, wether a scoring function exist, computational constraints and also the importance of earliness of warnings.
 
 \subsubsection{Stationary data streams}
+
+Let $\{X_{t}\}$ be a stochastic process, where $F_X(\bm{x_{t_1 + \tau}},...,\bm{x_{t_k + \tau}} )$ is the cumulative distribution function of the joint distribution at $t_1 + \tau,...,t_k + \tau$.  Then $\{X_t\}$ is a stationary process, or a stationary stream, if, for all $k$, for all $\tau$ and for all $t_1 + \tau,...,t_k + \tau$, 
+
+\begin{equation}
+\label{eq:stationarity}
+F_X(\bm{x_{t_1 + \tau}},...,\bm{x_{t_k + \tau}} ) = F_X(\bm{x_{t_1}},...,\bm{x_{t_k}} ),
+\end{equation}
+where the $\bm{x_t}$s are vectors of fixed size.  Clearly, $F_X(\cdot)$ is not a function of time.  
+
+In stationary streams, the mean and the variance, if they exist, do not vary.  The covariance structures to neighboring instances are also preserved.  To summarize, stationary streams are more general than i.i.d. streams, where the covariance to all other instances are zero.  
+
+In \cite{Gam13}, the prequential empirical risk is defined as 
+
+\begin{equation}
+\label{eq:prequentialRisk}
+R_{emp}(h, \{X_{t_k}\}) = k^{-1} \sum_{i=1}^k L(\bm{x_{t_i}} , h(\bm{x_{t_i}} ), y_{t_i}),
+\end{equation}
+where $y_{t_i}$ is the class label at time $t_i$ and $n$ is the number of samples up to $t_k$.  In the original paper, the notation is different and the measure is called the prequental error  Adaptations are made to comply with notation and definitions in section \ref{sec:static}.  Notice, that the loss function in the prequential empirical risk, is generalized compared to \cite{Gam13}, to also include dependency of $\bm{x_{t_i}}$, which may in fact be just $t_i$.  This generalization means that it is possible to model evolving loss as well.
+
+In the case when the classification is based on a scoring function, which is common for Bayesian networks, then
+the prequential AUC at time step $t_k$ can be calculated by
+\begin{equation}
+\label{eq:prequentialAUC}
+\mbox{AUC}_{t_k}= \frac{U_{1,k}}{n_{0,k}n_{1,k}},
+\end{equation}
+where $n_{0,k}$ and $n_{1,k}$ are the number of negatives and positives up to $t_k$.  To be precise, $n_{0,k} + n_{1,k} = k$.  The quantity $U_{1,k}$ is calculated by the second $U$-statistic as of equation \eqref{eq:U} (using $n_{0,k}$ and $n_{1,k}$).
+
+
+
+
 Definition of stationarity.
 Prequential loss function
 Prequential AUC
