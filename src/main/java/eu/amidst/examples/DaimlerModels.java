@@ -24,7 +24,12 @@ import java.util.List;
  *
  * Created by ana@cs.aau.dk on 25/11/14.
  */
-public class DaimlerModels {
+public final class DaimlerModels {
+
+    private DaimlerModels(){
+        //Not called
+    }
+
     /**
      * In this example we show how to create an OOBN fragment for the LE hypothesis with a hidden node for acceleration
      * (as in Figure 4.14 of D2.1).
@@ -35,7 +40,7 @@ public class DaimlerModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataDaimler.arff")));
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataDaimler.arff"));
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -174,8 +179,7 @@ public class DaimlerModels {
 
         ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
         converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginDaimlerLEAcceleration.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginDaimlerLEAcceleration.net");
 
 
     }

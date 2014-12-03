@@ -24,8 +24,11 @@ import java.util.List;
  *
  * Created by andresmasegosa on 22/11/14.
  */
-public class VerdandeModels {
+public final class VerdandeModels {
 
+    private VerdandeModels(){
+        //Not called
+    }
 
     /**
      * In this example we show how to create an input-output SKF (as in Figure 4.28 of Deliverable 2.1).
@@ -37,7 +40,7 @@ public class VerdandeModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataVerdandeScenario1.arff")));
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataVerdandeScenario1.arff"));
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -181,7 +184,7 @@ public class VerdandeModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataVerdandeScenario2.arff")));
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataVerdandeScenario2.arff"));
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -364,7 +367,7 @@ public class VerdandeModels {
      * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
     public static void VerdandeInputOutputHMM() throws ExceptionHugin {
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataVerdandeScenario3.arff")));
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataVerdandeScenario3.arff"));
 
         Attribute attDepth = data.getAttributes().getAttributeByName("DEPTH");
         Attribute attGammaDiff = data.getAttributes().getAttributeByName("GAMMADIFF");
