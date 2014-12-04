@@ -145,10 +145,9 @@ AUC is independent of $T$ and also the priors.  It may be difficult to comprehen
 
 First, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.  To summarize, $Q_0$ is basically the output value you get when you pick a random sample of class zero. The same thing can be said for $Q_1$.  
 
-The probability $P(Q_1 > Q_0)$ is of interest, because this says what is the probability that if you take one sample from each of the populations, what is the chance that the output value from sample one is higher than the output value of sample zero.  This question is independent of $T$, meaning that the discussion about priors and costs are not needed. This probability is called the concordance probability.
+The probability $P(Q_1 > Q_0)$ is of interest, because this says what is the probability that if you take one sample by random from each of the populations, what is the chance that the output value from sample one is higher than the output value of sample zero.  This question is independent of $T$, meaning that the discussion about priors and costs are not needed. This probability is called the concordance probability.
 
-Without exposing the details, it is possible to show that in the case that the data set is i.i.d.
-
+Without exposing the details, it is possible to show that
 \begin{equation}
 \label{eq:concurrent}
 \mbox{AUC} = P(Q_1 > Q_0).
@@ -164,8 +163,8 @@ We define a data set $Z$ with $n$ input-output pairs $(x_i, y_i)$, independently
 
 \begin{equation}
 \label{eq:U}
-U_0 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H(\,q_j - q_i    \,) \quad \mbox{and} \quad 
-U_1 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H( \,q_i - q_j    \,).
+U_0 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H(\,q_{1,j} - q_{0,i}    \,) \quad \mbox{and} \quad 
+U_1 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H( \,q_{0,i} - q_{1,j}    \,).
 \end{equation}
 Here, $H(\cdot)$ is the heaviside step function and notice that $U_0 + U_1 = n_0n_1$.  For large samples, each U is approximately normally distributed. In that case, the standardized value
 
@@ -215,27 +214,62 @@ R_{emp}(h, \{X_{t_k}\}) = k^{-1} \sum_{i=1}^k L(\bm{x_{t_i}} , h(\bm{x_{t_i}} ),
 \end{equation}
 where $y_{t_i}$ is the class label at time $t_i$ and $n$ is the number of samples up to $t_k$.  In the original paper, the notation is different and the measure is called the prequental error  Adaptations are made to comply with notation and definitions in section \ref{sec:static}.  Notice, that the loss function in the prequential empirical risk, is generalized compared to \cite{Gam13}, to also include dependency of $\bm{x_{t_i}}$, which may in fact be just $t_i$.  This generalization means that it is possible to model evolving loss as well.
 
-In the case when the classification is based on a scoring function, which is common for Bayesian networks, then
-the prequential AUC at time step $t_k$ can be calculated by
+\todo{Include a discussion of statistical interpretation of loss functions on stationary data.  Dependence between timesteps is essential. Is this a problem? What opportunities do we have with evolving loss? Maybe nothing, but worth reflecting on.}
+
+In the case when the classification is based on a scoring function, which is common for Bayesian networks, then the prequential AUC at time step $t_k$ can be calculated by
 \begin{equation}
 \label{eq:prequentialAUC}
 \mbox{AUC}_{t_k}= \frac{U_{1,k}}{n_{0,k}n_{1,k}},
 \end{equation}
 where $n_{0,k}$ and $n_{1,k}$ are the number of negatives and positives up to $t_k$.  To be precise, $n_{0,k} + n_{1,k} = k$.  The quantity $U_{1,k}$ is calculated by the second $U$-statistic as of equation \eqref{eq:U} (using $n_{0,k}$ and $n_{1,k}$).
 
+On a data stream there is an opportunity of calculating AUC recursively with the following algorithm.
 
+\begin{equation}
+\label{eq:prequentialAUC2}
+U_{1,k}= 
+\begin{cases}
+U_{1,k-1} + \sum_{j=1}^{n_{1,k}} H( \,q_{0,n_{0,k}} - q_{1,j}    \,)
+ \quad &\mbox{for} \quad y_{t_k} = 0\\
+U_{1,k-1} + \sum_{i=1}^{n_{0,k}} H( \,q_{0,i} - q_{1,n_{1,k}}    \,)
+\quad &\mbox{for} \quad y_{t_k} = 1.\\
+\end{cases}
+\end{equation}
+Clearly AUC claculation is $O(k)$, which might be a problem for very long streams.  
 
+It is worth noting a few points about the statistical interpretability of AUC on stationary streams.  Unless the stream is also i.i.d. the $q_{0,i}$s and the $q_{1,i}$s are generally dependent on neighboring points.  This fact is however not contradicting the fact that AUC is equal to the concordance probability $ P(Q_1 > Q_0)$.  This is because the definitions of $Q_0$ and $Q_1$ are $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$ and 
+that $X_0$ and $X_1$ are random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$.  In practice, samples of $Q_0$ and $Q_1$ can be though of as picking samples from $\bv{q_0}$ and $\bv{q_1}$, respectively.
 
-Definition of stationarity.
-Prequential loss function
-Prequential AUC
-Division into i.i.d. substreams
-Statistical interpretability (The concordance probability)
-Computational constraints
 \subsubsection{Data streams that involve concept-drift}
-More details on concept-drift
-Prequential loss function with forgetting mechanism
-Prequential AUC with forgetting mechanism
+
+Consept drift is generally understood as unforeseen changes in statistical properties of the target variable.  In the case of regression this can basically be understood as non stationarity of the dependent variable.  In the case of classification, it is understood as the class distribution being \emph{not} constant.  
+
+However, this definition is not always clear cut in the literature.  For instance in \cite{Brz14}, concept drift is understood broader involving changes in explanatory variables and the predictor itself.  \todo{Clarify a bit more.}  For clarity, in this paper we refer to consept drift as changes in the target variable alone.
+
+In \cite{Gam13}, two estimators where suggested for dealing with concept drift and/or non stationary explanatory variables.  The first estimator involves calculating the prequential empirical risk over a sliding window of $w$ samples. 
+
+\begin{equation}
+\label{eq:prequentialRisk2}
+R_{emp}(t_k, h_k, \{X_{t_k}\}, w) = w^{-1} \sum_{i=k - w +1}^k L(\bm{x_{t_i}} , h_k(\bm{x_{t_i}} ), y_{t_i}).
+\end{equation}
+Notice that $R_{emp}(t_k, h_k, \{X_{t_k}\}, w)$ is a function of time and not just a single number.  The measure reflects the expected loss as a function of time.  Notice also that the classification rule itself $h_k$ is allowed to be a function of time.
+
+The second estimator involves fading factors and is defined as follows
+
+\begin{equation}
+\label{eq:prequentialRisk3}
+R_{emp}(t_k, h_k, \{X_{t_k}\}, \alpha) =\frac{\sum_{i=1}^k \alpha^{i-k}L(\bm{x_{t_i}} , h(\bm{x_{t_i}} ), y_{t_i})}{\sum_{i=1}^k \alpha^{i-k}} \quad \mbox{where} \quad 0 \leq \alpha \leq 1.
+\end{equation}
+When $\alpha$ is equal to one, this reduces to the prequental empirical risk with no forgetting factor, while in the case when $\alpha$ is equal to zero, the estimator reduces to the loss function at $t_k$.
+
+In the special case when the loss function is one when the classification is correct and zero elsewhere and $h$, or $h_k$, is consistent, then it is shown in \cite{Gam13} that $R_{emp}(t_k, h_k, \{X_{t_k}\}, \alpha)$, $R_{emp}(t_k, h_k, \{X_{t_k}\}, w) $ and $R_{emp}(h, \{X_{t_k}\})$ approximates the Bayes error in the limiting cases.
+
+In \cite{Brz14}, the prequantial AUC with a forgetting factor is suggested.  The method involves calculating AUC on a sliding window of fixed size.  In general the method involves keeping a sorted list of scores, together with the labels (positives or negatives).  It also involves keeping track of the number of positives and negatives  \todo{Add details on this algorithm. Some pseudocode would work} 
+
+\todo{Discuss stationary explanatory variables with consept drift versus non stationary explanatory variables with concept drift.}
+
+\todo{Drift detection with prequential AUC and prequential loss}
+
 \subsubsection{Early and late warnings}
 Methods or reflections on how to incorporate
 The substream method
