@@ -7,7 +7,7 @@
 
 Consider again the factorization of the full joint distribution $p(\bx)$ in \equref{factorisation}. With this factorization we can efficiently represent the joint probability distribution $p(\bx)$, but it requires that $\pa{X_i}$, i.e., the \textit{parent set} of  $X_i$, is known for each $i=1\ld n$. 
 The parents of $X_i$ are exactly the nodes which have an outgoing edge pointing to $X_i$ (e.g., $\pa{X_4}=\{X_2,X_3\}$ for the model in \figref{sampleBN}). 
-Algorithms for learning the parent sets, also known as \textit{structural learning} algorithms, follow one of two approaches: $i)$ search and score  methods, see e.g. \cite{CooperHerskovitz92} and $ii)$ constraint-based techniques \cite{SGS}. Both will be considered in Task 4.1 of the project, and the progress towards the implementation of structural learning in AMIDST is summarized in \secref{parallel}.
+Algorithms for learning the parent sets, also known as \textit{structural learning} algorithms, follow one of two approaches: $i)$ search and score  methods, see e.g. \cite{CooperHerskovits92} and $ii)$ constraint-based techniques \cite{Spi00}. Both will be considered in Task 4.1 of the project, and the progress towards the implementation of structural learning in AMIDST is summarized in \secref{parallel}.
 
 As soon as the parent sets in  \equref{factorisation} are determined, the specific conditional distributions $p(X_i\given\pa{X_i})$ can also be learned from data. The approach taken in the AMIDST project is that the conditional distribution $p(X_i\given\pa{X_i})$ is assumed to be a member of the exponential family  (including, among others, the Gaussian and multinomial distributions).
 Therefore, parameter learning amounts to finding the optimal \textit{parameterization} of the given distributions. This task will be considered in Task 4.2 and Task 4.4.
@@ -46,7 +46,6 @@ Parameter learning now amounts to calculating the probability distribution $p(\b
       \node[latent, above = 0.3 of X3] (theta3){$\theta_3$}; \edge{theta3}{X3};            
       \node[latent, above = 0.3 of X4] (theta4){$\theta_4$}; \edge{theta4}{X4};      
       \node[latent, above = 0.3 of X5] (theta5) {$\theta_5$}; \edge{theta5}{X5};
-            
     \end{tikzpicture}
     }
   \end{center}
