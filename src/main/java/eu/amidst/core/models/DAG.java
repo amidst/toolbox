@@ -105,7 +105,7 @@ public class DAG {
         return str;
     }
 
-    private class ParentSetImpl implements ParentSet {
+    private static class ParentSetImpl implements ParentSet {
 
         private Variable mainVar;
         private List<Variable> vars;
@@ -141,7 +141,7 @@ public class DAG {
         public String toString() {
 
             int numParents = getNumberOfParents();
-            String str = new String("{ ");
+            String str = "{ ";
 
 
             for(int i=0;i<numParents;i++){
