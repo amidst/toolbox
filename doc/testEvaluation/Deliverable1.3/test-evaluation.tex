@@ -107,11 +107,11 @@ ECM =  c(1|0)p(1|0)p_0  + c(0|1)p(0|1)p_1.
 \end{equation}
 Here, $c(1|0)$ is the cost for misclassifying an item of class zero as class one and $p(1|0)$ is the misclassification probability given class zero.  The quantities $c(0|1)$ and $p(0|1)$ are defined equivalently, while $p_0$ and $p_1$ are the priors.  
 
-In general, the risk $R(h)$ cannot be computed because the distribution $P(x, y)$ is unknown.  However, we can compute an approximation, called empirical risk, by averaging the loss function on the training set $\bu{x} \times \bv{y}$ of size $n$, where each element is $(x_i, y_i)$.  The empirical risk is given by 
+In general, the risk $R(h)$ cannot be computed because the distribution $P(x, y)$ is unknown.  However, we can compute an approximation, called empirical risk, by averaging the loss function on the data set $Z$ of size $n$, where each element is $(x_i, y_i)$.  The empirical risk is given by 
 
 \begin{equation}
 \label{def:empRisk}
-R_{emp}(h, \bu{x} \times \bv{y}) = n^{-1} \sum_{i=1}^n L(x_i, h(x_i), y_i).
+R_{emp}(h, Z) = n^{-1} \sum_{i=1}^n L(x_i, h(x_i), y_i).
 \end{equation}
 Notice that $L$ is an array of $n \times 2\times 2$ elements.  Many supervised learning algorithms are optimized by finding the $h$ in a hypothesis space $\mathcal{H}$ that minimizes the empirical risk.  This paper will not focus on empirical risk minimization, but rather focus on using the empirical risk to compare methods.
 
@@ -140,18 +140,17 @@ It is of interest to evaluate all these classification rules.  The receiver oper
 \end{figure}
 
 
-The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  In particular, it is easy to see which threshold is needed for a certain hit rate or true positive rate.  Moreover, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUROC, is such a number.  
-AUROC is independent of $T$ and also the priors.  It may be difficult to comprehend what AUROC is at this point, but we will return to it afterward.
+The ROC curve allows a visual exposition of the family of classifiers $\mathcal{H}$.  In particular, it is easy to see which threshold is needed for a certain hit rate or true positive rate.  Moreover, it is also of interest to reduce all this information into a single number.  The area under the ROC curve, also known as AUC, is such a number.  
+AUC is independent of $T$ and also the priors.  It may be difficult to comprehend what AUC is at this point, but we will return to it afterward.
 
 First, let $X_0$ and $X_1$ be random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$, respectively.  We define the random variables $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$.  To summarize, $Q_0$ is basically the output value you get when you pick a random sample of class zero. The same thing can be said for $Q_1$.  
 
-The probability $P(Q_1 > Q_0)$ is of interest, because this says what is the probability that if you take one sample from each of the populations, what is the chance that the output value from sample one is higher than the output value of sample zero.  This question is independent of $T$, meaning that the discussion about priors and costs are not needed. This probability is called the concordance probability.
+The probability $P(Q_1 > Q_0)$ is of interest, because this says what is the probability that if you take one sample by random from each of the populations, what is the chance that the output value from sample one is higher than the output value of sample zero.  This question is independent of $T$, meaning that the discussion about priors and costs are not needed. This probability is called the concordance probability.
 
-Without exposing the details, it is possible to show that 
-
+Without exposing the details, it is possible to show that
 \begin{equation}
 \label{eq:concurrent}
-\mbox{AUROC} = P(Q_1 > Q_0).
+\mbox{AUC} = P(Q_1 > Q_0).
 \end{equation}
 It is important to note that nothing need to be assumed about the probability distributions of $Q_0$ and $Q_1$.  Furthermore, it is worth noting that the concordance probability is exactly equal the common language effect size of the Mann-Whitney $U$ test.  We have therefore chosen to add a section of the Mann-Whitney $U$ test.
 
@@ -160,12 +159,12 @@ It is important to note that nothing need to be assumed about the probability di
 
 In statistics, the Mann-Whitney $U$ test (also called the Mann-Whitney-Wilcoxon (MWW), Wilcoxon rank-sum test, or Wilcoxon-Mann-Whitney test) is a nonparametric test of the null hypothesis that two populations are the same against an alternative hypothesis, especially that a particular population tends to have larger values than the other.  It has greater efficiency than the $t$-test on non-normal distributions and it is nearly as efficient as the $t$-test on normal distributions.
 
-We define a training set $\bu{x} \times \bv{y}$ with $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$.  From the training set we have two populations $\bv{q_0} = \{q(x_i) , | \, y_i = 0 \}$ and $\bv{q_1} = \{q(x_i) , | \, y_i = 1 \}$.  Their sizes are $n_0$ and $n_1$ so that $n_0 + n_1 = n$.  Calculating the $U$ statistics is straightforward, where these two values are obtained 
+We define a data set $Z$ with $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(X,Y)$.  From the data set we have two populations $\bv{q_0} = \{q(x_i) , | \, y_i = 0 \}$ and $\bv{q_1} = \{q(x_i) , | \, y_i = 1 \}$.  Their sizes are $n_0$ and $n_1$ so that $n_0 + n_1 = n$.  Calculating the $U$ statistics is straightforward, where these two values are obtained 
 
 \begin{equation}
 \label{eq:U}
-U_0 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H(\,q_j - q_i    \,) \quad \mbox{and} \quad 
-U_1 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H( \,q_i - q_j    \,).
+U_0 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H(\,q_{1,j} - q_{0,i}    \,) \quad \mbox{and} \quad 
+U_1 = \sum_{i=1}^{n_0}\sum_{j=1}^{n_1} H( \,q_{0,i} - q_{1,j}    \,).
 \end{equation}
 Here, $H(\cdot)$ is the heaviside step function and notice that $U_0 + U_1 = n_0n_1$.  For large samples, each U is approximately normally distributed. In that case, the standardized value
 
@@ -188,17 +187,103 @@ Significance of test can be checked in tables of the normal distribution.  Altho
 P(Q_1 > Q_0) = \frac{U_1}{n_0n_1}.
 \end{equation}
 
-It is important to note that even though the Mann-Whitney $U$ test is dependent on wether the shapes of the probability distributions of $Q_0$ and $Q_1$ are similar, this requirement is not necessary for the concordance probability.  Also. equation \eqref{eq:concordance} shows a simple way of calculating $P(Q_1 > Q_0)$ and AUROC.
+It is important to note that even though the Mann-Whitney $U$ test is dependent on wether the shapes of the probability distributions of $Q_0$ and $Q_1$ are similar, this requirement is not necessary for the concordance probability.  Also. equation \eqref{eq:concordance} shows a simple way of calculating $P(Q_1 > Q_0)$ and AUC.
 
 \subsection{Performance measures for classification on streaming data}
 \label{sec:stream}
 
-In the use case scenarios in the Amidst software, all problems are binary classifiers, which involve dividing the streams into sub streams that are labeled as either positives or negatives.  There are two important approaches here.
+This section includes various evaluation methods for classification on data streams.  Central to choices of evaluation methods are stationarity versus concept-drift, class imbalance, wether a scoring function exist, computational constraints and also the importance of earliness of warnings.
 
-The first approach deals with multiple streams and the global time dependence is removed by sampling all these streams into multiple sub streams, which are starting and ending at the same time steps.  Each sub stream is labeled as either a positive or negative based on the data at the end time.  An evaluation time step that is a fixed between the start and the end is also defined.  The explanatory variables are derived from the data between the start and the evaluation time step.  In this sense, the data is basically i.i.d.
+\subsubsection{Stationary data streams}
 
-The second approach is when there is basically one stream where one can assume stationarity on a global scale.  Sub streams with large enough distance to other sub streams are taken out of the stream.  These sub streams are labeled as either a positive or a negative.  For instance, a positive is when something is happening towards the end of the sub stream, while a negative is a sub stream where nothing happens.  When the AMIDST software run, the output function is evaluated at each time step.  Depending of the problem, a heuristic algorithm is chosen to output a single number for each sub stream based on the output values.  This can for instance be the maximum value of the output function on an interval that is prior to an event.  
+Let $\{X_{t}\}$ be a stochastic process, where $p_X(\bm{x_{t_1 + \tau}},...,\bm{x_{t_k + \tau}} )$ is the probability distribution function of the joint distribution at $t_1 + \tau,...,t_k + \tau$.  Then $\{X_t\}$ is a stationary process, or a stationary stream, if, for all $k$, for all $\tau$ and for all $t_1 + \tau,...,t_k + \tau$, 
 
+\begin{equation}
+\label{eq:stationarity}
+p_X(\bm{x_{t_1 + \tau}},...,\bm{x_{t_k + \tau}} ) = p_X(\bm{x_{t_1}},...,\bm{x_{t_k}} ),
+\end{equation}
+where the $\bm{x_t}$s are vectors of fixed size.  Clearly, $p_X(\cdot)$ is not a function of time.  
+
+In stationary streams, the mean and the variance, if they exist, do not vary.  The covariance structures to neighboring instances are also preserved.  To summarize, stationary streams are more general than i.i.d. streams, where the covariance to all other instances are zero.  
+
+In \cite{Gam13}, the prequential empirical risk is defined as 
+
+\begin{equation}
+\label{eq:prequentialRisk}
+R_{emp}(h, \{X_{t_k}\}) = k^{-1} \sum_{i=1}^k L(\bm{x_{t_i}} , h(\bm{x_{t_i}} ), y_{t_i}),
+\end{equation}
+where $y_{t_i}$ is the class label at time $t_i$ and $n$ is the number of samples up to $t_k$.  In the original paper, the notation is different and the measure is called the prequental error  Adaptations are made to comply with notation and definitions in section \ref{sec:static}.  Notice, that the loss function in the prequential empirical risk, is generalized compared to \cite{Gam13}, to also include dependency of $\bm{x_{t_i}}$, which may in fact be just $t_i$.  This generalization means that it is possible to model evolving loss as well.
+
+\todo{Include a discussion of statistical interpretation of loss functions on stationary data.  Dependence between timesteps is essential. Is this a problem? What opportunities do we have with evolving loss? Maybe nothing, but worth reflecting on.}
+
+In the case when the classification is based on a scoring function, which is common for Bayesian networks, then the prequential AUC at time step $t_k$ can be calculated by
+\begin{equation}
+\label{eq:prequentialAUC}
+\mbox{AUC}_{t_k}= \frac{U_{1,k}}{n_{0,k}n_{1,k}},
+\end{equation}
+where $n_{0,k}$ and $n_{1,k}$ are the number of negatives and positives up to $t_k$.  To be precise, $n_{0,k} + n_{1,k} = k$.  The quantity $U_{1,k}$ is calculated by the second $U$-statistic as of equation \eqref{eq:U} (using $n_{0,k}$ and $n_{1,k}$).
+
+On a data stream there is an opportunity of calculating AUC recursively with the following algorithm.
+
+\begin{equation}
+\label{eq:prequentialAUC2}
+U_{1,k}= 
+\begin{cases}
+U_{1,k-1} + \sum_{j=1}^{n_{1,k}} H( \,q_{0,n_{0,k}} - q_{1,j}    \,)
+ \quad &\mbox{for} \quad y_{t_k} = 0\\
+U_{1,k-1} + \sum_{i=1}^{n_{0,k}} H( \,q_{0,i} - q_{1,n_{1,k}}    \,)
+\quad &\mbox{for} \quad y_{t_k} = 1.\\
+\end{cases}
+\end{equation}
+Clearly AUC claculation is $O(k)$, which might be a problem for very long streams.  
+
+It is worth noting a few points about the statistical interpretability of AUC on stationary streams.  Unless the stream is also i.i.d. the $q_{0,i}$s and the $q_{1,i}$s are generally dependent on neighboring points.  This fact is however not contradicting the fact that AUC is equal to the concordance probability $ P(Q_1 > Q_0)$.  This is because the definitions of $Q_0$ and $Q_1$ are $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$ and 
+that $X_0$ and $X_1$ are random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$.  In practice, samples of $Q_0$ and $Q_1$ can be though of as picking samples from $\bv{q_0}$ and $\bv{q_1}$, respectively.
+
+\subsubsection{Data streams that involve concept-drift}
+
+Consept drift is generally understood as unforeseen changes in statistical properties of the target variable.  In the case of regression this can basically be understood as non stationary of the dependent variable.  In the case of classification, it is understood as the class distribution being \emph{not} constant.  
+
+However, this definition is not always clear cut in the literature.  For instance in \cite{Brz14}, concept drift is understood broader involving changes in explanatory variables and the predictor itself.  \todo{Clarify a bit more.}  For clarity, in this paper we refer to concept drift as changes in the target variable alone.
+
+In \cite{Gam13}, two estimators where suggested for dealing with concept drift and/or non stationary explanatory variables.  The first estimator involves calculating the prequential empirical risk over a sliding window of $w$ samples. 
+
+\begin{equation}
+\label{eq:prequentialRisk2}
+R_{emp}(t_k, h_k, \{X_{t_k}\}, w) = w^{-1} \sum_{i=k - w +1}^k L(\bm{x_{t_i}} , h_k(\bm{x_{t_i}} ), y_{t_i}).
+\end{equation}
+Notice that $R_{emp}(t_k, h_k, \{X_{t_k}\}, w)$ is a function of time and not just a single number.  The measure reflects the expected loss as a function of time.  Notice also that the classification rule itself $h_k$ is allowed to be a function of time.
+
+The second estimator involves fading factors and is defined as follows
+
+\begin{equation}
+\label{eq:prequentialRisk3}
+R_{emp}(t_k, h_k, \{X_{t_k}\}, \alpha) =\frac{\sum_{i=1}^k \alpha^{i-k}L(\bm{x_{t_i}} , h(\bm{x_{t_i}} ), y_{t_i})}{\sum_{i=1}^k \alpha^{i-k}} \quad \mbox{where} \quad 0 \leq \alpha \leq 1.
+\end{equation}
+When $\alpha$ is equal to one, this reduces to the prequental empirical risk with no forgetting factor, while in the case when $\alpha$ is equal to zero, the estimator reduces to the loss function at $t_k$.
+
+In the special case when the loss function is one when the classification is correct and zero elsewhere and $h$, or $h_k$, is consistent, then it is shown in \cite{Gam13} that 
+$R_{emp}(t_k, h_k, \{X_{t_k}\}, \alpha)$, $R_{emp}(t_k, h_k, \{X_{t_k}\}, w) $ and $R_{emp}(h, \{X_{t_k}\})$ approximates the Bayes error in the limiting cases.
+
+In \cite{Brz14}, the prequantial AUC with a forgetting factor is suggested.  The method involves calculating AUC on a sliding window of fixed size.  In general the method involves keeping a sorted list of scores, together with the labels (positives or negatives).   \todo{Add details on this algorithm. Some pseudocode would work} 
+
+\todo{Discuss stationary explanatory variables with consept drift versus non stationary explanatory variables with concept drift.}
+
+\todo{Add a section on drift detection with prequential AUC and prequential loss?}
+
+\subsubsection{Early and late warnings}
+Methods or reflections on how to incorporate
+The substream method
+
+\subsubsection{Some reflections related to regression on data streams}
+
+%
+%In the use case scenarios in the Amidst software, all problems are binary classifiers, which involve dividing the streams into sub streams that are labeled as either positives or negatives.  There are two important approaches here.
+%
+%The first approach deals with multiple streams and the global time dependence is removed by sampling all these streams into multiple sub streams, which are starting and ending at the same time steps.  Each sub stream is labeled as either a positive or negative based on the data at the end time.  An evaluation time step that is a fixed between the start and the end is also defined.  The explanatory variables are derived from the data between the start and the evaluation time step.  In this sense, the data is basically i.i.d.
+%
+%The second approach is when there is basically one stream where one can assume stationarity on a global scale.  Sub streams with large enough distance to other sub streams are taken out of the stream.  These sub streams are labeled as either a positive or a negative.  For instance, a positive is when something is happening towards the end of the sub stream, while a negative is a sub stream where nothing happens.  When the AMIDST software run, the output function is evaluated at each time step.  Depending of the problem, a heuristic algorithm is chosen to output a single number for each sub stream based on the output values.  This can for instance be the maximum value of the output function on an interval that is prior to an event.  
+%
 
 
 
