@@ -1,7 +1,7 @@
 % !TEX root = D41-report.tex
-\section{HL -- Introduction}
+\section{Introduction}
 
-\comment{This is just the first couple of pages from D3.1, terminated as quickly as possible, basically. Need to define BNs and such stuff here\ldots }
+\comment{This is just the first  page from D3.1, then quickly terminated after learning is introduced. Just to say what a BN is.}
 
 
 Probabilistic graphical models provide a well-founded and principled approach for performing inference 
@@ -21,30 +21,33 @@ distribution given its parents in the network, so that the joint distribution fa
 p(X_1,\ldots,X_5) = p(X_1) p(X_2|X_1) p(X_3|X_1) p(X_4|X_2,X_3) p(X_5|X_3).
 \]
 
-In general, for a BN with $n$ variables $\bX=\{X_1,\ldots,X_N\}$, the joint distribution factorises as
+In general, for a BN with $n$ variables $\bX=\{X_1,\ldots,X_n\}$, the joint distribution factorises as
 
 \begin{equation}
-\label{eq:factorisation}
-p(\bX) = \prod_{i=1}^N p(X_i|\pa{X_i}) ,
+\label{equ:factorisation}
+p(\bX) = \prod_{i=1}^n p(X_i|\pa{X_i}) ,
 \end{equation}
 where $\pa{X_i}$ denotes the set of parents of $X_i$ in the network. 
 
+
+\newcommand{\simpleModel}{    
+      \node[obs] (X1) {$X_1$};
+      \node[obs] (X2) [below left of=X1, xshift=-1.2cm, yshift=-1.2cm] {$X_2$};
+      \node[obs] (X3) [below right of=X1, xshift=+1.2cm, yshift=-1.2cm] {$X_3$};
+      \node[obs] (X4) [below right of=X2, xshift=+1.2cm, yshift=-1.2cm] {$X_4$};
+      \node[obs] (X5) [below right of=X3, xshift=+1.2cm, yshift=-1.2cm] {$X_5$};
+      \edge{X1}{X2};
+      \edge{X1}{X3};
+      \edge{X2,X3}{X4};
+      \edge{X3}{X5};
+    }
+    
 \begin{figure}[htb]
   \begin{center}
-   \scalebox{0.75}{
-    \begin{tikzpicture}[->,>=stealth,shorten >=1pt,auto,
-      node distance=2cm,semithick,
-      every state/.style={fill=blue!50,ellipse,draw}]
-      \node[state] (X1) {$X_1$};
-      \node[state] (X2) [below left of=X1] {$X_2$};
-      \node[state] (X3) [below right of=X1] {$X_3$};
-      \node[state] (X4) [below right of=X2] {$X_4$};
-      \node[state] (X5) [below right of=X3] {$X_5$};
-      \draw (X1) to (X2);
-      \draw (X1) to (X3);
-      \draw (X2) to (X4);
-      \draw (X3) to (X4);
-      \draw (X3) to (X5);
+   \scalebox{1}{
+    \begin{tikzpicture}
+
+    \simpleModel
     \end{tikzpicture}
     }
   \end{center}
@@ -57,16 +60,12 @@ We will use lowercase letters to refer to
 values or configurations of values, so that $x$ denotes a value of $X$ and $\bx$ is a configuration of the
 variables in $\bX$. 
 Given a set of observed variables $\bX_E\subset \bX$ and a set of variables of interest $\bX_I\subset \bX \setminus \bX_E$,
-\emph{probabilistic inference} consists of computing the posterior distribution
-$
-p(x_i|\bx_E)
-$
-for each $i\in I$. A thorough introduction to the state of the art for inference in Bayesian networks was given in \cite{D3.1}. In this document we assume that inference techniques for a given Bayesian network is available, and will rather consider how to define a Bayesian network model that fits a data set \calD\ as good as possible?   
+\emph{probabilistic inference} is the calculation  of the posterior distribution
+$p(x_i|\bx_E)$ for each $i\in I$. 
+A thorough introduction to the state of the art for inference in Bayesian networks was given in \cite{D3.1}. 
 
-\bit
-\item Learning parameters
-\item Learning structure
-\eit
+In this document we assume that inference techniques for a given Bayesian network is available, and will consider how to define a Bayesian network model that fits a data set as well as possible.
+This process is known as \textit{learning} in the Bayesian network community.
 
 
 
