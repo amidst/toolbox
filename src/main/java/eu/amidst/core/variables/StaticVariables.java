@@ -149,7 +149,7 @@ public class StaticVariables implements Iterable<Variable>{
     }
 
 
-    private class VariableImplementation implements Variable {
+    private static class VariableImplementation implements Variable {
 
         private String name;
         private int varID;
@@ -182,7 +182,7 @@ public class StaticVariables implements Iterable<Variable>{
         }
 
         public boolean isObservable() {
-            return false;
+            return observable;
         }
 
         public <E extends StateSpace> E getStateSpace() {

@@ -35,6 +35,7 @@ public class ConverterToHuginTest {
         WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
         StaticVariables modelHeader = new StaticVariables(fileReader.getAttributes());
 
+
         //***************************************** Network structure **************************************************
         //Create the structure by hand
 

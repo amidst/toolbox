@@ -22,8 +22,11 @@ import java.util.List;
  *
  * Created by andresmasegosa on 22/11/14.
  */
-public class CajaMarModels {
+public final class CajaMarModels {
 
+    private CajaMarModels(){
+        //no called
+    }
     /**
      * In this example, we create the proposed dynamic model for making predictions about the defaulting
      * behaviour of a client. We took some fake data with some fake attributes.
@@ -40,7 +43,7 @@ public class CajaMarModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticDataCajaMar.arff")));
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataCajaMar.arff"));
 
 
         /**
@@ -180,8 +183,7 @@ public class CajaMarModels {
 
         ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
         converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginCajaMarDefaulterPredictor.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginCajaMarDefaulterPredictor.net");
 
 
     }
