@@ -13,7 +13,7 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-4
  */
-public class MultinomialIndex {
+public final class MultinomialIndex {
 
     /**
      * Computes the order of an assignment when indexing the set of possible values for a set of multinomial variables.
@@ -134,5 +134,9 @@ public class MultinomialIndex {
             n = n * v.getNumberOfStates();
         }
         return n;
+    }
+
+    private MultinomialIndex(){
+        //Not called
     }
 }

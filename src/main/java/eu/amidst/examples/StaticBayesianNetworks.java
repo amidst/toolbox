@@ -18,9 +18,11 @@ import java.util.Arrays;
  *
  * Created by andresmasegosa on 22/11/14.
  */
-public class StaticBayesianNetworks {
+public final class StaticBayesianNetworks {
 
-
+    private StaticBayesianNetworks(){
+        //Not called
+    }
     /**
      * In this example, we take a data set, create a BN and we compute the log-likelihood of all the samples
      * of this data set. The numbers defining the probability distributions of the BN are randomly fixed.
@@ -33,7 +35,7 @@ public class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticData.arff")));
+        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticData.arff"));
 
 
         /**
@@ -129,8 +131,7 @@ public class StaticBayesianNetworks {
          */
         ConverterToHugin converterToHugin = new ConverterToHugin(bn);
         converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/huginStaticBNExample.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        converterToHugin.getHuginNetwork().saveAsNet("networks/huginStaticBNExample.net");
 
     }
 
@@ -147,7 +148,7 @@ public class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader(new String("datasets/syntheticData.arff")));
+        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticData.arff"));
 
 
         /**
@@ -237,8 +238,7 @@ public class StaticBayesianNetworks {
          */
         ConverterToHugin converterToHugin = new ConverterToHugin(bn);
         converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/huginStaticBNHiddenExample.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        converterToHugin.getHuginNetwork().saveAsNet("networks/huginStaticBNHiddenExample.net");
 
     }
 
