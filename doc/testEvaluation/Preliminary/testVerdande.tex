@@ -3,7 +3,7 @@
 % !TEX TS-program = pdflatex
 \documentclass{article}
 
-%\usepackage{hl_short}
+\usepackage{hl_short}
 \usepackage{times}
 \usepackage{graphicx}
 \usepackage{latexsym}
@@ -180,508 +180,144 @@ academic exercise nor as in a product.
 
 \subsubsection{The data generation process}
 
+The data set that is available from Verdande is complex and involving many variables that will not be used in the chosen use case scenarios.  Moreover, mnemonics and units are generally not consistent.  In order to simplify these issues, all the drilling logs are simplified to two data sets that will be used directly by the Amidst software.  Data set one is used on the use case scenario one and two, while the second data set is used on use case scenario three.
 
-\subsubsection{The generated dataset}
+\subsubsection{Dataset one}
+This data set contains 100 drilling logs of various size. Typically one log covers one drilling section or approximately a few weeks of data. For each of the 100 logs two XML files have been generated. The first XML file contains a subset of graphs with common mnemonics and SI units.  The XML files contains a fixed number of variables , where the resolution of the logs are below ten seconds between updates.
+%
+%The subset includes ONLY:%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)%\item Depth of bit (DBTM)%\item Hole depth (DMEA)%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Activity code (verdande calculated) %\item Depth log indicator (no, yes) (verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)%\end{itemize}%%Moreover, these static properties exist for each log:
+%\begin{itemize}%\item Bit size%\item Mud motor (yes/no)%\item Tagalog ID (Well name etc)%\end{itemize}
 
-The existing data set was generated at $t$ equal to December 31$^\text{st}$ 2013, thus simulating the calculations as if the AMIDST system was run two years before that ($k$ coresponds to December 31\textit{st} 2011). 
-The dataset includes all customers who have been a client of Cajamar in the period  $k$ and up to day $t$, corresponding to $n=4.5\text{M}$ customers. 
+Among the variables that are contained in the XML file is the normality index, the torque vibration index and also the depth log indicator.
+The normality index is identified automatically by DrillEdge. The condition is taken to be normal, when no case is on the radar and no events have fired in a time window of 10 minutes (forward and backwards) and in a depth window of 5 meters (upwards and downwards).
 
-Every member of the dataset has been classified as either non defaulter or defaulter (no missing entries). 
-Customers can have missing attribute values in their description. In particular, some of the clients were not clients in the whole three year period before day $k$. If a customer was not associated to Cajamar at some point in time $k - 6 \mbox{ semesters}$, there will be missing values for some of the variables in $\Y^{(k-6)}$. 
- %RAMON: This is not true. I therefore deleted the statement. NB! Inconsistency with D2.1, where we say it is so.
- % However, Cajamar will manually fill in all relevant missing values using other data sources. 
-%Formally, every member $i$ of the dataset therefore has a vector of explanatory variables denoted by $\W_i=\{ \X_i^{(k-180)}, \ldots, \X_i^{(k-1)}, \Y_i^{(k-6)},\ldots, \Y_i^{(k-1)},\Z_i\}$ without missing values. In total, each customer is described using $7036$ variables.
-Formally, every member $i$ of the dataset  has a vector of explanatory variables denoted by $\W_i=\{ \X_i^{(k-180)}, \ldots, \X_i^{(k-1)}, \Y_i^{(k-6)},\ldots, \Y_i^{(k-1)},\Z_i\}$, potentially with some missing values (encoded using special codes). 
-In total, each customer can be described using $7036$ variables, being $7036 = 180|X| + 36|Y| + |Z|$, where $|\cdot|$ is the number of $\cdot$ variables in each group of variables.
+Torque vibration index (no, yes, NA) are basically identified on logs that are fully tagged. 
+The depth log indicator is pointing out which time stamps are elements in the second XML file. It is basically, the time steps of drilling (except when the depth is manually adjusted). The second XML file is made by simply filter based on the depth log indicator.The second XML file contains a subset of graphs with common mnemonics and SI units on a depth scale. This subset is using the activity code (that is when we are drilling) to filter out data when non drilling appears. In this case, each data point represent only one depth. The depth logs are unique, meaning that only one measure for each depth. (In the case when the depth is reset manually to a lower number, the measurements between the two candidate depths are deleted.) The XML files contains a fixed number of variables, which are indexed on the depth they were drilled.
 
-Of all the customers in the dataset, $76\%$ are considered to be of no risk because they do not have a loan in the bank, approximately $20\%$ of the customers were exposed but did not default, and $3.79\%$ of the customers  defaulted in the two-year period of interest. 
+%
+%The depth logs includes ONLY:
+%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)
+%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)%\end{itemize}
 
-This data set will be used both for training and testing purposes. The test-set is defined by randomly selecting $20\%$ of the customers. For reproducibility, a documented procedure including a fixed random seed \textcolor{blue}{AM: will be?} was used to select the customers in the test set. \textcolor{blue}{AM: A stratified sample is chosen? This is for comparisons with existing methods? Why not cross validation e.g?}
+\subsubsection{Dataset two}
+
+At the current state only one data log that is available for use case scenario 3.  This is a time log from OMV.  This log is manipulated to be run in the AMIDST software. It is expected that more logs will come from OMV and that Verdande will provide sufficient manipulation of the new logs as well.  This data log is different than the logs in data set one because it contains down hole measurements such as gamma ray and resistivity.  Moreover, this data log also contains lithology charts from planning and after the well is drilled.
+
+For each data log two XML files have been generated. The first XML file contains only a subset of graphs with common mnemonics and SI units on a time scale. The XML files contains a fixed number of variables , where the resolution of the logs are below ten seconds between updates.
+
+%The subset includes ONLY:%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)%\item Depth of bit (DBTM)%\item Hole depth (DMEA)%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Activity code (verdande calculated) %\item Depth log indicator (no, yes) (verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)
+%\item Gamma Ray (GAM)
+%\item Resistivity (RES)
+%\end{itemize}%%Moreover, these static properties exist for each log:
+%\begin{itemize}%\item Bit size%\item Mud motor (yes/no)%\item Tagalog ID (Well name etc)
+%\item Distance from Gamma sensor to bit%\item Distance from Resistivity sensor to bit%\end{itemize}The second XML file contains a subset of graphs with common mnemonics and SI units on depth scale. This subset is using the activity code (that is when we are drilling) to produce a set of depth logs as discussed above. The XML files contains a fixed number of variables, which are indexed on the depth they were drilled.
 
 
-
+%
+%The depth logs includes ONLY:
+%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)
+%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)
+%\item Gamma Ray (GAM)
+%\item Resistivity (RES)
+%\item Lithology from planning (LITPLAN)
+%\item Lithology afterwards (LITAFTER)%\end{itemize}
 
 \subsection{Predictive performance: test and evaluation}
 
-
 \subsubsection{Application scenario 1}
 
-The goal of the first application scenario is to determine if a customers is going to be a defaulters after two years. This corresponds to a classification problem, where the class variable is denoted as Defaulter$^k$ in \ref{TrainingDataset}. 
+The goal of the first application scenario is to detect abnormal torque states.  In essence the output of the dynamic Bayesian network is a probability of abnormal torque at each time step. The evaluation involves comparing this output stream to torque vibration index on logs that are fully tagged.  
 
-The approach of the AMIDST project is to calculate $r_i=P(\mbox{Default}_i^k \,|\, \w_i)$ for each customer $i$. These quantities, afterwards, update the risk table in the system (see Table~\ref{tab:riskTable}).
-If, at some point, the probability of default of a customer rises above a predefined threshold, the bank may take preventive actions to reduce the risk of defaulting by this customer.
+The tags are time intervals that are approximately two to ten minutes long. Even though experts have tagged them, they are not clear cut.  For instance, two different experts may disagree on both whether a tag is real or not and also the start and end points of each tag.  However, in this project the set of tags are taken to be the ground truth.  
 
-\begin{table}[ht!]
-\centering
-\begin{tabular}{c|ccc|ccc|c}
-     Time $t$  & Risk of being defaulter \\  
-\hline
-Client$_1$  &    $r_1$  \\ 
-$\vdots$      &   $\vdots$   \\ 
-Client$_n$  &   $r_n$  \\ 
-\end{tabular} 
-\caption{Risk for the bank customers where $r_i$ represents the probability of being defaulter for customer $i$.}
-\label{tab:riskTable}
-\end{table}
+Two requirements are relevant for testing this use case scenario.  
+\begin{enumerate}
+\item VER.U2.O2 Formalization of the test procedure will be developed in task 
+\item VER.U2.D3 The accuracy of the result and the discussion should be published in a journal or a conference. 
+\end{enumerate}
+
+As a consequence the evaluation method must \emph{comply} with the state of the art methods on one side and make sense from a practical point of view on the other side.
+
+It is important to note that detecting torque vibrations early is generally \emph{not} very important.  When vibrations are present the driller feels the vibrations easily and is not dependent on being told by a software system. The real value is to automatically detect the vibrations and be able to diagnose how much cumulative damage has the equipment been subject to.  We have therefore designed an evaluation method that only takes into account if the tag is detected and the ability to detect an event early is ignored.
+
+The AUC measure is of interest.  A set of negative tags, with time windows equal to the time windows of positive tags, are generated from the logs by random.  It is important that the negative tags are taken far enough away from the the positive tags so no dependencies are present.  
+
+Basically, as the algorithm run through all the logs, the maximum value of the output function is stored for every positive and negative tag.  The AUC is computed as of equation (citation).  It is an aim to be above 0.90. 
+
+\subsubsection{Application scenario 2}
+
+The goal of the first application scenario is to detect abnormal states.  In essence the output of the dynamic Bayesian network is a probability of abnormality at each time step. The evaluation involves comparing this output stream to the normality index on all 100 logs.  
+
+The tags are time intervals that are in ranges of hours. These tags are clearly not clear cut as they are based on the output of a complex software system.  In this project the set of tags are taken to be the ground truth.  
+
+These requirements are relevant for testing this use case scenario.  
+\begin{enumerate}
+\item VER.U3.O2 The rate of missed abnormalities must be no larger than the prior probability of abnormality.  
+\item VER.U3.D3 The rate of missed normal states must be no larger than the prior probability of normality.  
+\item VER.U3.O4  The rate of missed abnormalities could be below what is obtained by an inexperienced drilling engineer or a software program at that level. 
+\item VER.U3.D5 The rate of missed normalities could be below what is obtained by an inexperienced drilling engineer or a software program at that level.
+\end{enumerate}
+
+In order to meet these requirements it is important to define true positives, false positives, true negative and false negatives.  A set of negative tags, with time windows equal to the time windows of positive tags, are generated from the logs by random.  It is important that the negative tags are taken far enough away from the the positive tags so no dependencies are present.  
+
+Basically, as the algorithm run through all the 100 logs, the maximum value of the output function is calculated for every positive and negative tag.  The classification rule is to compare these output values (maximum on each tag) to a given threshold.  
+
+In order to compare with an inexperienced drilling engineer, an evaluation will only be done on three logs.  The drilling engineer is instructed to tag regions which he believes are abnormal.
+
+The above measures are global and can be estimated after the logs have been processed.  The performance measures do not take into account concept drift.  
+
+In case of drilling a section (the data contained in one log), there is clearly concept drift.  To be more precise, a drilling operation starts out normal, but as the open hole is getting longer, the probability of abnormality increases as the hole gets dirtier and more unstable. Moreover, equipment are expected to be in good shape as the operation starts, but degrades with drilling.  
+
+It is therefore of interest to compute the prequential AUC with a forgetting factor (as of equation xx) and plot this versus time.  A proper discussion of this is believed to be of interest.
+
+\subsubsection{Application scenario 3}
+
+Check sequence alignment on wiki.
+
+It is of interest to define two measures. The measure MDprior is the mean deviation between the expert identified formation tops before drilling and after drilling. The measure MDalgorithm is the mean deviation between the formation tops that are detected by the algorithm and the formation tops that are identified by the experts after the well is drilled. Clearly, it is a goal to make an algorithm where MDalgorithm is less than MDprior. 
+
+\begin{enumerate}
+\item VER.U4.O2 MDalgorithm must be less than MDprior (both defined in Use Case Scenario 3), on at least 1 randomly chosen drilling log. 
+\item VER.U4.D3 MDalgorithm should be 10 percent less than MDprior, defined in Use Case Scenario 2, on at least 3 randomly chosen drilling logs. 
+\end{enumerate}
+
+%If successful, automatic detection of formation tops would be a game-changer for the oil- community. This is because knowing the formation is essential in terms of dealing with issues related to hole instabilities, hole cleaning and vibrations.
 
 
 
-According to requirement CAJ.U3.D3, the risk prediction quality should be assessed using the area under the receiver operating characteristic (ROC) curve. 
-The classification rule is that a customer $i$ is classified as a defaulter if $r_i \geq C$ for some constant $C$, and the ROC curve is computed by  plotting the rate of true positives against the rate of true negatives for various choices of $C$.  The requested area can then be found directly, and should, according to the requirement, be larger than $0.90$. 
+\subsection{Runtime performance: test and evaluation}
 
-There are two main issues with the outlined approach:
-\begin{itemize}
-% RAMON: this is not a problem. The AMIDST system will only be used for monitoring customers who have already been granted a loan, not for the grant-decision in itself
-%\item[Relevance of the data:]  All the customers' data made available to the project for training and testing belong to people already associated with Cajamar, and their economic status (e.g., regarding whether or not they have obtained a loan) is a consequence of Cajamar's current system being employed to remove the customers not deemed appropriate. The dataset we have access to may therefore not reflect the distribution of customers that approach Cajamar in the first place (and which AMIDST will be exposed to if employed in production).
+The requirements below are related to runtime performance.  These requirement are fairly straightforward to accomplish.  We will therefore only list them to give a holistic exposition.
 
-\item[Changes in the economic climate:]  A Cajamar customer's chance of defaulting is to some  extent determined by external factors, like the economic climate in Spain. During the economic crisis, the rate of defaulters was significantly higher than what was observed prior to the onset of the crisis. The data set we work with, corresponds to the period of the crisis, and it is natural to expect that the relationships found by the model are optimized for that economic climate. The AUC criteria is chosen to remedy global effects that affect all customers in a similar way, but we can still not guarantee that the model will perform at a similar level for a fundamentally different economic climate. \textcolor{blue}{AM: In some cases these differences in the economic climate might be overcome by some of the socio-economic variables, for instance, a civil servant's personal economy with a permanent job should be less influenced by the economic climate than a casual/seasonal worker}.
-
-\item[Stable versus volatile climate:] Customers in the training and test sets are per definition from the same time period. Learning from the training data, we will therefore be able to detect the economic climate to which the customers will be exposed (e.g., simply by detecting the fraction of defaulters in the training data). If put in production, the predictions AMIDST model is asked to make, will be about the future, i.e., shifted two years in time when compared to the training data. This is not a problem if the economic climate is static or only slowly varying, but will be disastrous if, for instance, AMIDST is asked to make predictions about future customers immediately before the onset of a new economic crisis.
-
-\end{itemize}
-
-To partly account for these shortcomings of the test procedure we have collected another dataset with $k$ equal to December 31st 2013, and where the correct class labels will be discovered two years later (December 31st 2015).
-As of today, the class labels for this dataset are unknown, but will be supplied at the end of 2015, and will be therefore available for the formal testing in Task 8.3. 
-An AUC of more than $90\%$ when using this new dataset for testing (and the original dataset for training) would be seen as a strong indication of the applicability of AMIDST in production.
-
-
-
-
+\begin{enumerate}
+\item VER.U1.O1 Data import should take less than 10 minutes  on a single desktop computer or equivalent.
+\item VER.U5.D4 Agents need to run fast enough for real-time implementation. In practice, this means that once probability tables are calculated  (post learning), the agent once provided a single new data point must be able to calculate probabilities, values or classifications and returning these in under 1 second on a single desktop computer or equivalent hardware
+\end{enumerate}
 
 %
-%\subsubsection{Application scenario 2}
-%
-%
-%
-%
-%A marketing campaign in Cajamar involves two steps:
-%\begin{itemize}
-% \item The first step is conducted by the marketing department, and results in a list of candidate customers. 
-%The list contains clients that have a high probability of signing what is offered to them (for instance a credit card).  
-%\item The second step, conducted by the risk modellers, is to filter out clients that are risky in terms of defaulting.
-%The task described in Use case 4 is to find relevant users profiles. The profiles can, for instance, be used to conduct marketing campaigns. The profiles should contain customers that are like to be non-defaulters, and cover only attributes that are found to be relevant by the domain experts. It is required (CA.U6.O3) that the expected benefits of a marketing campaign using the obtained profiles should be $5\%$ higher than with current methods. 
-%\end{itemize}  
-%
-%Direct quantitative evaluation of the AMIDST-generated profiles is difficult to perform in a formal way mainly for two reasons. The first reason is that the application scenarios generate a \textit{user profile} and not a \textit{set of users}. 
-%We cannot value a profile in itself; it is the application of the profile to generate user sets that potentially can be monetized. The second reason is that the AMIDST profile defines users that are not likely to default, not users that are likely to sign a contract (and therefore not necessarily users who are valuable as marketing objects). For instance, it seems natural to expect the AMIDST profile to prefer solvent customers living in their own homes without any mortgage and with a sizeable cash-account. On the other hand, a customer like that may not be relevant to target for a campaign selling small-sized cash-loans without security requirements. This leads to a two-tired evaluation of the profiles, first considering the profiles as generators of profitable marketing campaigns, next as a way to evaluate the ability to find customers that will not default.
-%\textcolor{red}{AM: If the two steps defined above are followed, then the second reason should never be a problem right? Because the marketing department preselects this clients. Otherwise, we need to modify the 2-step description above.}
-%
-%
-%\begin{description}
-%\item [1) EVALUATION OF A CAMPAIGN'S PROFIT:]
-%
-%Cajamar currently uses theoretical measurements for evaluating marketing campaigns. Let $s_i=P(\mbox{Signs}_i \,|\, \w_i)$ be the probability that a customer $i$ signs on an offer presented to him (calculated by an existing system used by Cajamar) and, as before, let $r_i=P(\mbox{Default}_i^k \,|\, \w_i)$ be the probability that customer $i$ defaults on a loan within the next two years (given that the offer is accepted). Furthermore, let $\gamma_i$ be the net present value for the bank of that offer given that the customer does not default, and  $\Gamma_i$ the cost of the offer if a customer ends up in defaulting. $c$ is a fixed indirect cost of the campaign. Then, the loss of a customer would be
-%\begin{equation}
-% L(\w_i,s_i,r_i) = \left\{\begin{array}{ll}
-% s_i r_i\Gamma_i +   (1-s_i) (1-r_i)\gamma_i + c& \text{ if a loan is offered;} \\
-%s_i (1-r_i)\gamma_i  & \text{ otherwise.} \\ \end{array}\right.   \label{equ:cajamarTheoretical}
-% \end{equation}
-%
-%\comment{Ramon: In the email you write  $+c$ also for the ``otherwise''-customers, i.e., getting $s_i (1-r_i)\gamma_i +c$ instead of $s_i (1-r_i)\gamma_i$. I assumed that was a typo, because the customer has not been contacted. Was I wrong?
-%
-%Note also that I -- as agreed in Copenhagen -- removed the second term of the loss for this group of customers.}
-%
-%
-%We therefore propose that the profile extraction is evaluated as follows:
-%
-%\ben
-%\item A marketing campaign is selected, and the set of customers contacted are listed. The set of customers is called $\calC$.
-%\item The AMIDST system is used to generate a profile for non-defaulting customers, and a fixed number of  customers fitting the profile (comparable to the number of elements in $\calC$) are selected.
-% The marketing department selects a subset of the customers in this set based on their probability to contract. Call this reduced set of customers $\calA$. Note that the set $\calA$ now defines a fictitious campaign (chosen by AMIDST) and has not been employed in a real campaign. 
-%\item The two sets $\calC$ and $\calA$ are compared qualitatively and quantitatively (using the theoretical measure in \equref{cajamarTheoretical}).
-%\een
-%In \equref{cajamarTheoretical} all customers that are not included in the campaign will contribute with the loss $s_i (1-r_i)\gamma_i$. In practice, contributions will only be collected from the set of customers that is selected by either method, i.e., the set of customers in $\calC\cup\calA$ because a customer selected by neither system (i.e., not in $\calC\cup\calA$) will  contribute equally to the loss of each method, and is therefore not helpful to establish the difference between them. 
-%
-%\item [2) EVALUATION OF DEFAULTING BEHAVIOUR:]
-%
-%A drawback of this approach is that the loss-function rests upon (theoretical) probabilities $P(\mbox{Default}_i^k \,|\, \w_i)$ and $P(\mbox{Signs}_i \,|\, \w_i)$. Due to the introduction of $P(\mbox{Signs}_i \,|\, \w_i)$ in the loss function, we cannot in general guarantee that the system that is best at predicting the defaulting behavior will obtain the lowest loss. 
-%To target the quantitative requirement without using the theoretical probabilities we therefore also propose to utilize the AMIDST risk prediction capability from application Scenario 1 directly in the marketing setting, where the following procedure will be performed:
-%\bit
-%\item Select a historical marketing campaign that is at least two years old, and remove all customers that did not sign. The remaining set of customers is called $\calC$.
-%\item  Filter \textcolor{red}{out} clients that the AMIDST system deem too risky. The set of customers is called $\calA$. Note that $\calA\subseteq\calC$.
-%\item Calculate the empirical loss of the set $\calA$ compared to that of $\calC$. The requirement that the loss of $\calA$ should be at least $5\%$ lower than the loss of the set $\calC$. Note that for a direct comparison, only the difference in the two sets,  $\calC\setminus\calA$, will contribute, and the costs of applying the AMIDST solution will be $\gamma_i$ for the customers that do not default and $-\Gamma_i$ for those that do. 
-%\eit
-%It should be noted that this procedure only evaluates the AMIDST system's ability to remove poor customers from the list of customers that were included in the original campaign, as we are unable to quantify the effect of AMIDST potentially wanting to send marketing material to customers that were not selected for the historical campaign without using the theoretical construct of \equref{cajamarTheoretical}.  The two evaluation approaches must therefore be seen in combination to give the full picture.
-%
-%\end{description}
-%
-%\vekk{
-%
-%
-%
-%
-%\comment{Rest of the section is Sigve's text. I propose that we remove all the math into the start-up-sections and just use established stuff like ``Empirical risk'' here. Not sure if all of Sigve's points have been included in the ``for dummies'' - version I have written. Must be checked.}
-%
-%
-%
-%There are more opportunities with testing the second step.  After performing step one the test data set is reduced to a set of clients with a high contracting probability (i.e. above a certain level).  Let the clients in this data set be $(x_i, y_i)$, where $y_i$ is either default or not default and $x_i$ is a vector of explanatory variables.  It makes sense to compute AUC for both the current method and the Amidst method to compare the two methods.  This comparison will say something about the ability of the filter to take out defaulters, while keeping the non defaulters.  However, we must assume that the real probability of contracting $P(\bv{x_i})$ is completely independent of whether the client will actually default or not.
-%
-%Moreover, in Delivery 1.2, it is required that the benefit of a AMIDST induced marketing campaign should be more than 5 percent higher than a normal campaign.  In order to discuss such a requirement we have to iintroduce a function that describes the financial loss of a certain classification rule compared to a classification rule that make no mistakes. 
-%
-%In this paper, we define the \emph{loss function} as a real and lower-bounded function $L(x_i, h(x_i), y_i)$. It takes into account the explanatory variables for each client $x_i$, the predicted class $h(x_i)$ and the true class label $y_i$. 
-%
-%In the current system in Cajamar the classification rule is denoted $h_{\mbox{Current},L_1}$ and is defined by
-%
-%\begin{equation}
-%\label{def:empRisk}
-%h_{\mbox{Current},L_1}(x_i) = P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1 
-%\end{equation}
-%where the probability for defaulting client $i$ are $P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i})$.  Here, $L_1$ is a chosen classification limit. 
-%
-%We let the cost of excluding client $i$ that does not default as $c_i(0|1)$ and also the cost of including client $i$ that does default as $c_i(1|0)$.  Both costs are related to the size of the potential offer.  Also, we make the assumption that the real probability of contracting $P(\bv{x_i}) = p$ is completely independent of whether the client will actually default or not.  The loss function below is of interest
-%
-%\begin{equation}
-%\label{def:empRiskBank}
-%L(x_i, h_{\mbox{Current},L_1}(x_i) , y_i) = 
-%\begin{cases}
-%0     &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 0 \quad \& \quad y_i = 0\\
-%p c_i(1|0)    &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 1 \quad \& \quad y_i = 0\\
-%p c_i(0|1)      &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 0 \quad \& \quad y_i = 1\\
-%0   &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 1 \quad \& \quad y_i = 1.
-%\end{cases}
-%\end{equation}
-%Notice that $L$ is an array of $n \times 2\times 2$ elements. Cajamar can estimate $c_i(0|1)$ and $c_i(1|0)$ for all clients in the database.
-%
-%The empirical risk is found by averaging the loss function on the training set given by 
-%
-%\begin{equation}
-%\label{def:empRisk}
-%R_{emp}(h_{\mbox{Current},L_1}, \bv{x}) = n^{-1} \sum_{i=1}^n L(x_i, h_{\mbox{Current},L_1}(x_i), y_i).
-%\end{equation}
-%
-%It is now possible to calculate the empirical risk involved with using both the current filter and also the Amidst filter.  It is therefore possible to estimate the ratio between the costs and therefore see whether there is more than 5 percent gain in using the Amidst default filter compared to using the current default filter.  Notice that in terms of estimating this gain percentage it is not needed to estimate $p$.  However, it could be estimated from the number that accepted the offer on an old campaign.
-%
-%
-%\subsubsection*{Calculating empirical risk on an old campaign}
-%
-%It is also possible to use an old campaign to test the improvement of using the Amidst default filter in addition to the current filter. 
-%
-%Consider an old campaign that was done more than two years ago. Even though costs and default/non defaults are known for all clients, the loss function is only known on the clients that was targeted in that campaign.  This makes this discussion complicated. 
-%
-%We will now consider the AMIDST induced marketing campaign as a binary classification problem with class variable $y_i$, which can take the values $\{0,1\}$. Class one refers to non-defaulters that actually signs the contract and class zero refers to the rest of the clients.  In a perfect campaign only the non-defaulters that actually signs the offer (for instance a credit card or a loan) are selected.  
-%
-%In the current system in Cajamar the classification rule is denoted $h_{\mbox{Current},L_1,L_2}$ and is defined by
-%
-%\begin{equation}
-%\label{def:empRisk}
-%h_{\mbox{Current},L_1,L_2}(x_i) = P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1 \, \& \,P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2,
-%\end{equation}
-%where the probability for defaulting and contracting for client $i$ are $P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i})$ and $P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i})$.  Here, $L_1$ and $L_2$ are chosen classification limits. 
-%
-%We let the cost of excluding client $i$ that actually would contract and not default as $c_i(0|1)$.  This cost is related to the size of the potential offer.
-%
-%Moreover, we let $c_i(1|0)$ be the cost of offering to client $i$, provided that he either would not take the offer or would default if he took the offer.  Clearly, if client $i$ was offered and contracted but defaulted, $c_i(1|0)$ is related to the size of the contract.  Otherwise, $c_i(1|0)$ is only related to the cost of making the offer.  The loss function below is of interest
-%
-%\begin{equation}
-%\label{def:empRiskBank}
-%L(x_i, h_{\mbox{Current},L_1,L_2}(x_i) , y_i) = 
-%\begin{cases}
-%0     &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 0 \quad \& \quad y_i = 0\\
-%c_i(1|0)    &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 1 \quad \& \quad y_i = 0\\
-%c_i(0|1)      &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 0 \quad \& \quad y_i = 1\\
-%0   &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 1 \quad \& \quad y_i = 1.
-%\end{cases}
-%\end{equation}
-%
-%Cajamar can estimate $c_i(0|1)$ and $c_i(1|0)$ for all clients in the database.
-%
-%
-%The empirical risk for the old campaign is not taking into account the financial loss related to excluding a number of clients that actually would have contracted and not defaulted.  Said with other words, the empirical risk is not taking into account losses related to when $h_{\mbox{Current},L_1,L_2}(x_i) = 0$, and $y_1 = 1$.  In such a calculation none of the $c_i(0|1)$s are used.  The empirical risk will therefore be less than the true risk (which would take the above point into account).
-%
-%A simple test is to use the Amidst toolbox to provide an additional filter related to default prediction on top of the old classification rule.  Mathematically this is
-%
-%\begin{equation}
-%\begin{split}
-%\label{eq:filter}
-%h_{\mbox{Amidst filter},L_1,L_2,L_3}(x_i) = &
-%P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1
-% \, \& \,
-%P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2
-%\, \& \,  
-%\\ &
-%P_{\mbox{Amidst filter}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_3.
-%\end{split}
-%\end{equation}
-%This calculation of empirical risk is biased by the same amount as the old method.  It makes therefore sense to compare $R_{emp}(h_{\mbox{Amidst filter},L_1,L_2,L_3}, \bv{x}) $ with $R_{emp}(h_{\mbox{Current},L_1,L_2}, \bv{x}) $.
-%The benefit of using the Amidst model as additional filter can therefore be quantified.
-%
-%\subsection*{Questions: }
-%\begin{enumerate}
-%\item Do you see any flaw in reasoning?
-%\item What more should we do?
-%\item What do you think about the profiling ideas?
-%\end{enumerate}
-%
-%
-%}
-%
-%\subsection{Run-time performance: test and evaluation}
 %\subsubsection{Application scenario 1}
 %
-%According to the requirement procedure, the full process starting with SQL statements and ending with validation of the new risks should be completed in no more than three hours (CAJ.U1.O1, CAJ.U2.O1, CAJ.U4.D1, CAJ.U5.O1).
-%
-%The AMIDST solution will be installed in a server (IBM System x3690 X5) with the following characteristics:
-%\bit
-%\item 2 Intel Xeon 10C Processors (Model E7-2870 130w 2.40GHz/30MB)
-%\item 256GBRAM,16x16GB(1x16GB,4Rx4,1.35V)PC3L-8500CL7ECCDDR3
-%1066MHz LP RDIMM
-%\item 2 internal disks SAS ÒIBM 146 GB 2.5in SFF Slim-HS 15K 6Gbps SAS HDDÓ RAID, one of them Òhot swapÓ. 10 Disks IBM 600GB 2.5in SFF 10K 6Gbps HS SAS HDD.
-%\eit
-%This server is mainly used by credit risk models and marketing models departments. Data will be obtained via SQL queries. The current Information Center database management system is Oracle, but is being changed to a Teradata solution.
-%
-%
-%
-%\comment{Testing procedure/how strictly we will look at this must be evaluated.
-%\bit 
-%\item What happens if we finish only 95\% of the customers? RAMON: We need 100\%. 
-%\item Will there be variations in the run-time e,g, do to other users of the system? RAMON: Yes!. However, cannot state how much load the server will have. Solution?
-%\item Is the *max* time required to be less than 3hrs, median, \ldots RAMON: Max
-%\item Scalability through more hardware if we fail to meet the three hrs demand? RAMON: This is an option, but not for the short time-span
-%\eit
-%
-%To me, this seems under-specified. If the system is using 99\%\ of the resources elsewhere we cannot get all the customers done in 3 hrs., but this is what he wants?
-%
-%}
-%
-%
-%
 %\subsubsection{Application scenario 2}
 %
-%There are no specific run-time requirements for this application scenario. Specifically, it is stated that \textit{``[\ldots] execution time of this process is not relevant because the marketing campaigns are not launched so frequently.''}.
-%
-%
-%
-%\vekk{
-%
-%\newpage
-%
-%
-%
-%
-%%% This part written by Sigve. I'm keeping it here for reference (and copy-paste'ing. Rewrite to conform with the new layout of the document. 
-%%% This work initiated by Helge Langseth on Nov 20th 2014
-%
-%There are two application scenarios here.  The first one is prediction of whether a client will default within two years or not and the second is related to the benefit of a marketing campaign. For clarity we have added the description about the data set from delivery 2.1 without any modification.
-%
-%\section{Description from 2.1}
-%
-%%-------------------------------------------------------------------------------------------------------
-%\subsection{Predicting probability of default} \label{SubSection:Predicting}
-%%-------------------------------------------------------------------------------------------------------
-%
-%Our objective is to tackle the current limitations of the risk prediction problem by \textit{daily} learning the predictive model and also updating the risk of default for every bank customer. Dependences among the variables will now be considered, as well as including all the variables in the analysis. With these changes, Cajamar plans to improve the quality of the prediction model by increasing the area under ROC curve significantly.
-%
-%
-%Therefore, the process will consist in building a \textit{training set} as well as a set of customers to be evaluated, called \textit{evaluation set} (see Deliverable 1.2~\cite{Fer14b}). How these data sets are generated gives us some insights into the nature of this risk prediction problem (see Figure~\ref{Figure:CajaMarTimeLine} for a better understanding):
-%
-%%Next, we detail how these data sets are collected .
-%%Figure~\ref{Figure:CajaMarTimeLine} illustrates how both evaluation and training data sets are collected within a time-line. The current time is denoted as $t$ and the time $2$ years back as $k$, i.e., $k=t-2$ years. 
-%
-%\begin{figure}[ht!]
-%\centering
-%\includegraphics[scale=0.35]{figures/CajamarTimeLine}
-%\caption{\label{Figure:CajaMarTimeLine}Time-line showing the generation of the evaluation (in green) and training (in red) data sets. $t$ refers to the present time and $k$ corresponds to time $t-2$\ years. Both in the training and test data sets, there are two disjoint groups of variables, denoted as $\X$ and $\Y$, with different past information considered, $180$ days back (daily) and $6$ semesters back (by semester), respectively.}
-%
-%\end{figure}
-%
-%\begin{itemize}
-%
-%\item \textbf{Model evaluation data set:} This data is created at time $t$ and contains a record for every client to be evaluated. Note that information about the predicted defaulting behaviour is missing at time $t$ and it will be obtained after performing inference on the model. Predictive variables refer here to the financial activity and payment behaviour of the customers in recent past as well as to their socio-demographic information which usually does not change over time. 
-%
-%There are attributes, denoted as $\X$, for which information during the last 180 days is considered. 
-%%recent \textcolor{red}{{\bf financial activity}}of a customer refers to attributes such as ``account balance'', ``number of credit card operations'', etc. stored in the last 180 days. 
-%These attributes usually change daily for a customer, so they are encoded by introducing a set of variables for each attribute, one for each day back from the current time $t$. Hence, the financial activity of a customer is specified by a number of variables equal to 180 times the number of attributes. For others attributes, denoted as $\Y$, we are interested in information from the last $36$ months grouped by semester. 
-%%In the case of \textcolor{red}{{\bf past payment behaviour}}, the attributes refer to variables related to \textcolor{red}{payments inside Cajamar (loans, mortgages, credits, etc.).} Information from the last 36 months grouped by semester is considered for these variables. 
-%Therefore, similar to previous group of variables, $6$ variables for each of these attributes will be considered. Finally, there are some other static variables, denoted as $\Z$, not included in Figure~\ref{Figure:CajaMarTimeLine} as they are not indexed over time. The data set for the evaluation of customers is depicted in Table~\ref{tab:EvaluationDataset}. 
-%
-%
-%%with information about \textcolor{red}{payments to other financial institutions or companies (phone and electricity bills, public bodies, etc.)} 
-%%are included in this group of variables. They are denoted as .
-%
-%%The group of variables denoted as $\Z$ mainly includes socio-demographic variables and they are not indexed over time as they remain fixed.  
-%
-%\begin{table}[ht!]
-%\centering
-%\begin{tabular}{c|ccc|ccc|c}
-%	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} \\
-%     Time $t$              & $\X^{(t-180)}$ & $\ldots$ & $\X^{(t-1)} $ & $\Y^{(t-6)}$  & $\ldots$ & $\Y^{(t-1)} $ & $\Z$  \\  
-%\hline
-%Client$_1$  &                                                  &              &                     &                               &                     &        \\ 
-%$\vdots$      &                                                 &               &                     &                                &                     &      \\ 
-%Client$_n$  &                                                &               &                     &                                &                     &     \\ 
-%\end{tabular}
-%\caption{Evaluation data set at time $t$ for all the clients. Three groups of attributes $\X$, $\Y$ and $\Z$ are distinguished according to the past information required. Current time is denoted as $t$.}
-%\label{tab:EvaluationDataset} 
-%\end{table}
-%
-%Thus, the objective is to compute the probability of defaulting within the following two years of each record from the evaluation data set, and afterwards update the risk table in the system (see Table~\ref{tab:riskTable}).
-%
-%\begin{table}[ht!]
-%\centering
-%\begin{tabular}{c|ccc|ccc|c}
-%     Time $t$  & Risk of being defaulter \\  
-%\hline
-%Client$_1$  &    $r_1$  \\ 
-%$\vdots$      &   $\vdots$   \\ 
-%Client$_n$  &   $r_n$  \\ 
-%\end{tabular} 
-%\caption{Risk table for the bank customers where $r_i$ represents the probability of being defaulter for customer $i$.}
-%\label{tab:riskTable}
-%\end{table}
-%
-%If, at some point, the probability of default of a customer rises above a predefined threshold, the bank may take preventive actions to reduce the risk of defaulting by this customer.
-%
-%
-%\item \textbf{Model training data set:}  This data set is also built at time $t$ in a similar way as the evaluation data. It contains the same set of features as well as the target variable \textit{Defaulter} but with information referred to time $k$ instead (two years back). Note that, at time $t$, we have information of the \textit{Defaulter} variable in the period of time from $k$ to $t$. Thus,  Defaulter$^{(k)}$ indicates if at some point in this period she/he was a defaulter.
-%
-%The data set for training/updating the model is depicted in Table~\ref{tab:TrainingDataset}.
-%\begin{table}[ht!]
-%\centering
-%\begin{tabular}{c|ccc|ccc|c|c}
-%	&\multicolumn{3}{c|}{Days} & \multicolumn{3}{c|}{Semester} & \\
-%     Time $t$              & $\X^{(k-180)}$ & $\ldots$ & $\X^{(k-1)} $ & $\Y^{(k-6)}$  & $\ldots$ & $\Y^{(k-1)} $ & $\Z$ & Defaulter$^{(k)}$\\  
-%\hline
-%Client$_1$  &                                                  &              &                     &                               &                     &        &  \\ 
-%$\vdots$      &                                                 &               &                     &                                &                     &       & \\ 
-%Client$_n$  &                                                &               &                     &                                &                     &     & \\ 
-%\end{tabular} 
-%\caption{Training data set built at time $t$ with $k=t - 2$ years.  The notation for predictive variables is the same as in Table~\ref{tab:EvaluationDataset}.}
-%\label{tab:TrainingDataset} 
-%\end{table}
-%
-%Table~\ref{tab:TrainingDataset} shows the training data set where each record contains the values for all predictive variables and a class value labelled as \emph{non-defaulter} only when there is no evidence of defaulting in the period from $k$ to $t$ (2 years). 
-%
-%\end{itemize}
-%
-%\section{Test and evaluation regime}
-%
-%The training set above is actually the data set that we are going to train on and also test on. This may be a source to confusion, but from now on the training set above will be defined as the dataset and the evaluation set is not even considered in relation to testing. 
-%
-%The only criterion for being a member of the dataset is that the member has been a client continuously from day $k$ and up to day $t$.  Every member of the dataset has a class label that is either non defaulter or defaulter.  There are no missing values related to class labels.  However, there are missing values related to attributes.  In particular, some of the clients where not clients in the whole three year period before day $k$.  Cajamar will manually fill in all relevant missing values.  Formally, every member $i$ of the dataset has a vector of explanatory variables that is denoted by $\bv{x_i} =\{ \X_i^{(k-180)},  \X_i^{(k-1)}, ...\Y_i^{(k-6)}, \Y_i^{(k-1)},\Z_i\}$.  
-%
-%We will divide this data set into a training set and a test set by a completely random process.
-%
-%\subsection{Requirements for the first use case scenario: default prediction}
-%
-%In the first use case scenario, it is required that the AUROC should be above 0.90.
-% 
-%The Bayesian network basically computes the probability $P(\mbox{Default}_i \,|\, \bv{x_i})$ and the classification rule is
-%$P(\mbox{Default}_i \,|\, \bv{x_i}) \geq C$.  The ROC curve is computed by basically plotting the rate of true positives against the rate of true negatives for various choices of $C$.  AUROC is the area under the graph.  (There is also another way of computing AUROC which do not involve computing the rate of true positives and rate true negatives for various $C$, but this is omitted in this discussion.)
-%
-%\subsubsection*{Questions: }
-%\begin{enumerate}
-%\item How many defaulters and non defaulters do we have on both the training set and the test set?
-%\item Can you go though all the information and make sure that it is correct.
-%\end{enumerate}
-%
-%
-%\subsection{Requirements for the second use case scenario:  AMIDST induced marketing campaign}
-%
-%A marketing campaign in Cajamar involves two steps.  The first step is to find clients that have a high probability of signing what is offered (for instance a credit card).  The second step is to filter out clients that are risky in terms of defaulting.
-%The testing regime involves testing each step separately.
-%
-%The first step is difficult to test. We suggest that the Amidst profiler finds a list of a certain number of clients that are manually inspected by the marketing department in Cajamar. This list can for instance be compared to a list of clients with high contracting probability from a former campaign.
-%
-%There are more opportunities with testing the second step.  After performing step one the test data set is reduced to a set of clients with a high contracting probability (i.e. above a certain level).  Let the clients in this data set be $(x_i, y_i)$, where $y_i$ is either default or not default and $x_i$ is a vector of explanatory variables.  It makes sense to compute AUC for both the current method and the Amidst method to compare the two methods.  This comparison will say something about the ability of the filter to take out defaulters, while keeping the non defaulters.  However, we must assume that the real probability of contracting $P(\bv{x_i})$ is completely independent of whether the client will actually default or not.
-%
-%Moreover, in Delivery 1.2, it is required that the benefit of a AMIDST induced marketing campaign should be more than 5 percent higher than a normal campaign.  In order to discuss such a requirement we have to iintroduce a function that describes the financial loss of a certain classification rule compared to a classification rule that make no mistakes. 
-%
-%In this paper, we define the \emph{loss function} as a real and lower-bounded function $L(x_i, h(x_i), y_i)$. It takes into account the explanatory variables for each client $x_i$, the predicted class $h(x_i)$ and the true class label $y_i$. 
-%
-%In the current system in Cajamar the classification rule is denoted $h_{\mbox{Current},L_1}$ and is defined by
-%
-%\begin{equation}
-%\label{def:empRisk}
-%h_{\mbox{Current},L_1}(x_i) = P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1 
-%\end{equation}
-%where the probability for defaulting client $i$ are $P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i})$.  Here, $L_1$ is a chosen classification limit. 
-%
-%We let the cost of excluding client $i$ that does not default as $c_i(0|1)$ and also the cost of including client $i$ that does default as $c_i(1|0)$.  Both costs are related to the size of the potential offer.  Also, we make the assumption that the real probability of contracting $P(\bv{x_i}) = p$ is completely independent of whether the client will actually default or not.  The loss function below is of interest
-%
-%\begin{equation}
-%\label{def:empRiskBank}
-%L(x_i, h_{\mbox{Current},L_1}(x_i) , y_i) = 
-%\begin{cases}
-%0     &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 0 \quad \& \quad y_i = 0\\
-%p c_i(1|0)    &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 1 \quad \& \quad y_i = 0\\
-%p c_i(0|1)      &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 0 \quad \& \quad y_i = 1\\
-%0   &\quad \mbox{for} \quad h_{\mbox{Current},L_1}(x_i) = 1 \quad \& \quad y_i = 1.
-%\end{cases}
-%\end{equation}
-%Notice that $L$ is an array of $n \times 2\times 2$ elements. Cajamar can estimate $c_i(0|1)$ and $c_i(1|0)$ for all clients in the database.
-%
-%The empirical risk is found by averaging the loss function on the training set given by 
-%
-%\begin{equation}
-%\label{def:empRisk}
-%R_{emp}(h_{\mbox{Current},L_1}, \bv{x}) = n^{-1} \sum_{i=1}^n L(x_i, h_{\mbox{Current},L_1}(x_i), y_i).
-%\end{equation}
-%
-%It is now possible to calculate the empirical risk involved with using both the current filter and also the Amidst filter.  It is therefore possible to estimate the ratio between the costs and therefore see whether there is more than 5 percent gain in using the Amidst default filter compared to using the current default filter.  Notice that in terms of estimating this gain percentage it is not needed to estimate $p$.  However, it could be estimated from the number that accepted the offer on an old campaign.
-%
-%
-%\subsubsection*{Calculating empirical risk on an old campaign}
-%
-%It is also possible to use an old campaign to test the improvement of using the Amidst default filter in addition to the current filter. 
-%
-%Consider an old campaign that was done more than two years ago. Even though costs and default/non defaults are known for all clients, the loss function is only known on the clients that was targeted in that campaign.  This makes this discussion complicated. 
-%
-%We will now consider the AMIDST induced marketing campaign as a binary classification problem with class variable $y_i$, which can take the values $\{0,1\}$. Class one refers to non-defaulters that actually signs the contract and class zero refers to the rest of the clients.  In a perfect campaign only the non-defaulters that actually signs the offer (for instance a credit card or a loan) are selected.  
-%
-%In the current system in Cajamar the classification rule is denoted $h_{\mbox{Current},L_1,L_2}$ and is defined by
-%
-%\begin{equation}
-%\label{def:empRisk}
-%h_{\mbox{Current},L_1,L_2}(x_i) = P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1 \, \& \,P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2,
-%\end{equation}
-%where the probability for defaulting and contracting for client $i$ are $P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i})$ and $P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i})$.  Here, $L_1$ and $L_2$ are chosen classification limits. 
-%
-%We let the cost of excluding client $i$ that actually would contract and not default as $c_i(0|1)$.  This cost is related to the size of the potential offer.
-%
-%Moreover, we let $c_i(1|0)$ be the cost of offering to client $i$, provided that he either would not take the offer or would default if he took the offer.  Clearly, if client $i$ was offered and contracted but defaulted, $c_i(1|0)$ is related to the size of the contract.  Otherwise, $c_i(1|0)$ is only related to the cost of making the offer.  The loss function below is of interest
-%
-%\begin{equation}
-%\label{def:empRiskBank}
-%L(x_i, h_{\mbox{Current},L_1,L_2}(x_i) , y_i) = 
-%\begin{cases}
-%0     &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 0 \quad \& \quad y_i = 0\\
-%c_i(1|0)    &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 1 \quad \& \quad y_i = 0\\
-%c_i(0|1)      &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 0 \quad \& \quad y_i = 1\\
-%0   &\quad \mbox{for} \quad h_{\mbox{Current},L_1,L_2}(x_i) = 1 \quad \& \quad y_i = 1.
-%\end{cases}
-%\end{equation}
-%
-%Cajamar can estimate $c_i(0|1)$ and $c_i(1|0)$ for all clients in the database.
-%
-%
-%The empirical risk for the old campaign is not taking into account the financial loss related to excluding a number of clients that actually would have contracted and not defaulted.  Said with other words, the empirical risk is not taking into account losses related to when $h_{\mbox{Current},L_1,L_2}(x_i) = 0$, and $y_1 = 1$.  In such a calculation none of the $c_i(0|1)$s are used.  The empirical risk will therefore be less than the true risk (which would take the above point into account).
-%
-%A simple test is to use the Amidst toolbox to provide an additional filter related to default prediction on top of the old classification rule.  Mathematically this is
-%
-%\begin{equation}
-%\begin{split}
-%\label{eq:filter}
-%h_{\mbox{Amidst filter},L_1,L_2,L_3}(x_i) = &
-%P_{\mbox{Current}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_1
-% \, \& \,
-%P_{\mbox{Current}}(\mbox{Contract}_i \,|\, \bv{x_i}) \geq L_2
-%\, \& \,  
-%\\ &
-%P_{\mbox{Amidst filter}}(\mbox{Default}_i \,|\, \bv{x_i}) \leq L_3.
-%\end{split}
-%\end{equation}
-%This calculation of empirical risk is biased by the same amount as the old method.  It makes therefore sense to compare $R_{emp}(h_{\mbox{Amidst filter},L_1,L_2,L_3}, \bv{x}) $ with $R_{emp}(h_{\mbox{Current},L_1,L_2}, \bv{x}) $.
-%The benefit of using the Amidst model as additional filter can therefore be quantified.
-%
-%\subsection*{Questions: }
-%\begin{enumerate}
-%\item Do you see any flaw in reasoning?
-%\item What more should we do?
-%\item What do you think about the profiling ideas?
-%\end{enumerate}
-%
-%}
-%
+%\subsubsection{Application scenario 3}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \bibliographystyle{named}
