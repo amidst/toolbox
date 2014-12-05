@@ -52,6 +52,16 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
 
 
 
+
+    @Override
+    public int getNumberOfFreeParameters() {
+        int n=0;
+        for(Normal dist:this.getDistribution()){
+            n+=dist.getNumberOfFreeParameters();
+        }
+        return n;
+    }
+
     /**
      * Gets the corresponding univariate normal distribution after conditioning the distribution to a multinomial
      * parent assignment.

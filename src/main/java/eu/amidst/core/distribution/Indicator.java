@@ -24,6 +24,7 @@ public class Indicator extends ConditionalDistribution{
         for (Variable var: conditionalDistribution_.getConditioningVariables()){
             this.parents.add(var);
         }
+
         this.parents.add(indicatorVar_);
         this.conditionalDistribution=conditionalDistribution_;
         this.indicatorVar = indicatorVar_;
@@ -36,6 +37,12 @@ public class Indicator extends ConditionalDistribution{
 
     public Variable getIndicatorVar() {
         return indicatorVar;
+    }
+
+    //TODO: I'm not sure about how to compute this
+    @Override
+    public int getNumberOfFreeParameters() {
+        return 0;
     }
 
     @Override
