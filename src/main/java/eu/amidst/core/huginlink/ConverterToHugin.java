@@ -19,10 +19,10 @@ public class ConverterToHugin {
     private Domain huginBN;
     private BayesianNetwork amidstBN;
 
-    public ConverterToHugin(BayesianNetwork amidstBN_) throws ExceptionHugin {
+    public ConverterToHugin(BayesianNetwork amidstBN1) throws ExceptionHugin {
 
         this.huginBN = new Domain();
-        this.amidstBN = amidstBN_;
+        this.amidstBN = amidstBN1;
     }
 
     public Domain getHuginNetwork(){
@@ -88,7 +88,7 @@ public class ConverterToHugin {
         huginVar.getTable().setData(finalArray);
     }
 
-    public void setNormal_NormalParents(Normal_NormalParents dist, int assign_i) throws ExceptionHugin {
+    public void setNormal_NormalParents(Normal_NormalParents dist, int assign) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
         List<Variable> normalParents = dist.getConditioningVariables();
@@ -97,17 +97,17 @@ public class ConverterToHugin {
         Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
 
         double variance = Math.pow(dist.getSd(), 2);
-        ((ContinuousChanceNode)huginVar).setGamma(variance,assign_i);
+        ((ContinuousChanceNode)huginVar).setGamma(variance,assign);
 
         double intercept = dist.getIntercept();
-        ((ContinuousChanceNode) huginVar).setAlpha(intercept, assign_i);
+        ((ContinuousChanceNode) huginVar).setAlpha(intercept, assign);
 
         double[] coeffParents = dist.getCoeffParents();
 
         for(int i=0;i<numNormalParents;i++) {
             ContinuousChanceNode huginParent =
                     (ContinuousChanceNode)this.huginBN.getNodeByName(normalParents.get(i).getName());
-            ((ContinuousChanceNode)huginVar).setBeta(coeffParents[i],huginParent,assign_i);
+            ((ContinuousChanceNode)huginVar).setBeta(coeffParents[i],huginParent,assign);
         }
     }
 

@@ -11,14 +11,14 @@ import java.util.List;
  */
 public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
 
-    DataFileReader reader;
+    private DataFileReader reader;
     /**
      * We assume that the dataset here is going to be relatively small and that it is going to be read multiple times
      * so it is better to store it in an array, otherwise it might be just better to keep it in the ArrayList and avoid
      * the extra pass in the constructor.
      */
-    StaticDataInstance[] dataInstances;
-    int pointer = 0;
+    private StaticDataInstance[] dataInstances;
+    private int pointer = 0;
 
 
     public StaticDataOnMemoryFromFile(DataFileReader reader) {

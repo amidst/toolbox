@@ -11,18 +11,18 @@ public class DynamicDataInstance implements DataInstance {
     private DataRow dataRowPresent;
     private DataRow dataRowPast;
 
-    int sequenceID;
+    private int sequenceID;
     /**
      * The timeID of the Present
      */
-    int timeID;
+    private int timeID;
 
 
-    public DynamicDataInstance(DataRow dataRowPast_, DataRow dataRowPresent_, int sequenceID_, int timeID_){
-        dataRowPresent = dataRowPresent_;
-        dataRowPast =  dataRowPast_;
-        this.sequenceID = sequenceID_;
-        this.timeID = timeID_;
+    public DynamicDataInstance(DataRow dataRowPast1, DataRow dataRowPresent1, int sequenceID1, int timeID1){
+        dataRowPresent = dataRowPresent1;
+        dataRowPast =  dataRowPast1;
+        this.sequenceID = sequenceID1;
+        this.timeID = timeID1;
     }
 
     @Override

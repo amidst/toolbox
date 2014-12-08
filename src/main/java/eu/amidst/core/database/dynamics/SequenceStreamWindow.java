@@ -9,17 +9,17 @@ import eu.amidst.core.database.Attributes;
  */
 public interface SequenceStreamWindow {
 
-    public Attributes getDynamicAttributes();
+    Attributes getDynamicAttributes();
 
-    public int getWindowSize();
+    int getWindowSize();
 
-    public boolean hasMoreData();
+    boolean hasMoreData();
 
-    public void loadNextWindow();
+    void loadNextWindow();
 
-    public DynamicDataInstance getSequenceData(int indexInWindow);
+    DynamicDataInstance getSequenceData(int indexInWindow);
 
-    public boolean isReseteable();
+    boolean isReseteable();
 
-    public void reset();
+    void reset();
 }

@@ -9,7 +9,6 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -89,8 +88,10 @@ public final class StaticBayesianNetworks {
          * 2. We print out the created DAG. We can check that everything is as expected.
          */
         if (dag.containCycles())
-            throw new Exception("The graph contains cycles");
-
+            try {
+            } catch (Exception e) {
+                throw new IllegalArgumentException (e);
+            }
         System.out.println(dag.toString());
 
 

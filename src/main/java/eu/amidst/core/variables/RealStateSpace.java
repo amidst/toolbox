@@ -5,8 +5,8 @@ package eu.amidst.core.variables;
  */
 public class RealStateSpace extends StateSpace{
 
-    double minInterval;
-    double maxInterval;
+    private double minInterval;
+    private double maxInterval;
 
 
     public RealStateSpace() {

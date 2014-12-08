@@ -1,7 +1,6 @@
 package eu.amidst.examples;
 
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
@@ -12,9 +11,6 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class contains examples about how we can create CajaMar's dynamic models using the AMIDST Toolbox.
