@@ -95,9 +95,9 @@ The application scenario covers these use cases from (D1.2):
 
 Requirements for the different use-cases were defined in D1.2. Most requirements are functional in nature, and introduce functionality requests into the system, but some also introduce hard requirements that can be tested quantitatively. The latter are repeated in \ref{tab:verdande:requirements} for completeness. We note that the requirements centers around three issues:
 \begin{itemize}
-\item The whole process covered by Application scenario CAJ1, starting with SQL queries and ending with report generation must take less than 3 hours for the 5.6M clients (requirements CAJ.U1.O1, CAJ.U2.O1, CAJ.U4.D1, CAJ.U4.O1, and CAJ.U5.O1).
-\item The prediction quality for Application scenario CAJ1, evaluated by AUROC, must be higher than $90\%$ (CAJ.U3.D3).
-\item The quality of the profiles generated in Application scenario CAJ2 are evaluated through an improved benefit of at least $5\%$ (CAJ.U6.O3).
+\item The evaluation process for application scenario VER1 will be defined in this document (requirements VER.U2.D2 and VER.U2.D3).
+\item In application scenario VER2, the rate of mis abnormalities and rate of missed abnormalities must be better than the priors distributions and should be better than an inexperienced driller (requirements VER.U3.D2, VER.U3.D3, VER.U3.D4 and VER.U2.D5).
+\item In appliction scenario VER3, mean distance from the estimated formation shifts to the ground truth is essential (requirements VER.U4.D2 and VER.U4.D3).
 \end{itemize}
 
 \begin{table}
@@ -106,14 +106,14 @@ Requirements for the different use-cases were defined in D1.2. Most requirements
 \begin{tabular}{|p{16mm}|p{15mm}|p{75mm}|p{12mm}|}\hline
 ID & Sub-phase & Description & Task(s)\\ \hline\hline
 VER.U1.O1&	Software development	&Data import should take less than 10 minutes  on a single desktop computer or equivalent	&	7.1\\ \hline
-VER.U2.O2& 	Production testing	& Formalization of the test procedure will be developed in task 1.2. & 1,2 /\, 7.2\\ \hline
+VER.U2.D2& 	Production testing	& Formalization of the test procedure will be developed in task 1.2. & 1,2 /\, 7.2\\ \hline
 VER.U2.D3&	Production testing	& The accuracy of the result and the discussion should be published in a journal or a conference.  & 7.2 /\, 9.3 /\, 9.4\\\hline
-VER.U3.O2& 	Production testing	& The rate of missed abnormalities must be no larger than the prior probability of abnormality.  &  7.2\\ \hline
+VER.U3.D2& 	Production testing	& The rate of missed abnormalities must be no larger than the prior probability of abnormality.  &  7.2\\ \hline
 VER.U3.D3&	Production testing	&The rate of missed normal states must be no larger than the prior probability of normality.  & 7.2\\\hline
-VER.U3.O4& 	Production testing	& The rate of missed abnormalities could be below what is obtained by an inexperienced drilling engineer or a software program at that level. & 7.2\\ \hline
+VER.U3.D4& 	Production testing	& The rate of missed abnormalities could be below what is obtained by an inexperienced drilling engineer or a software program at that level. & 7.2\\ \hline
 VER.U3.D5&	Production testing	& The rate of missed normalities could be below what is obtained by an inexperienced drilling engineer or a software program at that level.  & 7.2\\\hline
-VER.U4.O2& 	Production testing	& MD algorithm must be less than MD prior (both defined in Use Case Scenario 3), on at least 1 randomly chosen drilling log.  &  7.3\\ \hline
-VER.U4.D3&	Production testing	&MD algorithm should be 10 percent less than MD prior, defined in Use Case Scenario 2, on at least 3 randomly chosen drilling logs.  & 7.3\\\hline
+VER.U4.D2& 	Production testing	& MD algorithm must be less than MD prior (defined in Use Case Scenario 3 in Delivery 1.2), on at least 1 randomly chosen drilling log.  &  7.3\\ \hline
+VER.U4.D3&	Production testing	&MD algorithm should be 10 percent less than MD prior (defined in Use Case Scenario 3 in Delivery 1.2) on at least 3 randomly chosen drilling logs.  & 7.3\\\hline
 VER.U5.D4&	Testing	& Agents need to run fast enough for real-time implementation. In practice, this means that once probability tables are calculated  (post learning), the agent once provided a single new data point must be able to calculate probabilities, values or classifications and returning these in under 1 second on a single desktop computer or equivalent hardware  & 3.3 / 7.3\\\hline
 \\
 \hline \hline\end{tabular}
@@ -185,19 +185,63 @@ The data set that is available from Verdande is complex and involving many varia
 \subsubsection{Dataset one}
 This data set contains 100 drilling logs of various size. Typically one log covers one drilling section or approximately a few weeks of data. For each of the 100 logs two XML files have been generated. The first XML file contains a subset of graphs with common mnemonics and SI units.  The XML files contains a fixed number of variables , where the resolution of the logs are below ten seconds between updates.
 %
-%The subset includes ONLY:%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)%\item Depth of bit (DBTM)%\item Hole depth (DMEA)%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Activity code (verdande calculated) %\item Depth log indicator (no, yes) (verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)%\end{itemize}%%Moreover, these static properties exist for each log:
-%\begin{itemize}%\item Bit size%\item Mud motor (yes/no)%\item Tagalog ID (Well name etc)%\end{itemize}
+%The subset includes ONLY:
+%
+%\begin{itemize}
+%\item Time stamp (for event export)
+%\item Time stamp in seconds since the operation started (verdande calculated)
+%\item Depth of bit (DBTM)
+%\item Hole depth (DMEA)
+%\item Block position (BPOS)
+%\item Rate of penetration (ROP) (verdande calculated)
+%\item Hook load (HKL)
+%\item Weight on bit (WOB) (verdande calculated if exist)
+%\item Mud flow in (MFI) (not verdande calculated)
+%\item Stand pipe pressure (SPP)
+%\item Rotations per minute (RPM)
+%\item Torque TRQ (not verdande calculated)
+%\item Activity code (verdande calculated) 
+%\item Depth log indicator (no, yes) (verdande calculated)
+%\item Normality index (normal, maybe abnormal) (verdande calculated)
+%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)
+%\item True vertical depth (TVD)
+%\end{itemize}
+%
+%Moreover, these static properties exist for each log:
+%\begin{itemize}
+%\item Bit size
+%\item Mud motor (yes/no)
+%\item Tagalog ID (Well name etc)
+%\end{itemize}
 
 Among the variables that are contained in the XML file is the normality index, the torque vibration index and also the depth log indicator.
-The normality index is identified automatically by DrillEdge. The condition is taken to be normal, when no case is on the radar and no events have fired in a time window of 10 minutes (forward and backwards) and in a depth window of 5 meters (upwards and downwards).
+
+The normality index is identified automatically by DrillEdge. The condition is taken to be normal, when no case is on the radar and no events have fired in a time window of 10 minutes (forward and backwards) and in a depth window of 5 meters (upwards and downwards).
 
 Torque vibration index (no, yes, NA) are basically identified on logs that are fully tagged. 
-The depth log indicator is pointing out which time stamps are elements in the second XML file. It is basically, the time steps of drilling (except when the depth is manually adjusted). The second XML file is made by simply filter based on the depth log indicator.The second XML file contains a subset of graphs with common mnemonics and SI units on a depth scale. This subset is using the activity code (that is when we are drilling) to filter out data when non drilling appears. In this case, each data point represent only one depth. The depth logs are unique, meaning that only one measure for each depth. (In the case when the depth is reset manually to a lower number, the measurements between the two candidate depths are deleted.) The XML files contains a fixed number of variables, which are indexed on the depth they were drilled.
+
+The depth log indicator is pointing out which time stamps are elements in the second XML file. It is basically, the time steps of drilling (except when the depth is manually adjusted). The second XML file is made by simply filter based on the depth log indicator.
+
+The second XML file contains a subset of graphs with common mnemonics and SI units on a depth scale. This subset is using the activity code (that is when we are drilling) to filter out data when non drilling appears. In this case, each data point represent only one depth. The depth logs are unique, meaning that only one measure for each depth. (In the case when the depth is reset manually to a lower number, the measurements between the two candidate depths are deleted.) The XML files contains a fixed number of variables, which are indexed on the depth they were drilled.
 
 %
 %The depth logs includes ONLY:
-%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)
-%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)%\end{itemize}
+%
+%\begin{itemize}
+%\item Time stamp (for event export)
+%\item Time stamp in seconds since the operation started (verdande calculated)
+%\item Block position (BPOS)
+%\item Rate of penetration (ROP) (verdande calculated)
+%\item Hook load (HKL)
+%\item Weight on bit (WOB) (verdande calculated if exist)
+%\item Mud flow in (MFI) (not verdande calculated)
+%\item Stand pipe pressure (SPP)
+%\item Rotations per minute (RPM)
+%\item Torque TRQ (not verdande calculated)
+%\item Normality index (normal, maybe abnormal) (verdande calculated)
+%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)
+%\item True vertical depth (TVD)
+%\end{itemize}
 
 \subsubsection{Dataset two}
 
@@ -205,22 +249,65 @@ At the current state only one data log that is available for use case scenario 3
 
 For each data log two XML files have been generated. The first XML file contains only a subset of graphs with common mnemonics and SI units on a time scale. The XML files contains a fixed number of variables , where the resolution of the logs are below ten seconds between updates.
 
-%The subset includes ONLY:%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)%\item Depth of bit (DBTM)%\item Hole depth (DMEA)%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Activity code (verdande calculated) %\item Depth log indicator (no, yes) (verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)
+%The subset includes ONLY:
+%
+%\begin{itemize}
+%\item Time stamp (for event export)
+%\item Time stamp in seconds since the operation started (verdande calculated)
+%\item Depth of bit (DBTM)
+%\item Hole depth (DMEA)
+%\item Block position (BPOS)
+%\item Rate of penetration (ROP) (verdande calculated)
+%\item Hook load (HKL)
+%\item Weight on bit (WOB) (verdande calculated if exist)
+%\item Mud flow in (MFI) (not verdande calculated)
+%\item Stand pipe pressure (SPP)
+%\item Rotations per minute (RPM)
+%\item Torque TRQ (not verdande calculated)
+%\item Activity code (verdande calculated) 
+%\item Depth log indicator (no, yes) (verdande calculated)
+%\item Normality index (normal, maybe abnormal) (verdande calculated)
+%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)
+%\item True vertical depth (TVD)
 %\item Gamma Ray (GAM)
 %\item Resistivity (RES)
-%\end{itemize}%%Moreover, these static properties exist for each log:
-%\begin{itemize}%\item Bit size%\item Mud motor (yes/no)%\item Tagalog ID (Well name etc)
-%\item Distance from Gamma sensor to bit%\item Distance from Resistivity sensor to bit%\end{itemize}The second XML file contains a subset of graphs with common mnemonics and SI units on depth scale. This subset is using the activity code (that is when we are drilling) to produce a set of depth logs as discussed above. The XML files contains a fixed number of variables, which are indexed on the depth they were drilled.
+%\end{itemize}
+%
+%Moreover, these static properties exist for each log:
+%\begin{itemize}
+%\item Bit size
+%\item Mud motor (yes/no)
+%\item Tagalog ID (Well name etc)
+%\item Distance from Gamma sensor to bit
+%\item Distance from Resistivity sensor to bit
+%\end{itemize}
+
+
+The second XML file contains a subset of graphs with common mnemonics and SI units on depth scale. This subset is using the activity code (that is when we are drilling) to produce a set of depth logs as discussed above. The XML files contains a fixed number of variables, which are indexed on the depth they were drilled.
 
 
 %
 %The depth logs includes ONLY:
-%%\begin{itemize}%\item Time stamp (for event export)%\item Time stamp in seconds since the operation started (verdande calculated)
-%\item Block position (BPOS)%\item Rate of penetration (ROP) (verdande calculated)%\item Hook load (HKL)%\item Weight on bit (WOB) (verdande calculated if exist)%\item Mud flow in (MFI) (not verdande calculated)%\item Stand pipe pressure (SPP)%\item Rotations per minute (RPM)%\item Torque TRQ (not verdande calculated)%\item Normality index (normal, maybe abnormal) (verdande calculated)%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)%\item True vertical depth (TVD)
+%
+%\begin{itemize}
+%\item Time stamp (for event export)
+%\item Time stamp in seconds since the operation started (verdande calculated)
+%\item Block position (BPOS)
+%\item Rate of penetration (ROP) (verdande calculated)
+%\item Hook load (HKL)
+%\item Weight on bit (WOB) (verdande calculated if exist)
+%\item Mud flow in (MFI) (not verdande calculated)
+%\item Stand pipe pressure (SPP)
+%\item Rotations per minute (RPM)
+%\item Torque TRQ (not verdande calculated)
+%\item Normality index (normal, maybe abnormal) (verdande calculated)
+%\item Torque vibration index (no, yes, NA) (verdande calculated from tags)
+%\item True vertical depth (TVD)
 %\item Gamma Ray (GAM)
 %\item Resistivity (RES)
 %\item Lithology from planning (LITPLAN)
-%\item Lithology afterwards (LITAFTER)%\end{itemize}
+%\item Lithology afterwards (LITAFTER)
+%\end{itemize}
 
 \subsection{Predictive performance: test and evaluation}
 
@@ -266,20 +353,28 @@ In order to compare with an inexperienced drilling engineer, an evaluation will 
 
 The above measures are global and can be estimated after the logs have been processed.  The performance measures do not take into account concept drift.  
 
-In case of drilling a section (the data contained in one log), there is clearly concept drift.  To be more precise, a drilling operation starts out normal, but as the open hole is getting longer, the probability of abnormality increases as the hole gets dirtier and more unstable. Moreover, equipment are expected to be in good shape as the operation starts, but degrades with drilling.  
+In case of drilling a section (the data contained in one log), there is clearly concept drift.  To be more precise, a drilling operation starts out normal, but as the open hole is getting longer, the probability of abnormality increases as the hole gets more unstable and also more dirty. Moreover, equipment are expected to be in good shape as the operation starts, but degrades with drilling.  
 
 It is therefore of interest to compute the prequential AUC with a forgetting factor (as of equation xx) and plot this versus time.  A proper discussion of this is believed to be of interest.
 
 \subsubsection{Application scenario 3}
 
-Check sequence alignment on wiki.
-
-It is of interest to define two measures. The measure MDprior is the mean deviation between the expert identified formation tops before drilling and after drilling. The measure MDalgorithm is the mean deviation between the formation tops that are detected by the algorithm and the formation tops that are identified by the experts after the well is drilled. Clearly, it is a goal to make an algorithm where MDalgorithm is less than MDprior. 
+In this application scenario it is of interest to both find the formation tops and also to correctly label them.  From Delivery 1.2 we have these requirements:
 
 \begin{enumerate}
-\item VER.U4.O2 MDalgorithm must be less than MDprior (both defined in Use Case Scenario 3), on at least 1 randomly chosen drilling log. 
-\item VER.U4.D3 MDalgorithm should be 10 percent less than MDprior, defined in Use Case Scenario 2, on at least 3 randomly chosen drilling logs. 
+\item VER.U4.D2 MDalgorithm must be less than MDprior (both defined in Use Case Scenario 3), on at least 1 randomly chosen drilling log. 
+\item VER.U4.D3 MDalgorithm should be 10 percent less than MDprior on at least 3 randomly chosen drilling logs. 
 \end{enumerate}
+
+The measure MDprior is the mean deviation between the expert identified formation tops before drilling and after drilling. The measure MDalgorithm is the mean deviation between the formation tops that are detected by the algorithm and the formation tops that are identified by the experts after the well is drilled. Clearly, it is a goal to make an algorithm where MDalgorithm is less than MDprior. 
+
+If we can assume that all formation shifts that are present in the litology chart from planning, actually happen, even though not exactly the same places, then it should be possible to force the algorithm to have the same formations as the ground truth.  In this case, finding an algorithm to calculate the mean deviation should be straigh forward. 
+
+However, this task is not this easy.  In particular, one can not assume that the sequence of formations in the planning lithology is exactly the same as the sequence in the ground truth.  We therefore need to make a measure that allows for a penalty of adding or removing an extra formation.
+
+{\bf In general, I don ot have the answer for this.  Helge suggested looking at sequence alignment on wiki. I tried, but did not figure it out. Will think more.  A simple option would be to assume that sequences from planning are the same as the ground truth, by some manipulation of the data.}
+
+
 
 %If successful, automatic detection of formation tops would be a game-changer for the oil- community. This is because knowing the formation is essential in terms of dealing with issues related to hole instabilities, hole cleaning and vibrations.
 
