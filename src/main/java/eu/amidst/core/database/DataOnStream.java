@@ -8,6 +8,6 @@ import java.util.Iterator;
  */
 public interface DataOnStream  extends Iterable<DataInstance>, Iterator<DataInstance> {
 
-    public Attributes getAttributes();
+    Attributes getAttributes();
 
 }

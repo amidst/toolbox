@@ -54,7 +54,7 @@ public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distri
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
-    public abstract E createNewBaseDistribution(Variable var, List<Variable> non_multinomialParents);
+    public abstract E createNewBaseDistribution(Variable var, List<Variable> nonMultinomialParents);
 
     public void setEF_BaseDistribution(int indexMultinomial, E baseDist) {
         this.distributions.set(indexMultinomial,baseDist);

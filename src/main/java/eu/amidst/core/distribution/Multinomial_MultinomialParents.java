@@ -129,13 +129,13 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     }
 
     public String toString() {
-
-        String str ="";
+        StringBuilder str = new StringBuilder();
+        str.append("");
         for (int i=0;i<getNumberOfParentAssignments();i++){
-            str = str + this.getMultinomial(i).toString();
+            str.append(this.getMultinomial(i).toString());
             if (getNumberOfParentAssignments()>1 && i< getNumberOfParentAssignments()-1)
-                str = str +"\n";
+                str.append("\n");
         }
-        return str;
+        return str.toString();
     }
 }

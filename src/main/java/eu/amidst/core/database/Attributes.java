@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Attributes {
 
-    List<Attribute> attributes;
+    private List<Attribute> attributes;
 
 
 

@@ -170,8 +170,7 @@ public final class VerdandeModels {
 
         ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
         converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginVerdandeIOSKF.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginVerdandeIOSKF.net");
     }
 
     /**
@@ -357,8 +356,7 @@ public final class VerdandeModels {
 
         ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
         converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginVerdandeIOSKFwithMG.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginVerdandeIOSKFwithMG.net");
 
 
     }
@@ -415,8 +413,7 @@ public final class VerdandeModels {
 
         ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
         converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginVerdandeIOHMM.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginVerdandeIOHMM.net");
     }
 
 

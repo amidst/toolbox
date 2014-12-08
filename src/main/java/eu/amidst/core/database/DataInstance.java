@@ -8,11 +8,11 @@ import eu.amidst.core.variables.Variable;
  */
 public interface DataInstance extends Assignment{
 
-    public double getValue(Variable var);
+    double getValue(Variable var);
 
-    public int getSequenceID();
+    int getSequenceID();
 
-    public int getTimeID();
+    int getTimeID();
 
 }
 

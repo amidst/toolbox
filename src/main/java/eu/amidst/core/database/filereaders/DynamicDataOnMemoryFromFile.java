@@ -11,15 +11,12 @@ import java.util.List;
  */
 public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
 
-    DataFileReader reader;
-
-    Attribute attSequenceID;
-    Attribute attTimeID;
-
-    NextDynamicDataInstance nextDynamicDataInstance;
-
-    DynamicDataInstance[] dataInstances;
-    int pointer = 0;
+    private DataFileReader reader;
+    private Attribute attSequenceID;
+    private Attribute attTimeID;
+    private NextDynamicDataInstance nextDynamicDataInstance;
+    private DynamicDataInstance[] dataInstances;
+    private int pointer = 0;
 
 
     public DynamicDataOnMemoryFromFile(DataFileReader reader) {

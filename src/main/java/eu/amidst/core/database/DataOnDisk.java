@@ -19,8 +19,8 @@ import java.util.Iterator;
  */
 public interface DataOnDisk extends Iterable<DataInstance>, Iterator<DataInstance> {
 
-    public Attributes getAttributes();
+    Attributes getAttributes();
 
-    public void restart();
+    void restart();
 
 }
