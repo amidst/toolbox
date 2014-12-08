@@ -104,8 +104,6 @@ public class Normal extends UnivariateDistribution {
     }
 
     public String toString() {
-
-        String str = "[ mu = " + this.getMean() + ", sd = "+ this.getSd() +" ]";
-        return str;
+        return "[ mu = " + this.getMean() + ", sd = "+ this.getSd() +" ]";
     }
 }

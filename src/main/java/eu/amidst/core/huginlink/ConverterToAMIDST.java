@@ -22,8 +22,8 @@ public class ConverterToAMIDST {
     private BayesianNetwork amidstBN;
     private Domain huginBN;
 
-    public ConverterToAMIDST(Domain huginBN_){
-        this.huginBN = huginBN_;
+    public ConverterToAMIDST(Domain huginBN1){
+        this.huginBN = huginBN1;
     }
 
     public BayesianNetwork getAmidstNetwork() {

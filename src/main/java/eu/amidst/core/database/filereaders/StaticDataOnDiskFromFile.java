@@ -12,7 +12,7 @@ import java.util.Iterator;
  */
 public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream{
 
-    DataFileReader reader;
+    private DataFileReader reader;
 
     public StaticDataOnDiskFromFile(DataFileReader reader) {
         this.reader = reader;

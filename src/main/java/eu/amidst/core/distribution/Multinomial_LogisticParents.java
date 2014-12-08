@@ -1,6 +1,5 @@
 package eu.amidst.core.distribution;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -101,15 +100,16 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
 
     public String toString() {
 
-        String str = "";
+        StringBuilder str = new StringBuilder();
+        str.append("");
 
         for (int i = 0; i < this.var.getNumberOfStates() - 1; i++) {
-            str = str + "[ alpha = " + this.getIntercept(i);
+            str.append("[ alpha = " + this.getIntercept(i));
             for (int j = 0; j < this.getCoeffParents(i).length; j++) {
-                str = str + ", beta = " + this.getCoeffParents(i)[j];
+                str.append(", beta = " + this.getCoeffParents(i)[j]);
             }
-            str = str + "]\n";
+            str.append("]\n");
         }
-        return str;
+        return str.toString();
     }
 }

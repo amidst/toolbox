@@ -8,14 +8,14 @@ import eu.amidst.core.variables.Variable;
  */
 public class EF_Normal extends EF_UnivariateDistribution {
 
-    public static int EXPECTED_MEAN = 0;
-    public static int EXPECTED_SQUARE = 1;
+    public static final int EXPECTED_MEAN = 0;
+    public static final int EXPECTED_SQUARE = 1;
 
-    public EF_Normal(Variable var_) {
-        if (var_.getDistributionType()!= DistType.GAUSSIAN)
+    public EF_Normal(Variable var1) {
+        if (var1.getDistributionType()!= DistType.GAUSSIAN)
             throw new UnsupportedOperationException("Creating a Gaussian EF distribution for a non-gaussian variable.");
 
-        this.var=var_;
+        this.var=var1;
         this.naturalParameters = new NaturalParameters(2);
         this.momentParameters = new MomentParameters(2);
 
