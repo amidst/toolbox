@@ -1,0 +1,22 @@
+K 10
+svn:ignore
+V 332
+testCajamar-HL.aux
+testCajamar-HL.log
+testCajamar-HL.synctex.gz
+testCajamar-HL.pdf
+deliverable1.3.aux
+deliverable1.3.dvi
+deliverable1.3.log
+deliverable1.3.out
+deliverable1.3.pdf
+deliverable1.3.synctex.gz
+deliverable1.3.toc
+test-evaluation.log
+testVerdande.pdf
+deliverable1.3.bbl
+deliverable1.3.blg
+introduction.log
+testVerdande.aux
+
+END
