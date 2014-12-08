@@ -11,7 +11,6 @@
  */
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.variables.MultinomialStateSpace;
 import eu.amidst.core.variables.Variable;
 
 
@@ -103,15 +102,15 @@ public class Multinomial extends UnivariateDistribution {
     }
 
     public String toString() {
-
-        String str = "[ ";
+        StringBuilder str = new StringBuilder();
+        str.append("[ ");
         int size = this.getProbabilities().length;
         for(int i=0;i<size;i++){
-            str = str + this.getProbabilities()[i];
+            str.append(this.getProbabilities()[i]);
             if(i<size-1)
-                str = str + ", ";
+                str.append(", ");
         }
-        str = str + " ]";
-        return str;
+        str.append(" ]");
+        return str.toString();
     }
 }

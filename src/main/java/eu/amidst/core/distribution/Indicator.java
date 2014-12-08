@@ -5,16 +5,15 @@ import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by andresmasegosa on 23/11/14.
  */
 public class Indicator extends ConditionalDistribution{
 
-    ConditionalDistribution conditionalDistribution;
-    Uniform uniform;
-    Variable indicatorVar;
+    private ConditionalDistribution conditionalDistribution;
+    private Uniform uniform;
+    private Variable indicatorVar;
 
     public Indicator(Variable indicatorVar_,  ConditionalDistribution conditionalDistribution_) {
         if (indicatorVar_.getDistributionType() != DistType.INDICATOR)

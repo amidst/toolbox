@@ -9,8 +9,8 @@ import java.util.List;
  */
 public class MultinomialStateSpace extends StateSpace implements Iterable<String>{
 
-    int numberOfStates;
-    List<String> statesNames;
+    private int numberOfStates;
+    private List<String> statesNames;
 
 
     public MultinomialStateSpace(int numberOfStates_) {

@@ -7,7 +7,7 @@ import eu.amidst.core.database.Attribute;
  */
 public interface DataRow {
 
-    public double getValue(Attribute att);
+    double getValue(Attribute att);
 
 }
 

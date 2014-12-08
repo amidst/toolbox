@@ -160,14 +160,14 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
 
     public String toString(){
-
-        String str = "[ alpha = " +this.getIntercept() + ", ";
+        StringBuilder str = new StringBuilder();
+        str.append("[ alpha = " +this.getIntercept() + ", ");
 
         for (int i=0;i<this.getCoeffParents().length;i++){
-            str = str + "beta"+(i+1)+" = "+ this.getCoeffParents()[i] + ", ";
+            str.append("beta"+(i+1)+" = "+ this.getCoeffParents()[i] + ", ");
         }
-        str = str + "sd = " + this.getSd() + " ]";
+        str.append("sd = " + this.getSd() + " ]");
 
-        return str;
+        return str.toString();
     }
 }

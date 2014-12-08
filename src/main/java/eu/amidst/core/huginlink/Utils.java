@@ -8,7 +8,6 @@ import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**

@@ -25,14 +25,14 @@ public final class Attribute {
     private final String name;
     private final StateSpace stateSpace;
 
-    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType_, int numberOfStates) {
+    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType1, int numberOfStates) {
 
         this.index = index;
         this.name = name.toUpperCase();
-        if (stateSpaceType_==StateSpaceType.FINITE_SET) {
+        if (stateSpaceType1==StateSpaceType.FINITE_SET) {
             this.stateSpace = new MultinomialStateSpace(numberOfStates);
             this.stateSpace.setUnit(unit);
-        }else if (stateSpaceType_== StateSpaceType.REAL) {
+        }else if (stateSpaceType1== StateSpaceType.REAL) {
             this.stateSpace = new RealStateSpace();
             this.stateSpace.setUnit(unit);
         }else {
@@ -40,23 +40,23 @@ public final class Attribute {
         }
     }
 
-    public Attribute(int index, String name, StateSpaceType stateSpaceType_, int numberOfStates) {
+    public Attribute(int index, String name, StateSpaceType stateSpaceType1, int numberOfStates) {
 
         this.index = index;
         this.name = name.toUpperCase();
-        if (stateSpaceType_==StateSpaceType.FINITE_SET) {
+        if (stateSpaceType1==StateSpaceType.FINITE_SET) {
             this.stateSpace = new MultinomialStateSpace(numberOfStates);
-        }else if (stateSpaceType_== StateSpaceType.REAL) {
+        }else if (stateSpaceType1== StateSpaceType.REAL) {
             this.stateSpace = new RealStateSpace();
         }else {
             throw new IllegalArgumentException("State Space not defined");
         }
     }
 
-    public Attribute(int index, String name, StateSpace stateSpace_) {
+    public Attribute(int index, String name, StateSpace stateSpace1) {
         this.index = index;
         this.name = name.toUpperCase();
-        this.stateSpace = stateSpace_;
+        this.stateSpace = stateSpace1;
     }
 
     public int getIndex() {

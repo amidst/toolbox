@@ -167,13 +167,13 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
 
     public String toString() {
-
-        String str = "";
+        StringBuilder str = new StringBuilder();
+        str.append("");
         for (int i = 0; i < getNumberOfParentAssignment(); i++) {
-            str = str + this.getNormal_NormalParentsDistribution(i).toString()+"\n";
+            str.append(this.getNormal_NormalParentsDistribution(i).toString()+"\n");
         }
 
-        return str;
+        return str.toString();
     }
 
 }
