@@ -1,0 +1,417 @@
+\usepackage{xspace}
+\usepackage{graphics,graphicx,epsfig}
+\usepackage{url}
+
+\newcommand{\nc}{\newcommand}
+
+%      HELGE's EGNE "NEWCOMMANDS"
+
+
+
+%%      THEOREMER OG SLIKT%
+%
+\newtheorem{hl_example}{Example}
+\newtheorem{hl_algorithm}{Algorithm}
+\newtheorem{hl_theorem}{Theorem}
+\newtheorem{hl_proposition}{Proposition}
+\newtheorem{hl_lemma}{Lemma}
+\newtheorem{hl_corollary}{Corollary}
+\newtheorem{hl_definition}{Definition}
+\newtheorem{hl_conjecture}{Conjecture}
+\newenvironment{hl_nonumberenv}[1]{{\bf #1}\begin{it}}{\end{it}}
+\newtheorem{hl_proof}{Proof}
+
+
+
+%      KOMMENTARMARKERING
+
+\nc{\vekk}[1]{}   %         \vekk{Brukes for å markere vekk tekst}
+%\nc{\comment}[1]{\mbox{}\marginpar{\raggedright\hspace{0pt}#1}}%
+\nc{\hl}[1]{\comment{{\bf HL:} #1}} %
+\nc{\tdn}[1]{\comment{{\bf TDN:} #1}} %
+
+
+
+%      BEGIN/END
+
+\nc{\bex}{\begin{example}} \nc{\eex}{\end{example}}
+
+%\nc{\bth}{\begin{theorem}}
+%\nc{\eth}{\end{theorem}}
+
+\nc{\ble}{\begin{lemma}}
+\nc{\ele}{\end{lemma}}
+
+\nc{\bco}{\begin{conjecture}}
+\nc{\eco}{\end{conjecture}}
+
+\nc{\beq}{\begin{equation}}
+\nc{\eeq}{\end{equation}}
+
+\nc{\beqa}{\begin{eqnarray}}
+\nc{\eeqa}{\end{eqnarray}}
+
+\nc{\beqas}{\begin{eqnarray*}}%
+\nc{\eeqas}{\end{eqnarray*}}
+
+\nc{\bsp}{\[\begin{array}{rcl}}
+\nc{\esp}{\end{array}\]}
+
+\nc{\btab}[1]{\begin{tabular}{#1}}
+\nc{\etab}{\end{tabular}}
+
+\nc{\bfi}{\begin{figure}[htpb]}
+\nc{\efi}{\end{figure}}
+
+\nc{\ben}{\begin{enumerate}}
+\nc{\een}{\end{enumerate}}
+
+\nc{\bit}{\begin{itemize}}
+\nc{\eit}{\end{itemize}}
+
+\nc{\bde}{\begin{description}}
+\nc{\ede}{\end{description}}
+
+
+%      PRODUKT, BINOMISKE TING OG SUMMER
+
+\nc{\pin}{\prod_{i=1}^n} \nc{\pjm}{\prod_{j=1}^m}
+\nc{\pkm}{\prod_{k=1}^m} \nc{\pjM}{\prod_{j=1}^M}
+\nc{\suin}{\sum_{i=1}^n} \nc{\sujm}{\sum_{j=1}^m}
+\nc{\sukm}{\sum_{k=1}^m} \nc{\sujM}{\sum_{j=1}^M} \nc{\bimr}{\left
+(_r^m \right)} \nc{\birs}{\left (_s^r \right)}
+\nc{\bin}[2]{\left(\begin{array}{c} #1 \\ #2 \end{array}\right)}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      CAL-TING
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\nc{\cal}{\mathcal}
+
+\nc{\calDelta}{\mbox{$\cal{\Delta}$}}
+
+% \nc{\calA}{\mbox{${\cal A}$}} \nc{\calB}{\mbox{$\cal{B}$}}
+% \nc{\calC}{\mbox{$\cal{C}$}} \nc{\calD}{\mbox{$\cal{D}$}}
+% \nc{\calE}{\mbox{$\cal{E}$}} \nc{\calF}{\mbox{$\cal{F}$}}
+% \nc{\calG}{\mbox{$\cal{G}$}} \nc{\calH}{\mbox{$\cal{H}$}}
+% \nc{\calI}{\mbox{$\cal{I}$}} \nc{\calJ}{\mbox{$\cal{J}$}}
+% \nc{\calK}{\mbox{$\cal{K}$}} \nc{\calL}{\mbox{$\cal{L}$}}
+% \nc{\calM}{\mbox{$\cal{M}$}} \nc{\calN}{\mbox{$\cal{N}$}}
+% \nc{\calO}{\mbox{$\cal{O}$}} \nc{\calP}{\mbox{$\cal{P}$}}
+% \nc{\calQ}{\mbox{$\cal{Q}$}} \nc{\calR}{\mbox{$\cal{R}$}}
+% \nc{\calS}{\mbox{$\cal{S}$}} \nc{\calT}{\mbox{$\cal{T}$}}
+% \nc{\calU}{\mbox{$\cal{U}$}} \nc{\calV}{\mbox{$\cal{V}$}}
+% \nc{\calW}{\mbox{$\cal{W}$}} \nc{\calX}{\mbox{$\cal{X}$}}
+% \nc{\calY}{\mbox{$\cal{Y}$}} \nc{\calZ}{\mbox{$\cal{Z}$}}
+% \nc{\calz}{\mbox{$\cal{z}$}}
+
+
+
+\nc{\calA}{{\ensuremath{\cal{A}}}} \nc{\calB}{{\ensuremath{\cal{B}}}}
+\nc{\calC}{{\ensuremath{\cal{C}}}} \nc{\calD}{{\ensuremath{\cal{D}}}}
+\nc{\calE}{{\ensuremath{\cal{E}}}} \nc{\calF}{{\ensuremath{\cal{F}}}}
+\nc{\calG}{{\ensuremath{\cal{G}}}} \nc{\calH}{{\ensuremath{\cal{H}}}}
+\nc{\calI}{{\ensuremath{\cal{I}}}} \nc{\calJ}{{\ensuremath{\cal{J}}}}
+\nc{\calK}{{\ensuremath{\cal{K}}}} \nc{\calL}{{\ensuremath{\cal{L}}}}
+\nc{\calM}{{\ensuremath{\cal{M}}}} \nc{\calN}{{\ensuremath{\cal{N}}}}
+\nc{\calO}{{\ensuremath{\cal{O}}}} \nc{\calP}{{\ensuremath{\cal{P}}}}
+\nc{\calQ}{{\ensuremath{\cal{Q}}}} \nc{\calR}{{\ensuremath{\cal{R}}}}
+\nc{\calS}{{\ensuremath{\cal{S}}}} \nc{\calT}{{\ensuremath{\cal{T}}}}
+\nc{\calU}{{\ensuremath{\cal{U}}}} \nc{\calV}{{\ensuremath{\cal{V}}}}
+\nc{\calW}{{\ensuremath{\cal{W}}}} \nc{\calX}{{\ensuremath{\cal{X}}}}
+\nc{\calY}{{\ensuremath{\cal{Y}}}} \nc{\calZ}{{\ensuremath{\cal{Z}}}}
+\nc{\calz}{{\ensuremath{\cal{z}}}}
+
+
+
+%\nc{\NP}{\mbox{$\calN\calP$}}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      BOLDMATH-TING
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\nc{\bm}{\boldmath}
+% \nc{\bm}{\bf}
+\nc{\bma}{{\ensuremath{\boldsymbol{a}}}} 
+\nc{\bmb}{{\ensuremath{\boldsymbol{b}}}}
+\nc{\bmc}{{\ensuremath{\boldsymbol{c}}}} \nc{\bmd}{{\ensuremath{\boldsymbol{d}}}}
+\nc{\bme}{{\ensuremath{\boldsymbol{e}}}} \nc{\bmf}{{\ensuremath{\boldsymbol{f}}}}
+\nc{\bmg}{{\ensuremath{\boldsymbol{g}}}} \nc{\bmh}{{\ensuremath{\boldsymbol{h}}}}
+\nc{\bmi}{{\ensuremath{\boldsymbol{i}}}} \nc{\bmj}{{\ensuremath{\boldsymbol{j}}}}
+\nc{\bmk}{{\ensuremath{\boldsymbol{k}}}} \nc{\bml}{{\ensuremath{\boldsymbol{l}}}}
+\nc{\bmm}{{\ensuremath{\boldsymbol{m}}}} \nc{\bmn}{{\ensuremath{\boldsymbol{n}}}}
+\nc{\bmo}{{\ensuremath{\boldsymbol{o}}}} \nc{\bmp}{{\ensuremath{\boldsymbol{p}}}}
+\nc{\bmq}{{\ensuremath{\boldsymbol{q}}}} \nc{\bmr}{{\ensuremath{\boldsymbol{r}}}}
+\nc{\bms}{{\ensuremath{\boldsymbol{s}}}} \nc{\bmt}{{\ensuremath{\boldsymbol{t}}}}
+\nc{\bmu}{{\ensuremath{\boldsymbol{u}}}} \nc{\bmv}{{\ensuremath{\boldsymbol{v}}}}
+\nc{\bmw}{{\ensuremath{\boldsymbol{w}}}} \nc{\bmx}{{\ensuremath{\boldsymbol{x}}}}
+\nc{\bmy}{{\ensuremath{\boldsymbol{y}}}} \nc{\bmz}{{\ensuremath{\boldsymbol{z}}}}
+
+% \nc{\bma}{{\mbox{\bm $a$}}} 
+% \nc{\bmb}{{\mbox{\bm $b$}}}
+% \nc{\bmc}{{\mbox{\bm $c$}}} \nc{\bmd}{{\mbox{\bm $d$}}}
+% \nc{\bme}{{\mbox{\bm $e$}}} \nc{\bmf}{{\mbox{\bm $f$}}}
+% \nc{\bmg}{{\mbox{\bm $g$}}} \nc{\bmh}{{\mbox{\bm $h$}}}
+% \nc{\bmi}{{\mbox{\bm $i$}}} \nc{\bmj}{{\mbox{\bm $j$}}}
+% \nc{\bmk}{{\mbox{\bm $k$}}} \nc{\bml}{{\mbox{\bm $l$}}}
+% \nc{\bmm}{{\mbox{\bm $m$}}} \nc{\bmn}{{\mbox{\bm $n$}}}
+% \nc{\bmo}{{\mbox{\bm $o$}}} \nc{\bmp}{{\mbox{\bm $p$}}}
+% \nc{\bmq}{{\mbox{\bm $q$}}} \nc{\bmr}{{\mbox{\bm $r$}}}
+% \nc{\bms}{{\mbox{\bm $s$}}} \nc{\bmt}{{\mbox{\bm $t$}}}
+% \nc{\bmu}{{\mbox{\bm $u$}}} \nc{\bmv}{{\mbox{\bm $v$}}}
+% \nc{\bmw}{{\mbox{\bm $w$}}} \nc{\bmx}{{\mbox{\bm $x$}}}
+% \nc{\bmy}{{\mbox{\bm $y$}}} \nc{\bmz}{{\mbox{\bm $z$}}}
+
+
+\nc{\bmA}{{\ensuremath{\boldsymbol{A}}}} \nc{\bmB}{{\ensuremath{\boldsymbol{B}}}}
+\nc{\bmC}{{\ensuremath{\boldsymbol{C}}}} \nc{\bmD}{{\ensuremath{\boldsymbol{D}}}}
+\nc{\bmE}{{\ensuremath{\boldsymbol{E}}}} \nc{\bmF}{{\ensuremath{\boldsymbol{F}}}}
+\nc{\bmG}{{\ensuremath{\boldsymbol{G}}}} \nc{\bmH}{{\ensuremath{\boldsymbol{H}}}}
+\nc{\bmI}{{\ensuremath{\boldsymbol{I}}}} \nc{\bmJ}{{\ensuremath{\boldsymbol{J}}}}
+\nc{\bmK}{{\ensuremath{\boldsymbol{K}}}} \nc{\bmL}{{\ensuremath{\boldsymbol{L}}}}
+\nc{\bmM}{{\ensuremath{\boldsymbol{M}}}} \nc{\bmN}{{\ensuremath{\boldsymbol{N}}}}
+\nc{\bmO}{{\ensuremath{\boldsymbol{O}}}} \nc{\bmP}{{\ensuremath{\boldsymbol{P}}}}
+\nc{\bmQ}{{\ensuremath{\boldsymbol{Q}}}} \nc{\bmR}{{\ensuremath{\boldsymbol{R}}}}
+\nc{\bmS}{{\ensuremath{\boldsymbol{S}}}} \nc{\bmT}{{\ensuremath{\boldsymbol{T}}}}
+\nc{\bmU}{{\ensuremath{\boldsymbol{U}}}} \nc{\bmV}{{\ensuremath{\boldsymbol{V}}}}
+\nc{\bmW}{{\ensuremath{\boldsymbol{W}}}} \nc{\bmX}{{\ensuremath{\boldsymbol{X}}}}
+\nc{\bmY}{{\ensuremath{\boldsymbol{Y}}}} \nc{\bmZ}{{\ensuremath{\boldsymbol{Z}}}}
+
+% \nc{\bmA}{{\mbox{\bm $A$}}} \nc{\bmB}{{\mbox{\bm $B$}}}
+% \nc{\bmC}{{\mbox{\bm $C$}}} \nc{\bmD}{{\mbox{\bm $D$}}}
+% \nc{\bmE}{{\mbox{\bm $E$}}} \nc{\bmF}{{\mbox{\bm $F$}}}
+% \nc{\bmG}{{\mbox{\bm $G$}}} \nc{\bmH}{{\mbox{\bm $H$}}}
+% \nc{\bmI}{{\mbox{\bm $I$}}} \nc{\bmJ}{{\mbox{\bm $J$}}}
+% \nc{\bmK}{{\mbox{\bm $K$}}} \nc{\bmL}{{\mbox{\bm $L$}}}
+% \nc{\bmM}{{\mbox{\bm $M$}}} \nc{\bmN}{{\mbox{\bm $N$}}}
+% \nc{\bmO}{{\mbox{\bm $O$}}} \nc{\bmP}{{\mbox{\bm $P$}}}
+% \nc{\bmQ}{{\mbox{\bm $Q$}}} \nc{\bmR}{{\mbox{\bm $R$}}}
+% \nc{\bmS}{{\mbox{\bm $S$}}} \nc{\bmT}{{\mbox{\bm $T$}}}
+% \nc{\bmU}{{\mbox{\bm $U$}}} \nc{\bmV}{{\mbox{\bm $V$}}}
+% \nc{\bmW}{{\mbox{\bm $W$}}} \nc{\bmX}{{\mbox{\bm $X$}}}
+% \nc{\bmY}{{\mbox{\bm $Y$}}} \nc{\bmZ}{{\mbox{\bm $Z$}}}
+
+
+
+
+\nc{\bmUpsilon}{{\mbox{\bm $\Upsilon$}}}
+\nc{\bmupsilon}{{\mbox{\bm $\upsilon$}}}
+\nc{\bmalpha}{{\mbox{\bm $\alpha$}}}
+\nc{\bmbeta}{{\mbox{\bm $\beta$}}}
+\nc{\bmgamma}{{\mbox{\bm $\gamma$}}}
+\nc{\bmGamma}{{\mbox{\bm $\Gamma$}}}
+\nc{\bmdelta}{{\mbox{\bm $\delta$}}}
+\nc{\bmDelta}{{\mbox{\bm $\Delta$}}}
+\nc{\bmeps}{{\mbox{\bm $\epsilon$}}}
+\nc{\bmepsilon}{\bmeps}
+\nc{\bmphi}{{\mbox{\bm $\phi$}}}
+\nc{\bmPhi}{{\mbox{\bm $\Phi$}}}
+\nc{\bmlambda}{{\mbox{\bm $\lambda$}}}
+\nc{\bmLambda}{{\mbox{\bm $\Lambda$}}}
+\nc{\bmmu}{{\mbox{\bm $\mu$}}}
+\nc{\bmnu}{{\mbox{\bm $\nu$}}}
+\nc{\bmpi}{{\mbox{\bm $\pi$}}}
+\nc{\bmrho}{{\mbox{\bm$\rho$}}}
+\nc{\bmpsi}{{\mbox{\bm $\psi$}}}
+\nc{\bmPsi}{{\mbox{\bm $\Psi$}}}
+\nc{\bmsigma}{{\mbox{\bm $\sigma$}}}
+\nc{\bmSigma}{{\mbox{\bm $\Sigma$}}}
+\nc{\bmtheta}{{\mbox{\bm $\theta$}}}
+\nc{\bmTheta}{{\mbox{\bm $\Theta$}}}
+\nc{\bmeta}{{\mbox{\bm $\eta$}}}
+\nc{\bmzeta}{{\mbox{\bm $\zeta$}}}
+\nc{\bmxi}{{\mbox{\bm $\xi$}}} \nc{\bmXi}{{\mbox{\bm $\Xi$}}}
+\nc{\bmnabla}{{\mbox{\bm $\nabla$}}}
+\nc{\bmomega}{{\mbox{\bm $\omega$}}}
+\nc{\bmOmega}{{\mbox{\bm $\Omega$}}}
+
+\nc{\bmen}{{\bf 1}} \nc{\bmhalf}{{\bf\frac{1}{2}}}
+\nc{\bmnull}{{\bf \ensuremath{0}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% General terminology
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\nc{\Var}{\mbox{Var}} \nc{\Cov}{\mbox{Cov}}
+\nc{\E}{\mbox{$\mathbb{E}$}}
+\nc{\KL}[2]{D\left(\,#1\,\norm\,#2\,\right)}
+\nc{\convL}{\stackrel{\calL}{\rightarrow}} \nc{\given}{|}
+%\nc{\norm}{||}
+\nc{\norm}{\|} \nc{\sizeof}[1]{\left|#1\right|}
+
+\nc{\iffp}{\mbox{$\Leftrightarrow$}} \nc{\ien}{\mbox{$i=1\ld n$}}
+%\nc{\R}{\mbox{$\mathbb{R}$}}
+\nc{\nat}{\mbox{$\mathbb{N}$}} \nc{\infinity}{\infty}
+\nc{\ld}{,\ldots,} \nc{\defi}{:=} \nc{\incl}{\subset}
+\nc{\upin}[2]{#1^{(#2)}} \nc{\non}{\nonumber}
+\nc{\stless}{\stackrel{\mbox{st}}{\leq}}
+\gdef\qed{\relax\ifmmode~\hfill\square\else\unskip\nobreak
+    ~\hfill$\square$\fi}
+\nc{\boxen}{\begin{flushright}$\rule{3mm}{3mm}$\end{flushright}}
+\newcommand{\trans}{^{\mbox{\tiny{T}}}}
+%\newcommand{\trans}{\top}
+\newcommand{\T}{\trans}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Special reliability analysis
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\nc{\h}{\mbox{$h(\bmp)$}}
+\nc{\hm}{\mbox{$h^m(\bmp)$}}
+\nc{\hnei}{\mbox{$h({\bf p})$}}
+\nc{\hmnei}{\mbox{$h^m({\bf p})$}}
+\nc{\hj}{h_j(\bmp)}
+\nc{\hmj}{h_j^m(\bmp)}
+\nc{\hjm}{\hmj}
+\nc{\ph}{\phi(\bmx)}
+\nc{\Ph}{\phi(\bmX)}
+%\nc{\p}{\overline P}
+\nc{\ip}{\coprod}
+\nc{\phd}{\phi^D (\bmx)}
+\nc{\Phd}{\phi^D(\bmX)}
+\nc{\hd}{h^D (\bmp)}
+\nc{\hdm}{\left( h^D (\bmp) \right)^m}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BN related stuff
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \nc{\pa}[1]{{\rm pa}\left(#1\right)}
+ \nc{\mb}[1]{{\rm mb}\left(#1\right)}
+ \nc{\sspace}[1]{\ensuremath{sp\left(#1\right)}}
+% \nc{\sspace}[1]{{\rm sp}\left(#1\right)}
+ \nc{\child}[1]{\mbox{${\rm ch}\left(#1\right)$}}
+ \nc{\indep}{\mbox{$\perp\!\!\!\perp$}}
+ \nc{\nonindep}{\not\!\!\!\indep} \nc{\NB}{Na\"{\i}ve Bayes\xspace}
+ \nc{\nB}{na\"{\i}ve Bayes\xspace}
+ \nc{\MDL}{\mbox{MDL}\xspace} \nc{\MDLp}{$\mbox{MDL}_p$\xspace}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This part here for the HuginToPsTrics stuff by Thomas
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Fbox}[5][0.5cm]{\rput(#2,#3){\rnode{#4}{\psframebox{\parbox[c][#1]{#1}{\centerline{#5}}}}}}
+\newcommand{\Fnode}[5][0.5cm]{\cnodeput[doubleline=false](#2,#3){#4}{\makebox[#1]{#5}}}
+\newcommand{\FDblnode}[5][0.5cm]{\cnodeput[doubleline=true](#2,#3){#4}{\makebox[#1]{#5}}}
+\newcommand{\Fdiam}[5][0.3cm]{\rput(#2,#3){\dianode{#4}{\makebox[#1]{#5}}}}
+\newcommand{\Fovalnode}[5][0.5cm]{\rput(#2,#3){\ovalnode{#4}{\makebox[#1]{#5}}}}
+\newcommand{\FDblovalnode}[5][0.5cm]{\rput(#2,#3){\ovalnode[doubleline=true]{#4}{\makebox[#1]{#5}}}}
+\newcommand{\Frect}[5][0.5cm]{\rput(#2,#3){\rnode{#4}{\psframebox{\makebox[#1]{#5}}}}}
+\newcommand{\arc}[3][solid]{\ncline[linestyle=#1]{->}{#2}{#3}}
+%\newpsobject{showgrid}{psgrid}{subgriddiv=1,griddots=10,gridlabels=6pt}
+%\psset{unit=0.5cm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% pstexfig: Latex-type figures from xfig.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\pstexfig}[2] {
+\begin{nopagebreak}
+  \begin{figure}[htpb]
+    \begin{center}
+      \input{./FIGS/#1.pstex_t}
+        \caption{#2}
+      \label{fig:#1}
+    \end{center}
+  \end{figure}
+\end{nopagebreak}
+}
+
+\newcommand{\pstexFig}[2] {
+\begin{nopagebreak}
+  \begin{figure*}[htbp]
+    \begin{center}
+      \input{./FIGS/#1.pstex_t}
+        \caption{#2}
+      \label{fig:#1}
+    \end{center}
+  \end{figure*}
+\end{nopagebreak}
+}
+
+\newcommand{\pstexfigSlide}[1] {
+\begin{nopagebreak}
+    \begin{center}
+        \input{./#1.pstex_t}
+    \end{center}
+\end{nopagebreak}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% epsfigur: Get an eps-fig from file
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\epsfigur}[3] {
+\begin{nopagebreak}
+  \begin{figure}[htpb]
+    \begin{center}
+      \epsfig{file =./FIGS/#1.eps,width=#3mm}
+        \caption{#2}
+      \label{fig:#1}
+    \end{center}
+  \end{figure}
+\end{nopagebreak}
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% psfigur: Get an ps-fig from file
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\psfigur}[3] {
+\begin{nopagebreak}
+  \begin{figure}[htpb]
+    \begin{center}
+      \psfig{file =./FIGS/#1.ps,width=#3mm,angle=-90}
+       \caption{#2}
+      \label{fig:#1}
+    \end{center}
+  \end{figure}
+\end{nopagebreak}
+}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Rpsfigur: Get an ps-fig from file
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\Rpsfigur}[3] {
+\begin{nopagebreak}
+  \begin{figure}[htpb]
+    \begin{center}
+      \psfig{file =./FIGS/#1.ps,width=#3mm}
+       \caption{#2}
+      \label{fig:#1}
+    \end{center}
+  \end{figure}
+\end{nopagebreak}
+}
+
+
+
+\nc{\figref}[1]{\figurename~\ref{fig:#1}\xspace}
+\nc{\tabref}[1]{Table~\ref{tab:#1}\xspace}
+\nc{\equref}[1]{Equation~(\ref{equ:#1})\xspace}
+\nc{\secref}[1]{Section~\ref{sec:#1}\xspace}
+\nc{\algoref}[1]{Algorithm~\ref{algo:#1}\xspace}
+\nc{\stepref}[1]{Step~\ref{step:#1}\xspace}
+
+\nc{\includebib}{\bibliography{defs,%
+                               hl,%
+                               master,%
+                               dynamic,%
+                               reliability,%
+                               troubleshoot,%
+                               class,%
+                               learning,%
+                               luigi,%
+			      footy,%
+                               antonio,%
+%                               mte,%
+                               global%
+}}
