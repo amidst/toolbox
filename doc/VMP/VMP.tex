@@ -44,6 +44,8 @@
 
 \begin{document}
 
+\section{Binary Child given one binary parent}
+
 Let $X$ and $Y$ be two binary variables, where the conditional probability of $Y$ given $X$ is expressed as follows:
 
 $$ p(Y|X) = p_{y|x}^{I(X=0)I(Y=0)}p_{\bar{y}|x}^{I(X=0)I(Y=1)}p_{y|\bar{x}}^{I(X=1)I(Y=0)}p_{\bar{y}|\bar{x}}^{I(X=1)I(Y=1)}$$
@@ -100,8 +102,27 @@ I(Y=1)I(X=1)
 - 0
 \end{eqnarray*}
 
-%\section{Daimler: test and evaluation}
+\section{Multinomial Child given a set of multinomial parents}
 
+Let us $Y$ be a multinomial variable whose state space is $\{y_1,...,y_k\}$. Let us also be $X_1,\ldots,X_p$ the set of parents of variable $Y$, all them also multinomial. The log-conditional probability of $Y$ given $X$ can be expressed as follows:
+
+$$ \ln p(Y|X_1,\ldots,X_p) = $$
+
+
+Similarly the above conditional probability can be expressed in the following exponential forms:
+
+\begin{eqnarray*}
+\ln p(Y|X_1,\ldots ,X_p) &=& \theta(X_1,\ldots ,X_p)^Ts(Y) - A(X_1,\ldots ,X_p) \\
+\end{eqnarray*}
+
+\begin{eqnarray*}
+\ln p(Y|X_1,\ldots ,X_p) &=& \theta(Y, X_1,\ldots ,X_{L-1},X_L, \ldots ,X_p)^T s(X_L) - A(Y, X_1,\ldots ,X_{L-1},X_L, \ldots ,X_p) \\
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X_1,\ldots ,X_p) &=& \theta^Ts(Y,X_1,\ldots ,X_p) - A(\theta) \\
+\end{eqnarray*}
 
 %\bibliographystyle{splncs}
 %\bibliography{biblio}
