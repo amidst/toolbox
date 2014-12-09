@@ -1,18 +1,21 @@
 % !TEX root = D41-report.tex
 \section{Introduction}
 
-\comment{This is just the first  page from D3.1, then quickly terminated after learning is introduced. Just to say what a BN is.}
+%\comment{This is just the first  page from D3.1, then quickly terminated after learning is introduced. Just to say what a BN is.}
 
-
-Probabilistic graphical models provide a well-founded and principled approach for performing inference 
-in complex domains endowed with uncertainty. A probabilistic graphical model is a framework consisting 
+This report describes the progress on software development related to WP4, which is concerned with
+learning AMIDST models from data. The AMIDST  model class (see Deliverable D2.1 \cite{AMIDST-D21}) is based on 
+probabilistic graphical models (PGMs), which provide a well-founded and principled approach for performing inference 
+in complex domains endowed with uncertainty. A PGM is a framework consisting 
 of two parts: a qualitative component in the form of a graphical model encoding conditional independence 
 assertions about the domain being modelled as well as a quantitative component consisting of a collection of local 
 probability distributions adhering to the independence properties specified in the graphical model. Collectively, the 
 two components provide a compact representation of the joint probability distribution over the domain being modelled. 
 
+In order to put in context the progress on the software development, we summarize the main concepts involved in
+learning AMIDST models from data. 
 Bayesian networks (BNs) \cite{Pearl88} are a particular type of
-probabilistic graphical model that has enjoyed widespread attention in
+PGM that has enjoyed widespread attention in
 the last two decades. Figure~\ref{fig:sampleBN} shows a BN representing
 the joint distribution of variables $X_1,\ldots,X_5$. Attached to each node, there is a conditional probability
 distribution given its parents in the network, so that the joint distribution factorises as
@@ -62,10 +65,11 @@ variables in $\bX$.
 Given a set of observed variables $\bX_E\subset \bX$ and a set of variables of interest $\bX_I\subset \bX \setminus \bX_E$,
 \emph{probabilistic inference} is the calculation  of the posterior distribution
 $p(x_i|\bx_E)$ for each $i\in I$. 
-A thorough introduction to the state of the art for inference in Bayesian networks was given in \cite{AMIDST-D31}. 
+A thorough introduction to the state of the art for inference in BNs was given in Deliverable D3.1 \cite{AMIDST-D31}. 
 
-In this document we assume that inference techniques for a given Bayesian network is available, and will consider how to define a Bayesian network model that fits a data set as well as possible.
-This process is known as \textit{learning} in the Bayesian network community.
+In this document we assume that inference techniques for a given BN are available (inference will be treated in
+WP3 and partly in WP5), and will consider how to 
+\textit{learn} a BN from data, i.e. how to define a BN model that fits a data set as well as possible.
 
 
 
