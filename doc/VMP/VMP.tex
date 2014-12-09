@@ -1,0 +1,233 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geom\dagetry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{array}							% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb,amsmath}
+\usepackage{cite}
+\usepackage[final]{fixme}
+\usepackage{pdfpages}
+\usepackage{tabularx}
+\usepackage{fancyheadings}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{multirow}
+
+\parskip 6pt % 1pt = 0.351 mm
+\parindent 0pt
+
+%\title{Requirement Engineering Process in AMIDST}
+%\author{The handsome AMIDST guys et. al.}
+%\date{Latest version, \today}							% Activate to display a given date or no date
+
+
+%\setcounter{page}{2}
+\newcommand{\drop}[1]{}
+\newcommand{\bm}{\mathbf}
+
+\newcommand{\bu}[1]{\mathbf{#1}}
+\newcommand{\bv}[1]{\bm{#1}}
+
+\newcommand{\todo}[1]{{\bf [TODO: #1]}}
+
+\newcommand{\me}{\mathrm{e}}
+
+\numberwithin{figure}{section}
+\numberwithin{equation}{section}
+\numberwithin{table}{section}
+
+\usepackage{pdfpages}
+
+\begin{document}
+
+\section{Binary Child given one binary parent}
+
+Let $X$ and $Y$ be two binary variables, where the conditional probability of $Y$ given $X$ is expressed as follows:
+
+$$ p(Y|X) = p_{y|x}^{I(X=0)I(Y=0)}p_{\bar{y}|x}^{I(X=0)I(Y=1)}p_{y|\bar{x}}^{I(X=1)I(Y=0)}p_{\bar{y}|\bar{x}}^{I(X=1)I(Y=1)}$$
+
+
+This conditional probability can be expressed in different exponential forms as follows:
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(X)^Ts(Y) - A(X) \\
+&=&
+\begin{pmatrix}
+I(X=0)\ln p_{y|x}  + I(X=1)\ln p_{y|\bar{x}}\\
+I(X=0)\ln p_{\bar{y}|x}  + I(X=1)\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=0) \\
+I(Y=1)
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(Y)^T s(X) - A(Y) \\
+&=&
+\begin{pmatrix}
+I(Y=0)\ln p_{y|x}  + I(Y=1)\ln p_{\bar{y}|x}\\
+I(Y=0)\ln p_{y|\bar{x}}  + I(Y=1)\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(X=0) \\
+I(X=1)
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta^T s(Y,X) - A(\theta) \\
+&=&
+\begin{pmatrix}
+\ln p_{y|x}\\
+\ln p_{\bar{y}|x}\\
+\ln p_{y|\bar{x}}\\
+\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=0)I(X=0) \\
+I(Y=1)I(X=0) \\
+I(Y=0)I(X=1) \\
+I(Y=1)I(X=1) 
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+\section{Multinomial Child given a set of multinomial parents}
+
+Let us $Y$ be a multinomial variable whose state space is $\{y_1,...,y_k\}$. Let us also be $X_1,\ldots,X_p$ the set of parents of variable $Y$, all them also multinomial. The log-conditional probability of $Y$ given $X$ can be expressed as follows:
+
+$$ \ln p(Y|X_1,\ldots,X_p) = $$
+
+
+Similarly the above conditional probability can be expressed in the following exponential forms:
+
+\begin{eqnarray*}
+\ln p(Y|X_1,\ldots ,X_p) &=& \theta(X_1,\ldots ,X_p)^Ts(Y) - A(X_1,\ldots ,X_p) \\
+\end{eqnarray*}
+
+\begin{eqnarray*}
+\ln p(Y|X_1,\ldots ,X_p) &=& \theta(Y, X_1,\ldots ,X_{L-1},X_L, \ldots ,X_p)^T s(X_L) - A(Y, X_1,\ldots ,X_{L-1},X_L, \ldots ,X_p) \\
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X_1,\ldots ,X_p) &=& \theta^Ts(Y,X_1,\ldots ,X_p) - A(\theta) \\
+\end{eqnarray*}
+
+\section{Normal Child given a set of normal parents}
+
+Let us $Y$ be a normal variable and $X_1,\ldots,X_p$ the set of parents of variable $Y$, all them also normal. The log-conditional probability of $Y$ given $X$ can be expressed as follows:
+
+$$ \ln p(Y|X_1,\ldots,X_p) = \ln \left(\frac{1}{\sigma \sqrt{2(\beta_0+\sum_i \beta_i X_i )}} \me^{-\frac{(x-(\beta_0+\sum_i \beta_i X_i))^2}{2\sigma^2}} \right)$$
+
+
+Similarly the above conditional probability can be expressed in the following exponential forms:
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(X)^T s(Y) - A(\theta(X)) + h(X)\\
+&=&
+\begin{pmatrix}
+\frac{\mu_{Y|X}}{\sigma^2}\\
+\frac{-1}{2\sigma^2}\\
+\end{pmatrix}^T
+\begin{pmatrix}
+Y\\
+Y^2\\
+\end{pmatrix}
+- \left(\frac{\mu_{Y|X}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{Y|X}}}} 
+\end{eqnarray*}
+
+where $\mu_{Y|X} = \beta_0+\sum_i{\beta_i X_i}$
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(Y)^T s(X) - A(\theta(Y)) + h(X)\\
+&=&
+\begin{pmatrix}
+-\frac{\beta_1^2}{2\sigma^2}\\
+\cdots\\
+-\frac{\beta_p^2}{2\sigma^2}\\
+\frac{\beta_1(Y-\beta_0)}{\sigma^2}\\
+\cdots\\
+\frac{\beta_p(Y-\beta_0)}{\sigma^2}\\
+-\frac{\beta_1\beta_2}{\sigma^2}
+\cdots\\
+-\frac{\beta_1\beta_p}{\sigma^2}
+\cdots\\
+-\frac{\beta_{p-1}\beta_p}{\sigma^2}
+\end{pmatrix}^T
+\begin{pmatrix}
+X_1^2\\
+\cdots\\
+X_p^2\\
+X_1\\
+\cdots\\
+X_p\\
+X_1 X_2\\
+\cdots\\
+X_1 X_p\\
+\cdots\\
+X_{p-1}X_{p}\\
+\end{pmatrix}
+- \left( \frac{(Y-\beta_0)^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{Y|X}}}}
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta^T s(Y,X) - A(\theta) + h(X)\\
+&=&
+\begin{pmatrix}
+\frac{-1}{2\sigma^2}\\
+\frac{-\beta_1^2}{2\sigma^2}\\
+\cdots\\
+\frac{-\beta_p^2}{2\sigma^2}\\
+\frac{\beta_0}{\sigma^2}\\
+\frac{\beta_1}{\sigma^2}\\
+\cdots\\
+\frac{\beta_p}{\sigma^2}\\
+\frac{-\beta_0\beta_1}{\sigma^2}\\
+\cdots\\
+\frac{-\beta_0\beta_p}{\sigma^2}\\
+\frac{-\beta_1\beta_2}{\sigma^2}\\
+\cdots\\
+\frac{-\beta_1\beta_p}{\sigma^2}\\
+\cdots\\
+\frac{-\beta_{p-1}\beta_p}{\sigma^2}\\
+\end{pmatrix}^T
+\begin{pmatrix}
+Y^2\\
+X^2\\
+\cdots\\
+X_p^2\\
+Y\\
+YX_1\\
+\cdots\\
+YX_p\\
+X_1\\
+\cdots\\
+X_p\\
+X_1X_2\\
+\cdots\\
+X_1X_p\\
+\cdots\\
+X_{p-1}X_p
+\end{pmatrix}
+- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) + \frac{1}{\ln{\sqrt{2\mu_{Y|X}}}}
+\end{eqnarray*}
+
+
+%\bibliographystyle{splncs}
+%\bibliography{biblio}
+
+\end{document}
