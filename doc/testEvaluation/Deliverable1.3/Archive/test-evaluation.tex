@@ -177,9 +177,12 @@ It is important to note that nothing need to be assumed about the probability di
 \subsubsection{Mann-Whitney $U$ test}
 \label{sec:U}
 
-The Mann-Whitney $U$ test is a nonparametric test of the null hypothesis that two populations are the same against an alternative hypothesis where one population tends to have larger values than the other.  It is the nonparametric version of common $t$-test, where both populations are assumed to be of normal distributions.  It is nearly as efficient as the $t$-test on normal data and far more efficient on non normal data.  In our context, we can use the Mann-Whitney $U$ test to discuss whether values of $Q_1$ are consistently larger than values of $Q_0$.  
+The Mann-Whitney $U$ test  \cite{Man47} is a nonparametric test of the null hypothesis that two populations are the same against an alternative hypothesis where one population tends to have larger values than the other.  It is the nonparametric version of common $t$-test, where both populations are assumed to be of normal distributions.  It is nearly as efficient as the $t$-test on normal data and far more efficient on non normal data.  In our context, we can use the Mann-Whitney $U$ test to discuss whether values of $Q_1$ are consistently larger than values of $Q_0$.  
 
-The relevant assumptions in this problems is that all samples of $Q_0$ and $Q_1$ are assumed to be independent of each other.  On stationary streams, we know this is not true as two consecutive measurements are clearly dependent.  However, in this context, where the interpretation is of importance, we can imagine that the samples of randomized.  A more important assumption is that under the null hypothesis, the probability distributions of $Q_0$ and $Q_1$ are exactly equal, while the alternative hypothesis is that the distributions have different means, but similar shapes.  It is clearly a problem if for instance $Q_0$ is one sided exponentially distributed, while $Q_1$ is normally distributed with a larger mean.   
+A relevant assumption for our problem is that all samples of $Q_0$ and $Q_1$ are assumed to be independent of each other.  On stationary streams, we know this is not true as two consecutive measurements are clearly dependent.  However, in the context of interpretation, we can imagine that the samples of randomized.  
+
+A more important assumption is that under the null hypothesis, the probability distributions of $Q_0$ and $Q_1$ are exactly equal, while the alternative hypothesis is that the distributions have different means, but similar shapes.  It is clearly a problem if for instance $Q_0$ is one sided exponentially distributed, while $Q_1$ is normally distributed with a larger mean.   
+Other assumptions can be stated for this test as well.  A more thorough discussion can be found in \cite{Fay10}.
 
 We define a data set $\calD$ with $n$ input-output pairs $(x_i, y_i)$, independently drawn from $P(\bmX,Y)$.  From the data set we have two populations $\bmq_0 = \{q(\bmx_i) , | \, y_i = 0 \}$ and $\bmq_1 = \{q(\bmx_i) , | \, y_i = 1 \}$.  Their sizes are $n_0$ and $n_1$ so that $n_0 + n_1 = n$.  Calculating the $U$ statistics is straightforward, where these two values are obtained 
 
@@ -204,19 +207,18 @@ m_U = \frac{n_0n_1}{2} \quad \mbox{and} \quad
 
 Significance of test can be checked in tables of the normal distribution.  Although, such an hypothesis test is interesting by itself, we are more interested in the concordance probability $P(Q_1 > Q_0)$ which is defined by
 
-\begin{equation}
+\begin{equation} 
 \label{eq:concordance}
 P(Q_1 > Q_0) = \frac{U_1}{n_0n_1}.
 \end{equation}
 
-It is important to note that even though the Mann-Whitney $U$ test is dependent on wether the shapes of the probability distributions of $Q_0$ and $Q_1$ are similar, this requirement is not necessary for the concordance probability.  To be more explicit, the problem when $Q_0$ is for instance one sided exponentially distributed and $Q_1$ is normally distributed is not a violation of preliminary assumptions.  
+It is important to note that even though the Mann-Whitney $U$ test is dependent on whether the shapes of the probability distributions of $Q_0$ and $Q_1$ are similar, this requirement is not necessary for the concordance probability.  To be more explicit, the problem when $Q_0$ is for instance one sided exponentially distributed and $Q_1$ is normally distributed, is not a violation of preliminary assumptions.  
 
-The concordance probability or AUC are therefore a measure of the ranking ability of the output function.  
-Also. equation \eqref{eq:concordance} shows a simple way of calculating $P(Q_1 > Q_0)$ and AUC.
+The concordance probability or AUC are therefore a measure of the ranking ability of the output function.  The Mann Whitney $U$-test allows one to test whether the result that is obtained is not just be chance in the way the data set is drawn.  It can also be used for designing experiments in terms of reasoning about how large data sets are needed for making an effective test.
 
-\todo{HL says: I'm still not really not sure what we need this for. What exactly can we test? Say more.}
+Moreover, equation \eqref{eq:concordance} shows a simple way of calculating $P(Q_1 > Q_0)$ and AUC.
 
-
+\todo{multi class AUC.}
 
 \subsection{Performance measures for classification on streaming data}
 \label{sec:stream}
@@ -243,15 +245,13 @@ R_{emp}(h, \{X_{t_k}\}) = k^{-1} \sum_{i=1}^k L(\bmx_{t_i} , h(\bmx_{t_i} ), y_{
 \end{equation}
 where $y_{t_i}$ is the class label at time $t_i$ and $n$ is the number of samples up to $t_k$.  In the original paper, the notation is different and the measure is called the prequental error  Adaptations are made to comply with notation and definitions in section \ref{sec:static}.  Notice, that the loss function in the prequential empirical risk, is generalized compared to \cite{Gam13}, to also include dependency of $\bm{x_{t_i}}$, which may in fact be just $t_i$.  This generalization means that it is possible to model evolving loss as well.
 
-\todo{Sigve says: Include a discussion of statistical interpretation of loss functions on stationary data.  Dependence between timesteps is essential. Is this a problem? What opportunities do we have with evolving loss? Maybe nothing, but worth reflecting on.}
+\drop{\todo{Sigve says: Include a discussion of statistical interpretation of loss functions on stationary data.  Dependence between timesteps is essential. Is this a problem? What opportunities do we have with evolving loss? Maybe nothing, but worth reflecting on.}}
 
-
-The area under the receiver operator characteristics curve (AUC) is also popular in a streaming context. 
+AUC is also popular in a streaming context, in the case when the classification is based on a scoring function, which is common for Bayesian networks. 
 Specialized learning algorithms for imbalanced streams are proposed in \cite{Dit13, Hoe12, Lic10}, where it is also pointed out that this problem is particularly difficult and effective algorithms for evaluation is vital.  
-AUC is calculated on limited holdout sets are used in  \cite{Dit13, Lic10}, while AUC is calculated on the entire stream in  \cite{Hoe12}.
-AUC calculation involves sorting all instances and iteration over the sorted list.  In a streaming context, this means that the calculation is $O(n)$ where $n$ is the length of the data stream.  If the whole stream is used, it may have computational problems related to memory and cpu time.  
+AUC is calculated on limited holdout sets are used in  \cite{Dit13, Lic10}, while AUC is calculated on the entire stream in  \cite{Hoe12}. If the whole stream is used, it may have computational problems related to memory and cpu time.  
 
-In the case when the classification is based on a scoring function, which is common for Bayesian networks, then the prequential AUC at time step $t_k$ can be calculated by
+The prequential AUC at time step $t_k$ can be calculated by
 \begin{equation}
 \label{eq:prequentialAUC}
 \mbox{AUC}_{t_k}= \frac{U_{1,k}}{n_{0,k}n_{1,k}},
@@ -270,62 +270,92 @@ U_{1,k-1} + \sum_{i=1}^{n_{0,k}} H( \,q_{0,i} - q_{1,n_{1,k}}    \,)
 \quad &\mbox{for} \quad y_{t_k} = 1.\\
 \end{cases}
 \end{equation}
-Clearly AUC claculation is $O(k)$, which might be a problem for very long streams.  
+Clearly AUC calculation is $O(k)$, which might be a problem for very long streams.  
+
+Another method for calculating AUC  involves sorting the scores of all instances and iteration over this list. At each time step the list of scores, the number of positives and the number of negatives must be updated.  Moreover, even though the list is continuously resorted the mapping from each score to either a positive or a negative must be kept. AUC is calculated by algorithm \ref{AUCalg} at each time step.  This method is also $O(k)$.
+
+\todo{update AUC alg.}
+
+\begin{algorithm}[H]
+ \KwData{$sortedList$: sorted list of all scores in a stream, $p$: number of positives in sorted list, $n$: number of negatives in sorted list}
+ \KwResult{Prequential $AUC$ at a given time step}
+$c \leftarrow 0, AUC \leftarrow 0$;\\
+\ForAll{scores $s \in sortedList$}{
+\If{isPositive($s$)}{
+$c \leftarrow c + 1$
+}\Else{
+$AUC = AUC + 1$;
+}
+}
+$ AUC = AUC/(p \cdot n)$;
+\label{AUCalg}
+ \caption{Calculation of prequential AUC at each time step in a stream.}
+\end{algorithm}
 
 It is worth noting a few points about the statistical interpretability of AUC on stationary streams.  Unless the stream is also i.i.d. the $q_{0,i}$s and the $q_{1,i}$s are generally dependent on neighboring points.  This fact is however not contradicting the fact that AUC is equal to the concordance probability $ P(Q_1 > Q_0)$.  This is because the definitions of $Q_0$ and $Q_1$ are $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$ and 
 that $X_0$ and $X_1$ are random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$.  In practice, samples of $Q_0$ and $Q_1$ can be though of as picking samples from $\bv{q_0}$ and $\bv{q_1}$, respectively.
 
 \subsubsection{Data streams that involve concept-drift}
 
-Consept drift is generally understood as unforeseen changes in statistical properties of the target variable.  In the case of regression this can basically be understood as non stationary of the dependent variable.  In the case of classification, it is understood as the class distribution being \emph{not} constant.  
+Consept drift is generally understood as unforeseen changes in statistical properties of the target variable.  In the case of regression this can basically be understood as non stationary of the dependent variable.  In the case of classification, it is understood as the class distribution is \emph{not} constant in time.  
 
-However, this definition is not always clear cut in the literature.  For instance in \cite{Brz14}, concept drift is understood broader involving changes in explanatory variables and the predictor itself.  \todo{Sigve says: Clarify a bit more.}  For clarity, in this paper we refer to concept drift as changes in the target variable alone.
+However, this definition is not always clear cut in the literature.  For instance in \cite{Brz14}, concept drift is understood broader, where non stationarity of explanatory variables are present in addition to time dependent class distributions.   For clarity, in this paper we refer to concept drift in the sense of \cite{Brz14}.
 
 In \cite{Gam13}, two estimators where suggested for dealing with concept drift and/or non stationary explanatory variables.  The first estimator involves calculating the prequential empirical risk over a sliding window of $w$ samples. 
 
 \begin{equation}
 \label{eq:prequentialRisk2}
-R_{emp}(t_k, h_k, \{X_{t_k}\}, w) = w^{-1} \sum_{i=k - w +1}^k L(\bmx_{t_i} , h_k(\bmx_{t_i} ), y_{t_i}).
+R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, w) = w^{-1} \sum_{i=k - w +1}^k L(\bmx_{t_i} , h_{t_i}(\bmx_{t_i} ), y_{t_i}).
 \end{equation}
-Notice that $R_{emp}(t_k, h_k, \{X_{t_k}\}, w)$ is a function of time and not just a single number.  The measure reflects the expected loss as a function of time.  Notice also that the classification rule itself $h_k$ is allowed to be a function of time.
+Notice that $R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, w)$ is a function of time and not just a single number.  The measure reflects the expected loss at $t_{k-\mbox{floor}(w/2)}$.  Notice also that the classification rule itself $h_{t_i}$ is allowed to be a function of time.
 
 The second estimator involves fading factors and is defined as follows
 
 \begin{equation}
 \label{eq:prequentialRisk3}
-R_{emp}(t_k, h_k, \{X_{t_k}\}, \alpha) =\frac{\sum_{i=1}^k \alpha^{i-k}L(\bm{x_{t_i}} , h(\bm{x_{t_i}} ), y_{t_i})}{\sum_{i=1}^k \alpha^{i-k}} \quad \mbox{where} \quad 0 \leq \alpha \leq 1.
+R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, \alpha) =\frac{\sum_{i=1}^k \alpha^{i-k}L(\bm{x_{t_i}} , h_{t_i}(\bm{x_{t_i}} ), y_{t_i})}{\sum_{i=1}^k \alpha^{i-k}} \quad \mbox{where} \quad 0 \leq \alpha \leq 1.
 \end{equation}
-When $\alpha$ is equal to one, this reduces to the prequental empirical risk with no forgetting factor, while in the case when $\alpha$ is equal to zero, the estimator reduces to the loss function at $t_k$.
+When $\alpha$ is equal to one, this reduces to the prequental empirical risk with no forgetting factor, while in the case when $\alpha$ is equal to zero, the estimator forgets all effects before $t_k$.
 
-In the special case when the loss function is one when the classification is correct and zero elsewhere and $h$, or $h_k$, is consistent, then it is shown in \cite{Gam13} that 
-$R_{emp}(t_k, h_k, \{X_{t_k}\}, \alpha)$, $R_{emp}(t_k, h_k, \{X_{t_k}\}, w) $ and $R_{emp}(h, \{X_{t_k}\})$ approximates the Bayes error in the limiting cases.
+In the special case when the loss function is zero-one and $h$, or $h_k$, is consistent, then it is shown in \cite{Gam13} that 
+$R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, \alpha)$, $R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, w) $ and $R_{emp}(h, \{X_{t_k}\})$ approximates the Bayes error in the limiting cases.
+
+\todo{Motivate AUC with concept drift}
+
+In \cite{Brz14}, the prequantial AUC with a forgetting factor is suggested.  The method involves calculating AUC on a sliding window of fixed size in a similar manner as algorithm \ref{AUCalg}.  At each time step the sorted list on the window is updates as well as the number of positives and negatives.  The rest of the algorithm is explained in algorithm \ref{AUCalg2}.
+
+\todo{potentially remove this lag.}
+
+\begin{algorithm}[H]
+ \KwData{$sortedList$: sorted list of scores in window, $p$: number of positives in sorted list, $n$: number of negatives in sorted list}
+ \KwResult{Prequential $AUC$ at a given time step}
+$c \leftarrow 0, AUC \leftarrow 0$;\\
+\ForAll{scores $s \in sortedList$}{
+\If{isPositive($s$)}{
+$c \leftarrow c + 1$
+}\Else{
+$AUC = AUC + c$;
+}
+}
+$ AUC = AUC/(p \cdot n)$;
+\label{AUCalg2}
+ \caption{Calculation of prequential AUC on a window, as described in article \cite{Brz14}.}
+\end{algorithm}
 
 
+\todo{Sigve says: Maybe discuss stationary explanatory variables with consept drift versus non stationary explanatory variables with concept drift.}
 
-In \cite{Brz14}, the prequantial AUC with a forgetting factor is suggested.  The method involves calculating AUC on a sliding window of fixed size.  In general the method involves keeping a sorted list of scores, together with the labels (positives or negatives).   \todo{Sigve says: Add details on this algorithm. Some pseudocode would work} 
+\subsubsection{Risk related to early and late warnings}
+
+When working on data streams it may sometimes be of interest to give as early warnings as possible.  Another way of saying this is to penalize late warnings more and more.  We therefore suggest this measure, where the notation is the same as in equation \eqref{eq:prequentialRisk2}
 
 \begin{equation}
-\label{equ:precAUCforget}
-\text{\todo{HL says: Sigve, can you add equation for prec AUC with forgetting -- used later}}
+\label{eq:prequentialRisk3}
+R_{emp}(t_k, \{h_{t_{k+m}}\}, \{X_{t_k}\}, w) = w^{-1} \sum_{i=k - w +1}^k L(\bmx_{t_i} , h_{t_{i+m}}(\bmx_{t_i} ), y_{t_{i+m}}).
 \end{equation}
+Here, $m$ denotes some time steps into the future and $h_{t_{k+m}}$ denotes prediction at $t_{k+m}$.
+\todo{Sigve says: Reflect more and relate to Cajamar. Helge has promised to help out.}
 
-
-
-
-\todo{Sigve says: Discuss stationary explanatory variables with consept drift versus non stationary explanatory variables with concept drift.}
-
-\todo{Sigve says: Add a section on drift detection with prequential AUC and prequential loss?}
-
-\subsubsection{Early and late warnings}
-Methods or reflections on how to incorporate
-The substream method
-\todo{HL says: Missing}
-
-
-
-\subsubsection{Some reflections related to regression on data streams}
-
-\todo{HL says: Missing}
 
 %
 %In the use case scenarios in the AMIDST software, all problems are binary classifiers, which involve dividing the streams into sub streams that are labeled as either positives or negatives.  There are two important approaches here.
