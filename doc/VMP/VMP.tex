@@ -1,0 +1,109 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{geometry}                		% See geom\dagetry.pdf to learn the layout options. There are lots.
+\geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{array}							% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb,amsmath}
+\usepackage{cite}
+\usepackage[final]{fixme}
+\usepackage{pdfpages}
+\usepackage{tabularx}
+\usepackage{fancyheadings}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{multirow}
+
+\parskip 6pt % 1pt = 0.351 mm
+\parindent 0pt
+
+%\title{Requirement Engineering Process in AMIDST}
+%\author{The handsome AMIDST guys et. al.}
+%\date{Latest version, \today}							% Activate to display a given date or no date
+
+
+%\setcounter{page}{2}
+\newcommand{\drop}[1]{}
+\newcommand{\bm}{\mathbf}
+
+\newcommand{\bu}[1]{\mathbf{#1}}
+\newcommand{\bv}[1]{\bm{#1}}
+
+\newcommand{\todo}[1]{{\bf [TODO: #1]}}
+
+\numberwithin{figure}{section}
+\numberwithin{equation}{section}
+\numberwithin{table}{section}
+
+\usepackage{pdfpages}
+
+\begin{document}
+
+Let $X$ and $Y$ be two binary variables, where the conditional probability of $Y$ given $X$ is expressed as follows:
+
+$$ p(Y|X) = p_{y|x}^{I(X=0)I(Y=0)}p_{\bar{y}|x}^{I(X=0)I(Y=1)}p_{y|\bar{x}}^{I(X=1)I(Y=0)}p_{\bar{y}|\bar{x}}^{I(X=1)I(Y=1)}$$
+
+
+This conditional probability can be expressed in different exponential forms as follows:
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(X)^Ts(Y) - A(X) \\
+&=&
+\begin{pmatrix}
+I(X=0)\ln p_{y|x}  + I(X=1)\ln p_{y|\bar{x}}\\
+I(X=0)\ln p_{\bar{y}|x}  + I(X=1)\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=0) \\
+I(Y=1)
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(Y)^T s(X) - A(Y) \\
+&=&
+\begin{pmatrix}
+I(Y=0)\ln p_{y|x}  + I(Y=1)\ln p_{\bar{y}|x}\\
+I(Y=0)\ln p_{y|\bar{x}}  + I(Y=1)\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(X=0) \\
+I(X=1)
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta^T s(Y,X) - A(\theta) \\
+&=&
+\begin{pmatrix}
+\ln p_{y|x}\\
+\ln p_{\bar{y}|x}\\
+\ln p_{y|\bar{x}}\\
+\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=0)I(X=0) \\
+I(Y=1)I(X=0) \\
+I(Y=0)I(X=1) \\
+I(Y=1)I(X=1) 
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+%\section{Daimler: test and evaluation}
+
+
+%\bibliographystyle{splncs}
+%\bibliography{biblio}
+
+\end{document}
