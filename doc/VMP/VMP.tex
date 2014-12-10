@@ -158,74 +158,25 @@ $$ \ln p(Y|X_1,\ldots,X_p) = \ln \left(\frac{1}{\sigma \sqrt{2(\beta_0+\sum_i \b
 Similarly the above conditional probability can be expressed in the following exponential forms:
 
 \begin{eqnarray*}
-\ln p(Y|X) &=& \theta(X)^T s(Y) - A(\theta(X)) + h(X)\\
-&=&
-\begin{pmatrix}
-\frac{\mu_{Y|X}}{\sigma^2}\\
-\frac{-1}{2\sigma^2}\\
-\end{pmatrix}^T
-\begin{pmatrix}
-Y\\
-Y^2\\
-\end{pmatrix}
-- \left(\frac{\mu_{Y|X}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{Y|X}}}} 
-\end{eqnarray*}
-
-where $\mu_{Y|X} = \beta_0+\sum_i{\beta_i X_i}$
-
-\begin{eqnarray*}
-\ln p(Y|X) &=& \theta(Y)^T s(X) - A(\theta(Y)) + h(X)\\
-&=&
-\begin{pmatrix}
--\frac{\beta_1^2}{2\sigma^2}\\
-\cdots\\
--\frac{\beta_p^2}{2\sigma^2}\\
-\frac{\beta_1(Y-\beta_0)}{\sigma^2}\\
-\cdots\\
-\frac{\beta_p(Y-\beta_0)}{\sigma^2}\\
--\frac{\beta_1\beta_2}{\sigma^2}
-\cdots\\
--\frac{\beta_1\beta_p}{\sigma^2}
-\cdots\\
--\frac{\beta_{p-1}\beta_p}{\sigma^2}
-\end{pmatrix}^T
-\begin{pmatrix}
-X_1^2\\
-\cdots\\
-X_p^2\\
-X_1\\
-\cdots\\
-X_p\\
-X_1 X_2\\
-\cdots\\
-X_1 X_p\\
-\cdots\\
-X_{p-1}X_{p}\\
-\end{pmatrix}
-- \left( \frac{(Y-\beta_0)^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{Y|X}}}}
-\end{eqnarray*}
-
-
-\begin{eqnarray*}
 \ln p(Y|X) &=& \theta^T s(Y,X) - A(\theta) + h(X)\\
 &=&
 \begin{pmatrix}
-\frac{-1}{2\sigma^2}\\
-\frac{-\beta_1^2}{2\sigma^2}\\
+\frac{-1}{2\sigma^2} &=& \theta_{\mbox{-}1} \\
+\frac{-\beta_1^2}{2\sigma^2} &=& \theta_{1^2} \\
+\cdots \\
+\frac{-\beta_p^2}{2\sigma^2} &=& \theta_{p^2} \\
+\frac{\beta_0}{\sigma^2} &=& \theta_0 \\
+\frac{\beta_1}{\sigma^2} &=& \theta_1 \\
 \cdots\\
-\frac{-\beta_p^2}{2\sigma^2}\\
-\frac{\beta_0}{\sigma^2}\\
-\frac{\beta_1}{\sigma^2}\\
+\frac{\beta_p}{\sigma^2} &=& \theta_p \\
+\frac{-\beta_0\beta_1}{\sigma^2} &=&\theta_{01} \\
 \cdots\\
-\frac{\beta_p}{\sigma^2}\\
-\frac{-\beta_0\beta_1}{\sigma^2}\\
+\frac{-\beta_0\beta_p}{\sigma^2} &=& \theta_{0p} \\
+\frac{-\beta_1\beta_2}{\sigma^2} &=& \theta_{12} \\
 \cdots\\
-\frac{-\beta_0\beta_p}{\sigma^2}\\
-\frac{-\beta_1\beta_2}{\sigma^2}\\
+\frac{-\beta_1\beta_p}{\sigma^2} &=& \theta_{1p} \\
 \cdots\\
-\frac{-\beta_1\beta_p}{\sigma^2}\\
-\cdots\\
-\frac{-\beta_{p-1}\beta_p}{\sigma^2}\\
+\frac{-\beta_{p-1}\beta_p}{\sigma^2} &=&\theta_{p\mbox{-}1p} \\
 \end{pmatrix}^T
 \begin{pmatrix}
 Y^2\\
@@ -247,6 +198,95 @@ X_{p-1}X_p
 \end{pmatrix}
 - \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) + \frac{1}{\ln{\sqrt{2\mu_{Y|X}}}}
 \end{eqnarray*}
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(X)^T s(Y) - A(\theta(X)) + h(X)\\
+&=&
+\begin{pmatrix}
+\frac{\mu_{Y|X}}{\sigma^2}\\
+\frac{-1}{2\sigma^2}\\
+\end{pmatrix}^T
+\begin{pmatrix}
+Y\\
+Y^2\\
+\end{pmatrix}
+- \left(\frac{\mu_{Y|X}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{Y|X}}}} \\
+&=&
+\begin{pmatrix}
+\theta_0+\theta_i m_0^{X_i}\\
+\theta_{\mbox{-}1}\\
+\end{pmatrix}^T
+\begin{pmatrix}
+Y\\
+Y^2\\
+\end{pmatrix}
+- \left(\frac{\mu_{Y|X}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{Y|X}}}} 
+\end{eqnarray*}
+
+where $\mu_{Y|X} = \beta_0+\sum_i{\beta_i X_i}$
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(Y)^T s(X) - A(\theta(Y)) + h(X)\\
+&=&
+\begin{pmatrix}
+-\frac{\beta_1^2}{2\sigma^2}\\
+\cdots\\
+-\frac{\beta_p^2}{2\sigma^2}\\
+\frac{\beta_1(Y-\beta_0)}{\sigma^2}\\
+\cdots\\
+\frac{\beta_p(Y-\beta_0)}{\sigma^2}\\
+-\frac{\beta_1\beta_2}{\sigma^2}\\
+\cdots\\
+-\frac{\beta_1\beta_p}{\sigma^2}\\
+\cdots\\
+-\frac{\beta_{p-1}\beta_p}{\sigma^2}
+\end{pmatrix}^T
+\begin{pmatrix}
+X_1^2\\
+\cdots\\
+X_p^2\\
+X_1\\
+\cdots\\
+X_p\\
+X_1 X_2\\
+\cdots\\
+X_1 X_p\\
+\cdots\\
+X_{p-1}X_{p}\\
+\end{pmatrix}
+- \left( \frac{(Y-\beta_0)^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{Y|X}}}}\\
+&=&
+\begin{pmatrix}
+\theta_{1^2}\\
+\cdots\\
+\theta_{p^2}\\
+\theta_1 m_0^Y+\theta_{01}\\
+\cdots\\
+\theta_p m_0^Y+\theta_{0p}\\
+\theta_{12}\\
+\cdots\\
+\theta_{1p}\\
+\cdots\\
+\theta_{p\mbox{-}1p}
+\end{pmatrix}^T
+\begin{pmatrix}
+X_1^2\\
+\cdots\\
+X_p^2\\
+X_1\\
+\cdots\\
+X_p\\
+X_1 X_2\\
+\cdots\\
+X_1 X_p\\
+\cdots\\
+X_{p-1}X_{p}\\
+\end{pmatrix}
+- \left( \frac{(Y-\beta_0)^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{Y|X}}}}
+\end{eqnarray*}
+
+
+
 
 
 %\bibliographystyle{splncs}
