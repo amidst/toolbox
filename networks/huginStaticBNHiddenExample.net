@@ -5,12 +5,14 @@ net
 
 node A
 {
-    states = ("A0" "A1");
+    label = "A";
+    states = ("State_0" "State_1");
 }
 
 node B
 {
-    states = ("B0" "B1" "B2");
+    label = "B";
+    states = ("State_0" "State_1" "State_2");
 }
 
 continuous node C
@@ -23,7 +25,8 @@ continuous node D
 
 node E
 {
-    states = ("E0" "E1");
+    label = "E";
+    states = ("State_0" "State_1");
 }
 
 continuous node G
@@ -40,63 +43,64 @@ continuous node I
 
 node HiddenVar
 {
-    states = ("HiddenVar0" "HiddenVar1");
+    label = "HiddenVar";
+    states = ("TRUE" "FALSE");
 }
 
 potential (A | HiddenVar)
 {
     data
-     = (( 0.5 0.5 )	%  HiddenVar=HiddenVar0
-	( 0.5 0.5 ));	%  HiddenVar=HiddenVar1
+     = (( 0.5 0.5 )	%  HiddenVar=TRUE
+	( 0.5 0.5 ));	%  HiddenVar=FALSE
 }
 
 potential (B | HiddenVar)
 {
     data
-     = (( 0.333333 0.333333 0.333333 )	%  HiddenVar=HiddenVar0
-	( 0.333333 0.333333 0.333333 ));	%  HiddenVar=HiddenVar1
+     = (( 0.333333 0.333333 0.333333 )	%  HiddenVar=TRUE
+	( 0.333333 0.333333 0.333333 ));	%  HiddenVar=FALSE
 }
 
 potential (C | HiddenVar)
 {
     data
-     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
-	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+     = ( normal ( 0, 1 )	%  HiddenVar=TRUE
+	 normal ( 0, 1 ) );	%  HiddenVar=FALSE
 }
 
 potential (D | HiddenVar)
 {
     data
-     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
-	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+     = ( normal ( 0, 1 )	%  HiddenVar=TRUE
+	 normal ( 0, 1 ) );	%  HiddenVar=FALSE
 }
 
 potential (E | HiddenVar)
 {
     data
-     = (( 0.5 0.5 )	%  HiddenVar=HiddenVar0
-	( 0.5 0.5 ));	%  HiddenVar=HiddenVar1
+     = (( 0.5 0.5 )	%  HiddenVar=TRUE
+	( 0.5 0.5 ));	%  HiddenVar=FALSE
 }
 
 potential (G | HiddenVar)
 {
     data
-     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
-	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+     = ( normal ( 0, 1 )	%  HiddenVar=TRUE
+	 normal ( 0, 1 ) );	%  HiddenVar=FALSE
 }
 
 potential (H | HiddenVar)
 {
     data
-     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
-	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+     = ( normal ( 0, 1 )	%  HiddenVar=TRUE
+	 normal ( 0, 1 ) );	%  HiddenVar=FALSE
 }
 
 potential (I | HiddenVar)
 {
     data
-     = ( normal ( 0, 1 )	%  HiddenVar=HiddenVar0
-	 normal ( 0, 1 ) );	%  HiddenVar=HiddenVar1
+     = ( normal ( 0, 1 )	%  HiddenVar=TRUE
+	 normal ( 0, 1 ) );	%  HiddenVar=FALSE
 }
 
 potential (HiddenVar)
