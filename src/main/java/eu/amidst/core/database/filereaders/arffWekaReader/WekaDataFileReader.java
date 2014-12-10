@@ -45,8 +45,9 @@ public class WekaDataFileReader implements DataFileReader{
             StateSpace stateSpaceAtt=null;
             if(attrWeka.isNominal()){
                 String[] vals = new String[attrWeka.numValues()];
-                for (int i=0; i<attrWeka.numValues(); i++)
-                    vals[i]=attrWeka.value(i);
+                for (int i=0; i<attrWeka.numValues(); i++) {
+                    vals[i] = attrWeka.value(i);
+                }
                 stateSpaceAtt = new MultinomialStateSpace(attrWeka.numValues());
             }else{
                 stateSpaceAtt = new RealStateSpace();
@@ -73,8 +74,9 @@ public class WekaDataFileReader implements DataFileReader{
     @Override
     public DataRow next() {
         Instance inst = present;
-        if(inst==null)
+        if(inst==null){
             return null;
+        }
         try {
             present = arffLoader.getNextInstance(dataStructure);
         }catch(IOException e){

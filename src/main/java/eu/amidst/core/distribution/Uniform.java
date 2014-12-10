@@ -7,8 +7,8 @@ import eu.amidst.core.variables.Variable;
  */
 public class Uniform extends UnivariateDistribution {
 
-    public Uniform(Variable var_) {
-        this.var = var_;
+    public Uniform(Variable var1) {
+        this.var = var1;
     }
 
     @Override

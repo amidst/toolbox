@@ -89,8 +89,9 @@ public final class DynamicBayesianNetwork{
     public double getLogProbabiltyOfFullAssignmentTimeT(Assignment assignment){
         double logProb = 0;
         for (Variable var: this.getDynamicVariables()){
-            if (assignment.getValue(var)== Utils.missingValue())
+            if (assignment.getValue(var)== Utils.missingValue()) {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
+            }
             logProb += this.distributionsTimeT[var.getVarID()].getLogConditionalProbability(assignment);
         }
         return logProb;
@@ -99,8 +100,9 @@ public final class DynamicBayesianNetwork{
     public double getLogProbabiltyOfFullAssignmentTime0(Assignment assignment){
         double logProb = 0;
         for (Variable var: this.getDynamicVariables()){
-            if (assignment.getValue(var) == Utils.missingValue())
+            if (assignment.getValue(var) == Utils.missingValue()) {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
+            }
             logProb += this.distributionsTime0[var.getVarID()].getLogConditionalProbability(assignment);
         }
         return logProb;
@@ -136,7 +138,9 @@ public final class DynamicBayesianNetwork{
                 for (Variable parent : this.getDynamicDAG().getListOfParentsTime0(var)) {
                     str.append(parent.getName() + " [" + parent.getDistributionType().toString() + "], ");
                 }
-                if (this.getDynamicDAG().getListOfParentsTime0(var).size() > 0) str.substring(0, str.length() - 2);
+                if (this.getDynamicDAG().getListOfParentsTime0(var).size() > 0){
+                    str.substring(0, str.length() - 2);
+                }
                 str.append(") follows a ");
                 str.append(this.getDistributionTime0(var).label() + "\n");
             }
@@ -155,7 +159,9 @@ public final class DynamicBayesianNetwork{
                 for (Variable parent : this.getDynamicDAG().getParentSetTimeT(var)) {
                     str.append(parent.getName() + " [" + parent.getDistributionType().toString() + "], ");
                 }
-                if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents() > 0) str.substring(0, str.length() - 2);
+                if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents() > 0){
+                    str.substring(0, str.length() - 2);
+                }
                 str.append(") follows a ");
                 str.append(this.getDistributionTimeT(var).label() + "\n");
             }

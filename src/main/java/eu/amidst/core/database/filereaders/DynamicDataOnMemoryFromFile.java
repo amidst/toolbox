@@ -30,8 +30,9 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
         int timeID = 0;
         int sequenceID = 0;
 
-        if (reader.hasNext())
+        if (reader.hasNext()) {
             present = this.reader.next();
+        }
         else {
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
