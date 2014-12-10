@@ -3,26 +3,26 @@ package eu.amidst.core.huginlink;
 
 import COM.hugin.HAPI.*;
 import eu.amidst.core.database.DataOnMemory;
-import eu.amidst.core.database.filereaders.DataFileReader;
-import eu.amidst.core.database.filereaders.StaticDataOnMemoryFromFile;
+import eu.amidst.core.database.DataOnStream;
+import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.ReservoirSampling;
 import eu.amidst.core.variables.StaticVariables;
-import eu.amidst.core.variables.Variable;
 
 
 /**
  * Created by afa on 9/12/14.
  */
-public class parallelTANHugin {
+public class ParallelTANHugin {
 
     BayesianNetwork amidstTAN;
 
-    public parallelTANHugin(DataFileReader fileReader) throws ExceptionHugin {
+    public ParallelTANHugin(DataOnStream dataOnStream) throws ExceptionHugin {
 
 
-        StaticVariables modelHeader = new StaticVariables(fileReader.getAttributes());
+        StaticVariables modelHeader = new StaticVariables(dataOnStream.getAttributes());
 
         DAG dag = new DAG(modelHeader);
         StaticVariables variables = dag.getStaticVariables();
@@ -35,10 +35,10 @@ public class parallelTANHugin {
 
         Domain huginNetwork = converterToHugin.getHuginNetwork();
 
-        StaticDataOnMemoryFromFile data = new StaticDataOnMemoryFromFile(fileReader);
+        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000,dataOnStream); //new StaticDataOnMemoryFromFile(fileReader);
 
         // Set the number of cores
-        int numCases = data.getNumberOfDataInstances();
+        int numCases = dataOnMemory.getNumberOfDataInstances();
         huginNetwork.setNumberOfCases(numCases);
 
         // Set the number of cores
@@ -54,12 +54,12 @@ public class parallelTANHugin {
             Node n = (Node) nodeList.get(i);
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 for (int j=0;j<numCases;j++){
-                    int state = (int)data.getDataInstance(j).getValue(bn.getDAG().getStaticVariables().getVariableById(i));
+                    int state = (int)dataOnMemory.getDataInstance(j).getValue(bn.getDAG().getStaticVariables().getVariableById(i));
                     ((DiscreteNode)n).setCaseState(j, state);
                 }
             } else {
                 for (int j=0;j<numCases;j++){
-                    double value = data.getDataInstance(j).getValue(bn.getDAG().getStaticVariables().getVariableById(i));
+                    double value = dataOnMemory.getDataInstance(j).getValue(bn.getDAG().getStaticVariables().getVariableById(i));
                     ((ContinuousChanceNode)n).setCaseValue(j, (long) value);
                 }
             }
@@ -87,7 +87,7 @@ public class parallelTANHugin {
     public static void main(String[] args) throws ExceptionHugin {
 
         WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
-        parallelTANHugin tan = new parallelTANHugin(fileReader);
+        ParallelTANHugin tan = new ParallelTANHugin(new StaticDataOnDiskFromFile(fileReader));
 
     }
 }
