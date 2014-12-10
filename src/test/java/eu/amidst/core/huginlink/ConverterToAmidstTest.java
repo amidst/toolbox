@@ -20,9 +20,7 @@ public class ConverterToAmidstTest {
         ParseListener parseListener = new DefaultClassParseListener();
         this.huginBN = new Domain ("networks/huginNetworkFromAMIDST.net", parseListener);
         System.out.println("\n\nConverting the Hugin network into AMIDST format ...");
-        ConverterToAMIDST converter = new ConverterToAMIDST(this.huginBN);
-        converter.convertToAmidstBN();
-        this.amidstBN = converter.getAmidstNetwork();
+        this.amidstBN = ConverterToAMIDST.convertToAmidst(this.huginBN);
         System.out.println("\nAMIDST network object created.");
     }
 

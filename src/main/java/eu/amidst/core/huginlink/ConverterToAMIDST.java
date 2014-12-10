@@ -18,16 +18,11 @@ import java.util.List;
  */
 public class ConverterToAMIDST {
 
-
     private BayesianNetwork amidstBN;
     private Domain huginBN;
 
-    public ConverterToAMIDST(Domain huginBN1){
-        this.huginBN = huginBN1;
-    }
-
-    public BayesianNetwork getAmidstNetwork() {
-        return amidstBN;
+    public ConverterToAMIDST(Domain huginBN_){
+        this.huginBN = huginBN_;
     }
 
     private void setNodesAndParents() throws ExceptionHugin {
@@ -181,7 +176,7 @@ public class ConverterToAMIDST {
         }
     }
 
-     private void setDistributions() throws ExceptionHugin {
+    private void setDistributions() throws ExceptionHugin {
 
         NodeList huginNodes = this.huginBN.getNodes();
         StaticVariables amidstVariables = this.amidstBN.getStaticVariables();
@@ -212,13 +207,16 @@ public class ConverterToAMIDST {
         }
     }
 
-    public void convertToAmidstBN() throws ExceptionHugin {
-        this.setNodesAndParents();
-        this.setDistributions();
+    public static BayesianNetwork convertToAmidst(Domain huginBN) throws ExceptionHugin {
+
+        ConverterToAMIDST converterToAMIDST = new ConverterToAMIDST(huginBN);
+        converterToAMIDST.setNodesAndParents();
+        converterToAMIDST.setDistributions();
+
+        return converterToAMIDST.amidstBN;
     }
 
 }
-
 
 
 
