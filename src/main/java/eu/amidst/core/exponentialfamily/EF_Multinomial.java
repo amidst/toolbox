@@ -33,6 +33,7 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
     @Override
     public double computeLogBaseMeasure(double val) {
+        //return log(1);
         return 0;
     }
 

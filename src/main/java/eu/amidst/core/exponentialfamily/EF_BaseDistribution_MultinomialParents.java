@@ -122,10 +122,16 @@ public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distri
     }
 
     public void updateNaturalFromMomentParameters(){
+        for(E baseDist: this.distributions){
+            baseDist.updateNaturalFromMomentParameters();
+        }
         return;
     }
 
     public void updateMomentFromNaturalParameters(){
+        for(E baseDist: this.distributions){
+            baseDist.updateMomentFromNaturalParameters();
+        }
         return;
     }
 
