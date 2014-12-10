@@ -1,5 +1,6 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.Domain;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
@@ -132,9 +133,10 @@ public final class StaticBayesianNetworks {
          *
          * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
          */
-        ConverterToHugin converterToHugin = new ConverterToHugin(bn);
-        converterToHugin.convertToHuginBN();
-        converterToHugin.getHuginNetwork().saveAsNet("networks/huginStaticBNExample.net");
+
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
+        huginNetwork.saveAsNet("networks/huginStaticBNExample.net");
+
 
     }
 
@@ -239,9 +241,9 @@ public final class StaticBayesianNetworks {
          *
          * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
          */
-        ConverterToHugin converterToHugin = new ConverterToHugin(bn);
-        converterToHugin.convertToHuginBN();
-        converterToHugin.getHuginNetwork().saveAsNet("networks/huginStaticBNHiddenExample.net");
+
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
+        huginNetwork.saveAsNet("networks/huginStaticBNHiddenExample.net");
 
     }
 

@@ -1,5 +1,6 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataOnDisk;
@@ -168,9 +169,9 @@ public final class VerdandeModels {
          */
         BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
-        converterToHugin.convertToHuginBN();
-        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginVerdandeIOSKF.net");
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
+        huginNetwork.saveAsNet("networks/HuginVerdandeIOSKF.net");
+
     }
 
     /**
@@ -354,10 +355,8 @@ public final class VerdandeModels {
          */
         BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
-        converterToHugin.convertToHuginBN();
-        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginVerdandeIOSKFwithMG.net");
-
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
+        huginNetwork.saveAsNet("networks/HuginVerdandeIOSKFwithMG.net");
 
     }
 
@@ -411,9 +410,9 @@ public final class VerdandeModels {
 
         BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
-        converterToHugin.convertToHuginBN();
-        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginVerdandeIOHMM.net");
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
+        huginNetwork.saveAsNet("networks/HuginVerdandeIOHMM.net");
+
     }
 
 
