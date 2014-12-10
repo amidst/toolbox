@@ -49,8 +49,9 @@ public class DynamicVariables  implements Iterable<Variable>{
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
-            if (mapping.containsKey(var.getName()))
+            if (mapping.containsKey(var.getName())) {
                 throw new IllegalArgumentException("Attribute list contains duplicated names");
+            }
             this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
 
@@ -78,8 +79,9 @@ public class DynamicVariables  implements Iterable<Variable>{
             }
 
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
-            if (mapping.containsKey(var.getName()))
+            if (mapping.containsKey(var.getName())) {
                 throw new IllegalArgumentException("Attribute list contains duplicated names");
+            }
             this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
 
@@ -98,19 +100,22 @@ public class DynamicVariables  implements Iterable<Variable>{
     }
 
     public Variable addIndicatorDynamicVariable(Variable var) {
-        if (!var.isObservable())
+        if (!var.isObservable()) {
             throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
+        }
 
-        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL)
+        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL) {
             throw new IllegalArgumentException("An indicator variable should be created from an real variable");
+        }
 
         VariableBuilder builder = new VariableBuilder(var.getAttribute());
         builder.setName(var.getName()+"_Indicator");
         builder.setDistributionType(DistType.INDICATOR);
 
         VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
-        if (mapping.containsKey(varNew.getName()))
+        if (mapping.containsKey(varNew.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
         this.mapping.put(varNew.getName(), varNew.getVarID());
         allVariables.add(varNew);
 
@@ -124,8 +129,9 @@ public class DynamicVariables  implements Iterable<Variable>{
     public Variable addObservedDynamicVariable(Attribute att) {
 
         VariableImplementation var = new VariableImplementation(new VariableBuilder(att), allVariables.size());
-        if (mapping.containsKey(var.getName()))
+        if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
@@ -139,8 +145,9 @@ public class DynamicVariables  implements Iterable<Variable>{
         VariableBuilder variableBuilder = new VariableBuilder(att);
         variableBuilder.setDistributionType(distType);
         VariableImplementation var = new VariableImplementation(variableBuilder, allVariables.size());
-        if (mapping.containsKey(var.getName()))
+        if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
@@ -152,8 +159,9 @@ public class DynamicVariables  implements Iterable<Variable>{
     public Variable addHiddenDynamicVariable(VariableBuilder builder) {
 
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
-        if (mapping.containsKey(var.getName()))
+        if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
@@ -164,18 +172,21 @@ public class DynamicVariables  implements Iterable<Variable>{
     }
 
     public Variable addRealDynamicVariable(Variable var){
-        if (!var.isObservable())
+        if (!var.isObservable()) {
             throw new IllegalArgumentException("A Real variable should be created from an observed variable");
+        }
 
-        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL)
+        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL) {
             throw new IllegalArgumentException("An Real variable should be created from a real variable");
+        }
 
         VariableBuilder builder = new VariableBuilder(var.getAttribute());
         builder.setName(var.getName()+"_Real");
 
         VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
-        if (mapping.containsKey(varNew.getName()))
+        if (mapping.containsKey(varNew.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
         this.mapping.put(varNew.getName(), varNew.getVarID());
         allVariables.add(varNew);
 
@@ -204,10 +215,12 @@ public class DynamicVariables  implements Iterable<Variable>{
 
     public Variable getVariableByName(String name) {
         Integer index = this.mapping.get(name);
-        if (index==null)
-            throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
-        else
+        if (index==null) {
+            throw new UnsupportedOperationException("Variable " + name + " is not part of the list of Variables (try uppercase)");
+        }
+        else {
             return this.getVariableById(index.intValue());
+        }
     }
 
     public Variable getTemporalCloneByName(String name) {
@@ -221,8 +234,9 @@ public class DynamicVariables  implements Iterable<Variable>{
 
     public Variable getVariable(String name) {
         for(Variable var: this){
-            if(var.getName().equals(name))
+            if(var.getName().equals(name)) {
                 return var;
+            }
         }
         throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
     }
@@ -254,8 +268,9 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.attribute = builder.getAttribute();
             this.isTemporalClone = false;
 
-            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET)
-                this.numberOfStates = ((MultinomialStateSpace)this.stateSpace).getNumberOfStates();
+            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
+                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+            }
         }
 
         /*
@@ -270,8 +285,9 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.attribute = variable.getAttribute();
             this.isTemporalClone = true;
 
-            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET)
-                this.numberOfStates = ((MultinomialStateSpace)this.stateSpace).getNumberOfStates();
+            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
+                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+            }
         }
 
         public String getName() {
@@ -312,8 +328,12 @@ public class DynamicVariables  implements Iterable<Variable>{
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o){
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()){
+                return false;
+            }
 
             Variable var = (Variable) o;
 

@@ -32,10 +32,10 @@ public class Normal extends UnivariateDistribution {
 
     /**
      * The class constructor.
-     * @param var_ The variable of the distribution.
+     * @param var1 The variable of the distribution.
      */
-    public Normal(Variable var_) {
-        this.var = var_;
+    public Normal(Variable var1) {
+        this.var = var1;
         this.mean = 0;
         this.sd = 1;
     }
@@ -50,10 +50,10 @@ public class Normal extends UnivariateDistribution {
 
     /**
      * Sets the mean of the distribution.
-     * @param mean_ A value for the mean.
+     * @param mean1 A value for the mean.
      */
-    public void setMean(double mean_) {
-        this.mean = mean_;
+    public void setMean(double mean1) {
+        this.mean = mean1;
     }
 
     /**
@@ -66,10 +66,10 @@ public class Normal extends UnivariateDistribution {
 
     /**
      * Sets the standard deviation of the distribution.
-     * @param sd_ A value for the standard deviation.
+     * @param sd1 A value for the standard deviation.
      */
-    public void setSd(double sd_) {
-        this.sd = sd_;
+    public void setSd(double sd1) {
+        this.sd = sd1;
     }
 
     @Override

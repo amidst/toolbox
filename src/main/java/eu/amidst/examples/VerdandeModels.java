@@ -104,7 +104,7 @@ public final class VerdandeModels {
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("Normal", "Abnormal")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
-        Variable normal_Abnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable normalAbnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
 
         /**
@@ -126,14 +126,14 @@ public final class VerdandeModels {
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(hidden);
 
         dynamicDAG.getParentSetTimeT(realTRQ).addParent(dynamicVariables.getTemporalClone(realTRQ));
-        dynamicDAG.getParentSetTimeT(realTRQ).addParent(normal_Abnormal);
+        dynamicDAG.getParentSetTimeT(realTRQ).addParent(normalAbnormal);
 
-        dynamicDAG.getParentSetTimeT(hidden).addParent(normal_Abnormal);
+        dynamicDAG.getParentSetTimeT(hidden).addParent(normalAbnormal);
         dynamicDAG.getParentSetTimeT(hidden).addParent(dynamicVariables.getTemporalClone(hidden));
 
 
-        dynamicDAG.getParentSetTimeT(normal_Abnormal).addParent(dynamicVariables.getTemporalClone(normal_Abnormal));
-        dynamicDAG.getParentSetTimeT(normal_Abnormal).addParent(observedROP);
+        dynamicDAG.getParentSetTimeT(normalAbnormal).addParent(dynamicVariables.getTemporalClone(normalAbnormal));
+        dynamicDAG.getParentSetTimeT(normalAbnormal).addParent(observedROP);
 
 
         /**

@@ -49,14 +49,14 @@ public final class StaticBayesianNetworks {
          */
         StaticVariables variables = new StaticVariables(data.getAttributes());
 
-        Variable A = variables.getVariableByName("A");
-        Variable B = variables.getVariableByName("B");
-        Variable C = variables.getVariableByName("C");
-        Variable D = variables.getVariableByName("D");
-        Variable E = variables.getVariableByName("E");
-        Variable G = variables.getVariableByName("G");
-        Variable H = variables.getVariableByName("H");
-        Variable I = variables.getVariableByName("I");
+        Variable a = variables.getVariableByName("A");
+        Variable b = variables.getVariableByName("B");
+        Variable c = variables.getVariableByName("C");
+        Variable d = variables.getVariableByName("D");
+        Variable e = variables.getVariableByName("E");
+        Variable f = variables.getVariableByName("F");
+        Variable g = variables.getVariableByName("G");
+        Variable h = variables.getVariableByName("H");
 
 
         /**
@@ -68,30 +68,32 @@ public final class StaticBayesianNetworks {
          */
         DAG dag = new DAG(variables);
 
-        dag.getParentSet(E).addParent(A);
-        dag.getParentSet(E).addParent(B);
+        dag.getParentSet(e).addParent(a);
+        dag.getParentSet(e).addParent(b);
 
-        dag.getParentSet(H).addParent(A);
-        dag.getParentSet(H).addParent(B);
+        dag.getParentSet(g).addParent(a);
+        dag.getParentSet(g).addParent(b);
 
-        dag.getParentSet(I).addParent(A);
-        dag.getParentSet(I).addParent(B);
-        dag.getParentSet(I).addParent(C);
-        dag.getParentSet(I).addParent(D);
+        dag.getParentSet(h).addParent(a);
+        dag.getParentSet(h).addParent(b);
+        dag.getParentSet(h).addParent(c);
+        dag.getParentSet(h).addParent(d);
 
-        dag.getParentSet(G).addParent(C);
-        dag.getParentSet(G).addParent(D);
+        dag.getParentSet(f).addParent(c);
+        dag.getParentSet(f).addParent(d);
 
         /**
          * 1. We first check if the graph contains cycles.
          *
          * 2. We print out the created DAG. We can check that everything is as expected.
          */
-        if (dag.containCycles())
+        if (dag.containCycles()) {
             try {
-            } catch (Exception e) {
-                throw new IllegalArgumentException (e);
+            } catch (Exception ex) {
+                throw new IllegalArgumentException(ex);
             }
+        }
+
         System.out.println(dag.toString());
 
 
@@ -164,14 +166,14 @@ public final class StaticBayesianNetworks {
          */
         StaticVariables variables = new StaticVariables(data.getAttributes());
 
-        Variable A = variables.getVariableByName("A");
-        Variable B = variables.getVariableByName("B");
-        Variable C = variables.getVariableByName("C");
-        Variable D = variables.getVariableByName("D");
-        Variable E = variables.getVariableByName("E");
-        Variable G = variables.getVariableByName("G");
-        Variable H = variables.getVariableByName("H");
-        Variable I = variables.getVariableByName("I");
+        Variable a = variables.getVariableByName("A");
+        Variable b = variables.getVariableByName("B");
+        Variable c = variables.getVariableByName("C");
+        Variable d = variables.getVariableByName("D");
+        Variable e = variables.getVariableByName("E");
+        Variable f = variables.getVariableByName("F");
+        Variable g = variables.getVariableByName("G");
+        Variable h = variables.getVariableByName("H");
 
         /**
          * 1. We create the hidden variable. For doing that we make use of the class VariableBuilder. When
@@ -204,14 +206,14 @@ public final class StaticBayesianNetworks {
          */
         DAG dag = new DAG(variables);
 
-        dag.getParentSet(A).addParent(hidden);
-        dag.getParentSet(B).addParent(hidden);
-        dag.getParentSet(C).addParent(hidden);
-        dag.getParentSet(D).addParent(hidden);
-        dag.getParentSet(E).addParent(hidden);
-        dag.getParentSet(G).addParent(hidden);
-        dag.getParentSet(H).addParent(hidden);
-        dag.getParentSet(I).addParent(hidden);
+        dag.getParentSet(a).addParent(hidden);
+        dag.getParentSet(b).addParent(hidden);
+        dag.getParentSet(c).addParent(hidden);
+        dag.getParentSet(d).addParent(hidden);
+        dag.getParentSet(e).addParent(hidden);
+        dag.getParentSet(f).addParent(hidden);
+        dag.getParentSet(g).addParent(hidden);
+        dag.getParentSet(h).addParent(hidden);
 
         /**
          * We print the graph to see if is properly created.

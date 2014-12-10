@@ -15,10 +15,10 @@ public class RealStateSpace extends StateSpace{
         maxInterval = Double.POSITIVE_INFINITY;
     }
 
-    public RealStateSpace(double minInterval_, double maxInterval_) {
+    public RealStateSpace(double minInterval1, double maxInterval1) {
         super(StateSpaceType.REAL);
-        this.maxInterval=maxInterval_;
-        this.minInterval=minInterval_;
+        this.maxInterval=maxInterval1;
+        this.minInterval=minInterval1;
     }
 
     public double getMinInterval() {

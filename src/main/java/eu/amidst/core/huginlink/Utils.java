@@ -101,10 +101,12 @@ public final class Utils {
 
         builder.setName(variable.getName());
         int nstates=0;
-        if (variable.getNumberOfStates()<0)
-            nstates=2;
-        else
-            nstates=variable.getNumberOfStates();
+        if (variable.getNumberOfStates()<0) {
+            nstates = 2;
+        }
+        else {
+            nstates = variable.getNumberOfStates();
+        }
 
         builder.setStateSpace(new MultinomialStateSpace(nstates));
         builder.setDistributionType(DistType.MULTINOMIAL);
