@@ -57,36 +57,6 @@ This conditional probability can be expressed in different exponential forms as 
 
 
 \begin{eqnarray*}
-\ln p(Y|X) &=& \theta(X)^Ts(Y) - A(X) \\
-&=&
-\begin{pmatrix}
-I(X=0)\ln p_{y|x}  + I(X=1)\ln p_{y|\bar{x}}\\
-I(X=0)\ln p_{\bar{y}|x}  + I(X=1)\ln p_{\bar{y}|\bar{x}}
-\end{pmatrix}^T
-\begin{pmatrix}
-I(Y=0) \\
-I(Y=1)
-\end{pmatrix}
-- 0
-\end{eqnarray*}
-
-
-\begin{eqnarray*}
-\ln p(Y|X) &=& \theta(Y)^T s(X) - A(Y) \\
-&=&
-\begin{pmatrix}
-I(Y=0)\ln p_{y|x}  + I(Y=1)\ln p_{\bar{y}|x}\\
-I(Y=0)\ln p_{y|\bar{x}}  + I(Y=1)\ln p_{\bar{y}|\bar{x}}
-\end{pmatrix}^T
-\begin{pmatrix}
-I(X=0) \\
-I(X=1)
-\end{pmatrix}
-- 0
-\end{eqnarray*}
-
-
-\begin{eqnarray*}
 \ln p(Y|X) &=& \theta^T s(Y,X) - A(\theta) \\
 &=&
 \begin{pmatrix}
@@ -103,6 +73,58 @@ I(Y=1)I(X=1)
 \end{pmatrix}
 - 0
 \end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(X)^Ts(Y) - A(X) \\
+&=&
+\begin{pmatrix}
+I(X=0)\ln p_{y|x}  + I(X=1)\ln p_{y|\bar{x}}\\
+I(X=0)\ln p_{\bar{y}|x}  + I(X=1)\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=0) \\
+I(Y=1)
+\end{pmatrix}
+- 0 \\
+&=&
+\begin{pmatrix}
+m^X_0\cdot\theta_0  + m^X_1\cdot\theta_2\\
+m^X_0\cdot\theta_1  + m^X_1\cdot\theta_3
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=0) \\
+I(Y=1)
+\end{pmatrix}
+- 0 
+\end{eqnarray*}
+
+
+\begin{eqnarray*}
+\ln p(Y|X) &=& \theta(Y)^T s(X) - A(Y) \\
+&=&
+\begin{pmatrix}
+I(Y=0)\ln p_{y|x}  + I(Y=1)\ln p_{\bar{y}|x}\\
+I(Y=0)\ln p_{y|\bar{x}}  + I(Y=1)\ln p_{\bar{y}|\bar{x}}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(X=0) \\
+I(X=1)
+\end{pmatrix}
+- 0\\
+&=&
+\begin{pmatrix}
+m^Y_0\theta_0  +  m^Y_1\theta_1\\
+m^Y_0\theta_2  + m^Y_1\theta_3
+\end{pmatrix}^T
+\begin{pmatrix}
+I(X=0) \\
+I(X=1)
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+
 
 \section{Multinomial Child given a set of multinomial parents}
 
