@@ -60,7 +60,7 @@ This conditional probability can be expressed in different exponential forms as 
 
 \begin{itemize}
 
-\item First form:
+\item \textbf{First form}:
 
 \begin{eqnarray*}
 \ln p(X|Y) &=& \theta^T s(X,Y) - A(\theta) \\
@@ -80,7 +80,7 @@ I(X=1)I(Y=1)
 - 0
 \end{eqnarray*}
 
-\item Second form:
+\item \textbf{Second form}:
 
 \begin{eqnarray*}
 \ln p(X|Y) &=& \theta(Y)^Ts(X) - A(Y) \\
@@ -106,7 +106,7 @@ I(X=1)
 - 0 
 \end{eqnarray*}
 
-\item Third form:
+\item \textbf{Third form}:
 
 \begin{eqnarray*}
 \ln p(X|Y) &=& \theta(X)^T s(Y) - A(X) \\
@@ -139,27 +139,27 @@ I(Y=1)
 \section{A multinomial child given a set of multinomial parents}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
-Let $X$ be a multinomial variable whose state space is $\{x^1,...,x^k\}$, and let $\mathbf{Y} =Y_1,\ldots,Y_n$ denote the set of parents of $X$, such that all of them are multinomial. Each parent $Y_i$ has $r_i$ states $\{ {y_1}^{r_1}, {y_2}^{r_2},\ldots, {y_n}^{r_n} \}$. The log-conditional probability of the child-node $X$ given the parent-nodes $\mathbf{Y}$ can be expressed as follows:
+Let $X$ be a multinomial variable whose state space is $\{x^1,...,x^k\}$, and let $\mathbf{Y} =Y_1,\ldots,Y_n$ denote the set of parents of $X$, such that all of them are multinomial. Each parent $Y_i$ has $r_i$ states $\{ {y_1}^{r_1}, {y_2}^{r_2},\ldots, {y_n}^{r_n} \}$ with $r_i \geq 2$ . The log-conditional probability of the child-node $X$ given the parent-nodes $\mathbf{Y}$ can be expressed as follows:
 
 $$ \ln p(X|Y_1,\ldots,Y_n) = $$
 
 Similarly the above conditional probability can be expressed in the following exponential forms:
 
 \begin{itemize}
-\item First form:
+\item \textbf{First form}:
 
 \begin{eqnarray*}
 \ln p(X|Y_1,\ldots ,Y_n) &=& \theta^Ts(X,Y_1,\ldots ,Y_n) - A(\theta) \\
 \end{eqnarray*}
 
-\item Second form:
+\item \textbf{Second form}:
 
 
 \begin{eqnarray*}
 \ln p(X|Y_1,\ldots ,Y_n) &=& \theta(Y_1,\ldots ,Y_n)^Ts(X) - A(Y_1,\ldots ,Y_n) \\
 \end{eqnarray*}
 
-\item Third form:
+\item \textbf{Third form}:
 
 \begin{eqnarray*}
 \ln p(X|Y_1,\ldots ,Y_n) &=& \theta(X, Y_1,\ldots ,Y_{l-1},Y_l, \ldots ,Y_n)^T s(Y_l) - A(X, Y_1,\ldots ,Y_{l-1},Y_l, \ldots ,Y_n) \\
@@ -180,12 +180,51 @@ $$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2(\beta_0+\sum_i^n 
 Similarly the above conditional probability can be expressed in the following exponential forms:
 
 \begin{itemize}
-\item First form:
-\item Second form:
-\item Third form:
-\end{itemize}
+\item \textbf{First form}:
 
+\begin{eqnarray*}
+\ln p(X|Y) &=& \theta^T s(X,Y) - A(\theta) + h(Y)\\
+&=&
+\begin{pmatrix}
+\frac{-1}{2\sigma^2} &=& \theta_{\mbox{-}1} \\
+\frac{-\beta_1^2}{2\sigma^2} &=& \theta_{1^2} \\
+\cdots \\
+\frac{-\beta_n^2}{2\sigma^2} &=& \theta_{n^2} \\
+\frac{\beta_0}{\sigma^2} &=& \theta_0 \\
+\frac{\beta_1}{\sigma^2} &=& \theta_1 \\
+\cdots\\
+\frac{\beta_n}{\sigma^2} &=& \theta_n \\
+\frac{-\beta_0\beta_1}{\sigma^2} &=&\theta_{01} \\
+\cdots\\
+\frac{-\beta_0\beta_n}{\sigma^2} &=& \theta_{0n} \\
+\frac{-\beta_1\beta_2}{\sigma^2} &=& \theta_{12} \\
+\cdots\\
+\frac{-\beta_1\beta_n}{\sigma^2} &=& \theta_{1n} \\
+\cdots\\
+\frac{-\beta_{n-1}\beta_n}{\sigma^2} &=&\theta_{n\mbox{-}1n} \\
+\end{pmatrix}^T
+\begin{pmatrix}
+X^2\\
+Y^2\\
+\cdots\\
+Y_n^2\\
+X\\
+XY_1\\
+\cdots\\
+XY_n\\
+Y_1\\
+\cdots\\
+Y_n\\
+Y_1Y_2\\
+\cdots\\
+Y_1Y_n\\
+\cdots\\
+Y_{n-1}Y_n
+\end{pmatrix}
+- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
+\end{eqnarray*}
 
+\item \textbf{Second form}:
 
 \begin{eqnarray*}
 \ln p(X|Y) &=& \theta(Y)^T s(X) - A(\theta(Y)) + h(Y)\\
@@ -198,10 +237,22 @@ Similarly the above conditional probability can be expressed in the following ex
 X\\
 X^2\\
 \end{pmatrix}
+- \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{X|Y}}}} \\
+&=&
+\begin{pmatrix}
+\theta_0+\theta_i m_0^{Y_i}\\
+\theta_{\mbox{-}1}\\
+\end{pmatrix}^T
+\begin{pmatrix}
+X\\
+X^2\\
+\end{pmatrix}
 - \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{X|Y}}}} 
 \end{eqnarray*}
 
-where $\mu_{X|Y} = \beta_0+\sum_i{\beta_i Y_i}$
+where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
+
+\item \textbf{Third form}:
 
 \begin{eqnarray*}
 \ln p(X|Y) &=& \theta(X)^T s(Y) - A(\theta(X)) + h(Y)\\
@@ -209,38 +260,62 @@ where $\mu_{X|Y} = \beta_0+\sum_i{\beta_i Y_i}$
 \begin{pmatrix}
 -\frac{\beta_1^2}{2\sigma^2}\\
 \cdots\\
--\frac{\beta_p^2}{2\sigma^2}\\
+-\frac{\beta_n^2}{2\sigma^2}\\
 \frac{\beta_1(X-\beta_0)}{\sigma^2}\\
 \cdots\\
-\frac{\beta_p(X-\beta_0)}{\sigma^2}\\
--\frac{\beta_1\beta_2}{\sigma^2}
+\frac{\beta_n(X-\beta_0)}{\sigma^2}\\
+-\frac{\beta_1\beta_2}{\sigma^2}\\
 \cdots\\
--\frac{\beta_1\beta_p}{\sigma^2}
+-\frac{\beta_1\beta_n}{\sigma^2}\\
 \cdots\\
--\frac{\beta_{p-1}\beta_p}{\sigma^2}
+-\frac{\beta_{n-1}\beta_n}{\sigma^2}
 \end{pmatrix}^T
 \begin{pmatrix}
 Y_1^2\\
 \cdots\\
-Y_p^2\\
+Y_n^2\\
 Y_1\\
 \cdots\\
-Y_p\\
+Y_n\\
 Y_1 Y_2\\
 \cdots\\
-Y_1 Y_p\\
+Y_1 Y_n\\
 \cdots\\
-Y_{p-1}Y_{p}\\
+Y_{n-1}Y_{n}\\
+\end{pmatrix}
+- \left( \frac{(X-\beta_0)^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}\\
+&=&
+\begin{pmatrix}
+\theta_{1^2}\\
+\cdots\\
+\theta_{n^2}\\
+\theta_1 m_0^X+\theta_{01}\\
+\cdots\\
+\theta_n m_0^X+\theta_{0n}\\
+\theta_{12}\\
+\cdots\\
+\theta_{1n}\\
+\cdots\\
+\theta_{n\mbox{-}1n}
+\end{pmatrix}^T
+\begin{pmatrix}
+Y_1^2\\
+\cdots\\
+Y_n^2\\
+Y_1\\
+\cdots\\
+Y_n\\
+Y_1 Y_2\\
+\cdots\\
+Y_1 Y_n\\
+\cdots\\
+Y_{n-1}Y_{n}\\
 \end{pmatrix}
 - \left( \frac{(X-\beta_0)^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
 \end{eqnarray*}
 
+\end{itemize}
 
-
-
-
-%\bibliographxstxle{splncs}
-%\bibliographx{biblio}
 
 \newpage
 %-----------------------------------------------------------------------------------------------------------------------------------
@@ -259,13 +334,10 @@ $k$& Range of possible values of a multinomial variable $X$\\
 $Y$ & Parent variable\\
 $\mathbf{Y} = \{Y_1,\ldots,Y_n\}$ & Set of parent variables\\
 $n$& Number of parent variables \\
-$r_i$& Range of possible values of $Y_i$\\
+$r_i$& Range of possible values of a multinomial variable $Y_i$\\
 $i$ & Parent variable index \\
 $p$ & Probability distribution\\
 \end{tabular}}
 \end{table}
-
-
-
 
 \end{document}
