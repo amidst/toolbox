@@ -226,6 +226,7 @@ Moreover, equation \eqref{eq:concordance} shows a simple way of calculating $P(Q
 This section includes various evaluation methods for classification on data streams.  Central to choices of evaluation methods are stationarity versus concept-drift, class imbalance, whether a scoring function exists, computational constraints and also the importance of early detection when a data stream changes behaviour.
 
 \subsubsection{Stationary data streams}
+\label{sec:stationary}
 
 Let $\{X_{t}\}$ be a stochastic process, where $p_X(\bmx_{t_1 + \tau},...,\bmx_{t_k + \tau} )$ is the probability distribution function of the joint distribution at $t_1 + \tau,...,t_k + \tau$.  Then $\{X_t\}$ is a stationary process, or a stationary stream, if, for all $k$, for all $\tau$ and for all $t_1 + \tau,...,t_k + \tau$, 
 
@@ -272,42 +273,45 @@ U_{1,k-1} + \sum_{i=1}^{n_{0,k}} H( \,q_{0,i} - q_{1,n_{1,k}}    \,)
 \end{equation}
 Clearly AUC calculation is $O(k)$, which might be a problem for very long streams.  
 
-Another method for calculating AUC  involves sorting the scores of all instances and iteration over this list. At each time step the list of scores, the number of positives and the number of negatives must be updated.  Moreover, even though the list is continuously resorted the mapping from each score to either a positive or a negative must be kept. AUC is calculated by algorithm \ref{AUCalg} at each time step.  This method is also $O(k)$.
-
-\todo{update AUC alg.}
+Another method for calculating AUC  involves sorting the scores of all instances and iteration over this list. It is essential that the sorted list always keeps the mapping from each score to either a positive or a negative.  At each time step, the list of scores, the number of positives and the number of negatives are updated.  The AUC is calculated by algorithm \ref{AUCalg}.  This method is also $O(k)$.
 
 \begin{algorithm}[H]
- \KwData{$sortedList$: sorted list of all scores in a stream, $p$: number of positives in sorted list, $n$: number of negatives in sorted list}
- \KwResult{Prequential $AUC$ at a given time step}
+ \KwData{$s$: Current score, $sortedList$: sorted list of all scores in a stream, $p$: number of positives in sorted list, $n$: number of negatives in sorted list}
+ \KwResult{Prequential $AUC$ at the current time step}
+$sortedList.update(s)$;\\
+$p.update(s)$;\\
+$n.update(s)$;\\
 $c \leftarrow 0, AUC \leftarrow 0$;\\
-\ForAll{scores $s \in sortedList$}{
-\If{isPositive($s$)}{
+\ForAll{scores $t \in$ sortedList}{
+\If{isPositive($t$)}{
 $c \leftarrow c + 1$
 }\Else{
-$AUC = AUC + 1$;
+$AUC = AUC + c$;
 }
 }
 $ AUC = AUC/(p \cdot n)$;
 \label{AUCalg}
- \caption{Calculation of prequential AUC at each time step in a stream.}
+ \caption{Calculation of prequential AUC at each time step in a stream.  Here, $sortedList.update(s)$ takes in the current score $s$ and places it correctly in the sorted list. The method $isPositive(s)$ computes whether the score $s$ is positive or not, while $p.update(s)$ and $n.update(s)$ updates the number of positives $p$ and negatives $n$.}
 \end{algorithm}
 
 It is worth noting a few points about the statistical interpretability of AUC on stationary streams.  Unless the stream is also i.i.d. the $q_{0,i}$s and the $q_{1,i}$s are generally dependent on neighboring points.  This fact is however not contradicting the fact that AUC is equal to the concordance probability $ P(Q_1 > Q_0)$.  This is because the definitions of $Q_0$ and $Q_1$ are $Q_0 = q(X_0)$ and $Q_1 = q(X_1)$ and 
-that $X_0$ and $X_1$ are random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$.  In practice, samples of $Q_0$ and $Q_1$ can be though of as picking samples from $\bv{q_0}$ and $\bv{q_1}$, respectively.
+that $X_0$ and $X_1$ are random variables with probability distributions $P(X | Y = 0)$ and $P(X | Y = 1)$.  The key point is that $P(X | Y = 0)$ and $P(X | Y = 1)$ are not dependent on time in stationary streams.  This is not true on non stationary streams.  
+
+\drop{In practice, samples of $Q_0$ and $Q_1$ can be though of as picking samples from $\bv{q_0}$ and $\bv{q_1}$, respectively.}
 
 \subsubsection{Data streams that involve concept-drift}
 
-Consept drift is generally understood as unforeseen changes in statistical properties of the target variable.  In the case of regression this can basically be understood as non stationary of the dependent variable.  In the case of classification, it is understood as the class distribution is \emph{not} constant in time.  
+Concept drift is generally understood as unforeseen changes in statistical properties of the target variable.  In the case of regression this can basically be understood as non stationary of the dependent variable.  In the case of classification, it is understood as the class distribution is \emph{not} constant in time.  
 
 However, this definition is not always clear cut in the literature.  For instance in \cite{Brz14}, concept drift is understood broader, where non stationarity of explanatory variables are present in addition to time dependent class distributions.   For clarity, in this paper we refer to concept drift in the sense of \cite{Brz14}.
 
-In \cite{Gam13}, two estimators where suggested for dealing with concept drift and/or non stationary explanatory variables.  The first estimator involves calculating the prequential empirical risk over a sliding window of $w$ samples. 
+In \cite{Gam13}, two estimators are suggested for dealing with concept drift and/or non stationary explanatory variables.  The first estimator involves calculating the prequential empirical risk over a sliding window of $w$ samples. 
 
 \begin{equation}
 \label{eq:prequentialRisk2}
 R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, w) = w^{-1} \sum_{i=k - w +1}^k L(\bmx_{t_i} , h_{t_i}(\bmx_{t_i} ), y_{t_i}).
 \end{equation}
-Notice that $R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, w)$ is a function of time and not just a single number.  The measure reflects the expected loss at $t_{k-\mbox{floor}(w/2)}$.  Notice also that the classification rule itself $h_{t_i}$ is allowed to be a function of time.
+Notice that $R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, w)$ is a function of time and not just a single number.  Hence, the measure reflects the expected loss at $t_{k-\mbox{floor}(w/2)}$.  Notice also that the classification rule itself $h_{t_i}$ is allowed to be a function of time.
 
 The second estimator involves fading factors and is defined as follows
 
@@ -320,18 +324,19 @@ When $\alpha$ is equal to one, this reduces to the prequental empirical risk wit
 In the special case when the loss function is zero-one and $h$, or $h_k$, is consistent, then it is shown in \cite{Gam13} that 
 $R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, \alpha)$, $R_{emp}(t_k, \{h_{t_k}\}, \{X_{t_k}\}, w) $ and $R_{emp}(h, \{X_{t_k}\})$ approximates the Bayes error in the limiting cases.
 
-\todo{Motivate AUC with concept drift}
+As said in \ref{sec:stationary}, $P(X | Y = 0)$ and $P(X | Y = 1)$ are not dependent on time in stationary streams. However, in our definition of concept-drift, which includes non stationary explanatory variables, $P(X | Y = 0)$ and $P(X | Y = 1)$ are generally dependent on time.  This means that an AUC that is calculated by either equation \eqref{eq:prequentialAUC2} or algorithm \ref{AUCalg} at the current time step, may be severely biased by very old measurements.
 
-In \cite{Brz14}, the prequantial AUC with a forgetting factor is suggested.  The method involves calculating AUC on a sliding window of fixed size in a similar manner as algorithm \ref{AUCalg}.  At each time step the sorted list on the window is updates as well as the number of positives and negatives.  The rest of the algorithm is explained in algorithm \ref{AUCalg2}.
-
-\todo{potentially remove this lag.}
+To overcome this problem, it is suggested in \cite{Brz14}, a prequantial AUC with a forgetting factor.  The method involves calculating AUC on a sliding window of fixed size in a similar manner as algorithm \ref{AUCalg}.  This algorithm is explained in algorithm \ref{AUCalg2}.
 
 \begin{algorithm}[H]
- \KwData{$sortedList$: sorted list of scores in window, $p$: number of positives in sorted list, $n$: number of negatives in sorted list}
- \KwResult{Prequential $AUC$ at a given time step}
+ \KwData{$s$: Current score, $sortedList$: sorted list of scores in the sliding window, $p$: number of positives in sorted list, $n$: number of negatives in sorted list}
+ \KwResult{Prequential $AUC$ at the current time step}
+$sortedList.update(s)$;\\
+$p.update(s)$;\\
+$n.update(s)$;\\
 $c \leftarrow 0, AUC \leftarrow 0$;\\
-\ForAll{scores $s \in sortedList$}{
-\If{isPositive($s$)}{
+\ForAll{scores $t \in$ sortedList}{
+\If{isPositive($t$)}{
 $c \leftarrow c + 1$
 }\Else{
 $AUC = AUC + c$;
@@ -339,11 +344,10 @@ $AUC = AUC + c$;
 }
 $ AUC = AUC/(p \cdot n)$;
 \label{AUCalg2}
- \caption{Calculation of prequential AUC on a window, as described in article \cite{Brz14}.}
+ \caption{Calculation of prequential AUC at each time step in a stream.  Here, $sortedList.update(s)$ takes in the current score $s$ and throws out the oldest score before resorting the list. The method $isPositive(s)$ computes whether the score $s$ is positive or not, while $p.update(s)$ and $n.update(s)$ updates the number of positives $p$ and negatives $n$.}
 \end{algorithm}
 
-
-\todo{Sigve says: Maybe discuss stationary explanatory variables with consept drift versus non stationary explanatory variables with concept drift.}
+\drop{\todo{Sigve says: Maybe discuss stationary explanatory variables with consept drift versus non stationary explanatory variables with concept drift.}}
 
 \subsubsection{Risk related to early and late warnings}
 
