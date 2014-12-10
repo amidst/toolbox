@@ -16,16 +16,17 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
     /**
      * The class constructor.
      *
-     * @param var_     The variable of the distribution.
-     * @param parents_ The set of parents of the variable.
+     * @param var1     The variable of the distribution.
+     * @param parents1 The set of parents of the variable.
      */
-    public Multinomial_LogisticParents(Variable var_, List<Variable> parents_) {
+    public Multinomial_LogisticParents(Variable var1, List<Variable> parents1) {
 
-        if (parents_.size() == 0)
+        if (parents1.size() == 0) {
             throw new UnsupportedOperationException("A multinomial logistic distribution can not be created from a empty set of parents.");
+        }
 
-        this.var = var_;
-        this.parents = parents_;
+        this.var = var1;
+        this.parents = parents1;
         this.intercept = new double[var.getNumberOfStates() - 1];
         this.coeffParents = new double[var.getNumberOfStates() - 1][parents.size()];
 

@@ -74,9 +74,11 @@ public class DAG {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o){return true;}
 
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
 
         DAG dag = (DAG) o;
 
@@ -115,11 +117,13 @@ public class DAG {
         }
 
         public void addParent(Variable var){
-            if (!Utils.isLinkCLG(mainVar,var))
+            if (!Utils.isLinkCLG(mainVar,var)){
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
+            }
 
-            if (this.contains(var))
+            if (this.contains(var)){
                 throw new IllegalArgumentException("Trying to add a duplicated parent");
+            }
 
             vars.add(var);
         }
@@ -147,8 +151,9 @@ public class DAG {
             for(int i=0;i<numParents;i++){
                 Variable parent = getParents().get(i);
                 str.append(parent.getName());
-                if (i<numParents-1)
+                if (i<numParents-1) {
                     str.append(", ");
+                }
             }
             str.append(" }");
             return str.toString();
@@ -167,9 +172,13 @@ public class DAG {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
+            if (this == o){
+                return true;
+            }
 
-            if (o == null || getClass() != o.getClass()) return false;
+            if (o == null || getClass() != o.getClass()){
+                return false;
+            }
 
             ParentSet parentset = (ParentSet) o;
 

@@ -10,12 +10,13 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
     /**
      * The class constructor.
-     * @param var_ The variable of the distribution.
+     * @param var The variable of the distribution.
      */
     public EF_Multinomial(Variable var) {
 
-        if (var.getDistributionType()!= DistType.MULTINOMIAL)
+        if (var.getDistributionType()!= DistType.MULTINOMIAL) {
             throw new UnsupportedOperationException("Creating a Multinomial EF distribution for a non-multinomial variable.");
+        }
 
         this.var=var;
         int nstates= var.getNumberOfStates();

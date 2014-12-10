@@ -32,7 +32,7 @@ public final class CajaMarModels {
      * We finally compute the log-likelihood of the data according to the created model (i.e. the probabilty distributions
      * are randomly initialized, there is no parametric learning). The data is a single long temporal sequence.
      */
-    public static void CajaMarDefaulterPredictor() throws ExceptionHugin {
+    public static void cajaMarDefaulterPredictor() throws ExceptionHugin {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -184,6 +184,6 @@ public final class CajaMarModels {
 
     }
     public static void main(String[] args) throws ExceptionHugin {
-        CajaMarModels.CajaMarDefaulterPredictor();
+        CajaMarModels.cajaMarDefaulterPredictor();
     }
 }

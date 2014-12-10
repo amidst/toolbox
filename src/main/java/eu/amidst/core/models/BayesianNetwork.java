@@ -76,8 +76,9 @@ public final class BayesianNetwork {
     public double getLogProbabiltyOfFullAssignment(Assignment assignment){
         double logProb = 0;
         for (Variable var: this.getStaticVariables()){
-            if (assignment.getValue(var)== Utils.missingValue())
+            if (assignment.getValue(var)== Utils.missingValue()) {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
+            }
 
             logProb += this.distributions[var.getVarID()].getLogConditionalProbability(assignment);
         }
