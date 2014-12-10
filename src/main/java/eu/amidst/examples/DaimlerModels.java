@@ -75,10 +75,10 @@ public final class DaimlerModels {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
-        Variable VLATSIGMA = dynamicVariables.addObservedDynamicVariable(attVLATSIGMA);
-        Variable VLATMEAS = dynamicVariables.addObservedDynamicVariable(attVLATMEAS);
-        Variable OLATSIGMA = dynamicVariables.addObservedDynamicVariable(attOLATSIGMA);
-        Variable OLATMEAS = dynamicVariables.addObservedDynamicVariable(attOLATMEAS);
+        Variable vlatSIGMA = dynamicVariables.addObservedDynamicVariable(attVLATSIGMA);
+        Variable vlatMEAS = dynamicVariables.addObservedDynamicVariable(attVLATMEAS);
+        Variable olatSIGMA = dynamicVariables.addObservedDynamicVariable(attOLATSIGMA);
+        Variable olatMEAS = dynamicVariables.addObservedDynamicVariable(attOLATMEAS);
 
         /**
          * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
@@ -95,22 +95,22 @@ public final class DaimlerModels {
          *
          */
 
-        Variable VLATREAL = dynamicVariables.addRealDynamicVariable(VLATMEAS);
-        Variable OLATREAL = dynamicVariables.addRealDynamicVariable(OLATMEAS);
+        Variable vlatREAL = dynamicVariables.addRealDynamicVariable(vlatMEAS);
+        Variable olatREAL = dynamicVariables.addRealDynamicVariable(olatMEAS);
 
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("A_LAT");
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpace(new RealStateSpace());
         variableBuilder.setDistributionType(DistType.GAUSSIAN);
-        Variable ALAT = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable aLAT = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("LE");
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("Yes", "No")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
-        Variable LE = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable latEv = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
 
         /**
@@ -128,23 +128,23 @@ public final class DaimlerModels {
 
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
-        dynamicDAG.getParentSetTimeT(VLATMEAS).addParent(VLATSIGMA);
-        dynamicDAG.getParentSetTimeT(VLATMEAS).addParent(VLATREAL);
+        dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatSIGMA);
+        dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatREAL);
 
 
-        dynamicDAG.getParentSetTimeT(OLATMEAS).addParent(OLATSIGMA);
-        dynamicDAG.getParentSetTimeT(OLATMEAS).addParent(OLATREAL);
+        dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatSIGMA);
+        dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatREAL);
 
-        dynamicDAG.getParentSetTimeT(ALAT).addParent(dynamicVariables.getTemporalClone(ALAT));
+        dynamicDAG.getParentSetTimeT(aLAT).addParent(dynamicVariables.getTemporalClone(aLAT));
 
-        dynamicDAG.getParentSetTimeT(VLATREAL).addParent(ALAT);
-        dynamicDAG.getParentSetTimeT(VLATREAL).addParent(dynamicVariables.getTemporalClone(VLATREAL));
+        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(aLAT);
+        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(dynamicVariables.getTemporalClone(vlatREAL));
 
-        dynamicDAG.getParentSetTimeT(OLATREAL).addParent(dynamicVariables.getTemporalClone(OLATREAL));
-        dynamicDAG.getParentSetTimeT(OLATREAL).addParent(dynamicVariables.getTemporalClone(VLATREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getTemporalClone(olatREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getTemporalClone(vlatREAL));
 
-        dynamicDAG.getParentSetTimeT(LE).addParent(VLATREAL);
-        dynamicDAG.getParentSetTimeT(LE).addParent(OLATREAL);
+        dynamicDAG.getParentSetTimeT(latEv).addParent(vlatREAL);
+        dynamicDAG.getParentSetTimeT(latEv).addParent(olatREAL);
 
         /**
          * 1. We print the graph to see if it is properly created.

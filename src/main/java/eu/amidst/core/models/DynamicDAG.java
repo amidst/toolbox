@@ -48,10 +48,10 @@ public class DynamicDAG {
 
     /* Methods accessing structure at time T*/
     public ParentSet getParentSetTimeT(Variable var) {
-        if (var.isTemporalClone())
+        if (var.isTemporalClone()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
-
+        }
         return this.parentSetTimeT[var.getVarID()];
     }
 
@@ -64,10 +64,10 @@ public class DynamicDAG {
     }*/
 
     public List<Variable> getListOfParentsTime0(Variable var) {
-        if (var.isTemporalClone())
+        if (var.isTemporalClone()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
-
+        }
         return this.parentSetTime0[var.getVarID()].getParents();
     }
 
@@ -135,16 +135,19 @@ public class DynamicDAG {
             this.vars = new ArrayList<Variable>();
         }
         public void addParent(Variable var){
-            if (!Utils.isLinkCLG(mainVar, var))
+            if (!Utils.isLinkCLG(mainVar, var)) {
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
+            }
 
-            if (this.contains(var))
+            if (this.contains(var)) {
                 throw new IllegalArgumentException("Trying to add a duplicated parent");
+            }
 
             vars.add(var);
 
-            if (!var.isTemporalClone())
-               parentSetTime0[mainVar.getVarID()].vars.add(var);
+            if (!var.isTemporalClone()) {
+                parentSetTime0[mainVar.getVarID()].vars.add(var);
+            }
         }
 
         public void removeParent(Variable var){
@@ -169,8 +172,9 @@ public class DynamicDAG {
             for(int i=0;i<numParents;i++){
                 Variable parent = getParents().get(i);
                 str.append(parent.getName());
-                if (i<numParents-1)
+                if (i<numParents-1) {
                     str.append(", ");
+                }
             }
 
 

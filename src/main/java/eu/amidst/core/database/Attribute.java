@@ -73,13 +73,18 @@ public final class Attribute {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o){
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
 
         Attribute attribute = (Attribute) o;
 
-        if (stateSpace.getStateSpaceType() != attribute.stateSpace.getStateSpaceType()) return false;
-        if (!name.equals(attribute.name)) return false;
+        if (stateSpace.getStateSpaceType() != attribute.stateSpace.getStateSpaceType()){return false;}
+        if (!name.equals(attribute.name)) {return false;}
 
         return true;
     }

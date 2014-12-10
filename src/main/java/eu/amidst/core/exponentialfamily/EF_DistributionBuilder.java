@@ -20,12 +20,12 @@ public final class EF_DistributionBuilder {
 
     public static EF_Normal toEFDistribution(Normal dist){
 
-        EF_Normal ef_normal = new EF_Normal(dist.getVariable());
+        EF_Normal efNormal = new EF_Normal(dist.getVariable());
         MomentParameters momentParameters = new MomentParameters(2);
         momentParameters.set(EF_Normal.EXPECTED_MEAN,dist.getMean());
         momentParameters.set(EF_Normal.EXPECTED_SQUARE,dist.getMean()*dist.getMean() + dist.getSd()*dist.getSd());
-        ef_normal.setMomentParameters(momentParameters);
-        return ef_normal;
+        efNormal.setMomentParameters(momentParameters);
+        return efNormal;
 
     }
 
@@ -44,7 +44,7 @@ public final class EF_DistributionBuilder {
 
 
     public static EF_Multinomial toEFDistribution(Multinomial dist) {
-        EF_Multinomial ef_multinomial = new EF_Multinomial(dist.getVariable());
+        EF_Multinomial efMultinomial = new EF_Multinomial(dist.getVariable());
 
         MomentParameters momentParameters = new MomentParameters(dist.getVariable().getNumberOfStates());
 
@@ -52,9 +52,9 @@ public final class EF_DistributionBuilder {
             momentParameters.set(i,dist.getProbabilityOfState(i));
         }
 
-        ef_multinomial.setMomentParameters(momentParameters);
+        efMultinomial.setMomentParameters(momentParameters);
 
-        return ef_multinomial;
+        return efMultinomial;
     }
 
     public static Multinomial toDistribution(EF_Multinomial efmultinomial) {

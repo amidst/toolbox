@@ -31,11 +31,11 @@ public class Multinomial extends UnivariateDistribution {
     /**
      * The class constructor.
      *
-     * @param var_ The variable of the distribution.
+     * @param var1 The variable of the distribution.
      */
-    public Multinomial(Variable var_) {
+    public Multinomial(Variable var1) {
 
-        this.var = var_;
+        this.var = var1;
         this.probabilities = new double[var.getNumberOfStates()];
 
         for (int i = 0; i < var.getNumberOfStates(); i++) {
@@ -51,10 +51,10 @@ public class Multinomial extends UnivariateDistribution {
     /**
      * Sets the probability values to the distribution.
      *
-     * @param probabilities_ An array of probabilities in the same order as the variable states.
+     * @param probabilities1 An array of probabilities in the same order as the variable states.
      */
-    public void setProbabilities(double[] probabilities_) {
-        this.probabilities = probabilities_;
+    public void setProbabilities(double[] probabilities1) {
+        this.probabilities = probabilities1;
     }
 
     /**
@@ -107,8 +107,9 @@ public class Multinomial extends UnivariateDistribution {
         int size = this.getProbabilities().length;
         for(int i=0;i<size;i++){
             str.append(this.getProbabilities()[i]);
-            if(i<size-1)
+            if(i<size-1) {
                 str.append(", ");
+            }
         }
         str.append(" ]");
         return str.toString();

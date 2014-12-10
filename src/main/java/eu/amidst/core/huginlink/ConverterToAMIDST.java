@@ -92,12 +92,12 @@ public class ConverterToAMIDST {
         int pos=0;
         for(int i=0;i<numParentAssignments;i++){
 
-            double[] amidstProbabilities_i = new double[numStates];
+            double[] amidstProbabilities = new double[numStates];
             for(int k=0;k<numStates;k++){
-                amidstProbabilities_i[k] = huginProbabilities[i*numStates+k];
+                amidstProbabilities[k] = huginProbabilities[i*numStates+k];
             }
             Multinomial_MultinomialParents dist = this.amidstBN.getDistribution(amidstVar);
-            dist.getMultinomial(i).setProbabilities(amidstProbabilities_i);
+            dist.getMultinomial(i).setProbabilities(amidstProbabilities);
             pos = pos+numStates;
         }
     }
@@ -127,10 +127,10 @@ public class ConverterToAMIDST {
 
     private void setNormal(Node huginVar, Normal normal, int i) throws ExceptionHugin {
 
-        double huginMean_i  = ((ContinuousChanceNode)huginVar).getAlpha(i);
-        double huginVariance_i  = ((ContinuousChanceNode)huginVar).getGamma(i);
-        normal.setMean(huginMean_i);
-        normal.setSd(Math.sqrt(huginVariance_i));
+        double huginMean  = ((ContinuousChanceNode)huginVar).getAlpha(i);
+        double huginVariance  = ((ContinuousChanceNode)huginVar).getGamma(i);
+        normal.setMean(huginMean);
+        normal.setSd(Math.sqrt(huginVariance));
     }
 
     private void setNormal_MultinomialParents(Node huginVar) throws ExceptionHugin {
@@ -160,10 +160,10 @@ public class ConverterToAMIDST {
 
         for(int i=0;i<numParentAssignments;i++) {
 
-            Normal_NormalParents normal_normal = dist.getNormal_NormalParentsDistribution(i);
+            Normal_NormalParents normalNormal = dist.getNormal_NormalParentsDistribution(i);
 
             double huginIntercept = ((ContinuousChanceNode)huginVar).getAlpha(i);
-            normal_normal.setIntercept(huginIntercept);
+            normalNormal.setIntercept(huginIntercept);
 
             List<Variable> normalParents = dist.getNormalParents();
             int numParents = normalParents.size();
@@ -174,10 +174,10 @@ public class ConverterToAMIDST {
                 ContinuousChanceNode huginParent =  (ContinuousChanceNode)this.huginBN.getNodeByName(nameAmidstNormalParent);
                 coeffs[j]= ((ContinuousChanceNode)huginVar).getBeta(huginParent,i);
             }
-            normal_normal.setCoeffParents(coeffs);
+            normalNormal.setCoeffParents(coeffs);
 
             double huginVariance = ((ContinuousChanceNode)huginVar).getGamma(i);
-            normal_normal.setSd(Math.sqrt(huginVariance));
+            normalNormal.setSd(Math.sqrt(huginVariance));
         }
     }
 
