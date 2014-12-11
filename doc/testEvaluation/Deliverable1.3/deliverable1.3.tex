@@ -1,3 +1,4 @@
+% !TEX TS-program = pdflatex
 \documentclass{article}   	% use "amsart" instead of "article" for AMSLaTeX format
 \usepackage{geometry}                		% See geom\dagetry.pdf to learn the layout options. There are lots.
 \geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
@@ -18,6 +19,9 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{multirow}
+\usepackage{hl_short}
+\usepackage[]{algorithm2e}
+
 
 \parskip 6pt % 1pt = 0.351 mm
 \parindent 0pt
@@ -33,10 +37,9 @@
 \renewcommand{\footrulewidth}{0.4pt}
 \cfoot{}
 
-
 %\setcounter{page}{2}
 \newcommand{\drop}[1]{}
-\newcommand{\bm}{\mathbf}
+%\newcommand{\bm}{\mathbf}
 
 \newcommand{\bu}[1]{\mathbf{#1}}
 \newcommand{\bv}[1]{\bm{#1}}
@@ -81,8 +84,11 @@
 
 \newpage
 
-% Executive summary
-%\input{executiveSummary}
+\section{Executive summary}
+
+This document is by no means ready, so I haven't written anything here. 
+
+\newpage
 
 % Introduction
 \input{introduction}
@@ -93,97 +99,15 @@
 % Use cases: test and evaluation
 \input{usecases-test-evaluation}
 
-
-\section{Cajamar: test and evaluation}
-
-\subsection{Use case requirements}
-
-\emph{Summarize the use case requirements for the different application scenarios. This information should be
-  derived from Deliverable 1.2.}
-
-\subsection{Model and data characteristics}
-
-\emph{Describe aspects of the model and data relevant for the ensuing test and evaluation discussion. Much of
-  this information can be synthesized from the existing documents, and should serve to make the document more
-  self-contained. }
-
-%\subsubsection{Application scenario 2: test and evaluation}
-
-
-
-\subsection{Predictive performance: test and evaluation}
-
-\subsubsection{Application scenario 1}
-
-\subsubsection{Application scenario 2}
-
-\subsection{Run-time performance: test and evaluation}
-
-\subsubsection{Application scenario 1}
-
-\subsubsection{Application scenario 2}
-
-
+\input{testCajamar-HL}
 
 \section{Daimler: test and evaluation}
 
-\subsection{Use case requirements}
 
-\emph{Summarize the use case requirements for the different application scenarios. This information should be
-  derived from Deliverable 1.2.}
-
-\subsection{Model and data characteristics}
-
-\emph{Describe aspects of the model and data relevant for the ensuing test and evaluation discussion. Much of
-  this information can be synthesized from the existing documents, and should serve to make the document more
-  self-contained. }
-
-%\subsubsection{Application scenario 2: test and evaluation}
+\input{testVerdande}
 
 
 
-\subsection{Predictive performance: test and evaluation}
-
-\subsubsection{Application scenario 1}
-
-\subsubsection{Application scenario 2}
-
-\subsection{Run-time performance: test and evaluation}
-
-\subsubsection{Application scenario 1}
-
-\subsubsection{Application scenario 2}
-
-
-
-\section{Verdande: test and evaluation}
-
-\subsection{Use case requirements}
-
-\emph{Summarize the use case requirements for the different application scenarios. This information should be
-  derived from Deliverable 1.2.}
-
-\subsection{Model and data characteristics}
-
-\emph{Describe aspects of the model and data relevant for the ensuing test and evaluation discussion. Much of
-  this information can be synthesized from the existing documents, and should serve to make the document more
-  self-contained. }
-
-%\subsubsection{Application scenario 2: test and evaluation}
-
-
-
-\subsection{Predictive performance: test and evaluation}
-
-\subsubsection{Application scenario 1}
-
-\subsubsection{Application scenario 2}
-
-\subsection{Run-time performance: test and evaluation}
-
-\subsubsection{Application scenario 1}
-
-\subsubsection{Application scenario 2}
 
 \input{conclusion}
 
