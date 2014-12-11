@@ -5,6 +5,7 @@ import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.ParseListener;
 import eu.amidst.core.huginlink.ConverterToAMIDST;
+import eu.amidst.core.huginlink.ConverterToHugin;
 
 import java.io.*;
 
@@ -20,10 +21,5 @@ public class BayesianNetworkLoader {
         BayesianNetwork amidstBN = ConverterToAMIDST.convertToAmidst(huginBN);
         return amidstBN;
     }
-
-    public static BayesianNetwork loadFromSerializableObject(String file) throws IOException, ClassNotFoundException {
-        ObjectInputStream objectIn = new ObjectInputStream(new FileInputStream(file));
-        return (BayesianNetwork)objectIn.readObject();
-
-    }
 }
+
