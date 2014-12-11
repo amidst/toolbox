@@ -7,28 +7,28 @@ import eu.amidst.core.database.Attribute;
  */
 public interface Variable {
 
-    public String getName();
+    String getName();
 
-    public int getVarID();
+    int getVarID();
 
-    public boolean isObservable();
+    boolean isObservable();
 
-    public <E extends StateSpace> E getStateSpace();
+    <E extends StateSpace> E getStateSpace();
 
-    public int getNumberOfStates();
+    int getNumberOfStates();
 
-    public DistType getDistributionType();
+    DistType getDistributionType();
 
-    public boolean isTemporalClone();
+    boolean isTemporalClone();
 
-    public boolean isDynamicVariable();
+    boolean isDynamicVariable();
 
-    public Attribute getAttribute();
-
-    @Override
-    public int hashCode();
+    Attribute getAttribute();
 
     @Override
-    public boolean equals(Object o);
+    int hashCode();
+
+    @Override
+    boolean equals(Object o);
 
 }

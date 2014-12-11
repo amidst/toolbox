@@ -5,29 +5,29 @@ import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by andresmasegosa on 23/11/14.
  */
 public class Indicator extends ConditionalDistribution{
 
-    ConditionalDistribution conditionalDistribution;
-    Uniform uniform;
-    Variable indicatorVar;
+    private ConditionalDistribution conditionalDistribution;
+    private Uniform uniform;
+    private Variable indicatorVar;
 
-    public Indicator(Variable indicatorVar_,  ConditionalDistribution conditionalDistribution_) {
-        if (indicatorVar_.getDistributionType() != DistType.INDICATOR)
+    public Indicator(Variable indicatorVar1,  ConditionalDistribution conditionalDistribution1) {
+        if (indicatorVar1.getDistributionType() != DistType.INDICATOR) {
             throw new IllegalArgumentException("IndicatorVar_ should be of indicator type");
-        this.var = conditionalDistribution_.getVariable();
+        }
+        this.var = conditionalDistribution1.getVariable();
         this.parents = new ArrayList<>();
-        for (Variable var: conditionalDistribution_.getConditioningVariables()){
+        for (Variable var: conditionalDistribution1.getConditioningVariables()){
             this.parents.add(var);
         }
 
-        this.parents.add(indicatorVar_);
-        this.conditionalDistribution=conditionalDistribution_;
-        this.indicatorVar = indicatorVar_;
+        this.parents.add(indicatorVar1);
+        this.conditionalDistribution=conditionalDistribution1;
+        this.indicatorVar = indicatorVar1;
         this.uniform = new Uniform(this.getVariable());
     }
 
@@ -47,10 +47,12 @@ public class Indicator extends ConditionalDistribution{
 
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
-        if (assignment.getValue(this.indicatorVar)==0.0)
+        if (assignment.getValue(this.indicatorVar)==0.0) {
             return this.uniform.getLogProbability(assignment.getValue(this.getVariable()));
-        else
+        }
+        else {
             return this.conditionalDistribution.getLogConditionalProbability(assignment);
+        }
     }
 
     public String label(){

@@ -116,7 +116,7 @@ public final class MultinomialIndex {
         int lastPhiStride = 1;
 
         for (int i=0; i<n; i++){
-            assignment[i]=Math.floor(index/lastPhiStride) % vars.get(i).getNumberOfStates();
+            assignment[i]=Math.floor(index/(double)lastPhiStride) % vars.get(i).getNumberOfStates();
             lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
         }
         return assignment;

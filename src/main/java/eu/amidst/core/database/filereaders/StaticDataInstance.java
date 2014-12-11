@@ -9,8 +9,8 @@ import eu.amidst.core.variables.Variable;
 public class StaticDataInstance implements DataInstance {
 
     private DataRow dataRow;
-    public StaticDataInstance(DataRow dataRow_){
-        dataRow=dataRow_;
+    public StaticDataInstance(DataRow dataRow1){
+        dataRow=dataRow1;
     }
 
     @Override

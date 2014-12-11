@@ -27,7 +27,7 @@ public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distri
 
     private List<E> distributions;
     private List<Variable> multinomialParents;
-    private List<Variable> non_multinomialParents;
+    private List<Variable> nonMultinomialParents;
 
     public EF_BaseDistribution_MultinomialParents(Variable var, List<Variable> parents) {
 
@@ -38,7 +38,7 @@ public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distri
             if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
                 this.multinomialParents.add(var);
             } else {
-                this.non_multinomialParents.add(var);
+                this.nonMultinomialParents.add(var);
             }
         }
 
@@ -48,13 +48,13 @@ public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distri
         // Initialize the distribution uniformly for each configuration of the parents.
         this.distributions = new ArrayList<E>(size);
         for (int i = 0; i < size; i++) {
-            this.distributions.add(createNewBaseDistribution(var,non_multinomialParents));
+            this.distributions.add(createNewBaseDistribution(var, nonMultinomialParents));
         }
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
-    public abstract E createNewBaseDistribution(Variable var, List<Variable> non_multinomialParents);
+    public abstract E createNewBaseDistribution(Variable var, List<Variable> nonMultinomialParents);
 
     public void setEF_BaseDistribution(int indexMultinomial, E baseDist) {
         this.distributions.set(indexMultinomial,baseDist);
@@ -122,10 +122,16 @@ public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distri
     }
 
     public void updateNaturalFromMomentParameters(){
+        for(E baseDist: this.distributions){
+            baseDist.updateNaturalFromMomentParameters();
+        }
         return;
     }
 
     public void updateMomentFromNaturalParameters(){
+        for(E baseDist: this.distributions){
+            baseDist.updateMomentFromNaturalParameters();
+        }
         return;
     }
 

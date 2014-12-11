@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Attributes {
 
-    List<Attribute> attributes;
+    private List<Attribute> attributes;
 
 
 
@@ -36,8 +36,7 @@ public class Attributes {
 
     public Attribute getAttributeByName(String name){
         for(Attribute att: getList()){
-            if(att.getName().equals(name))
-                return att;
+            if(att.getName().equals(name)){ return att;}
         }
         throw new UnsupportedOperationException("Attribute "+name+" is not part of the list of Attributes (try uppercase)");
     }

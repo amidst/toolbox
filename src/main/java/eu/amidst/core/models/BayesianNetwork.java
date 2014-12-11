@@ -14,17 +14,12 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-
 /**
  * Created by afa on 02/07/14.
  */
 
 
-public class BayesianNetwork {
+public final class BayesianNetwork {
 
     private ConditionalDistribution[] distributions;
 
@@ -81,8 +76,9 @@ public class BayesianNetwork {
     public double getLogProbabiltyOfFullAssignment(Assignment assignment){
         double logProb = 0;
         for (Variable var: this.getStaticVariables()){
-            if (assignment.getValue(var)== Utils.missingValue())
+            if (assignment.getValue(var)== Utils.missingValue()) {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
+            }
 
             logProb += this.distributions[var.getVarID()].getLogConditionalProbability(assignment);
         }
@@ -91,28 +87,32 @@ public class BayesianNetwork {
 
 
     public String toString(){
-        String str = "Bayesian Network:\n";
+
+
+        StringBuilder str = new StringBuilder();
+        str.append("Bayesian Network:\n");
+
         for (Variable var: this.getStaticVariables()){
 
             if (this.getDAG().getParentSet(var).getNumberOfParents()==0){
-                str+="P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ";
-                str+=this.getDistribution(var).label()+"\n";
+                str.append("P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ");
+                str.append(this.getDistribution(var).label()+"\n");
             }else {
-
-                str += "P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ";
+                str.append("P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ");
 
                 for (Variable parent : this.getDAG().getParentSet(var)) {
-                    str += parent.getName() + " [" + parent.getDistributionType().toString() + "], ";
+                    str.append(parent.getName() + " [" + parent.getDistributionType().toString() + "], ");
                 }
-                if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) str = str.substring(0, str.length() - 2);
-                str += ") follows a ";
-                str += this.getDistribution(var).label() + "\n";
-
+                if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) {
+                    str.substring(0, str.length() - 2);
+                    str.append(") follows a ");
+                    str.append(this.getDistribution(var).label() + "\n");
+                }
             }
             //Variable distribution
-            str += this.getDistribution(var).toString()+ "\n";
+            str.append(this.getDistribution(var).toString()+ "\n");
         }
-        return str;
+        return str.toString();
     }
 }
 

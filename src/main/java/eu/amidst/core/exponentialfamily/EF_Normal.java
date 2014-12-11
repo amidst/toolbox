@@ -8,14 +8,15 @@ import eu.amidst.core.variables.Variable;
  */
 public class EF_Normal extends EF_UnivariateDistribution {
 
-    public static int EXPECTED_MEAN = 0;
-    public static int EXPECTED_SQUARE = 1;
+    public static final int EXPECTED_MEAN = 0;
+    public static final int EXPECTED_SQUARE = 1;
 
-    public EF_Normal(Variable var_) {
-        if (var_.getDistributionType()!= DistType.GAUSSIAN)
+    public EF_Normal(Variable var1) {
+        if (var1.getDistributionType()!= DistType.GAUSSIAN) {
             throw new UnsupportedOperationException("Creating a Gaussian EF distribution for a non-gaussian variable.");
+        }
 
-        this.var=var_;
+        this.var=var1;
         this.naturalParameters = new NaturalParameters(2);
         this.momentParameters = new MomentParameters(2);
 
@@ -31,9 +32,9 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
     @Override
     public double computeLogNormalizer() {
-        double m_0=this.momentParameters.get(EXPECTED_MEAN);
-        double m_1=this.momentParameters.get(EXPECTED_SQUARE);
-        return m_0*m_0/(2*(m_1-m_0*m_0)) + 0.5*Math.log(m_1-m_0*m_0);
+        double m0=this.momentParameters.get(EXPECTED_MEAN);
+        double m1=this.momentParameters.get(EXPECTED_SQUARE);
+        return m0*m0/(2*(m1-m0*m0)) + 0.5*Math.log(m1-m0*m0);
     }
 
     @Override
@@ -46,18 +47,19 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
     @Override
     public void updateNaturalFromMomentParameters() {
-        double m_0=this.momentParameters.get(EXPECTED_MEAN);
-        double m_1=this.momentParameters.get(EXPECTED_SQUARE);
-        this.naturalParameters.set(0,m_0/(m_0-m_1*m_1));
-        this.naturalParameters.set(1,-0.5/(m_0-m_1*m_1));
+        double m0=this.momentParameters.get(EXPECTED_MEAN);
+        double m1=this.momentParameters.get(EXPECTED_SQUARE);
+        // var = E(X^2) - E(X)^2 = m1 - m0*m0
+        this.naturalParameters.set(0,m0/(m1-m0*m0));
+        this.naturalParameters.set(1,-0.5/(m1-m0*m0));
     }
 
     @Override
     public void updateMomentFromNaturalParameters() {
-        double n_0 = this.naturalParameters.get(0);
-        double n_1 = this.naturalParameters.get(1);
-        this.momentParameters.set(EXPECTED_MEAN,-0.5*n_0/n_1);
-        this.momentParameters.set(EXPECTED_SQUARE,-0.5*n_0/n_1 + 0.25*Math.pow(n_0/n_1,2));
+        double n0 = this.naturalParameters.get(0);
+        double n1 = this.naturalParameters.get(1);
+        this.momentParameters.set(EXPECTED_MEAN,-0.5*n0/n1);
+        this.momentParameters.set(EXPECTED_SQUARE,-0.5/n1 + 0.25*Math.pow(n0/n1,2));
     }
 
     @Override
@@ -65,10 +67,4 @@ public class EF_Normal extends EF_UnivariateDistribution {
         return 2;
     }
 
-    public static SufficientStatistics sufficientStatistics(double val){
-        SufficientStatistics vec = new SufficientStatistics(2);
-        vec.set(EXPECTED_MEAN,val);
-        vec.set(EXPECTED_SQUARE,val*val);
-        return vec;
-    }
 }

@@ -1,6 +1,5 @@
 package eu.amidst.core.distribution;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -17,16 +16,17 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
     /**
      * The class constructor.
      *
-     * @param var_     The variable of the distribution.
-     * @param parents_ The set of parents of the variable.
+     * @param var1     The variable of the distribution.
+     * @param parents1 The set of parents of the variable.
      */
-    public Multinomial_LogisticParents(Variable var_, List<Variable> parents_) {
+    public Multinomial_LogisticParents(Variable var1, List<Variable> parents1) {
 
-        if (parents_.size() == 0)
+        if (parents1.size() == 0) {
             throw new UnsupportedOperationException("A multinomial logistic distribution can not be created from a empty set of parents.");
+        }
 
-        this.var = var_;
-        this.parents = parents_;
+        this.var = var1;
+        this.parents = parents1;
         this.intercept = new double[var.getNumberOfStates() - 1];
         this.coeffParents = new double[var.getNumberOfStates() - 1][parents.size()];
 
@@ -101,15 +101,16 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
 
     public String toString() {
 
-        String str = "";
+        StringBuilder str = new StringBuilder();
+        str.append("");
 
         for (int i = 0; i < this.var.getNumberOfStates() - 1; i++) {
-            str = str + "[ alpha = " + this.getIntercept(i);
+            str.append("[ alpha = " + this.getIntercept(i));
             for (int j = 0; j < this.getCoeffParents(i).length; j++) {
-                str = str + ", beta = " + this.getCoeffParents(i)[j];
+                str.append(", beta = " + this.getCoeffParents(i)[j]);
             }
-            str = str + "]\n";
+            str.append("]\n");
         }
-        return str;
+        return str.toString();
     }
 }
