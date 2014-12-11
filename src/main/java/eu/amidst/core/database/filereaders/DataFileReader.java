@@ -9,18 +9,18 @@ import java.util.Iterator;
  */
 public interface DataFileReader extends Iterable<DataRow>, Iterator<DataRow> {
 
-    public Attributes getAttributes();
+    Attributes getAttributes();
 
-    public DataRow next();
+    DataRow next();
 
     /***
      * This method is expected to return true if at least two rows with the same sequence ID are left
      * @return
      */
-    public boolean hasNext();
+    boolean hasNext();
 
-    public void reset();
+    void reset();
 
-    public boolean doesItReadThisFileExtension(String fileExtension);
+    boolean doesItReadThisFileExtension(String fileExtension);
 
 }

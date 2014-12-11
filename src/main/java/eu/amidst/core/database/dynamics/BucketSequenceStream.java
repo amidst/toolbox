@@ -8,15 +8,15 @@ import eu.amidst.core.database.Attributes;
  */
 public interface BucketSequenceStream {
 
-    public Attributes getDynamicAttributes();
+    Attributes getDynamicAttributes();
 
-    public int getMarkovOrder();
+    int getMarkovOrder();
 
-    public boolean hasMoreData();
+    boolean hasMoreData();
 
-    public BucketSequenceData nextBucketSequenceData();
+    BucketSequenceData nextBucketSequenceData();
 
-    public boolean isReseteable();
+    boolean isReseteable();
 
-    public void reset();
+    void reset();
 }

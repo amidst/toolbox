@@ -5,10 +5,10 @@ package eu.amidst.core.database;
  */
 public interface DataOnMemory{
 
-    public int getNumberOfDataInstances();
+    int getNumberOfDataInstances();
 
-    public DataInstance getDataInstance(int i);
+    DataInstance getDataInstance(int i);
 
-    public Attributes getAttributes();
+    Attributes getAttributes();
 
 }

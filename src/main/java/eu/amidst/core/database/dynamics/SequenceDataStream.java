@@ -8,15 +8,15 @@ import eu.amidst.core.database.Attributes;
  * Created by afa on 03/07/14.
  */
 public interface SequenceDataStream {
-    public Attributes getDynamicAttributes();
+    Attributes getDynamicAttributes();
 
-    public int getNumTimeStepsBack();
+    int getNumTimeStepsBack();
 
-    public boolean hasMoreData();
+    boolean hasMoreData();
 
-    public DynamicDataInstance nextSequenceData();
+    DynamicDataInstance nextSequenceData();
 
-    public void reset();
+    void reset();
 
-    public boolean isReseteable();
+    boolean isReseteable();
 }

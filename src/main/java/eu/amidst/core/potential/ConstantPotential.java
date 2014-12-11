@@ -6,7 +6,8 @@ import java.util.List;
  * Created by andresmasegosa on 28/08/14.
  */
 public class ConstantPotential implements Potential {
-    double val;
+    private double val;
+
     public ConstantPotential(double val){
         this.val=val;
     }

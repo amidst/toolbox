@@ -6,13 +6,13 @@ import eu.amidst.core.database.filereaders.DynamicDataInstance;
  * Created by afa on 03/07/14.
  */
 public interface BucketSequenceData {
-    public int getMarkovOrder();
+    int getMarkovOrder();
 
-    public boolean hasMoreData();
+    boolean hasMoreData();
 
-    public DynamicDataInstance nextSequenceData();
+    DynamicDataInstance nextSequenceData();
 
-    public boolean isReseteable();
+    boolean isReseteable();
 
-    public void reset();
+    void reset();
 }

@@ -20,21 +20,21 @@ public final class EF_DistributionBuilder {
 
     public static EF_Normal toEFDistribution(Normal dist){
 
-        EF_Normal ef_normal = new EF_Normal(dist.getVariable());
+        EF_Normal efNormal = new EF_Normal(dist.getVariable());
         MomentParameters momentParameters = new MomentParameters(2);
         momentParameters.set(EF_Normal.EXPECTED_MEAN,dist.getMean());
         momentParameters.set(EF_Normal.EXPECTED_SQUARE,dist.getMean()*dist.getMean() + dist.getSd()*dist.getSd());
-        ef_normal.setMomentParameters(momentParameters);
-        return ef_normal;
+        efNormal.setMomentParameters(momentParameters);
+        return efNormal;
 
     }
 
 
-    public static Normal toDistribution(EF_Normal ef_normal){
+    public static Normal toDistribution(EF_Normal efNormal){
 
-        Normal normal = new Normal(ef_normal.getVariable());
-        double mean = ef_normal.getMomentParameters().get(EF_Normal.EXPECTED_MEAN);
-        double sigma = ef_normal.getMomentParameters().get(EF_Normal.EXPECTED_SQUARE) - mean*mean;
+        Normal normal = new Normal(efNormal.getVariable());
+        double mean = efNormal.getMomentParameters().get(EF_Normal.EXPECTED_MEAN);
+        double sigma = efNormal.getMomentParameters().get(EF_Normal.EXPECTED_SQUARE) - mean*mean;
 
         normal.setMean(mean);
         normal.setSd(Math.sqrt(sigma));
@@ -44,7 +44,7 @@ public final class EF_DistributionBuilder {
 
 
     public static EF_Multinomial toEFDistribution(Multinomial dist) {
-        EF_Multinomial ef_multinomial = new EF_Multinomial(dist.getVariable());
+        EF_Multinomial efMultinomial = new EF_Multinomial(dist.getVariable());
 
         MomentParameters momentParameters = new MomentParameters(dist.getVariable().getNumberOfStates());
 
@@ -52,17 +52,17 @@ public final class EF_DistributionBuilder {
             momentParameters.set(i,dist.getProbabilityOfState(i));
         }
 
-        ef_multinomial.setMomentParameters(momentParameters);
+        efMultinomial.setMomentParameters(momentParameters);
 
-        return ef_multinomial;
+        return efMultinomial;
     }
 
-    public static Multinomial toDistribution(EF_Multinomial ef_multinomial) {
+    public static Multinomial toDistribution(EF_Multinomial efmultinomial) {
 
-        Multinomial multinomial = new Multinomial(ef_multinomial.getVariable());
+        Multinomial multinomial = new Multinomial(efmultinomial.getVariable());
 
         for (int i=0; i<multinomial.getVariable().getNumberOfStates(); i++){
-            multinomial.setProbabilityOfState(i,ef_multinomial.getMomentParameters().get(i));
+            multinomial.setProbabilityOfState(i, efmultinomial.getMomentParameters().get(i));
         }
 
         return multinomial;

@@ -1,7 +1,7 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
@@ -12,9 +12,6 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class contains examples about how we can create CajaMar's dynamic models using the AMIDST Toolbox.
@@ -36,7 +33,7 @@ public final class CajaMarModels {
      * We finally compute the log-likelihood of the data according to the created model (i.e. the probabilty distributions
      * are randomly initialized, there is no parametric learning). The data is a single long temporal sequence.
      */
-    public static void CajaMarDefaulterPredictor() throws ExceptionHugin {
+    public static void cajaMarDefaulterPredictor() throws ExceptionHugin {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -181,13 +178,12 @@ public final class CajaMarModels {
          */
         BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
-        converterToHugin.convertToHuginBN();
-        converterToHugin.getHuginNetwork().saveAsNet("networks/HuginCajaMarDefaulterPredictor.net");
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
+        huginNetwork.saveAsNet("networks/HuginCajaMarDefaulterPredictor.net");
 
 
     }
     public static void main(String[] args) throws ExceptionHugin {
-        CajaMarModels.CajaMarDefaulterPredictor();
+        CajaMarModels.cajaMarDefaulterPredictor();
     }
 }

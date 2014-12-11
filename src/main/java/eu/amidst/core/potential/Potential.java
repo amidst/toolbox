@@ -7,11 +7,11 @@ import java.util.List;
  */
 public interface Potential {
 
-    public void setVariables(List variables);
+    void setVariables(List variables);
 
-    public List getVariables();
+    List getVariables();
 
-    public void combine(Potential pot);
+    void combine(Potential pot);
 
-    public void marginalize(List variables);
+    void marginalize(List variables);
 }
