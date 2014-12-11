@@ -7,9 +7,9 @@ import eu.amidst.core.database.DataInstance;
  * Created by afa on 02/07/14.
  */
 public interface Classifier {
-    public double[] predict(DataInstance instance);
+    double[] predict(DataInstance instance);
 
-    public int getClassVarID();
+    int getClassVarID();
 
-    public void setClassVarID(int varID);
+    void setClassVarID(int varID);
 }

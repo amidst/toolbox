@@ -177,32 +177,25 @@ public class ConverterToHuginTest {
         //--------------------------------------------------------------------------------------------------------------
         //Conversion from AMIDST network into a Hugin network.
         System.out.println("\n\nConverting the AMIDST network into Hugin format ...");
-        ConverterToHugin converter = new ConverterToHugin(this.amidstBN);
-        converter.convertToHuginBN();
+        this.huginBN = ConverterToHugin.convertToHugin(amidstBN);
         String outFile = new String("networks/huginNetworkFromAMIDST.net");
-        converter.getHuginNetwork().saveAsNet(new String(outFile));
+        this.huginBN.saveAsNet(new String(outFile));
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
-
-        //Update the attribute huginBN used next for the tests.
-        this.huginBN = converter.getHuginNetwork();
 
         //--------------------------------------------------------------------------------------------------------------
 
         ParseListener parseListener2 = new DefaultClassParseListener();
         this.huginBN = new Domain (outFile, parseListener2);
         System.out.println("\n\nConverting the previous Hugin network into AMIDST format ...");
-        ConverterToAMIDST converter2 = new ConverterToAMIDST(this.huginBN);
-        converter2.convertToAmidstBN();
-        this.amidstBN = converter2.getAmidstNetwork();
+        this.amidstBN = ConverterToAMIDST.convertToAmidst(this.huginBN);
         System.out.println("\nAMIDST network object created.");
 
         //--------------------------------------------------------------------------------------------------------------
 
         System.out.println("\n\nConverting the previous AMIDST network into Hugin format ...");
-        ConverterToHugin converter3 = new ConverterToHugin(this.amidstBN);
-        converter3.convertToHuginBN();
+        Domain huginNetwork2 = ConverterToHugin.convertToHugin(amidstBN);
         String outFile2 = new String("networks/huginNetworkFromAMIDST2.net");
-        converter3.getHuginNetwork().saveAsNet(new String(outFile2));
+        huginNetwork2.saveAsNet(new String(outFile2));
         System.out.println("Hugin network saved in \"" + outFile2 + "\"" + ".");
 
         //--------------------------------------------------------------------------------------------------------------

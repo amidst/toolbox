@@ -1,5 +1,6 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataOnDisk;
@@ -104,7 +105,7 @@ public final class VerdandeModels {
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("Normal", "Abnormal")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
-        Variable normal_Abnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable normalAbnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
 
         /**
@@ -126,14 +127,14 @@ public final class VerdandeModels {
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(hidden);
 
         dynamicDAG.getParentSetTimeT(realTRQ).addParent(dynamicVariables.getTemporalClone(realTRQ));
-        dynamicDAG.getParentSetTimeT(realTRQ).addParent(normal_Abnormal);
+        dynamicDAG.getParentSetTimeT(realTRQ).addParent(normalAbnormal);
 
-        dynamicDAG.getParentSetTimeT(hidden).addParent(normal_Abnormal);
+        dynamicDAG.getParentSetTimeT(hidden).addParent(normalAbnormal);
         dynamicDAG.getParentSetTimeT(hidden).addParent(dynamicVariables.getTemporalClone(hidden));
 
 
-        dynamicDAG.getParentSetTimeT(normal_Abnormal).addParent(dynamicVariables.getTemporalClone(normal_Abnormal));
-        dynamicDAG.getParentSetTimeT(normal_Abnormal).addParent(observedROP);
+        dynamicDAG.getParentSetTimeT(normalAbnormal).addParent(dynamicVariables.getTemporalClone(normalAbnormal));
+        dynamicDAG.getParentSetTimeT(normalAbnormal).addParent(observedROP);
 
 
         /**
@@ -168,10 +169,9 @@ public final class VerdandeModels {
          */
         BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
-        converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginVerdandeIOSKF.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
+        huginNetwork.saveAsNet("networks/HuginVerdandeIOSKF.net");
+
     }
 
     /**
@@ -355,11 +355,8 @@ public final class VerdandeModels {
          */
         BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
-        converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginVerdandeIOSKFwithMG.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
-
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
+        huginNetwork.saveAsNet("networks/HuginVerdandeIOSKFwithMG.net");
 
     }
 
@@ -413,10 +410,9 @@ public final class VerdandeModels {
 
         BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bayesianNetwork);
-        converterToHugin.convertToHuginBN();
-        String outFile = new String("networks/HuginVerdandeIOHMM.net");
-        converterToHugin.getHuginNetwork().saveAsNet(new String(outFile));
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
+        huginNetwork.saveAsNet("networks/HuginVerdandeIOHMM.net");
+
     }
 
 
