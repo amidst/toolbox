@@ -15,11 +15,4 @@ public class BayesianNetworkWriter implements Serializable {
         Domain huginBN = ConverterToHugin.convertToHugin(amidstBN);
         huginBN.saveAsNet(file);
     }
-
-    public static void saveSerializableObjectToFile(BayesianNetwork amidstBN, String file) throws IOException {
-        FileOutputStream fout = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fout);
-        oos.writeObject(amidstBN);
-        oos.close();
-    }
 }
