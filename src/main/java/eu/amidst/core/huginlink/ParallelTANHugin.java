@@ -21,21 +21,12 @@ public class ParallelTANHugin {
 
     public ParallelTANHugin(DataOnStream dataOnStream) throws ExceptionHugin {
 
-
         StaticVariables modelHeader = new StaticVariables(dataOnStream.getAttributes());
-
         DAG dag = new DAG(modelHeader);
-        StaticVariables variables = dag.getStaticVariables();
-
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
 
-        ConverterToHugin converterToHugin = new ConverterToHugin(bn);
-
-        converterToHugin.convertToHuginBN();
-
-        Domain huginNetwork = converterToHugin.getHuginNetwork();
-
-        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000,dataOnStream); //new StaticDataOnMemoryFromFile(fileReader);
+        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000,dataOnStream);
 
         // Set the number of cores
         int numCases = dataOnMemory.getNumberOfDataInstances();
@@ -45,9 +36,7 @@ public class ParallelTANHugin {
         int cores = Runtime.getRuntime().availableProcessors();
         huginNetwork.setConcurrencyLevel(cores);
 
-
         NodeList nodeList = huginNetwork.getNodes();
-
 
         // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
         for (int i = 0;i<nodeList.size();i++) {
@@ -78,9 +67,7 @@ public class ParallelTANHugin {
 
         huginNetwork.saveAsNet(new String("tan.net"));
 
-        ConverterToAMIDST converterToAMIDST = new ConverterToAMIDST(huginNetwork);
-        converterToAMIDST.convertToAmidstBN();
-        this.amidstTAN = converterToAMIDST.getAmidstNetwork();
+        this.amidstTAN = ConverterToAMIDST.convertToAmidst(huginNetwork);
     }
 
 
