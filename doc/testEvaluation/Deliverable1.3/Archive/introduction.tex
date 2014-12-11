@@ -12,13 +12,13 @@ The loss function for a regression problems is a function of both the predicted 
 The holdout error is basically the average zero-one loss on a holdout dataset of fixed size.  
 The predictive sequential, or \emph{prequential} error is defined as the average loss function up to time step $t$, where $t$ is the current time step. 
 
+Most classification rules in the AMIDST software involves comparing an output function, or a score, to a threshold.  The output function in the AMIDST software is usually a Bayesian network that predicts a probability of a class label.  In this case, the area under the receiver operator characteristics curve (AUC) is an interesting alternative for stationary streams \cite{Dit13, Hoe12, Lic10}.
 
-\todo{HL says: I've removed a part here as I couldn't get any sense out of it, and believe we agreed to kill it. Check, please. Other parts have been moved to the next section.}
+It is also important to note that most streams are not stationary.  Problems that involve \emph{consept-drift} are problems when data is drifting.  In \cite{Gam13}, it was suggested to use prequental loss with forgetting mechanisms to compensate for concept drift and in \cite{Brz14}, the prequential AUC with a forgetting mechanism is proposed.  
+
+
 \drop{
-
-Moreover, most classification rules in the AMIDST software involves comparing an output function, or a score, to a threshold.  The output function in the AMIDST software is usually a Bayesian network that predicts a probability of a class label.  In this case, the area under the receiver operator characteristics curve (AUC) is an interesting alternative for stationary streams.
-
-
+\todo{HL says: I've removed a part here as I couldn't get any sense out of it, and believe we agreed to kill it. Check, please. Other parts have been moved to the next section.}
 
 In the AMIDST project there are use case scenarios where the data is multiple i.i.d. streams.  These use case scenarios are dealt with by dividing these streams into sub streams over a particular time window, where a evaluation time is in between the start time and the end time.  The data from the start time to the evaluation time is basically the explanatory variables and the data at the end time is basically the class label.  This problem reduces to a problem of non streaming nature, and the evaluation is not taking concept-drift into account.  However, it is worth noting that this problem can be expanded in the sense of prequental loss as of \cite{Gam13} or prequental AUC as of \cite{Brz14}.  
 
@@ -27,9 +27,9 @@ Moreover, there are also use case scenarios in the AMIDST project that do not di
 This problem has been solved by chopping the streams into a number of sub streams that are approximately i.i.d and labeled as either a positive or a negative.  It is important that enough space between sub streams are left so that dependencies are withdrawn.  In essence, the i.i.d. assumption of the sub streams allows one to investigate the output function independently from the prior distributions and the choice of loss functions.  
 }
 
-
-\todo{HL says: I've also removed a part here on AUC that used stationarity, concept drift etc, that was not yet defined and later was used again (in context). Check.}
 \drop{
+\todo{HL says: I've also removed a part here on AUC that used stationarity, concept drift etc, that was not yet defined and later was used again (in context). Check.}
+
 
 However, most streams are not stationary.  Problems that involve \emph{consept-drift} are problems when both data are drifting and the learners are changing over time.  In \cite{Gam13}, it was suggested to use prequental loss with forgetting mechanisms to compensate for concept drift. The forgetting mechanisms involves either using a time window or fading factors.  In paper \cite{Gam13}, convergence towards the Bayes error is shown for all these performance measures provided that the learners are consistent, loss is zero-one and data is i.i.d.  Moreover, it is shown that in the case of concept-drift, the prequental error measures with forgetting mechanisms are favorable over those without a forgetting mechanism.
 
