@@ -9,12 +9,10 @@ import java.util.Iterator;
  */
 public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
-    DataFileReader reader;
-
-    Attribute attSequenceID;
-    Attribute attTimeID;
-
-    NextDynamicDataInstance nextDynamicDataInstance;
+    private DataFileReader reader;
+    private Attribute attSequenceID;
+    private Attribute attTimeID;
+    private NextDynamicDataInstance nextDynamicDataInstance;
 
 
     public DynamicDataOnDiskFromFile(DataFileReader reader){

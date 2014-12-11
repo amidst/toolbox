@@ -37,13 +37,13 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
     /**
      * The class constructor.
-     * @param var_ The variable of the distribution.
-     * @param parents_ The set of parents of the variable.
+     * @param var1 The variable of the distribution.
+     * @param parents1 The set of parents of the variable.
      */
-    public Multinomial_MultinomialParents(Variable var_, List<Variable> parents_) {
+    public Multinomial_MultinomialParents(Variable var1, List<Variable> parents1) {
 
-        this.var = var_;
-        this.parents = parents_;
+        this.var = var1;
+        this.parents = parents1;
 
         // Computes the size of the array of probabilities as the number of possible assignments for the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(this.parents);
@@ -118,10 +118,12 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     }
 
     public String label(){
-        if (this.getConditioningVariables().size()==0)
+        if (this.getConditioningVariables().size()==0) {
             return "Multinomial";
-        else
+        }
+        else {
             return "Multinomial|Multinomial";
+        }
     }
 
     public int getNumberOfParentAssignments(){
@@ -129,13 +131,14 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     }
 
     public String toString() {
-
-        String str ="";
+        StringBuilder str = new StringBuilder();
+        str.append("");
         for (int i=0;i<getNumberOfParentAssignments();i++){
-            str = str + this.getMultinomial(i).toString();
-            if (getNumberOfParentAssignments()>1 && i< getNumberOfParentAssignments()-1)
-                str = str +"\n";
+            str.append(this.getMultinomial(i).toString());
+            if (getNumberOfParentAssignments()>1 && i< getNumberOfParentAssignments()-1) {
+                str.append("\n");
+            }
         }
-        return str;
+        return str.toString();
     }
 }

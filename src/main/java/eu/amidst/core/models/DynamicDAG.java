@@ -31,8 +31,8 @@ public class DynamicDAG {
 
 
 
-    public DynamicDAG(DynamicVariables dynamicVariables_) {
-        this.dynamicVariables = dynamicVariables_;
+    public DynamicDAG(DynamicVariables dynamicVariables1) {
+        this.dynamicVariables = dynamicVariables1;
         this.parentSetTime0 = new ParentSetImpl[dynamicVariables.getNumberOfVars()];
         this.parentSetTimeT = new ParentSetImpl[dynamicVariables.getNumberOfVars()];
 
@@ -48,10 +48,10 @@ public class DynamicDAG {
 
     /* Methods accessing structure at time T*/
     public ParentSet getParentSetTimeT(Variable var) {
-        if (var.isTemporalClone())
+        if (var.isTemporalClone()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
-
+        }
         return this.parentSetTimeT[var.getVarID()];
     }
 
@@ -64,10 +64,10 @@ public class DynamicDAG {
     }*/
 
     public List<Variable> getListOfParentsTime0(Variable var) {
-        if (var.isTemporalClone())
+        if (var.isTemporalClone()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
-
+        }
         return this.parentSetTime0[var.getVarID()].getParents();
     }
 
@@ -112,38 +112,42 @@ public class DynamicDAG {
     }
 
     public String toString(){
-        String str = "DAG Time 0\n";
+        StringBuilder str = new StringBuilder();
+        str.append("DAG Time 0\n");
         for (Variable var: this.getDynamicVariables()){
-            str+=var.getName() +" : "+this.parentSetTime0[var.getVarID()].toString() + "\n";
+            str.append(var.getName() +" : "+this.parentSetTime0[var.getVarID()].toString() + "\n");
         }
 
-        str += "\nDAG Time T\n";
+        str.append("\nDAG Time T\n");
         for (Variable var: this.getDynamicVariables()){
-            str+=var.getName() +" : "+this.getParentSetTimeT(var).toString() + "\n";
+            str.append(var.getName() +" : "+this.getParentSetTimeT(var).toString() + "\n");
         }
-        return str;
+        return str.toString();
     }
 
-    private class ParentSetImpl implements ParentSet {
+    private final class ParentSetImpl implements ParentSet {
 
         private Variable mainVar;
         private List<Variable> vars;
 
-        private ParentSetImpl(Variable mainVar_){
-            mainVar = mainVar_;
+        private ParentSetImpl(Variable mainVar1){
+            mainVar = mainVar1;
             this.vars = new ArrayList<Variable>();
         }
         public void addParent(Variable var){
-            if (!Utils.isLinkCLG(mainVar, var))
+            if (!Utils.isLinkCLG(mainVar, var)) {
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
+            }
 
-            if (this.contains(var))
+            if (this.contains(var)) {
                 throw new IllegalArgumentException("Trying to add a duplicated parent");
+            }
 
             vars.add(var);
 
-            if (!var.isTemporalClone())
-               parentSetTime0[mainVar.getVarID()].vars.add(var);
+            if (!var.isTemporalClone()) {
+                parentSetTime0[mainVar.getVarID()].vars.add(var);
+            }
         }
 
         public void removeParent(Variable var){
@@ -161,20 +165,22 @@ public class DynamicDAG {
         public String toString() {
 
             int numParents = getNumberOfParents();
-            String str = "{ ";
+            StringBuilder str = new StringBuilder();
+            str.append("{ ");
 
 
             for(int i=0;i<numParents;i++){
                 Variable parent = getParents().get(i);
-                str = str + parent.getName();
-                if (i<numParents-1)
-                    str = str + ", ";
+                str.append(parent.getName());
+                if (i<numParents-1) {
+                    str.append(", ");
+                }
             }
 
 
 
-            str = str + " }";
-            return str;
+            str.append(" }");
+            return str.toString();
         }
 
         /**

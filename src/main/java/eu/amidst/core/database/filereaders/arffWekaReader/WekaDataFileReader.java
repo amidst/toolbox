@@ -7,7 +7,6 @@ import eu.amidst.core.database.filereaders.DataRow;
 import eu.amidst.core.variables.MultinomialStateSpace;
 import eu.amidst.core.variables.RealStateSpace;
 import eu.amidst.core.variables.StateSpace;
-import eu.amidst.core.variables.StateSpaceType;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
@@ -20,11 +19,11 @@ import java.util.*;
  */
 public class WekaDataFileReader implements DataFileReader{
 
-    ArffLoader arffLoader = null;
-    Instances dataStructure;
-    Attributes attributes;
+    private ArffLoader arffLoader = null;
+    private Instances dataStructure;
+    private Attributes attributes;
     /* We need to read an instance in advance to know if we have reached the EOF*/
-    Instance present = null;
+    private Instance present = null;
 
     public WekaDataFileReader(String s){
 
@@ -33,7 +32,9 @@ public class WekaDataFileReader implements DataFileReader{
             File file = new File(s);
             arffLoader.setFile(file);
             dataStructure = arffLoader.getStructure();
-        }catch(IOException e){};
+        }catch(IOException e){
+            throw new UnsupportedOperationException(e);
+        }
 
         /*Convert attributes to AMIDST format*/
         weka.core.Attribute attrWeka;
@@ -44,8 +45,9 @@ public class WekaDataFileReader implements DataFileReader{
             StateSpace stateSpaceAtt=null;
             if(attrWeka.isNominal()){
                 String[] vals = new String[attrWeka.numValues()];
-                for (int i=0; i<attrWeka.numValues(); i++)
-                    vals[i]=attrWeka.value(i);
+                for (int i=0; i<attrWeka.numValues(); i++) {
+                    vals[i] = attrWeka.value(i);
+                }
                 stateSpaceAtt = new MultinomialStateSpace(attrWeka.numValues());
             }else{
                 stateSpaceAtt = new RealStateSpace();
@@ -58,7 +60,9 @@ public class WekaDataFileReader implements DataFileReader{
         /*Read one instance*/
         try {
             present = arffLoader.getNextInstance(dataStructure);
-        }catch(IOException e){};
+        }catch(IOException e){
+            throw new UnsupportedOperationException(e);
+        }
 
     }
 
@@ -70,11 +74,14 @@ public class WekaDataFileReader implements DataFileReader{
     @Override
     public DataRow next() {
         Instance inst = present;
-        if(inst==null)
+        if(inst==null){
             return null;
+        }
         try {
             present = arffLoader.getNextInstance(dataStructure);
-        }catch(IOException e){};
+        }catch(IOException e){
+            throw new UnsupportedOperationException(e);
+        }
         return new DataRowWeka(inst);
     }
 
@@ -87,7 +94,9 @@ public class WekaDataFileReader implements DataFileReader{
     public void reset() {
         try {
             arffLoader.reset();
-        }catch(IOException e){};
+        }catch(IOException e){
+            throw new UnsupportedOperationException(e);
+        }
     }
 
     @Override

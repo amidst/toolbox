@@ -5,7 +5,7 @@ package eu.amidst.core.utils;
  */
 public class ArrayVector implements Vector{
 
-    double[] array;
+    private double[] array;
 
     public ArrayVector(int size){
         this.array = new double[size];

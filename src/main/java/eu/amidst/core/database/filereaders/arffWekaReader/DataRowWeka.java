@@ -9,7 +9,7 @@ import weka.core.Instance;
  */
 public class DataRowWeka implements DataRow{
 
-    Instance dataRow;
+    private Instance dataRow;
 
     public DataRowWeka(Instance dataRow){
         this.dataRow = dataRow;

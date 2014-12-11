@@ -26,12 +26,12 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
 
     /**
      * The class constructor.
-     * @param var_ The variable of the distribution.
-     * @param parents_ The set of parent variables.
+     * @param var1 The variable of the distribution.
+     * @param parents1 The set of parent variables.
      */
-    public Normal_MultinomialParents(Variable var_, List<Variable> parents_) {
-        this.var = var_;
-        this.parents = parents_;
+    public Normal_MultinomialParents(Variable var1, List<Variable> parents1) {
+        this.var = var1;
+        this.parents = parents1;
 
         //Initialize the distribution uniformly for each configuration of the parents.
         int size = MultinomialIndex.getNumberOfPossibleAssignments(parents);
@@ -107,10 +107,12 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     }
 
     public String label(){
-        if (this.getConditioningVariables().size()==0)
+        if (this.getConditioningVariables().size()==0) {
             return "Normal";
-        else
+        }
+        else {
             return "Normal|Multinomial";
+        }
     }
 
     public Normal[] getDistribution() {
@@ -122,11 +124,11 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     }
 
     public String toString() {
-
-        String str = "";
+        StringBuilder str = new StringBuilder();
+        str.append("");
         for(int i=0;i<getNumberOfParentAssignment();i++){
-            str = str + this.getNormal(i).toString() +"\n";
+            str.append(this.getNormal(i).toString() +"\n");
         }
-        return str;
+        return str.toString();
     }
 }

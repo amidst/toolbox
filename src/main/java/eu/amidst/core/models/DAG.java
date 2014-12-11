@@ -1,13 +1,11 @@
 package eu.amidst.core.models;
 
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -76,9 +74,11 @@ public class DAG {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o){return true;}
 
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
 
         DAG dag = (DAG) o;
 
@@ -98,29 +98,32 @@ public class DAG {
 
 
     public String toString(){
-        String str = "DAG\n";
+        StringBuilder str = new StringBuilder();
+        str.append("DAG\n");
         for (Variable var: this.getStaticVariables()){
-            str+=var.getName() +" : "+this.getParentSet(var).toString() + "\n";
+            str.append(var.getName() +" : "+this.getParentSet(var).toString() + "\n");
         }
-        return str;
+        return str.toString();
     }
 
-    private static class ParentSetImpl implements ParentSet {
+    private static final class ParentSetImpl implements ParentSet {
 
         private Variable mainVar;
         private List<Variable> vars;
 
-        private ParentSetImpl(Variable mainVar_){
-            mainVar = mainVar_;
+        private ParentSetImpl(Variable mainVar1){
+            mainVar = mainVar1;
             this.vars = new ArrayList<Variable>();
         }
 
         public void addParent(Variable var){
-            if (!Utils.isLinkCLG(mainVar,var))
+            if (!Utils.isLinkCLG(mainVar,var)){
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
+            }
 
-            if (this.contains(var))
+            if (this.contains(var)){
                 throw new IllegalArgumentException("Trying to add a duplicated parent");
+            }
 
             vars.add(var);
         }
@@ -141,20 +144,19 @@ public class DAG {
         public String toString() {
 
             int numParents = getNumberOfParents();
-            String str = "{ ";
 
+            StringBuilder str = new StringBuilder();
+            str.append("{ ");
 
             for(int i=0;i<numParents;i++){
                 Variable parent = getParents().get(i);
-                str = str + parent.getName();
-                if (i<numParents-1)
-                    str = str + ", ";
+                str.append(parent.getName());
+                if (i<numParents-1) {
+                    str.append(", ");
+                }
             }
-
-
-
-            str = str + " }";
-            return str;
+            str.append(" }");
+            return str.toString();
         }
 
         /**
@@ -170,9 +172,13 @@ public class DAG {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
+            if (this == o){
+                return true;
+            }
 
-            if (o == null || getClass() != o.getClass()) return false;
+            if (o == null || getClass() != o.getClass()){
+                return false;
+            }
 
             ParentSet parentset = (ParentSet) o;
 
