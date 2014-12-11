@@ -98,7 +98,7 @@ However, these numbers do not take into account that some misclassifications mig
 \label{sec:empRisk}
 
 In mathematical optimization, statistics, decision theory and machine learning, a loss function or a cost function is a function that maps an event or values of one or more variables onto a real number that is intuitively representing some \emph{cost} associated with the event. Loss functions can be used on optimization problems, when an algorithm or a method is optimized by minimizing the loss function.  Moreover, loss functions are frequently used to diagnose and compare various algorithms or methods.  
-We define the \emph{loss function} as a real and lower-bounded function $L$ on $\Omega_X \times \Omega_Y \times \Omega_Y$.  The value of the loss function at an arbitrary point $(x, h(\bmx), y)$ is interpreted as the loss, or cost, of taking the decision $h(\bmx)$ at $\bmx$, when the right decision is $y$.  Notice that the loss function is defined to also depend on $\bmx$.  This is of high practical use, because a certain misclassification might be more expensive than another. 
+We define the \emph{loss function} as a real and lower-bounded function $L$ on $\Omega_X \times \Omega_Y \times \Omega_Y$.  In the case of classification, the value of the loss function at an arbitrary point $(x, h(\bmx), y)$ is interpreted as the loss, or cost, of taking the decision $h(\bmx)$ at $\bmx$, when the right decision is $y$.  Notice that the loss function is defined to also depend on $\bmx$.  This is of high practical use, because a certain misclassification might be more expensive than another. 
 
 In the frequentist perspective, the expected loss is often referred to as the risk function \cite{Vap00}.  It is obtained by taking the expected value over the loss function with respect to the probability distribution $P(\bmX,Y): \Omega_X\times \Omega_Y \rightarrow \mathbb{R}^+$.  The \emph{risk function} is given by
 
@@ -121,7 +121,7 @@ In general, the risk $R(h)$ cannot be computed because the distribution $P(\bmX,
 \label{def:empRisk}
 R_{emp}(h, \calD) = N^{-1} \sum_{i=1}^N L(x_i, h(\bmx_i), y_i).
 \end{equation}
-%Notice that $L$ is an array of $N \times 2\times 2$ elements.  
+
 Many supervised learning algorithms are optimized by finding the $h$ in a hypothesis space $\mathcal{H}$ that minimizes the empirical risk on a data set that is used only for training the classification rule.  In this case, a separate data set is needed for testing the classifier.  In this document, we focus only on testing classifiers.  We only use empirical risk to quantitatively describe the methods.
 
 \subsubsection{Evaluation of families of classification rules}
@@ -218,7 +218,16 @@ The concordance probability or AUC are therefore a measure of the ranking abilit
 
 Moreover, equation \eqref{eq:concordance} shows a simple way of calculating $P(Q_1 > Q_0)$ and AUC.
 
-\todo{multi class AUC.}
+\subsubsection{Multi class classification}
+
+In the case of estimating the empirical risk equation \eqref{def:empRisk} is valid for multi class classification as well.  The AUC measure is generally defined for binary classification.  However, an extension of AUC to multi class problems is fo4iund in \cite{Han01}.  If we let AUC($i,j$) be the AUC between class $i$ and $j$, where samples that do not belong to either $i$ or $j$ are ignored, then the multi class AUC is defined as 
+
+
+\begin{equation} 
+\label{eq:multiAUC}
+\mbox{AUC}_m = \frac{1}{m(m-1)}\sum_{i,j} AUC(i,j),
+\end{equation}
+where $m$ is the number of classes.  It is worth noting that all AUC($i,i$) are equal to zero. This is basically the same as averaging all possible binary AUC.  This extension to multi class classification on streaming data is straightforward and will not be repeated each time in the next section.
 
 \subsection{Performance measures for classification on streaming data}
 \label{sec:stream}
