@@ -4,6 +4,8 @@ import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.huginlink.ConverterToHugin;
 
+import java.io.*;
+
 /**
  * Created by afa on 11/12/14.
  */
