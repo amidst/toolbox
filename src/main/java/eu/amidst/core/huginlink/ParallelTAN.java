@@ -1,5 +1,6 @@
 package eu.amidst.core.huginlink;
 
+
 import COM.hugin.HAPI.*;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnMemory;
@@ -18,7 +19,7 @@ import eu.amidst.core.variables.Variable;
  */
 public class ParallelTAN {
 
-     public static BayesianNetwork learn(DataOnStream dataOnStream, String nameRoot, String nameTarget) throws ExceptionHugin {
+    public static BayesianNetwork learn(DataOnStream dataOnStream, String nameRoot, String nameTarget) throws ExceptionHugin {
 
         StaticVariables modelHeader = new StaticVariables(dataOnStream.getAttributes());
         DAG dag = new DAG(modelHeader);
@@ -37,10 +38,10 @@ public class ParallelTAN {
 
         NodeList nodeList = huginNetwork.getNodes();
 
-
         // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
         for (int i = 0;i<nodeList.size();i++) {
-            Node n = nodeList.get(i);
+            //Node n = nodeList.get(i);
+            Node n = (Node)nodeList.get(i);
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 for (int j=0;j<numCases;j++){
                     Variable var =  bn.getDAG().getStaticVariables().getVariableById(i);
@@ -59,15 +60,14 @@ public class ParallelTAN {
         Node root = huginNetwork.getNodeByName(nameRoot);
         Node target = huginNetwork.getNodeByName(nameTarget);
 
-        huginNetwork.learnChowLiuTree(root,target);
-
+        //huginNetwork.learnChowLiuTree(root, target);
         huginNetwork.setMaxNumberOfEMIterations(1000);
         huginNetwork.learnTables();
-
         huginNetwork.saveAsNet(new String("parallelTAN.net"));
 
-        return(ConverterToAMIDST.convertToAmidst(huginNetwork));
+        return (ConverterToAMIDST.convertToAmidst(huginNetwork));
     }
+
 
     public static void main(String[] args) throws ExceptionHugin {
 
@@ -75,6 +75,7 @@ public class ParallelTAN {
         StaticDataOnDiskFromFile data = new StaticDataOnDiskFromFile(fileReader);
 
         ParallelTAN.learn(data, "A", "B");
+
     }
 }
 
