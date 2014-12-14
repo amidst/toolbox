@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Created by afa on 11/12/14.
  */
-public class BayesianNetworkLoaderTest {
+public class BayesianNetworkLoaderWriterTest {
 
     @Before
     public void setUp() throws ExceptionHugin {
