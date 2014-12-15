@@ -3,6 +3,7 @@ package eu.amidst.core.database;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by sigveh on 10/16/14.
@@ -19,6 +20,14 @@ public class Attributes {
 
     public List<Attribute> getList(){
         return attributes;
+    }
+
+    public Stream<Attribute> stream(){
+        return this.attributes.stream();
+    }
+
+    public Stream<Attribute> parallelStream(){
+        return this.attributes.parallelStream();
     }
 
     public List<Attribute> getListExceptTimeAndSeq(){

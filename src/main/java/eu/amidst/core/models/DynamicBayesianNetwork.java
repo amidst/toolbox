@@ -7,6 +7,10 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * <h2>This class implements a dynamic Bayesian network.</h2>
  *
@@ -21,12 +25,12 @@ public final class DynamicBayesianNetwork{
     /**
      * It contains the distributions for all variables at time 0.
      */
-    private ConditionalDistribution[] distributionsTime0;
+    private List<ConditionalDistribution> distributionsTime0;
 
     /**
      * It contains the distributions for all variables at time T.
      */
-    private ConditionalDistribution[] distributionsTimeT;
+    private List<ConditionalDistribution> distributionsTimeT;
 
     private DynamicDAG dynamicDAG;
 
@@ -42,18 +46,18 @@ public final class DynamicBayesianNetwork{
     private void initializeDistributions() {
         //Parents should have been assigned before calling this method (from dynamicmodelling.models)
 
-        this.distributionsTime0 = new ConditionalDistribution[this.getDynamicVariables().getNumberOfVars()];
-        this.distributionsTimeT = new ConditionalDistribution[this.getDynamicVariables().getNumberOfVars()];
+        this.distributionsTime0 = new ArrayList(this.getDynamicVariables().getNumberOfVars());
+        this.distributionsTimeT = new ArrayList(this.getDynamicVariables().getNumberOfVars());
 
         for (Variable var : this.getDynamicVariables()) {
             int varID = var.getVarID();
 
             /* Distributions at time t */
-            this.distributionsTimeT[varID] = DistributionBuilder.newDistribution(var, this.dynamicDAG.getParentSetTimeT(var).getParents());
+            this.distributionsTimeT.add(varID, DistributionBuilder.newDistribution(var, this.dynamicDAG.getParentSetTimeT(var).getParents()));
             this.dynamicDAG.getParentSetTimeT(var).blockParents();
 
             /* Distributions at time 0 */
-            this.distributionsTime0[varID] = DistributionBuilder.newDistribution(var, this.dynamicDAG.getListOfParentsTime0(var));
+            this.distributionsTime0.add(varID, DistributionBuilder.newDistribution(var, this.dynamicDAG.getListOfParentsTime0(var)));
             //this.dynamicDAG.getParentSetTime0(var).blockParents();
         }
     }
@@ -67,11 +71,11 @@ public final class DynamicBayesianNetwork{
     }
 
     public <E extends ConditionalDistribution> E getDistributionTimeT(Variable var) {
-        return (E) this.distributionsTimeT[var.getVarID()];
+        return (E) this.distributionsTimeT.get(var.getVarID());
     }
 
     public <E extends ConditionalDistribution> E getDistributionTime0(Variable var) {
-        return (E) this.distributionsTime0[var.getVarID()];
+        return (E) this.distributionsTime0.get(var.getVarID());
     }
 
     public DynamicDAG getDynamicDAG (){
@@ -92,7 +96,7 @@ public final class DynamicBayesianNetwork{
             if (assignment.getValue(var)== Utils.missingValue()) {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
             }
-            logProb += this.distributionsTimeT[var.getVarID()].getLogConditionalProbability(assignment);
+            logProb += this.distributionsTimeT.get(var.getVarID()).getLogConditionalProbability(assignment);
         }
         return logProb;
     }
@@ -103,7 +107,7 @@ public final class DynamicBayesianNetwork{
             if (assignment.getValue(var) == Utils.missingValue()) {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
             }
-            logProb += this.distributionsTime0[var.getVarID()].getLogConditionalProbability(assignment);
+            logProb += this.distributionsTime0.get(var.getVarID()).getLogConditionalProbability(assignment);
         }
         return logProb;
     }
@@ -123,6 +127,13 @@ public final class DynamicBayesianNetwork{
     }
     */
 
+    public List<ConditionalDistribution> getDistributionsTimeT(){
+        return Collections.unmodifiableList(this.distributionsTimeT);
+    }
+
+    public List<ConditionalDistribution> getDistributionsTime0(){
+        return Collections.unmodifiableList(this.distributionsTime0);
+    }
 
     public String toString(){
         StringBuilder str = new StringBuilder();

@@ -1,10 +1,12 @@
 package eu.amidst.core.models;
 
+import com.sun.corba.se.impl.encoding.IDLJavaSerializationInputStream;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,14 +16,14 @@ import java.util.List;
 public class DAG {
 
     private StaticVariables variables;
-    private ParentSet[] parents;
+    private List<ParentSet> parents;
 
     public DAG(StaticVariables variables) {
         this.variables = variables;
-        this.parents = new ParentSet[variables.getNumberOfVars()];
+        this.parents = new ArrayList(variables.getNumberOfVars());
 
         for (Variable var: variables){
-            parents[var.getVarID()] = new ParentSetImpl(var);
+            parents.add(var.getVarID(),new ParentSetImpl(var));
         }
     }
 
@@ -30,7 +32,7 @@ public class DAG {
     }
 
     public ParentSet getParentSet(Variable var) {
-        return parents[var.getVarID()];
+        return parents.get(var.getVarID());
     }
 
     public boolean containCycles(){
@@ -106,6 +108,10 @@ public class DAG {
         return str.toString();
     }
 
+    public List<ParentSet> getParentSets(){
+        return Collections.unmodifiableList(this.parents);
+    }
+
     private static final class ParentSetImpl implements ParentSet {
 
         private Variable mainVar;
@@ -114,6 +120,11 @@ public class DAG {
         private ParentSetImpl(Variable mainVar1){
             mainVar = mainVar1;
             this.vars = new ArrayList<Variable>();
+        }
+
+        @Override
+        public Variable getMainVar() {
+            return mainVar;
         }
 
         public void addParent(Variable var){

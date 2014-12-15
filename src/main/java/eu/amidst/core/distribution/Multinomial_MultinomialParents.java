@@ -107,6 +107,11 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return this.getMultinomial(parentAssignment).getLogProbability(value);
     }
 
+    @Override
+    public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
+        return this.getMultinomial(assignment);
+    }
+
 
     @Override
     public int getNumberOfFreeParameters() {

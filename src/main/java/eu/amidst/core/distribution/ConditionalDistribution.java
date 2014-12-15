@@ -43,4 +43,6 @@ public abstract class ConditionalDistribution extends Distribution {
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
     public abstract double getLogConditionalProbability(Assignment assignment);
+
+    public abstract UnivariateDistribution getUnivariateDistribution(Assignment assignment);
 }

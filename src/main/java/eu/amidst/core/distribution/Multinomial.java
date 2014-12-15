@@ -13,6 +13,8 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Variable;
 
+import java.util.Random;
+
 
 /**
  * <h2>This class implements a univariate multinomial distribution.</h2>
@@ -95,6 +97,18 @@ public class Multinomial extends UnivariateDistribution {
     @Override
     public double getLogProbability(double value) {
         return Math.log(this.probabilities[(int) value]);
+    }
+
+    @Override
+    public double sample(Random rand) {
+        double b = 0, r = rand.nextDouble();
+        for (int i = 0; i < probabilities.length; i++) {
+            b += probabilities[i];
+            if (b > r) {
+                return i;
+            }
+        }
+        return probabilities.length-1;
     }
 
     public String label() {
