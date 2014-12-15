@@ -17,9 +17,6 @@ import java.util.Iterator;
 /**
  * Created by afa on 02/07/14.
  */
-public interface DataOnDisk extends DataOnStream{
-
-    Attributes getAttributes();
-
+public interface DataOnDisk extends DataBase{
     void restart();
 }

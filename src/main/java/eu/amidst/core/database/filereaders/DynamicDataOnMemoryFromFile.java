@@ -9,9 +9,10 @@ import java.util.List;
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
-public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
+public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream, Iterator<DataInstance> {
 
     private DataFileReader reader;
+    private Iterator<DataRow> dataRowIterator;
     private Attribute attSequenceID;
     private Attribute attTimeID;
     private NextDynamicDataInstance nextDynamicDataInstance;
@@ -19,8 +20,10 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     private int pointer = 0;
 
 
-    public DynamicDataOnMemoryFromFile(DataFileReader reader) {
-        this.reader = reader;
+    public DynamicDataOnMemoryFromFile(DataFileReader reader1) {
+        this.reader = reader1;
+        dataRowIterator = this.reader.iterator();
+
 
         List<DynamicDataInstance> dataInstancesList = new ArrayList<>();
 
@@ -30,8 +33,8 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
         int timeID = 0;
         int sequenceID = 0;
 
-        if (reader.hasNext()) {
-            present = this.reader.next();
+        if (dataRowIterator.hasNext()) {
+            present = this.dataRowIterator.next();
         }
         else {
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
@@ -52,7 +55,7 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
 
         nextDynamicDataInstance = new NextDynamicDataInstance(past, present, sequenceID, timeID);
 
-        while (reader.hasNext()) {
+        while (dataRowIterator.hasNext()) {
 
             /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
             /* 1 = true,  false, i.e., TimeID is provided */
@@ -64,23 +67,24 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
 
             /* Not sequenceID nor TimeID are provided*/
                 case 0:
-                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(reader));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(dataRowIterator));
 
              /* Only TimeID is provided*/
                 case 1:
-                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoSeq(reader, attTimeID));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoSeq(dataRowIterator, attTimeID));
 
              /* Only SequenceID is provided*/
                 case 2:
-                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID(reader, attSequenceID));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID(dataRowIterator, attSequenceID));
 
              /* SequenceID and TimeID are provided*/
                 case 3:
-                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance(reader, attSequenceID, attTimeID));
+                    dataInstancesList.add(nextDynamicDataInstance.nextDataInstance(dataRowIterator, attSequenceID, attTimeID));
             }
             throw new IllegalArgumentException();
         }
-        reader.reset();
+        reader.restart();
+        this.dataRowIterator=reader.iterator();
 
         dataInstances = new DynamicDataInstance[dataInstancesList.size()];
         int counter = 0;

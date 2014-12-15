@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by afa on 02/07/14.
@@ -35,8 +36,8 @@ public class DynamicVariables  implements Iterable<Variable>{
     private HashMap<String, Integer> mapping;
 
     public DynamicVariables() {
-        this.allVariables = new ArrayList<>();
-        this.temporalClones = new ArrayList<>();
+        this.allVariables = new ArrayList();
+        this.temporalClones = new ArrayList();
         this.mapping = new HashMap<>();
     }
 
@@ -244,6 +245,14 @@ public class DynamicVariables  implements Iterable<Variable>{
     @Override
     public Iterator<Variable> iterator() {
         return this.allVariables.iterator();
+    }
+
+    public Stream<Variable> stream(){
+        return this.allVariables.stream();
+    }
+
+    public Stream<Variable> parallelStream(){
+        return this.allVariables.parallelStream();
     }
 
     private static class VariableImplementation implements Variable {

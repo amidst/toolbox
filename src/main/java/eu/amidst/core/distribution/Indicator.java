@@ -55,6 +55,15 @@ public class Indicator extends ConditionalDistribution{
         }
     }
 
+    @Override
+    public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
+        if (assignment.getValue(this.indicatorVar)==0.0) {
+            return this.uniform;
+        }else{
+            return this.conditionalDistribution.getUnivariateDistribution(assignment);
+        }
+    }
+
     public String label(){
         return "Indicator of "+this.getConditionalDistribution().label();
     }
