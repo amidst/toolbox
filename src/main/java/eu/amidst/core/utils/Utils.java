@@ -66,4 +66,6 @@ public final class Utils {
     public static boolean isLinkCLG(Variable child, Variable parent){
         return !(child.getDistributionType()== DistType.MULTINOMIAL && parent.getDistributionType()==DistType.GAUSSIAN);
     }
+
+
 }
