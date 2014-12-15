@@ -8,6 +8,7 @@ import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ReservoirSampling;
 import eu.amidst.core.variables.StaticVariables;
@@ -27,8 +28,6 @@ public class ParallelTAN {
         Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
 
         DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000,dataOnStream);
-
-
 
         // Set the number of cases
         int numCases = dataOnMemory.getNumberOfDataInstances();
@@ -60,17 +59,16 @@ public class ParallelTAN {
             }
         }
 
+        //Structural learning
         Node root = huginNetwork.getNodeByName(nameRoot);
         Node target = huginNetwork.getNodeByName(nameTarget);
-
-        huginNetwork.setSignificanceLevel(0.05);
         huginNetwork.learnChowLiuTree(root, target);
 
+        //Parametric learning
         huginNetwork.compile();
         huginNetwork.learnTables();
         huginNetwork.uncompile();
 
-        huginNetwork.saveAsNet(new String("networks/parallelTAN.net"));
         return (ConverterToAMIDST.convertToAmidst(huginNetwork));
     }
 
@@ -79,8 +77,8 @@ public class ParallelTAN {
 
         WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
         StaticDataOnDiskFromFile data = new StaticDataOnDiskFromFile(fileReader);
-        ParallelTAN.learn(data, "A", "B");
-
+        BayesianNetwork bn = ParallelTAN.learn(data, "A", "B");
+        BayesianNetworkWriter.saveToHuginFile(bn,"networks/parallelTAN.net" );
     }
 }
 
