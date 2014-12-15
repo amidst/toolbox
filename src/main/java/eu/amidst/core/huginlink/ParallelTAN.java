@@ -26,7 +26,16 @@ public class ParallelTAN {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
 
+
+        //ParseListener parseListener = new DefaultClassParseListener();
+        //Domain huginNetwork = new Domain(new String("networks/parallelTAN.net"), parseListener);
+
+
+
+
         DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000,dataOnStream);
+
+
 
         // Set the number of cases
         int numCases = dataOnMemory.getNumberOfDataInstances();
@@ -40,30 +49,46 @@ public class ParallelTAN {
 
         // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
         for (int i = 0;i<nodeList.size();i++) {
-            //Node n = nodeList.get(i);
+            Variable var =  bn.getDAG().getStaticVariables().getVariableById(i);
             Node n = (Node)nodeList.get(i);
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 for (int j=0;j<numCases;j++){
-                    Variable var =  bn.getDAG().getStaticVariables().getVariableById(i);
-                    DataInstance dataInstance = dataOnMemory.getDataInstance(j);
-                    int state = (int)dataInstance.getValue(var);
-                    ((DiscreteNode)n).setCaseState(j, state);
+                    int state = (int)dataOnMemory.getDataInstance(j).getValue(var);
+                    ((DiscreteChanceNode)n).setCaseState(j, state);
                 }
             } else {
                 for (int j=0;j<numCases;j++){
-                    double value = dataOnMemory.getDataInstance(j).getValue(bn.getDAG().getStaticVariables().getVariableById(i));
+                    double value = dataOnMemory.getDataInstance(j).getValue(var);
                     ((ContinuousChanceNode)n).setCaseValue(j, (long) value);
                 }
             }
         }
+        System.out.println("Number of cases:" + huginNetwork.getNumberOfCases());
 
         Node root = huginNetwork.getNodeByName(nameRoot);
         Node target = huginNetwork.getNodeByName(nameTarget);
+        huginNetwork.setSignificanceLevel(0.05);
+        huginNetwork.learnChowLiuTree(root, target);
 
-        //huginNetwork.learnChowLiuTree(root, target);
-        huginNetwork.setMaxNumberOfEMIterations(1000);
+
+
+        huginNetwork = new Domain(new String("networks/parallelTAN.net"),new DefaultClassParseListener());
+
+
+
+
+     //   ((DataSet)huginNetwork.getUserData()).saveAsCSV("datasets/dataFromHugin.csv",new char[]);
+        huginNetwork.compile();
+//        huginNetwork.setMaxNumberOfEMIterations(1000);
         huginNetwork.learnTables();
-        huginNetwork.saveAsNet(new String("parallelTAN.net"));
+
+
+        huginNetwork.uncompile();
+
+
+        huginNetwork.saveAsNet(new String("networks/parallelTAN.net"));
+
+
 
         return (ConverterToAMIDST.convertToAmidst(huginNetwork));
     }
@@ -71,7 +96,7 @@ public class ParallelTAN {
 
     public static void main(String[] args) throws ExceptionHugin {
 
-        WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
+        WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticDataCat.arff"));
         StaticDataOnDiskFromFile data = new StaticDataOnDiskFromFile(fileReader);
 
         ParallelTAN.learn(data, "A", "B");

@@ -1,3 +1,4 @@
+%!TEX root = ../MainDoc.tex
 \newpage
 \subsection{Converter from Hugin to Amidst}
 \label{ConverterFromHuginToAmidst}
@@ -28,12 +29,9 @@ This is brief code fragment showing how to convert a BN from Hugin to Amidst.
 \begin{table}[H]
 \begin{tabular}{l} \hline
 
-        \texttt{ParseListener parseListener = new DefaultClassParseListener();}\\    
-        \texttt{this.huginBN = new Domain ("networks/huginNetworkFromAMIDST.net", }\\
-        \texttt{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~parseListener);}\\
-        \texttt{ConverterToAMIDST converter = new ConverterToAMIDST(this.huginBN);}\\ 
-        \texttt{converter.convertToAmidstBN();}\\
-        \texttt{this.amidstBN = converter.getAmidstNetwork();}\\ \hline 
+\texttt{ParseListener parseListener = new DefaultClassParseListener();}\\    
+\texttt{Domain huginBN = new Domain ("networks/huginNetwork.net", parseListener);}\\
+\texttt{BayesianNetwork amidstBN = ConverterToAMIDST.convertToAmidst(huginBN);}\\  \hline 
 
 \end{tabular}
 \end{table} 
