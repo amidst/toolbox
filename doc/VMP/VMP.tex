@@ -354,14 +354,16 @@ X^2\\
 - \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{X|Y}}}} \\\\
 &=&
 \begin{pmatrix}
-\theta_0+\theta_i m_0^{Y_i}\\
+\theta_0+\sum_i^n\theta_i m_0^{Y_i}\\
 \theta_{\mbox{-}1}\\
 \end{pmatrix}^T
 \begin{pmatrix}
 X\\
 X^2\\
 \end{pmatrix}
-- \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{X|Y}}}} 
+- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_0+\sum_i^n\theta_i m_0^{Y_i}\right)^2 \right) \\
+&+&
+ \ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m_0^{Y_i})}}} 
 \end{eqnarray*}
 
 where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
@@ -426,7 +428,37 @@ Y_1 Y_n\\
 \cdots\\
 Y_{n-1}Y_{n}\\
 \end{pmatrix}
-- \left( \frac{(X-\beta_0)^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
+- \left( \frac{X^2 -2X\beta_0 +\beta_0^2}{\sigma^2} + \ln{\sigma} \right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}\\
+&=&
+\begin{pmatrix}
+\theta_{1^2}\\
+\cdots\\
+\theta_{n^2}\\
+\theta_1 m_0^X+\theta_{01}\\
+\cdots\\
+\theta_n m_0^X+\theta_{0n}\\
+\theta_{12}\\
+\cdots\\
+\theta_{1n}\\
+\cdots\\
+\theta_{n\mbox{-}1n}
+\end{pmatrix}^T
+\begin{pmatrix}
+Y_1^2\\
+\cdots\\
+Y_n^2\\
+Y_1\\
+\cdots\\
+Y_n\\
+Y_1 Y_2\\
+\cdots\\
+Y_1 Y_n\\
+\cdots\\
+Y_{n-1}Y_{n}\\
+\end{pmatrix}
+- \left( (-2\beta_{\mbox{-}1}X^2 - 2X\beta_0 - \frac{1}{2}\beta_0^2 \beta_{\mbox{-}1}^{-1}) + \frac{\ln{(2\theta_{\mbox{-}1}})}{2} \right)\\
+&+&
+\ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m_0^{Y_i})}}} 
 \end{eqnarray*}
 
 \end{itemize}
