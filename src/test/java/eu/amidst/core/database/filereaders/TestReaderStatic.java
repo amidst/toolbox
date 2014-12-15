@@ -19,6 +19,9 @@ import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
+
+import java.util.Iterator;
+
 import static org.junit.Assert.*;
 
 /**
@@ -35,10 +38,13 @@ public class TestReaderStatic {
     private static int index;
     private static Variable var;
     private static DataOnDisk dataOnDiskReader;
+    private static Iterator<DataInstance> dataOnDiskIterator;
+
 
     public static void loadFileAndInitializeStatic(){
         reader = new WekaDataFileReader("data/dataWeka/labor.arff");
         dataOnDiskReader = new StaticDataOnDiskFromFile(reader);
+        dataOnDiskIterator = dataOnDiskReader.iterator();
         attributes = dataOnDiskReader.getAttributes();
         staticVariables = new StaticVariables(attributes);
     }
@@ -79,8 +85,8 @@ public class TestReaderStatic {
 
         loadFileAndInitializeStatic();
 
-        if (dataOnDiskReader.hasNext()) {
-            nextInstance = dataOnDiskReader.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         for (Attribute att : attributes.getList()) {
@@ -174,7 +180,7 @@ public class TestReaderStatic {
         /* nexDataRow without calling hasNext */
         while(instanceCounter>=0){
             instanceCounter--;
-            nextInstance = dataOnDiskReader.next();
+            nextInstance = dataOnDiskIterator.next();
         }
         //I am not sure what should be the expected behavour here.
         //assertNull(nextInstance);

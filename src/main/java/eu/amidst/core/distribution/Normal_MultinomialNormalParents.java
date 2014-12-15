@@ -144,6 +144,11 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         return getNormal_NormalParentsDistribution(assignment).getLogConditionalProbability(assignment);
     }
 
+    @Override
+    public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
+        return this.getNormal_NormalParentsDistribution(assignment).getNormal(assignment);
+    }
+
     public List<Variable> getMultinomialParents() {
         return multinomialParents;
     }

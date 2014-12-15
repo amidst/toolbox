@@ -5,6 +5,7 @@ import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,23 +23,23 @@ public class DynamicDAG {
     /**
      * It contains the ParentSets for all variables at time 0.
      */
-    private ParentSetImpl[] parentSetTime0;
+    private List<ParentSetImpl> parentSetTime0;
 
     /**
      * It contains the ParentSets for all variables at time T.
      */
-    private ParentSetImpl[] parentSetTimeT;
+    private List<ParentSetImpl> parentSetTimeT;
 
 
 
     public DynamicDAG(DynamicVariables dynamicVariables1) {
         this.dynamicVariables = dynamicVariables1;
-        this.parentSetTime0 = new ParentSetImpl[dynamicVariables.getNumberOfVars()];
-        this.parentSetTimeT = new ParentSetImpl[dynamicVariables.getNumberOfVars()];
+        this.parentSetTime0 = new ArrayList(dynamicVariables.getNumberOfVars());
+        this.parentSetTimeT = new ArrayList(dynamicVariables.getNumberOfVars());
 
         for (Variable var: dynamicVariables){
-            parentSetTime0[var.getVarID()] = new ParentSetImpl(var);
-            parentSetTimeT[var.getVarID()] = new ParentSetImpl(var);
+            parentSetTime0.add(var.getVarID(),new ParentSetImpl(var));
+            parentSetTimeT.add(var.getVarID(),new ParentSetImpl(var));
         }
     }
 
@@ -52,7 +53,7 @@ public class DynamicDAG {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
         }
-        return this.parentSetTimeT[var.getVarID()];
+        return this.parentSetTimeT.get(var.getVarID());
     }
 
     /*public ParentSet getParentSetTime0(Variable var) {
@@ -68,7 +69,7 @@ public class DynamicDAG {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
         }
-        return this.parentSetTime0[var.getVarID()].getParents();
+        return this.parentSetTime0.get(var.getVarID()).getParents();
     }
 
     public boolean containCycles(){
@@ -111,11 +112,19 @@ public class DynamicDAG {
         return false;
     }
 
+    public List<ParentSet> getParentSetsTimeT(){
+        return Collections.unmodifiableList(this.parentSetTimeT);
+    }
+
+    public List<ParentSet> getParentSetsTime0(){
+        return Collections.unmodifiableList(this.parentSetTime0);
+    }
+
     public String toString(){
         StringBuilder str = new StringBuilder();
         str.append("DAG Time 0\n");
         for (Variable var: this.getDynamicVariables()){
-            str.append(var.getName() +" : "+this.parentSetTime0[var.getVarID()].toString() + "\n");
+            str.append(var.getName() +" : "+this.parentSetTime0.get(var.getVarID()).toString() + "\n");
         }
 
         str.append("\nDAG Time T\n");
@@ -134,6 +143,12 @@ public class DynamicDAG {
             mainVar = mainVar1;
             this.vars = new ArrayList<Variable>();
         }
+
+        @Override
+        public Variable getMainVar() {
+            return mainVar;
+        }
+
         public void addParent(Variable var){
             if (!Utils.isLinkCLG(mainVar, var)) {
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
@@ -146,7 +161,7 @@ public class DynamicDAG {
             vars.add(var);
 
             if (!var.isTemporalClone()) {
-                parentSetTime0[mainVar.getVarID()].vars.add(var);
+                parentSetTime0.get(mainVar.getVarID()).vars.add(var);
             }
         }
 
