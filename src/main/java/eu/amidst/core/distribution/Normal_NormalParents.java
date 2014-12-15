@@ -117,7 +117,7 @@ public class Normal_NormalParents extends ConditionalDistribution {
      * @param parentsAssignment An <code>Assignment</code> for the parents.
      * @return A <code>Normal</code> object with the univariate distribution.
      */
-    public Normal getUnivariateNormal(Assignment parentsAssignment) {
+    public Normal getNormal(Assignment parentsAssignment) {
 
         double mean = intercept;
         Normal univariateNormal = new Normal(var);
@@ -151,7 +151,12 @@ public class Normal_NormalParents extends ConditionalDistribution {
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
         double value = assignment.getValue(this.var);
-        return (getUnivariateNormal(assignment).getLogProbability(value));
+        return (getNormal(assignment).getLogProbability(value));
+    }
+
+    @Override
+    public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
+        return this.getNormal(assignment);
     }
 
     public String label(){

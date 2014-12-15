@@ -10,7 +10,7 @@ import java.util.List;
 public class MultinomialStateSpace extends StateSpace implements Iterable<String>{
 
     private int numberOfStates;
-    private List<String> statesNames;
+    private final List<String> statesNames;
 
 
     public MultinomialStateSpace(int numberOfStates1) {
@@ -44,5 +44,9 @@ public class MultinomialStateSpace extends StateSpace implements Iterable<String
     @Override
     public Iterator<String> iterator() {
         return statesNames.iterator();
+    }
+
+    public List<String> getStatesNames(){
+        return this.statesNames;
     }
 }

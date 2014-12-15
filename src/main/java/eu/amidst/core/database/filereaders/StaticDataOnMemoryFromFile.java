@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
+public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream, Iterator<DataInstance> {
 
     private DataFileReader reader;
     /**
@@ -29,7 +29,7 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
         for (DataRow row: reader){
             dataInstancesList.add(new StaticDataInstance(row));
         }
-        reader.reset();
+        reader.restart();
 
         dataInstances = new StaticDataInstance[dataInstancesList.size()];
         int counter = 0;
