@@ -155,7 +155,7 @@ I(Y=1)
 \section{A multinomial child given a set of multinomial parents}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
-Let $X$ be a multinomial variable with $k$ state spaces, where $k \geq 2$, and let $\mathbf{Y} =\{Y_1,\ldots,Y_n\}$ denote the set of parents of $X$, such that all of them are multinomial. Each parent $Y_i$ has $r_i$ state spaces where  $1 \geq i \geq n$ and $r_i \geq 2$. A parental configuration for $X$ is then a set of $n$ elements $\{Y_1 = {y_1}^{s_1}, \ldots, Y_i = {y_2}^{s_i},\ldots, Y_n = {y_n}^{s_n} \}$ such that $1\leq s_i \leq r_i$. Let $q = r_1 \times \ldots \times r_n$ denote the total number of parental configurations for $X$, and let $\mathbf{y}^l$ denote the $l^{th}$ parental configuration such that $1 \leq l \leq q$.
+Let $X$ be a multinomial variable with $k$ possible values such that $k \geq 2$, and let $\mathbf{Y} =\{Y_1,\ldots,Y_n\}$ denote the set of parents of $X$, such that all of them are multinomial. Each parent $Y_i$, $1 \geq i \geq n$, has $r_i$ possible values or states such that $r_i \geq 2$. A parental configuration for the child-node $X$ is then a set of $n$ elements $\{Y_1 = y_1^{v}, \ldots, Y_i = y_i^{v},\ldots, Y_n = y_n^{v} \}$ such that $y_i^{v}$ denotes a potential value of variable $Y_i$ such that  $1 \leq v \leq r_i$. Let $q = r_1 \times \ldots \times r_n$ denote the total number of parental configurations, and let $\mathbf{y}^l$ denote the $l^{th}$ parental configuration such that $1 \leq l \leq q$.
 
 The log-conditional probability of the child-node $X$ given its parent-nodes $\mathbf{Y}$ can be expressed as follows:
 
@@ -230,9 +230,9 @@ I(X=x^k)
 - 0 \\ \\
 &=&
 \begin{pmatrix}
-m^{\mathbf{Y}}_1 \cdot \theta_{11}  + m^{\mathbf{Y}}_q \cdot \theta_{1q} \\
+\mathbf{m}^{\mathbf{Y}}_1 \cdot \theta_{11}  + m^{\mathbf{Y}}_q \cdot \theta_{1q} \\
 \vdots \\
-m^{\mathbf{Y}}_1 \cdot \theta_{k1}  + m^{\mathbf{Y}}_q \cdot \theta_{kq}
+\mathbf{m}^{\mathbf{Y}}_1 \cdot \theta_{k1}  + m^{\mathbf{Y}}_q \cdot \theta_{kq}
 \end{pmatrix}^T
 \begin{pmatrix}
 I(X=x^1) \\
@@ -241,6 +241,8 @@ I(X=x^k)
 \end{pmatrix}
 - 0 
 \end{eqnarray*}
+
+\noindent such that $\mathbf{m}^{\mathbf{Y}}_1 = \prod_{i=1}^n I( Y_i = y_i^1) = \prod_{i=1}^n m^{Y_i}_1$ denotes the expected sufficient statistics for the first parental configuration, and $\mathbf{m}^{\mathbf{Y}}_q = \prod_{i=1}^n I( Y_i = y_i^{r_i})  = \prod_{i=1}^n m^{Y_i}_{r_i} $ denotes the expected sufficient statistics for the last parental configuration.
 
 \vspace{0.5in}
 \item \textbf{Third form}:
@@ -488,6 +490,8 @@ $\mathbf{y}^l$ & The $l^{th}$ configuration of a multinomial parent set $\mathbf
 $\theta_{jl}$ & Equal to $\ln p_{x^j\mid \mathbf{y}^l}$, denoting the log-conditional probability of $X$ in its state $j$ \\
                     & given the $l^{th}$ parent configuration\\
 $p$ & Probability distribution\\
+$m$ & Expected sufficient statistics \\
+$s$ & Sufficient statistics \\
 \end{tabular}}
 \end{table}
 
