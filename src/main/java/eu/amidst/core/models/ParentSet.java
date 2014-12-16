@@ -14,25 +14,27 @@ import java.util.List;
 
 public interface ParentSet extends Iterable<Variable>{
 
-    public void addParent(Variable var);
+    Variable getMainVar();
 
-    public void removeParent(Variable var);
+    void addParent(Variable var);
 
-    public List<Variable> getParents();
+    void removeParent(Variable var);
 
-    public int getNumberOfParents();
+    List<Variable> getParents();
 
-    public String toString();
+    int getNumberOfParents();
 
-    public void blockParents();
+    String toString();
 
-    public boolean contains(Variable var);
+    void blockParents();
+
+    boolean contains(Variable var);
 
     @Override
-    public boolean equals(Object o);
+    boolean equals(Object o);
 
     @Override
-    public default Iterator<Variable> iterator(){
+    default Iterator<Variable> iterator(){
         return this.getParents().iterator();
     }
 

@@ -7,16 +7,18 @@ import java.util.Iterator;
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
-public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
+public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream, Iterator<DataInstance> {
 
     private DataFileReader reader;
+    private Iterator<DataRow> dataRowIterator;
     private Attribute attSequenceID;
     private Attribute attTimeID;
     private NextDynamicDataInstance nextDynamicDataInstance;
 
 
-    public DynamicDataOnDiskFromFile(DataFileReader reader){
-        this.reader=reader;
+    public DynamicDataOnDiskFromFile(DataFileReader reader1){
+        this.reader=reader1;
+        dataRowIterator = this.reader.iterator();
 
         /**
          * We read the two first rows now, to create the first couple in next
@@ -27,8 +29,8 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
         int timeID = 0;
         int sequenceID = 0;
 
-        if (reader.hasNext()) {
-            present = this.reader.next();
+        if (dataRowIterator.hasNext()) {
+            present = this.dataRowIterator.next();
         }else {
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
@@ -62,26 +64,26 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
             /* Not sequenceID nor TimeID are provided*/
             case 0:
-                return nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(reader);
+                return nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(dataRowIterator);
 
              /* Only TimeID is provided*/
             case 1:
-                return nextDynamicDataInstance.nextDataInstance_NoSeq(reader, attTimeID);
+                return nextDynamicDataInstance.nextDataInstance_NoSeq(dataRowIterator, attTimeID);
 
              /* Only SequenceID is provided*/
             case 2:
-                return nextDynamicDataInstance.nextDataInstance_NoTimeID(reader, attSequenceID);
+                return nextDynamicDataInstance.nextDataInstance_NoTimeID(dataRowIterator, attSequenceID);
 
              /* SequenceID and TimeID are provided*/
             case 3:
-                return nextDynamicDataInstance.nextDataInstance(reader, attSequenceID, attTimeID);
+                return nextDynamicDataInstance.nextDataInstance(dataRowIterator, attSequenceID, attTimeID);
         }
         throw new IllegalArgumentException();
     }
 
     @Override
     public boolean hasNext() {
-        return reader.hasNext();
+        return dataRowIterator.hasNext();
     }
 
     @Override
@@ -91,7 +93,8 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream {
 
     @Override
     public void restart() {
-        this.reader.reset();
+        this.reader.restart();
+        this.dataRowIterator = this.reader.iterator();
     }
 
     @Override

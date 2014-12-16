@@ -1,3 +1,4 @@
+%!TEX root = ../MainDoc.tex
 \newpage
 \subsection{Converter from Amidst to Hugin}
 \label{ConverterFromAmidstToHugin}
@@ -27,11 +28,9 @@ This is brief code fragment showing how to convert a BN from Amidst to Hugin for
 
 \begin{table}[H]
 \begin{tabular}{l} \hline
-
-        \texttt{ConverterToHugin converterToHugin = new ConverterToHugin(bn);}\\    
-        \texttt{converterToHugin.convertToHuginBN();}\\
-        \texttt{converterToHugin.getHuginNetwork().saveAsNet}\\ 
-        \texttt{~~~~~~~~~~~~~~~~~("networks/huginStaticBNHiddenExample.net");}\\ \hline 
+\texttt{BayesianNetwork amidstBN = BayesianNetwork.newBayesianNetwork(dag);}\\
+\texttt{Domain huginNetwork = ConverterToHugin.convertToHugin(amidstBN);}\\
+\texttt{huginNetwork.saveAsNet("networks/huginStaticBNHiddenExample.net");}\\ \hline
 
 \end{tabular}
 \end{table} 

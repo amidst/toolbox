@@ -11,10 +11,8 @@ package eu.amidst.core.variables;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by afa on 02/07/14.
@@ -75,6 +73,7 @@ public class StaticVariables implements Iterable<Variable>{
 
         }
     }
+
     public Variable addIndicatorVariable(Variable var) {
         if (!var.isObservable()) {
             throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
@@ -157,6 +156,9 @@ public class StaticVariables implements Iterable<Variable>{
         return this.allVariables.iterator();
     }
 
+    public List<Variable> getVariableList(){
+        return Collections.unmodifiableList(this.allVariables);
+    }
 
     private static class VariableImplementation implements Variable {
 

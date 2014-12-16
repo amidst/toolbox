@@ -106,6 +106,11 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         return this.getNormal(assignment).getLogProbability(value);
     }
 
+    @Override
+    public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
+        return this.getNormal(assignment);
+    }
+
     public String label(){
         if (this.getConditioningVariables().size()==0) {
             return "Normal";
