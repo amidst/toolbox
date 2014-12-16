@@ -30,8 +30,6 @@ public class ParallelTANDemo {
         sampler.setParallelMode(true);
         sampler.sampleToAnARFFFile("datasets/PigsSample.arff",sampleSize);
 
-
-
         System.out.println("Number of variables: "+bn.getNumberOfVars());
 
         DataOnStream data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/PigsSample.arff"));
