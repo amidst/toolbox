@@ -25,6 +25,7 @@ public class DAG {
         for (Variable var: variables){
             parents.add(var.getVarID(),new ParentSetImpl(var));
         }
+        this.parents = Collections.unmodifiableList(parents);
     }
 
     public StaticVariables getStaticVariables(){
@@ -109,7 +110,7 @@ public class DAG {
     }
 
     public List<ParentSet> getParentSets(){
-        return Collections.unmodifiableList(this.parents);
+        return this.parents;
     }
 
     private static final class ParentSetImpl implements ParentSet {
