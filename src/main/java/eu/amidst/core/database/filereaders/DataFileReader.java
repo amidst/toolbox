@@ -7,19 +7,11 @@ import java.util.Iterator;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public interface DataFileReader extends Iterable<DataRow>, Iterator<DataRow> {
+public interface DataFileReader extends Iterable<DataRow> {
 
     Attributes getAttributes();
 
-    DataRow next();
-
-    /***
-     * This method is expected to return true if at least two rows with the same sequence ID are left
-     * @return
-     */
-    boolean hasNext();
-
-    void reset();
+    void restart();
 
     boolean doesItReadThisFileExtension(String fileExtension);
 

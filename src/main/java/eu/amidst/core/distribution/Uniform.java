@@ -2,6 +2,8 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Variable;
 
+import java.util.Random;
+
 /**
  * Created by andresmasegosa on 23/11/14.
  */
@@ -13,6 +15,11 @@ public class Uniform extends UnivariateDistribution {
 
     @Override
     public double getLogProbability(double value) {
+        return 0;
+    }
+
+    @Override
+    public double sample(Random rand) {
         return 0;
     }
 

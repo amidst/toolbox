@@ -13,6 +13,8 @@ package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.Attribute;
 
+import java.util.Iterator;
+
 /**
  * Created by ana@cs.aau.dk on 13/11/14.
  */
@@ -33,7 +35,7 @@ public final class NextDynamicDataInstance {
         this.sequenceID = sequenceID;
         this.timeIDcounter = timeIDcounter;
     }
-    public  DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(DataFileReader reader){
+    public  DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(Iterator<DataRow> reader){
         DynamicDataInstance dynDataInst = null;
         if(timeIDcounter == 0) {
             dynDataInst = new DynamicDataInstance(past, present, sequenceID, timeIDcounter++);
@@ -45,7 +47,7 @@ public final class NextDynamicDataInstance {
         return dynDataInst;
     }
 
-    public DynamicDataInstance nextDataInstance_NoSeq(DataFileReader reader, Attribute attTimeID){
+    public DynamicDataInstance nextDataInstance_NoSeq(Iterator<DataRow> reader, Attribute attTimeID){
         double presentTimeID = present.getValue(attTimeID);
 
         /*Missing values of the form (X,?), where X can also be ?*/
@@ -73,7 +75,7 @@ public final class NextDynamicDataInstance {
 
     }
 
-    public DynamicDataInstance nextDataInstance_NoTimeID(DataFileReader reader, Attribute attSequenceID){
+    public DynamicDataInstance nextDataInstance_NoTimeID(Iterator<DataRow> reader, Attribute attSequenceID){
         DynamicDataInstance dynDataInst = null;
         if(timeIDcounter == 0) {
             dynDataInst =  new DynamicDataInstance(past, present, (int) present.getValue(attSequenceID), timeIDcounter);
@@ -99,7 +101,7 @@ public final class NextDynamicDataInstance {
         }
     }
 
-    public DynamicDataInstance nextDataInstance(DataFileReader reader, Attribute attSequenceID, Attribute attTimeID){
+    public DynamicDataInstance nextDataInstance(Iterator<DataRow> reader, Attribute attSequenceID, Attribute attTimeID){
         double pastSequenceID = past.getValue(attSequenceID);
         double presentTimeID = present.getValue(attTimeID);
 
