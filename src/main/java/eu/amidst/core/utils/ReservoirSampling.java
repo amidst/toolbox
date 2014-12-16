@@ -17,20 +17,21 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ReservoirSampling {
 
     public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataBase dataBase){
+
         Random random = new Random(0);
         DataOnMemoryListContainer dataOnMemoryList = new DataOnMemoryListContainer(dataBase.getAttributes());
         int count = 0;
+
         for (DataInstance instance : dataBase){
             if (count<numberOfSamples)
                 dataOnMemoryList.add(count,instance);
             else{
                 int r = random.nextInt(count);
-                if (r<numberOfSamples)
-                    dataOnMemoryList.add(count,instance);
+                if (r < numberOfSamples)
+                    dataOnMemoryList.add(r,instance);
             }
             count++;
         }
-
         return dataOnMemoryList;
     }
 
