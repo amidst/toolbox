@@ -42,7 +42,7 @@ public class BayesianNetworkSampler  {
     }
 
 
-    public Stream<Assignment> getSampleStream(int nSamples) {
+    /*public Stream<Assignment> getSampleStream(int nSamples) {
         if (parallelMode){
             LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
             sampleStream = IntStream.range(0, nSamples).parallel().mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
@@ -51,16 +51,16 @@ public class BayesianNetworkSampler  {
             sampleStream =  IntStream.range(0, nSamples).mapToObj(e -> sample(network, causalOrder, random));
         }
         return sampleStream;
-    }
+    }*/
 
 
-    /*
+
     public Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         //sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
         sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, new Random(i)));
         return (parallelMode)? sampleStream.parallel() : sampleStream;
-    }*/
+    }
 
     public List<Assignment> getSampleList(int nSamples){
         return this.getSampleStream(nSamples).collect(Collectors.toList());
@@ -110,12 +110,6 @@ public class BayesianNetworkSampler  {
     }
 
     private static Assignment sample(BayesianNetwork network, List<Variable> causalOrder, Random random) {
-
-        try{
-            Thread.sleep(1000);
-        }catch(Exception e){
-
-        }
 
         HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
         for (Variable var : causalOrder) {
