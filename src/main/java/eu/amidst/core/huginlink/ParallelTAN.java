@@ -20,22 +20,46 @@ import eu.amidst.core.variables.Variable;
  */
 public class ParallelTAN {
 
-    public static BayesianNetwork learn(DataOnStream dataOnStream, String nameRoot, String nameTarget) throws ExceptionHugin {
+    private int numSamplesOnMemory;
+    private int numCores;
+
+    public ParallelTAN () {
+        this.numSamplesOnMemory = 10000;
+        this.numCores = 1; // Or Runtime.getRuntime().availableProcessors();
+    }
+
+
+    public int getNumSamplesOnMemory() {
+        return numSamplesOnMemory;
+    }
+
+    public void setNumSamplesOnMemory(int numSamplesOnMemory_) {
+        this.numSamplesOnMemory = numSamplesOnMemory_;
+    }
+
+    public int getNumCores() {
+        return numCores;
+    }
+
+    public void setNumCores(int numCores_) {
+        this.numCores = numCores_;
+    }
+
+
+    public BayesianNetwork learn(DataOnStream dataOnStream, String nameRoot, String nameTarget) throws ExceptionHugin {
 
         StaticVariables modelHeader = new StaticVariables(dataOnStream.getAttributes());
         DAG dag = new DAG(modelHeader);
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
 
-        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000,dataOnStream);
+        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory,dataOnStream);
 
         // Set the number of cases
         int numCases = dataOnMemory.getNumberOfDataInstances();
         huginNetwork.setNumberOfCases(numCases);
 
-        // Set the number of cores
-        int cores = Runtime.getRuntime().availableProcessors();
-        huginNetwork.setConcurrencyLevel(cores);
+        huginNetwork.setConcurrencyLevel(this.numCores);
 
         NodeList nodeList = huginNetwork.getNodes();
 
@@ -43,7 +67,6 @@ public class ParallelTAN {
         for (int i = 0;i<nodeList.size();i++) {
             Variable var =  bn.getDAG().getStaticVariables().getVariableById(i);
             Node n = nodeList.get(i);
-
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 ((DiscreteChanceNode)n).getExperienceTable();
                 for (int j=0;j<numCases;j++){
@@ -62,6 +85,7 @@ public class ParallelTAN {
         //Structural learning
         Node root = huginNetwork.getNodeByName(nameRoot);
         Node target = huginNetwork.getNodeByName(nameTarget);
+
         huginNetwork.learnChowLiuTree(root, target);
 
         //Parametric learning
@@ -73,13 +97,9 @@ public class ParallelTAN {
     }
 
 
-    public static void main(String[] args) throws ExceptionHugin {
 
-        WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
-        StaticDataOnDiskFromFile data = new StaticDataOnDiskFromFile(fileReader);
-        BayesianNetwork bn = ParallelTAN.learn(data, "A", "B");
-        BayesianNetworkWriter.saveToHuginFile(bn,"networks/parallelTAN.net" );
-    }
+
+
 }
 
 
