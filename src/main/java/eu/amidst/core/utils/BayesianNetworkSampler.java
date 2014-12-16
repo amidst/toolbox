@@ -11,11 +11,13 @@ import eu.amidst.core.variables.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -30,29 +32,91 @@ import org.openjdk.jmh.annotations.*;
 /**
  * Created by andresmasegosa on 11/12/14.
  */
-public class BayesianNetworkSampler {
+public class BayesianNetworkSampler  {
 
-    public static Stream<Assignment> parallelSampling(int seed, BayesianNetwork network, int nSamples){
+    private BayesianNetwork network;
 
-        List<Variable> causalOrder = getCausalOrder(network.getDAG());
+    private List<Variable> causalOrder;
 
+    private boolean parallelMode = true;
+
+    private int seed = 0;
+
+    private Stream<Assignment> sampleStream;
+
+    public BayesianNetworkSampler(BayesianNetwork network1){
+        network=network1;
+        this.causalOrder=BayesianNetworkSampler.getCausalOrder(network.getDAG());
+    }
+
+    /*
+    public Stream<Assignment> getSampleStream(int nSamples) {
+        if (parallelMode){
+            LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+            sampleStream = IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
+        }else{
+            Random random  = new Random(seed);
+            sampleStream =  IntStream.range(0, nSamples).mapToObj(e -> sample(network, causalOrder, random));
+        }
+        return (parallelMode)? sampleStream.parallel() : sampleStream;
+    }*/
+
+
+    public Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+        sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
+        return (parallelMode)? sampleStream.parallel() : sampleStream;
+    }
 
-        return IntStream.iterate(0, i -> i + 1).limit(nSamples).parallel().mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
+    public List<Assignment> getSampleList(int nSamples){
+        return this.getSampleStream(nSamples).collect(Collectors.toList());
+    }
+
+    public Iterable<Assignment> getSampleIterator(int nSamples){
+        class I implements Iterable<Assignment>{
+            public Iterator<Assignment> iterator(){
+                return getSampleStream(nSamples).iterator();
+            }
+        }
+        return new I();
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    public void setParallelMode(boolean parallelMode) {
+        this.parallelMode = parallelMode;
+    }
+
+    public void sampleToAnARFFFile(String path, int nSamples) throws IOException {
+
+        List<Variable> variables = network.getStaticVariables().getVariableList();
+
+        FileWriter fw = new FileWriter(path);
+        fw.write("@relation\n\n");
+
+        for (Variable v : variables){
+            fw.write(v.toARFFString()+"\n");
+        }
+
+        fw.write("\n\n@data\n\n");
+
+
+        this.getSampleStream(nSamples).forEach(e -> {
+            try {
+                fw.write(e.toString(variables) + "\n");
+            } catch (IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+
+        fw.close();
 
     }
 
-    public static Stream<Assignment> serialSampling(int seed, BayesianNetwork network, int nSamples){
+    private static Assignment sample(BayesianNetwork network, List<Variable> causalOrder, Random random) {
 
-        List<Variable> causalOrder = getCausalOrder(network.getDAG());
-
-        Random rand = new Random(seed);
-
-        return IntStream.iterate(0, i -> i + 1).limit(nSamples).mapToObj(e -> sample(network, causalOrder, rand));
-    }
-
-
-    public static Assignment sample(BayesianNetwork network, List<Variable> causalOrder, Random random) {
         HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
         for (Variable var : causalOrder) {
             double sampledValue = network.getDistribution(var).getUnivariateDistribution(assignment).sample(random);
@@ -61,8 +125,7 @@ public class BayesianNetworkSampler {
         return assignment;
     }
 
-
-    public static List<Variable> getCausalOrder(DAG dag){
+    private static List<Variable> getCausalOrder(DAG dag){
         StaticVariables variables = dag.getStaticVariables();
         int nNrOfAtts = variables.getNumberOfVars();
         List<Variable> order = new ArrayList();
@@ -90,37 +153,31 @@ public class BayesianNetworkSampler {
             }
             return order;
     }
-    public static void writeToARFFFile(String path, StaticVariables variables, Stream<Assignment> samples) throws IOException{
-
-        FileWriter fw = new FileWriter(path);
-        fw.write("@relation\n\n");
-
-        for (Variable v : variables){
-            fw.write(v.toARFFString()+"\n");
-        }
-
-        fw.write("\n\n@data\n\n");
-
-        samples.forEach(e -> {
-            try {
-                fw.write(e.toString(variables.getVariableList()) + "\n");
-            } catch (Exception ex){
-                ex.printStackTrace();
-                throw new UnsupportedOperationException("Error Writting Samples.");
-            }
-        });
-
-        fw.close();
-    }
 
     public static void main(String[] args) throws Exception{
 
-
+        Stopwatch watch = Stopwatch.createStarted();
         BayesianNetwork network = BayesianNetworkLoader.loadFromHugin("./networks/asia.net");
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
+        sampler.setSeed(0);
+        sampler.setParallelMode(true);
+        sampler.sampleToAnARFFFile("./data/asisa-samples.arff", 10);
+        System.out.println(watch.stop());
 
-        Stream<Assignment> samples = BayesianNetworkSampler.parallelSampling(0, network, 1000);
+        for (Assignment assignment : sampler.getSampleIterator(2)){
+            System.out.println(assignment.toString(network.getStaticVariables().getVariableList()));
+        }
+        System.out.println();
 
-        BayesianNetworkSampler.writeToARFFFile("./data/asisa-samples.arff", network.getStaticVariables(), samples);
+        for (Assignment assignment : sampler.getSampleList(2)){
+            System.out.println(assignment.toString(network.getStaticVariables().getVariableList()));
+        }
+        System.out.println();
 
+        sampler.getSampleStream(2).forEach( e -> System.out.println(e.toString(network.getStaticVariables().getVariableList())));
+
+
+        //VariableList is expensive to compute!!
     }
+
 }
