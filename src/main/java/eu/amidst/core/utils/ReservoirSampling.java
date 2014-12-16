@@ -1,23 +1,26 @@
 package eu.amidst.core.utils;
 
 import eu.amidst.core.database.*;
+import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
+import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
+import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by andresmasegosa on 10/12/14.
  */
 public class ReservoirSampling {
 
-    public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataOnStream dataOnStream){
+    public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataBase dataBase){
         Random random = new Random(0);
-        DataOnMemoryList dataOnMemoryList = new DataOnMemoryList(dataOnStream.getAttributes());
+        DataOnMemoryListContainer dataOnMemoryList = new DataOnMemoryListContainer(dataBase.getAttributes());
         int count = 0;
-        while (dataOnStream.hasNext()){
-            DataInstance instance = dataOnStream.next();
-
+        for (DataInstance instance : dataBase){
             if (count<numberOfSamples)
                 dataOnMemoryList.add(count,instance);
             else{
@@ -31,7 +34,7 @@ public class ReservoirSampling {
         return dataOnMemoryList;
     }
 
-    public static DataOnMemory samplingNumberOfGBs(double numberOfGB, DataOnStream dataOnStream) {
+    public static DataOnMemory samplingNumberOfGBs(double numberOfGB, DataBase dataOnStream) {
         double numberOfBytesPerSample = dataOnStream.getAttributes().getList().size()*8.0;
 
         //We assume an overhead of 10%.
@@ -40,34 +43,14 @@ public class ReservoirSampling {
         return samplingNumberOfSamples(numberOfSamples,dataOnStream);
     }
 
-    private static class DataOnMemoryList implements DataOnMemory{
+    public static void main(String[] args) throws Exception {
+        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataCajaMar.arff"));
 
-        List<DataInstance> instanceList;
-        Attributes attributes;
-
-        DataOnMemoryList(Attributes attributes1){
-            this.instanceList=new ArrayList();
-            this.attributes=attributes1;
-        }
+        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
 
 
-        @Override
-        public int getNumberOfDataInstances() {
-            return this.instanceList.size();
-        }
 
-        @Override
-        public DataInstance getDataInstance(int i) {
-            return this.instanceList.get(i);
-        }
-
-        @Override
-        public Attributes getAttributes() {
-            return this.attributes;
-        }
-
-        public void add(int id, DataInstance data){
-            this.instanceList.add(id,data);
-        }
     }
-}
+
+
+    }
