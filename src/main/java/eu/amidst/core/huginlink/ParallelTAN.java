@@ -8,6 +8,7 @@ import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ReservoirSampling;
 import eu.amidst.core.variables.StaticVariables;
@@ -40,30 +41,33 @@ public class ParallelTAN {
 
         // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
         for (int i = 0;i<nodeList.size();i++) {
-            //Node n = nodeList.get(i);
-            Node n = (Node)nodeList.get(i);
+            Variable var =  bn.getDAG().getStaticVariables().getVariableById(i);
+            Node n = nodeList.get(i);
+
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+                ((DiscreteChanceNode)n).getExperienceTable();
                 for (int j=0;j<numCases;j++){
-                    Variable var =  bn.getDAG().getStaticVariables().getVariableById(i);
-                    DataInstance dataInstance = dataOnMemory.getDataInstance(j);
-                    int state = (int)dataInstance.getValue(var);
-                    ((DiscreteNode)n).setCaseState(j, state);
+                    int state = (int)dataOnMemory.getDataInstance(j).getValue(var);
+                    ((DiscreteChanceNode)n).setCaseState(j, state);
                 }
             } else {
+                ((ContinuousChanceNode)n).getExperienceTable();
                 for (int j=0;j<numCases;j++){
-                    double value = dataOnMemory.getDataInstance(j).getValue(bn.getDAG().getStaticVariables().getVariableById(i));
+                    double value = dataOnMemory.getDataInstance(j).getValue(var);
                     ((ContinuousChanceNode)n).setCaseValue(j, (long) value);
                 }
             }
         }
 
+        //Structural learning
         Node root = huginNetwork.getNodeByName(nameRoot);
         Node target = huginNetwork.getNodeByName(nameTarget);
+        huginNetwork.learnChowLiuTree(root, target);
 
-        //huginNetwork.learnChowLiuTree(root, target);
-        huginNetwork.setMaxNumberOfEMIterations(1000);
+        //Parametric learning
+        huginNetwork.compile();
         huginNetwork.learnTables();
-        huginNetwork.saveAsNet(new String("parallelTAN.net"));
+        huginNetwork.uncompile();
 
         return (ConverterToAMIDST.convertToAmidst(huginNetwork));
     }
@@ -73,9 +77,8 @@ public class ParallelTAN {
 
         WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
         StaticDataOnDiskFromFile data = new StaticDataOnDiskFromFile(fileReader);
-
-        ParallelTAN.learn(data, "A", "B");
-
+        BayesianNetwork bn = ParallelTAN.learn(data, "A", "B");
+        BayesianNetworkWriter.saveToHuginFile(bn,"networks/parallelTAN.net" );
     }
 }
 
