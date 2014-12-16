@@ -95,6 +95,11 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
     }
 
     @Override
+    public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
+        return this.getMultinomial(assignment);
+    }
+
+    @Override
     public String label() {
         return "Multinomial Logistic";
     }

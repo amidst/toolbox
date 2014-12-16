@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * Created by ana@cs.aau.dk on 14/11/14.
  */
-public class WekaDataFileReader implements DataFileReader{
+public class WekaDataFileReader implements DataFileReader, Iterator<DataRow>{
 
     private ArffLoader arffLoader = null;
     private Instances dataStructure;
@@ -91,7 +91,7 @@ public class WekaDataFileReader implements DataFileReader{
     }
 
     @Override
-    public void reset() {
+    public void restart() {
         try {
             arffLoader.reset();
         }catch(IOException e){

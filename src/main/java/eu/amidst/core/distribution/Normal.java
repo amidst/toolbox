@@ -11,6 +11,8 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Variable;
 
+import java.util.Random;
+
 /**
  * <h2>This class implements a univariate Normal distribution.</h2>
  *
@@ -97,6 +99,11 @@ public class Normal extends UnivariateDistribution {
     @Override
     public double getLogProbability(double value) {
         return (-Math.log(sd) - 0.5 * Math.log(2 * Math.PI) - 0.5 * Math.pow(((value - mean) / sd), 2));
+    }
+
+    @Override
+    public double sample(Random rand) {
+        return rand.nextGaussian()*this.getSd()+this.getMean();
     }
 
     public String label(){

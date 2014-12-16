@@ -1,16 +1,21 @@
 package eu.amidst.core.variables;
 
+import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.utils.Utils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 03/11/14.
  */
-public class HashMapAssignment {
+public class HashMapAssignment implements DataInstance, Assignment{
     private HashMap<Variable,Double> assignment;
+    int sequenceID;
+    int timeID;
 
     public HashMapAssignment(int nOfVars){
         assignment = new HashMap(nOfVars);
@@ -24,6 +29,25 @@ public class HashMapAssignment {
         else {
             return Utils.missingValue();
         }
+    }
+    public void putValue(Variable var, double val) {
+        this.assignment.put(var,val);
+    }
+
+    public int getSequenceID() {
+        return sequenceID;
+    }
+
+    public void setSequenceID(int sequenceID) {
+        this.sequenceID = sequenceID;
+    }
+
+    public int getTimeID() {
+        return timeID;
+    }
+
+    public void setTimeID(int timeID) {
+        this.timeID = timeID;
     }
 
     public void setValue(Variable var, Double value){

@@ -14,6 +14,10 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by afa on 02/07/14.
  */
@@ -21,7 +25,7 @@ import eu.amidst.core.variables.Variable;
 
 public final class BayesianNetwork {
 
-    private ConditionalDistribution[] distributions;
+    private List<ConditionalDistribution> distributions;
 
     private DAG dag;
 
@@ -35,7 +39,7 @@ public final class BayesianNetwork {
     }
 
     public <E extends ConditionalDistribution> E getDistribution(Variable var) {
-        return (E)distributions[var.getVarID()];
+        return (E)distributions.get(var.getVarID());
     }
 
     public int getNumberOfVars() {
@@ -58,7 +62,7 @@ public final class BayesianNetwork {
 
 
 
-        this.distributions = new ConditionalDistribution[this.getNumberOfVars()];
+        this.distributions = new ArrayList(this.getNumberOfVars());
 
 
         /* Initialize the distribution for each variable depending on its distribution type
@@ -68,7 +72,7 @@ public final class BayesianNetwork {
             ParentSet parentSet = this.getDAG().getParentSet(var);
 
             int varID = var.getVarID();
-            this.distributions[varID]= DistributionBuilder.newDistribution(var, parentSet.getParents());
+            this.distributions.add(varID, DistributionBuilder.newDistribution(var, parentSet.getParents()));
             parentSet.blockParents();
         }
     }
@@ -80,11 +84,14 @@ public final class BayesianNetwork {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
             }
 
-            logProb += this.distributions[var.getVarID()].getLogConditionalProbability(assignment);
+            logProb += this.distributions.get(var.getVarID()).getLogConditionalProbability(assignment);
         }
         return logProb;
     }
 
+    public List<ConditionalDistribution> getDistributions(){
+        return Collections.unmodifiableList(this.distributions);
+    }
 
     public String toString(){
 

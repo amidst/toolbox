@@ -3,12 +3,7 @@ package eu.amidst.core.database;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public interface DataOnMemory{
-
+public interface DataOnMemory extends DataBase{
     int getNumberOfDataInstances();
-
     DataInstance getDataInstance(int i);
-
-    Attributes getAttributes();
-
 }

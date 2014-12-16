@@ -8,6 +8,7 @@ import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -28,12 +29,14 @@ public class TestReaderDynamic {
     private static List<Variable> obsVars;
     private static List<Variable> temporalClones;
     private static DataOnDisk dataOnDisk;
+    private static Iterator<DataInstance> dataOnDiskIterator;
 
 
     public static void loadFileAndInitialize(String s) {
         reader = new WekaDataFileReader(s);
         attributes = reader.getAttributes();
         dataOnDisk = new DynamicDataOnDiskFromFile(reader);
+        dataOnDiskIterator = dataOnDisk.iterator();
         dynamicVariables = new DynamicVariables(attributes);
         obsVars = dynamicVariables.getListOfDynamicVariables();
         //temporalClones = dynamicVariables.getListOfTemporalClones();
@@ -57,8 +60,8 @@ public class TestReaderDynamic {
     public void numericAttributeValue_NoTimeID_NoSeq(){
         loadFileAndInitialize("data/dataWeka/labor.arff");
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(40,(int)nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
@@ -115,51 +118,51 @@ public class TestReaderDynamic {
     public void attributeValue_TimeID(){
         loadFileAndInitialize("data/dataWeka/laborTimeID.arff");
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[?,1]
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(40,(int)nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         //[1,2]
         assertEquals(40,(int)nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")));
         assertEquals(35,(int)nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         //[2,3]
         assertEquals(2,(int)nextInstance.getValue(dynamicVariables.getTemporalCloneByName("CONTRIBUTION-TO-HEALTH-PLAN")));
         assertEquals(1,(int)nextInstance.getValue(dynamicVariables.getVariableByName("CONTRIBUTION-TO-HEALTH-PLAN")));
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         //[3,?]
         assertEquals(1,(int)nextInstance.getValue(dynamicVariables.getTemporalCloneByName("CONTRIBUTION-TO-HEALTH-PLAN")));
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getVariableByName("CONTRIBUTION-TO-HEALTH-PLAN")), DELTA);
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         //[?,?]
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("CONTRIBUTION-TO-HEALTH-PLAN")), DELTA);
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getVariableByName("CONTRIBUTION-TO-HEALTH-PLAN")), DELTA);
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         //[?,5]
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("CONTRIBUTION-TO-HEALTH-PLAN")), DELTA);
         assertEquals(4.5,nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         //[5,6]
 
@@ -169,47 +172,47 @@ public class TestReaderDynamic {
     public void attributeValue_TimeID2(){
         loadFileAndInitialize("data/dataWeka/laborTimeID2.arff");
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[?,1]
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(40,(int)nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
         //[1,?]
         assertEquals(40,(int)nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")));
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")), DELTA);
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[?,?]
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")), DELTA);
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[?,?]
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")), DELTA);
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[?,5]
         assertEquals(Double.NaN,nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(35,nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")), DELTA);
 
-        if(dataOnDisk.hasNext()){
-            nextInstance = dataOnDisk.next();
+        if(dataOnDiskIterator.hasNext()){
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[5,6]
@@ -269,8 +272,8 @@ public class TestReaderDynamic {
     public void attributeValue_seqID() {
         loadFileAndInitialize("data/dataWeka/laborSeqID.arff");
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //Seq 1: Instances 1-4
@@ -278,32 +281,32 @@ public class TestReaderDynamic {
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(40, (int) nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[1,2]
         assertEquals(40, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(35, (int) nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[2,3]
         assertEquals(4.5, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[3,4]
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(3.7, nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //Seq 2: Instances 5-17
@@ -311,8 +314,8 @@ public class TestReaderDynamic {
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(4.5, nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[7,8]
@@ -370,8 +373,8 @@ public class TestReaderDynamic {
     public void attributeValue_TimeID_SeqID() {
         loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //Seq 1: Instances 1-5
@@ -379,40 +382,40 @@ public class TestReaderDynamic {
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(40, (int) nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[1,2]
         assertEquals(40, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WORKING-HOURS")), DELTA);
         assertEquals(35, (int) nextInstance.getValue(dynamicVariables.getVariableByName("WORKING-HOURS")));
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[2,3]
         assertEquals(4.5, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[3,?]
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[?,5]
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(3.7, nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //Seq 2: Instances 1-13 (5-17)
@@ -420,8 +423,8 @@ public class TestReaderDynamic {
         assertEquals(Double.NaN, nextInstance.getValue(dynamicVariables.getTemporalCloneByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
         assertEquals(4.5, nextInstance.getValue(dynamicVariables.getVariableByName("WAGE-INCREASE-FIRST-YEAR")), DELTA);
 
-        if (dataOnDisk.hasNext()) {
-            nextInstance = dataOnDisk.next();
+        if (dataOnDiskIterator.hasNext()) {
+            nextInstance = dataOnDiskIterator.next();
         }
 
         //[7,8] (Every time we change sequence we add a missing row)
