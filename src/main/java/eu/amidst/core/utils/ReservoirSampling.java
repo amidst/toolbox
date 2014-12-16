@@ -30,7 +30,7 @@ public class ReservoirSampling {
         return dataOnMemoryList;
     }
 
-    public static DataOnMemory samplingNumberOfGBs(double numberOfGB, DataOnStream dataOnStream) {
+    public static DataOnMemory samplingNumberOfGBs(double numberOfGB, DataBase dataOnStream) {
         double numberOfBytesPerSample = dataOnStream.getAttributes().getList().size()*8.0;
 
         //We assume an overhead of 10%.

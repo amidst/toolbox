@@ -15,4 +15,5 @@ public interface Assignment {
         builder.append(this.getValue(vars.get(vars.size()-1)));
         return builder.toString();
     }
+
 }
