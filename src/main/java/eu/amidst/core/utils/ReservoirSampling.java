@@ -1,11 +1,15 @@
 package eu.amidst.core.utils;
 
 import eu.amidst.core.database.*;
+import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
+import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
+import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by andresmasegosa on 10/12/14.
@@ -39,5 +43,14 @@ public class ReservoirSampling {
         return samplingNumberOfSamples(numberOfSamples,dataOnStream);
     }
 
+    public static void main(String[] args) throws Exception {
+        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataCajaMar.arff"));
 
-}
+        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
+
+
+
+    }
+
+
+    }
