@@ -15,4 +15,5 @@ public interface DataFileReader extends Iterable<DataRow> {
 
     boolean doesItReadThisFileExtension(String fileExtension);
 
+    void close();
 }

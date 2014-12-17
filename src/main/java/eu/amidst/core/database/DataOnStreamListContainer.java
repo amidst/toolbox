@@ -31,6 +31,11 @@ public class DataOnStreamListContainer implements DataOnStream {
     }
 
     @Override
+    public void close() {
+
+    }
+
+    @Override
     public Iterator<DataInstance> iterator() {
         return this.instanceList.iterator();
     }

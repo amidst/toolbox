@@ -71,6 +71,11 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
     public Attributes getAttributes(){ return reader.getAttributes();}
 
     @Override
+    public void close() {
+        this.reader.close();
+    }
+
+    @Override
     public Iterator<DataInstance> iterator() {
         return this;
     }
