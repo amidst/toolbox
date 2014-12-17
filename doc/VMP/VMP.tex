@@ -275,6 +275,42 @@ I(\mathbf{Y}=\mathbf{y}^q)
 - 0
 \end{eqnarray*}
 
+%----------------------------------------- with one parent
+
+\begin{eqnarray*}
+\ln p(X\mid \mathbf{Y}) &=& \theta(X, \mathbf{Y'} )^T s(Y_i) - A(X) ~~\textrm{such~that} ~\mathbf{Y'} = \mathbf{Y} \setminus Y_i \\ \\
+&= &
+\begin{pmatrix}
+\! m^X_1 I(\mathbf{Y'} =\mathbf{y'}^1) \ln p_{x^1\mid \mathbf{y'}^1}  + \ldots + m^X_k I(\mathbf{Y'} =\mathbf{y'}^1) \ln p_{x^k\mid \mathbf{y'}^1}  \! \\
+\vdots \\
+\! m^X_1 I(\mathbf{Y'} =\mathbf{y'}^{q'})  \ln p_{x^1\mid \mathbf{y'}^{q'}}  + \ldots + m^X_k I(\mathbf{Y'} =\mathbf{y'}^{q'}) \ln p_{x^k\mid \mathbf{y'}^{q'}}\! 
+\end{pmatrix}^T \!
+\begin{pmatrix}
+I(Y_i=y_i^1) \! \\
+\vdots \\
+I(Y_i=y_i^{r_i}) \!
+\end{pmatrix}
+\! - 0 \! \\ \\
+&=&
+\begin{pmatrix}
+\! m^X_1 \cdot  \mathbf{m}^{\mathbf{Y'}}_1 \cdot \theta'_{11}  +  \ldots + m^X_k \cdot \mathbf{m}^{\mathbf{Y'}}_1 \cdot \theta'_{k1}\\
+\vdots \\
+\! m^X_1 \cdot  \mathbf{m}^{\mathbf{Y'}}_{q'} \cdot \theta'_{1q'}   + \ldots + m^X_k \cdot  \mathbf{m}^{\mathbf{Y'}}_{q'} \cdot \theta'_{kq'}
+\end{pmatrix}^T \!
+\begin{pmatrix}
+I(Y_i=y_i^1) \! \\
+\vdots \\
+I(Y_i=y_i^{r_i}) \!
+\end{pmatrix}
+- 0 \!
+\end{eqnarray*}
+
+
+\noindent where $\mathbf{m}^{\mathbf{Y'}}_1 =  I(\mathbf{Y'} =\mathbf{y'}^1) = I( Y_1 = y_1^1) \cdot \ldots I( Y_{i-1} = y_{i-1}^1) \cdot I( Y_{i+1}  = y_{i+1}^1) \cdot \ldots I( Y_{n}  = y_{n}^1)$ denotes the expected sufficient statistics for the first configuration of the parent set $\mathbf{Y'} = \mathbf{Y} \setminus Y_i$, and $\mathbf{m}^{\mathbf{Y'}}_{q'} = I(\mathbf{Y'} =\mathbf{y'}^{q'}) = I( Y_1 = y_1^{q'}) \cdot \ldots I( Y_{i-1} = y_{i-1}^{q'}) \cdot I( Y_{i+1}  = y_{i+1}^{q'}) \cdot \ldots I( Y_{n}  = y_{n}^{q'})$ denotes the expected sufficient statistics for the last configuration of the parent set $\mathbf{Y'}$, with $q' = q / r_i$ denotes the total number of configurations of the parent set $\mathbf{Y'}$.
+
+
+
+
 \end{itemize}
 
 
