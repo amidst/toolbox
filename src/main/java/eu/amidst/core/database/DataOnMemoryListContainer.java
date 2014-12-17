@@ -36,6 +36,11 @@ public class DataOnMemoryListContainer implements DataOnMemory {
     }
 
     @Override
+    public void close() {
+
+    }
+
+    @Override
     public Iterator<DataInstance> iterator() {
         return this.instanceList.iterator();
     }
