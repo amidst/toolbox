@@ -37,7 +37,7 @@ public interface Variable {
             return "@attribute " + this.getName() + " real";
         }else{
             StringBuilder stringBuilder = new StringBuilder("@attribute " + this.getName() + " {");
-            MultinomialStateSpace stateSpace = this.getStateSpace();
+            FiniteStateSpace stateSpace = this.getStateSpace();
             stateSpace.getStatesNames().stream().limit(stateSpace.getNumberOfStates()-1).forEach(e -> stringBuilder.append(e+", "));
             stringBuilder.append(stateSpace.getStatesName(stateSpace.getNumberOfStates()-1)+"}");
             return stringBuilder.toString();

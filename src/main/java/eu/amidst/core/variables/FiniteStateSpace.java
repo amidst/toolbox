@@ -1,33 +1,36 @@
 package eu.amidst.core.variables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by andresmasegosa on 25/11/14.
  */
-public class MultinomialStateSpace extends StateSpace implements Iterable<String>{
+public class FiniteStateSpace extends StateSpace implements Iterable<String>{
 
     private int numberOfStates;
     private final List<String> statesNames;
+    private final Map<String,Integer> mapStatesNames;
 
 
-    public MultinomialStateSpace(int numberOfStates1) {
+    public FiniteStateSpace(int numberOfStates1) {
         super(StateSpaceType.FINITE_SET);
         this.numberOfStates=numberOfStates1;
         this.statesNames = new ArrayList<>();
+        this.mapStatesNames = new HashMap<>();
         for (int i=0; i<numberOfStates1; i++){
             this.statesNames.add("State_"+i);
+            this.mapStatesNames.put("State_"+i, i);
         }
     }
 
-    public MultinomialStateSpace(List<String> statesNames1) {
+    public FiniteStateSpace(List<String> statesNames1) {
         super(StateSpaceType.FINITE_SET);
         this.numberOfStates=statesNames1.size();
         this.statesNames = new ArrayList<>();
-        for(String state: statesNames1) {
-            this.statesNames.add(state);
+        this.mapStatesNames = new HashMap<>();
+        for (int i = 0; i < statesNames.size(); i++) {
+            this.statesNames.add(statesNames.get(i));
+            this.mapStatesNames.put(statesNames.get(i),i);
         }
     }
 
@@ -39,7 +42,7 @@ public class MultinomialStateSpace extends StateSpace implements Iterable<String
         return statesNames.get(state);
     }
 
-    public int getIndexOfState(String stateName) { return statesNames.indexOf(stateName);}
+    public int getIndexOfState(String stateName) { return this.mapStatesNames.get(stateName);}
 
     @Override
     public Iterator<String> iterator() {
