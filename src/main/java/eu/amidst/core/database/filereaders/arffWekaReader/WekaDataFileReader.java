@@ -105,6 +105,11 @@ public class WekaDataFileReader implements DataFileReader, Iterator<DataRow>{
     }
 
     @Override
+    public void close() {
+        //The stream seems to be automatically closed by weka library.
+    }
+
+    @Override
     public Iterator<DataRow> iterator() {
         return this;
     }
