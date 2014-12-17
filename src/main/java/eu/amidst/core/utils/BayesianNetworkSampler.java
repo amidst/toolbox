@@ -85,7 +85,7 @@ public class BayesianNetworkSampler  {
 
     public void sampleToAnARFFFile(String path, int nSamples) throws IOException {
 
-        List<Variable> variables = network.getStaticVariables().getVariableList();
+        List<Variable> variables = network.getStaticVariables().getListOfVariables();
 
         FileWriter fw = new FileWriter(path);
         fw.write("@relation\n\n");
@@ -163,16 +163,16 @@ public class BayesianNetworkSampler  {
         System.out.println(watch.stop());
 
         for (Assignment assignment : sampler.getSampleIterator(2)){
-            System.out.println(assignment.toString(network.getStaticVariables().getVariableList()));
+            System.out.println(assignment.toString(network.getStaticVariables().getListOfVariables()));
         }
         System.out.println();
 
         for (Assignment assignment : sampler.getSampleList(2)){
-            System.out.println(assignment.toString(network.getStaticVariables().getVariableList()));
+            System.out.println(assignment.toString(network.getStaticVariables().getListOfVariables()));
         }
         System.out.println();
 
-        sampler.getSampleStream(2).forEach( e -> System.out.println(e.toString(network.getStaticVariables().getVariableList())));
+        sampler.getSampleStream(2).forEach( e -> System.out.println(e.toString(network.getStaticVariables().getListOfVariables())));
 
 
         //VariableList is expensive to compute!!
