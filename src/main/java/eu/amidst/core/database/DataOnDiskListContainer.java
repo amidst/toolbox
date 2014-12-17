@@ -26,6 +26,11 @@ public class DataOnDiskListContainer implements DataOnDisk {
     }
 
     @Override
+    public void close() {
+
+    }
+
+    @Override
     public Iterator<DataInstance> iterator() {
         return this.instanceList.iterator();
     }

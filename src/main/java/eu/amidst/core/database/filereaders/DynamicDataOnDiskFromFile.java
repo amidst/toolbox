@@ -92,6 +92,11 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream, Ite
     }
 
     @Override
+    public void close() {
+        this.reader.close();
+    }
+
+    @Override
     public void restart() {
         this.reader.restart();
         this.dataRowIterator = this.reader.iterator();
