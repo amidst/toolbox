@@ -9,4 +9,5 @@ public interface DataBase extends Iterable<DataInstance> {
 
     Attributes getAttributes();
 
+    void close();
 }

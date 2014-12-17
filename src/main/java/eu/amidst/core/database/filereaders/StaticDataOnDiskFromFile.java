@@ -37,6 +37,11 @@ public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream, Itera
     }
 
     @Override
+    public void close() {
+        this.reader.close();
+    }
+
+    @Override
     public void restart() {
         this.reader.restart();
         this.dataRowIterator = reader.iterator();
