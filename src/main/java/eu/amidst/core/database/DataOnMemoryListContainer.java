@@ -1,8 +1,8 @@
 package eu.amidst.core.database;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa on 11/12/14.
@@ -36,13 +36,8 @@ public class DataOnMemoryListContainer implements DataOnMemory {
     }
 
     @Override
-    public void close() {
-
-    }
-
-    @Override
-    public Iterator<DataInstance> iterator() {
-        return this.instanceList.iterator();
+    public Stream<DataInstance> stream() {
+        return this.instanceList.stream();
     }
 
 }
