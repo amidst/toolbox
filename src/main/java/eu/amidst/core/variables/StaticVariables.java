@@ -156,8 +156,12 @@ public class StaticVariables implements Iterable<Variable>{
         return this.allVariables.iterator();
     }
 
-    public List<Variable> getVariableList(){
-        return Collections.unmodifiableList(this.allVariables);
+    public void block(){
+        this.allVariables = Collections.unmodifiableList(this.allVariables);
+    }
+
+    public List<Variable> getListOfVariables(){
+        return this.allVariables;
     }
 
     private static class VariableImplementation implements Variable {

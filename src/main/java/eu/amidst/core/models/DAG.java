@@ -26,6 +26,7 @@ public class DAG {
             parents.add(var.getVarID(), new ParentSetImpl(var));
         }
         this.parents = Collections.unmodifiableList(parents);
+        this.variables.block();
     }
 
     public StaticVariables getStaticVariables() {
