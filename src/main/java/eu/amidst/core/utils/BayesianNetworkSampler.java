@@ -57,8 +57,8 @@ public class BayesianNetworkSampler  {
 
     public Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-        //sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
-        sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, new Random(i)));
+        sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
+        //sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, new Random(i)));
         return (parallelMode)? sampleStream.parallel() : sampleStream;
     }
 
@@ -88,7 +88,7 @@ public class BayesianNetworkSampler  {
         List<Variable> variables = network.getStaticVariables().getListOfVariables();
 
         FileWriter fw = new FileWriter(path);
-        fw.write("@relation\n\n");
+        fw.write("@relation dataset\n\n");
 
         for (Variable v : variables){
             fw.write(v.toARFFString()+"\n");
@@ -99,7 +99,9 @@ public class BayesianNetworkSampler  {
 
         this.getSampleStream(nSamples).forEach(e -> {
             try {
-                fw.write(e.toString(variables) + "\n");
+                //fw.write(e.toString(variables) + "\n");
+                fw.write(e.toARFFString(variables) + "\n");
+
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }
