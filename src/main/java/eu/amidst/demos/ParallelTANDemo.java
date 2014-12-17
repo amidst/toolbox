@@ -2,20 +2,15 @@ package eu.amidst.demos;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.DataOnMemory;
+
 import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.huginlink.ParallelTAN;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetworkWriter;
-import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.utils.ReservoirSampling;
-
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by afa on 16/12/14.
@@ -24,29 +19,29 @@ public class ParallelTANDemo {
 
     public static void main(String[] args) throws ExceptionHugin, IOException {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromHugin("networks/Pigs.net");
-        int sampleSize = 100000;
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        sampler.setParallelMode(true);
-        sampler.sampleToAnARFFFile("datasets/PigsSample.arff",sampleSize);
+        //It needs GBs, so avoid putting this file in a Dropbox folder!!!!
+        String dataFile = new String("/Users/afa/Desktop/PigsSample.arff");
 
-        System.out.println("Number of variables: "+bn.getNumberOfVars());
+        //BayesianNetwork bn = BayesianNetworkLoader.loadFromHugin("networks/Pigs.net");
+        //int sampleSize = 1000000;
+        //BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        //sampler.setParallelMode(true);
+        //sampler.sampleToAnARFFFile(dataFile,sampleSize);
 
-        DataOnStream data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/PigsSample.arff"));
+        ArrayList<Integer> vSamplesOnMemory = new ArrayList(Arrays.asList(500000,600000,700000));
+        ArrayList<Integer> vNumCores = new ArrayList(Arrays.asList(1,2,3,4));
 
-        ParallelTAN tan= new ParallelTAN();
-        tan.setNumCores(4);
-        tan.setNumSamplesOnMemory(10000);
-
-        System.out.println("Learning TAN ...");
-        BayesianNetwork model = tan.learn(data, "p630400490", "p48124091");
-        BayesianNetworkWriter.saveToHuginFile(model,"TANFromPigSample.net");
+        for (Integer samplesOnMemory : vSamplesOnMemory) {
+            for (Integer numCores : vNumCores) {
+                System.out.println("Learning TAN: "+ samplesOnMemory + " samples on memory, " + numCores +"core/s ...");
+                DataOnStream data = new StaticDataOnDiskFromFile(new WekaDataFileReader(dataFile));
+                ParallelTAN tan= new ParallelTAN();
+                tan.setNumCores(numCores);
+                tan.setNumSamplesOnMemory(samplesOnMemory);
+                Stopwatch watch = Stopwatch.createStarted();
+                BayesianNetwork model = tan.learn(data, "p630400490", "p48124091");
+                System.out.println(watch.stop());
+            }
+        }
     }
-
-
-
-
-
-
-
 }
