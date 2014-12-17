@@ -3,13 +3,15 @@ package eu.amidst.core.database.filereaders;
 import eu.amidst.core.database.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
-public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream, Iterator<DataInstance> {
+public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
 
     private DataFileReader reader;
     private Iterator<DataRow> dataRowIterator;
@@ -111,31 +113,12 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     }
 
     @Override
+    public Stream<DataInstance> stream() {
+        return Arrays.stream(this.dataInstances);
+    }
+
+    @Override
     public void close() {
         this.reader.close();
-    }
-
-    @Override
-    public DataInstance next() {
-        if (pointer >= getNumberOfDataInstances()) {
-            throw new UnsupportedOperationException("Make sure to call hasNext() to know when the sequence " +
-                    "has finished (restart() moves the reader pointer to the beginning");
-        }
-        return dataInstances[pointer++];
-    }
-
-    @Override
-    public boolean hasNext() {
-        return pointer < getNumberOfDataInstances();
-    }
-
-    @Override
-    public void restart() {
-        pointer = 0;
-    }
-
-    @Override
-    public Iterator<DataInstance> iterator() {
-        return this;
     }
 }
