@@ -111,6 +111,11 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     }
 
     @Override
+    public void close() {
+        this.reader.close();
+    }
+
+    @Override
     public DataInstance next() {
         if (pointer >= getNumberOfDataInstances()) {
             throw new UnsupportedOperationException("Make sure to call hasNext() to know when the sequence " +
