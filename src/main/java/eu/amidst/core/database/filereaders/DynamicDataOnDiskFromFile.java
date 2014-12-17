@@ -3,6 +3,7 @@ package eu.amidst.core.database.filereaders;
 import eu.amidst.core.database.*;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
@@ -105,5 +106,10 @@ public class DynamicDataOnDiskFromFile  implements DataOnDisk, DataOnStream, Ite
     @Override
     public Iterator<DataInstance> iterator() {
         return this;
+    }
+
+    @Override
+    public Stream<DataInstance> stream() {
+        return null;
     }
 }

@@ -24,12 +24,12 @@ public interface Assignment {
 //MEJORAR PONER CUANDO REAL
         for(int i=0; i<vars.size()-1;i++) {
             Attribute att = vars.get(i).getAttribute();
-            String nameState = ((MultinomialStateSpace) att.getStateSpace()).getStatesName((int)this.getValue(vars.get(i)));
+            String nameState = ((FiniteStateSpace) att.getStateSpace()).getStatesName((int)this.getValue(vars.get(i)));
             builder.append(nameState + ",");
         }
 
         Attribute att =vars.get(vars.size()-1).getAttribute();
-        String nameState = ((MultinomialStateSpace)att.getStateSpace()).getStatesName((int)this.getValue(vars.get(vars.size()-1)));
+        String nameState = ((FiniteStateSpace)att.getStateSpace()).getStatesName((int)this.getValue(vars.get(vars.size()-1)));
         builder.append(nameState);
         return builder.toString();
     }

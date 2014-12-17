@@ -4,36 +4,34 @@ import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.DataOnStream;
+import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream, Iterator<DataInstance>{
+public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream {
 
-    private Iterator<DataRow> dataRowIterator;
     DataFileReader reader;
-
 
     public StaticDataOnDiskFromFile(DataFileReader reader1) {
         this.reader = reader1;
-        this.dataRowIterator = reader.iterator();
-    }
-
-    @Override
-    public DataInstance next() {
-        return new StaticDataInstance(this.dataRowIterator.next());
-    }
-
-    @Override
-    public boolean hasNext() {
-        return dataRowIterator.hasNext();
     }
 
     @Override
     public Attributes getAttributes() {
         return reader.getAttributes();
+    }
+
+    @Override
+    public Stream<DataInstance> stream() {
+        return this.reader.stream().map( dataRow -> new StaticDataInstance(dataRow));
+    }
+
+    @Override
+    public Stream<DataInstance> parallelStream(){
+        return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), 128);
     }
 
     @Override
@@ -44,11 +42,6 @@ public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream, Itera
     @Override
     public void restart() {
         this.reader.restart();
-        this.dataRowIterator = reader.iterator();
     }
 
-    @Override
-    public Iterator<DataInstance> iterator() {
-        return this;
-    }
 }

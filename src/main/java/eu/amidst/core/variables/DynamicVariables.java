@@ -20,7 +20,6 @@ import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Created by afa on 02/07/14.
@@ -271,7 +270,7 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.isTemporalClone = false;
 
             if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
             }
         }
 
@@ -288,7 +287,7 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.isTemporalClone = true;
 
             if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
             }
         }
 
