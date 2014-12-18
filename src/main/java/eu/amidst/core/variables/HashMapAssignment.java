@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 /**
  * Created by ana@cs.aau.dk on 03/11/14.
  */
-public class HashMapAssignment implements DataInstance{
+public class HashMapAssignment implements DataInstance, Assignment{
     private HashMap<Variable,Double> assignment;
     int sequenceID;
     int timeID;
