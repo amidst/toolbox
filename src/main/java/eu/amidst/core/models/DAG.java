@@ -1,12 +1,10 @@
 package eu.amidst.core.models;
 
-import com.sun.corba.se.impl.encoding.IDLJavaSerializationInputStream;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,13 +20,14 @@ public class DAG {
         this.variables = variables;
         this.parents = new ArrayList(variables.getNumberOfVars());
 
-        for (Variable var: variables){
-            parents.add(var.getVarID(),new ParentSetImpl(var));
+        for (Variable var : variables) {
+            parents.add(var.getVarID(), new ParentSetImpl(var));
         }
         this.parents = Collections.unmodifiableList(parents);
+        this.variables.block();
     }
 
-    public StaticVariables getStaticVariables(){
+    public StaticVariables getStaticVariables() {
         return this.variables;
     }
 
@@ -36,24 +35,24 @@ public class DAG {
         return parents.get(var.getVarID());
     }
 
-    public boolean containCycles(){
+    public boolean containCycles() {
 
         boolean[] bDone = new boolean[this.variables.getNumberOfVars()];
 
-        for (Variable var: this.variables){
+        for (Variable var : this.variables) {
             bDone[var.getVarID()] = false;
         }
 
-        for (Variable var: this.variables){
+        for (Variable var : this.variables) {
 
             // find a node for which all parents are 'done'
             boolean bFound = false;
 
-            for (Variable variable2: this.variables){
+            for (Variable variable2 : this.variables) {
                 if (!bDone[variable2.getVarID()]) {
                     boolean bHasNoParents = true;
 
-                    for (Variable parent: this.getParentSet(variable2)){
+                    for (Variable parent : this.getParentSet(variable2)) {
                         if (!bDone[parent.getVarID()]) {
                             bHasNoParents = false;
                         }
@@ -77,39 +76,41 @@ public class DAG {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o){return true;}
+        if (this == o) {
+            return true;
+        }
 
-        if (o == null || getClass() != o.getClass()){
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         DAG dag = (DAG) o;
 
-        if (this.variables.getNumberOfVars() != dag.variables.getNumberOfVars()){
+        if (this.variables.getNumberOfVars() != dag.variables.getNumberOfVars()) {
             return false;
-        } else{
+        } else {
             boolean eqs = true;
-            for(Variable var: this.getStaticVariables()){
-                if (! this.getParentSet(var).equals(dag.getParentSet(dag.getStaticVariables().getVariableByName(var.getName())))) {
+            for (Variable var : this.getStaticVariables()) {
+                if (!this.getParentSet(var).equals(dag.getParentSet(dag.getStaticVariables().getVariableByName(var.getName())))) {
                     eqs = false;
                     break;
                 }
             }
-        return eqs;
+            return eqs;
         }
-   }
+    }
 
 
-    public String toString(){
+    public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("DAG\n");
-        for (Variable var: this.getStaticVariables()){
-            str.append(var.getName() +" : "+this.getParentSet(var).toString() + "\n");
+        for (Variable var : this.getStaticVariables()) {
+            str.append(var.getName() + " : " + this.getParentSet(var).toString() + "\n");
         }
         return str.toString();
     }
 
-    public List<ParentSet> getParentSets(){
+    public List<ParentSet> getParentSets() {
         return this.parents;
     }
 
@@ -118,7 +119,7 @@ public class DAG {
         private Variable mainVar;
         private List<Variable> vars;
 
-        private ParentSetImpl(Variable mainVar1){
+        private ParentSetImpl(Variable mainVar1) {
             mainVar = mainVar1;
             this.vars = new ArrayList<Variable>();
         }
@@ -128,27 +129,27 @@ public class DAG {
             return mainVar;
         }
 
-        public void addParent(Variable var){
-            if (!Utils.isLinkCLG(mainVar,var)){
+        public void addParent(Variable var) {
+            if (!Utils.isLinkCLG(mainVar, var)) {
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
             }
 
-            if (this.contains(var)){
+            if (this.contains(var)) {
                 throw new IllegalArgumentException("Trying to add a duplicated parent");
             }
 
             vars.add(var);
         }
 
-        public void removeParent(Variable var){
+        public void removeParent(Variable var) {
             vars.remove(var);
         }
 
-        public List<Variable> getParents(){
+        public List<Variable> getParents() {
             return vars;
         }
 
-        public int getNumberOfParents(){
+        public int getNumberOfParents() {
             return vars.size();
         }
 
@@ -160,10 +161,10 @@ public class DAG {
             StringBuilder str = new StringBuilder();
             str.append("{ ");
 
-            for(int i=0;i<numParents;i++){
+            for (int i = 0; i < numParents; i++) {
                 Variable parent = getParents().get(i);
                 str.append(parent.getName());
-                if (i<numParents-1) {
+                if (i < numParents - 1) {
                     str.append(", ");
                 }
             }
@@ -178,36 +179,46 @@ public class DAG {
             vars = Collections.unmodifiableList(vars);
         }
 
-        public boolean contains(Variable var){
+        public boolean contains(Variable var) {
             return this.vars.contains(var);
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o){
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || getClass() != o.getClass()){
+            if (o == null || getClass() != o.getClass()) {
                 return false;
             }
 
             ParentSet parentset = (ParentSet) o;
 
-            if (this.getNumberOfParents() != parentset.getNumberOfParents()){
+            if (this.getNumberOfParents() != parentset.getNumberOfParents()) {
                 return false;
-            } else{
+            } else {
                 int i = 0;
                 boolean eqs = true;
-                while (i < this.getNumberOfParents() && eqs){
-                    if (this.getParents().get(i).equals(parentset.getParents().get(i))){
+                while (i < this.getNumberOfParents() && eqs) {
+                    if (this.getParents().get(i).equals(parentset.getParents().get(i))) {
                         i++;
-                    }else{
+                    } else {
                         eqs = false;
                     }
                 }
                 return eqs;
             }
         }
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        BayesianNetwork network = BayesianNetworkLoader.loadFromHugin("./networks/asia.net");
+
+        System.out.println(network.getDAG().getParentSets().parallelStream().mapToInt( p -> p.getNumberOfParents()).sum());
+
+        System.out.println(network.getDAG().getParentSets().parallelStream().mapToInt( p -> p.getNumberOfParents()).sum());
+
     }
 }

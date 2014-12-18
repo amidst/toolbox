@@ -12,7 +12,6 @@ import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * Created by afa on 02/07/14.
@@ -156,8 +155,12 @@ public class StaticVariables implements Iterable<Variable>{
         return this.allVariables.iterator();
     }
 
-    public List<Variable> getVariableList(){
-        return Collections.unmodifiableList(this.allVariables);
+    public void block(){
+        this.allVariables = Collections.unmodifiableList(this.allVariables);
+    }
+
+    public List<Variable> getListOfVariables(){
+        return this.allVariables;
     }
 
     private static class VariableImplementation implements Variable {
@@ -180,7 +183,7 @@ public class StaticVariables implements Iterable<Variable>{
             this.attribute = builder.getAttribute();
 
             if (this.getStateSpace().getStateSpaceType() == StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
             }
 
         }

@@ -109,7 +109,7 @@ public final class DaimlerModels {
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("LE");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("Yes", "No")));
+        variableBuilder.setStateSpace(new FiniteStateSpace(Arrays.asList("Yes", "No")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
         Variable latEv = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
