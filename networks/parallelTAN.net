@@ -1,0 +1,118 @@
+net
+{
+    node_size = (0 0);
+}
+
+node A
+{
+    label = "A";
+    states = ("State_0" "State_1");
+}
+
+node B
+{
+    label = "B";
+    states = ("State_0" "State_1" "State_2");
+}
+
+continuous node C
+{
+}
+
+continuous node D
+{
+}
+
+node E
+{
+    label = "E";
+    states = ("State_0" "State_1");
+}
+
+continuous node G
+{
+}
+
+continuous node H
+{
+}
+
+continuous node I
+{
+}
+
+potential (A | B)
+{
+    data
+     = (( 0.195652 0.804348 )	%  B=State_0
+	( 0.192691 0.807309 )	%  B=State_1
+	( 0.222405 0.777595 ));	%  B=State_2
+}
+
+potential (B)
+{
+    data = ( 0.092 0.301 0.607 );
+}
+
+potential (C | E B)
+{
+    data
+     = (( normal ( 0.285714, 0.514286 )	%  E=State_0  B=State_0
+	  normal ( 0.309859, 0.416901 )	%  E=State_0  B=State_1
+	  normal ( 0.302632, 0.61386 ) )	%  E=State_0  B=State_2
+	( normal ( 0.351111, 0.443135 )	%  E=State_1  B=State_0
+	  normal ( 0.170588, 0.390846 )	%  E=State_1  B=State_1
+	  normal ( 0.338673, 0.563937 ) ));	%  E=State_1  B=State_2
+}
+
+potential (D | E B)
+{
+    data
+     = (( normal ( -3, 0.9 )	%  E=State_0  B=State_0
+	  normal ( -2.43662, 1.2495 )	%  E=State_0  B=State_1
+	  normal ( -2.46053, 1.10509 ) )	%  E=State_0  B=State_2
+	( normal ( -2.38667, 1.14893 )	%  E=State_1  B=State_0
+	  normal ( -2.42941, 1.32339 )	%  E=State_1  B=State_1
+	  normal ( -2.43249, 1.03041 ) ));	%  E=State_1  B=State_2
+}
+
+potential (E | A B)
+{
+    data
+     = ((( 0.222222 0.777778 )	%  A=State_0  B=State_0
+	 ( 0.22973 0.77027 )	%  A=State_0  B=State_1
+	 ( 0.172414 0.827586 ))	%  A=State_0  B=State_2
+	(( 0.271605 0.728395 )	%  A=State_1  B=State_0
+	 ( 0.288889 0.711111 )	%  A=State_1  B=State_1
+	 ( 0.277542 0.722458 )));	%  A=State_1  B=State_2
+}
+
+potential (G | B H)
+{
+    data
+     = ( normal ( -2.6407 + 0.0728844 * H, 0.246524 )	%  B=State_0
+	 normal ( -2.55626 + 0.00767743 * H, 0.249239 )	%  B=State_1
+	 normal ( -2.50162 + 0.0161985 * H, 0.250196 ) );	%  B=State_2
+}
+
+potential (H | E B)
+{
+    data
+     = (( normal ( 0.857143, 0.728571 )	%  E=State_0  B=State_0
+	  normal ( 1.28169, 1.20523 )	%  E=State_0  B=State_1
+	  normal ( 0.986842, 1.79982 ) )	%  E=State_0  B=State_2
+	( normal ( 1.07556, 1.58802 )	%  E=State_1  B=State_0
+	  normal ( 1.20588, 1.69109 )	%  E=State_1  B=State_1
+	  normal ( 1.01144, 1.36913 ) ));	%  E=State_1  B=State_2
+}
+
+potential (I | A B)
+{
+    data
+     = (( normal ( 0.0555556, 0.0555556 )	%  A=State_0  B=State_0
+	  normal ( 0.121622, 0.108293 )	%  A=State_0  B=State_1
+	  normal ( 0.0517241, 0.0499093 ) )	%  A=State_0  B=State_2
+	( normal ( 0.115226, 0.102371 )	%  A=State_1  B=State_0
+	  normal ( 0.125926, 0.11089 )	%  A=State_1  B=State_1
+	  normal ( 0.0911017, 0.082978 ) ));	%  A=State_1  B=State_2
+}
