@@ -1,6 +1,5 @@
 package eu.amidst.core.huginlink;
 
-import COM.hugin.HAPI.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.DynamicBayesianNetwork;
@@ -108,7 +107,7 @@ public final class Utils {
             nstates = variable.getNumberOfStates();
         }
 
-        builder.setStateSpace(new MultinomialStateSpace(nstates));
+        builder.setStateSpace(new FiniteStateSpace(nstates));
         builder.setDistributionType(DistType.MULTINOMIAL);
 
         /*

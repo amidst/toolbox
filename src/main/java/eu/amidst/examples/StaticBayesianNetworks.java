@@ -191,7 +191,7 @@ public final class StaticBayesianNetworks {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("TRUE","FALSE")));
+        variableBuilder.setStateSpace(new FiniteStateSpace(Arrays.asList("TRUE","FALSE")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL);
         Variable hidden = variables.addHiddenVariable(variableBuilder);
 
