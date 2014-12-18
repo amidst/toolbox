@@ -5,7 +5,7 @@ import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Node;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.DistType;
-import eu.amidst.core.variables.MultinomialStateSpace;
+import eu.amidst.core.variables.FiniteStateSpace;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.models.BayesianNetwork;
@@ -37,7 +37,7 @@ public class ConverterToHugin {
                 n.setNumberOfStates(amidstVar.getNumberOfStates());
                 n.setLabel(amidstVar.getName());
                 for (int j=0;j<n.getNumberOfStates();j++){
-                    String stateName = ((MultinomialStateSpace)amidstVar.getStateSpace()).getStatesName(j);
+                    String stateName = ((FiniteStateSpace)amidstVar.getStateSpace()).getStatesName(j);
                     n.setStateLabel(j, stateName);
                 }
             } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
