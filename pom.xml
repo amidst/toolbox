@@ -7,6 +7,7 @@
     <artifactId>core</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Amidst :: Core</name>
+    <packaging>jar</packaging>
     <url>http://github.com/amidst/core</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,6 +15,13 @@
         <junit.version>4.11</junit.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.hugin</groupId>
+            <artifactId>hugin</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/hgapi82_amidst-64.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -71,6 +79,15 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <!-- Uncomment this text to build without running unit tests.
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
+                </configuration>
+            </plugin-->
+
             <!-- this plugin builds an executable jar with dependencies -->
             <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
