@@ -4,7 +4,7 @@ import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.filereaders.DataFileReader;
 import eu.amidst.core.database.filereaders.DataRow;
-import eu.amidst.core.variables.MultinomialStateSpace;
+import eu.amidst.core.variables.FiniteStateSpace;
 import eu.amidst.core.variables.RealStateSpace;
 import eu.amidst.core.variables.StateSpace;
 import weka.core.Instance;
@@ -13,6 +13,7 @@ import weka.core.converters.ArffLoader;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Created by ana@cs.aau.dk on 14/11/14.
@@ -48,7 +49,7 @@ public class WekaDataFileReader implements DataFileReader, Iterator<DataRow>{
                 for (int i=0; i<attrWeka.numValues(); i++) {
                     vals[i] = attrWeka.value(i);
                 }
-                stateSpaceAtt = new MultinomialStateSpace(attrWeka.numValues());
+                stateSpaceAtt = new FiniteStateSpace(attrWeka.numValues());
             }else{
                 stateSpaceAtt = new RealStateSpace();
             }
@@ -105,7 +106,24 @@ public class WekaDataFileReader implements DataFileReader, Iterator<DataRow>{
     }
 
     @Override
+    public void close() {
+        //The stream seems to be automatically closed by weka library.
+    }
+
+    @Override
+    public Stream<DataRow> stream() {
+        return null;
+    }
+
+    @Override
+    public Stream<DataRow> parallelStream() {
+        return null;
+    }
+
+    @Override
     public Iterator<DataRow> iterator() {
         return this;
     }
+
+
 }

@@ -1,12 +1,10 @@
 package eu.amidst.core.models;
 
-import com.sun.corba.se.impl.encoding.IDLJavaSerializationInputStream;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,6 +24,7 @@ public class DAG {
             parents.add(var.getVarID(), new ParentSetImpl(var));
         }
         this.parents = Collections.unmodifiableList(parents);
+        this.variables.block();
     }
 
     public StaticVariables getStaticVariables() {
