@@ -53,8 +53,8 @@
 Let $X$ and $Y$ be two binary variables. The log-conditional probability of the child-node $X$ given its parent-node $Y$ is expressed as follows:
 
 \begin{eqnarray*}
-\ln p(X|Y) =  I(X=0) I(Y=0) \ln p_{x|y} + I(X=1) I(Y=0) \ln p_{\bar{x}|y} \\
-+ I(X=0) I(Y=1) \ln p_{x|\bar{y}} + I(X=1) I(Y=1) \ln p_{\bar{x}|\bar{y}}
+\ln p(X \mid Y) =  I(X= x^1) I(Y= y^1) \ln p_{x^1 \mid y^1} + I(X=x^2) I(Y= y^1) \ln p_{x^2 \mid y^1} \\
++ I(X=x^1) I(Y= y^2) \ln p_{x^1 \mid y^2} + I(X=x^2) I(Y= y^2) \ln p_{x^2 \mid y^2}
 \end{eqnarray*}
 
 This conditional probability can be expressed in different exponential forms as follows:
@@ -68,30 +68,30 @@ This conditional probability can be expressed in different exponential forms as 
 \ln p(X \mid Y) &=& \theta^T s(X,Y) - A(\theta) \\
 &=&
 \begin{pmatrix}
-\ln p_{x|y}\\
-\ln p_{\bar{x}|y}\\
-\ln p_{x|\bar{y}}\\
-\ln p_{\bar{x}|\bar{y}}
+\ln p_{x^1 \mid y^1}\\
+\ln p_{x^2 \mid y^1}\\
+\ln p_{x^1 \mid y^2}\\
+\ln p_{x^2 \mid y^2}
 \end{pmatrix}^T
 \begin{pmatrix}
-I(X=0)I(Y=0) \\
-I(X=1)I(Y=0) \\
-I(X=0)I(Y=1) \\
-I(X=1)I(Y=1) 
+I(X=x^1)I(Y=y^1) \\
+I(X=x^2)I(Y=y^1) \\
+I(X=x^1)I(Y=y^2) \\
+I(X=x^2)I(Y=y^2) 
 \end{pmatrix}
 - 0\\
 &=&
 \begin{pmatrix}
-\theta_0\\
-\theta_1\\
-\theta_2\\
-\theta_3
+\theta_{11}\\
+\theta_{21}\\
+\theta_{12}\\
+\theta_{22}
 \end{pmatrix}^T
 \begin{pmatrix}
-I(X=0)I(Y=0) \\
-I(X=1)I(Y=0) \\
-I(X=0)I(Y=1) \\
-I(X=1)I(Y=1) 
+I(X=x^1)I(Y=y^1) \\
+I(X=x^2)I(Y=y^1) \\
+I(X=x^1)I(Y=y^2) \\
+I(X=x^2)I(Y=y^2) 
 \end{pmatrix}
 - 0
 \end{eqnarray*}
@@ -102,22 +102,22 @@ I(X=1)I(Y=1)
 \ln p(X \mid Y) &=& \theta(Y)^Ts(X) - A(Y) \\
 &=&
 \begin{pmatrix}
-I(Y=0)\ln p_{x|y}  + I(Y=1)\ln p_{x|\bar{y}}\\
-I(Y=0)\ln p_{\bar{x}|y}  + I(Y=1)\ln p_{\bar{x}|\bar{y}}
+I(Y=y^1)\ln p_{x^1 \mid y^1}  + I(Y=y^2)\ln p_{x^1 \mid y^2}\\
+I(Y=y^1)\ln p_{x^2 \mid y^1}  + I(Y=y^2)\ln p_{x^2 \mid y^2}
 \end{pmatrix}^T
 \begin{pmatrix}
-I(X=0) \\
-I(X=1)
+I(X=x^1) \\
+I(X=x^2)
 \end{pmatrix}
 - 0 \\
 &=&
 \begin{pmatrix}
-m^Y_0\cdot\theta_0  + m^Y_1\cdot\theta_2\\
-m^Y_0\cdot\theta_1  + m^Y_1\cdot\theta_3
+m^Y_1\cdot\theta_{11}  + m^Y_2\cdot\theta_{12}\\
+m^Y_1\cdot\theta_{21}  + m^Y_2\cdot\theta_{22}
 \end{pmatrix}^T
 \begin{pmatrix}
-I(X=0) \\
-I(X=1)
+I(X=x^1) \\
+I(X=x^2)
 \end{pmatrix}
 - 0 
 \end{eqnarray*}
@@ -128,22 +128,22 @@ I(X=1)
 \ln p(X \mid Y) &=& \theta(X)^T s(Y) - A(X) \\
 &=&
 \begin{pmatrix}
-I(X=0)\ln p_{x|y}  + I(X=1)\ln p_{\bar{x}|y}\\
-I(X=0)\ln p_{x|\bar{y}}  + I(X=1)\ln p_{\bar{x}|\bar{y}}
+I(X=x^1)\ln p_{x^1 \mid y^1}  + I(X=x^2)\ln p_{x^2 \mid y^1}\\
+I(X=x^1)\ln p_{x^1 \mid y^2}  + I(X=x^2)\ln p_{x^2 \mid y^2}
 \end{pmatrix}^T
 \begin{pmatrix}
-I(Y=0) \\
-I(Y=1)
+I(Y=y^1) \\
+I(Y=y^2)
 \end{pmatrix}
 - 0\\
 &=&
 \begin{pmatrix}
-m^X_0 \cdot \theta_0  +  m^X_1\cdot \theta_1\\
-m^X_0 \cdot \theta_2  + m^X_1 \cdot \theta_3
+m^X_1 \cdot \theta_{11}  +  m^X_2\cdot \theta_{21}\\
+m^X_1 \cdot \theta_{12}  + m^X_2 \cdot \theta_{22}
 \end{pmatrix}^T
 \begin{pmatrix}
-I(Y=0) \\
-I(Y=1)
+I(Y=y^1) \\
+I(Y=y^2)
 \end{pmatrix}
 - 0
 \end{eqnarray*}
@@ -495,6 +495,210 @@ Y_{n-1}Y_{n}\\
 - \left( (-2\beta_{\mbox{-}1}X^2 - 2X\beta_0 - \frac{1}{2}\beta_0^2 \beta_{\mbox{-}1}^{-1}) + \frac{\ln{(2\theta_{\mbox{-}1}})}{2} \right)\\
 &+&
 \ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m_0^{Y_i})}}} 
+\end{eqnarray*}
+
+\end{itemize}
+
+\newpage
+%-----------------------------------------------------------------------------------------------------------------------------------
+\section{A base distribution given a binary parent}
+%-----------------------------------------------------------------------------------------------------------------------------------
+
+Let $X$ be any base distribution variable, and let $Y$ be a binary variable. The log-conditional probability of the child-node $X$ given its binary parent-node $Y$ is expressed as follows:
+
+\begin{eqnarray*}
+\ln p(X \mid Y) =  I(Y= y^1) \ln p_{X \mid y^1} + I(Y= y^2) \ln p_{X \mid y^2} ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
+= I(Y= y^1)  \Big(\theta_{X1} \cdot s(X) - A(\theta_{X1})\Big) +  I(Y= y^2) \Big(\theta_{X2} \cdot s(X) - A(\theta_{X2})\Big) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
+= I(Y=y^1) \cdot \theta_{X1} \cdot s(X) - I(Y=y^1) \cdot A(\theta_{X1}) +  I(Y=y^2) \cdot \theta_{X2} \cdot s(X) - I(Y=y^2) \cdot A(\theta_{X2})
+\end{eqnarray*}
+
+This conditional probability can be expressed in different exponential forms as follows:
+
+\begin{itemize}
+
+\item \textbf{First form}:
+
+\begin{eqnarray*}
+\ln p(X \mid Y) &=& \theta^T s(X,Y) - A(\theta) \\
+&=&
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+- A(\theta_{X2}) \\
+\theta_{X1} \\
+\theta_{X2}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=y^1) \\
+I(Y=y^2) \\
+s(X) \cdot I(Y=y^1) \\
+s(X) \cdot I(Y=y^2)
+\end{pmatrix}
+- 0 
+\end{eqnarray*}
+
+\item \textbf{Second form}:
+
+\begin{eqnarray*}
+\ln p(X \mid Y) &=& \theta(Y)^Ts(X) - A(Y) \\
+&=&
+\begin{pmatrix}
+I(Y=y^1)\\
+I(Y=y^2)\\
+I(Y=y^1) \cdot \theta_{X1}\\
+I(Y=y^2) \cdot \theta_{X2}
+\end{pmatrix}^T
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+- A(\theta_{X2}) \\
+s(X) \\
+s(X) 
+\end{pmatrix}
+- 0 \\\\
+&=&
+\begin{pmatrix}
+m^Y_1\\
+m^Y_2 \\
+m^Y_1 \cdot \theta_{X1}\\
+m^Y_2 \cdot \theta_{X2}
+\end{pmatrix}^T
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+- A(\theta_{X2}) \\
+s(X) \\
+s(X) 
+\end{pmatrix}
+- 0 
+\end{eqnarray*}
+
+\item \textbf{Third form}:
+
+\begin{eqnarray*}
+\ln p(X \mid Y) &=& \theta(X)^T s(Y) - A(X) \\
+&=&
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+- A(\theta_{X2})\\
+s(X) \cdot \theta_{X1}\\
+s(X) \cdot \theta_{X2}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(Y=y^1) \\
+I(Y=y^2) \\
+I(Y=y^1) \\
+I(Y=y^2)
+\end{pmatrix}
+- 0
+\end{eqnarray*}
+
+\end{itemize}
+
+\newpage
+%-----------------------------------------------------------------------------------------------------------------------------------
+\section{A base distribution given a set of multinomial parents}
+%-----------------------------------------------------------------------------------------------------------------------------------
+
+Let $X$ be any base distribution, and let $\mathbf{Y} =\{Y_1,\ldots,Y_n\}$ denote the set of parents of $X$, such that all of them are multinomial. Each parent $Y_i$, $1 \geq i \geq n$, has $r_i$ possible values or states such that $r_i \geq 2$. A parental configuration for the child-node $X$ is then a set of $n$ elements $\{Y_1 = y_1^{v}, \ldots, Y_i = y_i^{v},\ldots, Y_n = y_n^{v} \}$ such that $y_i^{v}$ denotes a potential value of variable $Y_i$ such that  $1 \leq v \leq r_i$. Let $q = r_1 \times \ldots \times r_n$ denote the total number of parental configurations, and let $\mathbf{y}^l$ denote the $l^{th}$ parental configuration such that $1 \leq l \leq q$.
+
+The log-conditional probability of the child-node $X$ given its parent-nodes $\mathbf{Y}$ can be expressed as follows:
+
+\begin{eqnarray*}
+\ln p(X \mid Y) =  \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \ln p_{X \mid \mathbf{y}^l} ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
+= \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \Big(  \theta_{Xl}   \cdot  s(X)  \cdot  A(\theta_{Xl}) \Big)~~~~~~~~~~~~~\\
+= \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \theta_{Xl} \cdot s(X) - I(\mathbf{Y} =\mathbf{y}^l) \cdot A(\theta_{Xl})
+\end{eqnarray*}
+
+This conditional probability can be expressed in different exponential forms as follows:
+
+\begin{itemize}
+
+\item \textbf{First form}:
+
+\begin{eqnarray*}
+\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) \\
+&=&
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+\vdots \\
+- A(\theta_{Xq}) \\
+\theta_{X1} \\
+\vdots \\
+\theta_{Xq}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(\mathbf{Y} =\mathbf{y}^1) \\
+\vdots \\
+I(\mathbf{Y} =\mathbf{y}^q) \\
+s(X) \cdot I(\mathbf{Y} =\mathbf{y}^1) \\
+\vdots \\
+s(X) \cdot I(\mathbf{Y} =\mathbf{y}^q)
+\end{pmatrix}
+- 0 
+\end{eqnarray*}
+
+\item \textbf{Second form}:
+
+\begin{eqnarray*}
+\ln p(X \mid \mathbf{Y} ) &=& \theta(\mathbf{Y} )^T s(X) - A(\mathbf{Y} ) \\
+&=&
+\begin{pmatrix}
+I(\mathbf{Y} =\mathbf{y}^1)\\
+\vdots \\
+I(\mathbf{Y} =\mathbf{y}^q)\\
+I(\mathbf{Y} =\mathbf{y}^1) \cdot \theta_{X1}\\
+\vdots \\
+I(\mathbf{Y} =\mathbf{y}^q) \cdot \theta_{Xq}
+\end{pmatrix}^T
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+\vdots \\
+- A(\theta_{Xq}) \\
+s(X) \\
+\vdots \\
+s(X) 
+\end{pmatrix}
+- 0 \\\\
+&=&
+\begin{pmatrix}
+\mathbf{m}^\mathbf{Y}_1\\
+\vdots \\
+\mathbf{m}^\mathbf{Y}_q \\
+\mathbf{m}^\mathbf{Y}_1 \cdot \theta_{X1}\\
+\vdots \\
+\mathbf{m}^\mathbf{Y}_q \cdot \theta_{Xq}
+\end{pmatrix}^T
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+\vdots \\
+- A(\theta_{Xq}) \\
+s(X) \\
+\vdots \\
+s(X) 
+\end{pmatrix}
+- 0 
+\end{eqnarray*}
+
+\item \textbf{Third form}:
+
+\begin{eqnarray*}
+\ln p(X \mid \mathbf{Y}) &=& \theta(X)^T s(\mathbf{Y}) - A(X) \\
+&=&
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+\vdots \\
+- A(\theta_{Xq})\\
+s(X) \cdot \theta_{X1}\\
+\vdots \\
+s(X) \cdot \theta_{Xq}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(\mathbf{Y} =\mathbf{y}^1) \\
+\vdots \\
+I(\mathbf{Y} =\mathbf{y}^q) \\
+I(\mathbf{Y} =\mathbf{y}^1) \\
+\vdots \\
+I(\mathbf{Y} =\mathbf{y}^q)
+\end{pmatrix}
+- 0
 \end{eqnarray*}
 
 \end{itemize}
