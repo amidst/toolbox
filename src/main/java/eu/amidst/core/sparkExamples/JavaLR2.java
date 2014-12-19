@@ -36,7 +36,7 @@ package eu.amidst.core.sparkExamples;
 /**
  * Logistic regression based classification using ML Lib.
  */
-public final class JavaLR2 {
+public class JavaLR2 {
 
     static class ParsePoint implements Function<String, LabeledPoint> {
         private static final Pattern COMMA = Pattern.compile(",");
@@ -55,12 +55,13 @@ public final class JavaLR2 {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args2) {
+        String[] args = {"data/dataSpark/lr-data/random.data", "1", "4"};
         if (args.length != 3) {
-            System.err.println("Usage: JavaLR <input_dir> <step_size> <niters>");
+            System.err.println("Usage: JavaLR2 <input_dir> <step_size> <niters>");
             System.exit(1);
         }
-        SparkConf sparkConf = new SparkConf().setAppName("JavaLR");
+        SparkConf sparkConf = new SparkConf().setAppName("JavaLR2"); //.setMaster("spark://localhost:7077");
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
         JavaRDD<String> lines = sc.textFile(args[0]);
         JavaRDD<LabeledPoint> points = lines.map(new ParsePoint()).cache();
