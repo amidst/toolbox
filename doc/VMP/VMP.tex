@@ -36,6 +36,8 @@
 
 \newcommand{\todo}[1]{{\bf [TODO: #1]}}
 
+\DeclareMathOperator*{\E}{\mbox{\large E}}
+
 \newcommand{\me}{\mathrm{e}}
 
 \numberwithin{figure}{section}
@@ -329,7 +331,7 @@ $$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2(\beta_0+\sum_i^n 
 Similarly the above log-conditional probability can be expressed in the following exponential forms:
 
 \begin{itemize}
-\item \textbf{First form}:
+\item \textbf{First form - Joint suff. stat. (Maxim. Likelihood)}:
 
 \begin{eqnarray*}
 \ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
@@ -353,25 +355,157 @@ Similarly the above log-conditional probability can be expressed in the followin
 \frac{-\beta_{n-1}\beta_n}{\sigma^2} &=&\theta_{n\mbox{-}1n} \\
 \end{pmatrix}^T
 \begin{pmatrix}
-X^2\\
-Y^2\\
+X^2   &=& m_{X^2}\\
+Y_1^2 &=& m_{Y_1^2}\\
 \vdots\\
-Y_n^2\\
-X\\
-XY_1\\
+Y_n^2 &=& m_{Y_n^2}\\
+X     &=& m_{X}\\
+XY_1  &=& m_{XY_1}\\
 \vdots\\
-XY_n\\
-Y_1\\
+XY_n  &=& m_{XY_n}\\
+Y_1   &=& m_{Y_1}\\
 \vdots\\
-Y_n\\
-Y_1Y_2\\
+Y_n   &=& m_{Y_n}\\
+Y_1Y_2&=& m_{Y_1Y_2}\\
 \vdots\\
-Y_1Y_n\\
+Y_1Y_n &=& m_{Y_1Y_n}\\
 \vdots\\
-Y_{n-1}Y_n
+Y_{n\mbox{-}1}Y_n &=& m_{Y_{n\mbox{-}1}Y_{n}}
 \end{pmatrix}
 - \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
 \end{eqnarray*}
+
+where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
+
+\begin{itemize}
+\item \textbf{From moment to natural parameters: (matrix representation)}
+
+\begin{eqnarray*}
+\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
+&=&
+\begin{pmatrix}
+\frac{-1}{2\sigma^2} &=& \theta_{\mbox{-}1} \\
+\frac{\beta}{\sigma^2} &=& \theta_{\beta} \\
+\frac{-\beta^T \beta}{2\sigma^2} &=& \theta_{\beta^T \beta} \\
+\end{pmatrix}
+\begin{pmatrix}
+XX^T   &=& \E(XX^T)\\
+Y'X   &=& \E(YX)\\
+Y'Y'^T   &=& \E(YY^T)\\
+\end{pmatrix}
+- (\ln{\sigma}) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
+\end{eqnarray*}
+
+where
+\begin{eqnarray*}
+X &=& 
+\begin{pmatrix}
+X_1\\
+\vdots\\
+X_r\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+Y &=& 
+\begin{pmatrix}
+Y_1\\
+\vdots\\
+Y_n\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+Y'Y'^T &=& 
+\begin{pmatrix}
+1\\
+Y_1\\
+\vdots\\
+Y_n\\
+\end{pmatrix}
+\begin{pmatrix}
+1\\
+Y_1
+\cdots
+Y_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & Y_1   & \cdots & Y_n\\ 
+Y_1&Y_1Y_1 & \cdots & Y_1Y_n\\
+Y_2&Y_2Y_1 &\cdots & Y_2Y_n\\
+\vdots\\
+Y_n&Y_nY_1 &\cdots &Y_nY_n\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+XX^T &=& 
+\begin{pmatrix}
+X_1\\
+\vdots\\
+X_r\\
+\end{pmatrix}
+\begin{pmatrix}
+X_1
+\cdots
+X_r
+\end{pmatrix}
+=
+\begin{pmatrix}
+X_1X_1 &\cdots & X_1X_r\\
+X_2X_1 &\cdots & X_2X_r\\
+\vdots\\
+X_rX_1 &\cdots &X_rX_r\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+Y'X^T &=& 
+\begin{pmatrix}
+Y_1\\
+\vdots\\
+Y_n\\
+\end{pmatrix}
+\begin{pmatrix}
+X_1
+\cdots
+X_r
+\end{pmatrix}
+=
+\begin{pmatrix}
+X_1 & X_2 &\cdots & X_r\\
+Y_1X_1 &Y_1X_2&\cdots & Y_1X_r\\
+\vdots\\
+Y_nX_1 &Y_nX_2&\cdots &Y_nX_r\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{itemize}
+\item FIRST STEP:
+\begin{eqnarray*}
+\mu_X &=& E(X) = E(Y'X)_{[1,r]}\\
+\mu_\mathbf{Y} &=& \E(Y) = \E(YY^T)_{[1,n]}\\
+\Sigma_{XX} &=&  \E(XX^T) - \E(X)^2 = \E(XX^T) - \E(YX)_{[1,r]}^T \E(YX)_{[1,r]} \\
+\Sigma_{\mathbf{YY}} &=&  \E(YY^T) - \E(Y)^2 = \E(YY^T) - \E(YY^T)_{[n,1]} \E(YY^T)_{[1,n]} \\
+\Sigma_{X\mathbf{Y}} &=&  \E(YX)^T - \E(X)\E(Y) = \E(YX)^T - \E(YX)_{[1,r]} \E(YY^T)_{[n,1]} \\
+\Sigma_{\mathbf{Y}X} &=&  \E(YX) - \E(Y)\E(X) = \E(YX) - \E(YY^T)_{[n,1]} \E(YX)_{[1,r]}
+\end{eqnarray*}
+
+\item SECOND STEP (Theorem 7.4 in page 253, Koller \& Friedman):
+\begin{eqnarray*}
+\beta_0 &=& \mu_X - \Sigma_{X\mathbf{Y}}\Sigma^{-1}_{\mathbf{YY}}\mu_\mathbf{Y}\\
+\beta   &=& \Sigma_{X\mathbf{Y}}\Sigma^{-1}_{\mathbf{YY}} \\
+\sigma^2 &=& \Sigma_{XX} - \Sigma_{XY}\Sigma^{-1}_{YY}\Sigma_{YX}
+\end{eqnarray*}
+
+All natural parameters $\theta$ can now be calculated considering these equations.
+\end{itemize}
+
+\item \textbf{From natural to moment parameters:}
+Via inference.
+
+\end{itemize}
 
 \vspace{0.5in}
 \item \textbf{Second form}:
@@ -390,19 +524,19 @@ X^2\\
 - \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{X|Y}}}} \\\\
 &=&
 \begin{pmatrix}
-\theta_0+\sum_i^n\theta_i m_0^{Y_i}\\
+\theta_0+\sum_i^n\theta_i m^{Y_i}\\
 \theta_{\mbox{-}1}\\
 \end{pmatrix}^T
 \begin{pmatrix}
 X\\
 X^2\\
 \end{pmatrix}
-- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_0+\sum_i^n\theta_i m_0^{Y_i}\right)^2 \right) \\
+- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_0+\sum_i^n\theta_i m^{Y_i}\right)^2 \right) \\
 &+&
- \ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m_0^{Y_i})}}} 
+ \ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m^{Y_i})}}} 
 \end{eqnarray*}
 
-where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
+
 
 \vspace{0.2in}
 \item \textbf{Third form}:
@@ -442,9 +576,9 @@ Y_{n-1}Y_{n}\\
 \theta_{1^2}\\
 \cdots\\
 \theta_{n^2}\\
-\theta_1 m_0^X+\theta_{01}\\
+\theta_1 m^X+\theta_{01}\\
 \cdots\\
-\theta_n m_0^X+\theta_{0n}\\
+\theta_n m^X+\theta_{0n}\\
 \theta_{12}\\
 \cdots\\
 \theta_{1n}\\
@@ -470,9 +604,9 @@ Y_{n-1}Y_{n}\\
 \theta_{1^2}\\
 \cdots\\
 \theta_{n^2}\\
-\theta_1 m_0^X+\theta_{01}\\
+\theta_1 m^X+\theta_{01}\\
 \cdots\\
-\theta_n m_0^X+\theta_{0n}\\
+\theta_n m^X+\theta_{0n}\\
 \theta_{12}\\
 \cdots\\
 \theta_{1n}\\
@@ -492,9 +626,9 @@ Y_1 Y_n\\
 \cdots\\
 Y_{n-1}Y_{n}\\
 \end{pmatrix}
-- \left( (-2\beta_{\mbox{-}1}X^2 - 2X\beta_0 - \frac{1}{2}\beta_0^2 \beta_{\mbox{-}1}^{-1}) + \frac{\ln{(2\theta_{\mbox{-}1}})}{2} \right)\\
+- \left( (-2\beta_{\mbox{-}1}m^{X^2} - 2m^{X}\beta_0 - \frac{1}{2}\beta_0^2 \beta_{\mbox{-}1}^{-1}) + \frac{\ln{(2\theta_{\mbox{-}1}})}{2} \right)\\
 &+&
-\ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m_0^{Y_i})}}} 
+\ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m^{Y_i})}}} 
 \end{eqnarray*}
 
 \end{itemize}
@@ -704,6 +838,8 @@ I(\mathbf{Y} =\mathbf{y}^q)
 \end{itemize}
 
 
+
+
 \newpage
 %-----------------------------------------------------------------------------------------------------------------------------------
 \section*{Notations}
@@ -736,3 +872,5 @@ $s$ & Sufficient statistics \\
 \end{table}
 
 \end{document}
+
+
