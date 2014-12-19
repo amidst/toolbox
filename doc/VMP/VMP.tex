@@ -36,6 +36,8 @@
 
 \newcommand{\todo}[1]{{\bf [TODO: #1]}}
 
+\DeclareMathOperator*{\E}{\mbox{\large E}}
+
 \newcommand{\me}{\mathrm{e}}
 
 \numberwithin{figure}{section}
@@ -376,29 +378,132 @@ Y_{n\mbox{-}1}Y_n &=& m_{Y_{n\mbox{-}1}Y_{n}}
 where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
 
 \begin{itemize}
-\item From moment to natural parameters:
+\item \textbf{From moment to natural parameters: (matrix representation)}
+
+\begin{eqnarray*}
+\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
+&=&
+\begin{pmatrix}
+\frac{-1}{2\sigma^2} &=& \theta_{\mbox{-}1} \\
+\frac{\beta}{\sigma^2} &=& \theta_{\beta} \\
+\frac{-\beta^T \beta}{2\sigma^2} &=& \theta_{\beta^T \beta} \\
+\end{pmatrix}
+\begin{pmatrix}
+XX^T   &=& \E(XX^T)\\
+Y'X   &=& \E(YX)\\
+Y'Y'^T   &=& \E(YY^T)\\
+\end{pmatrix}
+- (\ln{\sigma}) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
+\end{eqnarray*}
+
+where
+\begin{eqnarray*}
+X &=& 
+\begin{pmatrix}
+X_1\\
+\vdots\\
+X_r\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+Y &=& 
+\begin{pmatrix}
+Y_1\\
+\vdots\\
+Y_n\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+Y'Y'^T &=& 
+\begin{pmatrix}
+1\\
+Y_1\\
+\vdots\\
+Y_n\\
+\end{pmatrix}
+\begin{pmatrix}
+1\\
+Y_1
+\cdots
+Y_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & Y_1   & \cdots & Y_n\\ 
+Y_1&Y_1Y_1 & \cdots & Y_1Y_n\\
+Y_2&Y_2Y_1 &\cdots & Y_2Y_n\\
+\vdots\\
+Y_n&Y_nY_1 &\cdots &Y_nY_n\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+XX^T &=& 
+\begin{pmatrix}
+X_1\\
+\vdots\\
+X_r\\
+\end{pmatrix}
+\begin{pmatrix}
+X_1
+\cdots
+X_r
+\end{pmatrix}
+=
+\begin{pmatrix}
+X_1X_1 &\cdots & X_1X_r\\
+X_2X_1 &\cdots & X_2X_r\\
+\vdots\\
+X_rX_1 &\cdots &X_rX_r\\
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+Y'X^T &=& 
+\begin{pmatrix}
+Y_1\\
+\vdots\\
+Y_n\\
+\end{pmatrix}
+\begin{pmatrix}
+X_1
+\cdots
+X_r
+\end{pmatrix}
+=
+\begin{pmatrix}
+X_1 & X_2 &\cdots & X_r\\
+Y_1X_1 &Y_1X_2&\cdots & Y_1X_r\\
+\vdots\\
+Y_nX_1 &Y_nX_2&\cdots &Y_nX_r\\
+\end{pmatrix}
+\end{eqnarray*}
 
 \begin{itemize}
 \item FIRST STEP:
 \begin{eqnarray*}
-\mu_X &=& m_X\\
-\mu_Y &=& m_Y\\
-\Sigma_{XX} &=&  m_{X^2} - m_X^2\\
-\Sigma_{YY} &=&  m_{Y^2} - m_Y^2\\
-\Sigma_{XY} &=&  m_{XY} - m_Xm_Y\\
-\Sigma_{YX} &=&  m_{YX} - m_Ym_X
+\mu_X &=& E(X) = E(Y'X)_{[1,r]}\\
+\mu_\mathbf{Y} &=& \E(Y) = \E(YY^T)_{[1,n]}\\
+\Sigma_{XX} &=&  \E(XX^T) - \E(X)^2 = \E(XX^T) - \E(YX)_{[1,r]}^T \E(YX)_{[1,r]} \\
+\Sigma_{\mathbf{YY}} &=&  \E(YY^T) - \E(Y)^2 = \E(YY^T) - \E(YY^T)_{[n,1]} \E(YY^T)_{[1,n]} \\
+\Sigma_{X\mathbf{Y}} &=&  \E(YX)^T - \E(X)\E(Y) = \E(YX)^T - \E(YX)_{[1,r]} \E(YY^T)_{[n,1]} \\
+\Sigma_{\mathbf{Y}X} &=&  \E(YX) - \E(Y)\E(X) = \E(YX) - \E(YY^T)_{[n,1]} \E(YX)_{[1,r]}
 \end{eqnarray*}
 
-\item SECOND STEP:
+\item SECOND STEP (Theorem 7.4 in page 253, Koller \& Friedman):
 \begin{eqnarray*}
-\beta_0 &=& \mu_X - \Sigma_{XY}\Sigma^{-1}_{YY}\mu_X\\
- &=& m_X + \frac{m_X m_Y^2 - m_{XY}m_Y}{m_{Y^2} - m_Y^2}\\
-\beta   &=& \Sigma_{XY}\Sigma^{-1}_{YY} \\
- &=& \frac{m_{XY} - m_Xm_Y}{m_{Y^2} - m_Y^2}\\
-\sigma^2 &=& \Sigma_{XX} - \Sigma_{XY}\Sigma^{-1}_{YY}\Sigma_{YX}\\
- &=& m_{X^2} - m_X^2 + \frac{m_Ym_X(m_{XY}+m_{YX}-m_Xm_Y)-m_{XY}m_{YX}}{m_{Y^2} - m_Y^2}
+\beta_0 &=& \mu_X - \Sigma_{X\mathbf{Y}}\Sigma^{-1}_{\mathbf{YY}}\mu_\mathbf{Y}\\
+\beta   &=& \Sigma_{X\mathbf{Y}}\Sigma^{-1}_{\mathbf{YY}} \\
+\sigma^2 &=& \Sigma_{XX} - \Sigma_{XY}\Sigma^{-1}_{YY}\Sigma_{YX}
 \end{eqnarray*}
+
+All natural parameters $\theta$ can now be calculated considering these equations.
 \end{itemize}
+
+\item \textbf{From natural to moment parameters:}
+Via inference.
 
 \end{itemize}
 
