@@ -237,7 +237,10 @@ public class TestReaderDynamic {
     public void checkAutomaticTimeID_TimeID(){
         loadFileAndInitialize("data/dataWeka/laborTimeID.arff");
 
-        for(DataInstance instance: dataOnDisk){}
+        for(DataInstance instance: dataOnDisk)
+        {
+            nextInstance = instance;
+        }
 
         /*Test values for the last instance*/
         assertEquals(59,(int)nextInstance.getTimeID());
@@ -247,7 +250,10 @@ public class TestReaderDynamic {
     public void checkAutomaticSeq_TimeID(){
         loadFileAndInitialize("data/dataWeka/laborTimeID.arff");
 
-        for(DataInstance instance: dataOnDisk){}
+        for(DataInstance instance: dataOnDisk)
+        {
+            nextInstance = instance;
+        }
 
         /*Test values for the last instance*/
         assertEquals(0,(int)nextInstance.getSequenceID());
