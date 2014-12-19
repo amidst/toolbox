@@ -25,11 +25,13 @@ hs_err_pid*
 .idea/
 core.iml
 
-
+hgapi82_amidst-64.jar
 
 # pdf noise
 doc/REproccess.pdf
 
+target/maven-archiver*
+target/surefire-reports*
 
 # latex noise
 *.synctex.gz
