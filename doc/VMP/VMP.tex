@@ -838,6 +838,29 @@ I(\mathbf{Y} =\mathbf{y}^q)
 \end{itemize}
 
 
+%----------------------------------------- with one parent
+
+\begin{eqnarray*}
+\ln p(X\mid \mathbf{Y}) &=& \theta(X, \mathbf{Y'} )^T s(Y_i) - A(X) ~~\textrm{such~that} ~\mathbf{Y'} = \mathbf{Y} \setminus Y_i \\ \\
+&=&
+\begin{pmatrix}
+- A(\theta_{X1}) \\
+\vdots \\
+- A(\theta_{Xq})\\
+\! s(X) \cdot  \mathbf{m}^{\mathbf{Y'}}_1 \cdot \theta'_{X1}  +  \ldots + s(X) \cdot \mathbf{m}^{\mathbf{Y'}}_1 \cdot \theta'_{X1}\\
+\vdots \\
+\! s(X) \cdot  \mathbf{m}^{\mathbf{Y'}}_{q'} \cdot \theta'_{Xq'}   + \ldots + s(X) \cdot  \mathbf{m}^{\mathbf{Y'}}_{q'} \cdot \theta'_{Xq'}
+\end{pmatrix}^T \!
+\begin{pmatrix}
+I(Y_i=y_i^1) \! \\
+\vdots \\
+I(Y_i=y_i^{r_i}) \!\\
+I(Y_i=y_i^1) \! \\
+\vdots \\
+I(Y_i=y_i^{r_i}) \!
+\end{pmatrix}
+- 0 \!
+\end{eqnarray*}
 
 
 \newpage
@@ -864,6 +887,8 @@ $q $ & Total number of configurations of a multinomial parent set $\mathbf{Y}$\\
 $l$ & Index over the possible parental configuration values, i.e., $1 \geq l \geq q$ \\
 $\mathbf{y}^l$ & The $l^{th}$ configuration of a multinomial parent set $\mathbf{Y}$\\
 $\theta_{jl}$ & Equal to $\ln p_{x^j\mid \mathbf{y}^l}$, denoting the log-conditional probability of $X$ in its state $j$ \\
+                    & given the $l^{th}$ parent configuration\\
+$\theta_{Xl}$ & Equal to $\ln p_{ X \mid \mathbf{y}^l}$, denoting the log-conditional probability of a base distribution variable $X$ \\
                     & given the $l^{th}$ parent configuration\\
 $p$ & Probability distribution\\
 $m$ & Expected sufficient statistics \\
