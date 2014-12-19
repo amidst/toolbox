@@ -329,7 +329,7 @@ $$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2(\beta_0+\sum_i^n 
 Similarly the above log-conditional probability can be expressed in the following exponential forms:
 
 \begin{itemize}
-\item \textbf{First form}:
+\item \textbf{First form - Joint suff. stat. (Maxim. Likelihood)}:
 
 \begin{eqnarray*}
 \ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
@@ -353,25 +353,54 @@ Similarly the above log-conditional probability can be expressed in the followin
 \frac{-\beta_{n-1}\beta_n}{\sigma^2} &=&\theta_{n\mbox{-}1n} \\
 \end{pmatrix}^T
 \begin{pmatrix}
-X^2\\
-Y^2\\
+X^2   &=& m_{X^2}\\
+Y_1^2 &=& m_{Y_1^2}\\
 \vdots\\
-Y_n^2\\
-X\\
-XY_1\\
+Y_n^2 &=& m_{Y_n^2}\\
+X     &=& m_{X}\\
+XY_1  &=& m_{XY_1}\\
 \vdots\\
-XY_n\\
-Y_1\\
+XY_n  &=& m_{XY_n}\\
+Y_1   &=& m_{Y_1}\\
 \vdots\\
-Y_n\\
-Y_1Y_2\\
+Y_n   &=& m_{Y_n}\\
+Y_1Y_2&=& m_{Y_1Y_2}\\
 \vdots\\
-Y_1Y_n\\
+Y_1Y_n &=& m_{Y_1Y_n}\\
 \vdots\\
-Y_{n-1}Y_n
+Y_{n\mbox{-}1}Y_n &=& m_{Y_{n\mbox{-}1}Y_{n}}
 \end{pmatrix}
 - \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
 \end{eqnarray*}
+
+where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
+
+\begin{itemize}
+\item From moment to natural parameters:
+
+\begin{itemize}
+\item FIRST STEP:
+\begin{eqnarray*}
+\mu_X &=& m_X\\
+\mu_Y &=& m_Y\\
+\Sigma_{XX} &=&  m_{X^2} - m_X^2\\
+\Sigma_{YY} &=&  m_{Y^2} - m_Y^2\\
+\Sigma_{XY} &=&  m_{XY} - m_Xm_Y\\
+\Sigma_{YX} &=&  m_{YX} - m_Ym_X
+\end{eqnarray*}
+
+\item SECOND STEP:
+\begin{eqnarray*}
+\beta_0 &=& \mu_X - \Sigma_{XY}\Sigma^{-1}_{YY}\mu_X\\
+ &=& m_X + \frac{m_X m_Y^2 - m_{XY}m_Y}{m_{Y^2} - m_Y^2}\\
+\beta   &=& \Sigma_{XY}\Sigma^{-1}_{YY} \\
+ &=& \frac{m_{XY} - m_Xm_Y}{m_{Y^2} - m_Y^2}\\
+\sigma^2 &=& \Sigma_{XX} - \Sigma_{XY}\Sigma^{-1}_{YY}\Sigma_{YX}\\
+ &=& m_{X^2} - m_X^2 + \frac{m_Ym_X(m_{XY}+m_{YX}-m_Xm_Y)-m_{XY}m_{YX}}{m_{Y^2} - m_Y^2}
+\end{eqnarray*}
+\end{itemize}
+
+\end{itemize}
 
 \vspace{0.5in}
 \item \textbf{Second form}:
@@ -390,19 +419,19 @@ X^2\\
 - \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{X|Y}}}} \\\\
 &=&
 \begin{pmatrix}
-\theta_0+\sum_i^n\theta_i m_0^{Y_i}\\
+\theta_0+\sum_i^n\theta_i m^{Y_i}\\
 \theta_{\mbox{-}1}\\
 \end{pmatrix}^T
 \begin{pmatrix}
 X\\
 X^2\\
 \end{pmatrix}
-- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_0+\sum_i^n\theta_i m_0^{Y_i}\right)^2 \right) \\
+- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_0+\sum_i^n\theta_i m^{Y_i}\right)^2 \right) \\
 &+&
- \ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m_0^{Y_i})}}} 
+ \ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m^{Y_i})}}} 
 \end{eqnarray*}
 
-where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
+
 
 \vspace{0.2in}
 \item \textbf{Third form}:
@@ -442,9 +471,9 @@ Y_{n-1}Y_{n}\\
 \theta_{1^2}\\
 \cdots\\
 \theta_{n^2}\\
-\theta_1 m_0^X+\theta_{01}\\
+\theta_1 m^X+\theta_{01}\\
 \cdots\\
-\theta_n m_0^X+\theta_{0n}\\
+\theta_n m^X+\theta_{0n}\\
 \theta_{12}\\
 \cdots\\
 \theta_{1n}\\
@@ -470,9 +499,9 @@ Y_{n-1}Y_{n}\\
 \theta_{1^2}\\
 \cdots\\
 \theta_{n^2}\\
-\theta_1 m_0^X+\theta_{01}\\
+\theta_1 m^X+\theta_{01}\\
 \cdots\\
-\theta_n m_0^X+\theta_{0n}\\
+\theta_n m^X+\theta_{0n}\\
 \theta_{12}\\
 \cdots\\
 \theta_{1n}\\
@@ -492,12 +521,14 @@ Y_1 Y_n\\
 \cdots\\
 Y_{n-1}Y_{n}\\
 \end{pmatrix}
-- \left( (-2\beta_{\mbox{-}1}X^2 - 2X\beta_0 - \frac{1}{2}\beta_0^2 \beta_{\mbox{-}1}^{-1}) + \frac{\ln{(2\theta_{\mbox{-}1}})}{2} \right)\\
+- \left( (-2\beta_{\mbox{-}1}m^{X^2} - 2m^{X}\beta_0 - \frac{1}{2}\beta_0^2 \beta_{\mbox{-}1}^{-1}) + \frac{\ln{(2\theta_{\mbox{-}1}})}{2} \right)\\
 &+&
-\ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m_0^{Y_i})}}} 
+\ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m^{Y_i})}}} 
 \end{eqnarray*}
 
 \end{itemize}
+
+
 
 
 \newpage
@@ -532,3 +563,5 @@ $s$ & Sufficient statistics \\
 \end{table}
 
 \end{document}
+
+
