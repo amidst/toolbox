@@ -103,7 +103,7 @@ public final class VerdandeModels {
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Normal_Abnormal");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new MultinomialStateSpace(Arrays.asList("Normal", "Abnormal")));
+        variableBuilder.setStateSpace(new FiniteStateSpace(Arrays.asList("Normal", "Abnormal")));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
         Variable normalAbnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
@@ -257,7 +257,7 @@ public final class VerdandeModels {
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Mixture");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
+        variableBuilder.setStateSpace(new FiniteStateSpace(2));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
         Variable mixture = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
@@ -377,14 +377,14 @@ public final class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("FormationNo");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
+        variableBuilder.setStateSpace(new FiniteStateSpace(2));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
         Variable formationNo = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Shift");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new MultinomialStateSpace(2));
+        variableBuilder.setStateSpace(new FiniteStateSpace(2));
         variableBuilder.setDistributionType(DistType.MULTINOMIAL);
         Variable shift = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
