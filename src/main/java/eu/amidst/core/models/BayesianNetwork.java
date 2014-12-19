@@ -75,6 +75,8 @@ public final class BayesianNetwork {
             this.distributions.add(varID, DistributionBuilder.newDistribution(var, parentSet.getParents()));
             parentSet.blockParents();
         }
+
+        this.distributions = Collections.unmodifiableList(this.distributions);
     }
 
     public double getLogProbabiltyOfFullAssignment(Assignment assignment){
@@ -90,7 +92,7 @@ public final class BayesianNetwork {
     }
 
     public List<ConditionalDistribution> getDistributions(){
-        return Collections.unmodifiableList(this.distributions);
+        return this.distributions;
     }
 
     public String toString(){

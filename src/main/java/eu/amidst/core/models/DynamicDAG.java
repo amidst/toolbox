@@ -23,12 +23,12 @@ public class DynamicDAG {
     /**
      * It contains the ParentSets for all variables at time 0.
      */
-    private List<ParentSetImpl> parentSetTime0;
+    private List<ParentSet> parentSetTime0;
 
     /**
      * It contains the ParentSets for all variables at time T.
      */
-    private List<ParentSetImpl> parentSetTimeT;
+    private List<ParentSet> parentSetTimeT;
 
 
 
@@ -41,6 +41,10 @@ public class DynamicDAG {
             parentSetTime0.add(var.getVarID(),new ParentSetImpl(var));
             parentSetTimeT.add(var.getVarID(),new ParentSetImpl(var));
         }
+
+        this.parentSetTime0 = Collections.unmodifiableList(this.parentSetTime0);
+        this.parentSetTimeT = Collections.unmodifiableList(this.parentSetTimeT);
+        this.dynamicVariables.block();
     }
 
     public DynamicVariables getDynamicVariables(){
@@ -56,20 +60,12 @@ public class DynamicDAG {
         return this.parentSetTimeT.get(var.getVarID());
     }
 
-    /*public ParentSet getParentSetTime0(Variable var) {
-        if (var.isTemporalClone())
-            throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
-                    "of its dynamic counterpart.");
-
-        return this.parentSetTime0[var.getVarID()];
-    }*/
-
-    public List<Variable> getListOfParentsTime0(Variable var) {
+    public ParentSet getParentSetTime0(Variable var) {
         if (var.isTemporalClone()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
         }
-        return this.parentSetTime0.get(var.getVarID()).getParents();
+        return this.parentSetTime0.get(var.getVarID());
     }
 
     public boolean containCycles(){
@@ -113,11 +109,11 @@ public class DynamicDAG {
     }
 
     public List<ParentSet> getParentSetsTimeT(){
-        return Collections.unmodifiableList(this.parentSetTimeT);
+        return this.parentSetTimeT;
     }
 
     public List<ParentSet> getParentSetsTime0(){
-        return Collections.unmodifiableList(this.parentSetTime0);
+        return this.parentSetTime0;
     }
 
     public String toString(){
@@ -161,7 +157,7 @@ public class DynamicDAG {
             vars.add(var);
 
             if (!var.isTemporalClone()) {
-                parentSetTime0.get(mainVar.getVarID()).vars.add(var);
+                ((ParentSetImpl)parentSetTime0.get(mainVar.getVarID())).vars.add(var);
             }
         }
 

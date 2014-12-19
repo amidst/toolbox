@@ -19,11 +19,7 @@ package eu.amidst.core.variables;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
+import java.util.*;
 
 /**
  * Created by afa on 02/07/14.
@@ -242,17 +238,13 @@ public class DynamicVariables  implements Iterable<Variable>{
         throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
     }
 
+    public void block(){
+        this.allVariables = Collections.unmodifiableList(this.allVariables);
+    }
+
     @Override
     public Iterator<Variable> iterator() {
         return this.allVariables.iterator();
-    }
-
-    public Stream<Variable> stream(){
-        return this.allVariables.stream();
-    }
-
-    public Stream<Variable> parallelStream(){
-        return this.allVariables.parallelStream();
     }
 
     private static class VariableImplementation implements Variable {
@@ -278,7 +270,7 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.isTemporalClone = false;
 
             if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
             }
         }
 
@@ -295,7 +287,7 @@ public class DynamicVariables  implements Iterable<Variable>{
             this.isTemporalClone = true;
 
             if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((MultinomialStateSpace) this.stateSpace).getNumberOfStates();
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
             }
         }
 

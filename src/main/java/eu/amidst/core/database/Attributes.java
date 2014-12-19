@@ -22,14 +22,9 @@ public class Attributes {
         return attributes;
     }
 
-    public Stream<Attribute> stream(){
-        return this.attributes.stream();
+    public int getNumberOfAttributes(){
+        return this.attributes.size();
     }
-
-    public Stream<Attribute> parallelStream(){
-        return this.attributes.parallelStream();
-    }
-
     public List<Attribute> getListExceptTimeAndSeq(){
         List<Attribute> attributeList = new ArrayList<>();
         for(Attribute att: getList()){

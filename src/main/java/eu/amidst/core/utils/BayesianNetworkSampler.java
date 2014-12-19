@@ -57,8 +57,8 @@ public class BayesianNetworkSampler  {
 
     public Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-        //sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
-        sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, new Random(i)));
+        sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
+        //sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, new Random(i)));
         return (parallelMode)? sampleStream.parallel() : sampleStream;
     }
 
@@ -85,10 +85,10 @@ public class BayesianNetworkSampler  {
 
     public void sampleToAnARFFFile(String path, int nSamples) throws IOException {
 
-        List<Variable> variables = network.getStaticVariables().getVariableList();
+        List<Variable> variables = network.getStaticVariables().getListOfVariables();
 
         FileWriter fw = new FileWriter(path);
-        fw.write("@relation\n\n");
+        fw.write("@relation dataset\n\n");
 
         for (Variable v : variables){
             fw.write(v.toARFFString()+"\n");
@@ -99,7 +99,9 @@ public class BayesianNetworkSampler  {
 
         this.getSampleStream(nSamples).forEach(e -> {
             try {
-                fw.write(e.toString(variables) + "\n");
+                //fw.write(e.toString(variables) + "\n");
+                fw.write(e.toARFFString(variables) + "\n");
+
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }
@@ -163,16 +165,16 @@ public class BayesianNetworkSampler  {
         System.out.println(watch.stop());
 
         for (Assignment assignment : sampler.getSampleIterator(2)){
-            System.out.println(assignment.toString(network.getStaticVariables().getVariableList()));
+            System.out.println(assignment.toString(network.getStaticVariables().getListOfVariables()));
         }
         System.out.println();
 
         for (Assignment assignment : sampler.getSampleList(2)){
-            System.out.println(assignment.toString(network.getStaticVariables().getVariableList()));
+            System.out.println(assignment.toString(network.getStaticVariables().getListOfVariables()));
         }
         System.out.println();
 
-        sampler.getSampleStream(2).forEach( e -> System.out.println(e.toString(network.getStaticVariables().getVariableList())));
+        sampler.getSampleStream(2).forEach( e -> System.out.println(e.toString(network.getStaticVariables().getListOfVariables())));
 
 
         //VariableList is expensive to compute!!

@@ -10,7 +10,7 @@
 
 package eu.amidst.core.database;
 
-import eu.amidst.core.variables.MultinomialStateSpace;
+import eu.amidst.core.variables.FiniteStateSpace;
 import eu.amidst.core.variables.RealStateSpace;
 import eu.amidst.core.variables.StateSpace;
 import eu.amidst.core.variables.StateSpaceType;
@@ -28,9 +28,9 @@ public final class Attribute {
     public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType1, int numberOfStates) {
 
         this.index = index;
-        this.name = name.toUpperCase();
+        this.name = name;
         if (stateSpaceType1==StateSpaceType.FINITE_SET) {
-            this.stateSpace = new MultinomialStateSpace(numberOfStates);
+            this.stateSpace = new FiniteStateSpace(numberOfStates);
             this.stateSpace.setUnit(unit);
         }else if (stateSpaceType1== StateSpaceType.REAL) {
             this.stateSpace = new RealStateSpace();
@@ -43,9 +43,9 @@ public final class Attribute {
     public Attribute(int index, String name, StateSpaceType stateSpaceType1, int numberOfStates) {
 
         this.index = index;
-        this.name = name.toUpperCase();
+        this.name = name;
         if (stateSpaceType1==StateSpaceType.FINITE_SET) {
-            this.stateSpace = new MultinomialStateSpace(numberOfStates);
+            this.stateSpace = new FiniteStateSpace(numberOfStates);
         }else if (stateSpaceType1== StateSpaceType.REAL) {
             this.stateSpace = new RealStateSpace();
         }else {
@@ -55,7 +55,7 @@ public final class Attribute {
 
     public Attribute(int index, String name, StateSpace stateSpace1) {
         this.index = index;
-        this.name = name.toUpperCase();
+        this.name = name;
         this.stateSpace = stateSpace1;
     }
 
