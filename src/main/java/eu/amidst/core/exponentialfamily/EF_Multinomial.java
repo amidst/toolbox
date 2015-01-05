@@ -1,5 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
@@ -20,8 +22,8 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
         this.var=var;
         int nstates= var.getNumberOfStates();
-        this.naturalParameters = new NaturalParameters(nstates);
-        this.momentParameters = new MomentParameters(nstates);
+        this.naturalParameters = this.createZeroedNaturalParameters();
+        this.momentParameters = this.createZeroedMomentParameters();
 
         for (int i=0; i<nstates; i++){
             this.naturalParameters.set(i,-Math.log(nstates));
@@ -43,8 +45,13 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     }
 
     @Override
+    public Vector createZeroedVector() {
+        return new ArrayVector(this.var.getNumberOfStates());
+    }
+
+    @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        SufficientStatistics vec = new SufficientStatistics(this.getVariable().getNumberOfStates());
+        SufficientStatistics vec = this.createZeroedSufficientStatistics();
         vec.set((int) val, 1);
         return vec;
     }
@@ -68,12 +75,6 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     @Override
     public int sizeOfSufficientStatistics() {
         return this.var.getNumberOfStates();
-    }
-
-    public static SufficientStatistics sufficientStatistics(int nstates, double val){
-        SufficientStatistics vec = new SufficientStatistics(nstates);
-        vec.set((int) val, 1);
-        return vec;
     }
 
 }

@@ -27,4 +27,26 @@ public class ArrayVector implements Vector{
         return this.array.length;
     }
 
+    public void copy(Vector vector){
+        for (int i = 0; i < vector.size(); i++) {
+            this.set(i,vector.get(i));
+        }
+    }
+
+    public double[] getArray(){
+        return this.array;
+    }
+
+    public void copy(ArrayVector vector){
+        if (vector.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors differnt sizes");
+        System.arraycopy(vector.getArray(),0,this.array,0,vector.getArray().length);
+    }
+
+    public void divideBy(double val){
+        for (int i = 0; i < this.array.length ; i++) {
+            this.array[i]/=val;
+        }
+    }
+
 }
