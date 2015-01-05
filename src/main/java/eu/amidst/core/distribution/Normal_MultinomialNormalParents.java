@@ -30,7 +30,7 @@ import java.util.List;
  * @since 2014-11-4
  */
 
-public class Normal_MultinomialNormalParents extends ConditionalDistribution {
+public class Normal_MultinomialNormalParents extends ConditionalDistribution{
 
 
     /**
@@ -153,6 +153,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         return multinomialParents;
     }
 
+
     public List<Variable> getNormalParents() {
         return normalParents;
     }
@@ -165,7 +166,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         return "Normal|Multinomial,Normal";
     }
 
-    public int getNumberOfParentAssignment(){
+    public int getNumberOfParentAssignments(){
         return this.distribution.length;
     }
 
@@ -174,7 +175,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("");
-        for (int i = 0; i < getNumberOfParentAssignment(); i++) {
+        for (int i = 0; i < getNumberOfParentAssignments(); i++) {
             str.append(this.getNormal_NormalParentsDistribution(i).toString()+"\n");
         }
 

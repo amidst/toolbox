@@ -11,6 +11,10 @@ public interface Vector {
 
     public int size();
 
+    public void copy(Vector vector);
+
+    public void divideBy(double val);
+
     public default void dotProduct(Vector vec){
         if (vec.size()!=this.size())
             throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. The parameter vec has a different size. ");

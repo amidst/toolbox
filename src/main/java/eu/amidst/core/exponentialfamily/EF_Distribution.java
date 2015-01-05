@@ -47,13 +47,13 @@ public abstract class EF_Distribution {
     }
 
     public void setNaturalParameters(NaturalParameters parameters) {
-        this.naturalParameters = parameters;
+        this.naturalParameters.copy(parameters);
         this.updateMomentFromNaturalParameters();
     }
 
 
     public void setMomentParameters(MomentParameters parameters) {
-        this.momentParameters = parameters;
+        this.momentParameters.copy(parameters);
         this.updateNaturalFromMomentParameters();
     }
 
@@ -76,5 +76,22 @@ public abstract class EF_Distribution {
     public double computeLogProbabilityOf(DataInstance dataInstance){
         return Vector.dotProduct(this.naturalParameters,this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) + this.computeLogNormalizer();
     }
+
+    public abstract Vector createZeroedVector();
+
+    public MomentParameters createZeroedMomentParameters(){
+
+        return (MomentParameters)this.createZeroedVector();
+    }
+
+    public SufficientStatistics createZeroedSufficientStatistics(){
+        return (SufficientStatistics)this.createZeroedVector();
+    }
+
+    public NaturalParameters createZeroedNaturalParameters(){
+        return (NaturalParameters)this.createZeroedVector();
+    }
+
+
 
 }
