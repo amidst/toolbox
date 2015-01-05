@@ -37,7 +37,8 @@ public class ARFFDataReader implements DataFileReader {
         try {
             Optional<String> atRelation = Files.lines(pathFile)
                     .map(String::trim)
-                    .limit(0)
+                    .filter(w -> !w.isEmpty())
+                    .limit(1)
                     .filter(line -> line.startsWith("@relation"))
                     .findFirst();
 
@@ -49,6 +50,7 @@ public class ARFFDataReader implements DataFileReader {
             final int[] count = {0};
             Optional<String> atData = Files.lines(pathFile)
                     .map(String::trim)
+                    .filter(w -> !w.isEmpty())
                     .peek(line -> count[0]++)
                     .filter(line -> line.startsWith("@data"))
                     .findFirst();
@@ -56,11 +58,12 @@ public class ARFFDataReader implements DataFileReader {
             if (!atData.isPresent())
                 throw new IllegalArgumentException("ARFF file does not contain @data line.");
 
-            dataLineCount = count[0]+1;
+            dataLineCount = count[0];
 
             List<String> attLines = Files.lines(pathFile)
                     .map(String::trim)
-                    .limit(count[0])
+                    .filter(w -> !w.isEmpty())
+                    .limit(dataLineCount)
                     .filter(line -> line.startsWith("@attribute"))
                     .collect(Collectors.toList());
 
@@ -89,6 +92,9 @@ public class ARFFDataReader implements DataFileReader {
             throw new IllegalArgumentException("Attribute line does not start with @attribute");
 
         String name = parts[1].trim();
+
+        parts[2]=line.substring(parts[0].length() + parts[1].length() + 2);
+
         parts[2]=parts[2].trim();
 
         if (parts[2].equals("real")){
@@ -124,7 +130,7 @@ public class ARFFDataReader implements DataFileReader {
         }catch (IOException ex){
             throw new UncheckedIOException(ex);
         }
-        return streamString.skip(this.dataLineCount).map(line -> new DataRowWeka(this.attributes, line));
+        return streamString.filter(w -> !w.isEmpty()).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
     }
 
 
@@ -134,6 +140,9 @@ public class ARFFDataReader implements DataFileReader {
         public DataRowWeka(Attributes atts, String line){
             data = new double[atts.getNumberOfAttributes()];
             String[] parts = line.split(",");
+            if (parts.length!=atts.getNumberOfAttributes())
+                throw new IllegalStateException("The number of columns does not match the number of attributes.");
+
             for (int i = 0; i < parts.length; i++) {
                 switch (atts.getList().get(i).getStateSpace().getStateSpaceType()){
                     case REAL:
