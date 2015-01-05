@@ -5,6 +5,9 @@
  *
  * 1. getConditioningVariables change to getParentsVariables()
  *
+ * 2. Rewrite the naturalmparameters and momementsparametes interfaces to allow sparse implementations and translage
+ * that to the implemementaiton of setNatural and setMoments
+ *
  *
  *
  * **********************************************************
@@ -14,6 +17,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -21,40 +25,49 @@ import eu.amidst.core.utils.MultinomialIndex;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalDistribution {
+public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalDistribution {
 
 
-    private List<E> distributions;
-    private List<Variable> multinomialParents;
-    private List<Variable> nonMultinomialParents;
+    private final List<E> distributions;
+    private final List<Variable> multinomialParents;
 
-    public EF_BaseDistribution_MultinomialParents(Variable var, List<Variable> parents) {
-
-        this.var = var;
-        this.parents = parents;
-
-        for (Variable v : parents) {
-            if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
-                this.multinomialParents.add(var);
-            } else {
-                this.nonMultinomialParents.add(var);
-            }
-        }
-
-        // Computes the size of the array of probabilities as the number of possible assignments for the parents.
-        int size = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
-
-        // Initialize the distribution uniformly for each configuration of the parents.
-        this.distributions = new ArrayList<E>(size);
-        for (int i = 0; i < size; i++) {
-            this.distributions.add(createNewBaseDistribution(var, nonMultinomialParents));
-        }
-        //Make them unmodifiable
-        this.parents = Collections.unmodifiableList(this.parents);
+    public List<Variable> getMultinomialParents() {
+        return multinomialParents;
     }
 
-    public abstract E createNewBaseDistribution(Variable var, List<Variable> nonMultinomialParents);
+    public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
+
+        if (multinomialParents1.size()==0) throw new IllegalArgumentException("Size of multinomial parents is zero");
+        if (distributions1.size() == 0) throw new IllegalArgumentException("Size of base distributions is zero");
+
+        int size = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents1);
+        if (size!= distributions1.size()) throw new IllegalArgumentException("Size of base distributions list does not match with the number of parents configurations");
+
+        this.var = distributions1.get(0).getVariable();
+        this.multinomialParents = multinomialParents1;
+        this.distributions = distributions1;
+
+
+        this.parents = new ArrayList();
+        for (Variable v : this.multinomialParents)
+            this.parents.add(v);
+
+        E dist = distributions.get(0);
+
+        if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_ConditionalDistribution")){
+            EF_ConditionalDistribution distCond = (EF_ConditionalDistribution)dist;
+            for (Variable v : distCond.getConditioningVariables())
+                this.parents.add(v);
+        }
+
+
+
+        //Make them unmodifiable
+        this.parents = Collections.unmodifiableList(this.parents);
+
+    }
 
     public void setEF_BaseDistribution(int indexMultinomial, E baseDist) {
         this.distributions.set(indexMultinomial,baseDist);
@@ -67,80 +80,169 @@ public abstract class EF_BaseDistribution_MultinomialParents<E extends EF_Distri
 
     public E getEF_BaseDistribution(DataInstance dataInstance) {
         int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, dataInstance);
-        return distributions.get(position);
+        return getEF_BaseDistribution(position);
     }
 
     @Override
     public SufficientStatistics getSufficientStatistics(DataInstance instance) {
 
-        SufficientStatistics sufficientStatisticsTotal = new SufficientStatistics(this.sizeOfSufficientStatistics());
+        CompoundVector<E> vector = this.createCompoundVector();
 
         int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, instance);
 
-        SufficientStatistics sufficientStatisticsBase = this.distributions.get(position).getSufficientStatistics(instance);
+        vector.setBaseConf(position,1.0);
 
-        int sizeSSBase=sufficientStatisticsBase.size()+1;
+        SufficientStatistics sufficientStatisticsBase = this.getEF_BaseDistribution(position).getSufficientStatistics(instance);
 
-        sufficientStatisticsTotal.set(position*sizeSSBase, 1);
+        vector.setVectorByPosition(position, sufficientStatisticsBase);
 
-        for (int i=0; i<sufficientStatisticsBase.size(); i++){
-            sufficientStatisticsTotal.set(position*sizeSSBase + 1 + i,sufficientStatisticsBase.get(i));
-        }
+        return vector;
 
-        return sufficientStatisticsTotal;
+    }
+
+    public int numberOfConfigurations(){
+        return this.distributions.size();
+    }
+
+    public int sizeOfBaseSufficientStatistics(){
+        return this.getEF_BaseDistribution(0).sizeOfSufficientStatistics();
     }
 
     public int sizeOfSufficientStatistics(){
-        return this.distributions.size()*(this.distributions.get(0).sizeOfSufficientStatistics()+1);
-    }
-
-
-
-    public void setNaturalParameters(NaturalParameters parameters) {
-        this.naturalParameters = parameters;
-
-        int sizeSSBase = this.distributions.get(0).sizeOfSufficientStatistics()+1;
-        for (int i=0; i<this.distributions.size(); i++){
-            for (int j=0; j<this.distributions.get(0).sizeOfSufficientStatistics(); j++){
-                this.distributions.get(i).getNaturalParameters().set(j,parameters.get(sizeSSBase*i + 1 + j));
-            }
-        }
-        this.updateMomentFromNaturalParameters();
-    }
-
-
-    public void setMomentParameters(MomentParameters parameters) {
-        this.momentParameters = parameters;
-
-        int sizeBase = this.distributions.get(0).sizeOfSufficientStatistics();
-        for (int i=0; i<this.distributions.size(); i++){
-            for (int j=0; j<sizeBase; j++){
-                this.distributions.get(i).getMomentParameters().set(j,parameters.get(sizeBase*i+j));
-            }
-        }
-        this.updateNaturalFromMomentParameters();
+        return numberOfConfigurations() + numberOfConfigurations()*sizeOfBaseSufficientStatistics();
     }
 
     public void updateNaturalFromMomentParameters(){
-        for(E baseDist: this.distributions){
-            baseDist.updateNaturalFromMomentParameters();
+
+        CompoundVector<E> globalMomentsParam = (CompoundVector<E>)this.momentParameters;
+
+        //First copy the global moment
+        for (int i = 0; i < numberOfConfigurations(); i++) {
+            this.getEF_BaseDistribution(i).getMomentParameters().copy(globalMomentsParam.getVectorByPosition(i));
+            this.getEF_BaseDistribution(i).getMomentParameters().divideBy(globalMomentsParam.getBaseConf(i));
         }
+
+        CompoundVector<E> vectorNatural = this.createCompoundVector();
+
+
+        for (int i = 0; i < numberOfConfigurations(); i++) {
+            vectorNatural.setBaseConf(i, -this.getEF_BaseDistribution(i).computeLogNormalizer());
+            vectorNatural.getVectorByPosition(i).copy(globalMomentsParam.getVectorByPosition(i));
+        }
+
+        this.naturalParameters=vectorNatural;
+
         return;
     }
 
     public void updateMomentFromNaturalParameters(){
-        for(E baseDist: this.distributions){
-            baseDist.updateMomentFromNaturalParameters();
-        }
-        return;
+        throw new UnsupportedOperationException("Method not implemented yet!");
     }
 
     public double computeLogBaseMeasure(DataInstance dataInstance){
         int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, dataInstance);
-        return this.distributions.get(position).computeLogBaseMeasure(dataInstance);
+        return this.getEF_BaseDistribution(position).computeLogBaseMeasure(dataInstance);
     }
 
-    public double computeLogNormalizer(NaturalParameters parameters){
+    @Override
+    public double computeLogNormalizer() {
         return 0;
+    }
+
+
+    @Override
+    public Vector createZeroedVector() {
+        return null;
+    }
+
+    @Override
+    public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
+        return null;
+    }
+
+    @Override
+    public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        return null;
+    }
+
+    private CompoundVector<E> createCompoundVector(){
+        return new CompoundVector<>(this.getEF_BaseDistribution(0),this.numberOfConfigurations());
+    }
+
+    static class CompoundVector<E extends EF_Distribution> implements SufficientStatistics, MomentParameters, NaturalParameters {
+
+        int nConf;
+        int baseSSLength;
+        double[] baseConf;
+        E baseDist;
+
+        Vector[] baseVectors;
+
+        public CompoundVector(E baseDist1, int nConf1){
+            nConf = nConf1;
+            this.baseConf = new double[nConf];
+            baseDist = baseDist1;
+            baseVectors = new Vector[nConf];
+            baseSSLength = baseDist.sizeOfSufficientStatistics();
+
+            for (int i = 0; i < nConf; i++) {
+                baseVectors[i]=baseDist.createZeroedVector();
+            }
+
+        }
+
+        public void setVectorByPosition(int position, Vector vec){
+            for (int i = 0; i < vec.size(); i++) {
+                baseVectors[position].set(i,vec.get(i));
+            }
+        }
+
+        public Vector getVectorByPosition(int position){
+            return this.baseVectors[position];
+        }
+
+        public double getBaseConf(int i){
+            return this.baseConf[i];
+        }
+
+        public void setBaseConf(int i, double val){
+            this.baseConf[i]=val;
+        }
+
+        @Override
+        public double get(int i) {
+            i -= nConf;
+            return baseVectors[(int)Math.ceil(i/(double)nConf)].get(i%baseSSLength);
+        }
+
+        @Override
+        public void set(int i, double val) {
+            if (i < nConf){
+                baseConf[i] = val;
+            }else{
+                i -= nConf;
+                baseVectors[(int)Math.ceil(i/(double)nConf)].set(i%baseSSLength,val);
+            }
+        }
+
+        @Override
+        public int size() {
+            return nConf + nConf*baseSSLength;
+        }
+
+        @Override
+        public void copy(Vector vector) {
+            for (int i = 0; i < vector.size(); i++) {
+                this.set(i,vector.get(i));
+            }
+        }
+
+        @Override
+        public void divideBy(double val) {
+            for (int i = 0; i < this.baseConf.length; i++) {
+                this.baseConf[i]/=val;
+                this.baseVectors[i].divideBy(val);
+            }
+        }
     }
 }

@@ -27,7 +27,7 @@ import java.util.List;
  * @version 1.0
  * @since 2014-11-4
  */
-public class Multinomial_MultinomialParents extends ConditionalDistribution {
+public class Multinomial_MultinomialParents extends ConditionalDistribution{
 
     /**
      * An array of <code>Multinomial</code> objects, one for each configuration of the parents. These objects are ordered
@@ -146,4 +146,5 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         }
         return str.toString();
     }
+
 }
