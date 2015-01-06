@@ -3,6 +3,7 @@ package eu.amidst.demos;
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 
+import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
@@ -39,12 +40,14 @@ public class ParallelTANDemo {
         for (Integer samplesOnMemory : vSamplesOnMemory) {
             for (Integer numCores : vNumCores) {
                 System.out.println("Learning TAN: "+ samplesOnMemory + " samples on memory, " + numCores +"core/s ...");
-                DataOnStream data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+                DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
                 ParallelTAN tan= new ParallelTAN();
                 tan.setNumCores(numCores);
                 tan.setNumSamplesOnMemory(samplesOnMemory);
+                tan.setNameRoot("p630400490");
+                tan.setNameTarget("p48124091");
                 Stopwatch watch = Stopwatch.createStarted();
-                BayesianNetwork model = tan.learn(data, "p630400490", "p48124091");
+                BayesianNetwork model = tan.learnBN(data);
                 System.out.println(watch.stop());
             }
         }
