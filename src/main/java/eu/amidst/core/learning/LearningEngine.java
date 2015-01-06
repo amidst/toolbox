@@ -84,7 +84,8 @@ public final class LearningEngine {
     }
 
     public static BayesianNetwork learnStaticModel(DataBase database){
-        return staticParameterLearningAlgorithm.learn(staticStructuralLearningAlgorithm.learn(database),database);
+        DAG dag = staticStructuralLearningAlgorithm.learn(database);
+        return staticParameterLearningAlgorithm.learn(dag,database);
     }
 
     public static DynamicBayesianNetwork learnDynamicModel(DataBase database){
