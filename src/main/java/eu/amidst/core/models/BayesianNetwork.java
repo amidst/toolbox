@@ -42,6 +42,10 @@ public final class BayesianNetwork {
         return (E)distributions.get(var.getVarID());
     }
 
+    public void setDistribution(Variable var, ConditionalDistribution dist){
+        this.distributions.set(var.getVarID(),dist);
+    }
+
     public int getNumberOfVars() {
         return this.getDAG().getStaticVariables().getNumberOfVars();
     }

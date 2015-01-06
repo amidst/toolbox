@@ -3,8 +3,12 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.distribution.DistributionBuilder;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.StaticVariables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +31,25 @@ public class EF_BayesianNetwork extends EF_Distribution {
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
 
+    }
+
+    public EF_BayesianNetwork(DAG  dag){
+        distributionList = new ArrayList(dag.getStaticVariables().getNumberOfVars());
+
+        sizeSS=0;
+        for (ParentSet parentSet: dag.getParentSets()){
+            ConditionalDistribution dist = DistributionBuilder.newDistribution(parentSet.getMainVar(), parentSet.getParents());
+            EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
+            distributionList.set(ef_dist.getVariable().getVarID(), ef_dist);
+            sizeSS+=ef_dist.sizeOfSufficientStatistics();
+        }
+
+    }
+
+    public BayesianNetwork toBayesianNetwork(DAG dag){
+        BayesianNetwork bayesianNetwork = BayesianNetwork.newBayesianNetwork(dag);
+        this.distributionList.stream().forEach( dist -> bayesianNetwork.setDistribution(dist.getVariable(), EF_DistributionBuilder.toDistributionGeneral(dist)));
+        return bayesianNetwork;
     }
 
 
