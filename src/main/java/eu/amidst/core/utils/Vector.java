@@ -1,5 +1,8 @@
 package eu.amidst.core.utils;
 
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+
 /**
  * Created by andresmasegosa on 12/11/14.
  */
@@ -11,9 +14,20 @@ public interface Vector {
 
     public int size();
 
-    public void copy(Vector vector);
+    public default void copy(Vector vector){
+        if (vector.size()!=this.size())
+            throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
-    public void divideBy(double val);
+        for (int i = 0; i < vector.size(); i++) {
+            this.set(i,vector.get(i));
+        }
+    }
+
+    public default void divideBy(double val){
+        for (int i=0; i<this.size(); i++){
+            this.set(i, this.get(i)/val);
+        }
+    }
 
     public default void dotProduct(Vector vec){
         if (vec.size()!=this.size())
