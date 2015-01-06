@@ -116,10 +116,11 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         CompoundVector<E> globalMomentsParam = (CompoundVector<E>)this.momentParameters;
 
-        //First copy the global moment
         for (int i = 0; i < numberOfConfigurations(); i++) {
-            this.getEF_BaseDistribution(i).getMomentParameters().copy(globalMomentsParam.getVectorByPosition(i));
-            this.getEF_BaseDistribution(i).getMomentParameters().divideBy(globalMomentsParam.getBaseConf(i));
+            MomentParameters moment = this.getEF_BaseDistribution(i).createZeroedMomentParameters();
+            moment.copy(globalMomentsParam.getVectorByPosition(i));
+            moment.divideBy(globalMomentsParam.getBaseConf(i));
+            this.getEF_BaseDistribution(i).setMomentParameters(momentParameters);
         }
 
         CompoundVector<E> vectorNatural = this.createCompoundVector();
@@ -127,7 +128,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         for (int i = 0; i < numberOfConfigurations(); i++) {
             vectorNatural.setBaseConf(i, -this.getEF_BaseDistribution(i).computeLogNormalizer());
-            vectorNatural.getVectorByPosition(i).copy(globalMomentsParam.getVectorByPosition(i));
+            vectorNatural.getVectorByPosition(i).copy(this.getEF_BaseDistribution(i).getNaturalParameters());
         }
 
         this.naturalParameters=vectorNatural;
@@ -152,7 +153,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     @Override
     public Vector createZeroedVector() {
-        return null;
+        return this.createCompoundVector();
     }
 
     @Override
@@ -192,9 +193,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         }
 
         public void setVectorByPosition(int position, Vector vec){
-            for (int i = 0; i < vec.size(); i++) {
-                baseVectors[position].set(i,vec.get(i));
-            }
+            baseVectors[position].copy(vec);
         }
 
         public Vector getVectorByPosition(int position){
@@ -230,10 +229,13 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             return nConf + nConf*baseSSLength;
         }
 
-        @Override
-        public void copy(Vector vector) {
-            for (int i = 0; i < vector.size(); i++) {
-                this.set(i,vector.get(i));
+        public void copy(CompoundVector<E> vector) {
+            if (vector.size()!=this.size())
+                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+
+            System.arraycopy(vector.baseConf,0,this.baseConf,0,this.nConf);
+            for (int i = 0; i < this.nConf; i++) {
+                this.baseVectors[i].copy(vector.getVectorByPosition(i));
             }
         }
 

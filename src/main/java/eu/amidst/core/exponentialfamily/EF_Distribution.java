@@ -47,13 +47,13 @@ public abstract class EF_Distribution {
     }
 
     public void setNaturalParameters(NaturalParameters parameters) {
-        this.naturalParameters.copy(parameters);
+        this.naturalParameters=parameters;//.copy(parameters);
         this.updateMomentFromNaturalParameters();
     }
 
 
     public void setMomentParameters(MomentParameters parameters) {
-        this.momentParameters.copy(parameters);
+        this.momentParameters=parameters;// .copy(parameters);
         this.updateNaturalFromMomentParameters();
     }
 
