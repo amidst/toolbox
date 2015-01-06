@@ -2,6 +2,7 @@ package eu.amidst.core.huginlink;
 
 
 import COM.hugin.HAPI.*;
+import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnMemory;
 import eu.amidst.core.database.DataOnStream;
@@ -55,6 +56,9 @@ public class ParallelTAN {
 
         DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory,dataOnStream);
 
+
+
+
         // Set the number of cases
         int numCases = dataOnMemory.getNumberOfDataInstances();
         huginNetwork.setNumberOfCases(numCases);
@@ -82,6 +86,7 @@ public class ParallelTAN {
             }
         }
 
+        Stopwatch watch = Stopwatch.createStarted();
         //Structural learning
         Node root = huginNetwork.getNodeByName(nameRoot);
         Node target = huginNetwork.getNodeByName(nameTarget);
@@ -92,6 +97,8 @@ public class ParallelTAN {
         huginNetwork.compile();
         huginNetwork.learnTables();
         huginNetwork.uncompile();
+
+        System.out.println("Only TAN : "+watch.stop());
 
         return (ConverterToAMIDST.convertToAmidst(huginNetwork));
     }

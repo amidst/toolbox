@@ -27,11 +27,11 @@ public class ParallelTANDemo {
         String dataFile = new String("./datasets/Pigs.arff");
 
 
-        //BayesianNetwork bn = BayesianNetworkLoader.loadFromHugin("networks/Pigs.net");
-        //int sampleSize = 1000000;
-        //BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        //sampler.setParallelMode(true);
-        //sampler.sampleToAnARFFFile(dataFile,sampleSize);
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromHugin("networks/Pigs.net");
+        int sampleSize = 1000000;
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.setParallelMode(true);
+        sampler.sampleToAnARFFFile(dataFile,sampleSize);
 
         ArrayList<Integer> vSamplesOnMemory = new ArrayList(Arrays.asList(500000,600000,700000));
         ArrayList<Integer> vNumCores = new ArrayList(Arrays.asList(1,2,3,4));
