@@ -30,7 +30,29 @@ public final class EF_DistributionBuilder {
 
     }
 
+    public static ConditionalDistribution toDistributionGeneral(EF_ConditionalDistribution dist) {
 
+        if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents")) {
+            EF_BaseDistribution_MultinomialParents newDist = (EF_BaseDistribution_MultinomialParents)dist;
+            if (newDist.getEF_BaseDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Multinomial")){
+                EF_BaseDistribution_MultinomialParents<EF_Multinomial> newDistMulti =  (EF_BaseDistribution_MultinomialParents<EF_Multinomial>)dist;
+                return toDistribution(newDistMulti,newDistMulti.getEF_BaseDistribution(0));
+            }else if (newDist.getEF_BaseDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal")){
+                EF_BaseDistribution_MultinomialParents<EF_Normal> newDistMulti =  (EF_BaseDistribution_MultinomialParents<EF_Normal>)dist;
+                return toDistribution(newDistMulti,newDistMulti.getEF_BaseDistribution(0));
+            }else if (newDist.getEF_BaseDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal_NormalParents")) {
+                EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents> newDistMulti =  (EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents>)dist;
+                return toDistribution(newDistMulti,newDistMulti.getEF_BaseDistribution(0));
+            }else {
+                throw new IllegalArgumentException("This conditional distribution can not be converted to an exponential form: "+ dist.getClass().getName());
+            }
+        } else if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal_NormalParents")) {
+            return toDistribution((EF_Normal_NormalParents) dist);
+        } else{
+            throw new IllegalArgumentException("This conditional distribution can not be converted to an exponential form: "+ dist.getClass().getName());
+        }
+
+    }
 
 
     public static Normal_MultinomialNormalParents toDistribution(EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents> dist, EF_Normal_NormalParents base) {
