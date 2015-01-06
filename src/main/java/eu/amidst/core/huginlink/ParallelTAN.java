@@ -2,6 +2,7 @@ package eu.amidst.core.huginlink;
 
 
 import COM.hugin.HAPI.*;
+import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnMemory;
@@ -99,7 +100,11 @@ public class ParallelTAN {
         Node root = huginNetwork.getNodeByName(nameRoot);
         Node target = huginNetwork.getNodeByName(nameTarget);
 
+            Stopwatch watch = Stopwatch.createStarted();
+
             huginNetwork.learnChowLiuTree(root, target);
+
+            System.out.println("Only TAN struct. learning: "+watch.stop());
 
             //Parametric learning
             //huginNetwork.compile();
@@ -113,8 +118,9 @@ public class ParallelTAN {
 
 
     public BayesianNetwork learnBN(DataBase dataBase) {
+        LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
         LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::parallelLearnStatic);
-        return LearningEngine.learnParameters(this.learnDAG(dataBase),dataBase);
+        return LearningEngine.learnStaticModel(dataBase);
     }
 
 }
