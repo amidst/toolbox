@@ -201,7 +201,7 @@ public class DynamicVariables  implements Iterable<Variable>{
     //    return this.temporalClones;
     //}
 
-    private Variable getVariableById(int varID) {
+    public Variable getVariableById(int varID) {
        return this.allVariables.get(varID);
     }
 
