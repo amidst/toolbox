@@ -50,4 +50,15 @@ public interface Vector {
         return sum;
     }
 
+    public static Vector sum(Vector vec1, Vector vec2){
+        if (vec1.size()!=vec2.size())
+            throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. Parameters have a different size. ");
+
+        for (int i = 0; i < vec1.size(); i++) {
+            vec1.set(i,vec1.get(i)+vec2.get(i));
+        }
+
+        return vec1;
+    }
+
 }
