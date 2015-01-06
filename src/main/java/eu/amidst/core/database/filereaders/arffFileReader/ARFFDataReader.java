@@ -9,6 +9,7 @@ import eu.amidst.core.variables.FiniteStateSpace;
 import eu.amidst.core.variables.RealStateSpace;
 import eu.amidst.core.variables.StateSpaceType;
 import org.eclipse.jetty.io.UncheckedIOException;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,6 +39,7 @@ public class ARFFDataReader implements DataFileReader {
             Optional<String> atRelation = Files.lines(pathFile)
                     .map(String::trim)
                     .filter(w -> !w.isEmpty())
+                    .filter(w -> !w.startsWith("%"))
                     .limit(1)
                     .filter(line -> line.startsWith("@relation"))
                     .findFirst();
@@ -51,6 +53,7 @@ public class ARFFDataReader implements DataFileReader {
             Optional<String> atData = Files.lines(pathFile)
                     .map(String::trim)
                     .filter(w -> !w.isEmpty())
+                    .filter(w -> !w.startsWith("%"))
                     .peek(line -> count[0]++)
                     .filter(line -> line.startsWith("@data"))
                     .findFirst();
@@ -63,6 +66,7 @@ public class ARFFDataReader implements DataFileReader {
             List<String> attLines = Files.lines(pathFile)
                     .map(String::trim)
                     .filter(w -> !w.isEmpty())
+                    .filter(w -> !w.startsWith("%"))
                     .limit(dataLineCount)
                     .filter(line -> line.startsWith("@attribute"))
                     .collect(Collectors.toList());
@@ -92,12 +96,13 @@ public class ARFFDataReader implements DataFileReader {
             throw new IllegalArgumentException("Attribute line does not start with @attribute");
 
         String name = parts[1].trim();
+        name = StringUtils.strip(name,"'");
 
         parts[2]=line.substring(parts[0].length() + parts[1].length() + 2);
 
         parts[2]=parts[2].trim();
 
-        if (parts[2].equals("real")){
+        if (parts[2].equals("real") || parts[2].equals("numeric")){
             return new Attribute(index, name, new RealStateSpace());
         }else if (parts[2].startsWith("{")){
             String[] states = parts[2].substring(1,parts[2].length()-1).split(",");
@@ -130,7 +135,7 @@ public class ARFFDataReader implements DataFileReader {
         }catch (IOException ex){
             throw new UncheckedIOException(ex);
         }
-        return streamString.filter(w -> !w.isEmpty()).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
+        return streamString.filter(w -> !w.isEmpty()).filter(w -> !w.startsWith("%")).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
     }
 
 
@@ -144,13 +149,18 @@ public class ARFFDataReader implements DataFileReader {
                 throw new IllegalStateException("The number of columns does not match the number of attributes.");
 
             for (int i = 0; i < parts.length; i++) {
-                switch (atts.getList().get(i).getStateSpace().getStateSpaceType()){
-                    case REAL:
-                        data[i]=Double.parseDouble(parts[i]);
-                        break;
-                    case FINITE_SET:
-                        FiniteStateSpace finiteStateSpace = atts.getList().get(i).getStateSpace();
-                        data[i]=finiteStateSpace.getIndexOfState(parts[i]);
+                if(parts[i].equals("?")){
+                    data[i] = Double.NaN;
+                }
+                else {
+                    switch (atts.getList().get(i).getStateSpace().getStateSpaceType()) {
+                        case REAL:
+                            data[i] = Double.parseDouble(parts[i]);
+                            break;
+                        case FINITE_SET:
+                            FiniteStateSpace finiteStateSpace = atts.getList().get(i).getStateSpace();
+                            data[i] = finiteStateSpace.getIndexOfState(parts[i]);
+                    }
                 }
             }
         }
