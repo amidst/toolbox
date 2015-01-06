@@ -14,6 +14,24 @@ public final class EF_DistributionBuilder {
         //Not called
     }
 
+    public static EF_ConditionalDistribution toEFDistributionGeneral(ConditionalDistribution dist) {
+
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Multinomial_MultinomialParents")) {
+            return toEFDistribution((Multinomial_MultinomialParents) dist);
+        } else if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal_MultinomialParents")) {
+            return toEFDistribution((Normal_MultinomialParents) dist);
+        } else if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal_NormalParents")) {
+            return toEFDistribution((Normal_NormalParents) dist);
+        } else if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal_MultinomialNormalParents")) {
+            return toEFDistribution((Normal_MultinomialNormalParents) dist);
+        }else{
+            throw new IllegalArgumentException("This conditional distribution can not be converted to an exponential form: "+ dist.getClass().getName());
+        }
+
+    }
+
+
+
 
     public static Normal_MultinomialNormalParents toDistribution(EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents> dist, EF_Normal_NormalParents base) {
 
