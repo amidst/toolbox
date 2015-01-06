@@ -42,6 +42,6 @@ public class Attributes {
         for(Attribute att: getList()){
             if(att.getName().equals(name)){ return att;}
         }
-        throw new UnsupportedOperationException("Attribute "+name+" is not part of the list of Attributes (try uppercase)");
+        throw new UnsupportedOperationException("Attribute "+name+" is not part of the list of Attributes");
     }
 }
