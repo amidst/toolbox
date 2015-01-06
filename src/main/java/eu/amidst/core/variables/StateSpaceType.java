@@ -6,7 +6,6 @@ package eu.amidst.core.variables;
 public enum StateSpaceType {REAL, FINITE_SET;
 
         public static StateSpaceType parseKind(String s) {
-            s.toUpperCase();
             if(s.startsWith("{") && s.endsWith("}")){
                 return FINITE_SET;
             }

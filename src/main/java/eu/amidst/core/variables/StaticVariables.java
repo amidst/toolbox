@@ -139,7 +139,7 @@ public class StaticVariables implements Iterable<Variable>{
     public Variable getVariableByName(String name) {
         Integer index = this.mapping.get(name);
         if (index==null) {
-            throw new UnsupportedOperationException("Variable " + name + " is not part of the list of Variables (try uppercase)");
+            throw new UnsupportedOperationException("Variable " + name + " is not part of the list of Variables");
         }
         else {
             return this.getVariableById(index.intValue());
