@@ -95,9 +95,9 @@ public class ParallelTAN {
                 }
             }
 
-            //Structural learning
-            Node root = huginNetwork.getNodeByName(nameRoot);
-            Node target = huginNetwork.getNodeByName(nameTarget);
+        //Structural learning
+        Node root = huginNetwork.getNodeByName(nameRoot);
+        Node target = huginNetwork.getNodeByName(nameTarget);
 
             huginNetwork.learnChowLiuTree(root, target);
 
