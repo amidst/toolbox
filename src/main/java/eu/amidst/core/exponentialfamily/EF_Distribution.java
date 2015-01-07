@@ -78,7 +78,7 @@ public abstract class EF_Distribution {
     }
 
     public double computeLogProbabilityOf(DataInstance dataInstance){
-        return Vector.dotProduct(this.naturalParameters,this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) + this.computeLogNormalizer();
+        return this.naturalParameters.dotProduct(this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) + this.computeLogNormalizer();
     }
 
     public abstract Vector createZeroedVector();

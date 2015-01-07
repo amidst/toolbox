@@ -31,10 +31,15 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         return this.array.length;
     }
 
-    public void copy(Vector vector){
+    @Override
+    public void sum(Vector vector) {
         for (int i = 0; i < vector.size(); i++) {
-            this.set(i,vector.get(i));
+            this.array[i]+=vector.get(i);
         }
+    }
+
+    public void copy(Vector vector){
+        this.copy((ArrayVector)vector);
     }
 
     public double[] getArray(){
@@ -51,6 +56,15 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         for (int i = 0; i < this.array.length ; i++) {
             this.array[i]/=val;
         }
+    }
+
+    @Override
+    public double dotProduct(Vector vector) {
+        double sum=0;
+        for (int i = 0; i < vector.size(); i++) {
+            sum+=this.array[i]*vector.get(i);
+        }
+        return sum;
     }
 
 }

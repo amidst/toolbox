@@ -176,27 +176,27 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         double[] baseConf;
         E baseDist;
 
-        Vector[] baseVectors;
+        List<IndexedVector> baseVectors;
 
         public CompoundVector(E baseDist1, int nConf1){
             nConf = nConf1;
             this.baseConf = new double[nConf];
             baseDist = baseDist1;
-            baseVectors = new Vector[nConf];
+            baseVectors = new ArrayList(nConf);
             baseSSLength = baseDist.sizeOfSufficientStatistics();
 
             for (int i = 0; i < nConf; i++) {
-                baseVectors[i]=baseDist.createZeroedVector();
+                baseVectors.add(i, new IndexedVector(i,baseDist.createZeroedVector()));
             }
 
         }
 
         public void setVectorByPosition(int position, Vector vec){
-            baseVectors[position]=vec;
+            baseVectors.get(position).setVector(vec);
         }
 
         public Vector getVectorByPosition(int position){
-            return this.baseVectors[position];
+            return this.baseVectors.get(position).getVector();
         }
 
         public double getBaseConf(int i){
@@ -213,7 +213,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 return this.baseConf[i];
             }else{
                 i -= nConf;
-                return baseVectors[Math.floorDiv(i,this.baseSSLength)].get(i%baseSSLength);
+                return baseVectors.get(Math.floorDiv(i,this.baseSSLength)).getVector().get(i % baseSSLength);
             }
         }
 
@@ -223,7 +223,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 baseConf[i] = val;
             }else{
                 i -= nConf;
-                baseVectors[Math.floorDiv(i,this.baseSSLength)].set(i%baseSSLength,val);
+                baseVectors.get(Math.floorDiv(i,this.baseSSLength)).getVector().set(i % baseSSLength, val);
             }
         }
 
@@ -232,22 +232,83 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             return nConf + nConf*baseSSLength;
         }
 
+        @Override
+        public void sum(Vector vector) {
+            this.sum((CompoundVector<E>)vector);
+        }
+
+        public void sum(CompoundVector<E> vector) {
+            if (vector.size()!=this.size())
+                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+
+            for (int i = 0; i < baseConf.length; i++) {
+                baseConf[i]+=vector.getBaseConf(i);
+            }
+
+            this.baseVectors.stream().forEach(w -> w.getVector().sum(vector.getVectorByPosition(w.getIndex())));
+        }
+
+        @Override
+        public void copy(Vector vector) {
+            this.copy((CompoundVector<E>)vector);
+        }
+
         public void copy(CompoundVector<E> vector) {
             if (vector.size()!=this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
             System.arraycopy(vector.baseConf,0,this.baseConf,0,this.nConf);
-            for (int i = 0; i < this.nConf; i++) {
-                this.baseVectors[i].copy(vector.getVectorByPosition(i));
-            }
+            this.baseVectors.stream().forEach(w -> w.getVector().copy(vector.getVectorByPosition(w.getIndex())));
         }
 
         @Override
         public void divideBy(double val) {
             for (int i = 0; i < this.baseConf.length; i++) {
-                this.baseConf[i]/=val;
-                this.baseVectors[i].divideBy(val);
+                this.baseConf[i] /= val;
             }
+            this.baseVectors.stream().forEach(w -> w.getVector().divideBy(val));
+        }
+
+        @Override
+        public double dotProduct(Vector vector) {
+            return this.dotProduct((CompoundVector<E>)vector);
+        }
+
+        public double dotProduct(CompoundVector<E> vector) {
+            if (vector.size()!=this.size())
+                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+
+            double sum = 0;
+
+            for (int i = 0; i < baseConf.length; i++) {
+                sum+=baseConf[i]*vector.getBaseConf(i);
+            }
+
+            sum+=this.baseVectors.stream().mapToDouble(w -> w.getVector().dotProduct(vector.getVectorByPosition(w.getIndex()))).sum();
+
+            return sum;
+        }
+    }
+
+    static class IndexedVector {
+        Vector vector;
+        int index;
+
+        IndexedVector(int index1, Vector vec1){
+            this.vector=vec1;
+            this.index = index1;
+        }
+
+        public Vector getVector() {
+            return vector;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setVector(Vector vector) {
+            this.vector = vector;
         }
     }
 }

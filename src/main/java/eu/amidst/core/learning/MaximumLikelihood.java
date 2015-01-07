@@ -41,7 +41,7 @@ public final class MaximumLikelihood {
                 //        System.out.println("ML Sample: "+count[0]);
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sum);
+                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
 
         //Normalize the sufficient statistics
         sum.divideBy(count[0]);
@@ -65,7 +65,7 @@ public final class MaximumLikelihood {
                     //    System.out.println("ML Sample: "+count.get());
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sum);
+                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
 
         //Normalize the sufficient statistics
         sumSS.divideBy(count.get());
