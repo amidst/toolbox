@@ -338,27 +338,24 @@ Similarly the above log-conditional probability can be expressed in the followin
 &=&
 \begin{pmatrix}
 \frac{-1}{2\sigma^2} &=& \theta_{\mbox{-}1} \\
-\frac{-\beta_1^2}{2\sigma^2} &=& \theta_{1^2} \\
-\vdots \\
-\frac{-\beta_n^2}{2\sigma^2} &=& \theta_{n^2} \\
 \frac{\beta_0}{\sigma^2} &=& \theta_0 \\
 \frac{\beta_1}{\sigma^2} &=& \theta_1 \\
 \vdots\\
 \frac{\beta_n}{\sigma^2} &=& \theta_n \\\\
-\frac{-\beta_0\beta_1}{\sigma^2} &=&\theta_{01} \\
+\frac{-\beta_0\beta_1}{2\sigma^2} &=&\theta_{01} \\
 \vdots\\
-\frac{-\beta_0\beta_n}{\sigma^2} &=& \theta_{0n} \\
-\frac{-\beta_1\beta_2}{\sigma^2} &=& \theta_{12} \\
+\frac{-\beta_0\beta_n}{2\sigma^2} &=& \theta_{0n} \\
+\frac{-\beta_1^2}{2\sigma^2} &=& \theta_{1^2} \\
+\vdots \\
+\frac{-\beta_n^2}{2\sigma^2} &=& \theta_{n^2} \\
+\frac{-\beta_1\beta_2}{2\sigma^2} &=& \theta_{12} \\
 \vdots\\
-\frac{-\beta_1\beta_n}{\sigma^2} &=& \theta_{1n} \\
+\frac{-\beta_1\beta_n}{2\sigma^2} &=& \theta_{1n} \\
 \vdots\\
-\frac{-\beta_{n-1}\beta_n}{\sigma^2} &=&\theta_{n\mbox{-}1n} \\
+\frac{-\beta_{n-1}\beta_n}{2\sigma^2} &=&\theta_{n\mbox{-}1n} \\
 \end{pmatrix}^T
 \begin{pmatrix}
 X^2   &=& m_{X^2}\\
-Y_1^2 &=& m_{Y_1^2}\\
-\vdots\\
-Y_n^2 &=& m_{Y_n^2}\\
 X     &=& m_{X}\\
 XY_1  &=& m_{XY_1}\\
 \vdots\\
@@ -366,6 +363,9 @@ XY_n  &=& m_{XY_n}\\
 Y_1   &=& m_{Y_1}\\
 \vdots\\
 Y_n   &=& m_{Y_n}\\
+Y_1^2 &=& m_{Y_1^2}\\
+\vdots\\
+Y_n^2 &=& m_{Y_n^2}\\
 Y_1Y_2&=& m_{Y_1Y_2}\\
 \vdots\\
 Y_1Y_n &=& m_{Y_1Y_n}\\
@@ -384,14 +384,14 @@ where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
 \ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
 &=&
 \begin{pmatrix}
-\frac{-1}{2\sigma^2} &=& \theta_{\mbox{-}1} \\
-\frac{\beta}{\sigma^2} &=& \theta_{\beta} \\
-\frac{-\beta^T \beta}{2\sigma^2} &=& \theta_{\beta^T \beta} \\
-\end{pmatrix}
+-1 (2\sigma^2)^{-1} &=& \theta_{\mbox{-}1} \\
+\beta (\sigma^2)^{-1} &=& \theta_{\beta} \\
+-\beta \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta^T \beta} \\
+\end{pmatrix}^T
 \begin{pmatrix}
 XX^T   &=& \E(XX^T)\\
-Y'X   &=& \E(YX)\\
-Y'Y'^T   &=& \E(YY^T)\\
+Y'X^T   &=& \E(YX)\\
+Y'Y^T   &=& \E(YY^T)\\
 \end{pmatrix}
 - (\ln{\sigma}) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
 \end{eqnarray*}
@@ -406,6 +406,8 @@ X_r\\
 \end{pmatrix}
 \end{eqnarray*}
 
+\begin{tabular}{p{6cm}p{6cm}}
+\vspace{0.01mm}
 \begin{eqnarray*}
 Y &=& 
 \begin{pmatrix}
@@ -414,9 +416,54 @@ Y_1\\
 Y_n\\
 \end{pmatrix}
 \end{eqnarray*}
+&
+\begin{eqnarray*}
+Y' &=& 
+\begin{pmatrix}
+1\\
+Y_1\\
+\vdots\\
+Y_n\\
+\end{pmatrix}
+\end{eqnarray*}
+\\
+\end{tabular}
+
+\begin{tabular}{p{3.5cm}p{3.5cm}p{3.5cm}}
+\vspace{0.01mm}
+\begin{eqnarray*}
+\beta &=& 
+\begin{pmatrix}
+\beta_1\\
+\vdots\\
+\beta_n\\
+\end{pmatrix}
+\end{eqnarray*}
+&
+\begin{eqnarray*}
+\beta' &=& 
+\begin{pmatrix}
+\beta_0\\
+\beta_1\\
+\vdots\\
+\beta_n\\
+\end{pmatrix}
+\end{eqnarray*}
+&
+\begin{eqnarray*}
+\beta' \beta^T &=& 
+\begin{pmatrix}
+\beta_0\beta_1 & \cdots & \beta_0\beta_n\\
+\beta_1\beta_1 & \cdots & \beta_1\beta_n\\
+\vdots\\
+\beta_n\beta_1 & \cdots & \beta_n\beta_n\\
+\end{pmatrix}
+\end{eqnarray*}
+\\
+\end{tabular}
 
 \begin{eqnarray*}
-Y'Y'^T &=& 
+Y'Y^T &=& 
 \begin{pmatrix}
 1\\
 Y_1\\
@@ -424,18 +471,15 @@ Y_1\\
 Y_n\\
 \end{pmatrix}
 \begin{pmatrix}
-1\\
-Y_1
-\cdots
-Y_n
+Y_1&\cdots&Y_n
 \end{pmatrix}
 =
 \begin{pmatrix}
-1 & Y_1   & \cdots & Y_n\\ 
-Y_1&Y_1Y_1 & \cdots & Y_1Y_n\\
-Y_2&Y_2Y_1 &\cdots & Y_2Y_n\\
+Y_1   & \cdots & Y_n\\ 
+Y_1Y_1 & \cdots & Y_1Y_n\\
+Y_2Y_1 &\cdots & Y_2Y_n\\
 \vdots\\
-Y_n&Y_nY_1 &\cdots &Y_nY_n\\
+Y_nY_1 &\cdots &Y_nY_n\\
 \end{pmatrix}
 \end{eqnarray*}
 
@@ -447,9 +491,7 @@ X_1\\
 X_r\\
 \end{pmatrix}
 \begin{pmatrix}
-X_1
-\cdots
-X_r
+X_1 & \cdots & X_r
 \end{pmatrix}
 =
 \begin{pmatrix}
@@ -463,14 +505,13 @@ X_rX_1 &\cdots &X_rX_r\\
 \begin{eqnarray*}
 Y'X^T &=& 
 \begin{pmatrix}
+1\\
 Y_1\\
 \vdots\\
 Y_n\\
 \end{pmatrix}
 \begin{pmatrix}
-X_1
-\cdots
-X_r
+X_1 & \cdots & X_r
 \end{pmatrix}
 =
 \begin{pmatrix}
