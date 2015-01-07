@@ -17,7 +17,7 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     }
 
     public double computeLogProbabilityOf(double val){
-        return Vector.dotProduct(this.naturalParameters,this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) + this.computeLogNormalizer();
+        return this.naturalParameters.dotProduct(this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) + this.computeLogNormalizer();
     }
 
     public SufficientStatistics getSufficientStatistics(DataInstance data){

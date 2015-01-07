@@ -52,7 +52,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
     public BayesianNetwork toBayesianNetwork(DAG dag){
         ConditionalDistribution[] dists = new ConditionalDistribution[dag.getStaticVariables().getNumberOfVars()];
-        this.distributionList.parallelStream().forEach( dist -> dists[dist.getVariable().getVarID()]=EF_DistributionBuilder.toDistributionGeneral(dist));
+        this.distributionList.stream().forEach(dist -> dists[dist.getVariable().getVarID()] = EF_DistributionBuilder.toDistributionGeneral(dist));
         return BayesianNetwork.newBayesianNetwork(dag, Arrays.asList(dists));
     }
 
@@ -63,7 +63,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
         CompoundVector globalMomentsParam = (CompoundVector)this.momentParameters;
         CompoundVector vectorNatural = this.createCompoundVector();
 
-        this.distributionList.parallelStream().forEach(w -> {
+        this.distributionList.stream().forEach(w -> {
             MomentParameters localMomentParam = (MomentParameters) globalMomentsParam.getVectorByPosition(w.getVariable().getVarID());
             w.setMomentParameters(localMomentParam);
             vectorNatural.setVectorByPosition(w.getVariable().getVarID(),w.getNaturalParameters());
@@ -79,7 +79,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
     public SufficientStatistics getSufficientStatistics(DataInstance data) {
         CompoundVector vectorSS = this.createCompoundVector();
 
-        this.distributionList.parallelStream().forEach(w -> {
+        this.distributionList.stream().forEach(w -> {
             vectorSS.setVectorByPosition(w.getVariable().getVarID(),w.getSufficientStatistics(data));
         });
 
@@ -93,12 +93,12 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
     @Override
     public double computeLogBaseMeasure(DataInstance dataInstance) {
-        return this.distributionList.parallelStream().mapToDouble(w -> w.computeLogBaseMeasure(dataInstance)).sum();
+        return this.distributionList.stream().mapToDouble(w -> w.computeLogBaseMeasure(dataInstance)).sum();
     }
 
     @Override
     public double computeLogNormalizer() {
-        return this.distributionList.parallelStream().mapToDouble(w -> w.computeLogNormalizer()).sum();
+        return this.distributionList.stream().mapToDouble(w -> w.computeLogNormalizer()).sum();
     }
 
     @Override
@@ -113,36 +113,36 @@ public class EF_BayesianNetwork extends EF_Distribution {
     static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 
         int size;
-        Vector[] baseVectors;
+        List<IndexedVector> baseVectors;
 
-        public CompoundVector(List<EF_ConditionalDistribution> dists){
+        public CompoundVector(List<EF_ConditionalDistribution> dists) {
 
-            baseVectors = new Vector[dists.size()];
+            baseVectors = new ArrayList(dists.size());
 
-            size=0;
-            for (int i = 0; i < baseVectors.length; i++) {
-                baseVectors[i]=dists.get(i).createZeroedVector();
-                size+=baseVectors[i].size();
+            size = 0;
+            for (int i = 0; i < dists.size(); i++) {
+                baseVectors.add(i, new IndexedVector(i, dists.get(i).createZeroedVector()));
+                size += baseVectors.get(i).getVector().size();
             }
 
         }
 
-        public void setVectorByPosition(int position, Vector vec){
-            baseVectors[position]=vec;
+        public void setVectorByPosition(int position, Vector vec) {
+            baseVectors.get(position).setVector(vec);
         }
 
-        public Vector getVectorByPosition(int position){
-            return this.baseVectors[position];
+        public Vector getVectorByPosition(int position) {
+            return this.baseVectors.get(position).getVector();
         }
 
         @Override
         public double get(int i) {
             int total = 0;
-            for (int j = 0; j < this.baseVectors.length; j++) {
-                if (i<(total+this.baseVectors[j].size())){
-                    return this.baseVectors[j].get(i-total);
-                }else{
-                    total+=this.baseVectors[j].size();
+            for (int j = 0; j < this.baseVectors.size(); j++) {
+                if (i < (total + this.baseVectors.get(j).getVector().size())) {
+                    return this.baseVectors.get(j).getVector().get(i - total);
+                } else {
+                    total += this.baseVectors.get(j).getVector().size();
                 }
             }
             return Double.NaN;
@@ -151,11 +151,11 @@ public class EF_BayesianNetwork extends EF_Distribution {
         @Override
         public void set(int i, double val) {
             int total = 0;
-            for (int j = 0; j < this.baseVectors.length; j++) {
-                if (i<(total+this.baseVectors[j].size())){
-                    this.baseVectors[j].set(i - total, val);
-                }else{
-                    total+=this.baseVectors[j].size();
+            for (int j = 0; j < this.baseVectors.size(); j++) {
+                if (i < (total + this.baseVectors.get(j).getVector().size())) {
+                    this.baseVectors.get(j).getVector().set(i - total, val);
+                } else {
+                    total += this.baseVectors.get(j).getVector().size();
                 }
             }
         }
@@ -165,13 +165,63 @@ public class EF_BayesianNetwork extends EF_Distribution {
             return size;
         }
 
+        @Override
+        public void sum(Vector vector) {
+            this.sum((CompoundVector)vector);
+        }
+
+        @Override
+        public void copy(Vector vector) {
+            this.copy((CompoundVector)vector);
+        }
+
+        @Override
+        public void divideBy(double val) {
+            this.baseVectors.stream().forEach(w -> w.getVector().divideBy(val));
+        }
+
+        @Override
+        public double dotProduct(Vector vec) {
+            return this.dotProduct((CompoundVector)vec);
+        }
+
+        public double dotProduct(CompoundVector vec) {
+            return this.baseVectors.stream().mapToDouble(w -> w.getVector().dotProduct(vec.getVectorByPosition(w.getIndex()))).sum();
+        }
+
         public void copy(CompoundVector vector) {
-            if (vector.size()!=this.size())
+            if (vector.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
-            for (int i = 0; i < this.baseVectors.length; i++) {
-                this.baseVectors[i].copy(vector.getVectorByPosition(i));
-            }
+            this.baseVectors.stream().forEach(w -> w.getVector().copy(vector.getVectorByPosition(w.getIndex())));
+
+        }
+
+        public void sum(CompoundVector vector) {
+            this.baseVectors.stream().forEach(w -> w.getVector().sum(vector.getVectorByPosition(w.getIndex())));
+        }
+
+    }
+
+    static class IndexedVector {
+        Vector vector;
+        int index;
+
+        IndexedVector(int index1, Vector vec1){
+            this.vector=vec1;
+            this.index = index1;
+        }
+
+        public Vector getVector() {
+            return vector;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setVector(Vector vector) {
+            this.vector = vector;
         }
     }
 }
