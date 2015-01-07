@@ -8,6 +8,6 @@ import eu.amidst.core.utils.Vector;
  */
 public interface SufficientStatistics extends Vector {
     public static SufficientStatistics sum(SufficientStatistics vec1, SufficientStatistics vec2){
-        return (SufficientStatistics) Vector.sum(vec1,vec2);
+        return vec1;//(SufficientStatistics) Vector.sum(vec1,vec2);
     }
 }
