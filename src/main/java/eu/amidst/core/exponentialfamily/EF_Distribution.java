@@ -52,7 +52,7 @@ public abstract class EF_Distribution {
     }
 
     public void setMomentParameters(SufficientStatistics parameters) {
-        this.momentParameters.copy(parameters);
+        this.momentParameters=(MomentParameters)parameters;
         this.updateNaturalFromMomentParameters();
     }
 
@@ -84,7 +84,6 @@ public abstract class EF_Distribution {
     public abstract Vector createZeroedVector();
 
     public MomentParameters createZeroedMomentParameters(){
-
         return (MomentParameters)this.createZeroedVector();
     }
 
