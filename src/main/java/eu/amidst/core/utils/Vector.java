@@ -14,51 +14,11 @@ public interface Vector {
 
     public int size();
 
-    public default void copy(Vector vector){
-        if (vector.size()!=this.size())
-            throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+    public void sum(Vector vector);
 
-        for (int i = 0; i < vector.size(); i++) {
-            this.set(i,vector.get(i));
-        }
-    }
+    public void copy(Vector vector);
 
-    public default void divideBy(double val){
-        for (int i=0; i<this.size(); i++){
-            this.set(i, this.get(i)/val);
-        }
-    }
+    public void divideBy(double val);
 
-    public default void dotProduct(Vector vec){
-        if (vec.size()!=this.size())
-            throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. The parameter vec has a different size. ");
-
-        for (int i=0; i<this.size(); i++){
-            this.set(i, this.get(i)*vec.get(i));
-        }
-    }
-
-    public static double dotProduct(Vector vec1, Vector vec2){
-        if (vec1.size()!=vec2.size())
-            throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. Parameters have a different size. ");
-
-        double sum=0;
-        for (int i=0; i<vec1.size(); i++){
-            sum += vec1.get(i)*vec2.size();
-        }
-
-        return sum;
-    }
-
-    public static Vector sum(Vector vec1, Vector vec2){
-        if (vec1.size()!=vec2.size())
-            throw new IllegalArgumentException("Error in variable Vector. Method dotProduct. Parameters have a different size. ");
-
-        for (int i = 0; i < vec1.size(); i++) {
-            vec1.set(i,vec1.get(i)+vec2.get(i));
-        }
-
-        return vec1;
-    }
-
+    public double dotProduct(Vector vec);
 }
