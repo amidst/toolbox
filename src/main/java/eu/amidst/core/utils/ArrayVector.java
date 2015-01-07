@@ -1,9 +1,13 @@
 package eu.amidst.core.utils;
 
+import eu.amidst.core.exponentialfamily.MomentParameters;
+import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
+
 /**
  * Created by andresmasegosa on 12/11/14.
  */
-public class ArrayVector implements Vector{
+public class ArrayVector implements MomentParameters, NaturalParameters, SufficientStatistics{
 
     private double[] array;
 
