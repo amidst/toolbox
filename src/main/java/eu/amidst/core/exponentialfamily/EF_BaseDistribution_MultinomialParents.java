@@ -39,7 +39,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
 
-        if (multinomialParents1.size()==0) throw new IllegalArgumentException("Size of multinomial parents is zero");
+        //if (multinomialParents1.size()==0) throw new IllegalArgumentException("Size of multinomial parents is zero");
         if (distributions1.size() == 0) throw new IllegalArgumentException("Size of base distributions is zero");
 
         int size = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents1);
@@ -117,8 +117,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         CompoundVector<E> globalMomentsParam = (CompoundVector<E>)this.momentParameters;
 
         for (int i = 0; i < numberOfConfigurations(); i++) {
-            MomentParameters moment = this.getEF_BaseDistribution(i).createZeroedMomentParameters();
-            moment.copy(globalMomentsParam.getVectorByPosition(i));
+            MomentParameters moment = (MomentParameters)globalMomentsParam.getVectorByPosition(i);
             moment.divideBy(globalMomentsParam.getBaseConf(i));
             this.getEF_BaseDistribution(i).setMomentParameters(momentParameters);
         }
@@ -128,7 +127,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         for (int i = 0; i < numberOfConfigurations(); i++) {
             vectorNatural.setBaseConf(i, -this.getEF_BaseDistribution(i).computeLogNormalizer());
-            vectorNatural.getVectorByPosition(i).copy(this.getEF_BaseDistribution(i).getNaturalParameters());
+            vectorNatural.setVectorByPosition(i, this.getEF_BaseDistribution(i).getNaturalParameters());
         }
 
         this.naturalParameters=vectorNatural;
@@ -193,7 +192,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         }
 
         public void setVectorByPosition(int position, Vector vec){
-            baseVectors[position].copy(vec);
+            baseVectors[position]=vec;
         }
 
         public Vector getVectorByPosition(int position){
@@ -210,8 +209,12 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         @Override
         public double get(int i) {
-            i -= nConf;
-            return baseVectors[(int)Math.ceil(i/(double)nConf)].get(i%baseSSLength);
+            if (i<nConf) {
+                return this.baseConf[i];
+            }else{
+                i -= nConf;
+                return baseVectors[Math.floorDiv(i,this.baseSSLength)].get(i%baseSSLength);
+            }
         }
 
         @Override
@@ -220,7 +223,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 baseConf[i] = val;
             }else{
                 i -= nConf;
-                baseVectors[(int)Math.ceil(i/(double)nConf)].set(i%baseSSLength,val);
+                baseVectors[Math.floorDiv(i,this.baseSSLength)].set(i%baseSSLength,val);
             }
         }
 
