@@ -51,6 +51,10 @@ public abstract class EF_Distribution {
         this.updateMomentFromNaturalParameters();
     }
 
+    public void setMomentParameters(SufficientStatistics parameters) {
+        this.momentParameters.copy(parameters);
+        this.updateNaturalFromMomentParameters();
+    }
 
     public void setMomentParameters(MomentParameters parameters) {
         this.momentParameters=parameters;// .copy(parameters);
