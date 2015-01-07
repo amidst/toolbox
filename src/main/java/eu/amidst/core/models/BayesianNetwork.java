@@ -33,17 +33,22 @@ public final class BayesianNetwork {
         return new BayesianNetwork(dag);
     }
 
+    public static BayesianNetwork newBayesianNetwork(DAG dag, List<ConditionalDistribution> dists){
+        return new BayesianNetwork(dag);
+    }
+
     private BayesianNetwork(DAG dag) {
         this.dag = dag;
         initializeDistributions();
     }
 
-    public <E extends ConditionalDistribution> E getDistribution(Variable var) {
-        return (E)distributions.get(var.getVarID());
+    private BayesianNetwork(DAG dag, List<ConditionalDistribution> dists) {
+        this.dag = dag;
+        this.distributions=dists;
     }
 
-    public void setDistribution(Variable var, ConditionalDistribution dist){
-        this.distributions.set(var.getVarID(),dist);
+    public <E extends ConditionalDistribution> E getDistribution(Variable var) {
+        return (E)distributions.get(var.getVarID());
     }
 
     public int getNumberOfVars() {

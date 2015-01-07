@@ -104,12 +104,13 @@ public class ParallelTAN {
 
             huginNetwork.learnChowLiuTree(root, target);
 
-            System.out.println("Only TAN struct. learning: "+watch.stop());
-
             //Parametric learning
             //huginNetwork.compile();
             //huginNetwork.learnTables();
             //huginNetwork.uncompile();
+
+            System.out.println("Only TAN struct. learning: "+watch.stop());
+
             return (ConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
         } catch (ExceptionHugin exceptionHugin) {
             throw new IllegalStateException("Huging Exeception: " + exceptionHugin.getMessage());
