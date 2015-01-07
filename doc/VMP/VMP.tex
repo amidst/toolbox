@@ -385,18 +385,22 @@ where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
 &=&
 \begin{pmatrix}
 -1 (2\sigma^2)^{-1} &=& \theta_{\mbox{-}1} \\
-\beta (\sigma^2)^{-1} &=& \theta_{\beta} \\
--\beta \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta^T \beta} \\
+\beta' (\sigma^2)^{-1} &=& \theta_{\beta} \\
+-\beta' \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta \beta^T} \\
 \end{pmatrix}^T
 \begin{pmatrix}
 XX^T   &=& \E(XX^T)\\
 Y'X^T   &=& \E(YX)\\
 Y'Y^T   &=& \E(YY^T)\\
 \end{pmatrix}
-- (\ln{\sigma}) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
+\\
+&-& \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right)  + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
 \end{eqnarray*}
 
 where
+
+\begin{tabular}{p{3.5cm}p{3.5cm}}
+\vspace{0.01mm}
 \begin{eqnarray*}
 X &=& 
 \begin{pmatrix}
@@ -405,8 +409,28 @@ X_1\\
 X_r\\
 \end{pmatrix}
 \end{eqnarray*}
+&
+\begin{eqnarray*}
+XX^T &=& 
+\begin{pmatrix}
+X_1\\
+\vdots\\
+X_r\\
+\end{pmatrix}
+\begin{pmatrix}
+X_1 & \cdots & X_r
+\end{pmatrix}
+=
+\begin{pmatrix}
+X_1X_1 &\cdots & X_1X_r\\
+X_2X_1 &\cdots & X_2X_r\\
+\vdots\\
+X_rX_1 &\cdots &X_rX_r\\
+\end{pmatrix}
+\end{eqnarray*}\\
+\end{tabular}
 
-\begin{tabular}{p{6cm}p{6cm}}
+\begin{tabular}{p{3.5cm}p{3.5cm}p{3.5cm}}
 \vspace{0.01mm}
 \begin{eqnarray*}
 Y &=& 
@@ -424,6 +448,27 @@ Y' &=&
 Y_1\\
 \vdots\\
 Y_n\\
+\end{pmatrix}
+\end{eqnarray*}
+&
+\begin{eqnarray*}
+Y'Y^T &=& 
+%\begin{pmatrix}
+%1\\
+%Y_1\\
+%\vdots\\
+%Y_n\\
+%\end{pmatrix}
+%\begin{pmatrix}
+%Y_1&\cdots&Y_n
+%\end{pmatrix}
+%=
+\begin{pmatrix}
+Y_1   & \cdots & Y_n\\ 
+Y_1Y_1 & \cdots & Y_1Y_n\\
+Y_2Y_1 &\cdots & Y_2Y_n\\
+\vdots\\
+Y_nY_1 &\cdots &Y_nY_n\\
 \end{pmatrix}
 \end{eqnarray*}
 \\
@@ -462,45 +507,9 @@ Y_n\\
 \\
 \end{tabular}
 
-\begin{eqnarray*}
-Y'Y^T &=& 
-\begin{pmatrix}
-1\\
-Y_1\\
-\vdots\\
-Y_n\\
-\end{pmatrix}
-\begin{pmatrix}
-Y_1&\cdots&Y_n
-\end{pmatrix}
-=
-\begin{pmatrix}
-Y_1   & \cdots & Y_n\\ 
-Y_1Y_1 & \cdots & Y_1Y_n\\
-Y_2Y_1 &\cdots & Y_2Y_n\\
-\vdots\\
-Y_nY_1 &\cdots &Y_nY_n\\
-\end{pmatrix}
-\end{eqnarray*}
 
-\begin{eqnarray*}
-XX^T &=& 
-\begin{pmatrix}
-X_1\\
-\vdots\\
-X_r\\
-\end{pmatrix}
-\begin{pmatrix}
-X_1 & \cdots & X_r
-\end{pmatrix}
-=
-\begin{pmatrix}
-X_1X_1 &\cdots & X_1X_r\\
-X_2X_1 &\cdots & X_2X_r\\
-\vdots\\
-X_rX_1 &\cdots &X_rX_r\\
-\end{pmatrix}
-\end{eqnarray*}
+
+
 
 \begin{eqnarray*}
 Y'X^T &=& 
