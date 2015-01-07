@@ -10,6 +10,8 @@ import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.Vector;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by andresmasegosa on 06/01/15.
  */
@@ -29,7 +31,18 @@ public final class MaximumLikelihood {
 
         EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
 
-        dataBase.stream().map(efBayesianNetwork::getSufficientStatistics).reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sum);
+
+        AtomicInteger count = new AtomicInteger(0);
+
+        SufficientStatistics sum = dataBase.stream()
+                .peek(w -> count.getAndIncrement())
+                .map(efBayesianNetwork::getSufficientStatistics)
+                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sum);
+
+        //Normalize the sufficient statistics
+        sum.divideBy(count.get());
+
+        efBayesianNetwork.setMomentParameters(sum);
 
         return efBayesianNetwork.toBayesianNetwork(dag);
 
@@ -39,8 +52,17 @@ public final class MaximumLikelihood {
 
         EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
 
-        dataBase.parallelStream(batchSize).map(efBayesianNetwork::getSufficientStatistics).reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sum);
+        AtomicInteger count = new AtomicInteger(0);
 
+        SufficientStatistics sumSS = dataBase.parallelStream(batchSize)
+                .peek(w -> count.getAndIncrement())
+                .map(efBayesianNetwork::getSufficientStatistics)
+                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sum);
+
+        //Normalize the sufficient statistics
+        sumSS.divideBy(count.get());
+
+        efBayesianNetwork.setMomentParameters(sumSS);
         return efBayesianNetwork.toBayesianNetwork(dag);
 
     }
