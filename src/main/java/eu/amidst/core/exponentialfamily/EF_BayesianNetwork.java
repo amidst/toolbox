@@ -11,6 +11,7 @@ import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.StaticVariables;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,6 +32,9 @@ public class EF_BayesianNetwork extends EF_Distribution {
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
 
+        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroedNaturalParameters();
+
     }
 
     public EF_BayesianNetwork(DAG  dag){
@@ -40,16 +44,16 @@ public class EF_BayesianNetwork extends EF_Distribution {
         for (ParentSet parentSet: dag.getParentSets()){
             ConditionalDistribution dist = DistributionBuilder.newDistribution(parentSet.getMainVar(), parentSet.getParents());
             EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
-            distributionList.set(ef_dist.getVariable().getVarID(), ef_dist);
+            distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
 
     }
 
     public BayesianNetwork toBayesianNetwork(DAG dag){
-        BayesianNetwork bayesianNetwork = BayesianNetwork.newBayesianNetwork(dag);
-        this.distributionList.stream().forEach( dist -> bayesianNetwork.setDistribution(dist.getVariable(), EF_DistributionBuilder.toDistributionGeneral(dist)));
-        return bayesianNetwork;
+        ConditionalDistribution[] dists = new ConditionalDistribution[dag.getStaticVariables().getNumberOfVars()];
+        this.distributionList.parallelStream().forEach( dist -> dists[dist.getVariable().getVarID()]=EF_DistributionBuilder.toDistributionGeneral(dist));
+        return BayesianNetwork.newBayesianNetwork(dag, Arrays.asList(dists));
     }
 
 
@@ -60,8 +64,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
         CompoundVector vectorNatural = this.createCompoundVector();
 
         this.distributionList.parallelStream().forEach(w -> {
-            MomentParameters localMomentParam = w.createZeroedMomentParameters();
-            localMomentParam.copy(globalMomentsParam.getVectorByPosition(w.getVariable().getVarID()));
+            MomentParameters localMomentParam = (MomentParameters) globalMomentsParam.getVectorByPosition(w.getVariable().getVarID());
             w.setMomentParameters(localMomentParam);
             vectorNatural.setVectorByPosition(w.getVariable().getVarID(),w.getNaturalParameters());
         });
@@ -77,7 +80,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
         CompoundVector vectorSS = this.createCompoundVector();
 
         this.distributionList.parallelStream().forEach(w -> {
-            vectorSS.getVectorByPosition(w.getVariable().getVarID()).copy(w.getSufficientStatistics(data));
+            vectorSS.setVectorByPosition(w.getVariable().getVarID(),w.getSufficientStatistics(data));
         });
 
         return vectorSS;
@@ -125,7 +128,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
         }
 
         public void setVectorByPosition(int position, Vector vec){
-            baseVectors[position].copy(vec);
+            baseVectors[position]=vec;
         }
 
         public Vector getVectorByPosition(int position){
