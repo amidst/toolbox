@@ -384,7 +384,7 @@ where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
 \ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
 &=&
 \begin{pmatrix}
--1 (2\sigma^2)^{-1} &=& \theta_{\mbox{-}1} \\
+-(2\sigma^2)^{-1} &=& \theta_{\mbox{-}1} \\
 \beta' (\sigma^2)^{-1} &=& \theta_{\beta} \\
 -\beta' \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta \beta^T} \\
 \end{pmatrix}^T
@@ -531,15 +531,17 @@ Y_nX_1 &Y_nX_2&\cdots &Y_nX_r\\
 \end{pmatrix}
 \end{eqnarray*}
 
+\newpage
+
 \begin{itemize}
-\item FIRST STEP:
+\item FIRST STEP: subindex $[1:k,1:r]$ for a matrix refers to rows $1$ to $k$ and columns $1$ to $r$.
 \begin{eqnarray*}
-\mu_X &=& E(X) = E(Y'X)_{[1,r]}\\
-\mu_\mathbf{Y} &=& \E(Y) = \E(YY^T)_{[1,n]}\\
-\Sigma_{XX} &=&  \E(XX^T) - \E(X)^2 = \E(XX^T) - \E(YX)_{[1,r]}^T \E(YX)_{[1,r]} \\
-\Sigma_{\mathbf{YY}} &=&  \E(YY^T) - \E(Y)^2 = \E(YY^T) - \E(YY^T)_{[n,1]} \E(YY^T)_{[1,n]} \\
-\Sigma_{X\mathbf{Y}} &=&  \E(YX)^T - \E(X)\E(Y) = \E(YX)^T - \E(YX)_{[1,r]} \E(YY^T)_{[n,1]} \\
-\Sigma_{\mathbf{Y}X} &=&  \E(YX) - \E(Y)\E(X) = \E(YX) - \E(YY^T)_{[n,1]} \E(YX)_{[1,r]}
+\mu_X &=& E(X) = E(Y'X^T)_{[1,1:r]}\\
+\mu_\mathbf{Y} &=& \E(Y) = \E(Y'Y^T)_{[1,1:n]}\\
+\Sigma_{XX} &=&  \E(XX^T) - \E(X)^2 = \E(XX^T) - \E(Y'X^T)_{[1,1:r]}^T \E(Y'X^T)_{[1,1:r]} \\
+\Sigma_{\mathbf{YY}} &=&  \E(YY^T) - \E(Y)^2 = \E(Y'Y^T) - \E(Y'Y^T)_{[1:n,1]} \E(Y'Y^T)_{[1,1:n]} \\
+\Sigma_{X\mathbf{Y}} &=&  \E(Y'X^T)^T - \E(X)\E(Y) = \E(Y'X^T)^T - \E(Y'X^T)_{[1,1:r]} \E(Y'Y^T)_{[1:n,1]} \\
+\Sigma_{\mathbf{Y}X} &=&  \E(Y'X^T) - \E(Y)\E(X) = \E(Y'X^T) - \E(Y'Y^T)_{[1:n,1]} \E(Y'X^T)_{[1,1:r]}
 \end{eqnarray*}
 
 \item SECOND STEP (Theorem 7.4 in page 253, Koller \& Friedman):
