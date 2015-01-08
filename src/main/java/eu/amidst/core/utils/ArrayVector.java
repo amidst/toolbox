@@ -1,9 +1,13 @@
 package eu.amidst.core.utils;
 
+import eu.amidst.core.exponentialfamily.MomentParameters;
+import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
+
 /**
  * Created by andresmasegosa on 12/11/14.
  */
-public class ArrayVector implements Vector{
+public class ArrayVector implements MomentParameters, NaturalParameters, SufficientStatistics{
 
     private double[] array;
 
@@ -25,6 +29,42 @@ public class ArrayVector implements Vector{
 
     public int size(){
         return this.array.length;
+    }
+
+    @Override
+    public void sum(Vector vector) {
+        for (int i = 0; i < vector.size(); i++) {
+            this.array[i]+=vector.get(i);
+        }
+    }
+
+    public void copy(Vector vector){
+        this.copy((ArrayVector)vector);
+    }
+
+    public double[] getArray(){
+        return this.array;
+    }
+
+    public void copy(ArrayVector vector){
+        if (vector.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors differnt sizes");
+        System.arraycopy(vector.getArray(),0,this.array,0,vector.getArray().length);
+    }
+
+    public void divideBy(double val){
+        for (int i = 0; i < this.array.length ; i++) {
+            this.array[i]/=val;
+        }
+    }
+
+    @Override
+    public double dotProduct(Vector vector) {
+        double sum=0;
+        for (int i = 0; i < vector.size(); i++) {
+            sum+=this.array[i]*vector.get(i);
+        }
+        return sum;
     }
 
 }

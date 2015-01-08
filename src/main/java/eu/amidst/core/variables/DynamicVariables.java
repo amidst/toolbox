@@ -201,7 +201,7 @@ public class DynamicVariables  implements Iterable<Variable>{
     //    return this.temporalClones;
     //}
 
-    private Variable getVariableById(int varID) {
+    public Variable getVariableById(int varID) {
        return this.allVariables.get(varID);
     }
 
@@ -213,7 +213,7 @@ public class DynamicVariables  implements Iterable<Variable>{
     public Variable getVariableByName(String name) {
         Integer index = this.mapping.get(name);
         if (index==null) {
-            throw new UnsupportedOperationException("Variable " + name + " is not part of the list of Variables (try uppercase)");
+            throw new UnsupportedOperationException("Variable " + name + " is not part of the list of Variables");
         }
         else {
             return this.getVariableById(index.intValue());
@@ -235,7 +235,7 @@ public class DynamicVariables  implements Iterable<Variable>{
                 return var;
             }
         }
-        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables (try uppercase)");
+        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables");
     }
 
     public void block(){
