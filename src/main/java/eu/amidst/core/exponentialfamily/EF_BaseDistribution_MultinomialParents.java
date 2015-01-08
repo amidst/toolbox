@@ -245,7 +245,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 baseConf[i]+=vector.getBaseConf(i);
             }
 
+            //this.baseVectors.stream().filter(w -> vector.getBaseConf(w.getIndex())!=0).forEach(w -> w.getVector().sum(vector.getVectorByPosition(w.getIndex())));
             this.baseVectors.stream().forEach(w -> w.getVector().sum(vector.getVectorByPosition(w.getIndex())));
+
         }
 
         @Override
