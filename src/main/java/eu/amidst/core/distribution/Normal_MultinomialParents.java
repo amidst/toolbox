@@ -124,16 +124,19 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         return distribution;
     }
 
-    public int getNumberOfParentAssignment(){
+    public int getNumberOfParentAssignments(){
         return getDistribution().length;
     }
 
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("");
-        for(int i=0;i<getNumberOfParentAssignment();i++){
+        for(int i=0;i<getNumberOfParentAssignments();i++){
             str.append(this.getNormal(i).toString() +"\n");
         }
         return str.toString();
     }
+
+
+
 }
