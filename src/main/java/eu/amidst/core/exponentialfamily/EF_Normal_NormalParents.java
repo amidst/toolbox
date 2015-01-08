@@ -1,6 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
@@ -10,10 +11,10 @@ import java.util.Map;
 /**
  * Created by ana@cs.aau.dk on 08/12/14.
  */
-public class Normal_NormalParents extends EF_ConditionalDistribution  {
+public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
 
-    public Normal_NormalParents(Variable var_, List<Variable> parents_) {
+    public EF_Normal_NormalParents(Variable var_, List<Variable> parents_) {
 
         this.var = var_;
         this.parents = parents_;
@@ -56,6 +57,11 @@ public class Normal_NormalParents extends EF_ConditionalDistribution  {
     @Override
     public double computeLogNormalizer() {
         return 0;
+    }
+
+    @Override
+    public Vector createZeroedVector() {
+        return null;
     }
 
     @Override
