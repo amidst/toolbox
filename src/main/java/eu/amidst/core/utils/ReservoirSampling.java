@@ -23,9 +23,9 @@ public class ReservoirSampling {
         int count = 0;
 
         for (DataInstance instance : dataBase){
-            if (count<numberOfSamples)
-                dataOnMemoryList.add(count,instance);
-            else{
+            if (count<numberOfSamples) {
+                dataOnMemoryList.add(count, instance);
+            }else{
                 int r = random.nextInt(count);
                 if (r < numberOfSamples)
                     dataOnMemoryList.add(r,instance);

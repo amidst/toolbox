@@ -1,5 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
@@ -17,8 +19,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
         }
 
         this.var=var1;
-        this.naturalParameters = new NaturalParameters(2);
-        this.momentParameters = new MomentParameters(2);
+        this.naturalParameters = this.createZeroedNaturalParameters();
+        this.momentParameters = this.createZeroedMomentParameters();
 
         this.momentParameters.set(EXPECTED_MEAN,0);
         this.momentParameters.set(EXPECTED_SQUARE,1);
@@ -38,8 +40,13 @@ public class EF_Normal extends EF_UnivariateDistribution {
     }
 
     @Override
+    public Vector createZeroedVector() {
+        return new ArrayVector(2);
+    }
+
+    @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        SufficientStatistics vec = new SufficientStatistics(2);
+        SufficientStatistics vec = this.createZeroedSufficientStatistics();
         vec.set(EXPECTED_MEAN,val);
         vec.set(EXPECTED_SQUARE,val*val);
         return vec;
