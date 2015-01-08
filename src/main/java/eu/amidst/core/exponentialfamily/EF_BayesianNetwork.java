@@ -77,7 +77,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
     @Override
     public SufficientStatistics getSufficientStatistics(DataInstance data) {
-        CompoundVector vectorSS = this.createCompoundVector();
+        CompoundVector vectorSS = this.createEmtpyCompoundVector();//.createCompoundVector();
 
         this.distributionList.stream().forEach(w -> {
             vectorSS.setVectorByPosition(w.getVariable().getVarID(),w.getSufficientStatistics(data));
@@ -107,22 +107,31 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     private CompoundVector createCompoundVector(){
-        return new CompoundVector(this.distributionList);
+        return new CompoundVector(this.distributionList, false);
 
     }
+
+    private CompoundVector createEmtpyCompoundVector() {
+        return new CompoundVector(this.distributionList, true);
+    }
+
     static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 
         int size;
         List<IndexedVector> baseVectors;
 
-        public CompoundVector(List<EF_ConditionalDistribution> dists) {
+        public CompoundVector(List<EF_ConditionalDistribution> dists, boolean empty) {
 
             baseVectors = new ArrayList(dists.size());
 
             size = 0;
             for (int i = 0; i < dists.size(); i++) {
-                baseVectors.add(i, new IndexedVector(i, dists.get(i).createZeroedVector()));
-                size += baseVectors.get(i).getVector().size();
+                if (empty)
+                    baseVectors.add(i, new IndexedVector(i, null));
+                else
+                    baseVectors.add(i, new IndexedVector(i, dists.get(i).createZeroedVector()));
+
+                size += dists.get(i).sizeOfSufficientStatistics();
             }
 
         }
