@@ -18,6 +18,10 @@ public class BayesianNetworkLoaderTest {
         BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromHugin(file);
         System.out.println("\nAMIDST network loaded from Hugin file.");
 
+        System.out.println(amidstBN.getDAG().toString());
+
+        System.out.println(amidstBN.toString());
+
         String file2 = new String("networks/huginNetworkFromAMIDST2.net");
         BayesianNetworkWriter.saveToHuginFile(amidstBN,file2);
         System.out.println("\nAMIDST network save to Hugin file.");
