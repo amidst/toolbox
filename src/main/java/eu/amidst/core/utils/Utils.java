@@ -44,10 +44,24 @@ public final class Utils {
             sum+=vals[i];
         }
 
+        for (int i=0; i<vals.length; i++) {
+            vals[i] /= sum;
+        }
+
+        return vals;
+
+    }
+
+    public static double[] newNormalize(double[] vals) {
+        double sum = 0;
+        for (int i=0; i<vals.length; i++) {
+            sum+=vals[i];
+        }
+
         double[] normalizedVals = new double[vals.length];
 
         for (int i=0; i<vals.length; i++) {
-            normalizedVals[i] /= sum;
+            normalizedVals[i] = vals[i]/sum;
         }
 
         return normalizedVals;

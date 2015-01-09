@@ -7,12 +7,14 @@ import eu.amidst.core.distribution.DistributionBuilder;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
+import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.StaticVariables;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa on 06/01/15.
@@ -80,7 +82,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
         CompoundVector vectorSS = this.createEmtpyCompoundVector();//.createCompoundVector();
 
         this.distributionList.stream().forEach(w -> {
-            vectorSS.setVectorByPosition(w.getVariable().getVarID(),w.getSufficientStatistics(data));
+            vectorSS.setVectorByPosition(w.getVariable().getVarID(), w.getSufficientStatistics(data));
         });
 
         return vectorSS;

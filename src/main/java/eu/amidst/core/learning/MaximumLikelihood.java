@@ -32,19 +32,17 @@ public final class MaximumLikelihood {
         EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
 
 
-        final int[] count =  {0};
+        final int[] dataInstanceCount =  {0};
 
         SufficientStatistics sum = dataBase.stream()
                 .peek(w -> {
-                    count[0]++;
-                //    if (count[0]%100==0)
-                //        System.out.println("ML Sample: "+count[0]);
+                    dataInstanceCount[0]++;
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
                 .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
 
         //Normalize the sufficient statistics
-        sum.divideBy(count[0]);
+        sum.divideBy(dataInstanceCount[0]);
 
         efBayesianNetwork.setMomentParameters(sum);
 
@@ -56,19 +54,17 @@ public final class MaximumLikelihood {
 
         EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
 
-        AtomicInteger count = new AtomicInteger(0);
+        AtomicInteger dataInstanceCount = new AtomicInteger(0);
 
         SufficientStatistics sumSS = dataBase.parallelStream(batchSize)
                 .peek(w -> {
-                    count.getAndIncrement();
-                    //if (count.get()%100==0)
-                    //    System.out.println("ML Sample: "+count.get());
+                    dataInstanceCount.getAndIncrement();
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
                 .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
 
         //Normalize the sufficient statistics
-        sumSS.divideBy(count.get());
+        sumSS.divideBy(dataInstanceCount.get());
 
         efBayesianNetwork.setMomentParameters(sumSS);
         return efBayesianNetwork.toBayesianNetwork(dag);
