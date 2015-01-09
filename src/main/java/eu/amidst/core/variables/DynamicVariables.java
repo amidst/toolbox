@@ -338,7 +338,7 @@ public class DynamicVariables  implements Iterable<Variable>{
 
             Variable var = (Variable) o;
 
-            return this.getName().equals(var.getName());
+            return this.getVarID()==var.getVarID();
         }
 
     }
