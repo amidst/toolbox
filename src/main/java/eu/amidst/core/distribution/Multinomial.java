@@ -11,6 +11,7 @@
  */
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 
 import java.util.Random;
@@ -113,6 +114,14 @@ public class Multinomial extends UnivariateDistribution {
 
     public String label() {
         return "Multinomial";
+    }
+
+    @Override
+    public void randomInitialization(Random random) {
+        for (int i = 0; i < probabilities.length; i++) {
+            probabilities[i] = random.nextDouble();
+        }
+        probabilities = Utils.normalize(probabilities);
     }
 
     public String toString() {

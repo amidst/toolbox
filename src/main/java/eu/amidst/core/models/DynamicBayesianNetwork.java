@@ -10,6 +10,7 @@ import eu.amidst.core.variables.Variable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * <h2>This class implements a dynamic Bayesian network.</h2>
@@ -185,4 +186,8 @@ public final class DynamicBayesianNetwork{
         return str.toString();
     }
 
+    public void randomInitialization(Random random){
+        this.distributionsTimeT.stream().forEach(w -> w.randomInitialization(random));
+        this.distributionsTime0.stream().forEach(w -> w.randomInitialization(random));
+    }
 }

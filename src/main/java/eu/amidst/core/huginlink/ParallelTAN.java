@@ -8,15 +8,22 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnMemory;
 import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.learning.LearningEngine;
 import eu.amidst.core.learning.MaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.ReservoirSampling;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+
+import java.io.IOException;
+import java.util.Random;
 
 
 /**
@@ -29,7 +36,7 @@ public class ParallelTAN {
     String nameRoot;
     String nameTarget;
 
-    public ParallelTAN () {
+    public ParallelTAN() {
         this.numSamplesOnMemory = 10000;
         this.numCores = 1; // Or Runtime.getRuntime().availableProcessors();
     }
@@ -67,7 +74,7 @@ public class ParallelTAN {
         try {
             huginNetwork = ConverterToHugin.convertToHugin(bn);
 
-            DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory,dataBase);
+            DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory, dataBase);
 
             // Set the number of cases
             int numCases = dataOnMemory.getNumberOfDataInstances();
@@ -78,29 +85,28 @@ public class ParallelTAN {
             NodeList nodeList = huginNetwork.getNodes();
 
             // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
-            for (int i = 0;i<nodeList.size();i++) {
-                Variable var =  bn.getDAG().getStaticVariables().getVariableById(i);
+            for (int i = 0; i < nodeList.size(); i++) {
+                Variable var = bn.getDAG().getStaticVariables().getVariableById(i);
                 Node n = nodeList.get(i);
                 if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
-                    ((DiscreteChanceNode)n).getExperienceTable();
-                    for (int j=0;j<numCases;j++){
-                        int state = (int)dataOnMemory.getDataInstance(j).getValue(var);
-                        ((DiscreteChanceNode)n).setCaseState(j, state);
+                    ((DiscreteChanceNode) n).getExperienceTable();
+                    for (int j = 0; j < numCases; j++) {
+                        int state = (int) dataOnMemory.getDataInstance(j).getValue(var);
+                        ((DiscreteChanceNode) n).setCaseState(j, state);
                     }
                 } else {
-                    ((ContinuousChanceNode)n).getExperienceTable();
-                    for (int j=0;j<numCases;j++){
+                    ((ContinuousChanceNode) n).getExperienceTable();
+                    for (int j = 0; j < numCases; j++) {
                         double value = dataOnMemory.getDataInstance(j).getValue(var);
-                        ((ContinuousChanceNode)n).setCaseValue(j, (long) value);
+                        ((ContinuousChanceNode) n).setCaseValue(j, (long) value);
                     }
                 }
             }
 
-        //Structural learning
-        Node root = huginNetwork.getNodeByName(nameRoot);
-        Node target = huginNetwork.getNodeByName(nameTarget);
+            //Structural learning
+            Node root = huginNetwork.getNodeByName(nameRoot);
+            Node target = huginNetwork.getNodeByName(nameTarget);
 
-            Stopwatch watch = Stopwatch.createStarted();
 
             huginNetwork.learnChowLiuTree(root, target);
 
@@ -109,7 +115,6 @@ public class ParallelTAN {
             //huginNetwork.learnTables();
             //huginNetwork.uncompile();
 
-            System.out.println("Only TAN struct. learning: "+watch.stop());
 
             return (ConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
         } catch (ExceptionHugin exceptionHugin) {
@@ -120,12 +125,37 @@ public class ParallelTAN {
 
     public BayesianNetwork learnBN(DataBase dataBase) {
         LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
-        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::parallelLearnStatic);
+        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::serialLearnStatic);
         return LearningEngine.learnStaticModel(dataBase);
     }
 
-}
+    public static void main(String[] args) throws ExceptionHugin, IOException {
 
+        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(2000);
+        BayesianNetworkGenerator.setNumberOfStates(10);
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
+
+        int sampleSize = 5000;
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.setParallelMode(true);
+        DataBase data =  sampler.sampleToDataBase(sampleSize);
+
+        for (int i = 1; i <= 4; i++) {
+            int samplesOnMemory = 1000;
+            int numCores = i;
+            System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
+            ParallelTAN tan = new ParallelTAN();
+            tan.setNumCores(numCores);
+            tan.setNumSamplesOnMemory(samplesOnMemory);
+            tan.setNameRoot(bn.getStaticVariables().getListOfVariables().get(0).getName());
+            tan.setNameTarget(bn.getStaticVariables().getListOfVariables().get(1).getName());
+            Stopwatch watch = Stopwatch.createStarted();
+            BayesianNetwork model = tan.learnBN(data);
+            System.out.println(watch.stop());
+        }
+    }
+}
 
 
 

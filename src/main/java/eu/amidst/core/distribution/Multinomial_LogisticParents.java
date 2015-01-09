@@ -6,6 +6,7 @@ import eu.amidst.core.variables.Variable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class Multinomial_LogisticParents extends ConditionalDistribution {
 
@@ -102,6 +103,16 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
     @Override
     public String label() {
         return "Multinomial Logistic";
+    }
+
+    @Override
+    public void randomInitialization(Random random) {
+        for (int i = 0; i < this.coeffParents.length; i++) {
+            this.intercept[i] = random.nextGaussian();
+            for (int j = 0; j < this.coeffParents[i].length; j++) {
+                this.coeffParents[i][j]=random.nextGaussian();
+            }
+        }
     }
 
     public String toString() {
