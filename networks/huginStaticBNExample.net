@@ -6,13 +6,13 @@ net
 node A
 {
     label = "A";
-    states = ("State_0" "State_1");
+    states = ("1" "2");
 }
 
 node B
 {
     label = "B";
-    states = ("State_0" "State_1" "State_2");
+    states = ("1" "2" "3");
 }
 
 continuous node C
@@ -26,7 +26,7 @@ continuous node D
 node E
 {
     label = "E";
-    states = ("State_0" "State_1");
+    states = ("1" "2");
 }
 
 continuous node G
@@ -64,12 +64,12 @@ potential (D)
 potential (E | B A)
 {
     data
-     = ((( 0.5 0.5 )	%  B=State_0  A=State_0
-	 ( 0.5 0.5 ))	%  B=State_0  A=State_1
-	(( 0.5 0.5 )	%  B=State_1  A=State_0
-	 ( 0.5 0.5 ))	%  B=State_1  A=State_1
-	(( 0.5 0.5 )	%  B=State_2  A=State_0
-	 ( 0.5 0.5 )));	%  B=State_2  A=State_1
+     = ((( 0.5 0.5 )	%  B=1  A=1
+	 ( 0.5 0.5 ))	%  B=1  A=2
+	(( 0.5 0.5 )	%  B=2  A=1
+	 ( 0.5 0.5 ))	%  B=2  A=2
+	(( 0.5 0.5 )	%  B=3  A=1
+	 ( 0.5 0.5 )));	%  B=3  A=2
 }
 
 potential (G | C D)
@@ -80,21 +80,21 @@ potential (G | C D)
 potential (H | B A)
 {
     data
-     = (( normal ( 0, 1 )	%  B=State_0  A=State_0
-	  normal ( 0, 1 ) )	%  B=State_0  A=State_1
-	( normal ( 0, 1 )	%  B=State_1  A=State_0
-	  normal ( 0, 1 ) )	%  B=State_1  A=State_1
-	( normal ( 0, 1 )	%  B=State_2  A=State_0
-	  normal ( 0, 1 ) ));	%  B=State_2  A=State_1
+     = (( normal ( 0, 1 )	%  B=1  A=1
+	  normal ( 0, 1 ) )	%  B=1  A=2
+	( normal ( 0, 1 )	%  B=2  A=1
+	  normal ( 0, 1 ) )	%  B=2  A=2
+	( normal ( 0, 1 )	%  B=3  A=1
+	  normal ( 0, 1 ) ));	%  B=3  A=2
 }
 
 potential (I | B A C D)
 {
     data
-     = (( normal ( C + D, 1 )	%  B=State_0  A=State_0
-	  normal ( C + D, 1 ) )	%  B=State_0  A=State_1
-	( normal ( C + D, 1 )	%  B=State_1  A=State_0
-	  normal ( C + D, 1 ) )	%  B=State_1  A=State_1
-	( normal ( C + D, 1 )	%  B=State_2  A=State_0
-	  normal ( C + D, 1 ) ));	%  B=State_2  A=State_1
+     = (( normal ( C + D, 1 )	%  B=1  A=1
+	  normal ( C + D, 1 ) )	%  B=1  A=2
+	( normal ( C + D, 1 )	%  B=2  A=1
+	  normal ( C + D, 1 ) )	%  B=2  A=2
+	( normal ( C + D, 1 )	%  B=3  A=1
+	  normal ( C + D, 1 ) ));	%  B=3  A=2
 }
