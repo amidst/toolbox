@@ -19,6 +19,7 @@ import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * <h2>This class implements a conditional distribution of a multinomial variable given a set of multinomial parents.</h2>
@@ -128,6 +129,13 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
         }
         else {
             return "Multinomial|Multinomial";
+        }
+    }
+
+    @Override
+    public void randomInitialization(Random random) {
+        for (int i = 0; i < this.probabilities.length; i++) {
+            this.probabilities[i].randomInitialization(random);
         }
     }
 

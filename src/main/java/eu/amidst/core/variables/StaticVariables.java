@@ -22,6 +22,8 @@ public class StaticVariables implements Iterable<Variable>{
 
     private HashMap<String, Integer> mapping;
 
+    Attributes attributes;
+
     public StaticVariables() {
         this.allVariables = new ArrayList<>();
         this.mapping = new HashMap<>();
@@ -32,7 +34,7 @@ public class StaticVariables implements Iterable<Variable>{
      *
      */
     public StaticVariables(Attributes atts) {
-
+        this.attributes= new Attributes(atts.getList());
         this.allVariables = new ArrayList<>();
         this.mapping = new HashMap<>();
 
@@ -71,6 +73,10 @@ public class StaticVariables implements Iterable<Variable>{
             allVariables.add(var.getVarID(), var);
 
         }
+    }
+
+    public Attributes getAttributes() {
+        return attributes;
     }
 
     public Variable addIndicatorVariable(Variable var) {
@@ -231,7 +237,7 @@ public class StaticVariables implements Iterable<Variable>{
 
             Variable var = (Variable) o;
 
-            return this.getName().equals(var.getName());
+            return this.getVarID()==var.getVarID();
         }
 
         @Override
