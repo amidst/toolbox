@@ -6,6 +6,7 @@ import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * <h2>This class implements a conditional distribution of a normal variable given a set of multinomial parents.</h2>
@@ -117,6 +118,13 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         }
         else {
             return "Normal|Multinomial";
+        }
+    }
+
+    @Override
+    public void randomInitialization(Random random) {
+        for (int i = 0; i < this.distribution.length; i++) {
+            this.distribution[i].randomInitialization(random);
         }
     }
 
