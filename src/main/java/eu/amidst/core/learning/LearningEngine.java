@@ -1,5 +1,6 @@
 package eu.amidst.core.learning;
 
+import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
@@ -84,8 +85,16 @@ public final class LearningEngine {
     }
 
     public static BayesianNetwork learnStaticModel(DataBase database){
+
+        Stopwatch watch = Stopwatch.createStarted();
         DAG dag = staticStructuralLearningAlgorithm.learn(database);
-        return staticParameterLearningAlgorithm.learn(dag,database);
+        System.out.println("Structural Learning : " + watch.stop());
+
+        watch = Stopwatch.createStarted();
+        BayesianNetwork network = staticParameterLearningAlgorithm.learn(dag,database);
+        System.out.println("Parameter Learning: " + watch.stop());
+
+        return network;
     }
 
     public static DynamicBayesianNetwork learnDynamicModel(DataBase database){

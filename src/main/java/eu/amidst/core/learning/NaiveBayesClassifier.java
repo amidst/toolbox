@@ -5,8 +5,12 @@ import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+
+import java.util.Random;
 
 /**
  * Created by andresmasegosa on 06/01/15.
@@ -47,16 +51,22 @@ public class NaiveBayesClassifier {
 
     public static void main(String[] args){
 
-        String dataFile = new String("./datasets/Pigs.arff");
-        DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(50000);
+        BayesianNetworkGenerator.setNumberOfStates(10);
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
 
-        NaiveBayesClassifier model = new NaiveBayesClassifier();
-        model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
+        int sampleSize = 100;
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.setParallelMode(false);
+        DataBase data =  sampler.sampleToDataBase(sampleSize);
 
-        model.learn(data);
-
-        BayesianNetwork nbClassifier = model.getBNModel();
-
+        for (int i = 1; i <= 10; i++) {
+            NaiveBayesClassifier model = new NaiveBayesClassifier();
+            model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
+            model.learn(data);
+            BayesianNetwork nbClassifier = model.getBNModel();
+        }
 
     }
 }

@@ -17,6 +17,7 @@ import eu.amidst.core.variables.Variable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by afa on 02/07/14.
@@ -132,6 +133,11 @@ public final class BayesianNetwork {
         }
         return str.toString();
     }
+
+    public void randomInitialization(Random random){
+        this.distributions.stream().forEach(w -> w.randomInitialization(random));
+    }
+
 }
 
 

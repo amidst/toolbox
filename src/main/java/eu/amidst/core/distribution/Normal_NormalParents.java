@@ -18,6 +18,7 @@ import eu.amidst.core.variables.Variable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * <h2>This class implements a Conditional Linear Gaussian distribution, i.e. a distribution of a normal variable with
@@ -161,6 +162,14 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
     public String label(){
         return "Normal|Normal";
+    }
+
+    @Override
+    public void randomInitialization(Random random) {
+        this.intercept = random.nextGaussian();
+        for (int j = 0; j < this.coeffParents.length; j++) {
+            this.coeffParents[j]=random.nextGaussian();
+        }
     }
 
 
