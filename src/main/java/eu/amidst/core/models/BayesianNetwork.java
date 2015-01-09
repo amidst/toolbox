@@ -106,7 +106,6 @@ public final class BayesianNetwork {
 
     public String toString(){
 
-
         StringBuilder str = new StringBuilder();
         str.append("Bayesian Network:\n");
 
