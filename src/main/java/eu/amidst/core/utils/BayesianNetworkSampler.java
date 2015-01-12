@@ -104,9 +104,7 @@ public class BayesianNetworkSampler  {
 
         this.getSampleStream(nSamples).forEach(e -> {
             try {
-                //fw.write(e.toString(variables) + "\n");
                 fw.write(e.toARFFString(variables) + "\n");
-
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }
