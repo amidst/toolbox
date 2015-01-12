@@ -48,31 +48,12 @@ public class DBNConverterToHugin {
                     String stateName = ((FiniteStateSpace)amidstVar.getStateSpace()).getStatesName(j);
                     n.setStateLabel(j, stateName);
             }
-
             Node huginVar = this.huginDBN.getNodeByName(amidstVar.getName());
             Node clone = huginVar.createTemporalClone();
             clone.setName("T_"+huginVar.getName());
             clone.setLabel("T_"+huginVar.getLabel());
         }
      }
-
-//    private void setTemporalClones(DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
-//
-//        DynamicDAG dynamicDAG = amidstDBN.getDynamicDAG();
-//        List<Variable> amidstVars = amidstDBN.getDynamicVariables().getListOfDynamicVariables();
-//
-//        for (Variable amidstChild: amidstVars){
-//            List<Variable> amidstParents = dynamicDAG.getParentSetTimeT(amidstChild).getParents();
-//            Node huginChild = this.huginDBN.getNodeByName(amidstChild.getName());
-//            //for(Variable amidstParent: amidstParents) {
-//              //  if(amidstParent.isTemporalClone()) {
-//                    Node clone = huginChild.createTemporalClone();
-//                    clone.setName("T_"+huginChild.getName());
-//                    clone.setLabel("T_"+huginChild.getLabel());
-//               // }
-//            //}
-//        }
-//    }
 
     private void setStructure (DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
 
@@ -96,7 +77,7 @@ public class DBNConverterToHugin {
                     huginChildClone.addParent(huginParentClone);
                 }
             }
-      }
+        }
     }
 
     private void setDistributions(DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
