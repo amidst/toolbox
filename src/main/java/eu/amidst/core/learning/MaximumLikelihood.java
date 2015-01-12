@@ -1,6 +1,7 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
@@ -11,6 +12,7 @@ import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.Vector;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa on 06/01/15.
@@ -18,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class MaximumLikelihood {
 
     private static int batchSize = 1000;
+    private static boolean parallelMode = true;
 
     public static int getBatchSize() {
         return batchSize;
@@ -27,36 +30,29 @@ public final class MaximumLikelihood {
         MaximumLikelihood.batchSize = batchSize;
     }
 
-    public static BayesianNetwork serialLearnStatic(DAG dag, DataBase dataBase) {
-
-        EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
-
-
-        final int[] dataInstanceCount =  {0};
-
-        SufficientStatistics sum = dataBase.stream()
-                .peek(w -> {
-                    dataInstanceCount[0]++;
-                })
-                .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
-
-        //Normalize the sufficient statistics
-        sum.divideBy(dataInstanceCount[0]);
-
-        efBayesianNetwork.setMomentParameters(sum);
-
-        return efBayesianNetwork.toBayesianNetwork(dag);
-
+    public static boolean isParallelMode() {
+        return parallelMode;
     }
 
-    public static BayesianNetwork parallelLearnStatic(DAG dag, DataBase dataBase) {
+    public static void setParallelMode(boolean parallelMode) {
+        MaximumLikelihood.parallelMode = parallelMode;
+    }
+
+    public static BayesianNetwork learnParametersStaticModel(DAG dag, DataBase dataBase) {
 
         EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
+
+
+        Stream<DataInstance> stream = null;
+        if (parallelMode){
+            stream = dataBase.parallelStream(batchSize);
+        }else{
+            stream = dataBase.stream();
+        }
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);
 
-        SufficientStatistics sumSS = dataBase.parallelStream(batchSize)
+        SufficientStatistics sumSS = stream
                 .peek(w -> {
                     dataInstanceCount.getAndIncrement();
                 })
