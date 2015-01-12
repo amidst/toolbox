@@ -35,7 +35,7 @@ public final class BayesianNetwork {
     }
 
     public static BayesianNetwork newBayesianNetwork(DAG dag, List<ConditionalDistribution> dists){
-        return new BayesianNetwork(dag);
+        return new BayesianNetwork(dag, dists);
     }
 
     private BayesianNetwork(DAG dag) {
