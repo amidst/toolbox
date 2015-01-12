@@ -1,8 +1,6 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -42,11 +40,11 @@ public class NaiveBayesClassifier {
 
     public void learn(DataBase dataBase){
         LearningEngine.setStaticStructuralLearningAlgorithm(this::staticNaiveBayesStructure);
-        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::parallelLearnStatic);
+        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
         bnModel = LearningEngine.learnStaticModel(dataBase);
 
         //DAG dag = this.staticNaiveBayesStructure(dataBase);
-        //bnModel = MaximumLikelihood.parallelLearnStatic(dag,dataBase);
+        //bnModel = MaximumLikelihood.learnParametersStaticModel(dag,dataBase);
     }
 
     public static void main(String[] args){

@@ -4,17 +4,10 @@ package eu.amidst.core.huginlink;
 import COM.hugin.HAPI.*;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnMemory;
-import eu.amidst.core.database.DataOnStream;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.learning.LearningEngine;
 import eu.amidst.core.learning.MaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -35,12 +28,22 @@ public class ParallelTAN {
     private int numCores;
     String nameRoot;
     String nameTarget;
+    boolean parallelMode;
 
     public ParallelTAN() {
         this.numSamplesOnMemory = 10000;
-        this.numCores = 1; // Or Runtime.getRuntime().availableProcessors();
+        this.numCores = Runtime.getRuntime().availableProcessors();
+        this.parallelMode=true;
     }
 
+    public void setParallelMode(boolean parallelMode) {
+        this.parallelMode = parallelMode;
+        if (parallelMode)
+            this.numCores = Runtime.getRuntime().availableProcessors();
+        else
+            this.numCores=1;
+
+    }
 
     public int getNumSamplesOnMemory() {
         return numSamplesOnMemory;
@@ -125,7 +128,9 @@ public class ParallelTAN {
 
     public BayesianNetwork learnBN(DataBase dataBase) {
         LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
-        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::serialLearnStatic);
+        MaximumLikelihood.setParallelMode(this.parallelMode);
+        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
+
         return LearningEngine.learnStaticModel(dataBase);
     }
 

@@ -70,6 +70,8 @@ public class EF_BayesianNetwork extends EF_Distribution {
             w.setMomentParameters(localMomentParam);
             vectorNatural.setVectorByPosition(w.getVariable().getVarID(),w.getNaturalParameters());
         });
+
+        this.naturalParameters=vectorNatural;
     }
 
     @Override
