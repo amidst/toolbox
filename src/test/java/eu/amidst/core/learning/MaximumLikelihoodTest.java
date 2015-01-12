@@ -1,22 +1,15 @@
 package eu.amidst.core.learning;
 
-import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.huginlink.ConverterToHugin;
-import eu.amidst.core.huginlink.ParallelTAN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
@@ -83,14 +76,12 @@ public class MaximumLikelihoodTest {
 
         //Parameter Learning
         MaximumLikelihood.setBatchSize(1000);
+        MaximumLikelihood.setParallelMode(false);
 
-        //using Maximum likelihood parallelLearnStatic
-        BayesianNetwork bn = MaximumLikelihood.parallelLearnStatic(dag, data);
+        //using Maximum likelihood learnParametersStaticModel
+        BayesianNetwork bn = MaximumLikelihood.learnParametersStaticModel(dag, data);
         System.out.println(bn.toString());
 
-        //using Maximum likelihood serialLearnStatic
-        BayesianNetwork bn2 = MaximumLikelihood.serialLearnStatic(dag, data);
-        System.out.println(bn2.toString());
 
         //Check if the probability distributions of the true and learned networks are equals
         for (Variable var : asianet.getStaticVariables()) {
