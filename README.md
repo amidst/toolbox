@@ -18,25 +18,28 @@ Compiling & Running from the command line
 
 
 1- Install Maven: http://maven.apache.org/download.cgi
+(Download binaries and copy to Applications folder)
 
-2- Modify the file maven_startup.sh and fix the path of your maven (Line 5) and java installation (Line 9).
+2- Modify the file maven_startup.sh (which you find it in the root project folder) and fix the path of your maven (Line 5) and java installation (Line 9).
 
 3- Create (or modify if already exist) a file ".profile" in you home directory and add the following line,
 which points to file "maven_startup.sh"
 
         source <project-folder>/maven_startup.sh
 
+ Now after restarting the terminal, mvn should work.
+
 
 4- Put the hugin files ("hgapi82_amidst-64.jar" and "libhgapi82_amidst-64.jnilib") in a new folder in the project
-folder called "hubinlib". I.e. we should have the two following files:
+folder called "huginlib". I.e. we should have the two following files:
 
         <project-folder>/huginlib/hgapi82_amidst-64.jar
         <project-folder>/huginlib/libhgapi82_amidst-64.jnilib
 
 
-5- The script "compile.sh" just compile the whole project and create a .jar file in the ./target folder.
+5- The script "compile.sh" (which you find it in the root project folder) just compile the whole project and create a .jar file in the ./target folder.
 
 
-6- The script "run.sh" should be used to run some class. For example,
+6- The script "run.sh" (which you find it in the root project folder) should be used to run some class. For example,
 
         ./run.sh eu.amidst.examples.ParallelTANDemo

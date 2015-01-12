@@ -137,4 +137,12 @@ public class Multinomial extends UnivariateDistribution {
         str.append(" ]");
         return str.toString();
     }
+
+    public boolean equalDist(Multinomial dist, double threshold){
+        boolean equals = true;
+        for (int i = 0; i < this.probabilities.length; i++) {
+           equals = equals && Math.round(Math.abs(this.getProbabilityOfState(i) - dist.getProbabilityOfState(i))) <= threshold;
+        }
+        return equals;
+    }
 }
