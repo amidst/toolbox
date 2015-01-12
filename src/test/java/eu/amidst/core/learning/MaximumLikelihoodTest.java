@@ -101,8 +101,6 @@ public class MaximumLikelihoodTest {
             ConditionalDistribution learnedCD = bn.getDistribution(var);
             System.out.println("\nThe learned distribution:\n"+ learnedCD);
 
-            // assertEquals(trueCD,learnedCD);
-            // To be continued...
         }
 
     }
