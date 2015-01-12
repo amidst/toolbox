@@ -119,7 +119,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         for (int i = 0; i < numberOfConfigurations(); i++) {
             MomentParameters moment = (MomentParameters) globalMomentsParam.getVectorByPosition(i);
             moment.divideBy(globalMomentsParam.getBaseConf(i));
-            this.getEF_BaseDistribution(i).setMomentParameters(momentParameters);
+            this.getEF_BaseDistribution(i).setMomentParameters(moment);
         }
 
         CompoundVector<E> vectorNatural = this.createCompoundVector();
