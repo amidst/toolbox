@@ -172,7 +172,6 @@ public class Normal_NormalParents extends ConditionalDistribution {
         }
     }
 
-
     public String toString(){
         StringBuilder str = new StringBuilder();
         str.append("[ alpha = " +this.getIntercept() + ", ");
@@ -184,4 +183,22 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
         return str.toString();
     }
+
+    @Override
+    public boolean equalDist(ConditionalDistribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal_NormalParents"))
+            return this.equalDist((Normal_NormalParents)dist,threshold);
+        return false;
+    }
+
+    public boolean equalDist(Normal_NormalParents dist, double threshold) {
+        boolean equals = true;
+        if (Math.round(Math.abs(this.getIntercept() - dist.getIntercept())) <= threshold && Math.round(Math.abs(this.getSd() - dist.getSd())) <= threshold) {
+            for (int i = 0; i < this.getCoeffParents().length; i++) {
+                equals = equals && Math.round(Math.abs(this.coeffParents[i] - dist.coeffParents[i])) <= threshold;
+            }
+        }
+        return equals;
+    }
+
 }

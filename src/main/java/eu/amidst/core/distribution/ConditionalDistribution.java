@@ -22,6 +22,7 @@ public abstract class ConditionalDistribution extends Distribution {
 
     /**
      * Gets the set of conditioning variables
+     *
      * @return An <code>unmodifiable List</code> object with the set of conditioning variables.
      */
     public List<Variable> getConditioningVariables() {
@@ -30,19 +31,24 @@ public abstract class ConditionalDistribution extends Distribution {
 
     /**
      * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
+     *
      * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the evaluated distribution.
      */
-    public double getConditionalProbability(Assignment assignment){
+    public double getConditionalProbability(Assignment assignment) {
         return Math.exp(this.getLogConditionalProbability(assignment));
     }
 
     /**
      * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
+     *
      * @param assignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
     public abstract double getLogConditionalProbability(Assignment assignment);
 
     public abstract UnivariateDistribution getUnivariateDistribution(Assignment assignment);
+
+    public abstract boolean equalDist(ConditionalDistribution dist, double threshold);
+
 }
