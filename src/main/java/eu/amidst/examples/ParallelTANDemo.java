@@ -63,8 +63,8 @@ public class ParallelTANDemo {
         //It needs GBs, so avoid putting this file in a Dropbox folder!!!!
         String dataFile = new String("./datasets/RandomData.arff");
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(1000);
-        BayesianNetworkGenerator.setNumberOfStates(10);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(2000);
+        BayesianNetworkGenerator.setNumberOfStates(2);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
 
 
@@ -74,12 +74,9 @@ public class ParallelTANDemo {
         sampler.setParallelMode(true);
         sampler.sampleToAnARFFFile(dataFile, sampleSize);
 
-        ArrayList<Integer> vSamplesOnMemory = new ArrayList(Arrays.asList(5000));
-        ArrayList<Integer> vNumCores = new ArrayList(Arrays.asList(1, 2, 3, 4));
-
         int samplesOnMemory = 1000;
         int numCores=1;
-        System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, "+ sampleSize +" samples on disk, "+ numCores + " core(s) ...");
+        System.out.println("Learning TAN: " + bn.getStaticVariables().getNumberOfVars() +" variables, " + sampleSize +" samples on disk, "+ samplesOnMemory + " samples on memory, "+  numCores + " core(s) ...");
         DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
 
         ParallelTAN tan = new ParallelTAN();
@@ -87,12 +84,11 @@ public class ParallelTANDemo {
         tan.setNumSamplesOnMemory(samplesOnMemory);
         tan.setNameRoot(bn.getStaticVariables().getListOfVariables().get(0).getName());
         tan.setNameTarget(bn.getStaticVariables().getListOfVariables().get(1).getName());
-        Stopwatch watch = Stopwatch.createStarted();
         BayesianNetwork model = tan.learnBN(data);
-        System.out.println(watch.stop());
+        System.out.println();
 
         numCores=Runtime.getRuntime().availableProcessors();
-        System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, "+ sampleSize +" samples on disk, "+ numCores + " core(s) ...");
+        System.out.println("Learning TAN: " + bn.getStaticVariables().getNumberOfVars() +" variables, " + sampleSize +" samples on disk, "+ samplesOnMemory + " samples on memory, "+  numCores + " core(s) ...");
         data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
 
         tan = new ParallelTAN();
@@ -100,9 +96,7 @@ public class ParallelTANDemo {
         tan.setNumSamplesOnMemory(samplesOnMemory);
         tan.setNameRoot(bn.getStaticVariables().getListOfVariables().get(0).getName());
         tan.setNameTarget(bn.getStaticVariables().getListOfVariables().get(1).getName());
-        //watch = Stopwatch.createStarted();
         model = tan.learnBN(data);
-        //System.out.println(watch.stop());
 
 
     }
