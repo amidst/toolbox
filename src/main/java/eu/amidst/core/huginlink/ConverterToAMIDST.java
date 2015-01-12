@@ -47,7 +47,7 @@ public class ConverterToAMIDST {
 
         StaticVariables amidstVariables = staticVariables;
 
-        for(int i=0;i<huginNodes.size();i++){
+        for(int i=0;i<numNodes;i++){
 
             Node huginChild = (Node)huginNodes.get(i);
             NodeList huginParents = huginChild.getParents();
