@@ -1,0 +1,140 @@
+Mon Jan 12 10:47:53 2015
+
+
+Moral links:
+
+    Marrying T and L
+    Marrying E and B
+
+
+Triangulating prime component with 2 members:
+    A, T
+This component is a clique of cost 4
+
+Triangulating prime component with 3 members:
+    L, T, E
+This component is a clique of cost 8
+
+Triangulating prime component with 4 members:
+    B, S, L, E
+
+    Using the best greedy heuristic for triangulation
+
+
+Triangulating prime component with 3 members:
+    B, D, E
+This component is a clique of cost 8
+
+Triangulating prime component with 2 members:
+    X, E
+This component is a clique of cost 4
+
+
+Total cost of triangulation for all prime components is 40
+
+
+Elimination sequence:
+
+    X
+    D
+    B
+    S
+    L
+    E
+    A
+    T
+
+
+Cliques:
+
+Clique 6, 2 members, table size = 4:
+    T, A
+
+Clique 5, 3 members, table size = 8:
+    T, E, L
+
+Clique 4, 3 members, table size = 8:
+    E, L, S
+
+Clique 3, 3 members, table size = 8:
+    E, S, B
+
+Clique 2, 3 members, table size = 8:
+    E, B, D
+
+Clique 1, 2 members, table size = 4:
+    E, X
+
+Total clique table size: 40
+
+
+The junction forest:
+
+Creating junction tree with clique 6 as root ...
+
+Cliques 5 and 6 linked, separator has 1 member and table size = 2:
+    T
+
+Cliques 4 and 5 linked, separator has 2 members and table size = 4:
+    E, L
+
+Cliques 3 and 4 linked, separator has 2 members and table size = 4:
+    E, S
+
+Cliques 2 and 3 linked, separator has 2 members and table size = 4:
+    E, B
+
+Cliques 1 and 5 linked, separator has 1 member and table size = 2:
+    E
+
+
+Assignment of potentials to cliques:
+
+    Node X assigned to clique 1
+    Node B assigned to clique 3
+    Node D assigned to clique 2
+    Node A assigned to clique 6
+    Node S assigned to clique 4
+    Node L assigned to clique 4
+    Node T assigned to clique 6
+    Node E assigned to clique 5
+
+
+Checking conditional probability potentials:
+
+    No error found
+
+
+Beliefs for chance nodes:
+
+    X:
+	yes        0.11029
+	no         0.88971
+
+    B:
+	yes        0.45
+	no         0.55
+
+    D:
+	yes        0.435971
+	no         0.564029
+
+    A:
+	yes        0.01
+	no         0.99
+
+    S:
+	yes        0.5
+	no         0.5
+
+    L:
+	yes        0.055
+	no         0.945
+
+    T:
+	yes        0.0104
+	no         0.9896
+
+    E:
+	yes        0.064828
+	no         0.935172
