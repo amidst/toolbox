@@ -119,4 +119,9 @@ public class Normal extends UnivariateDistribution {
     public String toString() {
         return "[ mu = " + this.getMean() + ", sd = "+ this.getSd() +" ]";
     }
+
+    public boolean equalDist(Normal dist, double threshold){
+        return Math.abs(this.getMean() - dist.getMean()) <= threshold && Math.abs(this.getSd() - dist.getSd()) <= threshold;
+    }
+
 }
