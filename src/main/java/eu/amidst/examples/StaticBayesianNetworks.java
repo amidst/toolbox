@@ -4,7 +4,7 @@ import COM.hugin.HAPI.Domain;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -35,7 +35,7 @@ public final class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticData.arff"));
+        DataOnDisk data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticData.arff"));
 
 
         /**
@@ -152,7 +152,7 @@ public final class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticData.arff"));
+        DataOnDisk data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticData.arff"));
 
 
         /**

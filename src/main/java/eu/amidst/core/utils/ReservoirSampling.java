@@ -3,7 +3,7 @@ package eu.amidst.core.utils;
 import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,7 +45,7 @@ public class ReservoirSampling {
     }
 
     public static void main(String[] args) throws Exception {
-        DataOnDisk data = new StaticDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataCajaMar.arff"));
+        DataOnDisk data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataCajaMar.arff"));
 
         DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
 
