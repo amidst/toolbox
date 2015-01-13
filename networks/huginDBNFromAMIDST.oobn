@@ -1,0 +1,177 @@
+class huginDBNFromAMIDST
+{
+    inputs = ();
+    outputs = ();
+    node_size = (80 40);
+    HR_DBN_Num_Slices = "5";
+    HR_Desc = "";
+    HR_OOBN_CheckConsistency = "1";
+    HR_OOBN_FitExpand = "1";
+    HR_Zoom_ZoomFactor = "100";
+    HR_Groups_GroupColors = "";
+    HR_Groups_GroupNames = "";
+    HR_Groups_UserGroupsNo = "0";
+    HR_Color_Interface = "21";
+    HR_Color_Instance = "0";
+    HR_Color_DiscreteFunction = "5";
+    HR_Color_Function = "4";
+    HR_Color_Utility = "36";
+    HR_Color_Decision = "17";
+    HR_Color_ContinuousChance = "48";
+    HR_Color_DiscreteChance = "16";
+    HR_Monitor_InitSD = "2";
+    HR_Monitor_Utility_Arrange = "0";
+    HR_Monitor_Mean_Variance = "1";
+    HR_Monitor_Chance_Utility = "1";
+    HR_Monitor_InitStates = "5";
+    HR_Monitor_OpenGraph = "0";
+    HR_Monitor_GraphPrecision = "100";
+    HR_Monitor_AutoUpdGraph = "0";
+    HR_Compile_MaxMinimalSeparators = "100000";
+    HR_Compile_ApproxEpsilon = "1.0E-5";
+    HR_Compile_Approximate = "0";
+    HR_Compile_SaveToMemory = "0";
+    HR_Compile_Compress = "0";
+    HR_Compile_TriangMethod = "0";
+    HR_Propagate_AutoNormal = "1";
+    HR_Propagate_AutoSum = "1";
+    HR_Propagate_Auto = "1";
+    HR_Font_Italic = "0";
+    HR_Font_Weight = "400";
+    HR_Font_Size = "-12";
+    HR_Font_Name = "com.apple.laf.AquaFonts$DerivedUIResourceFont[family=Lucida Grande,name=Lucida Grande,style=plain,size=13]";
+    HR_Grid_GridShow = "0";
+    HR_Grid_GridSnap = "0";
+    HR_Grid_Y = "40";
+    HR_Grid_X = "40";
+
+    node A
+    {
+	label = "A";
+	states = ("State_0" "State_1");
+	HR_LinkGroup = "[G:0][E:0][D:0][C:0][B:0]";
+	HR_LinkMode = "[G:0][E:0][D:0][C:0][B:0]";
+    }
+
+    temporal T_A : A
+    {
+	label = "T_A";
+	HR_LinkGroup = "[A:0]";
+	HR_LinkMode = "[A:0]";
+    }
+
+    node B
+    {
+	label = "B";
+	states = ("State_0" "State_1" "State_2");
+    }
+
+    temporal T_B : B
+    {
+	label = "T_B";
+	HR_LinkGroup = "[B:0]";
+	HR_LinkMode = "[B:0]";
+    }
+
+    node C
+    {
+	label = "C";
+	states = ("State_0" "State_1");
+    }
+
+    node D
+    {
+	label = "D";
+	states = ("State_0" "State_1");
+    }
+
+    node E
+    {
+	label = "E";
+	states = ("State_0" "State_1");
+    }
+
+    temporal T_E : E
+    {
+	label = "T_E";
+	HR_LinkGroup = "[E:0]";
+	HR_LinkMode = "[E:0]";
+    }
+
+    node G
+    {
+	label = "G";
+	states = ("State_0" "State_1");
+    }
+
+    temporal T_G : G
+    {
+	label = "T_G";
+	HR_LinkGroup = "[G:0]";
+	HR_LinkMode = "[G:0]";
+    }
+
+    potential (A | T_A)
+    {
+	data = (( 0.5 0.5 )	%  T_A=State_0
+		( 0.5 0.5 ));	%  T_A=State_1
+    }
+
+    potential (T_A)
+    {
+	data = ( 1 1 );
+    }
+
+    potential (B | T_B A)
+    {
+	data = ((( 0.333333 0.333333 0.333333 )	%  T_B=State_0  A=State_0
+		 ( 0.333333 0.333333 0.333333 ))	%  T_B=State_0  A=State_1
+		(( 0.333333 0.333333 0.333333 )	%  T_B=State_1  A=State_0
+		 ( 0.333333 0.333333 0.333333 ))	%  T_B=State_1  A=State_1
+		(( 0.333333 0.333333 0.333333 )	%  T_B=State_2  A=State_0
+		 ( 0.333333 0.333333 0.333333 )));	%  T_B=State_2  A=State_1
+    }
+
+    potential (T_B)
+    {
+	data = ( 1 1 1 );
+    }
+
+    potential (C | A)
+    {
+	data = (( 0.5 0.5 )	%  A=State_0
+		( 0.5 0.5 ));	%  A=State_1
+    }
+
+    potential (D | A)
+    {
+	data = (( 0.5 0.5 )	%  A=State_0
+		( 0.5 0.5 ));	%  A=State_1
+    }
+
+    potential (E | T_E A)
+    {
+	data = ((( 0.5 0.5 )	%  T_E=State_0  A=State_0
+		 ( 0.5 0.5 ))	%  T_E=State_0  A=State_1
+		(( 0.5 0.5 )	%  T_E=State_1  A=State_0
+		 ( 0.5 0.5 )));	%  T_E=State_1  A=State_1
+    }
+
+    potential (T_E)
+    {
+	data = ( 1 1 );
+    }
+
+    potential (G | T_G A)
+    {
+	data = ((( 0.5 0.5 )	%  T_G=State_0  A=State_0
+		 ( 0.5 0.5 ))	%  T_G=State_0  A=State_1
+		(( 0.5 0.5 )	%  T_G=State_1  A=State_0
+		 ( 0.5 0.5 )));	%  T_G=State_1  A=State_1
+    }
+
+    potential (T_G)
+    {
+	data = ( 1 1 );
+    }
+} % class huginDBNFromAMIDST
