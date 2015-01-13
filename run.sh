@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -Xmx5000M -cp "./huginlib/*:./target/*" -Djava.library.path="./huginlib/" $1
+java -Xmx5000M -cp "./huginlib/*:./target/*" -Djava.library.path="./huginlib/" $@
