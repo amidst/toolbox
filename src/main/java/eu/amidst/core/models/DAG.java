@@ -105,7 +105,7 @@ public class DAG {
         StringBuilder str = new StringBuilder();
         str.append("DAG\n");
         for (Variable var : this.getStaticVariables()) {
-            str.append(var.getName() + " : " + this.getParentSet(var).toString() + "\n");
+            str.append(var.getName() + " parent sets: " + this.getParentSet(var).toString() + "\n");
         }
         return str.toString();
     }

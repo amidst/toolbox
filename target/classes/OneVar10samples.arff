@@ -1,0 +1,17 @@
+@relation dataset
+
+@attribute A {State_0, State_1}
+
+
+@data
+
+State_0
+State_1
+State_1
+State_1
+State_0
+State_1
+State_1
+State_1
+State_1
+State_1

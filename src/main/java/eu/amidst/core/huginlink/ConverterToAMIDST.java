@@ -47,22 +47,22 @@ public class ConverterToAMIDST {
 
         StaticVariables amidstVariables = staticVariables;
 
-        for(int i=0;i<huginNodes.size();i++){
+        for(int i=0;i<numNodes;i++){
 
             Node huginChild = (Node)huginNodes.get(i);
             NodeList huginParents = huginChild.getParents();
             Variable amidstChild = amidstVariables.getVariableByName(huginChild.getName());
 
             //Only multinomial parents are indexed in Hugin in a reverse order!!
-            List<Integer> positionsMultinomialParents = new ArrayList<>();
-            for (int j=0;j<huginParents.size();j++) {
-                Node huginParent = (Node) huginParents.get(j);
-                if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
-                    int indexParent = huginNodes.indexOf(huginParent);
-                    positionsMultinomialParents.add(indexParent);
-                }
-            }
-            Collections.reverse(positionsMultinomialParents);
+//            List<Integer> positionsMultinomialParents = new ArrayList<>();
+//            for (int j=0;j<huginParents.size();j++) {
+//                Node huginParent = (Node) huginParents.get(j);
+//                if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+//                    int indexParent = huginNodes.indexOf(huginParent);
+//                    positionsMultinomialParents.add(indexParent);
+//                }
+//            }
+//            Collections.reverse(positionsMultinomialParents);
 
             for(int j=0;j<huginParents.size();j++) {
                 Node huginParent = (Node) huginParents.get(j);
@@ -84,7 +84,7 @@ public class ConverterToAMIDST {
         List<Variable> parents = this.amidstBN.getDAG().getParentSet(amidstVar).getParents();
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(parents);
 
-        int pos=0;
+       // int pos=0;
         for(int i=0;i<numParentAssignments;i++){
 
             double[] amidstProbabilities = new double[numStates];
@@ -93,7 +93,7 @@ public class ConverterToAMIDST {
             }
             Multinomial_MultinomialParents dist = this.amidstBN.getDistribution(amidstVar);
             dist.getMultinomial(i).setProbabilities(amidstProbabilities);
-            pos = pos+numStates;
+          //  pos = pos+numStates;
         }
     }
 

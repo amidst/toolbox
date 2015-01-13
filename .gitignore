@@ -32,6 +32,7 @@ doc/REproccess.pdf
 
 target/maven-archiver*
 target/surefire-reports*
+target/*
 
 # latex noise
 *.synctex.gz
@@ -53,3 +54,5 @@ target/surefire-reports*
 Archive 2.zip
 Archive.1.zip
 *.zip
+
+*.arff
