@@ -129,4 +129,26 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
         }
         return str.toString();
     }
+
+    @Override
+    public boolean equalDist(ConditionalDistribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Multinomial_LogisticParents"))
+            return this.equalDist((Multinomial_LogisticParents)dist,threshold);
+        return false;
+    }
+
+    public boolean equalDist(Multinomial_LogisticParents dist, double threshold) {
+        boolean equals = true;
+
+        for (int i = 0; i < this.intercept.length; i++) {
+            equals = equals && Math.round(Math.abs(this.getIntercept(i) - dist.getIntercept(i))) <= threshold;
+        }
+
+        for (int i = 0; i < this.coeffParents.length; i++) {
+            for (int j=0; j < this.coeffParents[i].length; j++) {
+                equals = equals && Math.round(Math.abs(this.coeffParents[i][j] - dist.coeffParents[i][j])) <= threshold;
+            }
+        }
+        return equals;
+    }
 }
