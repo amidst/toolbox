@@ -2,6 +2,8 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Variable;
 
+import java.util.Random;
+
 /**
  * Created by afa on 12/11/14.
  */
@@ -25,4 +27,6 @@ public abstract class Distribution {
     }
 
     public abstract String label();
+
+    public abstract void randomInitialization(Random random);
 }

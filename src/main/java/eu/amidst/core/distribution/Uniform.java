@@ -31,4 +31,9 @@ public class Uniform extends UnivariateDistribution {
     }
 
     public String label(){ return "Uniform"; }
+
+    @Override
+    public void randomInitialization(Random random) {
+
+    }
 }
