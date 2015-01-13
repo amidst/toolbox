@@ -30,11 +30,11 @@ public final class BayesianNetwork {
 
     private DAG dag;
 
-    public static BayesianNetwork newBayesianNetwork(DAG dag){
+    public static BayesianNetwork newBayesianNetwork(DAG dag) {
         return new BayesianNetwork(dag);
     }
 
-    public static BayesianNetwork newBayesianNetwork(DAG dag, List<ConditionalDistribution> dists){
+    public static BayesianNetwork newBayesianNetwork(DAG dag, List<ConditionalDistribution> dists) {
         return new BayesianNetwork(dag, dists);
     }
 
@@ -45,11 +45,11 @@ public final class BayesianNetwork {
 
     private BayesianNetwork(DAG dag, List<ConditionalDistribution> dists) {
         this.dag = dag;
-        this.distributions=dists;
+        this.distributions = dists;
     }
 
     public <E extends ConditionalDistribution> E getDistribution(Variable var) {
-        return (E)distributions.get(var.getVarID());
+        return (E) distributions.get(var.getVarID());
     }
 
     public int getNumberOfVars() {
@@ -60,16 +60,15 @@ public final class BayesianNetwork {
         return this.getDAG().getStaticVariables();
     }
 
-    public DAG getDAG (){
+    public DAG getDAG() {
         return dag;
     }
 
-   // public List<Variable> getListOfVariables() {
-   //     return this.getStaticVariables().getListOfVariables();
-   // }
+    // public List<Variable> getListOfVariables() {
+    //     return this.getStaticVariables().getListOfVariables();
+    // }
 
-    private void initializeDistributions(){
-
+    private void initializeDistributions() {
 
 
         this.distributions = new ArrayList(this.getNumberOfVars());
@@ -89,10 +88,10 @@ public final class BayesianNetwork {
         this.distributions = Collections.unmodifiableList(this.distributions);
     }
 
-    public double getLogProbabiltyOfFullAssignment(Assignment assignment){
+    public double getLogProbabiltyOfFullAssignment(Assignment assignment) {
         double logProb = 0;
-        for (Variable var: this.getStaticVariables()){
-            if (assignment.getValue(var)== Utils.missingValue()) {
+        for (Variable var : this.getStaticVariables()) {
+            if (assignment.getValue(var) == Utils.missingValue()) {
                 throw new UnsupportedOperationException("This method can not compute the probabilty of a partial assignment.");
             }
 
@@ -101,21 +100,21 @@ public final class BayesianNetwork {
         return logProb;
     }
 
-    public List<ConditionalDistribution> getDistributions(){
+    public List<ConditionalDistribution> getDistributions() {
         return this.distributions;
     }
 
-    public String toString(){
+    public String toString() {
 
         StringBuilder str = new StringBuilder();
         str.append("Bayesian Network:\n");
 
-        for (Variable var: this.getStaticVariables()){
+        for (Variable var : this.getStaticVariables()) {
 
-            if (this.getDAG().getParentSet(var).getNumberOfParents()==0){
-                str.append("P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ");
-                str.append(this.getDistribution(var).label()+"\n");
-            }else {
+            if (this.getDAG().getParentSet(var).getNumberOfParents() == 0) {
+                str.append("P(" + var.getName() + " [" + var.getDistributionType().toString() + "]) follows a ");
+                str.append(this.getDistribution(var).label() + "\n");
+            } else {
                 str.append("P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ");
 
                 for (Variable parent : this.getDAG().getParentSet(var)) {
@@ -128,16 +127,20 @@ public final class BayesianNetwork {
                 }
             }
             //Variable distribution
-            str.append(this.getDistribution(var).toString()+ "\n");
+            str.append(this.getDistribution(var).toString() + "\n");
         }
         return str.toString();
     }
 
-    public void randomInitialization(Random random){
+    public void randomInitialization(Random random) {
         this.distributions.stream().forEach(w -> w.randomInitialization(random));
     }
 
+    //public boolean equals(BayesianNetwork bayesianNetwork, double threshold) {
+
+    //    this.getDistributions().stream().mapToInt(dist -> dist.equalDist(bayesianNetwork.getDistributions(),threshold));
+
+    //}
+
 }
-
-
 

@@ -28,7 +28,7 @@ import java.util.Random;
  * @version 1.0
  * @since 2014-11-4
  */
-public class Multinomial_MultinomialParents extends ConditionalDistribution{
+public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
     /**
      * An array of <code>Multinomial</code> objects, one for each configuration of the parents. These objects are ordered
@@ -38,7 +38,8 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
 
     /**
      * The class constructor.
-     * @param var1 The variable of the distribution.
+     *
+     * @param var1     The variable of the distribution.
      * @param parents1 The set of parents of the variable.
      */
     public Multinomial_MultinomialParents(Variable var1, List<Variable> parents1) {
@@ -59,13 +60,14 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
-    public Multinomial[] getProbabilities(){
+    public Multinomial[] getProbabilities() {
         return this.probabilities;
     }
 
     /**
      * Sets a <code>Multinomial</code> distribution in a given position in the array of probabilities.
-     * @param position The position in which the distribution is set.
+     *
+     * @param position                The position in which the distribution is set.
      * @param multinomialDistribution A <code>Multinomial</code> object.
      */
     public void setMultinomial(int position, Multinomial multinomialDistribution) {
@@ -75,7 +77,8 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
     /**
      * Sets a <code>Multinomial</code> distribution in a position in the array of probabilities determined by a given
      * parents assignment.
-     * @param parentAssignment An <code>Assignment</code> for the parents.
+     *
+     * @param parentAssignment        An <code>Assignment</code> for the parents.
      * @param multinomialDistribution A <code>Multinomial</code> object.
      */
     public void setMultinomial(Assignment parentAssignment, Multinomial multinomialDistribution) {
@@ -85,6 +88,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
 
     /**
      * Gets the <code>Multinomial</code> distribution for given a parents assignment.
+     *
      * @param parentAssignment An <code>Assignment</code> for the parents.
      * @return A <code>Multinomial</code> object.
      */
@@ -99,6 +103,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
 
     /**
      * Computes the logarithm of the probability of the variable for a given state and a parent assignment.
+     *
      * @param parentAssignment An <code>Assignment</code> for the parents.
      * @return A <code>double</code> value with the logarithm of the probability.
      */
@@ -116,18 +121,17 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
 
     @Override
     public int getNumberOfFreeParameters() {
-        int n=0;
-        for(Multinomial dist:this.getProbabilities()){
-            n+=dist.getNumberOfFreeParameters();
+        int n = 0;
+        for (Multinomial dist : this.getProbabilities()) {
+            n += dist.getNumberOfFreeParameters();
         }
         return n;
     }
 
-    public String label(){
-        if (this.getConditioningVariables().size()==0) {
+    public String label() {
+        if (this.getConditioningVariables().size() == 0) {
             return "Multinomial";
-        }
-        else {
+        } else {
             return "Multinomial|Multinomial";
         }
     }
@@ -139,20 +143,34 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution{
         }
     }
 
-    public int getNumberOfParentAssignments(){
+    public int getNumberOfParentAssignments() {
         return this.getProbabilities().length;
     }
 
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("");
-        for (int i=0;i<getNumberOfParentAssignments();i++){
+        for (int i = 0; i < getNumberOfParentAssignments(); i++) {
             str.append(this.getMultinomial(i).toString());
-            if (getNumberOfParentAssignments()>1 && i< getNumberOfParentAssignments()-1) {
+            if (getNumberOfParentAssignments() > 1 && i < getNumberOfParentAssignments() - 1) {
                 str.append("\n");
             }
         }
         return str.toString();
     }
 
+    @Override
+    public boolean equalDist(ConditionalDistribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Multinomial_MultinomialParents"))
+            return this.equalDist((Multinomial_MultinomialParents)dist,threshold);
+        return false;
+    }
+
+    public boolean equalDist(Multinomial_MultinomialParents dist, double threshold) {
+        boolean equals = true;
+        for (int i = 0; i < this.probabilities.length; i++) {
+            equals = equals && this.getMultinomial(i).equalDist(dist.getMultinomial(i),threshold);
+        }
+        return equals;
+    }
 }

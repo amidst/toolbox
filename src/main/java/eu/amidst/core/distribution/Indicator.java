@@ -73,4 +73,16 @@ public class Indicator extends ConditionalDistribution{
     public void randomInitialization(Random random) {
         this.conditionalDistribution.randomInitialization(random);
     }
+
+    @Override
+    public boolean equalDist(ConditionalDistribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Indicator"))
+            return this.equalDist((Indicator)dist,threshold);
+        return false;
+    }
+
+
+    public boolean equalDist(Indicator dist, double threshold) {
+        return this.getConditionalDistribution().equalDist(dist.getConditionalDistribution(),threshold);
+    }
 }
