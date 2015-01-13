@@ -63,6 +63,7 @@ public class MaximumLikelihoodTest {
         //System.out.println(bn.toString());
 
 
+
         //Check if the probability distributions of the true and learned networks are equals
         for (Variable var : asianet.getStaticVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
@@ -72,7 +73,12 @@ public class MaximumLikelihoodTest {
             ConditionalDistribution learnedCD = bn.getDistribution(var);
             System.out.println("\nThe learned distribution:\n"+ learnedCD);
 
+            System.out.println(trueCD.equalDist(learnedCD, 0.001));
+
+            assertTrue(trueCD.equalDist(learnedCD, 0.001));
         }
+
+
 
     }
 
