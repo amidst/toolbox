@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Build-Jdk: 1.8.0_25
-Built-By: sigveh
-Created-By: IntelliJ IDEA
-
