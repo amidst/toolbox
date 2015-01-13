@@ -61,7 +61,11 @@ public class JavaLR2 {
             System.err.println("Usage: JavaLR2 <input_dir> <step_size> <niters>");
             System.exit(1);
         }
-        SparkConf sparkConf = new SparkConf().setAppName("JavaLR2"); //.setMaster("spark://localhost:7077");
+        SparkConf sparkConf = new SparkConf().setAppName("JavaLR2");//.setMaster("spark://localhost:7077");
+        sparkConf.setMaster("local");
+        //sparkConf.setSparkHome("/Users/andresmasegosa/Dropbox/Amidst/spark-1.1.1-bin-hadoop1/");
+        sparkConf.setSparkHome("/Users/andresmasegosa/Dropbox/Amidst/spark-1.2.0/");
+        //sparkConf.validateSettings();
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
         JavaRDD<String> lines = sc.textFile(args[0]);
         JavaRDD<LabeledPoint> points = lines.map(new ParsePoint()).cache();
