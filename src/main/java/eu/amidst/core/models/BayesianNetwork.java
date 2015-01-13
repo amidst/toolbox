@@ -136,11 +136,14 @@ public final class BayesianNetwork {
         this.distributions.stream().forEach(w -> w.randomInitialization(random));
     }
 
-    //public boolean equals(BayesianNetwork bayesianNetwork, double threshold) {
-
-    //    this.getDistributions().stream().mapToInt(dist -> dist.equalDist(bayesianNetwork.getDistributions(),threshold));
-
-    //}
-
+    public boolean equalBNs(BayesianNetwork bnet, double threshold) {
+        boolean equals = true;
+        if (this.getDAG().equals(bnet.getDAG())){
+            for (Variable var : this.getStaticVariables()) {
+                equals = equals && this.getDistribution(var).equalDist(bnet.getDistribution(var), threshold);
+            }
+        }
+        return equals;
+    }
 }
 
