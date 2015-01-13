@@ -3,6 +3,7 @@ package eu.amidst.core.huginlink;
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
 import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.examples.DBNExample;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ public class DBNConverterToAmidstTest {
     @Before
     public void setUp() throws ExceptionHugin {
 
-        DynamicBayesianNetwork amidstDBN = DBNConverterToHuginTest.getAmidst_DBN_Example();
+        DynamicBayesianNetwork amidstDBN = DBNExample.getAmidst_DBN_Example();
         System.out.println("\nConverting the AMIDST Dynamic BN into Hugin format ...");
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
         //The name of the DBN must be the same as the name of the .net file !!!
