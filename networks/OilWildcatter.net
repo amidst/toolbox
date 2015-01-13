@@ -1,0 +1,178 @@
+net
+{
+    node_size = (120 40);
+    HR_OOBN_CheckConsistency = "1";
+    HR_Groups_GroupColors = "";
+    HR_Groups_GroupNames = "";
+    HR_Groups_UserGroupsNo = "0";
+    HR_Monitor_Utility_Arrange = "0";
+    HR_Monitor_Chance_Utility = "1";
+    HR_Compile_SaveToMemory = "0";
+    HR_Groups_IDs = "";
+    HR_Node_Label_Style = "0";
+    HR_Desc = "An oil wildcatter must decide either to drill or not to drill. He is uncertain whether the hole is dry, wet, or soaking. The wildcatter could take seismic soundings that will help determine the geological structure of the site. The soundings will give a closed reflection pattern (indication of much oil), an open pattern (indication of some oil) or a diffuse pattern (almost no hope of oil). Based on the result of the test, the wildcatter must decide whether or not to drill.";
+    HR_OOBN_FitExpand = "1";
+    HR_Zoom_ZoomFactor = "100";
+    HR_Color_Interface = "21";
+    HR_Color_Instance = "0";
+    HR_Color_ContinuousChance = "32";
+    HR_Compile_MaxMinimalSeparators = "100000";
+    HR_Monitor_InitSD = "2";
+    HR_Monitor_InitStates = "5";
+    HR_Monitor_OpenGraph = "0";
+    HR_Monitor_GraphPrecision = "100";
+    HR_Monitor_AutoUpdGraph = "0";
+    HR_Compile_ApproxEpsilon = "0.00001";
+    HR_Compile_Approximate = "0";
+    HR_Compile_Compress = "0";
+    HR_Compile_TriangMethod = "0";
+    HR_Propagate_AutoNormal = "1";
+    HR_Propagate_AutoSum = "1";
+    HR_Propagate_Auto = "0";
+    HR_Font_Italic = "0";
+    HR_Font_Weight = "400";
+    HR_Font_Size = "-12";
+    HR_Font_Name = "Arial";
+    HR_Grid_GridShow = "0";
+    HR_Grid_GridSnap = "1";
+    HR_Grid_Y = "10";
+    HR_Grid_X = "10";
+    HRUNTIME_Grid_X = "10";
+    HRUNTIME_Grid_Y = "10";
+    HRUNTIME_Grid_GridSnap = "1";
+    HRUNTIME_Grid_GridShow = "0";
+    HRUNTIME_Font_Name = "Arial";
+    HRUNTIME_Font_Size = "-12";
+    HRUNTIME_Font_Weight = "400";
+    HRUNTIME_Font_Italic = "0";
+    HRUNTIME_Propagate_Auto = "0";
+    HRUNTIME_Propagate_AutoSum = "1";
+    HRUNTIME_Propagate_AutoNormal = "1";
+    HRUNTIME_Compile_TriangMethod = "0";
+    HRUNTIME_Compile_Compress = "0";
+    HRUNTIME_Compile_Approximate = "0";
+    HRUNTIME_Compile_ApproxEpsilon = "0.00001";
+    HRUNTIME_Monitor_AutoUpdGraph = "0";
+    HRUNTIME_Monitor_GraphPrecision = "100";
+    HRUNTIME_Monitor_OpenGraph = "0";
+    HR_Color_Decision = "17";
+    HR_Color_Utility = "36";
+    HR_Color_ContinuosChance = "48";
+    HR_Color_DiscreteChance = "16";
+}
+
+node Oil
+{
+    label = "Oil contents";
+    position = (70 240);
+    states = ("dry" "wet" "soaking");
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_2 = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[Drillpay:0][Seismic:0]";
+}
+
+node Seismic
+{
+    label = "Seismic results";
+    position = (70 140);
+    states = ("closed" "open" "diffuse");
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_2 = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[Drill:0]";
+}
+
+decision Test
+{
+    label = "Test?";
+    position = (70 30);
+    states = ("yes" "no");
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[Testpay:0][Seismic:0][Drill:0]";
+}
+
+utility Testpay
+{
+    label = "Test payoff";
+    position = (250 30);
+    HR_Group = "0";
+    HR_Desc = "";
+}
+
+decision Drill
+{
+    label = "Drill?";
+    position = (250 140);
+    states = ("yes" "no");
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[Drillpay:0]";
+}
+
+utility Drillpay
+{
+    label = "Drill payoff";
+    position = (250 240);
+    HR_Group = "0";
+    HR_Desc = "";
+}
+
+potential (Oil)
+{
+    data = ( 0.5 0.3 0.2 );
+}
+
+potential (Seismic | Oil Test)
+{
+    data
+     = ((( 0.1 0.3 0.6 )	%  Oil=dry  Test=yes
+	 ( 0.333333 0.333333 0.333333 ))	%  Oil=dry  Test=no
+	(( 0.3 0.4 0.3 )	%  Oil=wet  Test=yes
+	 ( 0.333333 0.333333 0.333333 ))	%  Oil=wet  Test=no
+	(( 0.5 0.4 0.1 )	%  Oil=soaking  Test=yes
+	 ( 0.333333 0.333333 0.333333 )));	%  Oil=soaking  Test=no
+}
+
+potential (Drillpay | Oil Drill)
+{
+    data
+     = (( -70	%  Oil=dry  Drill=yes
+	  0 )	%  Oil=dry  Drill=no
+	( 50	%  Oil=wet  Drill=yes
+	  0 )	%  Oil=wet  Drill=no
+	( 200	%  Oil=soaking  Drill=yes
+	  0 ));	%  Oil=soaking  Drill=no
+}
+
+potential (Drill | Test Seismic)
+{
+    data
+     = ((( 1 1 )	%  Test=yes  Seismic=closed
+	 ( 1 1 )	%  Test=yes  Seismic=open
+	 ( 1 1 ))	%  Test=yes  Seismic=diffuse
+	(( 1 1 )	%  Test=no  Seismic=closed
+	 ( 1 1 )	%  Test=no  Seismic=open
+	 ( 1 1 )));	%  Test=no  Seismic=diffuse
+}
+
+potential (Testpay | Test)
+{
+    data
+     = ( -10	%  Test=yes
+	 0 );	%  Test=no
+}
+
+potential (Test)
+{
+    data = ( 1 1 );
+}
