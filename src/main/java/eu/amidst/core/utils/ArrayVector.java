@@ -48,7 +48,7 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
 
     public void copy(ArrayVector vector){
         if (vector.size()!=vector.size())
-            throw new IllegalArgumentException("Vectors differnt sizes");
+            throw new IllegalArgumentException("Vectors with different sizes");
         System.arraycopy(vector.getArray(),0,this.array,0,vector.getArray().length);
     }
 
