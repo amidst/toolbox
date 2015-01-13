@@ -6,15 +6,19 @@ import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
+import eu.amidst.core.distribution.ConditionalDistribution;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -59,6 +63,7 @@ public class MaximumLikelihoodTest {
         //System.out.println(bn.toString());
 
 
+
         //Check if the probability distributions of the true and learned networks are equals
         for (Variable var : asianet.getStaticVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
@@ -68,6 +73,9 @@ public class MaximumLikelihoodTest {
             ConditionalDistribution learnedCD = bn.getDistribution(var);
             System.out.println("\nThe learned distribution:\n"+ learnedCD);
 
+            System.out.println(trueCD.equalDist(learnedCD, 0.05));
+
+            assertTrue(trueCD.equalDist(learnedCD, 0.05));
         }
 
     }
