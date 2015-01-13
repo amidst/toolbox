@@ -146,7 +146,7 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
 
         for (int i = 0; i < this.coeffParents.length; i++) {
             for (int j=0; j < this.coeffParents[i].length; j++) {
-                equals = equals && Math.round(Math.abs(this.coeffParents[i][j] - dist.coeffParents[i][j])) <= threshold;
+                equals = equals && Math.abs(this.coeffParents[i][j] - dist.coeffParents[i][j]) <= threshold;
             }
         }
         return equals;

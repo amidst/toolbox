@@ -195,7 +195,7 @@ public class Normal_NormalParents extends ConditionalDistribution {
         boolean equals = true;
         if (Math.round(Math.abs(this.getIntercept() - dist.getIntercept())) <= threshold && Math.round(Math.abs(this.getSd() - dist.getSd())) <= threshold) {
             for (int i = 0; i < this.getCoeffParents().length; i++) {
-                equals = equals && Math.round(Math.abs(this.coeffParents[i] - dist.coeffParents[i])) <= threshold;
+                equals = equals && Math.abs(this.coeffParents[i] - dist.coeffParents[i]) <= threshold;
             }
         }
         return equals;
