@@ -57,3 +57,4 @@ Archive.1.zip
 
 *.arff
 datasets/RandomData.arff
+doc/testEvaluation/*
