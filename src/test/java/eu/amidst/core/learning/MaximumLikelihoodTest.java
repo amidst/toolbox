@@ -34,50 +34,39 @@ public class MaximumLikelihoodTest {
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromHugin("./networks/asia.net");
 
         System.out.println("\nAsia network \n ");
-        System.out.println(asianet.getDAG().toString());
-        System.out.println(asianet.toString());
+        //System.out.println(asianet.getDAG().toString());
+        //System.out.println(asianet.toString());
 
-        //Sampling 5000 instances from Asia BN
-        Stopwatch watch = Stopwatch.createStarted();
+        //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
         try{
-        sampler.sampleToAnARFFFile("./data/asia5000samples.arff", 5000);
+        sampler.sampleToAnARFFFile("./data/asiaSamples.arff", 10000);
         } catch (IOException ex){
         }
-        System.out.println(watch.stop());
-        //sampler.getSampleStream(10).forEach( e -> System.out.println(e.toString(asianet.getStaticVariables().getListOfVariables())));
 
         //Load the sampled data
-        DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/asia5000samples.arff")));
+        DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/asiaSamples.arff")));
 
-        //Structure learning is excluded from the test, i.e., so we use here the initial Asia network structure
+        //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
+        // and just learn then test the parameter learning
 
         //Parameter Learning
         MaximumLikelihood.setBatchSize(1000);
-        MaximumLikelihood.setParallelMode(false);
+        MaximumLikelihood.setParallelMode(true);
+        BayesianNetwork bnet = MaximumLikelihood.learnParametersStaticModel(asianet.getDAG(), data);
 
-        //using Maximum likelihood learnParametersStaticModel
-        BayesianNetwork bn = MaximumLikelihood.learnParametersStaticModel(asianet.getDAG(), data);
-        //System.out.println(bn.toString());
-
-
-
-        //Check if the probability distributions of the true and learned networks are equals
+        //Check if the probability distributions of each node
         for (Variable var : asianet.getStaticVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
-            ConditionalDistribution trueCD = asianet.getDistribution(var);
-            System.out.println("\nThe true distribution:\n"+ trueCD);
-
-            ConditionalDistribution learnedCD = bn.getDistribution(var);
-            System.out.println("\nThe learned distribution:\n"+ learnedCD);
-
-            System.out.println(trueCD.equalDist(learnedCD, 0.05));
-
-            assertTrue(trueCD.equalDist(learnedCD, 0.05));
+            System.out.println("\nTrue distribution:\n"+ asianet.getDistribution(var));
+            System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
+            assertTrue(bnet.getDistribution(var).equalDist(asianet.getDistribution(var), 0.05));
         }
 
+        //Or check directly if the true and learned networks are equals
+        assertTrue(bnet.equalBNs(asianet,0.05));
     }
 
 }
