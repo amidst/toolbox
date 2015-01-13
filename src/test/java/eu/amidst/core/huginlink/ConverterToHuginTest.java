@@ -2,7 +2,7 @@ package eu.amidst.core.huginlink;
 
 import COM.hugin.HAPI.*;
 
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -32,7 +32,7 @@ public class ConverterToHuginTest {
 
         //**************************************** Synthetic data ******************************************************
 
-        WekaDataFileReader fileReader = new WekaDataFileReader(new String("datasets/syntheticData.arff"));
+        ARFFDataReader fileReader = new ARFFDataReader(new String("datasets/syntheticData.arff"));
         StaticVariables modelHeader = new StaticVariables(fileReader.getAttributes());
 
 
