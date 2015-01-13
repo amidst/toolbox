@@ -23,14 +23,24 @@ public interface Assignment {
 
         //MEJORAR PONER CUANDO REAL
         for(int i=0; i<vars.size()-1;i++) {
-            FiniteStateSpace stateSpace = vars.get(i).getStateSpace();
-            String nameState = stateSpace.getStatesName((int)this.getValue(vars.get(i)));
-            builder.append(nameState + ",");
+            if (vars.get(i).getStateSpace().getStateSpaceType() == StateSpaceType.FINITE_SET) {
+                FiniteStateSpace stateSpace = vars.get(i).getStateSpace();
+                String nameState = stateSpace.getStatesName((int) this.getValue(vars.get(i)));
+                builder.append(nameState + ",");
+            }
+            else{
+                builder.append(this.getValue(vars.get(i))+ ",");
+            }
         }
 
-        FiniteStateSpace stateSpace  =vars.get(vars.size()-1).getStateSpace();
-        String nameState = stateSpace.getStatesName((int)this.getValue(vars.get(vars.size()-1)));
-        builder.append(nameState);
+        if(vars.get(vars.size()-1).getStateSpace().getStateSpaceType()  == StateSpaceType.FINITE_SET) {
+            FiniteStateSpace stateSpace = vars.get(vars.size() - 1).getStateSpace();
+            String nameState = stateSpace.getStatesName((int) this.getValue(vars.get(vars.size() - 1)));
+            builder.append(nameState);
+        }
+        else{
+            builder.append(this.getValue(vars.get(vars.size() - 1)));
+        }
         return builder.toString();
     }
 
