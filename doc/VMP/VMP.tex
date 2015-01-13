@@ -380,18 +380,23 @@ where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
 \begin{itemize}
 \item \textbf{From moment to natural parameters: (matrix representation)}
 
+
 \begin{eqnarray*}
 \ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
 &=&
 \begin{pmatrix}
+\beta_0 (\sigma^2)^{-1} &=& \theta_{0} \\
+-\beta_0 \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta_0 \beta^T} \\
 -(2\sigma^2)^{-1} &=& \theta_{\mbox{-}1} \\
-\beta' (\sigma^2)^{-1} &=& \theta_{\beta} \\
+\beta (\sigma^2)^{-1} &=& \theta_{\beta} \\
 -\beta' \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta \beta^T} \\
 \end{pmatrix}^T
 \begin{pmatrix}
-XX^T   &=& \E(XX^T)\\
-Y'X^T   &=& \E(YX)\\
-Y'Y^T   &=& \E(YY^T)\\
+X   &=& \E(X)\\
+Y   &=& \E(Y)\\
+XX^T   &=& \E(X)E(X)^T\\
+YX^T   &=& \E(YX^T)\\
+YY^T   &=& \E(YY^T)\\
 \end{pmatrix}
 \\
 &-& \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right)  + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
@@ -399,83 +404,7 @@ Y'Y^T   &=& \E(YY^T)\\
 
 where
 
-\begin{tabular}{p{3.5cm}p{3.5cm}}
-\vspace{0.01mm}
-\begin{eqnarray*}
-X &=& 
-\begin{pmatrix}
-X_1\\
-\vdots\\
-X_r\\
-\end{pmatrix}
-\end{eqnarray*}
-&
-\begin{eqnarray*}
-XX^T &=& 
-\begin{pmatrix}
-X_1\\
-\vdots\\
-X_r\\
-\end{pmatrix}
-\begin{pmatrix}
-X_1 & \cdots & X_r
-\end{pmatrix}
-=
-\begin{pmatrix}
-X_1X_1 &\cdots & X_1X_r\\
-X_2X_1 &\cdots & X_2X_r\\
-\vdots\\
-X_rX_1 &\cdots &X_rX_r\\
-\end{pmatrix}
-\end{eqnarray*}\\
-\end{tabular}
-
-\begin{tabular}{p{3.5cm}p{3.5cm}p{3.5cm}}
-\vspace{0.01mm}
-\begin{eqnarray*}
-Y &=& 
-\begin{pmatrix}
-Y_1\\
-\vdots\\
-Y_n\\
-\end{pmatrix}
-\end{eqnarray*}
-&
-\begin{eqnarray*}
-Y' &=& 
-\begin{pmatrix}
-1\\
-Y_1\\
-\vdots\\
-Y_n\\
-\end{pmatrix}
-\end{eqnarray*}
-&
-\begin{eqnarray*}
-Y'Y^T &=& 
-%\begin{pmatrix}
-%1\\
-%Y_1\\
-%\vdots\\
-%Y_n\\
-%\end{pmatrix}
-%\begin{pmatrix}
-%Y_1&\cdots&Y_n
-%\end{pmatrix}
-%=
-\begin{pmatrix}
-Y_1   & \cdots & Y_n\\ 
-Y_1Y_1 & \cdots & Y_1Y_n\\
-Y_2Y_1 &\cdots & Y_2Y_n\\
-\vdots\\
-Y_nY_1 &\cdots &Y_nY_n\\
-\end{pmatrix}
-\end{eqnarray*}
-\\
-\end{tabular}
-
-\begin{tabular}{p{3.5cm}p{3.5cm}p{3.5cm}}
-\vspace{0.01mm}
+\begin{tabular}{p{4cm}p{4cm}}
 \begin{eqnarray*}
 \beta &=& 
 \begin{pmatrix}
@@ -486,62 +415,28 @@ Y_nY_1 &\cdots &Y_nY_n\\
 \end{eqnarray*}
 &
 \begin{eqnarray*}
-\beta' &=& 
+Y &=& 
 \begin{pmatrix}
-\beta_0\\
-\beta_1\\
+Y_1\\
 \vdots\\
-\beta_n\\
-\end{pmatrix}
-\end{eqnarray*}
-&
-\begin{eqnarray*}
-\beta' \beta^T &=& 
-\begin{pmatrix}
-\beta_0\beta_1 & \cdots & \beta_0\beta_n\\
-\beta_1\beta_1 & \cdots & \beta_1\beta_n\\
-\vdots\\
-\beta_n\beta_1 & \cdots & \beta_n\beta_n\\
+Y_n\\
 \end{pmatrix}
 \end{eqnarray*}
 \\
 \end{tabular}
 
 
-
-
-
-\begin{eqnarray*}
-Y'X^T &=& 
-\begin{pmatrix}
-1\\
-Y_1\\
-\vdots\\
-Y_n\\
-\end{pmatrix}
-\begin{pmatrix}
-X_1 & \cdots & X_r
-\end{pmatrix}
-=
-\begin{pmatrix}
-X_1 & X_2 &\cdots & X_r\\
-Y_1X_1 &Y_1X_2&\cdots & Y_1X_r\\
-\vdots\\
-Y_nX_1 &Y_nX_2&\cdots &Y_nX_r\\
-\end{pmatrix}
-\end{eqnarray*}
-
-\newpage
-
 \begin{itemize}
-\item FIRST STEP: subindex $[1:k,1:r]$ for a matrix refers to rows $1$ to $k$ and columns $1$ to $r$.
+
+
+\item FIRST STEP: 
 \begin{eqnarray*}
-\mu_X &=& E(X) = E(Y'X^T)_{[1,1:r]}\\
-\mu_\mathbf{Y} &=& \E(Y) = \E(Y'Y^T)_{[1,1:n]}\\
-\Sigma_{XX} &=&  \E(XX^T) - \E(X)^2 = \E(XX^T) - \E(Y'X^T)_{[1,1:r]}^T \E(Y'X^T)_{[1,1:r]} \\
-\Sigma_{\mathbf{YY}} &=&  \E(YY^T) - \E(Y)^2 = \E(Y'Y^T) - \E(Y'Y^T)_{[1:n,1]} \E(Y'Y^T)_{[1,1:n]} \\
-\Sigma_{X\mathbf{Y}} &=&  \E(Y'X^T)^T - \E(X)\E(Y) = \E(Y'X^T)^T - \E(Y'X^T)_{[1,1:r]} \E(Y'Y^T)_{[1:n,1]} \\
-\Sigma_{\mathbf{Y}X} &=&  \E(Y'X^T) - \E(Y)\E(X) = \E(Y'X^T) - \E(Y'Y^T)_{[1:n,1]} \E(Y'X^T)_{[1,1:r]}
+\mu_X &=& E(X)\\
+\mu_\mathbf{Y} &=& \E(Y)\\
+\Sigma_{XX} &=&  \E(XX^T) - \E(X)\E(X)^T\\
+\Sigma_{\mathbf{YY}} &=&  \E(YY^T) - \E(Y)\E(Y)^T \\
+\Sigma_{X\mathbf{Y}} &=&  \E(YX^T)^T - \E(X)\E(Y)^T\\
+\Sigma_{\mathbf{Y}X} &=&  \E(YX^T) - \E(Y)\E(X)
 \end{eqnarray*}
 
 \item SECOND STEP (Theorem 7.4 in page 253, Koller \& Friedman):
