@@ -1,7 +1,7 @@
 package eu.amidst.core.learning;
 
+import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ParallelTAN;
@@ -18,13 +18,14 @@ import eu.amidst.core.variables.Variable;
  */
 public final class LearningEngine {
 
-    private static StaticParameterLearningAlgorithm staticParameterLearningAlgorithm = MaximumLikelihood::serialLearnStatic;
+    private static StaticParameterLearningAlgorithm staticParameterLearningAlgorithm = MaximumLikelihood::learnParametersStaticModel;
 
     private static DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm = MaximumLikelihood::learnDynamic;
 
     private static StaticStructuralLearningAlgorithm staticStructuralLearningAlgorithm = LearningEngine::staticNaiveBayesStructure;
 
     private static DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm = LearningEngine::dynamicNaiveBayesStructure;
+
 
     private static DAG staticNaiveBayesStructure(DataBase dataBase){
         StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
@@ -84,8 +85,16 @@ public final class LearningEngine {
     }
 
     public static BayesianNetwork learnStaticModel(DataBase database){
+
+        Stopwatch watch = Stopwatch.createStarted();
         DAG dag = staticStructuralLearningAlgorithm.learn(database);
-        return staticParameterLearningAlgorithm.learn(dag,database);
+        System.out.println("Structural Learning : " + watch.stop());
+
+        watch = Stopwatch.createStarted();
+        BayesianNetwork network = staticParameterLearningAlgorithm.learn(dag,database);
+        System.out.println("Parameter Learning: " + watch.stop());
+
+        return network;
     }
 
     public static DynamicBayesianNetwork learnDynamicModel(DataBase database){
@@ -105,7 +114,7 @@ public final class LearningEngine {
         LearningEngine.setStaticStructuralLearningAlgorithm(tan::learnDAG);
 
         MaximumLikelihood.setBatchSize(1000);
-        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::parallelLearnStatic);
+        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
 
         BayesianNetwork tanModel = LearningEngine.learnStaticModel(data);
 

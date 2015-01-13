@@ -5,6 +5,7 @@ import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by andresmasegosa on 23/11/14.
@@ -66,5 +67,10 @@ public class Indicator extends ConditionalDistribution{
 
     public String label(){
         return "Indicator of "+this.getConditionalDistribution().label();
+    }
+
+    @Override
+    public void randomInitialization(Random random) {
+        this.conditionalDistribution.randomInitialization(random);
     }
 }
