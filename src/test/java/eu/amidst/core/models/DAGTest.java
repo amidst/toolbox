@@ -1,6 +1,7 @@
 package eu.amidst.core.models;
 
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.variables.*;
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class DAGTest {
 
 /* Very simple example to test the DAG class*/
 
-    WekaDataFileReader reader = new WekaDataFileReader("data/dataWeka/contact-lenses.arff");
+    ARFFDataReader reader = new ARFFDataReader("data/dataWeka/contact-lenses.arff");
     StaticVariables variables = new StaticVariables(reader.getAttributes());
     DAG dag = new DAG(variables);
     DAG dag2 = new DAG(variables);

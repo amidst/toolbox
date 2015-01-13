@@ -6,13 +6,13 @@ net
 node A
 {
     label = "A";
-    states = ("State_0" "State_1");
+    states = ("1" "2");
 }
 
 node B
 {
     label = "B";
-    states = ("State_0" "State_1" "State_2");
+    states = ("1" "2" "3");
 }
 
 continuous node C
@@ -26,7 +26,7 @@ continuous node D
 node E
 {
     label = "E";
-    states = ("State_0" "State_1");
+    states = ("1" "2");
 }
 
 continuous node G
