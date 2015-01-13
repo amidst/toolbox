@@ -47,7 +47,7 @@ public class InferenceDemo {
 
 
 
-        
+
         //domainObject.simulate();
         domainObject.newCase();
         domainObject.enterCase(0);
