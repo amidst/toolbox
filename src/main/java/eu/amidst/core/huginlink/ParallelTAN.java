@@ -8,7 +8,6 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnMemory;
 import eu.amidst.core.database.DataOnStream;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.learning.LearningEngine;
 import eu.amidst.core.learning.MaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;

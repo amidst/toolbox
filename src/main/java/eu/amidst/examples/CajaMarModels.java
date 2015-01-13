@@ -5,7 +5,7 @@ import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.huginlink.Utils;
 import eu.amidst.core.models.BayesianNetwork;
@@ -40,7 +40,7 @@ public final class CajaMarModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataCajaMar.arff"));
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataCajaMar.arff"));
 
 
         /**
