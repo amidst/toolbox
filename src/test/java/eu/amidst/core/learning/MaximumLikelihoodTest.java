@@ -6,15 +6,19 @@ import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
+import eu.amidst.core.distribution.ConditionalDistribution;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
