@@ -139,14 +139,14 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
 
     public boolean equalDist(Multinomial_LogisticParents dist, double threshold) {
         boolean equals = true;
-
         for (int i = 0; i < this.intercept.length; i++) {
-            equals = equals && Math.round(Math.abs(this.getIntercept(i) - dist.getIntercept(i))) <= threshold;
+            equals = equals && Math.abs(this.getIntercept(i) - dist.getIntercept(i)) <= threshold;
         }
-
-        for (int i = 0; i < this.coeffParents.length; i++) {
-            for (int j=0; j < this.coeffParents[i].length; j++) {
-                equals = equals && Math.abs(this.coeffParents[i][j] - dist.coeffParents[i][j]) <= threshold;
+        if (equals) {
+            for (int i = 0; i < this.coeffParents.length; i++) {
+                for (int j = 0; j < this.coeffParents[i].length; j++) {
+                    equals = equals && Math.abs(this.coeffParents[i][j] - dist.coeffParents[i][j]) <= threshold;
+                }
             }
         }
         return equals;
