@@ -36,28 +36,36 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
         this.momentParameters = this.createZeroedMomentParameters();
         this.naturalParameters = this.createZeroedNaturalParameters();
-
     }
 
     public EF_BayesianNetwork(DAG  dag){
-        distributionList = new ArrayList(dag.getStaticVariables().getNumberOfVars());
+        this(dag.getParentSets());
+    }
+
+
+    public EF_BayesianNetwork(List<ParentSet>  parentSets){
+        distributionList = new ArrayList(parentSets.size());
 
         sizeSS=0;
-        for (ParentSet parentSet: dag.getParentSets()){
+        for (ParentSet parentSet: parentSets){
             ConditionalDistribution dist = DistributionBuilder.newDistribution(parentSet.getMainVar(), parentSet.getParents());
             EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
             distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
-
+        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroedNaturalParameters();
     }
 
     public BayesianNetwork toBayesianNetwork(DAG dag){
-        ConditionalDistribution[] dists = new ConditionalDistribution[dag.getStaticVariables().getNumberOfVars()];
-        this.distributionList.stream().forEach(dist -> dists[dist.getVariable().getVarID()] = EF_DistributionBuilder.toDistributionGeneral(dist));
-        return BayesianNetwork.newBayesianNetwork(dag, Arrays.asList(dists));
+        return BayesianNetwork.newBayesianNetwork(dag, toConditionalDistribution());
     }
 
+    public List<ConditionalDistribution> toConditionalDistribution(){
+        ConditionalDistribution[] dists = new ConditionalDistribution[this.distributionList.size()];
+        this.distributionList.stream().forEach(dist -> dists[dist.getVariable().getVarID()] = EF_DistributionBuilder.toDistributionGeneral(dist));
+        return Arrays.asList(dists);
+    }
 
     @Override
     public void updateNaturalFromMomentParameters() {
@@ -237,4 +245,5 @@ public class EF_BayesianNetwork extends EF_Distribution {
             this.vector = vector;
         }
     }
+
 }
