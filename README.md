@@ -22,7 +22,7 @@ Compiling & Running from the command line
 
 2- Modify the file maven_startup.sh (which you find it in the root project folder) and fix the path of your maven (Line 5) and java installation (Line 9).
 
-3- Create (or modify if already exist) a file ".profile" in you home directory and add the following line,
+3- Create (or modify if already exist) a file ".profile" or ".bash_profile" in you home directory and add the following line,
 which points to file "maven_startup.sh"
 
         source <project-folder>/maven_startup.sh
