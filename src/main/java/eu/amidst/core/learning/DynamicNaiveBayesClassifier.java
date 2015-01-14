@@ -90,7 +90,7 @@ public class DynamicNaiveBayesClassifier {
     public static void main(String[] args) throws IOException {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(5000);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         BayesianNetworkGenerator.setNumberOfStates(3);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
 
@@ -108,6 +108,7 @@ public class DynamicNaiveBayesClassifier {
             model.setParallelMode(true);
             model.learn(data);
             DynamicBayesianNetwork nbClassifier = model.getDynamicBNModel();
+            System.out.println(nbClassifier.toString());
         }
 
     }
