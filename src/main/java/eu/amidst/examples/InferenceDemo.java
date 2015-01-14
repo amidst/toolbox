@@ -14,6 +14,8 @@ import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,11 +25,66 @@ import java.util.List;
  */
 public class InferenceDemo {
 
+    public static void printCPTs (Domain domainObject) throws ExceptionHugin {
+
+        System.out.println("-------------------------------");
+        System.out.println("CONDITIONAL PROBABILITY TABLES:");
+        System.out.println("-------------------------------");
+
+        domainObject.getNodes().stream().forEach((node) -> {
+            try {
+                System.out.println(node.getName() + ": " + Arrays.toString(node.getTable().getData()));
+            } catch (ExceptionHugin exceptionHugin) {
+                exceptionHugin.printStackTrace();
+            }
+        });
+     }
+
+    public static void printBeliefs (Domain domainObject) throws ExceptionHugin {
+
+        System.out.println("--------");
+        System.out.println("BELIEFS:");
+        System.out.println("--------");
+
+        domainObject.getNodes().stream().forEach((node) -> {
+            try {
+                System.out.print("\n" + node.getName()+ ": ");
+                int numStates = (int)((LabelledDCNode)node).getNumberOfStates();
+                for (int j=0;j<numStates;j++){
+                    System.out.print(((LabelledDCNode) node).getBelief(j) + " ");
+                }
+
+            } catch (ExceptionHugin exceptionHugin) {
+                exceptionHugin.printStackTrace();
+            }
+        });
+
+
+//        NodeList nodes = domainObject.getNodes();
+//        int numNodes = nodes.size();
+//        System.out.println("--------");
+//        System.out.println("BELIEFS:");
+//        System.out.println("--------");
+//
+//
+//
+//        for(int i=0;i<numNodes;i++) {
+//            LabelledDCNode node = (LabelledDCNode)nodes.get(i);
+//            int numStates = (int)node.getNumberOfStates();
+//            System.out.print("\n" + node.getName() + ": ");
+//            for (int j=0;j<numStates;j++){
+//                System.out.print(((LabelledDCNode) node).getBelief(j) + " ");
+//            }
+//        }
+    }
+
+
+
     public static void demo1() throws ExceptionHugin, IOException {
 
 
         DynamicBayesianNetwork amidstDBN = DBNExample.getAmidst_DBN_Example();
-        System.out.println(amidstDBN.toString());
+        //System.out.println(amidstDBN.toString());
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
         String nameModel = "huginDBNFromAMIDST";
         huginDBN.setName(nameModel);
@@ -38,76 +95,40 @@ public class InferenceDemo {
 
 
 
+        //************************************************************
+        //********************** INFERENCE IN HUGIN ******************
+        //************************************************************
 
-        //Inference in Hugin
-        //Expand the DBN 5 time slices to make inference
-        Domain domainObject = new Domain(huginDBN,3);
-        domainObject.resetInferenceEngine();
+        // Create a Domain object with 'nSlices' from a Class object.
+        // The dynamic BN is expanded 'nSlices' times.
+        Domain domainObject = huginDBN.createDBNDomain(5);
 
+        //InferenceDemo.printCPTs(domainObject);
 
-
-
-
-        //domainObject.simulate();
-        domainObject.newCase();
-        domainObject.enterCase(0);
+        //Before entering evidence
         domainObject.compile();
+        InferenceDemo.printBeliefs(domainObject);
+        domainObject.uncompile();
+
+
+        LabelledDCNode T0A = (LabelledDCNode)domainObject.getNodeByName("T0.A");
+
+        // Evidence T0.A = 0
+        T0A.selectState(0);
+        System.out.println("\n\n Evidence entered: " + T0A.evidenceIsEntered());
+
+        //After entering evidence
+        domainObject.compile();
+        InferenceDemo.printBeliefs(domainObject);
+        domainObject.uncompile();
 
 
 
-        System.out.println(domainObject.getNumberOfCases());
-
-
-        ParseListener parseListener = new DefaultClassParseListener();
-        //domainObject.parseCase(,parseListener);
-
-        //DataSet data = new DataSet();
-        //data.setDataItem(1,1,"HOLA");
-        //data.saveAsCSV("datasets/dynamicData.csv", 'a');
-
-        //domainObject.addCases(data);
-
-//        domainObject.setNumberOfCases(1);
-  //      System.out.println("\n Number of cases: " + domainObject.getNumberOfCases());
-
-//
-//        ARFFDataReader reader = new ARFFDataReader("datasets/dataWeka/laborTimeIDSeqID.arff");
-//        Attributes attributes = reader.getAttributes();
-//        DataOnDisk dataOnDisk = new DynamicDataOnDiskFromFile(reader);
-//        Iterator<DataInstance> dataOnDiskIterator = dataOnDisk.iterator();
-//        DynamicVariables dynamicVariables = new DynamicVariables(attributes);
-//        List<Variable> obsVars = dynamicVariables.getListOfDynamicVariables();
-//        //temporalClones = dynamicVariables.getListOfTemporalClones();
-//
-//        domainObject.parseCase("dataset/huginNetworkFromAMIDST.net", parseListener);
-//
-//        System.out.println(domainObject.newCase());
-
-
-       // domainObject.propagate();
 
 
 
-       //
-       // domainObject.triangulate();
-       // domainObject.compile();
-//
-
-        //domainObject.computeDBNPredictions(3);
-
-//        domainObject.propagate();
 
 
-
-  //      domainObject.moveDBNWindow(1);
-
-        //Enter a case as evidence
-//        domainObject.enterCase(2);
-
-
-
-        //Tests if evidence has been entered since the last propagation.
-   //     domainObject.evidenceIsPropagated();
 
         
 
