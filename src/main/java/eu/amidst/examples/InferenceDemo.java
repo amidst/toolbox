@@ -25,13 +25,13 @@ import java.util.List;
  */
 public class InferenceDemo {
 
-    public static void printCPTs (Domain domainObject) throws ExceptionHugin {
+    public static void printCPTs (Class huginDBN) throws ExceptionHugin {
 
         System.out.println("-------------------------------");
         System.out.println("CONDITIONAL PROBABILITY TABLES:");
         System.out.println("-------------------------------");
 
-        domainObject.getNodes().stream().forEach((node) -> {
+        huginDBN.getNodes().stream().forEach((node) -> {
             try {
                 System.out.println(node.getName() + ": " + Arrays.toString(node.getTable().getData()));
             } catch (ExceptionHugin exceptionHugin) {
@@ -58,24 +58,6 @@ public class InferenceDemo {
                 exceptionHugin.printStackTrace();
             }
         });
-
-
-//        NodeList nodes = domainObject.getNodes();
-//        int numNodes = nodes.size();
-//        System.out.println("--------");
-//        System.out.println("BELIEFS:");
-//        System.out.println("--------");
-//
-//
-//
-//        for(int i=0;i<numNodes;i++) {
-//            LabelledDCNode node = (LabelledDCNode)nodes.get(i);
-//            int numStates = (int)node.getNumberOfStates();
-//            System.out.print("\n" + node.getName() + ": ");
-//            for (int j=0;j<numStates;j++){
-//                System.out.print(((LabelledDCNode) node).getBelief(j) + " ");
-//            }
-//        }
     }
 
 
@@ -99,38 +81,58 @@ public class InferenceDemo {
         //********************** INFERENCE IN HUGIN ******************
         //************************************************************
 
-        // Create a Domain object with 'nSlices' from a Class object.
-        // The dynamic BN is expanded 'nSlices' times.
-        Domain domainObject = huginDBN.createDBNDomain(5);
+        // CPTs of the DBN
+        InferenceDemo.printCPTs(huginDBN);
 
-        //InferenceDemo.printCPTs(domainObject);
+        // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
+        // The domain must be created using the method 'createDBNDomain'
+        Domain domainObject = huginDBN.createDBNDomain(3);
 
-        //Before entering evidence
+
+
+        //Beliefs before entering evidence
+        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
         domainObject.compile();
         InferenceDemo.printBeliefs(domainObject);
         domainObject.uncompile();
 
 
-        LabelledDCNode T0A = (LabelledDCNode)domainObject.getNodeByName("T0.A");
+        // Entering a discrete evidence T0.A = 0
+        LabelledDCNode T2A = (LabelledDCNode)domainObject.getNodeByName("T2.A");
+        T2A.selectState(0);
+        System.out.println("\n\n Evidence entered: " + T2A.evidenceIsEntered());
 
-        // Evidence T0.A = 0
-        T0A.selectState(0);
-        System.out.println("\n\n Evidence entered: " + T0A.evidenceIsEntered());
-
-        //After entering evidence
+        // Beliefs after propagating the evidence
+        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
         domainObject.compile();
         InferenceDemo.printBeliefs(domainObject);
+
+
+
+        // Move the windows n steps forward
+        domainObject.moveDBNWindow(1);
         domainObject.uncompile();
+        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
+        domainObject.compile();
+       // domainObject.computeDBNPredictions(1);
+        InferenceDemo.printBeliefs(domainObject);
 
 
 
+        // Move the windows n steps forward
+        domainObject.moveDBNWindow(1);
+        domainObject.uncompile();
+        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
+        domainObject.compile();
+        // domainObject.computeDBNPredictions(1);
+        InferenceDemo.printBeliefs(domainObject);
+
+        //domainObject.computeDBNPredictions(1);
+
+        //WindowOffset: Number of times that the windows of domain has been moved
+        //System.out.println(domainObject.getDBNWindowOffset());
 
 
-
-
-
-
-        
 
     }
 
