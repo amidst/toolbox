@@ -27,26 +27,7 @@ import java.util.*;
  */
 public class InferenceDemo {
 
-    public static void printCPTs (Class huginDBN) throws ExceptionHugin {
-
-        System.out.println("-------------------------------");
-        System.out.println("CONDITIONAL PROBABILITY TABLES:");
-        System.out.println("-------------------------------");
-
-        huginDBN.getNodes().stream().forEach((node) -> {
-            try {
-                System.out.println(node.getName() + ": " + Arrays.toString(node.getTable().getData()));
-            } catch (ExceptionHugin exceptionHugin) {
-                exceptionHugin.printStackTrace();
-            }
-        });
-     }
-
     public static void printBeliefs (Domain domainObject) throws ExceptionHugin {
-
-        System.out.println("--------");
-        System.out.println("BELIEFS:");
-        System.out.println("--------");
 
         domainObject.getNodes().stream().forEach((node) -> {
             try {
@@ -62,91 +43,15 @@ public class InferenceDemo {
         });
     }
 
-
-
-    public static void demo1() throws ExceptionHugin, IOException {
-
-
-        DynamicBayesianNetwork amidstDBN = DBNExample.getAmidst_DBN_Example();
-        //System.out.println(amidstDBN.toString());
-        Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
-        String nameModel = "huginDBNFromAMIDST";
-        huginDBN.setName(nameModel);
-        String outFile = new String("networks/"+nameModel+".net");
-        huginDBN.saveAsNet(outFile);
-        System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
-
-
-
-
-        //************************************************************
-        //********************** INFERENCE IN HUGIN ******************
-        //************************************************************
-
-        // CPTs of the DBN
-        InferenceDemo.printCPTs(huginDBN);
-
-        // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
-        // The domain must be created using the method 'createDBNDomain'
-        Domain domainObject = huginDBN.createDBNDomain(3);
-
-
-
-        //Beliefs before entering evidence
-        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-        domainObject.compile();
-        InferenceDemo.printBeliefs(domainObject);
-        domainObject.uncompile();
-
-
-        // Entering a discrete evidence T0.A = 0
-        LabelledDCNode T2A = (LabelledDCNode)domainObject.getNodeByName("T2.A");
-        T2A.selectState(0);
-        System.out.println("\n\n Evidence entered: " + T2A.evidenceIsEntered());
-
-        // Beliefs after propagating the evidence
-        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-        domainObject.compile();
-        InferenceDemo.printBeliefs(domainObject);
-
-
-
-        // Move the windows n steps forward
-        domainObject.moveDBNWindow(1);
-        domainObject.uncompile();
-        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-        domainObject.compile();
-       // domainObject.computeDBNPredictions(1);
-        InferenceDemo.printBeliefs(domainObject);
-
-
-
-        // Move the windows n steps forward
-        domainObject.moveDBNWindow(1);
-        domainObject.uncompile();
-        domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-        domainObject.compile();
-        // domainObject.computeDBNPredictions(1);
-        InferenceDemo.printBeliefs(domainObject);
-
-        //domainObject.computeDBNPredictions(1);
-
-        //WindowOffset: Number of times that the windows of domain has been moved
-        //System.out.println(domainObject.getDBNWindowOffset());
-
-
-
-    }
-
-
-    public static void demo2() throws ExceptionHugin, IOException {
+    public static void demo() throws ExceptionHugin, IOException {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(2);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(3);
         BayesianNetworkGenerator.setNumberOfStates(2);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
 
-        int sampleSize = 1000;
+
+        int sampleSize = 20;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(false);
         String file = "./datasets/randomdata.arff";
@@ -163,11 +68,10 @@ public class InferenceDemo {
         //We randomly initialize the parensets Time 0 because parameters are wrongly learnt due
         //to the data sample only contains 1 data sequence.
         Random rand = new Random(0);
-        amidstDBN.getDistributionsTime0().forEach( w -> w.randomInitialization(rand));
+        amidstDBN.getDistributionsTime0().forEach(w -> w.randomInitialization(rand));
 
         System.out.println(amidstDBN.toString());
 
-        //System.out.println(amidstDBN.toString());
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
         String nameModel = "huginDBNFromAMIDST";
         huginDBN.setName(nameModel);
@@ -176,16 +80,13 @@ public class InferenceDemo {
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
 
 
-
-
         //************************************************************
         //********************** INFERENCE IN HUGIN ******************
         //************************************************************
 
-        // CPTs of the DBN
-        InferenceDemo.printCPTs(huginDBN);
+        // The value of the timeWindow must be sampleSize-1 at maximum
+        int timeWindow = 4;
 
-        int timeWindow = 3;
         // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
         // The domain must be created using the method 'createDBNDomain'
         Domain domainObject = huginDBN.createDBNDomain(timeWindow);
@@ -193,6 +94,7 @@ public class InferenceDemo {
 
 
         //Beliefs before entering evidence
+        System.out.println("\n\nBELIEFS before propagating evidence: ");
         domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
         domainObject.compile();
         InferenceDemo.printBeliefs(domainObject);
@@ -205,19 +107,27 @@ public class InferenceDemo {
             DataInstance dataInstance= iterator.next();
 
             for (Variable var: amidstDBN.getDynamicVariables().getListOfDynamicVariables()){
-                LabelledDCNode node = (LabelledDCNode)domainObject.getNodeByName("T"+i+"."+var.getName());
-                node.selectState((long)dataInstance.getValue(var));
+
+                //Avoid entering evidence in class variable to have something to predict
+                if ((var.getName().compareTo("ClassVar")!=0)){
+                    LabelledDCNode node = (LabelledDCNode)domainObject.getNodeByName("T"+i+"."+var.getName());
+                    node.selectState((long)dataInstance.getValue(var));
+                }
+
             }
         }
 
         // Beliefs after propagating the evidence
+        System.out.println("\n----------------------------------------------------");
+        System.out.println("\n\nBELIEFS after propagating evidence: ");
         domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
         domainObject.compile();
         InferenceDemo.printBeliefs(domainObject);
 
 
         while (iterator.hasNext()) {
-            // Move the windows n steps forward
+            System.out.println("\n----------------------------------------------------");
+            System.out.println("\nMoving the windows 1 step forward");
             domainObject.moveDBNWindow(1);
             domainObject.uncompile();
 
@@ -228,17 +138,17 @@ public class InferenceDemo {
                 node.selectState((long) dataInstance.getValue(var));
             }
 
-
+            System.out.println("BELIEFS after propagating evidence: ");
             domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
             domainObject.compile();
-            // domainObject.computeDBNPredictions(1);
+            // domainObject.computeDBNPredictions(3);
             InferenceDemo.printBeliefs(domainObject);
         }
 
     }
 
     public static void main(String[] args) throws ExceptionHugin, IOException {
-        InferenceDemo.demo2();
+        InferenceDemo.demo();
     }
 
 }
