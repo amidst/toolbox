@@ -51,29 +51,13 @@ public class DynamicNaiveBayesClassifier {
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
         DynamicDAG dag = new DynamicDAG(modelHeader);
 
-        if (parallelMode){
-            dag.getParentSetsTime0().parallelStream()
-                    .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
-                    .forEach(w -> w.addParent(classVar));
+        dag.getParentSetsTimeT().stream()
+                .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
+                .forEach(w -> {
+                    w.addParent(classVar);
+                    w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
+                });
 
-            dag.getParentSetsTimeT().parallelStream()
-                    .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
-                    .forEach(w -> {
-                        w.addParent(classVar);
-                        w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
-                    });
-        }else {
-            dag.getParentSetsTime0().stream()
-                    .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
-                    .forEach(w -> w.addParent(classVar));
-
-            dag.getParentSetsTimeT().stream()
-                    .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
-                    .forEach(w -> {
-                        w.addParent(classVar);
-                        w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
-                    });
-        }
 
         dag.getParentSetTimeT(classVar).addParent(modelHeader.getTemporalClone(classVar));
 
@@ -90,7 +74,7 @@ public class DynamicNaiveBayesClassifier {
     public static void main(String[] args) throws IOException {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(5000);
         BayesianNetworkGenerator.setNumberOfStates(3);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
 
@@ -108,7 +92,7 @@ public class DynamicNaiveBayesClassifier {
             model.setParallelMode(true);
             model.learn(data);
             DynamicBayesianNetwork nbClassifier = model.getDynamicBNModel();
-            System.out.println(nbClassifier.toString());
+            //System.out.println(nbClassifier.toString());
         }
 
     }
