@@ -6,10 +6,7 @@ import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
 import eu.amidst.core.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.models.DynamicDAG;
+import eu.amidst.core.models.*;
 import eu.amidst.core.utils.Vector;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -96,4 +93,22 @@ public final class MaximumLikelihood {
         return efDynamicBayesianNetwork.toDynamicBayesianNetwork(dag);
     }
 
+    public static void main(String[] args){
+
+        BayesianNetwork bn=null;
+
+        int nlinks = bn.getDAG().getParentSets()
+                .parallelStream()
+                .mapToInt(parentSet -> parentSet.getNumberOfParents()).sum();
+
+        nlinks=0;
+
+        for (ParentSet parentSet: bn.getDAG().getParentSets()){
+            nlinks+=parentSet.getNumberOfParents();
+        }
+
+        for (int i = 0; i < bn.getDAG().getParentSets().size(); i++) {
+            nlinks+=bn.getDAG().getParentSets().get(i).getNumberOfParents();
+        }
+    }
 }
