@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.lang.Runtime;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -32,6 +33,8 @@ import org.apache.commons.cli.ParseException;
  * Created by afa on 16/12/14.
  */
 public class ParallelTANDemo {
+
+    public static int nOfThreads;
 
     public static void demo1() throws ExceptionHugin, IOException {
 
@@ -186,6 +189,8 @@ public class ParallelTANDemo {
 
 
     public static void main(String[] args) throws ExceptionHugin, IOException {
+
+        nOfThreads = Runtime.getRuntime().availableProcessors();
 
         final String applicationName = "run.sh eu.amidst.examples.ParallelTANDemo";
 
