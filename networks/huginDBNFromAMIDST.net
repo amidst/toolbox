@@ -4,148 +4,50 @@ class huginDBNFromAMIDST
     outputs = ();
     node_size = (0 0);
 
-    node A
+    node DiscreteVar0
     {
-	label = "A";
+	label = "DiscreteVar0";
 	states = ("State_0" "State_1");
     }
 
-    temporal T_A : A
+    temporal T_DiscreteVar0 : DiscreteVar0
     {
-	label = "T_A";
+	label = "T_DiscreteVar0";
     }
 
-    node B
+    node ClassVar
     {
-	label = "B";
-	states = ("State_0" "State_1" "State_2");
-    }
-
-    temporal T_B : B
-    {
-	label = "T_B";
-    }
-
-    node C
-    {
-	label = "C";
+	label = "ClassVar";
 	states = ("State_0" "State_1");
     }
 
-    temporal T_C : C
+    temporal T_ClassVar : ClassVar
     {
-	label = "T_C";
+	label = "T_ClassVar";
     }
 
-    node D
+    potential (T_DiscreteVar0 | T_ClassVar)
     {
-	label = "D";
-	states = ("State_0" "State_1");
+	data = (( 0.752408 0.247592 )	%  T_ClassVar=State_0
+		( 0.536612 0.463388 ));	%  T_ClassVar=State_1
     }
 
-    temporal T_D : D
+    potential (DiscreteVar0 | T_DiscreteVar0 ClassVar)
     {
-	label = "T_D";
+	data = ((( 0.753394 0.246606 )	%  T_DiscreteVar0=State_0  ClassVar=State_0
+		 ( 0.556485 0.443515 ))	%  T_DiscreteVar0=State_0  ClassVar=State_1
+		(( 0.77665 0.22335 )	%  T_DiscreteVar0=State_1  ClassVar=State_0
+		 ( 0.512397 0.487603 )));	%  T_DiscreteVar0=State_1  ClassVar=State_1
     }
 
-    node E
+    potential (T_ClassVar)
     {
-	label = "E";
-	states = ("State_0" "State_1");
+	data = ( 0.641995 0.358005 );
     }
 
-    temporal T_E : E
+    potential (ClassVar | T_ClassVar)
     {
-	label = "T_E";
-    }
-
-    node G
-    {
-	label = "G";
-	states = ("State_0" "State_1");
-    }
-
-    temporal T_G : G
-    {
-	label = "T_G";
-    }
-
-    potential (T_A)
-    {
-	data = ( 0.3 0.7 );
-    }
-
-    potential (A | T_A)
-    {
-	data = (( 0.15 0.85 )	%  T_A=State_0
-		( 0.1 0.9 ));	%  T_A=State_1
-    }
-
-    potential (T_B | T_A)
-    {
-	data = (( 0.4 0.1 0.5 )	%  T_A=State_0
-		( 0.2 0.5 0.3 ));	%  T_A=State_1
-    }
-
-    potential (B | T_B A)
-    {
-	data = ((( 0.1 0.2 0.7 )	%  T_B=State_0  A=State_0
-		 ( 0.6 0.1 0.3 ))	%  T_B=State_0  A=State_1
-		(( 0.3 0.4 0.3 )	%  T_B=State_1  A=State_0
-		 ( 0.2 0.1 0.7 ))	%  T_B=State_1  A=State_1
-		(( 0.5 0.1 0.4 )	%  T_B=State_2  A=State_0
-		 ( 0.1 0.1 0.8 )));	%  T_B=State_2  A=State_1
-    }
-
-    potential (T_C | T_A)
-    {
-	data = (( 0.4 0.6 )	%  T_A=State_0
-		( 0.2 0.8 ));	%  T_A=State_1
-    }
-
-    potential (C | A)
-    {
-	data = (( 0.4 0.6 )	%  A=State_0
-		( 0.2 0.8 ));	%  A=State_1
-    }
-
-    potential (T_D | T_A)
-    {
-	data = (( 0.7 0.3 )	%  T_A=State_0
-		( 0.1 0.9 ));	%  T_A=State_1
-    }
-
-    potential (D | A)
-    {
-	data = (( 0.7 0.3 )	%  A=State_0
-		( 0.1 0.9 ));	%  A=State_1
-    }
-
-    potential (T_E | T_A)
-    {
-	data = (( 0.8 0.2 )	%  T_A=State_0
-		( 0.1 0.9 ));	%  T_A=State_1
-    }
-
-    potential (E | T_E A)
-    {
-	data = ((( 0.3 0.7 )	%  T_E=State_0  A=State_0
-		 ( 0.6 0.4 ))	%  T_E=State_0  A=State_1
-		(( 0.7 0.3 )	%  T_E=State_1  A=State_0
-		 ( 0.9 0.1 )));	%  T_E=State_1  A=State_1
-    }
-
-    potential (T_G | T_A)
-    {
-	data = (( 0.6 0.4 )	%  T_A=State_0
-		( 0.7 0.3 ));	%  T_A=State_1
-    }
-
-    potential (G | T_G A)
-    {
-	data = ((( 0.2 0.8 )	%  T_G=State_0  A=State_0
-		 ( 0.5 0.5 ))	%  T_G=State_0  A=State_1
-		(( 0.3 0.7 )	%  T_G=State_1  A=State_0
-		 ( 0.8 0.2 )));	%  T_G=State_1  A=State_1
+	data = (( 0.632812 0.367188 )	%  T_ClassVar=State_0
+		( 0.651811 0.348189 ));	%  T_ClassVar=State_1
     }
 } % class huginDBNFromAMIDST

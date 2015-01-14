@@ -48,7 +48,7 @@ public class InferenceDemo {
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(3);
         BayesianNetworkGenerator.setNumberOfStates(2);
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
 
         int sampleSize = 20;

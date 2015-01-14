@@ -86,7 +86,7 @@ public class ParallelTANDemo {
             BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
             BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
             BayesianNetworkGenerator.setNumberOfStates(2);
-            BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
+            BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
             //BayesianNetwork bn = BayesianNetworkLoader.loadFromHugin("networks/Pigs.net");
 
