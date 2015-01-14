@@ -1,3 +1,11 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. (Andres) Implement DynamicDAG with two DAGs: one for time 0 and another for time T.
+ *
+ * ********************************************************
+ */
+
 package eu.amidst.core.models;
 
 import eu.amidst.core.utils.Utils;

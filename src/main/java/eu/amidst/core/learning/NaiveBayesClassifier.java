@@ -17,6 +17,16 @@ public class NaiveBayesClassifier {
 
     int classVarID;
     BayesianNetwork bnModel;
+    boolean parallelMode = true;
+
+
+    public boolean isParallelMode() {
+        return parallelMode;
+    }
+
+    public void setParallelMode(boolean parallelMode) {
+        this.parallelMode = parallelMode;
+    }
 
     public int getClassVarID() {
         return classVarID;
@@ -34,15 +44,19 @@ public class NaiveBayesClassifier {
         StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
         DAG dag = new DAG(modelHeader);
-        dag.getParentSets().parallelStream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
+        if (parallelMode)
+            dag.getParentSets().parallelStream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
+        else
+            dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
+
         return dag;
     }
 
     public void learn(DataBase dataBase){
         LearningEngine.setStaticStructuralLearningAlgorithm(this::staticNaiveBayesStructure);
         LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
+        MaximumLikelihood.setParallelMode(this.isParallelMode());
         bnModel = LearningEngine.learnStaticModel(dataBase);
-
         //DAG dag = this.staticNaiveBayesStructure(dataBase);
         //bnModel = MaximumLikelihood.learnParametersStaticModel(dag,dataBase);
     }

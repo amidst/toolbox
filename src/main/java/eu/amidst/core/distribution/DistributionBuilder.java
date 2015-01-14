@@ -53,7 +53,7 @@ public final class DistributionBuilder {
 
                 ConditionalDistribution dist = newDistribution(mainVar,newconditioningVars);
 
-                return new Indicator(indicatorVar,dist);
+                return new IndicatorDistribution(indicatorVar,dist);
 
             }else if (normalParents && !multinomialParents) {
                 return new Normal_NormalParents(mainVar, conditioningVars);

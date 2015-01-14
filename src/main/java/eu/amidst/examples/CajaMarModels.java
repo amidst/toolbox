@@ -15,7 +15,7 @@ import eu.amidst.core.variables.*;
 
 /**
  * This class contains examples about how we can create CajaMar's dynamic models using the AMIDST Toolbox.
- * It show how to create 2T-DBNs over multinomial, Gassuian and Indicator variables.
+ * It show how to create 2T-DBNs over multinomial, Gassuian and IndicatorDistribution variables.
  *
  * Created by andresmasegosa on 22/11/14.
  */

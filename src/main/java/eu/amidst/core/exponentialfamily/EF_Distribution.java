@@ -77,8 +77,9 @@ public abstract class EF_Distribution {
         return Math.exp(this.computeLogProbabilityOf(dataInstance));
     }
 
+    //TODO: the logbasemeasure and the lognormalizer are positives or negatives terms (Andres)
     public double computeLogProbabilityOf(DataInstance dataInstance){
-        return this.naturalParameters.dotProduct(this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) + this.computeLogNormalizer();
+        return this.naturalParameters.dotProduct(this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) - this.computeLogNormalizer();
     }
 
     public abstract Vector createZeroedVector();

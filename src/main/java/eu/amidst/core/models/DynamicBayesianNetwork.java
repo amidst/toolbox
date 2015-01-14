@@ -1,3 +1,11 @@
+/**
+ ******************* ISSUE LIST **************************
+ *
+ * 1. (Andres) Implement DynamicBN with two BNs: one for time 0 and another for time T.
+ *
+ * ********************************************************
+ */
+
 package eu.amidst.core.models;
 
 
@@ -40,8 +48,18 @@ public final class DynamicBayesianNetwork{
         this.initializeDistributions();
     }
 
-    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicDAG dynamicDAG1){
-        return new DynamicBayesianNetwork(dynamicDAG1);
+    private DynamicBayesianNetwork(DynamicDAG dynamicDAG1, List<ConditionalDistribution> distsTime0, List<ConditionalDistribution> distsTimeT){
+        dynamicDAG = dynamicDAG1;
+        this.distributionsTime0=distsTime0;
+        this.distributionsTimeT=distsTimeT;
+    }
+
+    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicDAG dynamicDAG){
+        return new DynamicBayesianNetwork(dynamicDAG);
+    }
+
+    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicDAG dynamicDAG, List<ConditionalDistribution> distsTime0, List<ConditionalDistribution> distsTimeT) {
+        return new DynamicBayesianNetwork(dynamicDAG,distsTime0,distsTimeT);
     }
 
     private void initializeDistributions() {
