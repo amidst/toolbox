@@ -178,6 +178,8 @@ public final class DynamicBayesianNetwork{
                 str.append(") follows a ");
                 str.append(this.getDistributionTime0(var).label() + "\n");
             }
+            //Variable distribution
+            str.append(this.getDistributionTime0(var).toString() + "\n");
         }
 
         str.append("\nDynamic Bayesian Network Time T:\n");
@@ -199,7 +201,8 @@ public final class DynamicBayesianNetwork{
                 str.append(") follows a ");
                 str.append(this.getDistributionTimeT(var).label() + "\n");
             }
-
+            //Variable distribution
+            str.append(this.getDistributionTimeT(var).toString() + "\n");
         }
         return str.toString();
     }

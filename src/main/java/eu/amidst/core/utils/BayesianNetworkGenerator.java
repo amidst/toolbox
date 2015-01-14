@@ -44,13 +44,14 @@ public final class BayesianNetworkGenerator {
 
         StaticVariables staticVariables  = new StaticVariables();
 
-        Variable classVar = staticVariables.addHiddenVariable(generateDiscreteVariable("ClassVar"));
 
         IntStream.range(0,numberOfDiscreteVars-1)
                 .forEach(i -> staticVariables.addHiddenVariable(generateDiscreteVariable("DiscreteVar" + i)));
 
         IntStream.range(0,numberOfContinuousVars)
                 .forEach(i -> staticVariables.addHiddenVariable(generateContinuousVariable("GaussianVar" + i)));
+
+        Variable classVar = staticVariables.addHiddenVariable(generateDiscreteVariable("ClassVar"));
 
         DAG dag = new DAG(staticVariables);
 
