@@ -82,6 +82,7 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DataInstance>
     }
 
     @Override public Spliterator<DataInstance> trySplit() {
+        //this.reader.spliterator().trySplit()
         return null;
         /*
         final HoldingConsumer<DataRow> holder = new HoldingConsumer<>();

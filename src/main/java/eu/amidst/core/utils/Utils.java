@@ -1,7 +1,12 @@
 package eu.amidst.core.utils;
 
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.DistType;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by andresmasegosa on 28/08/14.
@@ -81,5 +86,33 @@ public final class Utils {
         return !(child.getDistributionType()== DistType.MULTINOMIAL && parent.getDistributionType()==DistType.GAUSSIAN);
     }
 
+    public static List<Variable> getCausalOrder(DAG dag){
+        StaticVariables variables = dag.getStaticVariables();
+        int nNrOfAtts = variables.getNumberOfVars();
+        List<Variable> order = new ArrayList();
+        boolean[] bDone = new boolean[variables.getNumberOfVars()];
+
+        for (Variable var: variables){
+            bDone[var.getVarID()] = false;
+        }
+
+        for (int iAtt = 0; iAtt < nNrOfAtts; iAtt++) {
+            boolean allParentsDone = false;
+            for (Variable var2 : variables){
+                if (!bDone[var2.getVarID()]) {
+                    allParentsDone = true;
+                    int iParent = 0;
+                    for (Variable parent: dag.getParentSet(var2))
+                        allParentsDone = allParentsDone && bDone[parent.getVarID()];
+
+                    if (allParentsDone){
+                        order.add(var2);
+                        bDone[var2.getVarID()] = true;
+                    }
+                }
+            }
+        }
+        return order;
+    }
 
 }
