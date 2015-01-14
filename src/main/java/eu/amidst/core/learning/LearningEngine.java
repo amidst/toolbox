@@ -31,7 +31,7 @@ public final class LearningEngine {
         StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
         DAG dag = new DAG(modelHeader);
         Variable classVar = modelHeader.getVariableById(modelHeader.getNumberOfVars()-1);
-        dag.getParentSets().parallelStream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
+        dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
 
         return dag;
     }
@@ -41,7 +41,7 @@ public final class LearningEngine {
         DynamicDAG dag = new DynamicDAG(modelHeader);
         Variable classVar = modelHeader.getVariableById(modelHeader.getNumberOfVars()-1);
         dag.getParentSetsTimeT()
-                .parallelStream()
+                .stream()
                 .filter(w-> w.getMainVar()
                 .getVarID()!=classVar.getVarID())
                 .forEach(w -> {
@@ -98,7 +98,15 @@ public final class LearningEngine {
     }
 
     public static DynamicBayesianNetwork learnDynamicModel(DataBase database){
-        return dynamicParameterLearningAlgorithm.learn(dynamicStructuralLearningAlgorithm.learn(database),database);
+        Stopwatch watch = Stopwatch.createStarted();
+        DynamicDAG dag = dynamicStructuralLearningAlgorithm.learn(database);
+        System.out.println("Structural Learning : " + watch.stop());
+
+        watch = Stopwatch.createStarted();
+        DynamicBayesianNetwork network = dynamicParameterLearningAlgorithm.learn(dag,database);
+        System.out.println("Parameter Learning: " + watch.stop());
+
+        return network;
     }
 
     public static void main(String[] args) throws Exception{

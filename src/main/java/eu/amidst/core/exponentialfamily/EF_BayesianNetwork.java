@@ -7,6 +7,7 @@ import eu.amidst.core.distribution.DistributionBuilder;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
+import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.StaticVariables;
@@ -14,6 +15,7 @@ import eu.amidst.core.variables.StaticVariables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -58,20 +60,24 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     public BayesianNetwork toBayesianNetwork(DAG dag){
-        return BayesianNetwork.newBayesianNetwork(dag, toConditionalDistribution());
+        return BayesianNetwork.newBayesianNetwork(dag, toConditionalDistribution(this.distributionList));
     }
 
-    public List<ConditionalDistribution> toConditionalDistribution(){
-        ConditionalDistribution[] dists = new ConditionalDistribution[this.distributionList.size()];
-        this.distributionList.stream().forEach(dist -> dists[dist.getVariable().getVarID()] = EF_DistributionBuilder.toDistributionGeneral(dist));
+    public static List<ConditionalDistribution> toConditionalDistribution(List<EF_ConditionalDistribution> ef_dists){
+        ConditionalDistribution[] dists = new ConditionalDistribution[ef_dists.size()];
+        ef_dists.stream().forEach(dist -> dists[dist.getVariable().getVarID()] = EF_DistributionBuilder.toDistributionGeneral(dist));
         return Arrays.asList(dists);
+    }
+
+    public List<EF_ConditionalDistribution> getDistributionList() {
+        return distributionList;
     }
 
     @Override
     public void updateNaturalFromMomentParameters() {
 
         CompoundVector globalMomentsParam = (CompoundVector)this.momentParameters;
-        CompoundVector vectorNatural = this.createCompoundVector();
+        CompoundVector vectorNatural = this.createEmtpyCompoundVector();
 
         this.distributionList.stream().forEach(w -> {
             MomentParameters localMomentParam = (MomentParameters) globalMomentsParam.getVectorByPosition(w.getVariable().getVarID());
@@ -119,15 +125,15 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     private CompoundVector createCompoundVector(){
-        return new CompoundVector(this.distributionList, false);
-
+        return new CompoundVector(this.distributionList.stream().map(w-> w.createZeroedVector()).collect(Collectors.toList()));
     }
 
     private CompoundVector createEmtpyCompoundVector() {
-        return new CompoundVector(this.distributionList, true);
+        return new CompoundVector(this.distributionList.size(), this.sizeOfSufficientStatistics());
     }
 
-    static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
+    /*
+    private static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 
         int size;
         List<IndexedVector> baseVectors;
@@ -224,7 +230,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
     }
 
-    static class IndexedVector {
+    private static class IndexedVector {
         Vector vector;
         int index;
 
@@ -246,4 +252,5 @@ public class EF_BayesianNetwork extends EF_Distribution {
         }
     }
 
+    */
 }

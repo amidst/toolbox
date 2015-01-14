@@ -13,6 +13,7 @@
  * **********************************************************
  */
 
+//TODO: Condiser the log-base-measure when defining the base distribution.
 
 package eu.amidst.core.exponentialfamily;
 
@@ -86,7 +87,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     @Override
     public SufficientStatistics getSufficientStatistics(DataInstance instance) {
 
-        CompoundVector<E> vector = this.createCompoundVector();
+        CompoundVector vector = this.createCompoundVector();
 
         int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, instance);
 
@@ -114,7 +115,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     public void updateNaturalFromMomentParameters() {
 
-        CompoundVector<E> globalMomentsParam = (CompoundVector<E>) this.momentParameters;
+        CompoundVector globalMomentsParam = (CompoundVector) this.momentParameters;
 
         for (int i = 0; i < numberOfConfigurations(); i++) {
             MomentParameters moment = (MomentParameters) globalMomentsParam.getVectorByPosition(i);
@@ -122,7 +123,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             this.getEF_BaseDistribution(i).setMomentParameters(moment);
         }
 
-        CompoundVector<E> vectorNatural = this.createCompoundVector();
+        CompoundVector vectorNatural = this.createCompoundVector();
 
 
         for (int i = 0; i < numberOfConfigurations(); i++) {
@@ -165,20 +166,21 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return null;
     }
 
-    private CompoundVector<E> createCompoundVector() {
-        return new CompoundVector<>(this.getEF_BaseDistribution(0), this.numberOfConfigurations());
+    private CompoundVector createCompoundVector() {
+        return new CompoundVector((EF_ConditionalDistribution)this.getEF_BaseDistribution(0), this.numberOfConfigurations());
     }
 
-    static class CompoundVector<E extends EF_Distribution> implements SufficientStatistics, MomentParameters, NaturalParameters {
+    //TODO: Replace this CompoundVector by the compoundvector of indicator
+    private static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 
         int nConf;
         int baseSSLength;
         double[] baseConf;
-        E baseDist;
+        EF_ConditionalDistribution baseDist;
 
         SparseVector baseVectors;
 
-        public CompoundVector(E baseDist1, int nConf1) {
+        public CompoundVector(EF_ConditionalDistribution baseDist1, int nConf1) {
             nConf = nConf1;
             this.baseConf = new double[nConf];
             baseDist = baseDist1;
@@ -235,14 +237,14 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         @Override
         public void sum(Vector vector) {
-            this.sum((CompoundVector<E>) vector);
+            this.sum((CompoundVector) vector);
         }
 
         public SparseVector getBaseVectors() {
             return baseVectors;
         }
 
-        public void sum(CompoundVector<E> vector) {
+        public void sum(CompoundVector vector) {
             if (vector.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
@@ -255,10 +257,10 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         @Override
         public void copy(Vector vector) {
-            this.copy((CompoundVector<E>) vector);
+            this.copy((CompoundVector) vector);
         }
 
-        public void copy(CompoundVector<E> vector) {
+        public void copy(CompoundVector vector) {
             if (vector.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
@@ -276,10 +278,10 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         @Override
         public double dotProduct(Vector vector) {
-            return this.dotProduct((CompoundVector<E>) vector);
+            return this.dotProduct((CompoundVector) vector);
         }
 
-        public double dotProduct(CompoundVector<E> vector) {
+        public double dotProduct(CompoundVector vector) {
             if (vector.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
@@ -317,7 +319,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         }
     }
 
-    static class SparseVector implements Vector {
+    private static class SparseVector implements Vector {
 
         VectorBuilder vectorBuilder;
 
@@ -457,7 +459,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @FunctionalInterface
-    public interface VectorBuilder {
+    private interface VectorBuilder {
             public Vector createZeroedVector();
     }
 }

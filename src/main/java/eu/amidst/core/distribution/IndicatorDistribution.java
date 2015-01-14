@@ -10,13 +10,13 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 23/11/14.
  */
-public class Indicator extends ConditionalDistribution{
+public class IndicatorDistribution extends ConditionalDistribution{
 
     private ConditionalDistribution conditionalDistribution;
-    private Uniform uniform;
+    private DeltaDistribution deltaDist;
     private Variable indicatorVar;
 
-    public Indicator(Variable indicatorVar1,  ConditionalDistribution conditionalDistribution1) {
+    public IndicatorDistribution(Variable indicatorVar1, ConditionalDistribution conditionalDistribution1) {
         if (indicatorVar1.getDistributionType() != DistType.INDICATOR) {
             throw new IllegalArgumentException("IndicatorVar_ should be of indicator type");
         }
@@ -29,7 +29,7 @@ public class Indicator extends ConditionalDistribution{
         this.parents.add(indicatorVar1);
         this.conditionalDistribution=conditionalDistribution1;
         this.indicatorVar = indicatorVar1;
-        this.uniform = new Uniform(this.getVariable());
+        this.deltaDist = new DeltaDistribution(this.getVariable(), 0.0);
     }
 
     public ConditionalDistribution getConditionalDistribution() {
@@ -49,9 +49,8 @@ public class Indicator extends ConditionalDistribution{
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
         if (assignment.getValue(this.indicatorVar)==0.0) {
-            return this.uniform.getLogProbability(assignment.getValue(this.getVariable()));
-        }
-        else {
+            return 0.0; //this.deltaDist.getLogProbability(assignment.getValue(this.var)); //Both the indicator and main var has, by definition, the same value.
+        }else {
             return this.conditionalDistribution.getLogConditionalProbability(assignment);
         }
     }
@@ -59,14 +58,14 @@ public class Indicator extends ConditionalDistribution{
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
         if (assignment.getValue(this.indicatorVar)==0.0) {
-            return this.uniform;
+            return this.deltaDist;
         }else{
             return this.conditionalDistribution.getUnivariateDistribution(assignment);
         }
     }
 
     public String label(){
-        return "Indicator of "+this.getConditionalDistribution().label();
+        return "IndicatorDistribution of "+this.getConditionalDistribution().label();
     }
 
     @Override
@@ -76,13 +75,12 @@ public class Indicator extends ConditionalDistribution{
 
     @Override
     public boolean equalDist(ConditionalDistribution dist, double threshold) {
-        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Indicator"))
-            return this.equalDist((Indicator)dist,threshold);
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.IndicatorDistribution"))
+            return this.equalDist((IndicatorDistribution)dist,threshold);
         return false;
     }
 
-
-    public boolean equalDist(Indicator dist, double threshold) {
+    public boolean equalDist(IndicatorDistribution dist, double threshold) {
         return this.getConditionalDistribution().equalDist(dist.getConditionalDistribution(),threshold);
     }
 }

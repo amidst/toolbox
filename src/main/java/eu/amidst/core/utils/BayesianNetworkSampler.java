@@ -43,7 +43,7 @@ public class BayesianNetworkSampler  {
 
     public BayesianNetworkSampler(BayesianNetwork network1){
         network=network1;
-        this.causalOrder=BayesianNetworkSampler.getCausalOrder(network.getDAG());
+        this.causalOrder=Utils.getCausalOrder(network.getDAG());
     }
 
 
@@ -57,9 +57,6 @@ public class BayesianNetworkSampler  {
         }
         return sampleStream;
     }*/
-
-
-
 
     public Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
@@ -173,36 +170,6 @@ public class BayesianNetworkSampler  {
         }
         return assignment;
     }
-
-    private static List<Variable> getCausalOrder(DAG dag){
-        StaticVariables variables = dag.getStaticVariables();
-        int nNrOfAtts = variables.getNumberOfVars();
-        List<Variable> order = new ArrayList();
-        boolean[] bDone = new boolean[variables.getNumberOfVars()];
-
-        for (Variable var: variables){
-            bDone[var.getVarID()] = false;
-        }
-
-        for (int iAtt = 0; iAtt < nNrOfAtts; iAtt++) {
-                boolean allParentsDone = false;
-                for (Variable var2 : variables){
-                    if (!bDone[var2.getVarID()]) {
-                        allParentsDone = true;
-                        int iParent = 0;
-                        for (Variable parent: dag.getParentSet(var2))
-                            allParentsDone = allParentsDone && bDone[parent.getVarID()];
-
-                        if (allParentsDone){
-                            order.add(var2);
-                            bDone[var2.getVarID()] = true;
-                        }
-                    }
-                }
-            }
-            return order;
-    }
-
 
     public static void main(String[] args) throws Exception{
 

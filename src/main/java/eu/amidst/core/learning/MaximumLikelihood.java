@@ -4,6 +4,7 @@ import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
+import eu.amidst.core.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -69,6 +70,30 @@ public final class MaximumLikelihood {
 
     public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataBase dataBase) {
 
-        return null;
+        EF_DynamicBayesianNetwork efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dag);
+
+        Stream<DataInstance> stream = null;
+        if (parallelMode){
+            stream = dataBase.parallelStream(batchSize);
+        }else{
+            stream = dataBase.stream();
+        }
+
+        AtomicInteger dataInstanceCount = new AtomicInteger(0);
+
+        SufficientStatistics sumSS = stream
+                .peek(w -> {
+                    if (w.getTimeID()==0)
+                        dataInstanceCount.getAndIncrement();
+                })
+                .map(efDynamicBayesianNetwork::getSufficientStatistics)
+                .reduce(efDynamicBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
+
+        //Normalize the sufficient statistics
+        sumSS.divideBy(dataInstanceCount.get());
+
+        efDynamicBayesianNetwork.setMomentParameters(sumSS);
+        return efDynamicBayesianNetwork.toDynamicBayesianNetwork(dag);
     }
+
 }
