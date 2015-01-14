@@ -14,6 +14,7 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.ReservoirSampling;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.examples.ParallelTANDemo;
 
 import java.io.IOException;
 import java.util.Random;
@@ -26,12 +27,14 @@ public class ParallelTAN {
 
     private int numSamplesOnMemory;
     private int numCores;
+    private int batchSize;
     String nameRoot;
     String nameTarget;
     boolean parallelMode;
 
     public ParallelTAN() {
         this.numSamplesOnMemory = 10000;
+        this.batchSize = 1000;
         this.numCores = Runtime.getRuntime().availableProcessors();
         this.parallelMode=true;
     }
@@ -45,6 +48,13 @@ public class ParallelTAN {
 
     }
 
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
     public int getNumSamplesOnMemory() {
         return numSamplesOnMemory;
     }
@@ -128,6 +138,7 @@ public class ParallelTAN {
 
     public BayesianNetwork learnBN(DataBase dataBase) {
         LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
+        MaximumLikelihood.setBatchSize(this.batchSize);
         MaximumLikelihood.setParallelMode(this.parallelMode);
         LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
 

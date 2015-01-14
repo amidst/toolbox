@@ -62,7 +62,6 @@ public class BayesianNetworkSampler  {
     public Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
-        //System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(ParallelTANDemo.nOfThreads));
         return (parallelMode)? sampleStream.parallel() : sampleStream;
     }
 
