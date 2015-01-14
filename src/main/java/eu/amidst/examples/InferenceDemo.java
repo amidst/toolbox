@@ -43,12 +43,14 @@ public class InferenceDemo {
         });
     }
 
+
+
     public static void demo() throws ExceptionHugin, IOException {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(3);
         BayesianNetworkGenerator.setNumberOfStates(2);
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
 
 
         int sampleSize = 20;
@@ -143,6 +145,11 @@ public class InferenceDemo {
             domainObject.compile();
             // domainObject.computeDBNPredictions(3);
             InferenceDemo.printBeliefs(domainObject);
+            //System.out.println("CUSTOMER ID: " + "Probability of defaulting:" +
+            //        ((LabelledDCNode)domainObject.getNodeByName("T180.ClassVar")).getBelief(0));
+
+
+
         }
 
     }
