@@ -167,7 +167,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     private CompoundVector createCompoundVector() {
-        return new CompoundVector((EF_ConditionalDistribution)this.getEF_BaseDistribution(0), this.numberOfConfigurations());
+        return new CompoundVector((EF_Distribution)this.getEF_BaseDistribution(0), this.numberOfConfigurations());
     }
 
     //TODO: Replace this CompoundVector by the compoundvector of indicator
@@ -176,11 +176,11 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         int nConf;
         int baseSSLength;
         double[] baseConf;
-        EF_ConditionalDistribution baseDist;
+        EF_Distribution baseDist;
 
         SparseVector baseVectors;
 
-        public CompoundVector(EF_ConditionalDistribution baseDist1, int nConf1) {
+        public CompoundVector(EF_Distribution baseDist1, int nConf1) {
             nConf = nConf1;
             this.baseConf = new double[nConf];
             baseDist = baseDist1;
