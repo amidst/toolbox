@@ -40,18 +40,18 @@ public final class BayesianNetworkGenerator {
         BayesianNetworkGenerator.numberOfStates = numberOfStates;
     }
 
-    public static BayesianNetwork generateNaiveBayes(Random random){
+    public static BayesianNetwork generateNaiveBayes(Random random, int nClassLabels){
 
         StaticVariables staticVariables  = new StaticVariables();
 
 
         IntStream.range(0,numberOfDiscreteVars-1)
-                .forEach(i -> staticVariables.addHiddenVariable(generateDiscreteVariable("DiscreteVar" + i)));
+                .forEach(i -> staticVariables.addHiddenVariable(generateDiscreteVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates)));
 
         IntStream.range(0,numberOfContinuousVars)
                 .forEach(i -> staticVariables.addHiddenVariable(generateContinuousVariable("GaussianVar" + i)));
 
-        Variable classVar = staticVariables.addHiddenVariable(generateDiscreteVariable("ClassVar"));
+        Variable classVar = staticVariables.addHiddenVariable(generateDiscreteVariable("ClassVar", nClassLabels));
 
         DAG dag = new DAG(staticVariables);
 
@@ -66,11 +66,11 @@ public final class BayesianNetworkGenerator {
         return network;
     }
 
-    private static VariableBuilder generateDiscreteVariable(String name){
+    private static VariableBuilder generateDiscreteVariable(String name, int numberOfStates){
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
         builder.setDistributionType(DistType.MULTINOMIAL);
-        builder.setStateSpace(new FiniteStateSpace(BayesianNetworkGenerator.numberOfStates));
+        builder.setStateSpace(new FiniteStateSpace(numberOfStates));
         builder.setObservable(false);
 
         return builder;
@@ -92,7 +92,7 @@ public final class BayesianNetworkGenerator {
         BayesianNetworkGenerator.setNumberOfDiscreteVars(10000);
         BayesianNetworkGenerator.setNumberOfStates(10);
 
-        BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(new Random(0));
+        BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
         BayesianNetworkWriter.saveToHuginFile(naiveBayes,"./networks/NB-1000.net");
 
