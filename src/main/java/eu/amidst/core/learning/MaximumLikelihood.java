@@ -7,9 +7,13 @@ import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
 import eu.amidst.core.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.models.*;
+import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -95,6 +99,27 @@ public final class MaximumLikelihood {
 
     public static void main(String[] args){
 
+        List<ArrayVector> vectorList = IntStream.range(0,10).mapToObj(i -> {
+            ArrayVector vec = new ArrayVector(2);
+            vec.set(0, 1);
+            vec.set(1, 1);
+            return vec;
+        }).collect(Collectors.toList());
+
+        /*
+        Vector out = vectorList.parallelStream()
+                .reduce(new ArrayVector(2), (u, v) -> {
+                    ArrayVector outvec = new ArrayVector(2);
+                    outvec.sum(v);
+                    outvec.sum(u);
+                    return outvec;});
+                    */
+
+        //Vector out = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sum(v); return u;});
+        Vector out = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sum(u); return v;});
+
+        System.out.println(out.get(0) + ", " + out.get(1));
+        /*
         BayesianNetwork bn=null;
 
         int nlinks = bn.getDAG().getParentSets()
@@ -109,6 +134,6 @@ public final class MaximumLikelihood {
 
         for (int i = 0; i < bn.getDAG().getParentSets().size(); i++) {
             nlinks+=bn.getDAG().getParentSets().get(i).getNumberOfParents();
-        }
+        }*/
     }
 }
