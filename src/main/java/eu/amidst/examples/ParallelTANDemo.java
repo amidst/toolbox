@@ -128,6 +128,50 @@ public class ParallelTANDemo {
 
     }
 
+    public static void demoLuxembourg() throws ExceptionHugin, IOException {
+        String dataFile = "";
+        int numContVars = 0;
+        String nameRoot = "";
+        String nameTarget = "";
+        DataBase data;
+        int nOfVars;
+
+    /* Generate some fake data and write to file */
+        dataFile = new String("./datasets/Data_#v"+numDiscVars+"_#s"+sampleSize+".arff");
+        BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
+        BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.setParallelMode(true);
+        sampler.sampleToAnARFFFile(dataFile, sampleSize);
+        data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+        nOfVars = numContVars + numDiscVars;
+
+    /* Get information about the model: Root and Target */
+        nameRoot = data.getAttributes().getList().get(numDiscVars-1).getName();
+        nameTarget = data.getAttributes().getList().get(0).getName();
+
+    /* Setup the TAN object */
+        ParallelTAN tan = new ParallelTAN();
+        tan.setParallelMode( numCores > 1 );
+        tan.setNumCores(numCores);
+        tan.setNumSamplesOnMemory(samplesOnMemory);
+        tan.setNameRoot(nameRoot);
+        tan.setNameTarget(nameTarget);
+        tan.setBatchSize(batchSize);
+
+        System.out.println("\nLearning TAN (" + nOfVars + " variables) using " + tan.getNumCores() + " core/s.");
+        System.out.println("Structure learning (Hugin) uses " + tan.getNumSamplesOnMemory() + " samples.");
+        System.out.println("Parameter learning (toolbox) uses " +
+                sampleSize  + " samples (batch size " +  tan.getBatchSize() + ").");
+
+    /* Learn */
+        System.out.println("Run-times:");
+        BayesianNetwork model = tan.learnBN(data);
+        System.out.println();
+    }
+
     public static void demoOnServer() throws ExceptionHugin, IOException {
 
 
@@ -318,7 +362,7 @@ public class ParallelTANDemo {
         if(onServer)
             ParallelTANDemo.demoOnServer();
         else
-            ParallelTANDemo.demoLive();
+            ParallelTANDemo.demoLuxembourg();
     }
 
 }
