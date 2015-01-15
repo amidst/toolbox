@@ -148,7 +148,7 @@ public class ParallelTANDemo {
             dataFile = new String("./datasets/Data_#v"+numDiscVars+"_#s"+sampleSize+".arff");
             BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
             BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
-            BayesianNetworkGenerator.setNumberOfStates(10);
+            BayesianNetworkGenerator.setNumberOfStates(2);
             BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -177,7 +177,6 @@ public class ParallelTANDemo {
             tan.setNumSamplesOnMemory(samplesOnMemory);
             tan.setNameRoot(nameRoot);
             tan.setNameTarget(nameTarget);
-            tan.setBatchSize(batchSize);
             BayesianNetwork model = tan.learnBN(data);
         }else{
         /**
@@ -189,6 +188,7 @@ public class ParallelTANDemo {
             tan.setNameRoot(nameRoot);
             tan.setNameTarget(nameTarget);
             tan.setNumCores(numCores);
+            tan.setBatchSize(batchSize);
             BayesianNetwork model = tan.learnBN(data);
         }
 
