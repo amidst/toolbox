@@ -120,8 +120,9 @@ public class ParallelTAN {
             Node root = huginNetwork.getNodeByName(nameRoot);
             Node target = huginNetwork.getNodeByName(nameTarget);
 
-
+            Stopwatch watch = Stopwatch.createStarted();
             huginNetwork.learnChowLiuTree(root, target);
+            System.out.println("Structural Learning in Hugin: " + watch.stop());
 
             //Parametric learning
             //huginNetwork.compile();

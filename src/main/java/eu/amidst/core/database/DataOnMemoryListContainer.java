@@ -17,7 +17,11 @@ public class DataOnMemoryListContainer implements DataOnMemory {
     }
 
     public void add(int id, DataInstance data){
-        this.instanceList.add(id,data);
+        this.instanceList.add(id, data);
+    }
+
+    public void set(int id, DataInstance data){
+        this.instanceList.set(id,data);
     }
 
     @Override
