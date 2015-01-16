@@ -99,11 +99,11 @@ public class InferenceDemo {
          //************************************************************
 
          // The value of the timeWindow must be sampleSize-1 at maximum
-         int timeWindow = 5;
+         int timeSlices = 5;
 
          // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
          // The domain must be created using the method 'createDBNDomain'
-         Domain domainObject = huginDBN.createDBNDomain(timeWindow);
+         Domain domainObject = huginDBN.createDBNDomain(timeSlices);
 
         nameModel = "CajamarDBNExpanded";
         huginDBN.setName(nameModel);
@@ -120,7 +120,7 @@ public class InferenceDemo {
 
         // ENTERING EVIDENCE IN ALL THE SLICES OF THE INITIAL EXPANDED DBN
          Iterator<DataInstance> iterator = data.iterator();
-         for (int i = 0; i <= timeWindow && iterator.hasNext(); i++) {
+         for (int i = 0; i <= timeSlices && iterator.hasNext(); i++) {
 
              DataInstance dataInstance= iterator.next();
 
@@ -140,35 +140,56 @@ public class InferenceDemo {
          System.out.println("\n\nBELIEFS after propagating evidence: ");
          domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
          domainObject.compile();
-         InferenceDemo.printBeliefs(domainObject);
 
 
+        LabelledDCNode lastDefault =null;
 
+        // InferenceDemo.printBeliefs(domainObject);
 
-/*
+        int currentSequenceID = 1;
 
          while (iterator.hasNext()) {
-             System.out.println("\n----------------------------------------------------");
-             System.out.println("\nMoving the windows 1 step forward");
-             domainObject.moveDBNWindow(1);
-             domainObject.uncompile();
 
              DataInstance dataInstance = iterator.next();
 
-             for (Variable var : amidstDBN.getDynamicVariables().getListOfDynamicVariables()) {
-                 LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + timeWindow + "." + var.getName());
-                 node.selectState((long) dataInstance.getValue(var));
+             while (currentSequenceID==dataInstance.getSequenceID()) {
+
+                 System.out.println("TIME_ID: "+ dataInstance.getTimeID() + "  CUSTOMER ID:" +  dataInstance.getSequenceID());
+
+                 dataInstance = iterator.next();
+
+                 //Before moving the window
+                 lastDefault =  (LabelledDCNode)domainObject.getNodeByName("T"+timeSlices + ".DEFAULT");
+
+                 domainObject.moveDBNWindow(1);
+                 domainObject.uncompile();
+
+                 for (Variable var : amidstDBN.getDynamicVariables().getListOfDynamicVariables()) {
+
+                     //Avoid entering evidence in class variable to have something to predict
+                     if ((var.getVarID()!=model.getClassVarID())) {
+                         LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + timeSlices + "." + var.getName());
+                         node.selectState((long) dataInstance.getValue(var));
+                     }
+                 }
+
+                 domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
+                 domainObject.compile();
+
+
+
              }
+             currentSequenceID = dataInstance.getSequenceID();
 
-             System.out.println("BELIEFS after propagating evidence: ");
-             domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-             domainObject.compile();
-             // domainObject.computeDBNPredictions(3);
-             InferenceDemo.printBeliefs(domainObject);
-             //System.out.println("CUSTOMER ID: " + "Probability of defaulting:" +
-             //        ((LabelledDCNode)domainObject.getNodeByName("T180.ClassVar")).getBelief(0));
+             System.out.println("NEW CLIENT");
 
-         }*/
+
+             System.out.println(lastDefault.getName());
+             double probDefaulter = lastDefault.getBelief(1);
+
+             System.out.println("CLIENT ID: " + (dataInstance.getSequenceID()-1) + "   " + " Probability of defaulting:" +probDefaulter);
+
+         }
      }
 
     public static void main(String[] args) throws ExceptionHugin, IOException {
