@@ -39,6 +39,7 @@ public class ParallelTANDemo {
     static String dataFileInput = "";
     static boolean onServer = false;
     static int batchSize = 1000;
+    static int numStates = 2;
 
     public static void demoPigs() throws ExceptionHugin, IOException {
 
@@ -192,7 +193,7 @@ public class ParallelTANDemo {
             dataFile = new String("./datasets/Data_#v"+numDiscVars+"_#s"+sampleSize+".arff");
             BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
             BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
-            BayesianNetworkGenerator.setNumberOfStates(2);
+            BayesianNetworkGenerator.setNumberOfStates(numStates);
             BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -200,7 +201,7 @@ public class ParallelTANDemo {
             sampler.sampleToAnARFFFile(dataFile, sampleSize);
             data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
             nOfVars = numContVars + numDiscVars;
-            System.out.println("Learning TAN: " + nOfVars +" variables, " + sampleSize +" samples on disk, "+ samplesOnMemory + " samples on memory, "+  numCores + " core(s) ...");
+            System.out.println("Learning TAN: " + nOfVars +" variables, " +numStates +" states/var, "+ sampleSize +" samples on disk, "+ samplesOnMemory + " samples on memory, "+  numCores + " core(s) ...");
         }else{
             data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFileInput));
             numDiscVars = data.getAttributes().getNumberOfAttributes();
@@ -278,6 +279,10 @@ public class ParallelTANDemo {
             {
                 onServer = true;
             }
+            if ( commandLine.hasOption("r") )
+            {
+                numStates = Integer.parseInt(commandLine.getOptionValue("r"));
+            }
 
         }
         catch (ParseException parseException)  // checked exception
@@ -334,6 +339,7 @@ public class ParallelTANDemo {
         options.addOption("d", "dataPath", true, "Here you can specify the data path .");
         options.addOption("b", "batchSize", true, "Here you can specify the batch size for learning.");
         options.addOption("onServer", "onServer", false, "write onServer to run onServer method (with more options).");
+        options.addOption("r", "numStates", true, "Here you can set # of states.");
 
         return options;
     }
