@@ -1,7 +1,9 @@
 package eu.amidst.core.utils;
 
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.DistType;
+import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -103,6 +105,62 @@ public final class Utils {
                     allParentsDone = true;
                     int iParent = 0;
                     for (Variable parent: dag.getParentSet(var2))
+                        allParentsDone = allParentsDone && bDone[parent.getVarID()];
+
+                    if (allParentsDone){
+                        order.add(var2);
+                        bDone[var2.getVarID()] = true;
+                    }
+                }
+            }
+        }
+        return order;
+    }
+
+    public static List<Variable> getCausalOrderTime0(DynamicDAG dag){
+        DynamicVariables variables = dag.getDynamicVariables();
+        int nNrOfAtts = variables.getNumberOfVars();
+        List<Variable> order = new ArrayList();
+        boolean[] bDone = new boolean[variables.getNumberOfVars()];
+
+        for (Variable var: variables){
+            bDone[var.getVarID()] = false;
+        }
+        for (int iAtt = 0; iAtt < nNrOfAtts; iAtt++) {
+            boolean allParentsDone = false;
+            for (Variable var2 : variables){
+                if (!bDone[var2.getVarID()]) {
+                    allParentsDone = true;
+                    int iParent = 0;
+                    for (Variable parent: dag.getParentSetTime0(var2))
+                        allParentsDone = allParentsDone && bDone[parent.getVarID()];
+
+                    if (allParentsDone){
+                        order.add(var2);
+                        bDone[var2.getVarID()] = true;
+                    }
+                }
+            }
+        }
+        return order;
+    }
+
+    public static List<Variable> getCausalOrderTimeT(DynamicDAG dag){
+        DynamicVariables variables = dag.getDynamicVariables();
+        int nNrOfAtts = variables.getNumberOfVars();
+        List<Variable> order = new ArrayList();
+        boolean[] bDone = new boolean[variables.getNumberOfVars()];
+
+        for (Variable var: variables){
+            bDone[var.getVarID()] = false;
+        }
+        for (int iAtt = 0; iAtt < nNrOfAtts; iAtt++) {
+            boolean allParentsDone = false;
+            for (Variable var2 : variables){
+                if (!bDone[var2.getVarID()]) {
+                    allParentsDone = true;
+                    int iParent = 0;
+                    for (Variable parent: dag.getParentSetTimeT(var2))
                         allParentsDone = allParentsDone && bDone[parent.getVarID()];
 
                     if (allParentsDone){
