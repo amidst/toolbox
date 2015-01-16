@@ -60,16 +60,17 @@ public class InferenceDemo {
         //data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
-        model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);
+        model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
         model.setParallelMode(true);
         model.learn(data);
         DynamicBayesianNetwork amidstDBN = model.getDynamicBNModel();
 
         //We randomly initialize the parensets Time 0 because parameters are wrongly learnt due
-        //to the data sample only contains 1 data sequence.
-        Random rand = new Random(0);
-        amidstDBN.getDistributionsTime0().forEach(w -> w.randomInitialization(rand));
-        //System.out.println(amidstDBN.toString());
+        //Random rand = new Random(0);
+        //amidstDBN.getDistributionsTime0().forEach(w -> w.randomInitialization(rand));
+        System.out.println();
+        System.out.println();
+        System.out.println(amidstDBN.toString());
 
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
 
@@ -81,46 +82,42 @@ public class InferenceDemo {
          data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
          // The value of the timeWindow must be sampleSize-1 at maximum
-         int timeSlices = 5;
-
-         // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
-         // The domain must be created using the method 'createDBNDomain'
-         Domain domainObject = huginDBN.createDBNDomain(timeSlices);
+         int timeSlices = 1;
 
 
+        System.out.println("Computing Probabilities of Defaulting:\n\n");
 
-        // ENTERING EVIDENCE IN ALL THE SLICES OF THE INITIAL EXPANDED DBN
          Iterator<DataInstance> iterator = data.iterator();
-         for (int i = 0; i <= timeSlices && iterator.hasNext(); i++) {
+         LabelledDCNode lastDefault =null;
 
-             DataInstance dataInstance= iterator.next();
-
-             System.out.println("\n-----> " + dataInstance.getTimeID() + ", " + dataInstance.getSequenceID());
-
-             for (Variable var: amidstDBN.getDynamicVariables().getListOfDynamicVariables()){
-                 //Avoid entering evidence in class variable to have something to predict
-                 if ((var.getVarID()!=model.getClassVarID())){
-                     LabelledDCNode node = (LabelledDCNode)domainObject.getNodeByName("T"+i+"."+var.getName());
-                     node.selectState((long)dataInstance.getValue(var));
-                 }
-             }
-         }
-
-           domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-           domainObject.compile();
-
-          LabelledDCNode lastDefault =null;
-
-         int currentSequenceID = 1;
+         int currentSequenceID = 0;
+         DataInstance dataInstance = iterator.next();
 
          while (iterator.hasNext()) {
+             // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
+             // The domain must be created using the method 'createDBNDomain'
+             Domain domainObject = huginDBN.createDBNDomain(timeSlices);
 
-             DataInstance dataInstance = iterator.next();
+             // ENTERING EVIDENCE IN ALL THE SLICES OF THE INITIAL EXPANDED DBN
+             for (int i = 0; i <= timeSlices && iterator.hasNext(); i++) {
+                 //System.out.println("\n-----> " + dataInstance.getTimeID() + ", " + dataInstance.getSequenceID());
 
-             while (currentSequenceID==dataInstance.getSequenceID()) {
+                 for (Variable var: amidstDBN.getDynamicVariables().getListOfDynamicVariables()){
+                     //Avoid entering evidence in class variable to have something to predict
+                     if ((var.getVarID()!=model.getClassVarID())){
+                         LabelledDCNode node = (LabelledDCNode)domainObject.getNodeByName("T"+i+"."+var.getName());
+                         node.selectState((long)dataInstance.getValue(var));
+                     }
+                 }
+                 dataInstance= iterator.next();
+             }
+             lastDefault =  (LabelledDCNode)domainObject.getNodeByName("T"+timeSlices + ".DEFAULT");
+             domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
+             domainObject.compile();
 
-                 System.out.println("TIME_ID: "+ dataInstance.getTimeID() + "  CUSTOMER ID:" +  dataInstance.getSequenceID());
-                 dataInstance = iterator.next();
+             while (currentSequenceID==dataInstance.getSequenceID() && iterator.hasNext()) {
+
+                 //System.out.println("TIME_ID: "+ dataInstance.getTimeID() + "  CUSTOMER ID:" +  dataInstance.getSequenceID());
 
                  //Before moving the window
                  lastDefault =  (LabelledDCNode)domainObject.getNodeByName("T"+timeSlices + ".DEFAULT");
@@ -137,8 +134,12 @@ public class InferenceDemo {
 
                  domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
                  domainObject.compile();
+
+                 dataInstance= iterator.next();
              }
-             System.out.println("CLIENT ID: " + currentSequenceID + "   " + " Probability of defaulting:" +lastDefault.getBelief(1));
+             System.out.println("CLIENT ID: " + currentSequenceID + "   " + " Probability of defaulting: " +lastDefault.getBelief(1));
+             domainObject.uncompile();
+
              currentSequenceID = dataInstance.getSequenceID();
          }
      }

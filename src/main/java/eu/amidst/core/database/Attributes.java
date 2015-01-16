@@ -25,6 +25,8 @@ public class Attributes {
     public int getNumberOfAttributes(){
         return this.attributes.size();
     }
+
+    //TODO This method is not standard?!?
     public List<Attribute> getListExceptTimeAndSeq(){
         List<Attribute> attributeList = new ArrayList<>();
         for(Attribute att: getList()){
