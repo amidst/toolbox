@@ -47,34 +47,21 @@ public class InferenceDemo {
 
     public static void demo() throws ExceptionHugin, IOException {
 
-        //Generate random data
-//        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-//        BayesianNetworkGenerator.setNumberOfDiscreteVars(3);
-//        BayesianNetworkGenerator.setNumberOfStates(2);
-//        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0),2);
-//        int sampleSize = 20;
-//        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-//        sampler.setParallelMode(false);
-//        String file = "./datasets/randomdata.arff";
-//        sampler.sampleToAnARFFFile(file,sampleSize);
 
-        //String file = "./datasets/bank_data_small.arff";
-        String file = "./datasets/bank_data.arff";
-        //String file = "./datasets/randomdata2.arff";
 
+        //************************************************************
+        //********************** LEARNING IN AMIDST ******************
+        //************************************************************
+
+        String file = "./datasets/bank_data_train.arff";
         DataBase data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
-        System.out.println("ATTRIBUTES:");
-        data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));
-
-
+        //System.out.println("ATTRIBUTES:");
+        //data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
-
-        // -3 instead of -1 because we have to ignore TIME_ID and SEQUENCE_ID as they are not variables in the model.
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);
         model.setParallelMode(true);
-
         model.learn(data);
         DynamicBayesianNetwork amidstDBN = model.getDynamicBNModel();
 
@@ -82,21 +69,16 @@ public class InferenceDemo {
         //to the data sample only contains 1 data sequence.
         Random rand = new Random(0);
         amidstDBN.getDistributionsTime0().forEach(w -> w.randomInitialization(rand));
-
-
-        System.out.println(amidstDBN.toString());
+        //System.out.println(amidstDBN.toString());
 
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
-        String nameModel = "CajamarDBN";
-        huginDBN.setName(nameModel);
-        String outFile = new String("networks/" + nameModel + ".net");
-        huginDBN.saveAsNet(outFile);
-        System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
-
 
          //************************************************************
          //********************** INFERENCE IN HUGIN ******************
          //************************************************************
+
+         file = "./datasets/bank_data_predict.arff";
+         data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
          // The value of the timeWindow must be sampleSize-1 at maximum
          int timeSlices = 5;
@@ -105,17 +87,6 @@ public class InferenceDemo {
          // The domain must be created using the method 'createDBNDomain'
          Domain domainObject = huginDBN.createDBNDomain(timeSlices);
 
-        nameModel = "CajamarDBNExpanded";
-        huginDBN.setName(nameModel);
-        outFile = new String("networks/" + nameModel + ".net");
-        domainObject.saveAsNet(outFile);
-
-         //Beliefs before entering evidence
-         System.out.println("\n\nBELIEFS before propagating evidence: ");
-         domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-         domainObject.compile();
-         InferenceDemo.printBeliefs(domainObject);
-         domainObject.uncompile();
 
 
         // ENTERING EVIDENCE IN ALL THE SLICES OF THE INITIAL EXPANDED DBN
@@ -124,7 +95,7 @@ public class InferenceDemo {
 
              DataInstance dataInstance= iterator.next();
 
-             System.out.println(dataInstance.getTimeID() + ", " +dataInstance.getSequenceID());
+             System.out.println("\n-----> " + dataInstance.getTimeID() + ", " + dataInstance.getSequenceID());
 
              for (Variable var: amidstDBN.getDynamicVariables().getListOfDynamicVariables()){
                  //Avoid entering evidence in class variable to have something to predict
@@ -135,18 +106,12 @@ public class InferenceDemo {
              }
          }
 
-         // Beliefs after propagating the evidence
-         System.out.println("\n----------------------------------------------------");
-         System.out.println("\n\nBELIEFS after propagating evidence: ");
-         domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-         domainObject.compile();
+           domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
+           domainObject.compile();
 
+          LabelledDCNode lastDefault =null;
 
-        LabelledDCNode lastDefault =null;
-
-        // InferenceDemo.printBeliefs(domainObject);
-
-        int currentSequenceID = 1;
+         int currentSequenceID = 1;
 
          while (iterator.hasNext()) {
 
@@ -155,17 +120,14 @@ public class InferenceDemo {
              while (currentSequenceID==dataInstance.getSequenceID()) {
 
                  System.out.println("TIME_ID: "+ dataInstance.getTimeID() + "  CUSTOMER ID:" +  dataInstance.getSequenceID());
-
                  dataInstance = iterator.next();
 
                  //Before moving the window
                  lastDefault =  (LabelledDCNode)domainObject.getNodeByName("T"+timeSlices + ".DEFAULT");
-
                  domainObject.moveDBNWindow(1);
                  domainObject.uncompile();
 
                  for (Variable var : amidstDBN.getDynamicVariables().getListOfDynamicVariables()) {
-
                      //Avoid entering evidence in class variable to have something to predict
                      if ((var.getVarID()!=model.getClassVarID())) {
                          LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + timeSlices + "." + var.getName());
@@ -175,20 +137,9 @@ public class InferenceDemo {
 
                  domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
                  domainObject.compile();
-
-
-
              }
+             System.out.println("CLIENT ID: " + currentSequenceID + "   " + " Probability of defaulting:" +lastDefault.getBelief(1));
              currentSequenceID = dataInstance.getSequenceID();
-
-             System.out.println("NEW CLIENT");
-
-
-             System.out.println(lastDefault.getName());
-             double probDefaulter = lastDefault.getBelief(1);
-
-             System.out.println("CLIENT ID: " + (dataInstance.getSequenceID()-1) + "   " + " Probability of defaulting:" +probDefaulter);
-
          }
      }
 
