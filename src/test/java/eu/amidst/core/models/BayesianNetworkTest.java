@@ -8,7 +8,7 @@ import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.variables.*;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.containsString;
+//import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 
 /**

@@ -61,6 +61,8 @@ public final class MaximumLikelihood {
                 .map(efBayesianNetwork::getSufficientStatistics)
                 .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
 
+
+
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
 
@@ -106,19 +108,22 @@ public final class MaximumLikelihood {
             return vec;
         }).collect(Collectors.toList());
 
-        /*
-        Vector out = vectorList.parallelStream()
+
+        Vector out1 = vectorList.parallelStream()
                 .reduce(new ArrayVector(2), (u, v) -> {
                     ArrayVector outvec = new ArrayVector(2);
                     outvec.sum(v);
                     outvec.sum(u);
                     return outvec;});
-                    */
 
-        //Vector out = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sum(v); return u;});
-        Vector out = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sum(u); return v;});
 
-        System.out.println(out.get(0) + ", " + out.get(1));
+        Vector out2 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sum(v); return u;});
+        Vector out3 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sum(u); return v;});
+
+        System.out.println(out1.get(0) + ", " + out1.get(1));
+        System.out.println(out2.get(0) + ", " + out2.get(1));
+        System.out.println(out3.get(0) + ", " + out3.get(1));
+
         /*
         BayesianNetwork bn=null;
 
