@@ -37,6 +37,7 @@ public class DynamicNaiveBayesClassifier {
         return classVarID;
     }
 
+    //TODO: Consider the case where the dynamic data base have TIME_ID and SEQ_ID
     public void setClassVarID(int classVarID) {
         this.classVarID = classVarID;
     }
@@ -51,13 +52,15 @@ public class DynamicNaiveBayesClassifier {
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
         DynamicDAG dag = new DynamicDAG(modelHeader);
 
+        // TODO Remove this commented part. Done for efficiency in the inference demo.
+        /*
         dag.getParentSetsTimeT().stream()
                 .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
                 .forEach(w -> {
                     w.addParent(classVar);
                     w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
                 });
-
+        */
 
         dag.getParentSetTimeT(classVar).addParent(modelHeader.getTemporalClone(classVar));
 
