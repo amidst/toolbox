@@ -58,7 +58,9 @@ public class InferenceDemo {
 //        String file = "./datasets/randomdata.arff";
 //        sampler.sampleToAnARFFFile(file,sampleSize);
 
+        //String file = "./datasets/bank_data_small.arff";
         String file = "./datasets/bank_data.arff";
+        //String file = "./datasets/randomdata2.arff";
 
         DataBase data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
@@ -90,20 +92,23 @@ public class InferenceDemo {
         String outFile = new String("networks/" + nameModel + ".net");
         huginDBN.saveAsNet(outFile);
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
-    }
+
 
          //************************************************************
          //********************** INFERENCE IN HUGIN ******************
          //************************************************************
-/*
+
          // The value of the timeWindow must be sampleSize-1 at maximum
-         int timeWindow = 4;
+         int timeWindow = 5;
 
          // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
          // The domain must be created using the method 'createDBNDomain'
          Domain domainObject = huginDBN.createDBNDomain(timeWindow);
 
-
+        nameModel = "CajamarDBNExpanded";
+        huginDBN.setName(nameModel);
+        outFile = new String("networks/" + nameModel + ".net");
+        domainObject.saveAsNet(outFile);
 
          //Beliefs before entering evidence
          System.out.println("\n\nBELIEFS before propagating evidence: ");
@@ -113,19 +118,20 @@ public class InferenceDemo {
          domainObject.uncompile();
 
 
+        // ENTERING EVIDENCE IN ALL THE SLICES OF THE INITIAL EXPANDED DBN
          Iterator<DataInstance> iterator = data.iterator();
-
          for (int i = 0; i <= timeWindow && iterator.hasNext(); i++) {
+
              DataInstance dataInstance= iterator.next();
 
-             for (Variable var: amidstDBN.getDynamicVariables().getListOfDynamicVariables()){
+             System.out.println(dataInstance.getTimeID() + ", " +dataInstance.getSequenceID());
 
+             for (Variable var: amidstDBN.getDynamicVariables().getListOfDynamicVariables()){
                  //Avoid entering evidence in class variable to have something to predict
                  if ((var.getName().compareTo("ClassVar")!=0)){
                      LabelledDCNode node = (LabelledDCNode)domainObject.getNodeByName("T"+i+"."+var.getName());
                      node.selectState((long)dataInstance.getValue(var));
                  }
-
              }
          }
 
@@ -136,6 +142,10 @@ public class InferenceDemo {
          domainObject.compile();
          InferenceDemo.printBeliefs(domainObject);
 
+
+
+
+/*
 
          while (iterator.hasNext()) {
              System.out.println("\n----------------------------------------------------");
@@ -158,9 +168,9 @@ public class InferenceDemo {
              //System.out.println("CUSTOMER ID: " + "Probability of defaulting:" +
              //        ((LabelledDCNode)domainObject.getNodeByName("T180.ClassVar")).getBelief(0));
 
-         }
+         }*/
      }
-*/
+
     public static void main(String[] args) throws ExceptionHugin, IOException {
         InferenceDemo.demo();
     }
