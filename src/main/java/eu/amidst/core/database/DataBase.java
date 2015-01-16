@@ -5,7 +5,7 @@ import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
 import java.util.Iterator;
 import java.util.stream.Stream;
-
+//TODO: Which the index of the variables TIME_ID and SEQ_ID
 /**
  * Created by andresmasegosa on 11/12/14.
  */

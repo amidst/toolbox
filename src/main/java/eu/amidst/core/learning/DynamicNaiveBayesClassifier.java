@@ -53,14 +53,14 @@ public class DynamicNaiveBayesClassifier {
         DynamicDAG dag = new DynamicDAG(modelHeader);
 
         // TODO Remove this commented part. Done for efficiency in the inference demo.
-        /*
+
         dag.getParentSetsTimeT().stream()
                 .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
                 .forEach(w -> {
                     w.addParent(classVar);
-                    w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
+                    //w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
                 });
-        */
+
 
         dag.getParentSetTimeT(classVar).addParent(modelHeader.getTemporalClone(classVar));
 
