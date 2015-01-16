@@ -89,12 +89,12 @@ public final class BayesianNetworkGenerator {
     public static void main(String[] agrs) throws ExceptionHugin {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(10000);
-        BayesianNetworkGenerator.setNumberOfStates(10);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
+        BayesianNetworkGenerator.setNumberOfStates(2);
 
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
-        BayesianNetworkWriter.saveToHuginFile(naiveBayes,"./networks/NB-1000.net");
+        BayesianNetworkWriter.saveToHuginFile(naiveBayes,"./networks/NB-10.net");
 
     }
 }
