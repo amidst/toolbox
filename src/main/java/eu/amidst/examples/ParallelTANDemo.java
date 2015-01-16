@@ -332,7 +332,7 @@ public class ParallelTANDemo {
     public static Options constructOptions()
     {
         final Options options = new Options();
-        options.addOption("c", "numCores", true, "Here you can set # of cores .");
+        options.addOption("c", "numCores", true, "Here you can set # of cores for hugin.");
         options.addOption("s", "samples", true, "Here you can set # of (out-of-core) samples for parameter learning (amidst).");
         options.addOption("m", "samplesOnMemory", true, "Here you can set # of (in memory) samples for structural learning (hugin).");
         options.addOption("v", "variables", true, "Here you can set # of variables .");
