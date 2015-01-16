@@ -59,6 +59,9 @@ public class InferenceDemo {
         //System.out.println("ATTRIBUTES:");
         //data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));
 
+        System.out.println("Learning a Dynamic Naive Bayes Classifier.");
+        System.out.println("Traning Data: 4000 clients, 1000 days of records for each client, 10 profile variables.");
+
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
         model.setParallelMode(true);
@@ -82,10 +85,10 @@ public class InferenceDemo {
          data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
          // The value of the timeWindow must be sampleSize-1 at maximum
-         int timeSlices = 1;
+         int timeSlices = 9;
 
 
-        System.out.println("Computing Probabilities of Defaulting:\n\n");
+         System.out.println("Computing Probabilities of Defaulting for 10 clients using Hugin API:\n");
 
          Iterator<DataInstance> iterator = data.iterator();
          LabelledDCNode lastDefault =null;
