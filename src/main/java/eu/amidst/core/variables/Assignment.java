@@ -11,6 +11,7 @@ public interface Assignment {
 
     double getValue(Variable var);
 
+    // TODO Check THIS!!
     default String toString(List<Variable> vars){
         StringBuilder builder = new StringBuilder(vars.size()*2);
         vars.stream().limit(vars.size()-1).forEach(var -> builder.append(this.getValue(var)+","));
