@@ -16,8 +16,8 @@ public class DataOnMemoryListContainer implements DataOnMemory {
         this.attributes=attributes1;
     }
 
-    public void add(int id, DataInstance data){
-        this.instanceList.add(id, data);
+    public void add(DataInstance data){
+        this.instanceList.add(data);
     }
 
     public void set(int id, DataInstance data){
