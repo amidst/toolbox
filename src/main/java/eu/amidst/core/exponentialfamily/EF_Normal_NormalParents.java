@@ -8,11 +8,9 @@ import eu.amidst.core.variables.Variable;
 
 import org.apache.commons.math.linear.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 /**
@@ -57,26 +55,25 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
          * First step: means and convariances
          */
         CompoundVector globalMomentParam = (CompoundVector)this.momentParameters;
-        RealMatrix mean_X = globalMomentParam.getMatrixByPosition(EXPECTED_XY).getSubMatrix(0,0,0,0);
-        RealMatrix mean_Y = globalMomentParam.getMatrixByPosition(EXPECTED_XY).getSubMatrix(0,0,1,nOfParents);
+        double mean_X = globalMomentParam.getXYbaseMatrix().getEntry(0);
+        RealVector mean_Y = globalMomentParam.getXYbaseMatrix();
 
-        RealMatrix cov_XX = globalMomentParam.getMatrixByPosition(EXPECTED_cov).getSubMatrix(0, 0, 0, 0).
-                            subtract(mean_X.multiply(mean_X.transpose()));
+        double cov_XX = globalMomentParam.getcovbaseMatrix().getEntry(0, 0) - mean_X*mean_X;
         RealMatrix cov_YY = globalMomentParam.getMatrixByPosition(EXPECTED_cov).getSubMatrix(1, nOfParents, 1, nOfParents).
-                            subtract(mean_Y.multiply(mean_Y.transpose()));
-        RealMatrix cov_XY = globalMomentParam.getMatrixByPosition(EXPECTED_cov).getSubMatrix(0,0,1,nOfParents).
-                            subtract(mean_X.multiply(mean_Y.transpose()));
-        RealMatrix cov_YX = cov_XY.transpose();
+                            subtract(mean_Y.outerProduct(mean_Y));
+        RealVector cov_XY = globalMomentParam.getMatrixByPosition(EXPECTED_cov).getSubMatrix(0, 0, 1, nOfParents).getRowVector(0).
+                            subtract(mean_Y.mapAdd(mean_X));
+        //RealVector cov_YX = cov_XY; //outerProduct transpose the vector automatically
 
         /*
          * Second step: betas and variance
          */
         RealMatrix cov_YYInverse = new LUDecompositionImpl(cov_YY).getSolver().getInverse();
-        RealMatrix cov_XYbyCov_YYInv = cov_XY.multiply(cov_YYInverse);
+        RealMatrix cov_XYbyCov_YYInv = (new Array2DRowRealMatrix(cov_XY.getData())).multiply(cov_YYInverse);
 
-        double beta_0 = mean_X.subtract(cov_XYbyCov_YYInv.multiply(mean_Y)).getEntry(0, 0);
-        RealMatrix beta = cov_XYbyCov_YYInv;
-        variance = cov_XX.subtract(cov_XYbyCov_YYInv.multiply(cov_YX)).getEntry(0, 0);
+        double beta_0 = mean_X - cov_XYbyCov_YYInv.preMultiply(mean_Y).getEntry(0);
+        RealVector beta = cov_XYbyCov_YYInv.getColumnVector(0);
+        variance = cov_XX - cov_XYbyCov_YYInv.preMultiply(cov_XY).getEntry(0);
 
         /*
          * Third step: natural parameters (5 in total)
@@ -86,15 +83,14 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
          * 1) theta_0
          */
         double theta_0 = beta_0 / variance;
-        double[] theta_0matrix = {theta_0};
-        ((CompoundVector) this.naturalParameters).setMatrixByPosition(EXPECTED_XY,new Array2DRowRealMatrix(theta_0matrix));
-        double variance2Inv =  1.0/(2*variance);
+        double[] theta_0array = {theta_0};
 
         /*
-         * 2) theta_0
+         * 2) theta_0Theta
          */
-        RealMatrix theta_0Theta = beta.scalarMultiply(-beta_0*variance2Inv);
-        ((CompoundVector) this.naturalParameters).setMatrixByPosition(EXPECTED_XY,theta_0Theta);
+        double variance2Inv =  1.0/(2*variance);
+        RealVector theta_0Theta = beta.mapMultiply(-beta_0 * variance2Inv);
+        ((CompoundVector) this.naturalParameters).setXYbaseVector(new ArrayRealVector(theta_0array, theta_0Theta.getData()));
 
         /*
          * 3) theta_Minus1
@@ -104,25 +100,24 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         /*
          * 4) theta_beta
          */
-        RealMatrix theta_beta = beta.scalarMultiply(1.0/variance);
+        RealVector theta_beta = beta.mapMultiply(1.0 / variance);
 
         /*
          * 5) theta_betaBeta
          */
-        RealMatrix theta_betaBeta = beta.multiply(beta.transpose()).scalarMultiply(variance2Inv);
+        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(variance2Inv);
 
         /*
          * Store natural parameters
          */
         RealMatrix natural_XY = new Array2DRowRealMatrix(nOfParents+1,nOfParents+1);
-        double[] theta_betaArray = theta_beta.getColumn(0);
-        double[] theta_betaWithMinus1Array = theta_betaArray;
-        theta_betaWithMinus1Array[0] = theta_Minus1;
-        System.arraycopy(theta_betaArray, 0, theta_betaWithMinus1Array, 1, theta_betaArray.length);
-        natural_XY.setRow(0,theta_betaWithMinus1Array);
-        natural_XY.setColumn(0,theta_betaWithMinus1Array);
+        double[] theta_Minus1array = {theta_Minus1};
+        RealVector covXY = new ArrayRealVector(theta_Minus1array, theta_beta.getData());
+        natural_XY.setColumnVector(0, covXY);
+        natural_XY.setRowVector(0, covXY);
         natural_XY.setSubMatrix(theta_betaBeta.getData(),1,1);
-        ((CompoundVector) this.naturalParameters).setMatrixByPosition(EXPECTED_cov,natural_XY);
+        ((CompoundVector) this.naturalParameters).setcovbaseVector(theta_betaBeta);
+
     }
 
     @Override
@@ -134,35 +129,20 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     public SufficientStatistics getSufficientStatistics(DataInstance data) {
         CompoundVector vectorSS = this.createEmtpyCompoundVector();
 
-        double[] Xmatrix = {data.getValue(this.var)};
-        vectorSS.setMatrixByPosition(EXPECTED_XY,new Array2DRowRealMatrix(Xmatrix));
+        double[] Xarray = {data.getValue(this.var)};
 
-        double[] Ymatrix = this.parents.stream()
+        double[] Yarray = this.parents.stream()
                                          .mapToDouble(w->data.getValue(w))
                                          .toArray();
-        vectorSS.setMatrixByPosition(EXPECTED_XY,new Array2DRowRealMatrix(Ymatrix));
+        RealVector XYRealVector = new ArrayRealVector(Xarray,Yarray);
+        vectorSS.setXYbaseVector(XYRealVector);
 
-        RealMatrix XYRealmatrix = new Array2DRowRealMatrix(nOfParents+1,nOfParents+1);
+        RealMatrix covRealmatrix = new Array2DRowRealMatrix(nOfParents+1,nOfParents+1);
 
-        double[] YPlus1Vector = new double[nOfParents+1];
-        YPlus1Vector[0] = data.getValue(this.var)*data.getValue(this.var);
-        System.arraycopy(Ymatrix,0,YPlus1Vector,1,nOfParents);
-        XYRealmatrix.setRow(0,YPlus1Vector);
-        XYRealmatrix.setColumn(0,YPlus1Vector);
 
-        double[][] YYmatrix = new double[nOfParents][nOfParents];
+        covRealmatrix = XYRealVector.outerProduct(XYRealVector);
 
-        int i=0;
-        for(double vali: Ymatrix){
-            int j=0;
-            for(double valj: Ymatrix){
-                YYmatrix[i][j] = vali * valj;
-                j++;
-            }
-            i++;
-        }
-        XYRealmatrix.setSubMatrix(YYmatrix,1,1);
-        vectorSS.setMatrixByPosition(EXPECTED_XY,new Array2DRowRealMatrix(YYmatrix));
+        vectorSS.setcovbaseVector(covRealmatrix);
 
         return vectorSS;
     }
@@ -221,7 +201,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         int size;
         int nOfParents;
-        RealMatrix XYbaseVector;
+        RealVector XYbaseVector;
         RealMatrix covbaseVector;
 
         public CompoundVector(int nOfParents_) {
@@ -229,7 +209,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             nOfParents = nOfParents_;
 
             // E(XY) - Index {0, ..., noParents+1}
-            XYbaseVector = new Array2DRowRealMatrix(1,nOfParents+1);
+            XYbaseVector = new ArrayRealVector(nOfParents+1);
 
             // E(XY) - Index (i * (noParents+1) ) + j (+ noParents + 1)
             covbaseVector = new Array2DRowRealMatrix(nOfParents+1,nOfParents+1);
@@ -238,9 +218,17 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         }
 
+        public void setXYbaseVector(RealVector XYbaseVector_){
+            XYbaseVector = XYbaseVector_;
+        }
+
+        public void setcovbaseVector(RealMatrix covbaseVector_){
+            covbaseVector = covbaseVector_;
+        }
+
         public void setMatrixByPosition(int position, RealMatrix vec) {
             switch (position){
-                case 0: XYbaseVector = vec;
+                case 0: XYbaseVector = vec.getRowVector(0);
                 case 1: covbaseVector = vec;
                 default:
                     throw new IndexOutOfBoundsException("There are only two components (indexes 0 for XY and 1 for the" +
@@ -249,9 +237,17 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             }
         }
 
+        public RealVector getXYbaseMatrix(){
+            return XYbaseVector;
+        }
+
+        public RealMatrix getcovbaseMatrix(){
+            return covbaseVector;
+        }
+
         public RealMatrix getMatrixByPosition(int position) {
             switch (position){
-                case 0: return XYbaseVector;
+                case 0: return new Array2DRowRealMatrix(XYbaseVector.getData());//column RealMatrix
                 case 1: return covbaseVector;
                 default:
                     throw new IndexOutOfBoundsException("There are only two components (indexes 0 for XY and 1 for the" +
@@ -267,9 +263,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         @Override
         public double get(int i) {
             if(i==0) {
-                return XYbaseVector.getEntry(0, 0);
+                return XYbaseVector.getEntry(0);
             }else if(isBetween(i,1,nOfParents)) {
-                return XYbaseVector.getEntry(0,i);
+                return XYbaseVector.getEntry(i);
             }else{
                 i = i-(nOfParents+1);
                 int row = i/(nOfParents+1);
@@ -281,9 +277,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         @Override
         public void set(int i, double val) {
             if(i==0) {
-                XYbaseVector.setEntry(0, 0, val);
+                XYbaseVector.setEntry(0, val);
             }else if(isBetween(i,1,nOfParents)) {
-                XYbaseVector.setEntry(0, i, val);
+                XYbaseVector.setEntry(i, val);
             }else{
                 i = i-(nOfParents+1);
                 int row = i/(nOfParents+1);
@@ -309,7 +305,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         @Override
         public void divideBy(double val) {
-            XYbaseVector.scalarMultiply(1.0/val);
+            XYbaseVector.mapAddToSelf(1.0 / val);
             covbaseVector.scalarMultiply(1.0/val);
         }
 
@@ -323,13 +319,13 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         public void copy(CompoundVector vector) {
-            XYbaseVector = vector.getMatrixByPosition(EXPECTED_XY).copy();
+            XYbaseVector = vector.getMatrixByPosition(EXPECTED_XY).copy().getColumnVector(0);
             covbaseVector = vector.getMatrixByPosition(EXPECTED_cov).copy();
 
         }
 
         public void sum(CompoundVector vector) {
-            XYbaseVector.add(vector.getMatrixByPosition(EXPECTED_XY));
+            XYbaseVector.add(vector.getMatrixByPosition(EXPECTED_XY).getColumnVector(0));
             covbaseVector.add(vector.getMatrixByPosition(EXPECTED_cov));
         }
 
