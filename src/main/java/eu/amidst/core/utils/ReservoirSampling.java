@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class ReservoirSampling {
 
+    //TODO Be careful with use of "add(int pos, element)" of List!!!!!!
     public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataBase dataBase){
 
         Random random = new Random(0);
@@ -24,7 +25,7 @@ public class ReservoirSampling {
 
         for (DataInstance instance : dataBase){
             if (count<numberOfSamples) {
-                dataOnMemoryList.add(count, instance);
+                dataOnMemoryList.add(instance);
             }else{
                 int r = random.nextInt(count+1);
                 if (r < numberOfSamples)
