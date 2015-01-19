@@ -4,7 +4,6 @@ import COM.hugin.HAPI.*;
 
 import COM.hugin.HAPI.Node;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.FiniteStateSpace;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
@@ -31,7 +30,7 @@ public class ConverterToHugin {
         //A reverse order of the variables is used instead.
         for(int i=1;i<=size;i++){
             Variable amidstVar = amidstVars.getVariableById(size-i);
-            if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+            if(amidstVar.isMultinomial()){
                 LabelledDCNode n = new LabelledDCNode(this.huginBN);
                 n.setName(amidstVar.getName());
                 n.setNumberOfStates(amidstVar.getNumberOfStates());
@@ -40,7 +39,7 @@ public class ConverterToHugin {
                     String stateName = ((FiniteStateSpace)amidstVar.getStateSpace()).getStatesName(j);
                     n.setStateLabel(j, stateName);
                 }
-            } else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
+            } else if (amidstVar.isGaussian()) {
                 ContinuousChanceNode c = new ContinuousChanceNode(this.huginBN);
                 c.setName(amidstVar.getName());
             } else {

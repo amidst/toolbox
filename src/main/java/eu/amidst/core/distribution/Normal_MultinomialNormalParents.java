@@ -12,7 +12,6 @@
 
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -65,7 +64,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution{
 
         for (Variable parent : parents) {
 
-            if (parent.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+            if (parent.isMultinomial()) {
                 this.multinomialParents.add(parent);
             } else {
                 this.normalParents.add(parent);

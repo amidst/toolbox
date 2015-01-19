@@ -1,13 +1,16 @@
 package eu.amidst.examples;
 
-import COM.hugin.HAPI.ExceptionHugin;
+import COM.hugin.HAPI.*;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.huginlink.DBNConverterToHugin;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DynamicVariables;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 /**
@@ -164,5 +167,146 @@ public class DBNExample {
         distG_TimeT.getMultinomial(3).setProbabilities(new double[]{0.8, 0.2});
 
         return (amidstDBN);
+    }
+
+    public static DynamicBayesianNetwork getAmidst_DBN_Example2() throws ExceptionHugin {
+
+        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataDiscrete.arff"));
+
+        DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+
+        Variable A = dynamicVariables.getVariable("A");
+        Variable B = dynamicVariables.getVariable("B");
+        Variable C = dynamicVariables.getVariable("C");
+        Variable D = dynamicVariables.getVariable("D");
+        Variable E = dynamicVariables.getVariable("E");
+        Variable G = dynamicVariables.getVariable("G");
+
+        Variable A_TClone = dynamicVariables.getTemporalClone(A);
+
+
+        // Time 0: Parents at time 0 are automatically created when adding parents at time t !!!
+        // Time t
+        dynamicDAG.getParentSetTimeT(D).addParent(A);
+        dynamicDAG.getParentSetTimeT(D).addParent(B);
+        dynamicDAG.getParentSetTimeT(D).addParent(C);
+
+        dynamicDAG.getParentSetTimeT(E).addParent(B);
+        dynamicDAG.getParentSetTimeT(E).addParent(C);
+
+        dynamicDAG.getParentSetTimeT(G).addParent(C);
+
+        dynamicDAG.getParentSetTimeT(A).addParent(A_TClone);
+
+
+        DynamicBayesianNetwork amidstDBN = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+
+        System.out.println(dynamicDAG.toString());
+
+        //****************************************** Distributions *****************************************************
+
+        // ********************************************************************************************
+        // ************************************** TIME 0 **********************************************
+        // ********************************************************************************************
+
+        // Variable A
+        Multinomial_MultinomialParents distA_Time0 = amidstDBN.getDistributionTime0(A);
+        distA_Time0.getMultinomial(0).setProbabilities(new double[]{0.3, 0.7});
+
+        // Variable B
+        Multinomial_MultinomialParents distB_Time0 = amidstDBN.getDistributionTime0(B);
+        distB_Time0.getMultinomial(0).setProbabilities(new double[]{0.4, 0.1, 0.5});
+
+        // Variable C
+        Multinomial_MultinomialParents distC_Time0 = amidstDBN.getDistributionTime0(C);
+        distC_Time0.getMultinomial(0).setProbabilities(new double[]{0.4, 0.6});
+
+        // Variable D
+        Multinomial_MultinomialParents distD_Time0 = amidstDBN.getDistributionTime0(D);
+        distD_Time0.getMultinomial(0).setProbabilities(new double[]{0.1,0.9});
+        distD_Time0.getMultinomial(1).setProbabilities(new double[]{0.8,0.2});
+        distD_Time0.getMultinomial(2).setProbabilities(new double[]{0.4,0.6});
+        distD_Time0.getMultinomial(3).setProbabilities(new double[]{0.3,0.7});
+        distD_Time0.getMultinomial(4).setProbabilities(new double[]{0.5,0.5});
+        distD_Time0.getMultinomial(5).setProbabilities(new double[]{0.2,0.8});
+        distD_Time0.getMultinomial(6).setProbabilities(new double[]{0.9,0.1});
+        distD_Time0.getMultinomial(7).setProbabilities(new double[]{0.3,0.7});
+        distD_Time0.getMultinomial(8).setProbabilities(new double[]{0.4,0.6});
+        distD_Time0.getMultinomial(9).setProbabilities(new double[]{0.9,0.1});
+        distD_Time0.getMultinomial(10).setProbabilities(new double[]{0.6,0.4});
+        distD_Time0.getMultinomial(11).setProbabilities(new double[]{0.2,0.8});
+
+        // Variable E
+        Multinomial_MultinomialParents distE_Time0 = amidstDBN.getDistributionTime0(E);
+        distE_Time0.getMultinomial(0).setProbabilities(new double[]{0.4, 0.6});
+        distE_Time0.getMultinomial(1).setProbabilities(new double[]{0.2, 0.8});
+        distE_Time0.getMultinomial(2).setProbabilities(new double[]{0.3, 0.7});
+        distE_Time0.getMultinomial(3).setProbabilities(new double[]{0.6, 0.4});
+        distE_Time0.getMultinomial(4).setProbabilities(new double[]{0.1, 0.9});
+        distE_Time0.getMultinomial(5).setProbabilities(new double[]{0.8, 0.2});
+
+        // Variable G
+        Multinomial_MultinomialParents distG_Time0 = amidstDBN.getDistributionTime0(G);
+        distG_Time0.getMultinomial(0).setProbabilities(new double[]{0.6, 0.4});
+        distG_Time0.getMultinomial(1).setProbabilities(new double[]{0.1, 0.9});
+
+        // ********************************************************************************************
+        // ************************************** TIME T **********************************************
+        // ********************************************************************************************
+
+        // Variable A
+        Multinomial_MultinomialParents distA_TimeT = amidstDBN.getDistributionTimeT(A);
+        distA_TimeT.getMultinomial(0).setProbabilities(new double[]{0.2, 0.8});
+        distA_TimeT.getMultinomial(1).setProbabilities(new double[]{0.8, 0.2});
+
+
+        // Variable B
+        Multinomial_MultinomialParents distB_TimeT = amidstDBN.getDistributionTimeT(B);
+        distB_TimeT.getMultinomial(0).setProbabilities(new double[]{0.4, 0.1, 0.5});
+
+        // Variable C
+        Multinomial_MultinomialParents distC_TimeT = amidstDBN.getDistributionTimeT(C);
+        distC_TimeT.getMultinomial(0).setProbabilities(new double[]{0.4, 0.6});
+
+        // Variable D
+        Multinomial_MultinomialParents distD_TimeT = amidstDBN.getDistributionTimeT(D);
+        distD_TimeT.getMultinomial(0).setProbabilities(new double[]{0.1,0.9});
+        distD_TimeT.getMultinomial(1).setProbabilities(new double[]{0.8,0.2});
+        distD_TimeT.getMultinomial(2).setProbabilities(new double[]{0.4,0.6});
+        distD_TimeT.getMultinomial(3).setProbabilities(new double[]{0.3,0.7});
+        distD_TimeT.getMultinomial(4).setProbabilities(new double[]{0.5,0.5});
+        distD_TimeT.getMultinomial(5).setProbabilities(new double[]{0.2,0.8});
+        distD_TimeT.getMultinomial(6).setProbabilities(new double[]{0.9,0.1});
+        distD_TimeT.getMultinomial(7).setProbabilities(new double[]{0.3,0.7});
+        distD_TimeT.getMultinomial(8).setProbabilities(new double[]{0.4,0.6});
+        distD_TimeT.getMultinomial(9).setProbabilities(new double[]{0.9,0.1});
+        distD_TimeT.getMultinomial(10).setProbabilities(new double[]{0.6,0.4});
+        distD_TimeT.getMultinomial(11).setProbabilities(new double[]{0.2,0.8});
+
+        // Variable E
+        Multinomial_MultinomialParents distE_TimeT = amidstDBN.getDistributionTimeT(E);
+        distE_TimeT.getMultinomial(0).setProbabilities(new double[]{0.4, 0.6});
+        distE_TimeT.getMultinomial(1).setProbabilities(new double[]{0.2, 0.8});
+        distE_TimeT.getMultinomial(2).setProbabilities(new double[]{0.3, 0.7});
+        distE_TimeT.getMultinomial(3).setProbabilities(new double[]{0.6, 0.4});
+        distE_TimeT.getMultinomial(4).setProbabilities(new double[]{0.1, 0.9});
+        distE_TimeT.getMultinomial(5).setProbabilities(new double[]{0.8, 0.2});
+
+        // Variable G
+        Multinomial_MultinomialParents distG_TimeT = amidstDBN.getDistributionTimeT(G);
+        distG_TimeT.getMultinomial(0).setProbabilities(new double[]{0.6, 0.4});
+        distG_TimeT.getMultinomial(1).setProbabilities(new double[]{0.1, 0.9});
+
+        return (amidstDBN);
+    }
+
+
+    public static void main (String[] args) throws ExceptionHugin {
+        DynamicBayesianNetwork amidstDBN  = DBNExample.getAmidst_DBN_Example2();
+        System.out.println(amidstDBN.toString());
+        COM.hugin.HAPI.Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
+        huginDBN.setName("huginDBNExample2");
+        huginDBN.saveAsNet("networks/huginDBNExample2.net");
     }
 }

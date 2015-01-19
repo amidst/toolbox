@@ -1,7 +1,6 @@
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class IndicatorDistribution extends ConditionalDistribution{
     private Variable indicatorVar;
 
     public IndicatorDistribution(Variable indicatorVar1, ConditionalDistribution conditionalDistribution1) {
-        if (indicatorVar1.getDistributionType() != DistType.INDICATOR) {
+        if (!indicatorVar1.isIndicator()) {
             throw new IllegalArgumentException("IndicatorVar_ should be of indicator type");
         }
         this.var = conditionalDistribution1.getVariable();

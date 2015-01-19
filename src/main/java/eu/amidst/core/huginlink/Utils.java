@@ -23,18 +23,18 @@ public final class Utils {
         int type = -1;
         List<Variable> conditioningVariables = amidstBN.getDistribution(amidstVar).getConditioningVariables();
 
-        if (amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL)==0){
+        if (amidstVar.isMultinomial()){
             return 0;
         }
-        else if (amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN)==0) {
+        else if (amidstVar.isGaussian()) {
 
             boolean multinomialParents = false;
             boolean normalParents = false;
 
             for (Variable v : conditioningVariables) {
-                if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0) {
+                if (v.isMultinomial()) {
                     multinomialParents = true;
-                } else if (v.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
+                } else if (v.isGaussian()) {
                     normalParents = true;
                 } else {
                     throw new IllegalArgumentException("Unrecognized DistributionType. ");
@@ -125,55 +125,6 @@ public final class Utils {
         */
         return builder;
     }
-
-
-/*
-    public static void printHuginBNInfo (Domain huginBN) throws ExceptionHugin {
-
-
-        System.out.println("======================================");
-        System.out.println("Hugin Bayesian network ...");
-        System.out.println("======================================");
-        NodeList huginNodes = huginBN.getNodes();
-
-        System.out.println("Nodes: " + huginNodes.toString());
-
-        System.out.println("Structure:");
-
-        for(int i=0;i<huginNodes.size();i++){
-
-            Node huginChild = (Node)huginNodes.get(i);
-            String childName = huginChild.getName();
-
-            NodeList huginParents = huginChild.getParents();
-            for (int j=0;j<huginParents.size();j++){
-                Node huginParent = (Node)huginParents.get(j);
-                String parentName = huginParent.getName();
-                System.out.println("  " + parentName + " -> " + childName);
-            }
-        }
-
-        System.out.println("Distributions:");
-
-        for (int i=0;i<huginNodes.size();i++){
-            Node huginNode = (Node)huginNodes.get(i);
-
-            System.out.println(huginNode.getName());
-
-           if (huginNode.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0){
-               double[] probabilities  = huginNode.getTable().getData();
-               for(int j=0;j<probabilities.length;j++){
-                   System.out.print(probabilities[j]+ " ");
-               }
-           }
-           else {
-
-           }
-
-        }
-
-
-    }*/
 
 
     //*********************************************************************************

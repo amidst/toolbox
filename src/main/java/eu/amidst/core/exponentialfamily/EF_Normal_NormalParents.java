@@ -3,7 +3,6 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 import org.apache.commons.math.linear.*;
@@ -32,11 +31,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         this.var = var_;
         this.parents = parents_;
 
-        if (var_.getDistributionType()!= DistType.GAUSSIAN)
+        if (!var_.isGaussian())
             throw new UnsupportedOperationException("Creating a Normal|Normal EF distribution for a non-gaussian child variable.");
 
         for (Variable v : parents) {
-            if (v.getDistributionType() != DistType.GAUSSIAN)
+            if (!v.isGaussian())
                 throw new UnsupportedOperationException("Creating a Normal|Normal EF distribution for a non-gaussian parent variable.");
         }
 
