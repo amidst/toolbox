@@ -16,20 +16,20 @@ public final class DistributionBuilder {
     }
     public static ConditionalDistribution newDistribution(Variable mainVar, List<Variable> conditioningVars){
 
-        if (mainVar.getDistributionType().compareTo(DistType.MULTINOMIAL)==0){
+        if (mainVar.isMultinomial()){
             return new Multinomial_MultinomialParents(mainVar, conditioningVars);
-        }else if (mainVar.getDistributionType().compareTo(DistType.GAUSSIAN)==0) {
+        }else if (mainVar.isGaussian()) {
             boolean multinomialParents = false;
             boolean normalParents = false;
             boolean indicator = false;
 
             /* The parents of a gaussian variable are either multinomial and/or normal */
             for (Variable v : conditioningVars) {
-                if (v.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0 || (v.getDistributionType().compareTo(DistType.MULTINOMIAL_LOGISTIC)==0)) {
+                if (v.isMultinomial() || (v.isMultinomialLogistic())) {
                     multinomialParents = true;
-                } else if (v.getDistributionType().compareTo(DistType.GAUSSIAN) == 0) {
+                } else if (v.isGaussian()) {
                     normalParents = true;
-                } else if (v.getDistributionType().compareTo(DistType.INDICATOR) == 0) {
+                } else if (v.isIndicator()) {
                     indicator = true;
                 } else {
                     throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
@@ -40,7 +40,7 @@ public final class DistributionBuilder {
                 List<Variable> newconditioningVars = new ArrayList<>();
                 Variable indicatorVar = null;
                 for (Variable v : conditioningVars) {
-                   if (v.getDistributionType().compareTo(DistType.INDICATOR) != 0) {
+                   if (!v.isIndicator()){
                        newconditioningVars.add(v);
                    }else{
                        indicatorVar=v;
@@ -64,9 +64,9 @@ public final class DistributionBuilder {
             } else {
                 throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
             }
-        }else if (mainVar.getDistributionType().compareTo(DistType.MULTINOMIAL_LOGISTIC)==0){
+        }else if (mainVar.isMultinomialLogistic()) {
             return new Multinomial_LogisticParents(mainVar, conditioningVars);
-        }else if (mainVar.getDistributionType().compareTo(DistType.INDICATOR)==0){
+        }else if (mainVar.isIndicator()){
             return new Normal_MultinomialParents(mainVar, new ArrayList<>()); //A Normal by default is assigned to indicator variables.
         }else {
             throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");

@@ -31,6 +31,22 @@ public interface Variable {
     @Override
     boolean equals(Object o);
 
+    default boolean isGaussian(){
+        return(this.getDistributionType().compareTo(DistType.GAUSSIAN)==0);
+    }
+
+    default boolean isMultinomial(){
+        return(this.getDistributionType().compareTo(DistType.MULTINOMIAL)==0);
+    }
+
+    default boolean isMultinomialLogistic(){
+        return(this.getDistributionType().compareTo(DistType.MULTINOMIAL_LOGISTIC)==0);
+    }
+
+    default boolean isIndicator(){
+        return(this.getDistributionType().compareTo(DistType.INDICATOR)==0);
+    }
+
     default String toARFFString(){
 
         if (this.getDistributionType() == DistType.GAUSSIAN) {
