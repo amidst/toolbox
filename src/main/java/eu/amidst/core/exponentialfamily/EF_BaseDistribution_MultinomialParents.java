@@ -20,7 +20,6 @@ package eu.amidst.core.exponentialfamily;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 

@@ -6,7 +6,6 @@ import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.MultinomialIndex;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.models.BayesianNetwork;
@@ -233,8 +232,8 @@ public class ConverterToHuginTest {
     }
 
     private void testVariableType(Variable amidstVar, Node huginVar) throws ExceptionHugin {
-        boolean amidstMultinomialVar = amidstVar.getDistributionType().compareTo(DistType.MULTINOMIAL) == 0;
-        boolean amidstNormalVar = amidstVar.getDistributionType().compareTo(DistType.GAUSSIAN) == 0;
+        boolean amidstMultinomialVar = amidstVar.isMultinomial();
+        boolean amidstNormalVar = amidstVar.isGaussian();
         boolean huginMultinomialVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0;
         boolean huginNormalVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_CONTINUOUS) == 0;
 
