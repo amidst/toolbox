@@ -10,6 +10,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,24 +49,36 @@ public class ConverterToAMIDST {
         StaticVariables amidstVariables = staticVariables;
 
         for(int i=0;i<numNodes;i++){
-
-            Node huginChild = (Node)huginNodes.get(i);
+            Node huginChild = huginNodes.get(i);
             NodeList huginParents = huginChild.getParents();
             Variable amidstChild = amidstVariables.getVariableByName(huginChild.getName());
 
-            //Only multinomial parents are indexed in Hugin in a reverse order!!
-//            List<Integer> positionsMultinomialParents = new ArrayList<>();
-//            for (int j=0;j<huginParents.size();j++) {
-//                Node huginParent = (Node) huginParents.get(j);
-//                if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
-//                    int indexParent = huginNodes.indexOf(huginParent);
-//                    positionsMultinomialParents.add(indexParent);
-//                }
-//            }
-//            Collections.reverse(positionsMultinomialParents);
+
+            // Only multinomial parents are indexed in reverse order in Hugin
+            //-----------------------------------------------------------------------------
+            ArrayList<Integer> multinomialParentsIndexes = new ArrayList();
+            for (int j=0;j<huginParents.size();j++) {
+                Node huginParent = huginParents.get(j);
+                if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+                    multinomialParentsIndexes.add(j);
+                }
+            }
+            Collections.reverse(multinomialParentsIndexes);
+            ArrayList<Integer> parentsIndexes = new ArrayList();
+            for (int j=0;j<huginParents.size();j++) {
+                Node huginParent = huginParents.get(j);
+                if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+                    parentsIndexes.add(multinomialParentsIndexes.get(0));
+                    multinomialParentsIndexes.remove(0);
+                }
+                else {
+                    parentsIndexes.add(j);
+                }
+            }
+            //-----------------------------------------------------------------------------
 
             for(int j=0;j<huginParents.size();j++) {
-                Node huginParent = (Node) huginParents.get(j);
+                Node huginParent = huginParents.get(parentsIndexes.get(j));
                 Variable amidstParent = amidstVariables.getVariableByName(huginParent.getName());
                 dag.getParentSet(amidstChild).addParent(amidstParent);
             }

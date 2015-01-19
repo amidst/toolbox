@@ -251,9 +251,34 @@ public class ConverterToHuginTest {
         // Number of parents
         assertEquals(numParentsAmidstVar, numParentsHuginVar);
 
+
+        // Only multinomial parents are indexed in reverse order in Hugin
+        //-----------------------------------------------------------------------------
+        ArrayList<Integer> multinomialParentsIndexes = new ArrayList();
+        for (int j=0;j<parentsHuginVar.size();j++) {
+            Node huginParent = parentsHuginVar.get(j);
+            if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+                multinomialParentsIndexes.add(j);
+            }
+        }
+        Collections.reverse(multinomialParentsIndexes);
+        ArrayList<Integer> parentsIndexes = new ArrayList();
+        for (int j=0;j<parentsHuginVar.size();j++) {
+            Node huginParent = parentsHuginVar.get(j);
+            if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+                parentsIndexes.add(multinomialParentsIndexes.get(0));
+                multinomialParentsIndexes.remove(0);
+            }
+            else {
+                parentsIndexes.add(j);
+            }
+        }
+        //------------------------------------------------------------------------------
+
+
         for (int j = 0; j < numParentsAmidstVar; j++) {
             Variable parentAmidstVar = parentsAmidstVar.getParents().get(j);
-            String parentNameHuginVar = ((Node) parentsHuginVar.get(j)).getName();
+            String parentNameHuginVar = ((Node) parentsHuginVar.get(parentsIndexes.get(j))).getName();
             String parentNameAmidstVar = parentAmidstVar.getName();
             assertEquals(parentNameAmidstVar, parentNameHuginVar);
         }
