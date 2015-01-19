@@ -2,7 +2,6 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 /**
@@ -14,7 +13,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public static final int EXPECTED_SQUARE = 1;
 
     public EF_Normal(Variable var1) {
-        if (var1.getDistributionType()!= DistType.GAUSSIAN) {
+        if (!var1.isGaussian()) {
             throw new UnsupportedOperationException("Creating a Gaussian EF distribution for a non-gaussian variable.");
         }
 
