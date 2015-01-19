@@ -13,6 +13,7 @@ import eu.amidst.core.variables.StateSpaceType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -58,8 +59,31 @@ public class DBNConverterToAmidst {
                 Variable amidstChild = dynamicVariables.getVariableByName(huginChild.getName());
                 NodeList huginParents = huginChild.getParents();
 
+                // Only multinomial parents are indexed in reverse order in Hugin
+                //-----------------------------------------------------------------------------
+                ArrayList<Integer> multinomialParentsIndexes = new ArrayList();
+                for (int j=0;j<huginParents.size();j++) {
+                    Node huginParent = huginParents.get(j);
+                    if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+                        multinomialParentsIndexes.add(j);
+                    }
+                }
+                Collections.reverse(multinomialParentsIndexes);
+                ArrayList<Integer> parentsIndexes = new ArrayList();
+                for (int j=0;j<huginParents.size();j++) {
+                    Node huginParent = huginParents.get(j);
+                    if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
+                        parentsIndexes.add(multinomialParentsIndexes.get(0));
+                        multinomialParentsIndexes.remove(0);
+                    }
+                    else {
+                        parentsIndexes.add(j);
+                    }
+                }
+                //-----------------------------------------------------------------------------
+
                 for(int j=0;j<huginParents.size();j++) {
-                    Node huginParent = (Node) huginParents.get(j);
+                    Node huginParent = (Node) huginParents.get(parentsIndexes.get(j));
                     if(huginParent.getTemporalMaster()==null){
                         Variable amidstParent = dynamicVariables.getVariableByName(huginParent.getName());
                         dynamicDAG.getParentSetTimeT(amidstChild).addParent(amidstParent);
