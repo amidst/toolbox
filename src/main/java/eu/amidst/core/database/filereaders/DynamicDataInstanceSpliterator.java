@@ -127,8 +127,11 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DataInstance>
             case 3:
                 action.accept(nextDynamicDataInstance.nextDataInstance(dataRowIterator, attSequenceID, attTimeID));
                 return true;
+
+            default:
+                throw new IllegalArgumentException();
+
         }
-        throw new IllegalArgumentException();
     }
 
     @Override public void forEachRemaining(Consumer<? super DataInstance> action) {
