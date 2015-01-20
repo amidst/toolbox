@@ -70,20 +70,25 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
             /* Not sequenceID nor TimeID are provided*/
                 case 0:
                     dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(dataRowIterator));
-
+                    break;
              /* Only TimeID is provided*/
                 case 1:
                     dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoSeq(dataRowIterator, attTimeID));
+                    break;
 
              /* Only SequenceID is provided*/
                 case 2:
                     dataInstancesList.add(nextDynamicDataInstance.nextDataInstance_NoTimeID(dataRowIterator, attSequenceID));
+                    break;
 
              /* SequenceID and TimeID are provided*/
                 case 3:
                     dataInstancesList.add(nextDynamicDataInstance.nextDataInstance(dataRowIterator, attSequenceID, attTimeID));
+                    break;
+
+                default:
+                    throw new IllegalArgumentException();
             }
-            throw new IllegalArgumentException();
         }
         reader.restart();
         this.dataRowIterator=reader.iterator();
