@@ -21,9 +21,6 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
     int nOfParents;
 
-    public static final int EXPECTED_XY = 0;
-    public static final int EXPECTED_cov = 1;
-
     double variance;
 
     public EF_Normal_NormalParents(Variable var_, List<Variable> parents_) {
@@ -58,11 +55,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         RealVector mean_Y = globalMomentParam.getXYbaseMatrix();
 
         double cov_XX = globalMomentParam.getcovbaseMatrix().getEntry(0, 0) - mean_X*mean_X;
-        RealMatrix cov_YY = globalMomentParam.getMatrixByPosition(EXPECTED_cov).getSubMatrix(1, nOfParents, 1, nOfParents).
+        RealMatrix cov_YY = globalMomentParam.getcovbaseMatrix().getSubMatrix(1, nOfParents, 1, nOfParents).
                             subtract(mean_Y.outerProduct(mean_Y));
-        RealVector cov_XY = globalMomentParam.getMatrixByPosition(EXPECTED_cov).getSubMatrix(0, 0, 1, nOfParents).getRowVector(0).
+        RealVector cov_XY = globalMomentParam.getcovbaseMatrix().getSubMatrix(0, 0, 1, nOfParents).getRowVector(0).
                             subtract(mean_Y.mapAdd(mean_X));
-        //RealVector cov_YX = cov_XY; //outerProduct transpose the vector automatically
+        //RealVector cov_YX = cov_XY; //outerProduct transposes the vector automatically
 
         /*
          * Second step: betas and variance
@@ -136,10 +133,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         RealVector XYRealVector = new ArrayRealVector(Xarray,Yarray);
         vectorSS.setXYbaseVector(XYRealVector);
 
-        RealMatrix covRealmatrix = new Array2DRowRealMatrix(nOfParents+1,nOfParents+1);
-
-
-        covRealmatrix = XYRealVector.outerProduct(XYRealVector);
+        RealMatrix covRealmatrix = XYRealVector.outerProduct(XYRealVector);
 
         vectorSS.setcovbaseVector(covRealmatrix);
 
@@ -154,15 +148,17 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     @Override
     public double computeLogBaseMeasure(DataInstance dataInstance) {
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
-        double[] theta_beta = globalNaturalParameters.getMatrixByPosition(EXPECTED_XY).getRow(0);
-        double[] beta = Arrays.stream(theta_beta).map(w->w*variance).toArray();
+        double[] theta_beta = globalNaturalParameters.getXYbaseMatrix().toArray();
+        double beta0 = theta_beta[0]*variance;
+        double[] beta = Arrays.stream(theta_beta).map(w->w*2*variance/beta0).toArray();
+        //Note that beta[0] is beta0 = beta0*2/beta0 = 2 hence beta[0] != beta0
 
         double[] YdataInstance = this.parents.stream()
                                      .mapToDouble(w -> dataInstance.getValue(w))
                                      .toArray();
 
         double[] result = new double[YdataInstance.length];
-        return beta[0] + IntStream.range(0, YdataInstance.length)
+        return beta0 + IntStream.range(0, YdataInstance.length)
                                   .mapToDouble(i -> result[i] = beta[i + 1] * YdataInstance[i]).sum();
     }
 
@@ -172,7 +168,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         double theta_0 = globalNaturalParameters.get(0);
         double beta_0 = theta_0 * variance;
 
-        return theta_0*beta_0 + Math.log(variance);
+        return (beta_0*beta_0)/(2*variance) + Math.log(variance);
     }
 
     @Override
@@ -318,14 +314,14 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         public void copy(CompoundVector vector) {
-            XYbaseVector = vector.getMatrixByPosition(EXPECTED_XY).copy().getColumnVector(0);
-            covbaseVector = vector.getMatrixByPosition(EXPECTED_cov).copy();
+            XYbaseVector = vector.getXYbaseMatrix().copy();
+            covbaseVector = vector.getcovbaseMatrix().copy();
 
         }
 
         public void sum(CompoundVector vector) {
-            XYbaseVector.add(vector.getMatrixByPosition(EXPECTED_XY).getColumnVector(0));
-            covbaseVector.add(vector.getMatrixByPosition(EXPECTED_cov));
+            XYbaseVector.add(vector.getXYbaseMatrix());
+            covbaseVector.add(vector.getcovbaseMatrix());
         }
 
     }
