@@ -3,13 +3,16 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * Created by andresmasegosa on 23/11/14.
  */
-public class IndicatorDistribution extends ConditionalDistribution{
+public class IndicatorDistribution extends ConditionalDistribution implements Serializable {
+
+    private static final long serialVersionUID = 33632978537501393L;
 
     private ConditionalDistribution conditionalDistribution;
     private DeltaDistribution deltaDist;

@@ -11,12 +11,15 @@ package eu.amidst.core.variables;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by afa on 02/07/14.
  */
-public class StaticVariables implements Iterable<Variable>{
+public class StaticVariables implements Iterable<Variable>, Serializable {
+
+    private static final long serialVersionUID = 5077959998533923231L;
 
     private List<Variable> allVariables;
 
@@ -169,7 +172,9 @@ public class StaticVariables implements Iterable<Variable>{
         return this.allVariables;
     }
 
-    private static class VariableImplementation implements Variable {
+    private static class VariableImplementation implements Variable, Serializable {
+
+        private static final long serialVersionUID = 4656207896676444152L;
 
         private String name;
         private int varID;

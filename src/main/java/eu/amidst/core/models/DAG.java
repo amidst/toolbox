@@ -4,6 +4,7 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +12,9 @@ import java.util.List;
 /**
  * Created by Hanen on 13/11/14.
  */
-public class DAG {
+public class DAG implements Serializable {
+
+    private static final long serialVersionUID = 2889423026182605212L;
 
     private StaticVariables variables;
     private List<ParentSet> parents;
@@ -114,7 +117,9 @@ public class DAG {
         return this.parents;
     }
 
-    private static final class ParentSetImpl implements ParentSet {
+    private static final class ParentSetImpl implements ParentSet, Serializable {
+
+        private static final long serialVersionUID = 3580889238865345208L;
 
         private Variable mainVar;
         private List<Variable> vars;

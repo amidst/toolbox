@@ -14,6 +14,7 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.Random;
 
 
@@ -24,7 +25,9 @@ import java.util.Random;
  * @version 1.0
  * @since 2014-11-3
  */
-public class Multinomial extends UnivariateDistribution {
+public class Multinomial extends UnivariateDistribution implements Serializable {
+
+    private static final long serialVersionUID = 1080643673773257370L;
 
     /**
      * A set of probabilities, one for each state of the variable

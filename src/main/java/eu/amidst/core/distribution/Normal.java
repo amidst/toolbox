@@ -11,6 +11,7 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -20,7 +21,7 @@ import java.util.Random;
  * @version 1.0
  * @since 2014-11-3
  */
-public class Normal extends UnivariateDistribution {
+public class Normal extends UnivariateDistribution implements Serializable {
 
     /**
      * The mean of the Normal distribution.
