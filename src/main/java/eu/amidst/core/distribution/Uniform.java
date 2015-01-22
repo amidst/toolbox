@@ -2,12 +2,15 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  * Created by andresmasegosa on 23/11/14.
  */
-public class Uniform extends UnivariateDistribution {
+public class Uniform extends UnivariateDistribution implements Serializable {
+
+    private static final long serialVersionUID = 4895241466974520178L;
 
     public Uniform(Variable var1) {
         this.var = var1;
