@@ -16,6 +16,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +31,10 @@ import java.util.Random;
  * @since 2014-11-4
  */
 
-public class Normal_MultinomialNormalParents extends ConditionalDistribution{
+public class Normal_MultinomialNormalParents extends ConditionalDistribution implements Serializable {
 
+
+    private static final long serialVersionUID = 497098869714845065L;
 
     /**
      * The list of multinomial parents

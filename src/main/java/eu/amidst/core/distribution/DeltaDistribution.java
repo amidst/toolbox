@@ -2,12 +2,15 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  * Created by andresmasegosa on 13/01/15.
  */
-public class DeltaDistribution extends UnivariateDistribution {
+public class DeltaDistribution extends UnivariateDistribution implements Serializable {
+
+    private static final long serialVersionUID = -1053316887862538948L;
 
     double deltaValue;
 

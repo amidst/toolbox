@@ -1,11 +1,14 @@
 package eu.amidst.core.variables;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by andresmasegosa on 25/11/14.
  */
-public class FiniteStateSpace extends StateSpace implements Iterable<String>{
+public class FiniteStateSpace extends StateSpace implements Iterable<String>, Serializable {
+
+    private static final long serialVersionUID = 7109357376974892250L;
 
     private int numberOfStates;
     private final List<String> statesNames;

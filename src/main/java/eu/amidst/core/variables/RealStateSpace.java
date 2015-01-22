@@ -1,9 +1,13 @@
 package eu.amidst.core.variables;
 
+import java.io.Serializable;
+
 /**
  * Created by andresmasegosa on 25/11/14.
  */
-public class RealStateSpace extends StateSpace{
+public class RealStateSpace extends StateSpace implements Serializable {
+
+    private static final long serialVersionUID = -5178769771928040023L;
 
     private double minInterval;
     private double maxInterval;
