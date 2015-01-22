@@ -4,11 +4,14 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class Multinomial_LogisticParents extends ConditionalDistribution {
+public class Multinomial_LogisticParents extends ConditionalDistribution implements Serializable {
+
+    private static final long serialVersionUID = 2395930092612964235L;
 
     private double[] intercept;
 

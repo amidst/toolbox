@@ -15,11 +15,15 @@ import eu.amidst.core.variables.RealStateSpace;
 import eu.amidst.core.variables.StateSpace;
 import eu.amidst.core.variables.StateSpaceType;
 
+import java.io.Serializable;
+
 /**
  * Created by sigveh on 10/20/14.
  */
 
-public final class Attribute {
+public final class Attribute implements Serializable {
+
+    private static final long serialVersionUID = -2932037991574118651L;
 
     private final int index;
     private final String name;

@@ -1,5 +1,6 @@
 package eu.amidst.core.database;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +9,9 @@ import java.util.stream.Stream;
 /**
  * Created by sigveh on 10/16/14.
  */
-public class Attributes {
+public class Attributes implements Serializable {
+
+    private static final long serialVersionUID = -1877629684033612201L;
 
     private List<Attribute> attributes;
 
