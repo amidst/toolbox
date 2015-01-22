@@ -19,12 +19,15 @@ package eu.amidst.core.variables;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by afa on 02/07/14.
  */
-public class DynamicVariables  implements Iterable<Variable>{
+public class DynamicVariables  implements Iterable<Variable>, Serializable {
+
+    private static final long serialVersionUID = -4959625141445606681L;
 
     private List<Variable> allVariables;
     private List<Variable> temporalClones;
@@ -247,7 +250,10 @@ public class DynamicVariables  implements Iterable<Variable>{
         return this.allVariables.iterator();
     }
 
-    private static class VariableImplementation implements Variable {
+    private static class VariableImplementation implements Variable, Serializable {
+
+        private static final long serialVersionUID = 7934186475276412196L;
+
         private String name;
         private int varID;
         private boolean observable;

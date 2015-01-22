@@ -51,8 +51,6 @@ public class BNExample {
             }
         }
 
-        System.out.println(dag.toString());
-
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         return(bn);
     }
