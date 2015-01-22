@@ -16,7 +16,6 @@ public class Attributes implements Serializable {
     private List<Attribute> attributes;
 
 
-
     public Attributes(List<Attribute> attributes){
         this.attributes = Collections.unmodifiableList(attributes);
     }

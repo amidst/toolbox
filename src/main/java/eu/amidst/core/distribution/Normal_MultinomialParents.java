@@ -115,7 +115,10 @@ public class Normal_MultinomialParents extends ConditionalDistribution implement
     }
 
     public String label(){
-        if (this.getConditioningVariables().size()==0) {
+        //TODO Explain this !!!
+        // if (this.getConditioningVariables().size() == 0) {
+        //Both ifs are equivalent but when reading a serializable object the first gives a NullPointerException. WHY?
+        if (this.getDistribution().length==1){
             return "Normal";
         }
         else {

@@ -15,6 +15,7 @@ public class FiniteStateSpace extends StateSpace implements Iterable<String>, Se
     private final Map<String,Integer> mapStatesNames;
 
 
+
     public FiniteStateSpace(int numberOfStates1) {
         super(StateSpaceType.FINITE_SET);
         this.numberOfStates=numberOfStates1;
