@@ -1,11 +1,17 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents.CompoundVector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
+ *
+ *
+ * TODO: Redesign this class!!!!!
  * Created by andresmasegosa on 12/11/14.
  */
 public final class EF_DistributionBuilder {
@@ -178,11 +184,56 @@ public final class EF_DistributionBuilder {
     }
 
     public static EF_Normal_NormalParents toEFDistribution(Normal_NormalParents dist) {
-        return null;
+
+        EF_Normal_NormalParents ef_normal_normalParents = new EF_Normal_NormalParents(dist.getVariable(), dist.getConditioningVariables());
+
+        CompoundVector naturalParameters = ef_normal_normalParents.createEmtpyCompoundVector();
+
+        double beta_0 = dist.getIntercept();
+        double[] coeffParents = dist.getCoeffParents();
+        double sd = dist.getSd();
+
+        double variance = sd*sd;
+        /*
+         * 1) theta_0
+         */
+        double theta_0 = beta_0 / variance;
+        naturalParameters.setThetaBeta0_NatParam(theta_0);
+
+        /*
+         * 2) theta_0Theta
+         */
+        double variance2Inv =  1.0/(2*variance);
+        //IntStream.range(0,coeffParents.length).forEach(i-> coeffParents[i]*=(beta_0*variance2Inv));
+        double[] theta0_beta = Arrays.stream(coeffParents).map(w->w*beta_0*variance2Inv).toArray();
+        naturalParameters.setThetaBeta0Beta_NatParam(theta0_beta);
+
+        /*
+         * 3) theta_Minus1
+         */
+        double theta_Minus1 = -variance2Inv;
+
+        /*
+         * 4) theta_beta & 5) theta_betaBeta
+         */
+        double[] theta_beta = Arrays.stream(coeffParents).map(w -> w / variance).toArray();
+        naturalParameters.setThetaCov_NatParam(theta_Minus1,theta_beta, variance2Inv);
+
+        ef_normal_normalParents.setNaturalParameters(naturalParameters);
+        return ef_normal_normalParents;
     }
 
     public static Normal_NormalParents toDistribution(EF_Normal_NormalParents ef) {
-        return null;
+
+        Normal_NormalParents normal_normal = new Normal_NormalParents(ef.getVariable(), ef.getConditioningVariables());
+
+        double[] allBeta = ef.getAllBetaValues();
+
+        normal_normal.setIntercept(allBeta[0]);
+        normal_normal.setCoeffParents(Arrays.copyOfRange(allBeta, 1, allBeta.length));
+        normal_normal.setSd(Math.sqrt(ef.getVariance()));
+
+        return normal_normal;
     }
 
 

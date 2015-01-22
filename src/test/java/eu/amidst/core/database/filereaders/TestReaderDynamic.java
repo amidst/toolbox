@@ -16,6 +16,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by ana@cs.aau.dk on 18/11/14.
  */
+
+//TODO Test DataOnMemory
 public class TestReaderDynamic {
 
     private static final double DELTA = 1e-15;
