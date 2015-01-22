@@ -1,6 +1,7 @@
 package eu.amidst.core.models;
 
 import COM.hugin.HAPI.ExceptionHugin;
+import eu.amidst.examples.BNExample;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,20 +12,30 @@ import java.io.IOException;
  */
 public class BayesianNetworkLoaderTest {
 
+    //TODO Implement a test comparing all the elements of the BayesianNetwork before saving the file and after loading it
     @Before
-    public void setUp() throws ExceptionHugin {
+    public void setUp() throws ExceptionHugin, IOException, ClassNotFoundException {
 
-        String file = new String("networks/huginNetworkFromAMIDST.net");
-        BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromHugin(file);
-        System.out.println("\nAMIDST network loaded from Hugin file.");
+        BayesianNetwork bn1 = BNExample.getAmidst_BN_Example();
 
-        System.out.println(amidstBN.getDAG().toString());
+        System.out.println("------------  BN model before saving the object  --------------");
+        System.out.println(bn1.toString());
+        BayesianNetworkWriter.saveToFile(bn1, "networks/bn.ser");
 
-        System.out.println(amidstBN.toString());
+        System.out.println("------------  BN model loaded from the file -------------------");
+        BayesianNetwork bn2 = BayesianNetworkLoader.loadFromFile("networks/bn.ser");
+        System.out.println(bn2.toString());
 
-        String file2 = new String("networks/huginNetworkFromAMIDST2.net");
-        BayesianNetworkWriter.saveToHuginFile(amidstBN,file2);
-        System.out.println("\nAMIDST network save to Hugin file.");
+
+        //TODO move this piece of code to the module huginLink
+        //String file = new String("networks/huginNetworkFromAMIDST.net");
+        //BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromHugin(file);
+        //System.out.println("\nAMIDST network loaded from Hugin file.");
+        //System.out.println(amidstBN.getDAG().toString());
+        //System.out.println(amidstBN.toString());
+        //String file2 = new String("networks/huginNetworkFromAMIDST2.net");
+        //BayesianNetworkWriter.saveToHuginFile(amidstBN,file2);
+        //System.out.println("\nAMIDST network save to Hugin file.");
 
     }
 

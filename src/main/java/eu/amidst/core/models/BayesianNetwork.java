@@ -29,7 +29,6 @@ public final class BayesianNetwork implements Serializable {
 
 
     private static final long serialVersionUID = 4107783324901370839L;
-
     private List<ConditionalDistribution> distributions;
 
     private DAG dag;
