@@ -14,6 +14,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,10 @@ import java.util.Random;
  */
 
 
-public final class BayesianNetwork {
+public final class BayesianNetwork implements Serializable {
+
+
+    private static final long serialVersionUID = 4107783324901370839L;
 
     private List<ConditionalDistribution> distributions;
 

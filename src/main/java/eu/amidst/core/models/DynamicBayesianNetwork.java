@@ -15,6 +15,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,9 +29,10 @@ import java.util.Random;
  * @since 2014-07-3
  *
  */
-public final class DynamicBayesianNetwork{
+public final class DynamicBayesianNetwork implements Serializable {
 
 
+    private static final long serialVersionUID = 4968590066969071698L;
     /**
      * It contains the distributions for all variables at time 0.
      */
