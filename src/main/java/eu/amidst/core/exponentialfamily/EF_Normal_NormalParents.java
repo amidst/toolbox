@@ -172,8 +172,8 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
     @Override
-    public Vector createZeroedVector() {
-        return new ArrayVector(sizeSS);
+    public CompoundVector createZeroedVector() {
+        return new CompoundVector(nOfParents);
     }
 
     @Override
@@ -187,12 +187,26 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
 
+    public double[] getAllBetaValues(){
+        CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
+        double[] theta_beta = globalNaturalParameters.getXYbaseMatrix().toArray();
+        double beta0 = theta_beta[0]*variance;
+        double[] beta = Arrays.stream(theta_beta).map(w->w*2*variance/beta0).toArray();
+        beta[0] = beta0;
+        return beta;
+    }
 
-    private CompoundVector createEmtpyCompoundVector() {
+    public double getVariance(){
+        return variance;
+    }
+
+
+
+    public CompoundVector createEmtpyCompoundVector() {
         return new CompoundVector(nOfParents);
     }
 
-    static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
+    public static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 
         int size;
         int nOfParents;
@@ -282,6 +296,26 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
                 covbaseVector.setEntry(row, column, val);
             }
         }
+
+        public void setThetaBeta0_NatParam(double val){
+            XYbaseVector.setEntry(0,val);
+        }
+
+        public void setThetaBeta0Beta_NatParam(double[] val) {
+            XYbaseVector.setSubVector(1,val);
+        }
+
+        public void setThetaCov_NatParam(double theta_Minus1, double[] theta_beta, double variance2Inv){
+            double[] theta_Minus1array = {theta_Minus1};
+            RealVector covXY = new ArrayRealVector(theta_Minus1array, theta_beta);
+            covbaseVector.setColumnVector(0, covXY);
+            covbaseVector.setRowVector(0, covXY);
+
+            RealVector beta = new ArrayRealVector(theta_beta);
+            RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(variance2Inv);
+            covbaseVector.setSubMatrix(theta_betaBeta.getData(),1,1);
+        }
+
 
         @Override
         public int size() {
