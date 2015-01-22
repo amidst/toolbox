@@ -11,6 +11,7 @@ import java.util.Random;
  */
 public abstract class UnivariateDistribution extends Distribution {
 
+    public UnivariateDistribution(){}
     /**
      * Evaluates the distribution in a given point.
      * @param value The point to be evaluated.

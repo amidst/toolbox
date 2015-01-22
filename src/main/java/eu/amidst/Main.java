@@ -51,21 +51,10 @@ public class Main {
 
 package eu.amidst;
 
-
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkWriter;
-import eu.amidst.examples.BNExample;
-
-
 public class Main {
-
-
 
  public static void main(String[] args) throws Exception {
 
-     BayesianNetwork bn = BNExample.getAmidst_BN_Example();
-
-     BayesianNetworkWriter.saveToFile(bn, "networks/dbn.ser");
 
 
  }

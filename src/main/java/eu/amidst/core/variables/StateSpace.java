@@ -8,6 +8,10 @@ public abstract class StateSpace {
     private StateSpaceType stateSpaceType;
     private String unit="NA";
 
+    // This empty constructor is required because this class is the first non-serializable superclass in the inheritence
+    // hierarchy for the classes FiniteStateSpace and RealStateSpace (both implements Serializable)
+    public StateSpace(){}
+
     public StateSpace(StateSpaceType type){
         this.stateSpaceType=type;
     }

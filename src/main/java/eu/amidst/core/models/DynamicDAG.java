@@ -12,6 +12,7 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,8 +21,10 @@ import java.util.List;
 /**
  * Created by Hanen on 13/11/14.
  */
-public class DynamicDAG {
+public class DynamicDAG implements Serializable {
 
+
+    private static final long serialVersionUID = 123181485615649547L;
 
     /**
      * It contains a pointer to the variables (list of variables).
@@ -138,7 +141,10 @@ public class DynamicDAG {
         return str.toString();
     }
 
-    private final class ParentSetImpl implements ParentSet {
+    private final class ParentSetImpl implements ParentSet, Serializable {
+
+
+        private static final long serialVersionUID = 7416827986614255621L;
 
         private Variable mainVar;
         private List<Variable> vars;

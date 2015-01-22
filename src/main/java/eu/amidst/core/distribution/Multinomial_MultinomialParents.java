@@ -32,7 +32,6 @@ import java.util.Random;
 public class Multinomial_MultinomialParents extends ConditionalDistribution implements Serializable {
 
     private static final long serialVersionUID = 8457343901446393938L;
-    
     /**
      * An array of <code>Multinomial</code> objects, one for each configuration of the parents. These objects are ordered
      * according to the criteria implemented in class utils.MultinomialIndex
@@ -132,7 +131,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution impl
     }
 
     public String label() {
-        if (this.getConditioningVariables().size() == 0) {
+        //TODO Explain this !!!
+        // if (this.getConditioningVariables().size() == 0) {
+        //Both ifs are equivalent but when reading a serializable object the first gives a NullPointerException. WHY?
+        if (this.getProbabilities().length==1) {
             return "Multinomial";
         } else {
             return "Multinomial|Multinomial";
