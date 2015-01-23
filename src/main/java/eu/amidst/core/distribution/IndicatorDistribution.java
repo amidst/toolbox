@@ -10,9 +10,7 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 23/11/14.
  */
-public class IndicatorDistribution extends ConditionalDistribution implements Serializable {
-
-    private static final long serialVersionUID = 33632978537501393L;
+public class IndicatorDistribution extends ConditionalDistribution {
 
     private ConditionalDistribution conditionalDistribution;
     private DeltaDistribution deltaDist;

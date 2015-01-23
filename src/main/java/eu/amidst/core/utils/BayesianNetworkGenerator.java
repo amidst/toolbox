@@ -2,10 +2,12 @@ package eu.amidst.core.utils;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.*;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -86,7 +88,7 @@ public final class BayesianNetworkGenerator {
         return builder;
     }
 
-    public static void main(String[] agrs) throws ExceptionHugin {
+    public static void main(String[] agrs) throws ExceptionHugin, IOException, ClassNotFoundException {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
@@ -94,7 +96,9 @@ public final class BayesianNetworkGenerator {
 
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
-        BayesianNetworkWriter.saveToHuginFile(naiveBayes,"./networks/NB-10.net");
+        BayesianNetworkWriter.saveToFile(naiveBayes, "networks/NB-10.ser");
 
+        BayesianNetwork naiveBayes2 = BayesianNetworkLoader.loadFromFile("networks/NB-10.ser");
+        System.out.println(naiveBayes2.toString());
     }
 }
