@@ -49,7 +49,7 @@ public interface Variable {
 
     default String toARFFString(){
 
-        if (this.getDistributionType() == DistType.GAUSSIAN) {
+        if (this.isGaussian()) {
             return "@attribute " + this.getName() + " real";
         }else{
             StringBuilder stringBuilder = new StringBuilder("@attribute " + this.getName() + " {");
