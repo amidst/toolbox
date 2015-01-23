@@ -44,11 +44,343 @@
 \numberwithin{equation}{section}
 \numberwithin{table}{section}
 
+\newcommand{\e}[1]{E\left[ #1 \right]}
+
 \usepackage{pdfpages}
 
 \begin{document}
+\title{ Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models }
 
-%-----------------------------------------------------------------------------------------------------------------------------------
+\maketitle
+\begin{abstract}
+
+\end{abstract}
+
+
+\section{Introduction}
+
+Defining the data structure of a Bayesian network is not a straightforward problem. The definition of the data structure of a DAG is not complex when compared to the definition of the data structure of the conditional probability distributions encoded in the BN. The DAG is an \textit{homogeneous} data structure, in the sense that this only composed by nodes and directed edges. However, the set of different conditional distributions is not limited at all. For example, the data structure for representing a Multinomial distribution is, in a first look, quite different from the data structure needed to represent a Normal distribution. In the former case, we need to store the probability of each one of the cases of the multinomial variable, while in the latter case we need to store, for example, the mean and the variance of the Normal distribution. If we consider a Poisson or a Exponential or a MoTBF, etc, the data structures needed to represent these distributions are completely different. But these are only examples of unidimensional distributions. 
+
+When defining the data structure of the conditional distributions things become much more complex. For example, the data structure for representing the conditional distribution of a Normal distribution given a set of normally distributed variables is, in a first look, totally different from the data structure needed to represent a conditional distribution of a Multinomial variable given a set of Multinomial variables. In the former case, under the conditional linear Gaussian framework, we need to store the coefficients for the linear combination of the parents variables plus the variance of the main variable. While the data structure for the latter case is usually defined using a big probability table. If we allow the combination of Normal, Multinomial, Poison, Exponential, etc, the number of data structures needed to represent all the possible combinations quickly explode.
+
+It is also challenging the problem of making inferences and learn from data with BNs with different kinds of conditional distributions. For example, the maximum likelihood of a Normal distribution is obtained by computing the sample mean and variance, while the maximum likelihood of a Multinomial distribution is obtained by normalizing the sample \textit{counts} of each one of the sates. More involved methods come up for the different possible conditional probabilities, what means that the addition of new family of variables, i.e. Normal or Poission or Exponential, etc, implies to define, code and test completely new maximum likelihood methods.  
+
+In the case of inference, things are even worst. For example, the combination and marginalization operations over probability potentials belonging to different distributions families is in general non closed and, in principle, involves quite different approach. I.e., the combination or multiplication of two multinomial potential or distributiosn involves completely different method than the combination or product of two Normal distributions. Same for the marginalization operation. So, defining and coding all of these operations for different family of distributions can become a daunting task. 
+
+In this technical report, we argue that if we restrict ourselves to the so-called conjugate exponential family models, we can avoid most of the above problems. Firstly, all the conditional probability distributions inside this family can be represented using the same data structure, which is simply composed by two n-dimensional vector (the so-called natural and moment parameters) and two n-dimensional functions (the so-called sufficient statistics and log-normalizer functions). Moreover, we show as many learning and inference algorithms can be directly implemented on top of this general and unique representation. The result is a suitable framework for coding a toolbox which aims to deal with the problem of represent, make inference and learn from data general Bayesian networks.
+
+
+\section{Background and notation}
+
+\subsection*{Bayesian networks}
+Let $\bm X = \{X_1,\ldots,X_N\}$ denote the set of stochastic random variables defining our domain problem and $\bm x$ an observation vector. A Bayesian network defines a joint distribution $P(\bm X)$ in the following form:
+
+$$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$ 
+
+\noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. Bayesian networks can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, is associated with a factor or conditional probability $p(X_i|Pa(X_i))$. Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
+
+\subsection*{Exponential family models}
+
+A Bayesian network defines a joint probability in the exponential family with a natural (or canonical) parametrization if the joint distribution can be functionally expressed as follows, 
+\begin{equation*}
+p(\bm x |\theta) = h(x) exp(\theta^Ts(\bm x) -
+A(\theta) )
+\end{equation*}
+\noindent where $\theta$ is the so-called natural parameter which belongs to the so-called \emph{natural parameter space}
+$\Theta \equiv \{ \theta \in\Re^K: \int_{\bm x} h(\bm x) exp(\theta^T s(\bm x) -
+A(\theta) ) d\bm x < \infty \}$, $s(\bm x)$ is the vector of sufficient statistics belonging to $\mathcal{S} \subseteq\Re^K$, $A$ is the log partition function and $h(x)$ is the base measure. 
+
+The so-called \emph{expectation or moment parameters} $\mu\in\mathcal{S}$ can also be used to parameterize probability
+distributions of the exponential family. This \emph{expectation parameter} $\mu$ is defined as the expected vector of sufficient statistics with respect to $\theta$:
+
+\begin{equation}
+\label{Equation:NaturalToMoment}
+\begin{array}{lll}
+\bm \mu & \triangleq & \e{s(\bm x)|\theta}  = \int s(\bm x)p(\bm x|\theta)
+d\bm x\\
+\end{array}
+\end{equation}
+
+The \emph{natural parameter} $\theta$ associated to
+an \emph{expectation parameter} $\mu$ is obtained by solving the following optimization 
+problem.
+ 
+\begin{eqnarray}
+\label{Equation:MomentToNatural}
+\theta(\mu) = arg\max_{\theta\in\Theta} \theta^T\mu
+-A(\theta)
+\end{eqnarray}
+
+\subsection*{Regular and Minimal Exponential Family}
+
+A Bayesian network belongs to the regular (or linear) exponential family if $\Theta$ is an open and convex set, otherwise it belongs to the more general curved exponential family. Additionally, an exponential family is said to be minimal if there is non-zero constant vector $\alpha$, such that $\alpha^Ts(\bm x)$ is equal to a constant for all $\bm x$.  
+
+The regular exponential family with a minimal representations have been widely studied in the literature. They enjoy many useful properties. The following two properties are ones of the most relevant ones: i)  The transformation between $\theta$ and $\mu$ is one-to-one, i.e. $\mu$ is a dual set of the model parameter $\theta$; ii) the moment parameters equals the gradient of the log-normalizer, 
+
+\begin{equation}
+\label{Equation:RegularEFEquality}
+\mu = \frac{\partial A(\theta)}{\partial \theta}
+\end{equation}
+
+The problem is that any BN which contains immoralities does not induce a regular exponential family.
+
+\subsection*{Conditional distributions as exponential family models}
+
+A conditional distribution $p(X|Pa(X))$ is in the exponential family if it can be written in the following functional form, 
+
+$$ p(x | Pa(X)) = h(x) exp( \theta(Pa(X))^Ts(x) -
+A(\theta(Pa(X))) ) $$
+
+\noindent where $\theta(Pa(X))$ denotes that the natural parameters are now a function of of the parents variables of $X$.  %Equivalently, we can say that $p(X|Pa(X))$ is in the exponential family if for any assignment, $\bm \pi$  to the parents variables, $p(X|\bm\pi)$ is in exponential form. 
+
+A conditional distribution $p(X|Y)$ is said to be conjugate to a child distribution $p(W|X)$ if $p(X|Y)$ has the same functional form, with respect to $X$, as $p(W|X)$. A important property of the exponential conjugate conditional distributions is that the can be also expressed in the following functional form,
+ 
+\begin{equation}
+\label{Equation:EqCED}
+p(x | \bm y) = h(x) exp(\theta^Ts(x,\bm y) -
+B(\theta) ) 
+\end{equation}
+\noindent where $B(\theta)$ is the conditional log-normalizer. 
+
+A Bayesian network is said to be a conjugate exponential (CEF) model if all its conditional distributions belong to the exponential family and are conjugate.
+
+
+\section{Bayesian networks as CEF models}
+
+\subsection{Representation}
+In this section we show that conjugate-exponential family Bayesian networks (CEF-BNs) are quite amenable to be represented (and coded) as exponential family models. 
+
+By using Equation \ref{Equation:EqCED}, a conjugate-exponential BN can be represented in the following way, 
+
+\begin{eqnarray}
+\label{Equation:CEFSS}
+\ln p(X_1,\ldots, X_n) &=& \sum_{i=1}^n \ln p(X_i|Pa(X_i))\nonumber\\
+&=& \sum_{i=1}^n \theta_i(Pa(X_i))^T s_i(X_i) - B(\theta(Pa(X_i)))\nonumber\\
+&=& \sum_{i=1}^n \theta_i^T s_i(X_i, Pa(X_i)) - B(\theta_i)\nonumber\\
+&=&
+\begin{pmatrix}
+\theta_1\\
+\ldots \\
+\theta_n\\
+\end{pmatrix}^T
+\begin{pmatrix}
+s_1(X_1,Pa(X_1)) \\
+\ldots \\
+s_n(X_n,Pa(X_n)) \\
+\end{pmatrix}
+- \sum_{i=1}^n B_i(\theta_i)
+\end{eqnarray}
+
+The above expression show us that we can represent a CEF-BN by using the local representations of the conditional distributions:
+
+\begin{itemize}
+\item The natural parameter is the composition of the local natural parameters of each conditional distribution. 
+\item The sufficient statistics are the composition of the local sufficient statistics of each conditional distribution. 
+\item The log-normalizer is the sum of the local conditional log-normalizer of each conditional distribution. 
+\end{itemize}
+
+So, in order to represent a BN as an exponential family model we have only to care about the local representation of each conditional distribution as in Equation \ref{Equation:EqCED}. The global representation is just obtained by composing these local representations. 
+
+Let us notice that without the assumption of conjugacy  for the conditional exponential distributions, the above representation would have not been possible. 
+
+\subsection{From Natural to Moment Parameters}
+
+We now look at the transformation from to natural to moment parameters in a CEF-BN. Following Equation \ref{Equation:NaturalToMoment}., we have that the vector of moment parameters in a CEF-BN model decomposes as follows,
+
+\begin{equation}
+\begin{array}{lll}
+\mu & = & \e{s(X_1,\ldots, X_n)|\theta} \\
+&=& \int s(X_1,\ldots, X_n)p(X_1,\ldots, X_n|\theta) 
+d\bm X = \\
+&=& (\mu_1,\ldots,\mu_n) \\
+\end{array}
+\end{equation}
+
+\noindent where $\mu_i= \int s(X_i,Pa(X_i)) p(X_i,Pa(X_i)) d\bm X$. I.e. the moments parameter of a CEF-BN locally decomposes in moment parameters associated to local marginal probabilities. Let us note that to compute the local marginal probability  $p(X_i,Pa(X_i))$ we need to perform inference over the whole BN.
+
+\subsection{From Moment to Natural Parameters}
+
+The transformation from moments to natural also decomposes. Let us start by expanding Equation \ref{Equation:MomentToNatural}, 
+
+\begin{eqnarray}
+\label{Equation:CEFBN_MomentToNatural}
+\theta(\mu) &=& \arg\max_{\theta\in\Theta} \theta^T\mu
+-A(\theta)\nonumber \\
+&=& \arg\max_{(\theta_1,\ldots, \theta_n) \in\Theta} \sum_{i=1}^n \theta_i^T \mu_i - B(\theta_i) 
+\end{eqnarray}
+
+Because the $\theta_i$ parameters are independent, the above maximization problem fully decomposes in local maximization problem for each conditional probability distribution,  
+
+\begin{eqnarray}
+\label{Equation:CEFBN_MomentToNaturalLocal}
+\theta_i(\mu_i) = \arg\max_{\theta_i\in\Theta_i} \theta_i^T\mu_i - B(\theta_i)
+\end{eqnarray}
+
+\noindent and the global solution is just the composition of the local solutions, 
+
+$$ \theta(\mu) = (\theta_1(\mu_1), \ldots, \theta_n(\mu_n))$$
+
+Let us see that, in opposite to the previous case, the transformation from moment to natural parameters can be performed totally locally eat each conditional distribution. The global solution is just an aggregation of the local solutions.
+
+\section{Conditional distributions with multinomial parents in exponential form}
+\label{Section:CD_With_MParents}
+
+In this subsection we try to exploit some structure that is present in many conditional distributions to ease its representation in exponential form and, also, the associated parameter transformations.  The structure we try to exploit is the presence of multinomial variable in the parent set of a conditional distribution. The advantage of this representation is that if we know how to represent in a exponential form some distribution (ie. Poison distribution, a Normal distribution, a Multinomial distribution, a Normal distribution with Normal parents, etc), we can directly derive the corresponding distribution conditioned to multinomial parents (i.e. Poison given Multinomial parents , Normal given Multinomial parents , Multinomial given Multinomial parents, Normal given Normal and Multinomial parents, etc). Similarly, we  also show that for these conditional distributions the transformation from moment to natural parameters can be further decomposed. 
+
+
+\subsection{Representation}
+\label{Section:CD_With_MParents:Representation}
+
+Let $(\bm Z, \bm Y)$\footnote{$\bm Z$ can be empty.} the set of parents of a variable $X$ and let assume that $\mathbf{Y}$ are all of them multinomial variables. .  Let $q$ denote the total number of parental configurations for the variables in $\bm Y$, and let $\bm y$ denote the $l$-th parental configuration that that $1 \leq l \leq q$.
+
+The log-conditional probability of $X$ given its parent-nodes $\bm Z$ and $\mathbf{Y}$ decomposes as  follows:
+
+\begin{eqnarray*}
+\ln p(X \mid \bm Z, \bm Y) &=&  \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \ln p(X | \bm Z, \mathbf{y}^l) \\
+&=& \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \Big(  \theta_{l}^T s_l(X, \bm Z)  -  B_l(\theta_{l}) \Big)\\
+&=& \sum_{l=1}^q \theta_{l}^T  I(\mathbf{Y} =\mathbf{y}^l) s(X, \bm Z) - \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) B_l(\theta_{l})
+\end{eqnarray*}
+
+\noindent where $\theta_l$, $s_l(X,\bm Z)$ and $B_l(\theta_l)$ come when the local conditional $p(X | \bm Z, \mathbf{y}^l)$ is expressed in exponential form. 
+
+So, the conditional distribution $p(X \mid \bm Z, \bm Y)$ can be written in exponential form as follows, 
+
+\begin{eqnarray}
+\label{Equation:CD_With_MParents:Representation}
+\ln p(X \mid \bm Z, \bm Y)  &=& \theta^T s(X,\mathbf{Y}) - B(\theta) \nonumber \\
+&=&
+\begin{pmatrix}
+- B_1(\theta_{1}) \\
+\vdots \\
+- B_q(\theta_{q}) \\
+\theta_{1} \\
+\vdots \\
+\theta_{q}
+\end{pmatrix}^T
+\begin{pmatrix}
+I(\mathbf{Y} =\mathbf{y}^1) \\
+\vdots \\
+I(\mathbf{Y} =\mathbf{y}^q) \\
+s_1(X, \bm Z) \cdot I(\mathbf{Y} =\mathbf{y}^1) \\
+\vdots \\
+s_q(X, \bm Z) \cdot I(\mathbf{Y} =\mathbf{y}^q)
+\end{pmatrix}
+- 0 
+\end{eqnarray}
+
+As can be seen, the exponential representation a conditional probability with multinomial parents can be expressed as composition of the exponential representation of the conditional distributions restricted to each one of the possible configurations of the multinomial parents. 
+
+\subsection{From Natural to Moment Parameters}
+\label{Section:CD_With_MParents:NaturalToMoment}
+
+
+By using the decomposition of the sufficient statistics vector of this conditional probability distribution, the moment parameter vector associated to a natural parameter vector $\theta$ can be expressed as a combination of the moment parameters of the marginals probability $p(\bm Y|\theta)$ and $p(X, \bm Z)$ as follows:
+
+$$ 
+\begin{pmatrix}
+\mu^{I}_1  \\
+\vdots \\
+\mu^{I}_q \\
+\mu^{I}_1 \mu^{local}_1\\
+\vdots \\
+\mu^{I}_q \mu^{local}_q\\
+\end{pmatrix}
+$$
+
+\noindent where  $\mu^{I}_l$ is the $l$-th component (i.e. a scalar) of the moment vector associated to the marginal distribution $p(\bm Y|\theta)$,  $\mu^{I}_l  = \int I(\bm Y = \bm y_l) p(\bm Y|\theta) d\bm Y= p(\bm y_l|\theta)$, and $\mu^{local}_l$  is the ``local'' moment parameter associated to the marginal distribution $p(X,\bm Z| \bm y = l)$, $\mu_l = \int s_l(X, \bm Z)p(X,\bm Z|\bm y = l, \theta) dX\bm Z$. 
+
+Again, we can see than the moment parameters of this conditional distribution can be expressed as a composition of the local moment parameters of each of the distributions conditioned to each configuration of the multinomial parents variables. 
+
+\subsection{From Moment to Natural Parameters}
+\label{Section:CD_With_MParents:MomentToNatural}
+
+We now look how to transform from moment to natural parameters. Initially, the dimension of the optimization problem is $2q$ (i.e the dimension of the natural parameter vector), however we can use the structure present in the natural space and see that it boils down to a $q$ dimensional problem, 
+
+\begin{eqnarray*}
+\arg\max_{(\theta_1,\ldots, \theta_q) \in \Theta} \sum_{l=1}^q \theta_l^T \mu_{q+l}- \mu_l B_l(\theta_l)
+\end{eqnarray*}
+
+Furthermore, the above optimization problem decomposes in a set of $q$ independent optimization problems, 
+
+\begin{eqnarray*}
+\arg\max_{\theta_l \in \Theta_l} \theta_l^T \mu_{q+l}- \mu_l B_l(\theta_l)
+\end{eqnarray*}
+
+The solution of the above optimization problem is not affected if the optimized expression is divided by $\mu_l$, which is an scalar\footnote{It $\mu_l$ it would imply that $p(\bm Y= \bm y_t)=0$, so it does not make sense to solve the problem.}. So this problem can be transformed as follows, 
+
+\begin{eqnarray}
+\label{Equation:CD_With_MParents:MomentToNatural}
+\arg\max_{\theta_l \in \Theta_l} \theta_l^T\mu'_l - B_l(\theta_l)
+\end{eqnarray}
+
+\noindent where $\mu'_l =\frac{1}{\mu_{l}}\mu_{q+l}$, i.e.the element-wise division of the vector $\mu_{q+l}$ by the scalar $\mu_l$.
+
+The above problem simply corresponds to the transformation of the moment parameters $\mu'_l$ to their corresponding natural parameters $\theta_l$ for the conditional distribution $p(X|\bm Z, \bm y_l)$. So again, we see how the transformation from moment to natural decomposes in a series of local transformations. 
+
+
+\section{Maximum Likelihood}
+
+In this section we look at the maximum likelihood problem in CEF-BNs. Our aim is to show how the solution to this multi-dimensional optimization problem has a common characterization in terms of exponential family representation and, moreover, boils down to smaller local problems for each conditional distribution\footnote{We point out that the following derivation is made without assuming that our models belongs to the regular exponential family and, in consequence, not using the equality of Equation \ref{Equation:RegularEFEquality}.}.
+
+Let us assume that we are given a set of $m$ i.i.d. data samples $D=\{\bm x^{(1)}, \ldots, \bm x^{(m)}\}$ indexed by $j$. The maximum likelihood problem can be stated as follows:
+
+\begin{eqnarray*}
+\theta^\star  &=& \arg\max_{\theta \in \Theta} \sum_{j=1}^m \ln p(\bm x^{(j)}|\theta) \\
+&=& \arg\max_{\theta \in \Theta} \sum_{j=1}^m \theta^Ts(\bm x^{(j)})  - A(\theta) \\
+&=& \arg\max_{\theta \in \Theta} \theta^T\Big(\sum_{j=1}^m s(\bm x^{(j)})\Big)  - m A(\theta) \\
+&=& \arg\max_{\theta \in \Theta} \theta^T\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)  - A(\theta) \\
+\end{eqnarray*}
+
+\noindent where the last part is achieved by diving the optimized equation by the number of samples $m$, what does not affect the result of the optimization. 
+
+As widely known, the maximum likelihood is equivalent to a transformation form moment to natural parameters as stated in Equation \ref{Equation:MomentToNatural}, 
+
+$$\theta^\star = \theta\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)$$
+
+As shown in Section \ref{Section: }, this problem decomposes for each conditional probability distribution.  The above formation can expressed in terms of local transformations defined in Equation \ref{Equation:CEFBN_MomentToNaturalLocal}, 
+
+$$\theta_i^\star = \theta_i\Big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i)\Big)$$
+
+
+To better understand the above decomposition, we should notice that $\theta_i(\mu_i)$ is directly related to maximum likelihood estimation of the conditional distribution $p(X_i|Pa(X_i))$, 
+
+\begin{eqnarray*}
+\theta^\star  &=& \arg\max_{\theta_i \in \Theta_i} \sum_{j=1}^m \ln p(x_i^{(j)}|\bm{pa}^{(j)}_i,\theta) \\
+&=& \arg\max_{\theta_i \in \Theta_i} \sum_{j=1}^m \Big(\theta_i^Ts(x_i^{(j)},\bm{pa}^{(j)}_i)  - B_i(\theta_i) \Big)\\
+&=& \arg\max_{\theta_i \in \Theta_i} \theta_i^T\Big(\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i) \Big)  - m B_i(\theta) \\
+&=& \arg\max_{\theta_i \in \Theta_i} \theta_i^T\Big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i) \Big)  - B_i(\theta) \\
+\end{eqnarray*}
+
+\noindent where $\bm{pa}^{(j)}_i$ the assignment to the parents of $X_i$ according the to the $j$-th data sample $\bm x^{(j)}$.
+
+For those conditional distributions with multinomial parents, the problem further decomposes as shown in Section \ref{Section:CD_With_MParents:MomentToNatural}. 
+
+
+%
+%The maximum likelihood computation can be addressed using the following steps:
+%
+%\begin{enumerate}
+%
+%\item  Compute the sufficient statistics of a given data sample $\bm x^{(j)}$, which is the composition of the sufficient statistics of each conditional distribution (see Equation \ref{Equation:CEFSS}). If the conditional distribution has multinomial parents then we can use Equation \ref{Equation:CD_With_MParents:Representation} to compose the sufficient statistics of the conditional distribution. 
+%
+%\item Sum all the sufficient statistics and divide the sum vector by the total number of samples. 
+%
+%\item Obtain the natural parameters associated to this normalized sufficient statistics. According to Equation \ref{Equation:CEFBN_MomentToNatural}, this natural parameters can be obtain by aggregating the the natural parameters of the conditional distributions, which can be computed locally. If a conditional distribution has multinomial parents then we can use Equation \ref{Equation:CD_With_MParents:MomentToNatural} to compose the natural parameter of this conditional distribution. 
+%\end{enumerate}
+
+
+\section{EM algorithms in CEF-BNs}
+
+\section{Variational Inference in CEF-BNs}
+
+\section{Expectation  Propagation Inference in CEF-BNs}
+
+\appendix
+\vspace{20mm}
+\begin{center}
+{\LARGE \textbf{APPENDIX}}
+\end{center}
+ %-----------------------------------------------------------------------------------------------------------------------------------
 \section{A binary child given a binary parent}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
@@ -59,7 +391,7 @@ Let $X$ and $Y$ be two binary variables. The log-conditional probability of the 
 + I(X=x^1) I(Y= y^2) \ln p_{x^1 \mid y^2} + I(X=x^2) I(Y= y^2) \ln p_{x^2 \mid y^2}
 \end{eqnarray*}
 
-This conditional probability can be expressed in different exponential forms as follows:
+This conditional probability distribution can be expressed in different exponential forms as follows:
 
 
 \begin{itemize}
@@ -593,7 +925,7 @@ Let $X$ be any base distribution variable, and let $Y$ be a binary variable. The
 = I(Y=y^1) \cdot \theta_{X1} \cdot s(X) - I(Y=y^1) \cdot A(\theta_{X1}) +  I(Y=y^2) \cdot \theta_{X2} \cdot s(X) - I(Y=y^2) \cdot A(\theta_{X2})
 \end{eqnarray*}
 
-This conditional probability can be expressed in different exponential forms as follows:
+This conditional probability distribution can be expressed in different exponential forms as follows:
 
 \begin{itemize}
 
@@ -688,7 +1020,7 @@ The log-conditional probability of the child-node $X$ given its parent-nodes $\m
 = \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \theta_{Xl} \cdot s(X) - I(\mathbf{Y} =\mathbf{y}^l) \cdot A(\theta_{Xl})
 \end{eqnarray*}
 
-This conditional probability can be expressed in different exponential forms as follows:
+This conditional probability distribution can be expressed in different exponential forms as follows:
 
 \begin{itemize}
 
@@ -842,6 +1174,9 @@ $m$ & Expected sufficient statistics \\
 $s$ & Sufficient statistics \\
 \end{tabular}}
 \end{table}
+
+
+
 
 \end{document}
 

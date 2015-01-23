@@ -300,13 +300,4 @@ public class DBNExample {
 
         return (amidstDBN);
     }
-
-
-    public static void main (String[] args) throws ExceptionHugin {
-        DynamicBayesianNetwork amidstDBN  = DBNExample.getAmidst_DBN_Example2();
-        System.out.println(amidstDBN.toString());
-        COM.hugin.HAPI.Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
-        huginDBN.setName("huginDBNExample2");
-        huginDBN.saveAsNet("networks/huginDBNExample2.net");
-    }
 }
