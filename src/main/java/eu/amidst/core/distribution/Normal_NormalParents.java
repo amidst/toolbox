@@ -16,7 +16,6 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -29,10 +28,8 @@ import java.util.Random;
  * @version 1.0
  * @since 2014-11-4
  */
-public class Normal_NormalParents extends ConditionalDistribution implements Serializable {
+public class Normal_NormalParents extends ConditionalDistribution {
 
-
-    private static final long serialVersionUID = 7647078836712443403L;
 
     /**
      * The "intercept" parameter of the distribution
