@@ -52,24 +52,25 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
          */
         CompoundVector globalMomentParam = (CompoundVector)this.momentParameters;
         double mean_X = globalMomentParam.getXYbaseMatrix().getEntry(0);
-        RealVector mean_Y = globalMomentParam.getXYbaseMatrix();
+        RealVector mean_Y = globalMomentParam.getXYbaseMatrix().getSubVector(1,nOfParents);
 
         double cov_XX = globalMomentParam.getcovbaseMatrix().getEntry(0, 0) - mean_X*mean_X;
         RealMatrix cov_YY = globalMomentParam.getcovbaseMatrix().getSubMatrix(1, nOfParents, 1, nOfParents).
                             subtract(mean_Y.outerProduct(mean_Y));
         RealVector cov_XY = globalMomentParam.getcovbaseMatrix().getSubMatrix(0, 0, 1, nOfParents).getRowVector(0).
-                            subtract(mean_Y.mapAdd(mean_X));
+                            subtract(mean_Y.mapMultiply(mean_X));
         //RealVector cov_YX = cov_XY; //outerProduct transposes the vector automatically
 
         /*
          * Second step: betas and variance
          */
         RealMatrix cov_YYInverse = new LUDecompositionImpl(cov_YY).getSolver().getInverse();
-        RealMatrix cov_XYbyCov_YYInv = (new Array2DRowRealMatrix(cov_XY.getData())).multiply(cov_YYInverse);
+        RealVector beta = cov_YYInverse.preMultiply(cov_XY);
 
-        double beta_0 = mean_X - cov_XYbyCov_YYInv.preMultiply(mean_Y).getEntry(0);
-        RealVector beta = cov_XYbyCov_YYInv.getColumnVector(0);
-        variance = cov_XX - cov_XYbyCov_YYInv.preMultiply(cov_XY).getEntry(0);
+
+        double beta_0 = mean_X - beta.dotProduct(mean_Y);
+        variance = cov_XX - beta.dotProduct(cov_XY);
+
 
         /*
          * Third step: natural parameters (5 in total)
@@ -101,7 +102,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         /*
          * 5) theta_betaBeta
          */
-        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(variance2Inv);
+        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv);
 
         /*
          * Store natural parameters
@@ -112,13 +113,13 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         natural_XY.setColumnVector(0, covXY);
         natural_XY.setRowVector(0, covXY);
         natural_XY.setSubMatrix(theta_betaBeta.getData(),1,1);
-        ((CompoundVector) this.naturalParameters).setcovbaseVector(theta_betaBeta);
+        ((CompoundVector) this.naturalParameters).setcovbaseVector(natural_XY);
 
     }
 
     @Override
     public void updateMomentFromNaturalParameters() {
-        throw new UnsupportedOperationException("Method not implemented yet!");
+        //throw new UnsupportedOperationException("Method not implemented yet!");
     }
 
     @Override
@@ -191,7 +192,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
         double[] theta_beta = globalNaturalParameters.getXYbaseMatrix().toArray();
         double beta0 = theta_beta[0]*variance;
-        double[] beta = Arrays.stream(theta_beta).map(w->w*2*variance/beta0).toArray();
+        double[] beta = Arrays.stream(theta_beta).map(w->-w*2*variance/beta0).toArray();
         beta[0] = beta0;
         return beta;
     }
@@ -334,8 +335,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         @Override
         public void divideBy(double val) {
-            XYbaseVector.mapAddToSelf(1.0 / val);
-            covbaseVector.scalarMultiply(1.0/val);
+            //TODO Try to find a self based operation for efficiency
+            XYbaseVector.mapDivideToSelf(val);
+            covbaseVector = covbaseVector.scalarMultiply(1.0/val);
         }
 
         @Override
@@ -354,8 +356,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         public void sum(CompoundVector vector) {
-            XYbaseVector.add(vector.getXYbaseMatrix());
-            covbaseVector.add(vector.getcovbaseMatrix());
+            //TODO Try to find a self based operation for efficiency
+            XYbaseVector = XYbaseVector.add(vector.getXYbaseMatrix());
+            covbaseVector = covbaseVector.add(vector.getcovbaseMatrix());
         }
 
     }
