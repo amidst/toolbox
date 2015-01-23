@@ -1,12 +1,17 @@
 package eu.amidst.core.utils;
 
+import COM.hugin.HAPI.DefaultClassParseListener;
+import COM.hugin.HAPI.Domain;
+import COM.hugin.HAPI.ParseListener;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.huginlink.ConverterToAMIDST;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -176,13 +181,13 @@ public class BayesianNetworkSampler  {
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        BayesianNetwork network = BayesianNetworkLoader.loadFromHugin("./networks/asia.net");
+        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("networks/asia.ser");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
 
-        sampler.sampleToAnARFFFile("./data/asisa-samples.arff", 10);
+        sampler.sampleToAnARFFFile("data/asisa-samples.arff", 10);
 
         System.out.println(watch.stop());
 
