@@ -7,6 +7,7 @@ import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.*;
 
@@ -125,18 +126,7 @@ public final class StaticBayesianNetworks {
         }
         System.out.println(logProb);
 
-
-
-        /**
-         * 1. The BN is now converted to Hugin format and stored on a file.
-         *
-         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
-         */
-
-        Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
-        huginNetwork.saveAsNet("networks/huginStaticBNExample.net");
-
-
+        BayesianNetworkWriter.saveToFile(bn,"networks/huginStaticBNExample.ser");
     }
 
     /**
@@ -234,15 +224,7 @@ public final class StaticBayesianNetworks {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         System.out.println(bn.toString());
 
-
-        /**
-         * 1. The BN is now converted to Hugin format and stored on a file.
-         *
-         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
-         */
-
-        Domain huginNetwork = ConverterToHugin.convertToHugin(bn);
-        huginNetwork.saveAsNet("networks/huginStaticBNHiddenExample.net");
+        BayesianNetworkWriter.saveToFile(bn,"networks/huginStaticBNHiddenExample.ser");
 
     }
 

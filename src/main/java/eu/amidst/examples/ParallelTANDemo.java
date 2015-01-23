@@ -1,14 +1,19 @@
 package eu.amidst.examples;
 
+import COM.hugin.HAPI.DefaultClassParseListener;
+import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
+import COM.hugin.HAPI.ParseListener;
 import com.google.common.base.Stopwatch;
 
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.huginlink.ConverterToAMIDST;
 import eu.amidst.core.huginlink.ParallelTAN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 
@@ -30,6 +35,7 @@ import org.apache.commons.cli.ParseException;
 /**
  * Created by afa on 16/12/14.
  */
+//TODO Move this class to the module huginLink
 public class ParallelTANDemo {
 
     static int numCores = Runtime.getRuntime().availableProcessors();
@@ -41,14 +47,16 @@ public class ParallelTANDemo {
     static int batchSize = 1000;
     static int numStates = 2;
 
-    public static void demoPigs() throws ExceptionHugin, IOException {
+    public static void demoPigs() throws ExceptionHugin, IOException, ClassNotFoundException {
 
 
         //It needs GBs, so avoid putting this file in a Dropbox folder!!!!
-        String dataFile = new String("./datasets/Pigs.arff");
+        String dataFile = new String("/Users/afa/Pigs.arff");
 
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromHugin("networks/Pigs.net");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.ser");
+
+
         //int sampleSize = 100000;
         //BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         //sampler.setParallelMode(true);
@@ -348,9 +356,11 @@ public class ParallelTANDemo {
 
 
     //TODO: Subobtions should be considered in the future
-    public static void main(String[] args) throws ExceptionHugin, IOException {
+    public static void main(String[] args) throws ExceptionHugin, IOException, ClassNotFoundException {
+        ParallelTANDemo.demoPigs();
+    }
 
-        final String applicationName = "run.sh eu.amidst.examples.ParallelTANDemo";
+   /*     final String applicationName = "run.sh eu.amidst.examples.ParallelTANDemo";
 
         if (args.length < 1) {
 
@@ -370,5 +380,5 @@ public class ParallelTANDemo {
         else
             ParallelTANDemo.demoLuxembourg();
     }
-
+*/
 }

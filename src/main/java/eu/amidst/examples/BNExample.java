@@ -5,7 +5,6 @@ import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
