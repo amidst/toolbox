@@ -96,10 +96,13 @@ public class InferenceDemo {
          int currentSequenceID = 0;
          DataInstance dataInstance = iterator.next();
 
+        Domain domainObject = huginDBN.createDBNDomain(timeSlices);
+
+
          while (iterator.hasNext()) {
              // Create a DBN runtime domain (from a Class object) with a time window of 'nSlices' .
              // The domain must be created using the method 'createDBNDomain'
-             Domain domainObject = huginDBN.createDBNDomain(timeSlices);
+
 
              // ENTERING EVIDENCE IN ALL THE SLICES OF THE INITIAL EXPANDED DBN
              for (int i = 0; i <= timeSlices && iterator.hasNext(); i++) {
@@ -118,30 +121,32 @@ public class InferenceDemo {
              domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
              domainObject.compile();
 
-             while (currentSequenceID==dataInstance.getSequenceID() && iterator.hasNext()) {
-
-                 //System.out.println("TIME_ID: "+ dataInstance.getTimeID() + "  CUSTOMER ID:" +  dataInstance.getSequenceID());
-
-                 //Before moving the window
-                 lastDefault =  (LabelledDCNode)domainObject.getNodeByName("T"+timeSlices + ".DEFAULT");
-                 domainObject.moveDBNWindow(1);
-                 domainObject.uncompile();
-
-                 for (Variable var : amidstDBN.getDynamicVariables().getListOfDynamicVariables()) {
-                     //Avoid entering evidence in class variable to have something to predict
-                     if ((var.getVarID()!=model.getClassVarID())) {
-                         LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + timeSlices + "." + var.getName());
-                         node.selectState((long) dataInstance.getValue(var));
-                     }
-                 }
-
-                 domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-                 domainObject.compile();
-
-                 dataInstance= iterator.next();
-             }
+//             while (currentSequenceID==dataInstance.getSequenceID() && iterator.hasNext()) {
+//
+//                 //System.out.println("TIME_ID: "+ dataInstance.getTimeID() + "  CUSTOMER ID:" +  dataInstance.getSequenceID());
+//
+//                 //Before moving the window
+//                 lastDefault =  (LabelledDCNode)domainObject.getNodeByName("T"+timeSlices + ".DEFAULT");
+//                 domainObject.moveDBNWindow(1);
+//                 domainObject.uncompile();
+//
+//                 for (Variable var : amidstDBN.getDynamicVariables().getListOfDynamicVariables()) {
+//                     //Avoid entering evidence in class variable to have something to predict
+//                     if ((var.getVarID()!=model.getClassVarID())) {
+//                         LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + timeSlices + "." + var.getName());
+//                         node.selectState((long) dataInstance.getValue(var));
+//                     }
+//                 }
+//
+//                 domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
+//                 domainObject.compile();
+//
+//                 dataInstance= iterator.next();
+//             }
              System.out.println("CLIENT ID: " + currentSequenceID + "   " + " Probability of defaulting: " +lastDefault.getBelief(1));
              domainObject.uncompile();
+
+             domainObject.retractFindings();
 
              currentSequenceID = dataInstance.getSequenceID();
          }

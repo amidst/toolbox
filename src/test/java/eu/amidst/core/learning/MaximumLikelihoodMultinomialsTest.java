@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Hanen on 08/01/15.
  */
-public class MaximumLikelihoodTest {
+public class MaximumLikelihoodMultinomialsTest {
 
     @Test
     public void testingML() throws ExceptionHugin {
