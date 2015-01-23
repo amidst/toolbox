@@ -1,9 +1,11 @@
 package eu.amidst.core.models;
 
+import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,6 +136,7 @@ public class DAG implements Serializable {
             return mainVar;
         }
 
+
         public void addParent(Variable var) {
             if (!Utils.isLinkCLG(mainVar, var)) {
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
@@ -215,15 +218,5 @@ public class DAG implements Serializable {
                 return eqs;
             }
         }
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        BayesianNetwork network = BayesianNetworkLoader.loadFromHugin("./networks/asia.net");
-
-        System.out.println(network.getDAG().getParentSets().parallelStream().mapToInt( p -> p.getNumberOfParents()).sum());
-
-        System.out.println(network.getDAG().getParentSets().parallelStream().mapToInt( p -> p.getNumberOfParents()).sum());
-
     }
 }

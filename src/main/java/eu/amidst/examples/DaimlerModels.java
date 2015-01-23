@@ -10,9 +10,11 @@ import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.huginlink.Utils;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.core.models.DynamicBayesianNetworkWriter;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +37,7 @@ public final class DaimlerModels {
      * In this example we show how to create an OOBN fragment for the LE hypothesis with a hidden node for acceleration
      * (as in Figure 4.14 of D2.1).
      */
-    public static void Daimler_LE_acceleration() throws ExceptionHugin {
+    public static void Daimler_LE_acceleration() throws ExceptionHugin, IOException {
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
@@ -170,22 +172,12 @@ public final class DaimlerModels {
         DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
-
-        /**
-         * 1. The DBN is now converted to Hugin format and stored on a file.
-         *
-         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
-         */
-        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
-
-        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
-        huginNetwork.saveAsNet("networks/HuginDaimlerLEAcceleration.net");
-
+        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork,"networks/HuginDaimlerLEAcceleration.ser");
     }
 
 
 
-    public static void main(String[] args) throws ExceptionHugin {
+    public static void main(String[] args) throws ExceptionHugin, IOException {
         DaimlerModels.Daimler_LE_acceleration();
     }
 }
