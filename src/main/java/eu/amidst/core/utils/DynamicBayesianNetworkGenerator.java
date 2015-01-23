@@ -1,12 +1,10 @@
 package eu.amidst.core.utils;
 
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DynamicBayesianNetworkWriter;
-import eu.amidst.core.models.DynamicDAG;
-import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -97,7 +95,7 @@ public class DynamicBayesianNetworkGenerator {
         return builder;
     }
 
-    public static void main(String[] agrs) throws ExceptionHugin {
+    public static void main(String[] agrs) throws ExceptionHugin, IOException, ClassNotFoundException {
 
         DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(10);
@@ -108,7 +106,7 @@ public class DynamicBayesianNetworkGenerator {
         System.out.println(dynamicNaiveBayes.getDynamicDAG().toString());
         System.out.println(dynamicNaiveBayes.toString());
 
-        DynamicBayesianNetworkWriter.saveToHuginFile(dynamicNaiveBayes, "./networks/DynamicNB-10.net");
+        DynamicBayesianNetworkWriter.saveToFile(dynamicNaiveBayes, "networks/DynamicNB-10.ser");
 
     }
 }

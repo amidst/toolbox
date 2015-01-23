@@ -8,10 +8,10 @@ import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.huginlink.Utils;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.models.DynamicDAG;
+import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
+
+import java.io.IOException;
 
 /**
  * This class contains examples about how we can create CajaMar's dynamic models using the AMIDST Toolbox.
@@ -33,7 +33,7 @@ public final class CajaMarModels {
      * We finally compute the log-likelihood of the data according to the created model (i.e. the probabilty distributions
      * are randomly initialized, there is no parametric learning). The data is a single long temporal sequence.
      */
-    public static void cajaMarDefaulterPredictor() throws ExceptionHugin {
+    public static void cajaMarDefaulterPredictor() throws ExceptionHugin, IOException, ClassNotFoundException {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -167,23 +167,12 @@ public final class CajaMarModels {
                 logProb += dynamicBayesianNetwork.getLogProbabiltyOfFullAssignmentTimeT(dataInstance);
             }
         }
-
         System.out.println(logProb);
 
-
-        /**
-         * 1. The DBN is now converted to Hugin format and stored on a file.
-         *
-         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
-         */
-        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
-
-        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
-        huginNetwork.saveAsNet("networks/HuginCajaMarDefaulterPredictor.net");
-
+        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/HuginCajaMarDefaulterPredictor.ser");
 
     }
-    public static void main(String[] args) throws ExceptionHugin {
+    public static void main(String[] args) throws ExceptionHugin, IOException, ClassNotFoundException {
         CajaMarModels.cajaMarDefaulterPredictor();
     }
 }

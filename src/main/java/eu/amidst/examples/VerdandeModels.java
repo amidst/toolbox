@@ -8,11 +8,10 @@ import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.huginlink.Utils;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.models.DynamicDAG;
+import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +33,7 @@ public final class VerdandeModels {
     /**
      * In this example we show how to create an input-output SKF (as in Figure 4.28 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputSKF() throws ExceptionHugin {
+    public static void VerdandeInputOutputSKF() throws ExceptionHugin, IOException {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -157,27 +156,17 @@ public final class VerdandeModels {
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object. Similarly
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
-        System.out.println(dynamicBayesianNetwork.toString());
+        DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        System.out.println(dbn.toString());
 
-
-
-        /**
-         * 1. The DBN is now converted to Hugin format and stored on a file.
-         *
-         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
-         */
-        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
-
-        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
-        huginNetwork.saveAsNet("networks/HuginVerdandeIOSKF.net");
+        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKF.ser");
 
     }
 
     /**
      * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputKFwithMG() throws ExceptionHugin {
+    public static void VerdandeInputOutputKFwithMG() throws ExceptionHugin, IOException {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -345,29 +334,22 @@ public final class VerdandeModels {
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object. Similarly
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
-        System.out.println(dynamicBayesianNetwork.toString());
 
-        /**
-         * 1. The DBN is now converted to Hugin format and stored on a file.
-         *
-         * 2. We can open HUGIN and visually inspect the BN created with the AMIDST toolbox.
-         */
-        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
+        DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        System.out.println(dbn.toString());
 
-        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
-        huginNetwork.saveAsNet("networks/HuginVerdandeIOSKFwithMG.net");
+        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKFwithMG.ser");
 
     }
 
     /**
      * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputHMM() throws ExceptionHugin {
+    public static void VerdandeInputOutputHMM() throws IOException {
         DataOnDisk data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataVerdandeScenario3.arff"));
 
-        Attribute attDepth = data.getAttributes().getAttributeByName("DEPTH");
-        Attribute attGammaDiff = data.getAttributes().getAttributeByName("GAMMADIFF");
+        Attribute attDepth = data.getAttributes().getAttributeByName("depth");
+        Attribute attGammaDiff = data.getAttributes().getAttributeByName("gammaDiff");
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
@@ -394,8 +376,9 @@ public final class VerdandeModels {
         dynamicDAG.getParentSetTimeT(formationNo).addParent(observedDepth);
         dynamicDAG.getParentSetTimeT(formationNo).addParent(dynamicVariables.getTemporalClone(formationNo));
 
+        //TODO Error trying to add a duplicate parent. A -> B <- Aclone. We are considering A and AClone the same variables? Is that right?
         dynamicDAG.getParentSetTimeT(shift).addParent(formationNo);
-        dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(formationNo));
+        //dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(formationNo));
         dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(shift));
 
         dynamicDAG.getParentSetTimeT(observedGammaDiff).addParent(shift);
@@ -405,20 +388,15 @@ public final class VerdandeModels {
         System.out.println(dynamicDAG.toString());
 
 
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
-        System.out.println(dynamicBayesianNetwork.toString());
+        DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        System.out.println(dbn.toString());
 
-        BayesianNetwork bayesianNetwork = Utils.DBNToBN(dynamicBayesianNetwork);
 
-        Domain huginNetwork = ConverterToHugin.convertToHugin(bayesianNetwork);
-        huginNetwork.saveAsNet("networks/HuginVerdandeIOHMM.net");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOHMM.ser");
 
     }
 
-
-
-
-    public static void main(String[] args) throws ExceptionHugin {
+    public static void main(String[] args) throws ExceptionHugin, IOException {
         VerdandeModels.VerdandeInputOutputSKF();
         VerdandeModels.VerdandeInputOutputKFwithMG();
         VerdandeModels.VerdandeInputOutputHMM();
