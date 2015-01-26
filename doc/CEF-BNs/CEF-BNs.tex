@@ -18,6 +18,8 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{multirow}
+\usepackage[titletoc,title]{appendix}
+
 
 \parskip 6pt % 1pt = 0.351 mm
 \parindent 0pt
@@ -90,7 +92,7 @@ A(\theta) )
 $\Theta \equiv \{ \theta \in\Re^K: \int_{\bm x} h(\bm x) exp(\theta^T s(\bm x) -
 A(\theta) ) d\bm x < \infty \}$, $s(\bm x)$ is the vector of sufficient statistics belonging to $\mathcal{S} \subseteq\Re^K$, $A$ is the log partition function and $h(x)$ is the base measure. 
 
-The so-called \emph{expectation or moment parameters} $\mu\in\mathcal{S}$ can also be used to parameterize probability
+The so-called \emph{expectation or moment parameters} $\mu\in\mathcal{S}$ can also be used to parametrize probability
 distributions of the exponential family. This \emph{expectation parameter} $\mu$ is defined as the expected vector of sufficient statistics with respect to $\theta$:
 
 \begin{equation}
@@ -113,11 +115,13 @@ problem.
 
 Given the natural parameters, the inverse step of updating the moment parameters is not trivial in the case of conditional distributions, since as we will see in Section \ref{sec:CondDist} the transformation requires the joint probability distribution of the children and the parents. 
 
+The importance of being able to convert from one space of parameters to the other takes special relevance in the implementation of the variational message passing algorithm, where message passing and updates are carried out in the two different spaces. Another less explored alternative is the use of \textit{root} parameters, in order to prevent possible numerical imprecision. More information on this topic can be found in the following technical report \cite{HowJeb05}.
+
 \subsection*{Regular Exponential Family}
 
 A Bayesian network belongs to the linear exponential family if $\Theta$ is an open and convex set, otherwise it belongs to the more general curved exponential family. Additionally, an exponential family is said to be minimal if there is non-zero constant vector $\alpha$, such that $\alpha^Ts(\bm x)$ is equal to a constant for all $\bm x$.  We will consider the regular exponential family to be the linear exponential one with minimal representation.
 
-The regular exponential family with a minimal representation has been widely studied in the literature. The distributions in this family enjoy many useful properties. The following two properties are some of the most relevant ones: i)  The transformation between $\theta$ and $\mu$ parameters is a one-to-one correspondence, i.e. $\mu$ is a dual set of the model parameter $\theta$; and ii) the moment parameters equal the gradient of the log-normalizer (the proof of this equality is (will be!) included in the appendix), 
+The regular exponential family with a minimal representation has been widely studied in the literature. The distributions in this family enjoy many useful properties. The following two properties are some of the most relevant ones: i)  The transformation between $\theta$ and $\mu$ parameters is a one-to-one correspondence, i.e. $\mu$ is a dual set of the model parameter $\theta$; and ii) the moment parameters equal the gradient of the log-normalizer (the proof of this equality is included in Appendix \ref{appendix:regularEFequality}), 
 
 \begin{equation}
 \label{Equation:RegularEFEquality}
@@ -235,7 +239,7 @@ In this subsection we try to exploit the commonalities in terms of structure tha
 \subsection{Representation}
 \label{Section:CD_With_MParents:Representation}
 
-Let $(\bm Z, \bm Y)$ be the set of parents of a variable $X$, where $\mathbf{Y}$ is a set of multinomial variables and $\bm Z$ a set of continuous variables\footnote{$\bm Z$ can be empty.}.  Let $q$ denote the total number of parental configurations for the variables in $\bm Y$, and let $\bm y$ denote the $l$-th parental configuration $1 \leq l \leq q$.
+Let $(\bm Z, \bm Y)$ be the set of parents of a variable $X$, where $\mathbf{Y}$ is a set of multinomial variables and $\bm Z$ a set of non-multinomial variables\footnote{$\bm Z$ can be empty.}.  Let $q$ denote the total number of parental configurations for the variables in $\bm Y$, and let $\bm y$ denote the $l$-th parental configuration $1 \leq l \leq q$.
 
 The log-conditional probability of $X$ given its parent-nodes $\bm Z$ and $\mathbf{Y}$ decomposes as  follows:
 
@@ -272,7 +276,7 @@ s_q(X, \bm Z) \cdot I(\mathbf{Y} =\mathbf{y}^q)
 - 0 
 \end{eqnarray}
 
-The corresponding proof can be found (will be!) in the appendix.
+The corresponding proof can be found in Appendix \ref{appendix:CD_With_MParents:Representation}.
 
 As can be seen, the exponential representation of a conditional probability with multinomial parents can be expressed as the composition of the exponential representation of the conditional distributions restricted to each one of the possible configurations of the multinomial parents. 
 
@@ -381,13 +385,20 @@ For those conditional distributions with multinomial parents, the problem furthe
 
 \section{Expectation  Propagation Inference in CEF-BNs}
 
-\appendix
-\vspace{20mm}
-\begin{center}
-{\LARGE \textbf{APPENDIX}}
-\end{center}
+\begin{appendices}
+
+
+\section{Regular EF: moment parameters equal the gradient of the log-normalizer}\label{appendix:regularEFequality}
+%\appendix
+%\vspace{20mm}
+%\begin{center}
+%{\LARGE \textbf{APPENDIX}}
+%\end{center}
+
+\section{Conditional distributions with multinomial parents: proof of EF representation}\label{appendix:CD_With_MParents:Representation}
+
  %-----------------------------------------------------------------------------------------------------------------------------------
-\section{A binary child given a binary parent}
+\section{EF representation: A binary child given a binary parent}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 Let $X$ and $Y$ be two binary variables. The log-conditional probability of the child-node $X$ given its parent-node $Y$ is expressed as follows:
@@ -492,7 +503,7 @@ I(Y=y^2)
 
 \newpage
 %-----------------------------------------------------------------------------------------------------------------------------------
-\section{A multinomial child given a set of multinomial parents}
+\section{EF representation: A multinomial child given a set of multinomial parents}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 Let $X$ be a multinomial variable with $k$ possible values such that $k \geq 2$, and let $\mathbf{Y} =\{Y_1,\ldots,Y_n\}$ denote the set of parents of $X$, such that all of them are multinomial. Each parent $Y_i$, $1 \geq i \geq n$, has $r_i$ possible values or states such that $r_i \geq 2$. A parental configuration for the child-node $X$ is then a set of $n$ elements $\{Y_1 = y_1^{v}, \ldots, Y_i = y_i^{v},\ldots, Y_n = y_n^{v} \}$ such that $y_i^{v}$ denotes a potential value of variable $Y_i$ such that  $1 \leq v \leq r_i$. Let $q = r_1 \times \ldots \times r_n$ denote the total number of parental configurations, and let $\mathbf{y}^l$ denote the $l^{th}$ parental configuration such that $1 \leq l \leq q$.
@@ -656,7 +667,7 @@ I(Y_i=y_i^{r_i}) \!
 
 \newpage
 %-----------------------------------------------------------------------------------------------------------------------------------
-\section{A normal child given a set of normal parents}
+\section{EF representation: A normal child given a set of normal parents}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 Let $X$ be a normal variable and $ \mathbf{Y} = \{Y_1,\ldots,Y_n\}$ denote the set of parents of $X$, such that all of them are normal. 
@@ -920,7 +931,7 @@ Y_{n-1}Y_{n}\\
 
 \newpage
 %-----------------------------------------------------------------------------------------------------------------------------------
-\section{A base distribution given a binary parent}
+\section{EF representation: A base distribution given a binary parent}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 Let $X$ be any base distribution variable, and let $Y$ be a binary variable. The log-conditional probability of the child-node $X$ given its binary parent-node $Y$ is expressed as follows:
@@ -1013,7 +1024,7 @@ I(Y=y^2)
 
 \newpage
 %-----------------------------------------------------------------------------------------------------------------------------------
-\section{A base distribution given a set of multinomial parents}
+\section{EF representation: A base distribution given a set of multinomial parents}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
 Let $X$ be any base distribution, and let $\mathbf{Y} =\{Y_1,\ldots,Y_n\}$ denote the set of parents of $X$, such that all of them are multinomial. Each parent $Y_i$, $1 \geq i \geq n$, has $r_i$ possible values or states such that $r_i \geq 2$. A parental configuration for the child-node $X$ is then a set of $n$ elements $\{Y_1 = y_1^{v}, \ldots, Y_i = y_i^{v},\ldots, Y_n = y_n^{v} \}$ such that $y_i^{v}$ denotes a potential value of variable $Y_i$ such that  $1 \leq v \leq r_i$. Let $q = r_1 \times \ldots \times r_n$ denote the total number of parental configurations, and let $\mathbf{y}^l$ denote the $l^{th}$ parental configuration such that $1 \leq l \leq q$.
@@ -1180,9 +1191,12 @@ $m$ & Expected sufficient statistics \\
 $s$ & Sufficient statistics \\
 \end{tabular}}
 \end{table}
+-
 
+\end{appendices}
 
-
+\bibliography{biblio}
+\bibliographystyle{plain}
 
 \end{document}
 
