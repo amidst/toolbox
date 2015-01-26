@@ -22,8 +22,10 @@ public class FiniteStateSpace extends StateSpace implements Iterable<String>, Se
         this.statesNames = new ArrayList<>();
         this.mapStatesNames = new HashMap<>();
         for (int i=0; i<numberOfStates1; i++){
-            this.statesNames.add("State_"+i);
-            this.mapStatesNames.put("State_"+i, i);
+            //this.statesNames.add("State_"+i);
+            //this.mapStatesNames.put("State_"+i, i);
+            this.statesNames.add(i+".0");
+            this.mapStatesNames.put(i+".0", i);
         }
     }
 

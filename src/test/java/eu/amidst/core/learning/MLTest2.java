@@ -27,10 +27,10 @@ import static org.junit.Assert.assertTrue;
 public class MLTest2 {
 
     @Test
-    public void testingML() throws ExceptionHugin {
+    public void testingML() throws ExceptionHugin, IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork trueBN = BayesianNetworkLoader.loadFromHugin("./networks/WasteIncinerator.net");
+        BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.ser");
 
         System.out.println("\nWasteIncinerator network \n ");
         System.out.println(trueBN.getDAG().toString());

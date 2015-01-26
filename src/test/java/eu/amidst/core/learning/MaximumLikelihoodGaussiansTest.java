@@ -23,9 +23,10 @@ import static org.junit.Assert.assertTrue;
 public class MaximumLikelihoodGaussiansTest {
 
     @Test
-    public void testingML_Gaussians1Parent() throws ExceptionHugin {
+    public void testingML_Gaussians1Parent() throws ExceptionHugin, IOException, ClassNotFoundException {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromHugin("./networks/Normal_1NormalParents.net");
+
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
 
         System.out.println("\nNormal_1NormalParents network \n ");
 
@@ -60,10 +61,9 @@ public class MaximumLikelihoodGaussiansTest {
     }
 
     @Test
-    public void testingML_GaussiansTwoParents() throws ExceptionHugin {
+    public void testingML_GaussiansTwoParents() throws ExceptionHugin, IOException, ClassNotFoundException {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromHugin("./networks/Normal_NormalParents.net");
-
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
         System.out.println("\nNormal_NormalParents network \n ");
 
         //Sampling
