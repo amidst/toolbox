@@ -28,10 +28,10 @@ import static org.junit.Assert.*;
 public class MaximumLikelihoodMultinomialsTest {
 
     @Test
-    public void testingML() throws ExceptionHugin {
+    public void testingML() throws ExceptionHugin, IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromHugin("./networks/asia.net");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.ser");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().toString());
