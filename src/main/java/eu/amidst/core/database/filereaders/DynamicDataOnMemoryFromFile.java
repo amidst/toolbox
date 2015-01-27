@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
-public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
+public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInstance>, DataOnDisk<DynamicDataInstance>, DataOnStream<DynamicDataInstance> {
 
     private DataFileReader reader;
     private Iterator<DataRow> dataRowIterator;
@@ -93,7 +93,7 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
         reader.restart();
         this.dataRowIterator=reader.iterator();
 
-        dataInstances = new DynamicDataInstance[dataInstancesList.size()];
+        dataInstances = new DynamicDataInstanceImpl[dataInstancesList.size()];
         int counter = 0;
         for (DynamicDataInstance inst : dataInstancesList) {
             dataInstances[counter] = inst;
@@ -108,7 +108,7 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     }
 
     @Override
-    public DataInstance getDataInstance(int i) {
+    public DynamicDataInstance getDataInstance(int i) {
         return dataInstances[i];
     }
 
@@ -118,7 +118,7 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Da
     }
 
     @Override
-    public Stream<DataInstance> stream() {
+    public Stream<DynamicDataInstance> stream() {
         return Arrays.stream(this.dataInstances);
     }
 

@@ -1,12 +1,13 @@
 package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class DynamicDataInstance implements DataInstance {
+class DynamicDataInstanceImpl implements DynamicDataInstance {
 
     private DataRow dataRowPresent;
     private DataRow dataRowPast;
@@ -18,7 +19,7 @@ public class DynamicDataInstance implements DataInstance {
     private int timeID;
 
 
-    public DynamicDataInstance(DataRow dataRowPast1, DataRow dataRowPresent1, int sequenceID1, int timeID1){
+    public DynamicDataInstanceImpl(DataRow dataRowPast1, DataRow dataRowPresent1, int sequenceID1, int timeID1){
         dataRowPresent = dataRowPresent1;
         dataRowPast =  dataRowPast1;
         this.sequenceID = sequenceID1;
