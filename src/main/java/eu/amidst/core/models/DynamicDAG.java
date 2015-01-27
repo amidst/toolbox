@@ -42,15 +42,14 @@ public class DynamicDAG implements Serializable {
     private List<ParentSet> parentSetTimeT;
 
 
-
     public DynamicDAG(DynamicVariables dynamicVariables1) {
         this.dynamicVariables = dynamicVariables1;
         this.parentSetTime0 = new ArrayList(dynamicVariables.getNumberOfVars());
         this.parentSetTimeT = new ArrayList(dynamicVariables.getNumberOfVars());
 
-        for (Variable var: dynamicVariables){
-            parentSetTime0.add(var.getVarID(),new ParentSetImpl(var));
-            parentSetTimeT.add(var.getVarID(),new ParentSetImpl(var));
+        for (Variable var : dynamicVariables) {
+            parentSetTime0.add(var.getVarID(), new ParentSetImpl(var));
+            parentSetTimeT.add(var.getVarID(), new ParentSetImpl(var));
         }
 
         this.parentSetTime0 = Collections.unmodifiableList(this.parentSetTime0);
@@ -58,7 +57,7 @@ public class DynamicDAG implements Serializable {
         this.dynamicVariables.block();
     }
 
-    public DynamicVariables getDynamicVariables(){
+    public DynamicVariables getDynamicVariables() {
         return this.dynamicVariables;
     }
 
@@ -79,25 +78,25 @@ public class DynamicDAG implements Serializable {
         return this.parentSetTime0.get(var.getVarID());
     }
 
-    public boolean containCycles(){
+    public boolean containCycles() {
 
         boolean[] bDone = new boolean[this.dynamicVariables.getNumberOfVars()];
 
 
-        for (Variable var: this.dynamicVariables){
+        for (Variable var : this.dynamicVariables) {
             bDone[var.getVarID()] = false;
         }
 
-        for (Variable var: this.dynamicVariables){
+        for (Variable var : this.dynamicVariables) {
 
             // find a node for which all parents are 'done'
             boolean bFound = false;
 
-            for (Variable variable2: this.dynamicVariables){
+            for (Variable variable2 : this.dynamicVariables) {
                 if (!bDone[variable2.getVarID()]) {
                     boolean bHasNoParents = true;
 
-                    for (Variable parent: this.getParentSetTimeT(variable2)){
+                    for (Variable parent : this.getParentSetTimeT(variable2)) {
                         if (!bDone[parent.getVarID()]) {
                             bHasNoParents = false;
                         }
@@ -119,24 +118,24 @@ public class DynamicDAG implements Serializable {
         return false;
     }
 
-    public List<ParentSet> getParentSetsTimeT(){
+    public List<ParentSet> getParentSetsTimeT() {
         return this.parentSetTimeT;
     }
 
-    public List<ParentSet> getParentSetsTime0(){
+    public List<ParentSet> getParentSetsTime0() {
         return this.parentSetTime0;
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append("DAG Time 0\n");
-        for (Variable var: this.getDynamicVariables()){
-            str.append(var.getName() +" : "+this.parentSetTime0.get(var.getVarID()).toString() + "\n");
+        str.append("\nDynamic DAG at Time 0\n");
+        for (Variable var : this.getDynamicVariables()) {
+            str.append(var.getName() + " has "+ this.getParentSetTime0(var).getNumberOfParents() + " parent(s): " + this.parentSetTime0.get(var.getVarID()).toString() + "\n");
         }
 
-        str.append("\nDAG Time T\n");
-        for (Variable var: this.getDynamicVariables()){
-            str.append(var.getName() +" : "+this.getParentSetTimeT(var).toString() + "\n");
+        str.append("\nDynamic DAG at Time T\n");
+        for (Variable var : this.getDynamicVariables()) {
+            str.append(var.getName()  + " has "+ this.getParentSetTimeT(var).getNumberOfParents() + " parent(s): " + this.getParentSetTimeT(var).toString() + "\n");
         }
         return str.toString();
     }
@@ -149,7 +148,7 @@ public class DynamicDAG implements Serializable {
         private Variable mainVar;
         private List<Variable> vars;
 
-        private ParentSetImpl(Variable mainVar1){
+        private ParentSetImpl(Variable mainVar1) {
             mainVar = mainVar1;
             this.vars = new ArrayList<Variable>();
         }
@@ -160,7 +159,7 @@ public class DynamicDAG implements Serializable {
         }
 
         //TODO Gives an error trying to add a duplicate parent in the following structure: A -> B <- Aclone. Are are considering A and AClone the same variables?
-        public void addParent(Variable var){
+        public void addParent(Variable var) {
             if (!Utils.isLinkCLG(mainVar, var)) {
                 throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
             }
@@ -172,19 +171,19 @@ public class DynamicDAG implements Serializable {
             vars.add(var);
 
             if (!var.isTemporalClone()) {
-                ((ParentSetImpl)parentSetTime0.get(mainVar.getVarID())).vars.add(var);
+                ((ParentSetImpl) parentSetTime0.get(mainVar.getVarID())).vars.add(var);
             }
         }
 
-        public void removeParent(Variable var){
+        public void removeParent(Variable var) {
             vars.remove(var);
         }
 
-        public List<Variable> getParents(){
+        public List<Variable> getParents() {
             return vars;
         }
 
-        public int getNumberOfParents(){
+        public int getNumberOfParents() {
             return vars.size();
         }
 
@@ -192,20 +191,19 @@ public class DynamicDAG implements Serializable {
 
             int numParents = getNumberOfParents();
             StringBuilder str = new StringBuilder();
-            str.append("{ ");
+            str.append("{");
 
 
-            for(int i=0;i<numParents;i++){
+            for (int i = 0; i < numParents; i++) {
                 Variable parent = getParents().get(i);
                 str.append(parent.getName());
-                if (i<numParents-1) {
+                if (i < numParents - 1) {
                     str.append(", ");
                 }
             }
 
 
-
-            str.append(" }");
+            str.append("}");
             return str.toString();
         }
 
@@ -216,8 +214,51 @@ public class DynamicDAG implements Serializable {
             vars = Collections.unmodifiableList(vars);
         }
 
-        public boolean contains(Variable var){
+        public boolean contains(Variable var) {
             return this.vars.contains(var);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        DynamicDAG dyndag = (DynamicDAG) o;
+
+        int i = 0;
+        boolean eqs = true;
+
+        if (this.parentSetTime0.size() != dyndag.getParentSetsTime0().size()) {
+            return false;
+        } else {
+            while (i < this.parentSetTime0.size() && eqs) {
+                if (this.getParentSetsTime0().get(i).equals(dyndag.getParentSetsTime0().get(i))) {
+                    i++;
+                } else {
+                    eqs = false;
+                }
+            }
+        }
+
+        if (this.parentSetTimeT.size() != dyndag.getParentSetsTimeT().size()) {
+            return false;
+        } else {
+            i = 0;
+            while (i < this.parentSetTimeT.size() && eqs) {
+                if (this.getParentSetsTime0().get(i).equals(dyndag.getParentSetsTime0().get(i))) {
+                    i++;
+                } else {
+                    eqs = false;
+                }
+            }
+            return eqs;
+        }
+
     }
 }
