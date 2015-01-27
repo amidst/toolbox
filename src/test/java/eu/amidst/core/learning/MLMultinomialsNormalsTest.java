@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by Hanen on 27/01/15.
  */
-public class MLMultinomialNormalTest {
+public class MLMultinomialsNormalsTest {
 
         @Test
         public void testingML2() throws ExceptionHugin, IOException, ClassNotFoundException {
