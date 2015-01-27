@@ -2,6 +2,7 @@ package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.database.DynamicDataInstance;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -12,7 +13,7 @@ import java.util.stream.Stream;
 import static java.util.Spliterators.spliterator;
 import static java.util.stream.StreamSupport.stream;
 
-public class DynamicDataInstanceSpliterator implements Spliterator<DataInstance> {
+public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataInstance> {
 
     private DataFileReader reader;
     private Iterator<DataRow> dataRowIterator;
@@ -77,11 +78,11 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DataInstance>
     //    return stream(new DynamicDataInstanceFixedBatchParallelSpliteratorWrapper(in.spliterator(), batchSize), true);
     //}
 
-    public static Stream<DataInstance> toDynamicDataInstanceStream(DataFileReader reader) {
+    public static Stream<DynamicDataInstance> toDynamicDataInstanceStream(DataFileReader reader) {
         return stream(new DynamicDataInstanceSpliterator(reader), false);
     }
 
-    @Override public Spliterator<DataInstance> trySplit() {
+    @Override public Spliterator<DynamicDataInstance> trySplit() {
         //this.reader.spliterator().trySplit()
         return null;
         /*
@@ -95,7 +96,8 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DataInstance>
         */
     }
 
-    @Override public boolean tryAdvance(Consumer<? super DataInstance> action) {
+    @Override
+    public boolean tryAdvance(Consumer<? super DynamicDataInstance> action) {
 
         if (!dataRowIterator.hasNext())
             return false;
@@ -134,18 +136,23 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DataInstance>
         }
     }
 
-    @Override public void forEachRemaining(Consumer<? super DataInstance> action) {
+    @Override
+    public void forEachRemaining(Consumer<? super DynamicDataInstance> action) {
         while(this.dataRowIterator.hasNext()){
             this.tryAdvance(action);
         }
     }
-    @Override public Comparator<DataInstance> getComparator() {
+    @Override
+    public Comparator<DynamicDataInstance> getComparator() {
         if (hasCharacteristics(SORTED)) return null;
         throw new IllegalStateException();
     }
 
-    @Override public long estimateSize() { return est; }
-    @Override public int characteristics() { return characteristics; }
+    @Override
+    public long estimateSize() { return est; }
+
+    @Override
+    public int characteristics() { return characteristics; }
 
     static final class HoldingConsumer<T> implements Consumer<T> {
         Object value;

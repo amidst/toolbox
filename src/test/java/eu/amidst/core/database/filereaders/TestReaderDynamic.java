@@ -1,8 +1,6 @@
 package eu.amidst.core.database.filereaders;
 
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
@@ -25,13 +23,13 @@ public class TestReaderDynamic {
     private static Attributes attributes;
     private static DynamicVariables dynamicVariables;
 
-    private static DataInstance nextInstance = null;
+    private static DynamicDataInstance nextInstance = null;
     private static int index;
     private static Variable var;
     private static List<Variable> obsVars;
     private static List<Variable> temporalClones;
-    private static DataOnDisk dataOnDisk;
-    private static Iterator<DataInstance> dataOnDiskIterator;
+    private static DataOnDisk<DynamicDataInstance> dataOnDisk;
+    private static Iterator<DynamicDataInstance> dataOnDiskIterator;
 
 
     public static void loadFileAndInitialize(String s) {
@@ -237,7 +235,7 @@ public class TestReaderDynamic {
     public void reachEOF_TimeID(){
         loadFileAndInitialize("data/dataWeka/laborTimeID.arff");
 
-        for(DataInstance instance: dataOnDisk)
+        for(DynamicDataInstance instance: dataOnDisk)
         {
             nextInstance = instance;
         }
@@ -251,7 +249,7 @@ public class TestReaderDynamic {
     public void checkAutomaticTimeID_TimeID(){
         loadFileAndInitialize("data/dataWeka/laborTimeID.arff");
 
-        for(DataInstance instance: dataOnDisk)
+        for(DynamicDataInstance instance: dataOnDisk)
         {
             nextInstance = instance;
         }
@@ -264,7 +262,7 @@ public class TestReaderDynamic {
     public void checkAutomaticSeq_TimeID(){
         loadFileAndInitialize("data/dataWeka/laborTimeID.arff");
 
-        for(DataInstance instance: dataOnDisk)
+        for(DynamicDataInstance instance: dataOnDisk)
         {
             nextInstance = instance;
         }
@@ -347,7 +345,7 @@ public class TestReaderDynamic {
     public void reachEOF_SeqID(){
         loadFileAndInitialize("data/dataWeka/laborSeqID.arff");
 
-        for(DataInstance instance: dataOnDisk){}
+        for(DynamicDataInstance instance: dataOnDisk){}
 
         /*Test values for the last instance*/
         assertEquals(88,(int)nextInstance.getValue(dynamicVariables.getTemporalCloneByName("working-hours")));
@@ -358,7 +356,7 @@ public class TestReaderDynamic {
     public void checkAutomaticTimeID_SeqID(){
         loadFileAndInitialize("data/dataWeka/laborSeqID.arff");
 
-        for(DataInstance instance: dataOnDisk){}
+        for(DynamicDataInstance instance: dataOnDisk){}
 
         /*Test values for the last instance*/
         assertEquals(39,(int)nextInstance.getTimeID());
@@ -368,7 +366,7 @@ public class TestReaderDynamic {
     public void checkAutomaticSeq_SeqID(){
         loadFileAndInitialize("data/dataWeka/laborSeqID.arff");
 
-        for(DataInstance instance: dataOnDisk)
+        for(DynamicDataInstance instance: dataOnDisk)
         {
             nextInstance = instance;
         }
@@ -459,7 +457,7 @@ public class TestReaderDynamic {
     public void reachEOF_TimeID_SeqID(){
         loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
 
-        for(DataInstance instance: dataOnDisk)
+        for(DynamicDataInstance instance: dataOnDisk)
         {
             nextInstance = instance;
         }
@@ -473,7 +471,7 @@ public class TestReaderDynamic {
     public void checkAutomaticTimeID_TimeID_SeqID(){
         loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
 
-        for(DataInstance instance: dataOnDisk)
+        for(DynamicDataInstance instance: dataOnDisk)
         {
             nextInstance = instance;
         }
@@ -486,7 +484,7 @@ public class TestReaderDynamic {
     public void checkAutomaticSeq_TimeID_SeqID(){
         loadFileAndInitialize("data/dataWeka/laborTimeIDSeqID.arff");
 
-        for(DataInstance instance: dataOnDisk)
+        for(DynamicDataInstance instance: dataOnDisk)
         {
             nextInstance = instance;
         }

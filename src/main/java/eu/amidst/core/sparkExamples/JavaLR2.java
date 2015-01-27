@@ -64,7 +64,7 @@ public class JavaLR2 {
         SparkConf sparkConf = new SparkConf().setAppName("JavaLR2");//.setMaster("spark://localhost:7077");
         sparkConf.setMaster("local");
         //sparkConf.setSparkHome("/Users/andresmasegosa/Dropbox/Amidst/spark-1.1.1-bin-hadoop1/");
-        sparkConf.setSparkHome("/Users/andresmasegosa/Dropbox/Amidst/spark-1.2.0/");
+        sparkConf.setSparkHome("//Users/andresmasegosa/Dropbox/codigo/spark/");
         //sparkConf.validateSettings();
         JavaSparkContext sc = new JavaSparkContext(sparkConf);
         JavaRDD<String> lines = sc.textFile(args[0]);

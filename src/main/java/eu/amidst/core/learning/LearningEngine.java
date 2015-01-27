@@ -2,6 +2,7 @@ package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ParallelTAN;
@@ -112,7 +113,7 @@ public final class LearningEngine {
     public static void main(String[] args) throws Exception{
 
         String dataFile = new String("./datasets/Pigs.arff");
-        DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
 
         ParallelTAN tan= new ParallelTAN();
         tan.setNumCores(4);
