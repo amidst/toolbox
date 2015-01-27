@@ -31,9 +31,9 @@ public class MLDBNTest {
         //Generate a dynamic Naive Bayes with only multinomials variables
 
         DynamicBayesianNetworkGenerator dbnGenerator = new DynamicBayesianNetworkGenerator();
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(2);
-        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
+        dbnGenerator.setNumberOfContinuousVars(0);
+        dbnGenerator.setNumberOfDiscreteVars(2);
+        dbnGenerator.setNumberOfStates(2);
 
         DynamicBayesianNetwork dynamicNB = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2);
 
