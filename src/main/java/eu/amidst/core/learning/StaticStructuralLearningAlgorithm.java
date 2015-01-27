@@ -2,6 +2,7 @@ package eu.amidst.core.learning;
 
 
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StaticVariables;
 
@@ -10,5 +11,5 @@ import eu.amidst.core.variables.StaticVariables;
  */
 @FunctionalInterface
 public interface StaticStructuralLearningAlgorithm {
-    public DAG learn(DataBase dataBase);
+    public DAG learn(DataBase<StaticDataInstance> dataBase);
 }

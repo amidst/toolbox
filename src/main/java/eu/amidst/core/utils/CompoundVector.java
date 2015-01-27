@@ -5,6 +5,7 @@ import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,6 +1,7 @@
 package eu.amidst.core.database.dynamics;
 
-import eu.amidst.core.database.filereaders.DynamicDataInstance;
+
+import eu.amidst.core.database.DynamicDataInstance;
 
 /**
  * Created by afa on 03/07/14.
