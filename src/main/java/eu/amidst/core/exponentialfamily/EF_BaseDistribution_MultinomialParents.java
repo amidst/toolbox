@@ -296,28 +296,6 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         }
     }
 
-    static class IndexedVector {
-        Vector vector;
-        int index;
-
-        IndexedVector(int index1, Vector vec1) {
-            this.vector = vec1;
-            this.index = index1;
-        }
-
-        public Vector getVector() {
-            return vector;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public void setVector(Vector vector) {
-            this.vector = vector;
-        }
-    }
-
     private static class SparseVector implements Vector {
 
         VectorBuilder vectorBuilder;

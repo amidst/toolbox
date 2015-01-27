@@ -1,6 +1,6 @@
 package eu.amidst.core.database.dynamics;
 
-import eu.amidst.core.database.filereaders.DynamicDataInstance;
+import eu.amidst.core.database.filereaders.DynamicDataInstanceImpl;
 
 /**
  * Created by afa on 03/07/14.
@@ -10,7 +10,7 @@ public interface BucketSequenceData {
 
     boolean hasMoreData();
 
-    DynamicDataInstance nextSequenceData();
+    DynamicDataInstanceImpl nextSequenceData();
 
     boolean isReseteable();
 

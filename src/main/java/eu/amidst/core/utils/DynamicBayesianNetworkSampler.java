@@ -1,14 +1,8 @@
 package eu.amidst.core.utils;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.filereaders.DynamicDataInstance;
-import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.database.*;
 import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.models.DynamicBayesianNetworkLoader;
 import eu.amidst.core.variables.*;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -41,10 +34,10 @@ public class DynamicBayesianNetworkSampler {
     }
 
 
-    public Stream<DataInstance> getSampleStream(int nSequences, int sequenceLength) {
+    public Stream<DynamicDataInstance> getSampleStream(int nSequences, int sequenceLength) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
 
-        List<DataInstance> dbnsample = new ArrayList(nSequences);
+        List<DynamicDataInstance> dbnsample = new ArrayList(nSequences);
 
         for(int i=0; i< nSequences;i++){
             List<DynamicDataInstance> oneseq = sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength);
@@ -57,13 +50,13 @@ public class DynamicBayesianNetworkSampler {
         return dbnsample.stream();
     }
 
-    public List<DataInstance> getSampleList(int nSequences, int sequenceLength){
+    public List<DynamicDataInstance> getSampleList(int nSequences, int sequenceLength){
         return this.getSampleStream(nSequences,sequenceLength).collect(Collectors.toList());
     }
 
-    public Iterable<DataInstance> getSampleIterator(int nSequences, int sequenceLength){
-        class I implements Iterable<DataInstance>{
-            public Iterator<DataInstance> iterator(){
+    public Iterable<DynamicDataInstance> getSampleIterator(int nSequences, int sequenceLength){
+        class I implements Iterable<DynamicDataInstance>{
+            public Iterator<DynamicDataInstance> iterator(){
                 return getSampleStream(nSequences,sequenceLength).iterator();
             }
         }
@@ -103,7 +96,7 @@ public class DynamicBayesianNetworkSampler {
     }
 
 
-    public DataBase sampleToDataBase(int nSequences, int sequenceLength){
+    public DataBase<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){
 
         class TemporalDataBase implements DataBase{
             Attributes atts;
@@ -126,7 +119,7 @@ public class DynamicBayesianNetworkSampler {
             }
 
             @Override
-            public Stream<DataInstance> stream() {
+            public Stream<DynamicDataInstance> stream() {
 /*
                 class TemporalDynamicDataInstance implements DataInstance{
 
@@ -183,7 +176,7 @@ public class DynamicBayesianNetworkSampler {
             dataPresent.putValue(var, sampledValue);
         }
 
-        DynamicDataInstance d = new DynamicDataInstance(null,dataPresent, sequenceID, 0);
+        DynamicDataInstanceImpl d = new DynamicDataInstanceImpl(null,dataPresent, sequenceID, 0);
 
         allAssignments.add(0,d);
 
@@ -194,7 +187,7 @@ public class DynamicBayesianNetworkSampler {
                 double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
                 dataPresent.putValue(var, sampledValue);
             }
-            DynamicDataInstance d2 = new DynamicDataInstance(dataPast, dataPresent, sequenceID, i);
+            DynamicDataInstanceImpl d2 = new DynamicDataInstanceImpl(dataPast, dataPresent, sequenceID, i);
 
             allAssignments.add(i,d2);
 
@@ -205,14 +198,14 @@ public class DynamicBayesianNetworkSampler {
     }
 
 
-    static class DynamicDataInstance implements DataInstance{
+    static class DynamicDataInstanceImpl implements DynamicDataInstance {
 
         private HashMapAssignment dataPresent;
         private HashMapAssignment dataPast;
         private int sequenceID;
         private int timeID;
 
-        public DynamicDataInstance(HashMapAssignment dataPast1, HashMapAssignment dataPresent1, int sequenceID1, int timeID1){
+        public DynamicDataInstanceImpl(HashMapAssignment dataPast1, HashMapAssignment dataPresent1, int sequenceID1, int timeID1){
             dataPresent = dataPresent1;
             dataPast =  dataPast1;
             this.sequenceID = sequenceID1;
@@ -288,12 +281,12 @@ public class DynamicBayesianNetworkSampler {
 
         System.out.println(watch.stop());
 
-        for (DataInstance dynamicdatainstance : sampler.getSampleIterator(2, 10)){
+        for (DynamicDataInstance dynamicdatainstance : sampler.getSampleIterator(2, 10)){
             System.out.println(dynamicdatainstance.toString(network.getDynamicVariables().getListOfDynamicVariables()));
         }
         System.out.println();
 
-        for (DataInstance dynamicdatainstance : sampler.getSampleList(2, 10)){
+        for (DynamicDataInstance dynamicdatainstance : sampler.getSampleList(2, 10)){
             System.out.println(dynamicdatainstance.toString(network.getDynamicVariables().getListOfDynamicVariables()));
         }
         System.out.println();
