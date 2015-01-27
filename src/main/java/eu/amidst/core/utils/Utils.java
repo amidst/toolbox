@@ -159,9 +159,11 @@ public final class Utils {
             for (Variable var2 : variables){
                 if (!bDone[var2.getVarID()]) {
                     allParentsDone = true;
-                    int iParent = 0;
-                    for (Variable parent: dag.getParentSetTimeT(var2))
+                    for (Variable parent: dag.getParentSetTimeT(var2)) {
+                        if (parent.isTemporalClone())
+                            continue;
                         allParentsDone = allParentsDone && bDone[parent.getVarID()];
+                    }
 
                     if (allParentsDone){
                         order.add(var2);
