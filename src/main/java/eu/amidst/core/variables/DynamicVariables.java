@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * //TODO Implements hashCode method!!
  * Created by afa on 02/07/14.
  */
 public class DynamicVariables  implements Iterable<Variable>, Serializable {
@@ -37,12 +36,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
     public DynamicVariables() {
         this.allVariables = new ArrayList();
+        this.temporalClones = new ArrayList();
         this.mapping = new HashMap<>();
     }
 
     public DynamicVariables(Attributes atts) {
 
         this.allVariables = new ArrayList<>();
+        this.temporalClones = new ArrayList<>();
         this.mapping = new HashMap<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
@@ -53,6 +54,10 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             }
             this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
+
+
+            VariableImplementation temporalClone = new VariableImplementation(var);
+            temporalClones.add(var.getVarID(), temporalClone);
         }
     }
 
@@ -63,6 +68,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     public DynamicVariables(Attributes atts, HashMap<Attribute, DistType> typeDists) {
 
         this.allVariables = new ArrayList<>();
+        this.temporalClones = new ArrayList<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder;
@@ -78,6 +84,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             }
             this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
+
+            VariableImplementation temporalClone = new VariableImplementation(var);
+            temporalClones.add(var.getVarID(), temporalClone);
 
         }
     }
@@ -110,6 +119,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(varNew.getName(), varNew.getVarID());
         allVariables.add(varNew);
 
+        VariableImplementation temporalClone = new VariableImplementation(varNew);
+        temporalClones.add(varNew.getVarID(),temporalClone);
+
         return varNew;
 
     }
@@ -123,6 +135,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
+        VariableImplementation temporalClone = new VariableImplementation(var);
+        temporalClones.add(var.getVarID(),temporalClone);
 
         return var;
     }
@@ -137,6 +151,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
+        VariableImplementation temporalClone = new VariableImplementation(var);
+        temporalClones.add(var.getVarID(),temporalClone);
+
         return var;
     }
     public Variable addHiddenDynamicVariable(VariableBuilder builder) {
@@ -147,6 +164,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
+
+        VariableImplementation temporalClone = new VariableImplementation(var);
+        temporalClones.add(var.getVarID(),temporalClone);
 
         return var;
     }
@@ -169,6 +189,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
         this.mapping.put(varNew.getName(), varNew.getVarID());
         allVariables.add(varNew);
+
+        VariableImplementation temporalClone = new VariableImplementation(varNew);
+        temporalClones.add(varNew.getVarID(),temporalClone);
 
         return varNew;
     }
@@ -220,12 +243,6 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
     public void block(){
         this.allVariables = Collections.unmodifiableList(this.allVariables);
-        this.temporalClones = new ArrayList();
-
-        for (Variable var : this.allVariables){
-            this.temporalClones.add(var.getVarID(), new VariableImplementation(var, var.getVarID() + this.getNumberOfVars()));
-        }
-
     }
 
     @Override
@@ -233,6 +250,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return this.allVariables.iterator();
     }
 
+
+    //TODO Implements hashCode method!!
     private static class VariableImplementation implements Variable, Serializable {
 
         private static final long serialVersionUID = 7934186475276412196L;
@@ -266,9 +285,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         /*
          * Constructor for a Temporal clone (based on a variable)
          */
-        public VariableImplementation(Variable variable, int varID) {
+        public VariableImplementation(Variable variable) {
             this.name = variable.getName()+"_TClone";
-            this.varID = varID;
+            this.varID = variable.getVarID();
             this.observable = variable.isObservable();
             this.stateSpace = variable.getStateSpace();
             this.distributionType = variable.getDistributionType();
@@ -327,7 +346,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
             Variable var = (Variable) o;
 
-            return this.getVarID()==var.getVarID();
+            return this.isTemporalClone()==var.isTemporalClone() && this.getVarID()==var.getVarID();
         }
 
     }
