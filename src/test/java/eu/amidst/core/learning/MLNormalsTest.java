@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by ana@cs.aau.dk on 22/01/15.
  */
-public class MaximumLikelihoodGaussiansTest {
+public class MLNormalsTest {
 
     @Test
     public void testingML_Gaussians1Parent() throws ExceptionHugin, IOException, ClassNotFoundException {
