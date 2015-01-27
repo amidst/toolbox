@@ -1,9 +1,10 @@
 package eu.amidst.core.learning;
 
+import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.database.DynamicDataInstance;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
 import eu.amidst.core.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.models.*;
@@ -40,12 +41,12 @@ public final class MaximumLikelihood {
         MaximumLikelihood.parallelMode = parallelMode;
     }
 
-    public static BayesianNetwork learnParametersStaticModel(DAG dag, DataBase dataBase) {
+    public static BayesianNetwork learnParametersStaticModel(DAG dag, DataBase<StaticDataInstance> dataBase) {
 
         EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
 
 
-        Stream<DataInstance> stream = null;
+        Stream<StaticDataInstance> stream = null;
         if (parallelMode){
             stream = dataBase.parallelStream(batchSize);
         }else{
@@ -61,8 +62,6 @@ public final class MaximumLikelihood {
                 .map(efBayesianNetwork::getSufficientStatistics)
                 .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
 
-
-
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
 
@@ -71,11 +70,11 @@ public final class MaximumLikelihood {
 
     }
 
-    public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataBase dataBase) {
+    public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataBase<DynamicDataInstance> dataBase) {
 
         EF_DynamicBayesianNetwork efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dag);
 
-        Stream<DataInstance> stream = null;
+        Stream<DynamicDataInstance> stream = null;
         if (parallelMode){
             stream = dataBase.parallelStream(batchSize);
         }else{
@@ -140,5 +139,59 @@ public final class MaximumLikelihood {
         for (int i = 0; i < bn.getDAG().getParentSets().size(); i++) {
             nlinks+=bn.getDAG().getParentSets().get(i).getNumberOfParents();
         }*/
+
+
+        int nSamples = 4000000;
+        int sizeSS=1000000;
+        int sizeSS2=100;
+
+        double[][] sum = new double[sizeSS][];
+        double[][] ss = new double[sizeSS][];
+
+        for (int i = 0; i < 100; i++) {
+            /*for (int j = 0; j < ss.length; j++) {
+                    ss[j]=new double[sizeSS];
+            }*/
+            /*
+            for (int j = 0; j < ss.length; j++) {
+                for (int k = 0; k < ss[j].length; k++) {
+                    ss[j][k]=1.0;//Math.random();
+                }
+            }
+
+
+            for (int j = 0; j < ss.length; j++) {
+                for (int k = 0; k < ss[j].length; k++) {
+                    sum[j][k]+=ss[j][k];
+                }
+            }
+*/
+
+            class ArrayVector{
+                double[] array;
+                public ArrayVector(int size){
+                    array = new double[size];
+                }
+                public double[] getArray(){
+                    return this.array;
+                }
+            }
+
+            Stopwatch watch = Stopwatch.createStarted();
+            for (int j = 0; j < sizeSS ; j++) {
+                    ArrayVector vex = new ArrayVector(sizeSS2);
+                    ss[j]=vex.getArray();
+            }
+            System.out.println(watch.stop());
+
+            watch = Stopwatch.createStarted();
+            for (int j = 0; j < sizeSS ; j++) {
+                ss[j]= new double[sizeSS2];
+            }
+            System.out.println(watch.stop());
+            System.out.println();
+        }
+
+
     }
 }

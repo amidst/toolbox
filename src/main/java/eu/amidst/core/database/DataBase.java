@@ -9,21 +9,21 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/12/14.
  */
-public interface DataBase extends Iterable<DataInstance> {
+public interface DataBase <E extends DataInstance> extends Iterable<E> {
 
     Attributes getAttributes();
 
-    Stream<DataInstance> stream();
+    Stream<E> stream();
 
-    default Stream<DataInstance> parallelStream(int batchSize){
+    default Stream<E> parallelStream(int batchSize){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), batchSize);
     }
 
-    default Stream<DataInstance> parallelStream(){
+    default Stream<E> parallelStream(){
         return this.stream().parallel();
     }
 
-    default Iterator<DataInstance> iterator(){
+    default Iterator<E> iterator(){
         return this.stream().iterator();
     }
 

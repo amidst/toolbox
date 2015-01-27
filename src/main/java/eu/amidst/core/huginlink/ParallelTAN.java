@@ -5,6 +5,7 @@ import COM.hugin.HAPI.*;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnMemory;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.learning.LearningEngine;
 import eu.amidst.core.learning.MaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
@@ -137,7 +138,7 @@ public class ParallelTAN {
     }
 
 
-    public BayesianNetwork learnBN(DataBase dataBase) {
+    public BayesianNetwork learnBN(DataBase<StaticDataInstance> dataBase) {
         LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
         MaximumLikelihood.setBatchSize(this.batchSize);
         MaximumLikelihood.setParallelMode(this.parallelMode);
@@ -156,7 +157,7 @@ public class ParallelTAN {
         int sampleSize = 5000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(true);
-        DataBase data =  sampler.sampleToDataBase(sampleSize);
+        DataBase<StaticDataInstance> data =  sampler.sampleToDataBase(sampleSize);
 
         for (int i = 1; i <= 4; i++) {
             int samplesOnMemory = 1000;

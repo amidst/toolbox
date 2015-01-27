@@ -1,6 +1,7 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 
@@ -9,5 +10,5 @@ import eu.amidst.core.models.DAG;
  */
 @FunctionalInterface
 public interface StaticParameterLearningAlgorithm {
-       public BayesianNetwork learn(DAG dag, DataBase dataBase);
+       public BayesianNetwork learn(DAG dag, DataBase<StaticDataInstance> dataBase);
 }
