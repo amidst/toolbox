@@ -46,6 +46,9 @@
 
 \newcommand{\e}[1]{E\left[ #1 \right]}
 
+\usepackage{amsthm}
+\theoremstyle{definition}
+\newtheorem{exmp}{Example}[section]
 \usepackage{pdfpages}
 
 \begin{document}
@@ -61,13 +64,13 @@
 
 Defining the data structure of a Bayesian network is not a straightforward problem. The definition of the data structure of a DAG is not complex when compared to the definition of the data structure of the conditional probability distributions encoded in the BN. The DAG is an \textit{homogeneous} data structure, in the sense that it is only composed by nodes and directed edges. However, the set of different conditional distributions is not limited at all. For example, the data structure for representing a Multinomial distribution is, in a first look, quite different from the data structure needed to represent a Normal distribution. In the former case, we need to store the probability of each one of the cases of the multinomial variable, while in the latter case we need to store, for example, the mean and the variance of the Normal distribution. If we consider a Poisson, an Exponential, or a MoTBF, etc, the data structures needed to represent these distributions are completely different. 
 
-But these are only examples of unidimensional distributions. When defining the data structure of the conditional distributions things become much more complex. For example, the data structure for representing the conditional distribution of a Normal distribution given a set of normally distributed variables is, in a first look, totally different from the data structure needed to represent a conditional distribution of a Multinomial variable given a set of Multinomial variables. In the former case, under the conditional linear Gaussian framework, we need to store the coefficients for the linear combination of the parents variables plus the variance of the main variable. While the data structure for the multinomial given multinomial case is usually defined using a big probability table. If we want to allow the combination of Normal, Multinomial, Poison, Exponential, etc, in the same framework the number of data structures needed to represent all the possible combinations quickly explode.
+But these are only examples of unidimensional distributions. When defining the data structure of the conditional distributions things become much more complex. For example, the data structure for representing the conditional distribution of a Normal distribution given a set of normally distributed variables is, in a first look, totally different from the data structure needed to represent a conditional distribution of a Multinomial variable given a set of Multinomial variables. In the former case, under the conditional linear Gaussian framework, we need to store the coefficients for the linear combination of the parents variables plus the variance of the main variable. While the data structure for the multinomial given multinomial case is usually defined using a big probability table. If we want to allow the combination of Normal, Multinomial, Poison, Exponential, etc, in the same framework the number of data structures needed to represent all the possible conditional distributions combinations quickly explode.
 
-It is also challenging the problem of making inferences and learn from data with BNs with different kinds of conditional distributions. For example, the maximum likelihood of a Normal distribution is obtained by computing the sample mean and variance, while the maximum likelihood of a Multinomial distribution is obtained by normalizing the sample \textit{counts} of each one of the sates. Alternative methods are required for the different possible conditional probabilities, which means that the addition of new family of variables, i.e. Normal, Poission, or Exponential, etc, implies to define, code and test from scratch new maximum likelihood methods.  
+The problem of making inferences and learn from data with BNs with different kinds of conditional distributions becomes also quite challenging. For example, the maximum likelihood of a Normal distribution is obtained by computing the sample mean and variance, while the maximum likelihood of a Multinomial distribution is obtained by normalizing the sample \textit{counts} of each one of the sates. Alternative methods are required for the different possible conditional probabilities, which means that the addition of new family of variables, i.e. Normal, Poission, or Exponential, etc, implies to define, code and test from scratch new maximum likelihood methods.  
 
 In the case of inference, things are even worse. For example, the combination and marginalization operations over probability potentials belonging to different distribution families is in general non-closed and, in principle, involves quite different approaches. I.e., the combination or multiplication of two multinomial potentials or distributions involve completely different methods than the combination or product of two Normal distributions. And similarly for the marginalization operation. So, defining and coding all of these operations for different family of distributions can become a daunting task. 
 
-In this technical report, we argue that if we restrict ourselves to the so-called conjugate exponential family models, we can avoid most of the above problems. Firstly, all the conditional probability distributions inside this family can be represented using the same data structure, which is simply composed by two n-dimensional vectors (the so-called natural and moment parameters) and two n-dimensional functions (the so-called sufficient statistics and log-normalizer functions). Moreover, we show how many learning and inference algorithms can be directly implemented on top of this general and unique representation. The result is a suitable framework for coding a toolbox which aims to deal with the problem of representing, making inference and learning general Bayesian networks from data.
+In this technical report, we show that if we restrict ourselves to the so-called conjugate exponential family models, we can avoid most of the above problems by using previously known results and algorithms. Firstly, all the conditional probability distributions inside this family can be represented using the same data structure, which is simply composed by two n-dimensional vectors (the so-called natural and moment parameters) and two n-dimensional functions (the so-called sufficient statistics and log-normalizer functions). Moreover, we describe previously proposed learning and inference algorithms than can be directly implemented on top of this general and unique representation. The result is a suitable framework for coding a toolbox which aims to deal with the problem of representing, making inference and learning general Bayesian networks from data.
 
 
 \section{Background and notation}
@@ -82,10 +85,11 @@ $$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$
 \subsection*{Exponential family models}
 
 A Bayesian network defines a joint probability in the exponential family with a natural (or canonical) parametrization if the joint distribution can be functionally expressed as follows, 
-\begin{equation*}
+\begin{equation}
+\label{Equation:EFCanonical}
 p(\bm x |\theta) = h(x) exp(\theta^Ts(\bm x) -
 A(\theta) )
-\end{equation*}
+\end{equation}
 \noindent where $\theta$ is the so-called natural parameter, which belongs to the so-called \emph{natural parameter space}
 $\Theta \equiv \{ \theta \in\Re^K: \int_{\bm x} h(\bm x) exp(\theta^T s(\bm x) -
 A(\theta) ) d\bm x < \infty \}$, $s(\bm x)$ is the vector of sufficient statistics belonging to $\mathcal{S} \subseteq\Re^K$, $A$ is the log partition function and $h(x)$ is the base measure. 
@@ -115,16 +119,63 @@ Given the natural parameters, the inverse step of updating the moment parameters
 
 \subsection*{Regular Exponential Family}
 
-A Bayesian network belongs to the linear exponential family if $\Theta$ is an open and convex set, otherwise it belongs to the more general curved exponential family. Additionally, an exponential family is said to be minimal if there is non-zero constant vector $\alpha$, such that $\alpha^Ts(\bm x)$ is equal to a constant for all $\bm x$.  We will consider the regular exponential family to be the linear exponential one with minimal representation.
+A Bayesian network belongs to the linear exponential family if the natural parameter space $\Theta$ is an open and convex set. Additionally, a linear exponential family is said to be minimal if there is non-zero constant vector $\alpha$, such that $\alpha^Ts(\bm x)$ is equal to a constant for all $\bm x$.  We will consider the \textit{regular exponential family} to be the linear exponential one with minimal representation.
 
-The regular exponential family with a minimal representation has been widely studied in the literature. The distributions in this family enjoy many useful properties. The following two properties are some of the most relevant ones: i)  The transformation between $\theta$ and $\mu$ parameters is a one-to-one correspondence, i.e. $\mu$ is a dual set of the model parameter $\theta$; and ii) the moment parameters equal the gradient of the log-normalizer (the proof of this equality is (will be!) included in the appendix), 
+
+The regular exponential family has been widely studied in the literature. The distributions in this family enjoy many useful properties. The following two properties are some of the most relevant ones: i)  The transformation between $\theta$ and $\mu$ parameters is a one-to-one correspondence, i.e. $\mu$ is a dual set of the model parameter $\theta$; and ii) the moment parameters equal the gradient of the log-normalizer (the proof of this equality is (will be!) included in the appendix), 
 
 \begin{equation}
 \label{Equation:RegularEFEquality}
 \mu = \frac{\partial A(\theta)}{\partial \theta}
 \end{equation}
 
-However any BN which contains immoralities does not induce a regular exponential family. The limitations of this is that the capability to efficiently transformation from natural to moment parameters through this equation is lost. In the following sections we will describe how to handle this in the curved exponential family as well. 
+
+However any BN which contains immoralities does not induce a linear exponential family (some parameters are restricted to (non)-linear constraints to ensure the conditional independence). So, some of the nice properties of the regular family are lost. In that case, we need to rely on a more general family called the \textit{curved exponential family}. In this case, the probability distribution can be more generally expressed as follows, 
+
+\begin{equation*}
+p(\bm x |\theta) = h(x) exp(\psi(\theta)^Ts(\bm x) -
+A(\theta) )
+\end{equation*}
+
+\noindent where $\psi$ is a parameter transformation function. In our case, we restrict to cases where $\psi$ is invertible, so we can re-parametrize the distribution in a canonical form as in Equation \ref{Equation:EFCanonical}, where the natural parameter space is not any more an open convex set.
+
+
+\begin{exmp}
+
+A Bernoulli distribution can be represented as a curved exponential family as follows, 
+
+
+$$
+\ln p(x| \rho ) = 
+\begin{pmatrix}
+\ln \rho\\
+\ln (1-\rho)
+\end{pmatrix}^T
+\begin{pmatrix}
+I(x=0)\\
+I(x=1)
+\end{pmatrix}
+$$
+
+\noindent where the $\psi$ function is defined as follows, $\psi(\rho) = (\ln \rho, \ln 1-\rho)$. 
+
+The above distribution can be reparametrized in cannonical form as follows, 
+
+$$
+\ln p(x| \theta ) = 
+\begin{pmatrix}
+\theta_1\\
+\theta_2
+\end{pmatrix}^T
+\begin{pmatrix}
+I(x=0)\\
+I(x=1)
+\end{pmatrix}
+$$
+
+\noindent where $\theta\in\Theta = \{ (\theta_1, \theta_2) \in \Re^2 : e^{\theta_1} + e^{\theta_2} = 1\}$.  As can be seen, $\Theta$ is not an open convex set in $\Re^2$. 
+
+\end{exmp}
 
 \subsection*{Conditional distributions as exponential family models} \label{sec:CondDist}
 
@@ -150,8 +201,11 @@ A Bayesian network is said to be a conjugate exponential (CEF) model if all its 
 
 
 \section{Bayesian networks as CEF models}
+\label{Section:CEFBN}
 
 \subsection{Representation}
+\label{Section:CEFBN:Representation}
+
 In this section we show why conjugate-exponential family Bayesian networks (CEF-BNs) are quite amenable to be represented (and coded) as exponential family models. 
 
 By using Equation \ref{Equation:EqCED}, a conjugate-exponential BN can be represented in the following way, 
@@ -188,6 +242,7 @@ So, in order to represent a BN as an exponential family model we only have to wo
 Let us notice that without the assumption of conjugacy  for the conditional exponential distributions, the above representation would have not been possible. 
 
 \subsection{From Natural to Moment Parameters}
+\label{Section:CEFBN:NaturalToMoment}
 
 We now look at the transformation from to natural to moment parameters in a CEF-BN. Following Equation \ref{Equation:NaturalToMoment}., we have that the vector of moment parameters in a CEF-BN model decomposes as follows,
 
@@ -203,6 +258,8 @@ d\bm X = \\
 \noindent where $\mu_i= \int s(X_i,Pa(X_i)) p(X_i,Pa(X_i)) d\bm X$. I.e. the moments parameter of a CEF-BN locally decomposes in moment parameters associated to local marginal probabilities. Let us note that to compute the local marginal probability  $p(X_i,Pa(X_i))$ we need to perform inference over the whole BN.
 
 \subsection{From Moment to Natural Parameters}
+\label{Section:CEFBN:MomentToNatural}
+
 
 The transformation from moment to natural parameters also decomposes. Let us start by expanding Equation \ref{Equation:MomentToNatural}, 
 
@@ -343,7 +400,7 @@ As widely known, the maximum likelihood is equivalent to a transformation form m
 
 $$\theta^\star = \theta\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)$$
 
-As shown in Section \ref{Section: }, this problem decomposes for each conditional probability distribution.  The above formation can be expressed in terms of local transformations defined in Equation \ref{Equation:CEFBN_MomentToNaturalLocal}, 
+As shown in Section \ref{Section:CEFBN:MomentToNatural}, this problem decomposes for each conditional probability distribution.  The above formation can be expressed in terms of local transformations defined in Equation \ref{Equation:CEFBN_MomentToNaturalLocal}, 
 
 $$\theta_i^\star = \theta_i\Big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i)\Big)$$
 
