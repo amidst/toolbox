@@ -10,10 +10,7 @@
 package eu.amidst.core.database.filereaders;
 
 
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 
 import eu.amidst.core.variables.StaticVariables;
@@ -34,11 +31,11 @@ public class TestReaderStatic {
     private static Attributes attributes;
     private static StaticVariables staticVariables;
     private static DataRow datarow = null;
-    private static DataInstance nextInstance = null;
+    private static StaticDataInstance nextInstance = null;
     private static int index;
     private static Variable var;
-    private static DataOnDisk dataOnDiskReader;
-    private static Iterator<DataInstance> dataOnDiskIterator;
+    private static DataOnDisk<StaticDataInstance> dataOnDiskReader;
+    private static Iterator<StaticDataInstance> dataOnDiskIterator;
 
 
     public static void loadFileAndInitializeStatic(){
@@ -121,7 +118,7 @@ public class TestReaderStatic {
 
         /* Number of instances */
         int instanceCounter = 0;
-        for (DataInstance dataInstance: dataOnDiskReader){
+        for (StaticDataInstance dataInstance: dataOnDiskReader){
             instanceCounter++;
         }
         assertEquals(57, instanceCounter);

@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
-public class DynamicDataOnDiskFromFile implements DataOnDisk, DataOnStream {
+public class DynamicDataOnDiskFromFile implements DataOnDisk<DynamicDataInstance>, DataOnStream<DynamicDataInstance> {
 
     private DataFileReader reader;
 
@@ -32,7 +32,7 @@ public class DynamicDataOnDiskFromFile implements DataOnDisk, DataOnStream {
         this.reader.restart();
     }
     @Override
-    public Stream<DataInstance> stream() {
+    public Stream<DynamicDataInstance> stream() {
         return DynamicDataInstanceSpliterator.toDynamicDataInstanceStream(reader);
     }
 }

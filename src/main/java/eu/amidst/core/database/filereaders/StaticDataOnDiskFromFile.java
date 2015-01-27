@@ -1,9 +1,6 @@
 package eu.amidst.core.database.filereaders;
 
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.DataOnStream;
+import eu.amidst.core.database.*;
 import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
 import java.util.stream.Stream;
@@ -11,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream {
+public class StaticDataOnDiskFromFile implements DataOnDisk<StaticDataInstance>, DataOnStream<StaticDataInstance> {
 
     DataFileReader reader;
 
@@ -25,12 +22,12 @@ public class StaticDataOnDiskFromFile implements DataOnDisk, DataOnStream {
     }
 
     @Override
-    public Stream<DataInstance> stream() {
-        return this.reader.stream().map( dataRow -> new StaticDataInstance(dataRow));
+    public Stream<StaticDataInstance> stream() {
+        return this.reader.stream().map( dataRow -> new StaticDataInstanceImpl(dataRow));
     }
 
     @Override
-    public Stream<DataInstance> parallelStream(){
+    public Stream<StaticDataInstance> parallelStream(){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), 128);
     }
 

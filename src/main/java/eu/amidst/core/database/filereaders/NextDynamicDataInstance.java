@@ -12,6 +12,7 @@
 package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.Attribute;
+import eu.amidst.core.database.DynamicDataInstance;
 
 import java.util.Iterator;
 
@@ -35,14 +36,14 @@ public final class NextDynamicDataInstance {
         this.sequenceID = sequenceID;
         this.timeIDcounter = timeIDcounter;
     }
-    public  DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(Iterator<DataRow> reader){
-        DynamicDataInstance dynDataInst = null;
+    public DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(Iterator<DataRow> reader){
+        DynamicDataInstanceImpl dynDataInst = null;
         if(timeIDcounter == 0) {
-            dynDataInst = new DynamicDataInstance(past, present, sequenceID, timeIDcounter++);
+            dynDataInst = new DynamicDataInstanceImpl(past, present, sequenceID, timeIDcounter++);
         }else {
             past = present;
             present = reader.next();
-            dynDataInst = new DynamicDataInstance(past, present, sequenceID, timeIDcounter++);
+            dynDataInst = new DynamicDataInstanceImpl(past, present, sequenceID, timeIDcounter++);
         }
         return dynDataInst;
     }
@@ -53,7 +54,7 @@ public final class NextDynamicDataInstance {
         /*Missing values of the form (X,?), where X can also be ?*/
         if(timeIDcounter < present.getValue(attTimeID)){
             timeIDcounter++;
-            DynamicDataInstance dynDataInst = new DynamicDataInstance(past, new DataRowMissing(), (int) sequenceID,
+            DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, new DataRowMissing(), (int) sequenceID,
                     (int) presentTimeID);
             past = new DataRowMissing(); //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
@@ -61,7 +62,7 @@ public final class NextDynamicDataInstance {
         /*Missing values of the form (X,Y), where X can also be ? and Y is an observed (already read) instance*/
         }else if(timeIDcounter == present.getValue(attTimeID)) {
             timeIDcounter++;
-            DynamicDataInstance dynDataInst = new DynamicDataInstance(past, present, (int) sequenceID,
+            DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, present, (int) sequenceID,
                     (int) presentTimeID);
             past = present; //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
@@ -76,9 +77,9 @@ public final class NextDynamicDataInstance {
     }
 
     public DynamicDataInstance nextDataInstance_NoTimeID(Iterator<DataRow> reader, Attribute attSequenceID){
-        DynamicDataInstance dynDataInst = null;
+        DynamicDataInstanceImpl dynDataInst = null;
         if(timeIDcounter == 0) {
-            dynDataInst =  new DynamicDataInstance(past, present, (int) present.getValue(attSequenceID), timeIDcounter);
+            dynDataInst =  new DynamicDataInstanceImpl(past, present, (int) present.getValue(attSequenceID), timeIDcounter);
             timeIDcounter++;
             return dynDataInst;
         }
@@ -87,7 +88,7 @@ public final class NextDynamicDataInstance {
         double pastSequenceID = past.getValue(attSequenceID);
         double presentSequenceID = present.getValue(attSequenceID);
         if (Double.isNaN(pastSequenceID) || pastSequenceID == presentSequenceID) {
-            dynDataInst =  new DynamicDataInstance(past, present, (int) presentSequenceID, timeIDcounter);
+            dynDataInst =  new DynamicDataInstanceImpl(past, present, (int) presentSequenceID, timeIDcounter);
             timeIDcounter++;
             return dynDataInst;
         }
@@ -95,7 +96,7 @@ public final class NextDynamicDataInstance {
              past = new DataRowMissing();
              /* Recursive call */
              timeIDcounter = 0;
-            dynDataInst =  new DynamicDataInstance(past, present, (int) presentSequenceID, timeIDcounter);
+            dynDataInst =  new DynamicDataInstanceImpl(past, present, (int) presentSequenceID, timeIDcounter);
             timeIDcounter++;
             return dynDataInst;
         }
@@ -108,7 +109,7 @@ public final class NextDynamicDataInstance {
         /*Missing values of the form (X,?), where X can also be ?*/
         if(timeIDcounter < present.getValue(attTimeID)){
             timeIDcounter++;
-            DynamicDataInstance dynDataInst = new DynamicDataInstance(past, new DataRowMissing(), (int) pastSequenceID,
+            DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, new DataRowMissing(), (int) pastSequenceID,
                     (int) presentTimeID);
             past = new DataRowMissing(); //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
@@ -116,7 +117,7 @@ public final class NextDynamicDataInstance {
         /*Missing values of the form (X,Y), where X can also be ? and Y is an observed (already read) instance*/
         }else if(timeIDcounter == present.getValue(attTimeID)) {
             timeIDcounter++;
-            DynamicDataInstance dynDataInst = new DynamicDataInstance(past, present, (int) pastSequenceID,
+            DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, present, (int) pastSequenceID,
                     (int) presentTimeID);
             past = present; //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
@@ -131,7 +132,7 @@ public final class NextDynamicDataInstance {
             }else{
                 past = new DataRowMissing();
                 /* It oculd be a recursive call discarding the past DataRow, but this is slightly more efficient*/
-                DynamicDataInstance dynDataInst = new DynamicDataInstance(past, present, (int) presentSequenceID,
+                DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, present, (int) presentSequenceID,
                         (int) present.getValue(attTimeID));
                 past = present;
                 present = reader.next();

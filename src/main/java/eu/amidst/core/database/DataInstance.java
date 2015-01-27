@@ -10,9 +10,5 @@ public interface DataInstance extends Assignment{
 
     double getValue(Variable var);
 
-    int getSequenceID();
-
-    int getTimeID();
-
 }
 

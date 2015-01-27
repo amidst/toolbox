@@ -4,10 +4,7 @@ import COM.hugin.HAPI.DefaultClassParseListener;
 import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ParseListener;
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.database.*;
 import eu.amidst.core.huginlink.ConverterToAMIDST;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
@@ -64,17 +61,17 @@ public class BayesianNetworkSampler  {
         return sampleStream;
     }*/
 
-    public Stream<Assignment> getSampleStream(int nSamples) {
+    private Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
         return (parallelMode)? sampleStream.parallel() : sampleStream;
     }
 
-    public List<Assignment> getSampleList(int nSamples){
+    private List<Assignment> getSampleList(int nSamples){
         return this.getSampleStream(nSamples).collect(Collectors.toList());
     }
 
-    public Iterable<Assignment> getSampleIterator(int nSamples){
+    private Iterable<Assignment> getSampleIterator(int nSamples){
         class I implements Iterable<Assignment>{
             public Iterator<Assignment> iterator(){
                 return getSampleStream(nSamples).iterator();
@@ -117,8 +114,8 @@ public class BayesianNetworkSampler  {
 
     }
 
-    public DataBase sampleToDataBase(int nSamples){
-        class TemporalDataBase implements DataBase{
+    public DataBase<StaticDataInstance> sampleToDataBase(int nSamples){
+        class TemporalDataBase implements DataBase<StaticDataInstance>{
             Attributes atts;
             BayesianNetworkSampler sampler;
             int nSamples;
@@ -137,8 +134,8 @@ public class BayesianNetworkSampler  {
             }
 
             @Override
-            public Stream<DataInstance> stream() {
-                class TemporalDataInstance implements DataInstance{
+            public Stream<StaticDataInstance> stream() {
+                class TemporalDataInstance implements StaticDataInstance{
 
                     Assignment assignment;
                     TemporalDataInstance(Assignment assignment1){
@@ -149,15 +146,6 @@ public class BayesianNetworkSampler  {
                         return this.assignment.getValue(var);
                     }
 
-                    @Override
-                    public int getSequenceID() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getTimeID() {
-                        return 0;
-                    }
                 }
                 return this.sampler.getSampleStream(this.nSamples).map(a -> new TemporalDataInstance(a));
             }
