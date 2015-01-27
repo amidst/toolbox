@@ -213,4 +213,15 @@ public final class DynamicBayesianNetwork implements Serializable {
         this.distributionsTimeT.stream().forEach(w -> w.randomInitialization(random));
         this.distributionsTime0.stream().forEach(w -> w.randomInitialization(random));
     }
+
+    public boolean equalDBNs(DynamicBayesianNetwork bnet, double threshold) {
+        boolean equals = true;
+        if (this.getDynamicDAG().equals(bnet.getDynamicDAG())){
+            for (Variable var : this.getDynamicVariables()) {
+                equals = equals && this.getDistributionTime0(var).equalDist(bnet.getDistributionTime0(var), threshold) && this.getDistributionTimeT(var).equalDist(bnet.getDistributionTimeT(var), threshold);
+            }
+        }
+        return equals;
+    }
+
 }
