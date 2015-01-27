@@ -44,7 +44,9 @@ public class MLDBNTest {
         sampler.setParallelMode(true);
 
         //Sample from the dynamic NB given as inputs both nSequences and sequenceLength
-        DataBase data = sampler.sampleToDataBase(1000,1000);
+
+        DataBase data = sampler.sampleToDataBase(10000,100);
+
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Dynamic Naive Bayes network structure
         // and just apply then test parameter learning

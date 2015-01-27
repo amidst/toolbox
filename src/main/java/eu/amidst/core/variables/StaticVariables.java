@@ -172,6 +172,8 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         return this.allVariables;
     }
 
+    //TODO Implements hashCode method!!
+
     private static class VariableImplementation implements Variable, Serializable {
 
         private static final long serialVersionUID = 4656207896676444152L;

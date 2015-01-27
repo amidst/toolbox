@@ -178,19 +178,29 @@ public class DynamicBayesianNetworkSampler {
 
         allAssignments.add(d);
 
-        dataPast = dataPresent;
+        dataPast = new HashMapAssignment(network.getNumberOfVars());
+        for (Variable var: network.getDynamicVariables().getListOfDynamicVariables()){
+            dataPast.putValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+        }
+        dataPresent = new HashMapAssignment(network.getNumberOfVars());
 
         for(int k=1; k< sequenceLength;k++) {
+            DynamicDataInstance d2 = new DynamicDataInstanceImpl(dataPast, dataPresent, sequenceID, k);
+
             for (Variable var : causalOrderTimeT) {
-                double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
+                double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(d2).sample(random);
                 dataPresent.putValue(var, sampledValue);
             }
-            DynamicDataInstance d2 = new DynamicDataInstanceImpl(dataPast, dataPresent, sequenceID, k);
 
             allAssignments.add(d2);
 
-            dataPast = dataPresent;
-           }
+            dataPast = new HashMapAssignment(network.getNumberOfVars());
+            for (Variable var: network.getDynamicVariables().getListOfDynamicVariables()){
+                dataPast.putValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+            }
+            dataPresent = new HashMapAssignment(network.getNumberOfVars());
+
+        }
         return allAssignments;
         //return allAssignments.stream();
     }
