@@ -52,8 +52,6 @@ public class DynamicBayesianNetworkSampler {
                 dbnsample.add(i, oneseq.get(j));
             }
         }
-        //sampleStream = sampleStream.forEach(i -> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength));
-
         return dbnsample.stream();
     }
 
@@ -189,14 +187,14 @@ public class DynamicBayesianNetworkSampler {
 
         dataPast = dataPresent;
 
-        for(int i=1; i< sequenceLength;i++) {
+        for(int k=1; k< sequenceLength;k++) {
             for (Variable var : causalOrderTimeT) {
                 double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
                 dataPresent.putValue(var, sampledValue);
             }
-            DynamicDataInstance d2 = new DynamicDataInstance(dataPast, dataPresent, sequenceID, i);
+            DynamicDataInstance d2 = new DynamicDataInstance(dataPast, dataPresent, sequenceID, k);
 
-            allAssignments.add(i,d2);
+            allAssignments.add(k,d2);
 
             dataPast = dataPresent;
            }
@@ -278,27 +276,34 @@ public class DynamicBayesianNetworkSampler {
 
         Stopwatch watch = Stopwatch.createStarted();
 
+        DynamicBayesianNetworkGenerator dbnGenerator = new DynamicBayesianNetworkGenerator();
+        dbnGenerator.setNumberOfContinuousVars(0);
+        dbnGenerator.setNumberOfDiscreteVars(3);
+        dbnGenerator.setNumberOfStates(2);
+
         DynamicBayesianNetwork network = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2);
 
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
 
-        sampler.sampleToAnARFFFile("./data/dnb-samples.arff", 2, 10);
+        sampler.sampleToAnARFFFile("./data/dnb-samples.arff",3, 2);
 
         System.out.println(watch.stop());
 
-        for (DataInstance dynamicdatainstance : sampler.getSampleIterator(2, 10)){
+        for (DataInstance dynamicdatainstance : sampler.getSampleIterator(3, 2)){
+            System.out.println("\nSequence ID" + dynamicdatainstance.getSequenceID());
+            System.out.println("\nTime ID" + dynamicdatainstance.getTimeID());
             System.out.println(dynamicdatainstance.toString(network.getDynamicVariables().getListOfDynamicVariables()));
         }
         System.out.println();
 
-        for (DataInstance dynamicdatainstance : sampler.getSampleList(2, 10)){
-            System.out.println(dynamicdatainstance.toString(network.getDynamicVariables().getListOfDynamicVariables()));
-        }
-        System.out.println();
+        //for (DataInstance dynamicdatainstance : sampler.getSampleList(2, 10)){
+        //    System.out.println(dynamicdatainstance.toString(network.getDynamicVariables().getListOfDynamicVariables()));
+        //}
+        //System.out.println();
 
-        sampler.getSampleStream(2, 10).forEach( e -> System.out.println(e.toString(network.getDynamicVariables().getListOfDynamicVariables())));
+        //sampler.getSampleStream(2, 10).forEach( e -> System.out.println(e.toString(network.getDynamicVariables().getListOfDynamicVariables())));
 
 
     }
