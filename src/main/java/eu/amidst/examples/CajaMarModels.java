@@ -4,6 +4,7 @@ import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ConverterToHugin;
@@ -40,7 +41,7 @@ public final class CajaMarModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataCajaMar.arff"));
+        DataOnDisk<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataCajaMar.arff"));
 
 
         /**
@@ -160,7 +161,7 @@ public final class CajaMarModels {
          */
         double logProb = 0;
 
-        for (DataInstance dataInstance: data){
+        for (DynamicDataInstance dataInstance: data){
             if (dataInstance.getTimeID()==0) {
                 logProb += dynamicBayesianNetwork.getLogProbabiltyOfFullAssignmentTime0(dataInstance);
             }else{

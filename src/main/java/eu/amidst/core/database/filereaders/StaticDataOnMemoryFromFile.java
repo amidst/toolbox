@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, DataOnStream {
+public class StaticDataOnMemoryFromFile implements DataOnMemory<StaticDataInstance>, DataOnDisk<StaticDataInstance>, DataOnStream<StaticDataInstance> {
 
     private DataFileReader reader;
 
@@ -19,22 +19,22 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
      * so it is better to store it in an array, otherwise it might be just better to keep it in the ArrayList and avoid
      * the extra pass in the constructor.
      */
-    private StaticDataInstance[] dataInstances;
+    private StaticDataInstanceImpl[] dataInstances;
 
 
     public StaticDataOnMemoryFromFile(DataFileReader reader) {
         this.reader = reader;
 
-        List<StaticDataInstance> dataInstancesList = new ArrayList<>();
+        List<StaticDataInstanceImpl> dataInstancesList = new ArrayList<>();
 
         for (DataRow row: reader){
-            dataInstancesList.add(new StaticDataInstance(row));
+            dataInstancesList.add(new StaticDataInstanceImpl(row));
         }
         reader.restart();
 
-        dataInstances = new StaticDataInstance[dataInstancesList.size()];
+        dataInstances = new StaticDataInstanceImpl[dataInstancesList.size()];
         int counter = 0;
-        for (StaticDataInstance inst : dataInstancesList) {
+        for (StaticDataInstanceImpl inst : dataInstancesList) {
             dataInstances[counter] = inst;
             counter++;
         }
@@ -47,7 +47,7 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
     }
 
     @Override
-    public DataInstance getDataInstance(int i) {
+    public StaticDataInstance getDataInstance(int i) {
         return dataInstances[i];
     }
 
@@ -58,7 +58,7 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory, DataOnDisk, Dat
     }
 
     @Override
-    public Stream<DataInstance> stream() {
+    public Stream<StaticDataInstance> stream() {
         return Arrays.stream(this.dataInstances);
     }
 

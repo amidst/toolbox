@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/12/14.
  */
-public class DataOnMemoryListContainer implements DataOnMemory {
-    List<DataInstance> instanceList;
+public class DataOnMemoryListContainer <E extends DataInstance> implements DataOnMemory<E> {
+    List<E> instanceList;
     Attributes attributes;
 
     public DataOnMemoryListContainer(Attributes attributes1){
@@ -16,11 +16,11 @@ public class DataOnMemoryListContainer implements DataOnMemory {
         this.attributes=attributes1;
     }
 
-    public void add(DataInstance data){
+    public void add(E data){
         this.instanceList.add(data);
     }
 
-    public void set(int id, DataInstance data){
+    public void set(int id, E data){
         this.instanceList.set(id,data);
     }
 
@@ -30,7 +30,7 @@ public class DataOnMemoryListContainer implements DataOnMemory {
     }
 
     @Override
-    public DataInstance getDataInstance(int i) {
+    public E getDataInstance(int i) {
         return this.instanceList.get(i);
     }
 
@@ -40,7 +40,7 @@ public class DataOnMemoryListContainer implements DataOnMemory {
     }
 
     @Override
-    public Stream<DataInstance> stream() {
+    public Stream<E> stream() {
         return this.instanceList.stream();
     }
 

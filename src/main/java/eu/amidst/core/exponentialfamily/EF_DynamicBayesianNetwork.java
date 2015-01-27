@@ -1,6 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.Vector;
@@ -8,7 +9,7 @@ import eu.amidst.core.utils.Vector;
 /**
  * Created by andresmasegosa on 13/01/15.
  */
-public class EF_DynamicBayesianNetwork extends EF_Distribution {
+public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
 
     EF_BayesianNetwork bayesianNetworkTime0;
 
@@ -54,7 +55,7 @@ public class EF_DynamicBayesianNetwork extends EF_Distribution {
     }
 
     @Override
-    public SufficientStatistics getSufficientStatistics(DataInstance data) {
+    public SufficientStatistics getSufficientStatistics(DynamicDataInstance data) {
         CompoundVector vectorSS = this.createEmtpyCompoundVector();
 
         if (data.getTimeID()==0) {
@@ -75,7 +76,7 @@ public class EF_DynamicBayesianNetwork extends EF_Distribution {
     }
 
     @Override
-    public double computeLogBaseMeasure(DataInstance dataInstance) {
+    public double computeLogBaseMeasure(DynamicDataInstance dataInstance) {
         throw new UnsupportedOperationException("No make sense for dynamic BNs");
     }
 
@@ -85,7 +86,7 @@ public class EF_DynamicBayesianNetwork extends EF_Distribution {
     }
 
     @Override
-    public double computeLogProbabilityOf(DataInstance dataInstance) {
+    public double computeLogProbabilityOf(DynamicDataInstance dataInstance) {
         if (dataInstance.getTimeID()==0)
             return this.bayesianNetworkTime0.computeLogProbabilityOf(dataInstance);
         else

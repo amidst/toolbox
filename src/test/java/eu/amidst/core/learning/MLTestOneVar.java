@@ -6,6 +6,7 @@ import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.ParseListener;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.ConditionalDistribution;
@@ -48,10 +49,11 @@ public class MLTestOneVar {
         } catch (IOException ex){
         }
         System.out.println(watch.stop());
-        sampler.getSampleStream(10).forEach( e -> System.out.println(e.toString(net.getStaticVariables().getListOfVariables())));
+        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(10);
+        data.stream().forEach( e -> System.out.println(e.toString(net.getStaticVariables().getListOfVariables())));
 
         //Load the sampled data
-        DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/OneVar10samples.arff")));
+        data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/OneVar10samples.arff")));
 
         //Structure learning is excluded from the test, i.e., so we use here the same initial network structure net.getDAG()
 
