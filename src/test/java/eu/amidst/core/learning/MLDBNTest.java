@@ -4,10 +4,7 @@ import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.models.DynamicBayesianNetworkWriter;
+import eu.amidst.core.models.*;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.core.utils.DynamicBayesianNetworkSampler;
@@ -47,7 +44,7 @@ public class MLDBNTest {
         sampler.setParallelMode(true);
 
         //Sample from the dynamic NB given as inputs both nSequences and sequenceLength
-        DataBase data = sampler.sampleToDataBase(1000,100);
+        DataBase data = sampler.sampleToDataBase(1000,1000);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Dynamic Naive Bayes network structure
         // and just apply then test parameter learning
@@ -55,13 +52,14 @@ public class MLDBNTest {
         //Parameter Learning
         MaximumLikelihood.setBatchSize(1000);
         MaximumLikelihood.setParallelMode(false);
+
         DynamicBayesianNetwork bnet = MaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
         //Check if the probability distributions of each node
         for (Variable var : dynamicNB.getDynamicVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             // time 0
-            System.out.println("\nTrue distribution:\n"+ dynamicNB.getDistributionTime0(var));
+            System.out.println("\nTrue distribution:\n" + dynamicNB.getDistributionTime0(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getDistributionTime0(var));
             //assertTrue(bnet.getDistributionTime0(var).equalDist(dynamicNB.getDistributionTime0(var), 0.05));
             // time T
