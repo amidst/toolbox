@@ -9,14 +9,14 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.variables.Variable;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 13/11/14.
  */
-public abstract class EF_Distribution {
+public abstract class EF_DynamicDistribution {
     /**
      * The variable of the distribution
      */
@@ -66,20 +66,20 @@ public abstract class EF_Distribution {
 
     public abstract void updateMomentFromNaturalParameters();
 
-    public abstract SufficientStatistics getSufficientStatistics(DataInstance data);
+    public abstract SufficientStatistics getSufficientStatistics(DynamicDataInstance data);
 
     public abstract int sizeOfSufficientStatistics();
 
-    public abstract double computeLogBaseMeasure(DataInstance dataInstance);
+    public abstract double computeLogBaseMeasure(DynamicDataInstance dataInstance);
 
     public abstract double computeLogNormalizer();
 
-    public double computeProbabilityOf(StaticDataInstance dataInstance){
+    public double computeProbabilityOf(DynamicDataInstance dataInstance){
         return Math.exp(this.computeLogProbabilityOf(dataInstance));
     }
 
     //TODO: the logbasemeasure and the lognormalizer are positives or negatives terms (Andres)
-    public double computeLogProbabilityOf(DataInstance dataInstance){
+    public double computeLogProbabilityOf(DynamicDataInstance dataInstance){
         return this.naturalParameters.dotProduct(this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) - this.computeLogNormalizer();
     }
 

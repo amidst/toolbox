@@ -6,6 +6,6 @@ import java.util.Iterator;
 /**
  * Created by afa on 02/07/14.
  */
-public interface DataOnStream extends DataBase  {
+public interface DataOnStream<E extends DataInstance> extends DataBase<E> {
 
 }

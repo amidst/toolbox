@@ -1,8 +1,7 @@
 package eu.amidst.examples;
 
 import COM.hugin.HAPI.Domain;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.ConverterToHugin;
@@ -36,7 +35,7 @@ public final class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticData.arff"));
+        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticData.arff"));
 
 
         /**
@@ -121,7 +120,7 @@ public final class StaticBayesianNetworks {
          * 3. We accumulate these log-probs and finally we print the log-prob of the data set.
          */
         double logProb = 0;
-        for (DataInstance instance : data) {
+        for (StaticDataInstance instance : data) {
             logProb += bn.getLogProbabiltyOfFullAssignment(instance);
         }
         System.out.println(logProb);

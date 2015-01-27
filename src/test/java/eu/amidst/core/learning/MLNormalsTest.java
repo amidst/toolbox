@@ -35,7 +35,7 @@ public class MLNormalsTest {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
         try{
-            sampler.sampleToAnARFFFile("./data/Normal_1NormalParents.arff", 10000);
+            sampler.sampleToAnARFFFile("./data/Normal_1NormalParents.arff", 100000);
         } catch (IOException ex){
         }
 
@@ -71,7 +71,7 @@ public class MLNormalsTest {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
         try{
-            sampler.sampleToAnARFFFile("./data/Normal_NormalParents.arff", 10000);
+            sampler.sampleToAnARFFFile("./data/Normal_NormalParents.arff", 100000);
         } catch (IOException ex){
         }
 

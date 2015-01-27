@@ -3,10 +3,7 @@ package eu.amidst.examples;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.core.database.Attributes;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.huginlink.*;
@@ -56,7 +53,7 @@ public class InferenceDemo {
         //************************************************************
 
         String file = "./datasets/bank_data_train.arff";
-        DataBase data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
+        DataBase<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
         //System.out.println("ATTRIBUTES:");
         //data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));
@@ -92,11 +89,11 @@ public class InferenceDemo {
 
          System.out.println("Computing Probabilities of Defaulting for 10 clients using Hugin API:\n");
 
-         Iterator<DataInstance> iterator = data.iterator();
+         Iterator<DynamicDataInstance> iterator = data.iterator();
          LabelledDCNode lastDefault =null;
 
          int currentSequenceID = 0;
-         DataInstance dataInstance = iterator.next();
+        DynamicDataInstance dataInstance = iterator.next();
 
         Domain domainObject = huginDBN.createDBNDomain(timeSlices);
 

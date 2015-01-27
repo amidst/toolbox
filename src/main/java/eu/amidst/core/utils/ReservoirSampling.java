@@ -17,13 +17,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ReservoirSampling {
 
     //TODO Be careful with use of "add(int pos, element)" of List!!!!!!
-    public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataBase dataBase){
+    public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataBase<StaticDataInstance> dataBase){
 
         Random random = new Random(0);
-        DataOnMemoryListContainer dataOnMemoryList = new DataOnMemoryListContainer(dataBase.getAttributes());
+        DataOnMemoryListContainer<StaticDataInstance> dataOnMemoryList = new DataOnMemoryListContainer(dataBase.getAttributes());
         int count = 0;
 
-        for (DataInstance instance : dataBase){
+        for (StaticDataInstance instance : dataBase){
             if (count<numberOfSamples) {
                 dataOnMemoryList.add(instance);
             }else{

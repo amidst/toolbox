@@ -17,7 +17,7 @@ import java.util.Iterator;
 /**
  * Created by afa on 02/07/14.
  */
-public interface DataOnDisk extends DataBase{
+public interface DataOnDisk<E extends DataInstance> extends DataBase<E>{
 
     default void restart(){
         //Only needed if iterator implementation is not based on streams.
