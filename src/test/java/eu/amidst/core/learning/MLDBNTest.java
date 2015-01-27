@@ -71,7 +71,7 @@ public class MLDBNTest {
         }
 
         //Or check directly if the true and learned networks are equals
-        //assertTrue(bnet.equalDBNs(dynamicNB,0.05));
+        assertTrue(bnet.equalDBNs(dynamicNB,0.05));
     }
 
 }
