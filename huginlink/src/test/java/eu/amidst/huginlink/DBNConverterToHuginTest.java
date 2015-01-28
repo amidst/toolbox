@@ -1,15 +1,8 @@
-package eu.amidst.core.huginlink;
+package eu.amidst.huginlink;
 
 import COM.hugin.HAPI.Class;
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
-import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.models.DynamicDAG;
-import eu.amidst.core.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.examples.DBNExample;
 import org.junit.Before;
 import org.junit.Test;
