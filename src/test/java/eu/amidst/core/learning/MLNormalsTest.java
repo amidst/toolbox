@@ -18,6 +18,8 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Created by ana@cs.aau.dk on 22/01/15.
+ * TODO: test probability dist of EF is equal to regular dist.
+ *
  */
 public class MLNormalsTest {
 
