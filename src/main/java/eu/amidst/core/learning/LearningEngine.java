@@ -2,10 +2,6 @@ package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.huginlink.ParallelTAN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.DynamicBayesianNetwork;
@@ -112,20 +108,20 @@ public final class LearningEngine {
 
     public static void main(String[] args) throws Exception{
 
-        String dataFile = new String("./datasets/Pigs.arff");
-        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
-
-        ParallelTAN tan= new ParallelTAN();
-        tan.setNumCores(4);
-        tan.setNumSamplesOnMemory(1000);
-        tan.setNameRoot("p630400490");
-        tan.setNameTarget("p48124091");
-        LearningEngine.setStaticStructuralLearningAlgorithm(tan::learnDAG);
-
-        MaximumLikelihood.setBatchSize(1000);
-        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
-
-        BayesianNetwork tanModel = LearningEngine.learnStaticModel(data);
+//        String dataFile = new String("./datasets/Pigs.arff");
+//        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+//
+//        ParallelTAN tan= new ParallelTAN();
+//        tan.setNumCores(4);
+//        tan.setNumSamplesOnMemory(1000);
+//        tan.setNameRoot("p630400490");
+//        tan.setNameTarget("p48124091");
+//        LearningEngine.setStaticStructuralLearningAlgorithm(tan::learnDAG);
+//
+//        MaximumLikelihood.setBatchSize(1000);
+//        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
+//
+//        BayesianNetwork tanModel = LearningEngine.learnStaticModel(data);
 
     }
 

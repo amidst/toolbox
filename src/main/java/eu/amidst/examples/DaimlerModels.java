@@ -1,13 +1,10 @@
 package eu.amidst.examples;
 
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
+
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.huginlink.ConverterToHugin;
-import eu.amidst.core.huginlink.Utils;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetworkWriter;
@@ -37,7 +34,7 @@ public final class DaimlerModels {
      * In this example we show how to create an OOBN fragment for the LE hypothesis with a hidden node for acceleration
      * (as in Figure 4.14 of D2.1).
      */
-    public static void Daimler_LE_acceleration() throws ExceptionHugin, IOException {
+    public static void Daimler_LE_acceleration() throws IOException {
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
@@ -177,7 +174,7 @@ public final class DaimlerModels {
 
 
 
-    public static void main(String[] args) throws ExceptionHugin, IOException {
+    public static void main(String[] args) throws IOException {
         DaimlerModels.Daimler_LE_acceleration();
     }
 }

@@ -1,19 +1,14 @@
-package eu.amidst.examples;
+package eu.amidst.huginlink;
 
-import COM.hugin.HAPI.DefaultClassParseListener;
-import COM.hugin.HAPI.Domain;
+
 import COM.hugin.HAPI.ExceptionHugin;
-import COM.hugin.HAPI.ParseListener;
 import com.google.common.base.Stopwatch;
 
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.huginlink.ConverterToAMIDST;
-import eu.amidst.core.huginlink.ParallelTAN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 
@@ -25,12 +20,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.lang.Runtime;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
+
 
 /**
  * Created by afa on 16/12/14.
@@ -93,7 +84,7 @@ public class ParallelTANDemo {
         int nOfVars;
 
         //It may need many GBs, so avoid putting this file in a Dropbox folder!!!
-        dataFile = new String("./datasets/Data_#v"+numDiscVars+"_#s"+sampleSize+".arff");
+        dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
         BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
         BayesianNetworkGenerator.setNumberOfStates(2);
@@ -105,10 +96,10 @@ public class ParallelTANDemo {
         sampler.sampleToAnARFFFile(dataFile, sampleSize);
         data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
         nOfVars = numContVars + numDiscVars;
-        System.out.println("Learning TAN: " + nOfVars +" variables, " + sampleSize +" samples on disk, "+ samplesOnMemory + " samples on memory, 1 core(s) ...");
+        System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, 1 core(s) ...");
 
 
-        nameRoot = data.getAttributes().getList().get(numDiscVars-1).getName();
+        nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
         nameTarget = data.getAttributes().getList().get(0).getName();
 
 
@@ -146,7 +137,7 @@ public class ParallelTANDemo {
         int nOfVars;
 
     /* Generate some fake data and write to file */
-        dataFile = new String("./datasets/Data_#v"+numDiscVars+"_#s"+sampleSize+".arff");
+        dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
         BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
         BayesianNetworkGenerator.setNumberOfStates(2);
@@ -158,12 +149,12 @@ public class ParallelTANDemo {
         nOfVars = numContVars + numDiscVars;
 
     /* Get information about the model: Root and Target */
-        nameRoot = data.getAttributes().getList().get(numDiscVars-1).getName();
+        nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
         nameTarget = data.getAttributes().getList().get(0).getName();
 
     /* Setup the TAN object */
         ParallelTAN tan = new ParallelTAN();
-        tan.setParallelMode( numCores > 1 );
+        tan.setParallelMode(numCores > 1);
         tan.setNumCores(numCores);
         tan.setNumSamplesOnMemory(samplesOnMemory);
         tan.setNameRoot(nameRoot);
@@ -173,7 +164,7 @@ public class ParallelTANDemo {
         System.out.println("\nLearning TAN (" + nOfVars + " variables) using " + tan.getNumCores() + " core/s.");
         System.out.println("Structure learning (Hugin) uses " + tan.getNumSamplesOnMemory() + " samples.");
         System.out.println("Parameter learning (toolbox) uses " +
-                sampleSize  + " samples (batch size " +  tan.getBatchSize() + ").");
+                sampleSize + " samples (batch size " + tan.getBatchSize() + ").");
 
     /* Learn */
         System.out.println("Run-times:");
@@ -182,7 +173,6 @@ public class ParallelTANDemo {
     }
 
     public static void demoOnServer() throws ExceptionHugin, IOException {
-
 
 
         String dataFile = "";
@@ -196,9 +186,9 @@ public class ParallelTANDemo {
         /**
          * Sample from NB network with the specified features.
          */
-        if(dataFileInput.isEmpty()) {
+        if (dataFileInput.isEmpty()) {
             //It may need many GBs, so avoid putting this file in a Dropbox folder!!!
-            dataFile = new String("./datasets/Data_#v"+numDiscVars+"_#s"+sampleSize+".arff");
+            dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
             BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
             BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
             BayesianNetworkGenerator.setNumberOfStates(numStates);
@@ -209,32 +199,32 @@ public class ParallelTANDemo {
             sampler.sampleToAnARFFFile(dataFile, sampleSize);
             data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
             nOfVars = numContVars + numDiscVars;
-            System.out.println("Learning TAN: " + nOfVars +" variables, " +numStates +" states/var, "+ sampleSize +" samples on disk, "+ samplesOnMemory + " samples on memory, "+  numCores + " core(s) ...");
-        }else{
+            System.out.println("Learning TAN: " + nOfVars + " variables, " + numStates + " states/var, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
+        } else {
             data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFileInput));
             numDiscVars = data.getAttributes().getNumberOfAttributes();
             nOfVars = numContVars + numDiscVars;
-            System.out.println("Learning TAN: " + nOfVars +" variables, " + " samples on file " + dataFileInput + "," + samplesOnMemory + " samples on memory, "+  numCores + " core(s) ...");
+            System.out.println("Learning TAN: " + nOfVars + " variables, " + " samples on file " + dataFileInput + "," + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
         }
 
-        nameRoot = data.getAttributes().getList().get(numDiscVars-1).getName();
+        nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
         nameTarget = data.getAttributes().getList().get(0).getName();
 
 
         /**
          * Serial mode
          */
-        if(numCores == 1) {
+        if (numCores == 1) {
             ParallelTAN tan = new ParallelTAN();
             tan.setParallelMode(false);
             tan.setNumSamplesOnMemory(samplesOnMemory);
             tan.setNameRoot(nameRoot);
             tan.setNameTarget(nameTarget);
             BayesianNetwork model = tan.learnBN(data);
-        }else{
-        /**
-         * Parallel mode (by default, and also by default all available cores are used)
-         */
+        } else {
+            /**
+             * Parallel mode (by default, and also by default all available cores are used)
+             */
             ParallelTAN tan = new ParallelTAN();
             tan.setParallelMode(true);
             tan.setNumSamplesOnMemory(samplesOnMemory);
@@ -246,58 +236,46 @@ public class ParallelTANDemo {
         }
 
 
-
     }
 
-    public static void useGnuParser(final String[] commandLineArguments)
-    {
+    public static void useGnuParser(final String[] commandLineArguments) {
         final CommandLineParser cmdLineGnuParser = new GnuParser();
 
         final Options gnuOptions = constructOptions();
         CommandLine commandLine;
-        try
-        {
+        try {
             commandLine = cmdLineGnuParser.parse(gnuOptions, commandLineArguments);
-            if ( commandLine.hasOption("c") )
-            {
+            if (commandLine.hasOption("c")) {
                 numCores = Integer.parseInt(commandLine.getOptionValue("c"));
                 System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(numCores));
             }
-            if ( commandLine.hasOption("s") )
-            {
+            if (commandLine.hasOption("s")) {
                 sampleSize = Integer.parseInt(commandLine.getOptionValue("s"));
             }
-            if (commandLine.hasOption("m") )
-            {
+            if (commandLine.hasOption("m")) {
                 samplesOnMemory = Integer.parseInt(commandLine.getOptionValue("m"));
             }
-            if ( commandLine.hasOption("v") )
-            {
+            if (commandLine.hasOption("v")) {
                 numDiscVars = Integer.parseInt(commandLine.getOptionValue("v"));
             }
-            if ( commandLine.hasOption("d") )
-            {
+            if (commandLine.hasOption("d")) {
                 dataFileInput = commandLine.getOptionValue("d");
             }
-            if ( commandLine.hasOption("b") )
-            {
+            if (commandLine.hasOption("b")) {
                 batchSize = Integer.parseInt(commandLine.getOptionValue("b"));
             }
-            if ( commandLine.hasOption("onServer") )
-            {
+            if (commandLine.hasOption("onServer")) {
                 onServer = true;
             }
-            if ( commandLine.hasOption("r") )
-            {
+            if (commandLine.hasOption("r")) {
                 numStates = Integer.parseInt(commandLine.getOptionValue("r"));
             }
 
-        }
-        catch (ParseException parseException)  // checked exception
+        } catch (ParseException parseException)  // checked exception
         {
             System.err.println(
                     "Encountered exception while parsing using GnuParser:\n"
-                            + parseException.getMessage() );
+                            + parseException.getMessage());
         }
     }
 
@@ -313,8 +291,7 @@ public class ParallelTANDemo {
             final int spacesBeforeOption,
             final int spacesBeforeOptionDescription,
             final boolean displayUsage,
-            final OutputStream out)
-    {
+            final OutputStream out) {
         final String commandLineSyntax = "run.sh eu.amidst.examples.ParallelTANDemo";
         final PrintWriter writer = new PrintWriter(out);
         final HelpFormatter helpFormatter = new HelpFormatter();
@@ -337,8 +314,7 @@ public class ParallelTANDemo {
      *
      * @return Options expected from command-line.
      */
-    public static Options constructOptions()
-    {
+    public static Options constructOptions() {
         final Options options = new Options();
         options.addOption("c", "numCores", true, "Here you can set # of cores for hugin.");
         options.addOption("s", "samples", true, "Here you can set # of (out-of-core) samples for parameter learning (amidst).");
@@ -351,8 +327,6 @@ public class ParallelTANDemo {
 
         return options;
     }
-
-
 
 
     //TODO: Subobtions should be considered in the future
