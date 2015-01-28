@@ -78,11 +78,11 @@ public class DynamicNaiveBayesClassifier {
     public static void main(String[] args) throws IOException {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(5000);
-        BayesianNetworkGenerator.setNumberOfStates(3);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        BayesianNetworkGenerator.setNumberOfStates(2);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
 
-        int sampleSize = 10000;
+        int sampleSize = 1000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(false);
         String file = "./datasets/randomdata.arff";
@@ -90,13 +90,13 @@ public class DynamicNaiveBayesClassifier {
 
         DataBase<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 1; i++) {
             DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
             model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
             model.setParallelMode(true);
             model.learn(data);
             DynamicBayesianNetwork nbClassifier = model.getDynamicBNModel();
-            //System.out.println(nbClassifier.toString());
+            System.out.println(nbClassifier.toString());
         }
 
     }

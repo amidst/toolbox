@@ -1,6 +1,7 @@
 package eu.amidst.core.learning;
 
 import COM.hugin.HAPI.ExceptionHugin;
+import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
@@ -28,20 +29,18 @@ public class MLDBNTest {
         //Generate a dynamic Naive Bayes with only Multinomial variables
         DynamicBayesianNetworkGenerator dbnGenerator = new DynamicBayesianNetworkGenerator();
 
-        //TODO Check for Gaussian variables too!
-
-        //Set the number of Discrete and Continuous variables, in this case we have 0 continuous vars
+        //Set the number of Discrete variables, their number of states, the number of Continuous variables
         dbnGenerator.setNumberOfContinuousVars(0);
         dbnGenerator.setNumberOfDiscreteVars(5);
         dbnGenerator.setNumberOfStates(2);
 
-        DynamicBayesianNetwork dynamicNB = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2);
+        //The number of states for the class variable is equal to 2
+        DynamicBayesianNetwork dynamicNB = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, false);
 
         System.out.println(dynamicNB.getDynamicDAG().toString());
         System.out.println(dynamicNB.toString());
 
         //Sampling from the generated Dynamic NB
-
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicNB);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
@@ -58,7 +57,12 @@ public class MLDBNTest {
         MaximumLikelihood.setBatchSize(1000);
         MaximumLikelihood.setParallelMode(true);
 
+        Stopwatch watch = Stopwatch.createStarted();
+
         DynamicBayesianNetwork bnet = MaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
+
+        System.out.println(watch.stop());
+        System.out.println();
 
         //Check if the probability distributions of each node over both time 0 and T
         for (Variable var : dynamicNB.getDynamicVariables()) {
