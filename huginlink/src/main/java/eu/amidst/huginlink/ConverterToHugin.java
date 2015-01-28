@@ -1,15 +1,13 @@
-package eu.amidst.core.huginlink;
+package eu.amidst.huginlink;
 
 import COM.hugin.HAPI.*;
-
-import COM.hugin.HAPI.Node;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.variables.FiniteStateSpace;
-import eu.amidst.core.variables.StaticVariables;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
+import eu.amidst.core.variables.FiniteStateSpace;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 
 import java.util.List;
 

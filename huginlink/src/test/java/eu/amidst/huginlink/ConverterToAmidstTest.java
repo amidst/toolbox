@@ -1,7 +1,10 @@
-package eu.amidst.core.huginlink;
+package eu.amidst.huginlink;
 
 
-import COM.hugin.HAPI.*;
+import COM.hugin.HAPI.DefaultClassParseListener;
+import COM.hugin.HAPI.Domain;
+import COM.hugin.HAPI.ExceptionHugin;
+import COM.hugin.HAPI.ParseListener;
 import eu.amidst.core.models.BayesianNetwork;
 import org.junit.Before;
 import org.junit.Test;
