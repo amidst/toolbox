@@ -1,4 +1,4 @@
-package eu.amidst.examples;
+package eu.amidst.huginlink;
 
 
 import COM.hugin.HAPI.*;
@@ -6,13 +6,8 @@ import COM.hugin.HAPI.Class;
 import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.huginlink.*;
 import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
-import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
-import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;

@@ -1,6 +1,8 @@
-package eu.amidst.core.huginlink;
+package eu.amidst.huginlink;
 
 
+import COM.hugin.HAPI.Domain;
+import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.*;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
@@ -15,7 +17,6 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.ReservoirSampling;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.examples.ParallelTANDemo;
 
 import java.io.IOException;
 import java.util.Random;
@@ -80,7 +81,7 @@ public class ParallelTAN {
         this.nameTarget = nameTarget;
     }
 
-    public DAG learnDAG(DataBase dataBase) {
+    public DAG learnDAG(DataBase dataBase) throws ExceptionHugin {
         StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
         DAG dag = new DAG(modelHeader);
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
@@ -131,15 +132,17 @@ public class ParallelTAN {
             //huginNetwork.uncompile();
 
 
-            return (ConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
+            return (eu.amidst.huginlink.ConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
         } catch (ExceptionHugin exceptionHugin) {
             throw new IllegalStateException("Huging Exeception: " + exceptionHugin.getMessage());
         }
     }
 
 
-    public BayesianNetwork learnBN(DataBase<StaticDataInstance> dataBase) {
-        LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
+    public BayesianNetwork learnBN(DataBase<StaticDataInstance> dataBase) throws ExceptionHugin {
+
+        //TODO uncomment this and solve the problem
+        //LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
         MaximumLikelihood.setBatchSize(this.batchSize);
         MaximumLikelihood.setParallelMode(this.parallelMode);
         LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);

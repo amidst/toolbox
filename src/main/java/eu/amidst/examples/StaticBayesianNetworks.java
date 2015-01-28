@@ -1,10 +1,8 @@
 package eu.amidst.examples;
 
-import COM.hugin.HAPI.Domain;
 import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.huginlink.ConverterToHugin;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;

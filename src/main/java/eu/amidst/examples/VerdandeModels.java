@@ -1,13 +1,10 @@
 package eu.amidst.examples;
 
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
+
 import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.huginlink.ConverterToHugin;
-import eu.amidst.core.huginlink.Utils;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
@@ -33,7 +30,7 @@ public final class VerdandeModels {
     /**
      * In this example we show how to create an input-output SKF (as in Figure 4.28 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputSKF() throws ExceptionHugin, IOException {
+    public static void VerdandeInputOutputSKF() throws IOException {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -166,7 +163,7 @@ public final class VerdandeModels {
     /**
      * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
-    public static void VerdandeInputOutputKFwithMG() throws ExceptionHugin, IOException {
+    public static void VerdandeInputOutputKFwithMG() throws IOException {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -396,7 +393,7 @@ public final class VerdandeModels {
 
     }
 
-    public static void main(String[] args) throws ExceptionHugin, IOException {
+    public static void main(String[] args) throws IOException {
         VerdandeModels.VerdandeInputOutputSKF();
         VerdandeModels.VerdandeInputOutputKFwithMG();
         VerdandeModels.VerdandeInputOutputHMM();
