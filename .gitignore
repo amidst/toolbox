@@ -60,3 +60,4 @@ datasets/RandomData.arff
 doc/testEvaluation/*
 huginlib/*
 maven_startup.sh
+*.jnilib

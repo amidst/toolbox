@@ -1,7 +1,6 @@
 package eu.amidst.core.learning;
 
 
-import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
