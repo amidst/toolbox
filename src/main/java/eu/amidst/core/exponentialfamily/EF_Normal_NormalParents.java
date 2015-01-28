@@ -146,6 +146,8 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return sizeSS;
     }
 
+
+    //TODO: check if this is quicker with a dot product of vectors \beta*Y
     @Override
     public double computeLogBaseMeasure(DataInstance dataInstance) {
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
