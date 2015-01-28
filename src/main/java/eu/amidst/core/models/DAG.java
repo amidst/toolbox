@@ -1,6 +1,5 @@
 package eu.amidst.core.models;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
