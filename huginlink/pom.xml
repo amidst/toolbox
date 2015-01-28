@@ -12,6 +12,13 @@
     <artifactId>huginlink</artifactId>
     <dependencies>
         <dependency>
+            <groupId>com.hugin</groupId>
+            <artifactId>hugin</artifactId>
+            <version>8.2</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/huginlib/hgapi82_amidst-64.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
