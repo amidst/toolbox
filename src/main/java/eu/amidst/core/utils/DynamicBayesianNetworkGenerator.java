@@ -5,6 +5,7 @@ import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -13,15 +14,10 @@ import java.util.stream.IntStream;
  */
 public class DynamicBayesianNetworkGenerator {
 
-    private static int numberOfVars = 10;
-    private static int numberOfLinks = 3;
     private static int numberOfDiscreteVars = 10;
-    private static int numberOfContinuousVars = 0;
     private static int numberOfStates = 2;
-
-    public static void setNumberOfVars(int numberOfVars) {
-        DynamicBayesianNetworkGenerator.numberOfVars = numberOfVars;
-    }
+    private static int numberOfContinuousVars = 0;
+    private static int numberOfLinks = 3;
 
     public static void setNumberOfLinks(int numberOfLinks) {
         DynamicBayesianNetworkGenerator.numberOfLinks = numberOfLinks;
@@ -36,33 +32,34 @@ public class DynamicBayesianNetworkGenerator {
     }
 
     public static void setNumberOfStates(int numberOfStates) {
+        //the same number of states is assigned for each discrete variable
         DynamicBayesianNetworkGenerator.numberOfStates = numberOfStates;
     }
 
-    public static DynamicBayesianNetwork generateDynamicNaiveBayes(Random random, int nClassLabels){
+    public static DynamicBayesianNetwork generateDynamicNaiveBayes(Random random, int numberClassStates, boolean connectChildrenTemporally){
 
         DynamicVariables dynamicVariables  = new DynamicVariables();
 
+        //class variable which is always discrete
+        Variable classVar = dynamicVariables.addHiddenDynamicVariable(generateDiscreteVariable("ClassVar", numberClassStates));
 
-        IntStream.range(0, numberOfDiscreteVars - 1)
+        //Discrete variables
+        IntStream.range(1, numberOfDiscreteVars+1)
                 .forEach(i -> dynamicVariables.addHiddenDynamicVariable(generateDiscreteVariable("DiscreteVar" + i, DynamicBayesianNetworkGenerator.numberOfStates)));
 
-        IntStream.range(0,numberOfContinuousVars)
-                .forEach(i -> dynamicVariables.addHiddenDynamicVariable(generateContinuousVariable("GaussianVar" + i)));
-
-        Variable classVar = dynamicVariables.addHiddenDynamicVariable(generateDiscreteVariable("ClassVar", nClassLabels));
+        //Continuous variables
+        IntStream.range(1,numberOfContinuousVars+1)
+                .forEach(i -> dynamicVariables.addHiddenDynamicVariable(generateContinuousVariable("ContinuousVar" + i)));
 
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
-
-        /*dag.getParentSetsTime0().stream()
-                .filter(var -> var.getMainVar().getVarID()!=classVar.getVarID())
-                .forEach(w -> w.addParent(classVar));*/
 
         dag.getParentSetsTimeT().stream()
                 .filter(var -> var.getMainVar().getVarID()!=classVar.getVarID())
                 .forEach(w -> {
                             w.addParent(classVar);
-                            w.addParent(dynamicVariables.getTemporalClone(w.getMainVar()));
+                            if (connectChildrenTemporally) {
+                                w.addParent(dynamicVariables.getTemporalClone(w.getMainVar()));
+                            }
                         }
                 );
 
@@ -98,10 +95,11 @@ public class DynamicBayesianNetworkGenerator {
     public static void main(String[] agrs) throws ExceptionHugin, IOException, ClassNotFoundException {
 
         DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(10);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfStates(2);
+        DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
 
-        DynamicBayesianNetwork dynamicNaiveBayes = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2);
+        DynamicBayesianNetwork dynamicNaiveBayes = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
 
         System.out.println(dynamicNaiveBayes.getDynamicDAG().toString());
         System.out.println(dynamicNaiveBayes.toString());

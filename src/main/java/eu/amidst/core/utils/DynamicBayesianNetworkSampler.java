@@ -284,7 +284,7 @@ public class DynamicBayesianNetworkSampler {
         dbnGenerator.setNumberOfDiscreteVars(3);
         dbnGenerator.setNumberOfStates(2);
 
-        DynamicBayesianNetwork network = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2);
+        DynamicBayesianNetwork network = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
 
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
         sampler.setSeed(0);
