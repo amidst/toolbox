@@ -1,11 +1,8 @@
 package eu.amidst.core.utils;
 
-import COM.hugin.HAPI.DefaultClassParseListener;
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ParseListener;
+
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.*;
-import eu.amidst.core.huginlink.ConverterToAMIDST;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetworkWriter;
@@ -14,7 +11,6 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.examples.ParallelTANDemo;
 
 import java.io.FileWriter;
 import java.io.IOException;

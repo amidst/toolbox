@@ -1,6 +1,5 @@
 package eu.amidst.core.utils;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
@@ -92,7 +91,7 @@ public class DynamicBayesianNetworkGenerator {
         return builder;
     }
 
-    public static void main(String[] agrs) throws ExceptionHugin, IOException, ClassNotFoundException {
+    public static void main(String[] agrs) throws IOException, ClassNotFoundException {
 
         DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);

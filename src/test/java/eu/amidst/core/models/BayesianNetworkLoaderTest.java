@@ -1,6 +1,5 @@
 package eu.amidst.core.models;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.examples.BNExample;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +13,7 @@ public class BayesianNetworkLoaderTest {
 
     //TODO Implement a test comparing all the elements of the BayesianNetwork before saving the file and after loading it
     @Before
-    public void setUp() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public void setUp() throws IOException, ClassNotFoundException {
 
         BayesianNetwork bn1 = BNExample.getAmidst_BN_Example();
 

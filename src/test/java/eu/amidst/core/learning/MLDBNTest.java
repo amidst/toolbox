@@ -1,5 +1,6 @@
 package eu.amidst.core.learning;
 
+
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
@@ -24,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 public class MLDBNTest {
 
     @Test
-    public void testingMLforDBN() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public void testingMLforDBN() throws IOException, ClassNotFoundException {
 
         //Generate a dynamic Naive Bayes with only Multinomial variables
         DynamicBayesianNetworkGenerator dbnGenerator = new DynamicBayesianNetworkGenerator();

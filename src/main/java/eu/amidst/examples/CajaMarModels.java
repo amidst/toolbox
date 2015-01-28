@@ -1,14 +1,9 @@
 package eu.amidst.examples;
 
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.huginlink.ConverterToHugin;
-import eu.amidst.core.huginlink.Utils;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
@@ -34,7 +29,7 @@ public final class CajaMarModels {
      * We finally compute the log-likelihood of the data according to the created model (i.e. the probabilty distributions
      * are randomly initialized, there is no parametric learning). The data is a single long temporal sequence.
      */
-    public static void cajaMarDefaulterPredictor() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public static void cajaMarDefaulterPredictor() throws IOException, ClassNotFoundException {
 
         /**
          * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
@@ -173,7 +168,7 @@ public final class CajaMarModels {
         DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/HuginCajaMarDefaulterPredictor.ser");
 
     }
-    public static void main(String[] args) throws ExceptionHugin, IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         CajaMarModels.cajaMarDefaulterPredictor();
     }
 }

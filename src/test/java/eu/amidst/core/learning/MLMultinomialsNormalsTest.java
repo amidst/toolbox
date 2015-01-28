@@ -1,6 +1,5 @@
 package eu.amidst.core.learning;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class MLMultinomialsNormalsTest {
 
         @Test
-        public void testingML2() throws ExceptionHugin, IOException, ClassNotFoundException {
+        public void testingML2() throws  IOException, ClassNotFoundException {
 
             // load the true WasteIncinerator hugin Bayesian network containing 3 Multinomial and 6 Gaussian variables
 

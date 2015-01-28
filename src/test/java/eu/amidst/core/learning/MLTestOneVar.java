@@ -1,16 +1,12 @@
 package eu.amidst.core.learning;
 
-import COM.hugin.HAPI.DefaultClassParseListener;
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
-import COM.hugin.HAPI.ParseListener;
+
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.huginlink.ConverterToAMIDST;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetworkWriter;
@@ -30,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 public class MLTestOneVar {
 
     @Test
-    public void MLTest() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public void MLTest() throws  IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
         BayesianNetwork net = BayesianNetworkLoader.loadFromFile("./networks/One.ser");
