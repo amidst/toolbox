@@ -32,6 +32,7 @@
 %\setcounter{page}{2}
 \newcommand{\drop}[1]{}
 \newcommand{\bm}{\mathbf}
+\newcommand{\bs}{\boldsymbol}
 
 \newcommand{\bu}[1]{\mathbf{#1}}
 \newcommand{\bv}[1]{\bm{#1}}
@@ -731,88 +732,13 @@ Let $X$ be a normal variable and $ \mathbf{Y} = \{Y_1,\ldots,Y_n\}$ denote the s
 
 The log-conditional probability of $X$ given its parents $\mathbf{Y}$ can be expressed as follows:
 
-$$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2(\beta_0+\sum_i^n \beta_i Y_i )}} \me^{-\frac{(y-(\beta_0+\sum_i^n \beta_i Y_i))^2}{2\sigma^2}} \right)$$
-
-
-Similarly the above log-conditional probability can be expressed in the following exponential forms:
-
-\begin{itemize}
-\item \textbf{First form - Joint suff. stat. (Maxim. Likelihood)}:
-
-\begin{eqnarray*}
-\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
-&=&
-\begin{pmatrix}
-\frac{-1}{2\sigma^2} &=& \theta_{\mbox{-}1} \\
-\frac{\beta_0}{\sigma^2} &=& \theta_0 \\
-\frac{\beta_1}{\sigma^2} &=& \theta_1 \\
-\vdots\\
-\frac{\beta_n}{\sigma^2} &=& \theta_n \\\\
-\frac{-\beta_0\beta_1}{2\sigma^2} &=&\theta_{01} \\
-\vdots\\
-\frac{-\beta_0\beta_n}{2\sigma^2} &=& \theta_{0n} \\
-\frac{-\beta_1^2}{2\sigma^2} &=& \theta_{1^2} \\
-\vdots \\
-\frac{-\beta_n^2}{2\sigma^2} &=& \theta_{n^2} \\
-\frac{-\beta_1\beta_2}{2\sigma^2} &=& \theta_{12} \\
-\vdots\\
-\frac{-\beta_1\beta_n}{2\sigma^2} &=& \theta_{1n} \\
-\vdots\\
-\frac{-\beta_{n-1}\beta_n}{2\sigma^2} &=&\theta_{n\mbox{-}1n} \\
-\end{pmatrix}^T
-\begin{pmatrix}
-X^2   &=& m_{X^2}\\
-X     &=& m_{X}\\
-XY_1  &=& m_{XY_1}\\
-\vdots\\
-XY_n  &=& m_{XY_n}\\
-Y_1   &=& m_{Y_1}\\
-\vdots\\
-Y_n   &=& m_{Y_n}\\
-Y_1^2 &=& m_{Y_1^2}\\
-\vdots\\
-Y_n^2 &=& m_{Y_n^2}\\
-Y_1Y_2&=& m_{Y_1Y_2}\\
-\vdots\\
-Y_1Y_n &=& m_{Y_1Y_n}\\
-\vdots\\
-Y_{n\mbox{-}1}Y_n &=& m_{Y_{n\mbox{-}1}Y_{n}}
-\end{pmatrix}
-- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
-\end{eqnarray*}
-
-where $\mu_{X|Y} = \beta_0+\sum_i^n{\beta_i Y_i}$
-
-\begin{itemize}
-\item \textbf{From moment to natural parameters: (matrix representation)}
-
-
-\begin{eqnarray*}
-\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
-&=&
-\begin{pmatrix}
-\beta_0 (\sigma^2)^{-1} &=& \theta_{0} \\
--\beta_0 \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta_0 \beta^T} \\
--(2\sigma^2)^{-1} &=& \theta_{\mbox{-}1} \\
-\beta (\sigma^2)^{-1} &=& \theta_{\beta} \\
--\beta' \beta^T (2\sigma^2)^{-1} &=& \theta_{\beta \beta^T} \\
-\end{pmatrix}^T
-\begin{pmatrix}
-X   &=& \E(X)\\
-Y   &=& \E(Y)\\
-XX^T   &=& \E(XX^T)\\
-YX^T   &=& \E(YX^T)\\
-YY^T   &=& \E(YY^T)\\
-\end{pmatrix}
-\\
-&-& \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right)  + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
-\end{eqnarray*}
+$$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2(\beta_0+ \bs \beta^T \cdot \bm Y )}} \me^{-\frac{(y-(\beta_0+ \bs \beta^T \cdot \bm Y))^2}{2\sigma^2}} \right)$$
 
 where
 
 \begin{tabular}{p{4cm}p{4cm}}
 \begin{eqnarray*}
-\beta &=& 
+\bs \beta &=& 
 \begin{pmatrix}
 \beta_1\\
 \vdots\\
@@ -821,7 +747,7 @@ where
 \end{eqnarray*}
 &
 \begin{eqnarray*}
-Y &=& 
+\bm Y &=& 
 \begin{pmatrix}
 Y_1\\
 \vdots\\
@@ -830,6 +756,72 @@ Y_n\\
 \end{eqnarray*}
 \\
 \end{tabular}
+
+Similarly the above log-conditional probability can be expressed in the following exponential forms:
+
+
+\newcommand{\Z}{\bm Z}
+\newcommand{\Y}{\bm Y}
+\newcommand{\thb}{\bs \theta}
+\newcommand{\beb}{\bs \beta}
+
+\begin{itemize}
+\item \textbf{First form - Joint suff. stat. (Maxim. Likelihood, matrix representation)}:
+
+$$\bm Z = ( X, \bm Y)$$
+\begin{eqnarray*}
+\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
+&=&
+\begin{pmatrix}
+\thb_1 \\
+\thb_2 \\
+\end{pmatrix}^T
+\begin{pmatrix}
+\Z   \\
+\Z^T\Z   \\
+\end{pmatrix}
+- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right)  + \frac{1}{\ln{\sqrt{2\mu_{X|Y}}}}
+\end{eqnarray*}
+
+
+
+where $\mu_{X|\bm Y} = \beta_0+ \bs \beta^T \cdot \bm Y$
+
+\begin{eqnarray*}
+\Z &=& 
+\begin{pmatrix}
+X & \Y
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+\Z^T\Z &=& 
+\begin{pmatrix}
+\E(XX^T)   & \E(X\Y) \\
+\E(\Y X^T) & \E(\Y \Y^T)
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+\thb_1 &=& 
+\begin{pmatrix}
+\beta_0\lambda^{-2} & -\beta_0\beb^T\sigma^{-2}/2
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{eqnarray*}
+\Z^T\Z &=& 
+\begin{pmatrix}
+\E(XX^T)   & \E(X\Y) \\
+\E(\Y X^T) & \E(\Y \Y^T)
+\end{pmatrix}
+\end{eqnarray*}
+
+\begin{itemize}
+\item \textbf{From moment to natural parameters: }
+
+
+
 
 
 \begin{itemize}
