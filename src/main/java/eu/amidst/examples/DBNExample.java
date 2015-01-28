@@ -1,11 +1,9 @@
 package eu.amidst.examples;
 
-import COM.hugin.HAPI.*;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.huginlink.DBNConverterToHugin;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.Assignment;
@@ -18,7 +16,7 @@ import eu.amidst.core.variables.Variable;
  */
 public class DBNExample {
 
-    public static DynamicBayesianNetwork getAmidst_DBN_Example() throws ExceptionHugin {
+    public static DynamicBayesianNetwork getAmidst_DBN_Example()  {
 
         DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataDiscrete.arff"));
 
@@ -169,7 +167,7 @@ public class DBNExample {
         return (amidstDBN);
     }
 
-    public static DynamicBayesianNetwork getAmidst_DBN_Example2() throws ExceptionHugin {
+    public static DynamicBayesianNetwork getAmidst_DBN_Example2() {
 
         DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataDiscrete.arff"));
 

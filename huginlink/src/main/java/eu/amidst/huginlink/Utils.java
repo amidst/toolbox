@@ -1,4 +1,4 @@
-package eu.amidst.core.huginlink;
+package eu.amidst.huginlink;
 
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
