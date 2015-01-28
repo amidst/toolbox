@@ -1,6 +1,5 @@
 package eu.amidst.core.learning;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
@@ -23,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class MLNormalsTest {
 
     @Test
-    public void testingML_Gaussians1Parent() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public void testingML_Gaussians1Parent() throws IOException, ClassNotFoundException {
 
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
@@ -61,7 +60,7 @@ public class MLNormalsTest {
     }
 
     @Test
-    public void testingML_GaussiansTwoParents() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
         System.out.println("\nNormal_NormalParents network \n ");

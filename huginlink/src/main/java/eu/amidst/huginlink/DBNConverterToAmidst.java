@@ -1,4 +1,4 @@
-package eu.amidst.core.huginlink;
+package eu.amidst.huginlink;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;

@@ -1,15 +1,14 @@
-package eu.amidst.core.huginlink;
+package eu.amidst.huginlink;
 
 import COM.hugin.HAPI.*;
-
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import org.junit.Before;
 import org.junit.Test;
 

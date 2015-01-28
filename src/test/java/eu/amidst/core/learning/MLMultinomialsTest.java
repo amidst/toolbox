@@ -1,6 +1,5 @@
 package eu.amidst.core.learning;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
@@ -28,7 +27,7 @@ import static org.junit.Assert.*;
 public class MLMultinomialsTest {
 
     @Test
-    public void testingML() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public void testingML() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.ser");

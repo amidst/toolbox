@@ -6,8 +6,11 @@
     <groupId>eu.amidst</groupId>
     <artifactId>core</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>huginlink</module>
+    </modules>
     <name>Amidst :: Core</name>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
     <url>http://github.com/amidst/core</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,13 +18,6 @@
         <junit.version>4.11</junit.version>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>com.hugin</groupId>
-            <artifactId>hugin</artifactId>
-            <version>8.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/huginlib/hgapi82_amidst-64.jar</systemPath>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
