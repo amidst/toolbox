@@ -18,6 +18,7 @@ doc/requirementEngineering/REproccessOLD.pdf
 doc/requirementEngineering/REproccessNIK.pdf
 doc/testEvaluation/testEvaluation*
 doc/D2.1_AMIDSTModelingFramework/D2.1_AMIDSTModellingFramework.*
+doc/CEF-BNs/CEF-BNs.pdf
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
