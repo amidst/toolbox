@@ -33,6 +33,7 @@ doc/REproccess.pdf
 target/maven-archiver*
 target/surefire-reports*
 target/*
+huginlink/target/*
 
 # latex noise
 *.synctex.gz
