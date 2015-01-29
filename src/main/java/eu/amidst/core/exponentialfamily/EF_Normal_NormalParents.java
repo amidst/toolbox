@@ -147,22 +147,10 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
 
-    //TODO: check if this is quicker with a dot product of vectors \beta*Y
+
     @Override
     public double computeLogBaseMeasure(DataInstance dataInstance) {
-        CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
-        double[] theta_beta = globalNaturalParameters.getXYbaseMatrix().toArray();
-        double beta0 = theta_beta[0]*variance;
-        double[] beta = Arrays.stream(theta_beta).map(w->w*2*variance/beta0).toArray();
-        //Note that beta[0] is beta0 = beta0*2/beta0 = 2 hence beta[0] != beta0
-
-        double[] YdataInstance = this.parents.stream()
-                                     .mapToDouble(w -> dataInstance.getValue(w))
-                                     .toArray();
-
-        double[] result = new double[YdataInstance.length];
-        return beta0 + IntStream.range(0, YdataInstance.length)
-                                  .mapToDouble(i -> result[i] = beta[i + 1] * YdataInstance[i]).sum();
+        return 0.5*Math.log(2*Math.PI);
     }
 
     @Override
