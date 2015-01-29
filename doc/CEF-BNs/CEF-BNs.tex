@@ -790,7 +790,7 @@ where $\mu_{X|\bm Y} = \beta_0+ \bs \beta^T \cdot \bm Y$
 \begin{eqnarray*}
 \Z &=& 
 \begin{pmatrix}
-X & \Y
+\E(X) & \E(\Y)
 \end{pmatrix}
 \end{eqnarray*}
 
@@ -805,16 +805,30 @@ X & \Y
 \begin{eqnarray*}
 \thb_1 &=& 
 \begin{pmatrix}
-\beta_0\lambda^{-2} & -\beta_0\beb^T\sigma^{-2}/2
+\beta_0\sigma^{-2} & -\beta_0\beb^T\sigma^{-2}/2
+\end{pmatrix}
+=
+\begin{pmatrix}
+\theta_1^1 & \thb_1^2
 \end{pmatrix}
 \end{eqnarray*}
 
 \begin{eqnarray*}
-\Z^T\Z &=& 
+\thb_2 &=& 
 \begin{pmatrix}
-\E(XX^T)   & \E(X\Y) \\
-\E(\Y X^T) & \E(\Y \Y^T)
+-2\sigma^{-2}   &  \beb \sigma^{-2}/2\\
+\beb \sigma^{-2}/2   & -\beb \beb^T \sigma^{-2}
 \end{pmatrix}
+= 
+\begin{pmatrix}
+\theta_2^{11}   &  \thb_2^{12} \\
+\thb_2^{21}   &  \thb_2^{22}
+\end{pmatrix}
+%= \sigma^{-2}/2
+%\begin{pmatrix}
+%-4   &  \beb \\
+%\beb & -2\beb \beb^T 
+%\end{pmatrix}
 \end{eqnarray*}
 
 \begin{itemize}
@@ -830,17 +844,17 @@ X & \Y
 \item FIRST STEP: 
 \begin{eqnarray*}
 \mu_X &=& E(X)\\
-\mu_\mathbf{Y} &=& \E(Y)\\
+\mu_\mathbf{Y} &=& \E(\Y)\\
 \Sigma_{XX} &=&  \E(XX^T) - \E(X)\E(X)^T\\
-\Sigma_{\mathbf{YY}} &=&  \E(YY^T) - \E(Y)\E(Y)^T \\
-\Sigma_{X\mathbf{Y}} &=&  \E(YX^T)^T - \E(X)\E(Y)^T\\
-\Sigma_{\mathbf{Y}X} &=&  \E(YX^T) - \E(Y)\E(X)
+\Sigma_{\mathbf{YY}} &=&  \E(\Y\Y^T) - \E(\Y)\E(\Y)^T \\
+\Sigma_{X\mathbf{Y}} &=&  \E(X \Y) - \E(X)\E(\Y)^T\\
+\Sigma_{\mathbf{Y}X} &=&  \E(\Y X^T) - \E(\Y)\E(X)
 \end{eqnarray*}
 
 \item SECOND STEP (Theorem 7.4 in page 253, Koller \& Friedman):
 \begin{eqnarray*}
 \beta_0 &=& \mu_X - \Sigma_{X\mathbf{Y}}\Sigma^{-1}_{\mathbf{YY}}\mu_\mathbf{Y}\\
-\beta   &=& \Sigma_{X\mathbf{Y}}\Sigma^{-1}_{\mathbf{YY}} \\
+\beb   &=& \Sigma_{X\mathbf{Y}}\Sigma^{-1}_{\mathbf{YY}} \\
 \sigma^2 &=& \Sigma_{XX} - \Sigma_{XY}\Sigma^{-1}_{YY}\Sigma_{YX}
 \end{eqnarray*}
 
@@ -869,16 +883,16 @@ X^2\\
 - \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma}\right) + \ln{\frac{1}{\sqrt{2\mu_{X|Y}}}} \\\\
 &=&
 \begin{pmatrix}
-\theta_0+\sum_i^n\theta_i m^{Y_i}\\
-\theta_{\mbox{-}1}\\
+\theta_1^1+2\thb_2^{12} \E(\Y)\\
+\theta_2^{11}\\
 \end{pmatrix}^T
 \begin{pmatrix}
 X\\
 X^2\\
 \end{pmatrix}
-- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_0+\sum_i^n\theta_i m^{Y_i}\right)^2 \right) \\
+- \left(\frac{\ln{(2\theta_2^{11}})}{2}-\theta_2^{11}\left(\theta_1^1+2\thb_2^{12} \E(\Y)\right)^2 \right) \\
 &+&
- \ln{\frac{1}{\sqrt{2(\theta_0+\sum_i^n\theta_i m^{Y_i})}}} 
+ \ln{\frac{1}{\sqrt{2(\theta_1^1+2\thb_2^{12} \E(\Y))}}} 
 \end{eqnarray*}
 
 
