@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public final class InferenceEngineForBN {
 
-    private static InferenceAlgorithmForBN inferenceAlgorithmForBN;
+    private static InferenceAlgorithmForBN inferenceAlgorithmForBN = new RandomInferenceAlgorithm();
 
     public static void setInferenceAlgorithmForBN(InferenceAlgorithmForBN inferenceAlgorithmForBN) {
         InferenceEngineForBN.inferenceAlgorithmForBN = inferenceAlgorithmForBN;
