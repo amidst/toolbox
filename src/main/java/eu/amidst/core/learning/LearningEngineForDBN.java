@@ -2,36 +2,19 @@ package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.DynamicVariables;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 06/01/15.
  */
-public final class LearningEngine {
+public final class LearningEngineForDBN {
+    private static DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm = MaximumLikelihoodForDBN::learnDynamic;
 
-    private static StaticParameterLearningAlgorithm staticParameterLearningAlgorithm = MaximumLikelihood::learnParametersStaticModel;
+    private static DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm = LearningEngineForDBN::dynamicNaiveBayesStructure;
 
-    private static DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm = MaximumLikelihood::learnDynamic;
-
-    private static StaticStructuralLearningAlgorithm staticStructuralLearningAlgorithm = LearningEngine::staticNaiveBayesStructure;
-
-    private static DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm = LearningEngine::dynamicNaiveBayesStructure;
-
-
-    private static DAG staticNaiveBayesStructure(DataBase dataBase){
-        StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
-        DAG dag = new DAG(modelHeader);
-        Variable classVar = modelHeader.getVariableById(modelHeader.getNumberOfVars()-1);
-        dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
-
-        return dag;
-    }
 
     private static DynamicDAG dynamicNaiveBayesStructure(DataBase dataBase){
         DynamicVariables modelHeader = new DynamicVariables(dataBase.getAttributes());
@@ -40,7 +23,7 @@ public final class LearningEngine {
         dag.getParentSetsTimeT()
                 .stream()
                 .filter(w-> w.getMainVar()
-                .getVarID()!=classVar.getVarID())
+                        .getVarID()!=classVar.getVarID())
                 .forEach(w -> {
                     w.addParent(classVar);
                     w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
@@ -49,49 +32,24 @@ public final class LearningEngine {
         return dag;
     }
 
-    public static void setStaticParameterLearningAlgorithm(StaticParameterLearningAlgorithm staticParameterLearningAlgorithm) {
-        LearningEngine.staticParameterLearningAlgorithm = staticParameterLearningAlgorithm;
-    }
 
     public static void setDynamicParameterLearningAlgorithm(DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm) {
-        LearningEngine.dynamicParameterLearningAlgorithm = dynamicParameterLearningAlgorithm;
+        LearningEngineForDBN.dynamicParameterLearningAlgorithm = dynamicParameterLearningAlgorithm;
     }
 
-    public static void setStaticStructuralLearningAlgorithm(StaticStructuralLearningAlgorithm staticStructuralLearningAlgorithm) {
-        LearningEngine.staticStructuralLearningAlgorithm = staticStructuralLearningAlgorithm;
-    }
 
     public static void setDynamicStructuralLearningAlgorithm(DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm) {
-        LearningEngine.dynamicStructuralLearningAlgorithm = dynamicStructuralLearningAlgorithm;
+        LearningEngineForDBN.dynamicStructuralLearningAlgorithm = dynamicStructuralLearningAlgorithm;
     }
 
-    public static BayesianNetwork learnParameters(DAG dag, DataBase database){
-        return staticParameterLearningAlgorithm.learn(dag,database);
-    }
 
     public static DynamicBayesianNetwork learnParameters(DynamicDAG dag, DataBase dataBase){
         return dynamicParameterLearningAlgorithm.learn(dag,dataBase);
     }
 
-    public static DAG learnDAG(DataBase dataBase){
-        return staticStructuralLearningAlgorithm.learn(dataBase);
-    }
 
     public static DynamicDAG learnDynamicDAG(DataBase dataBase){
         return dynamicStructuralLearningAlgorithm.learn(dataBase);
-    }
-
-    public static BayesianNetwork learnStaticModel(DataBase database){
-
-        Stopwatch watch = Stopwatch.createStarted();
-        DAG dag = staticStructuralLearningAlgorithm.learn(database);
-        System.out.println("Structural Learning : " + watch.stop());
-
-        watch = Stopwatch.createStarted();
-        BayesianNetwork network = staticParameterLearningAlgorithm.learn(dag,database);
-        System.out.println("Parameter Learning: " + watch.stop());
-
-        return network;
     }
 
     public static DynamicBayesianNetwork learnDynamicModel(DataBase database){
@@ -105,6 +63,7 @@ public final class LearningEngine {
 
         return network;
     }
+
 
     public static void main(String[] args) throws Exception{
 

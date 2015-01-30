@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 06/01/15.
  */
-public final class MaximumLikelihood {
+public final class MaximumLikelihoodForBN {
 
     private static int batchSize = 1000;
     private static boolean parallelMode = true;
@@ -30,7 +30,7 @@ public final class MaximumLikelihood {
     }
 
     public static void setBatchSize(int batchSize) {
-        MaximumLikelihood.batchSize = batchSize;
+        MaximumLikelihoodForBN.batchSize = batchSize;
     }
 
     public static boolean isParallelMode() {
@@ -38,7 +38,7 @@ public final class MaximumLikelihood {
     }
 
     public static void setParallelMode(boolean parallelMode) {
-        MaximumLikelihood.parallelMode = parallelMode;
+        MaximumLikelihoodForBN.parallelMode = parallelMode;
     }
 
     public static BayesianNetwork learnParametersStaticModel(DAG dag, DataBase<StaticDataInstance> dataBase) {
@@ -70,33 +70,6 @@ public final class MaximumLikelihood {
 
     }
 
-    public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataBase<DynamicDataInstance> dataBase) {
-
-        EF_DynamicBayesianNetwork efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dag);
-
-        Stream<DynamicDataInstance> stream = null;
-        if (parallelMode){
-            stream = dataBase.parallelStream(batchSize);
-        }else{
-            stream = dataBase.stream();
-        }
-
-        AtomicInteger dataInstanceCount = new AtomicInteger(0);
-
-        SufficientStatistics sumSS = stream
-                .peek(w -> {
-                    if (w.getTimeID()==0)
-                        dataInstanceCount.getAndIncrement();
-                })
-                .map(efDynamicBayesianNetwork::getSufficientStatistics)
-                .reduce(efDynamicBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
-
-        //Normalize the sufficient statistics
-        sumSS.divideBy(dataInstanceCount.get());
-
-        efDynamicBayesianNetwork.setMomentParameters(sumSS);
-        return efDynamicBayesianNetwork.toDynamicBayesianNetwork(dag);
-    }
 
     public static void main(String[] args){
 
