@@ -25,6 +25,7 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
     //private final int batchSize;
     private final int characteristics;
     private long est;
+    private int option;
 
     //public DynamicDataInstanceFixedBatchParallelSpliteratorWrapper(DataFileReader reader1, long est, int batchSize) {
     public DynamicDataInstanceSpliterator(DataFileReader reader1) {
@@ -67,6 +68,14 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
         }
 
         nextDynamicDataInstance = new NextDynamicDataInstance(past, present, sequenceID, timeID);
+
+
+        /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
+        /* 1 = true,  false, i.e., TimeID is provided */
+        /* 2 = false, true,  i.e., SequenceID is provided */
+        /* 3 = true,  true,  i.e., SequenceID is provided*/
+        option = ((attTimeID == null) ? 0 : 1) + 2 * ((attSequenceID == null) ? 0 : 1);
+
     }
 
 
@@ -101,12 +110,6 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
 
         if (!dataRowIterator.hasNext())
             return false;
-
-        /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
-        /* 1 = true,  false, i.e., TimeID is provided */
-        /* 2 = false, true,  i.e., SequenceID is provided */
-        /* 3 = true,  true,  i.e., SequenceID is provided*/
-        int option = ((attTimeID == null) ? 0 : 1) + 2 * ((attSequenceID == null) ? 0 : 1);
 
         switch (option) {
 

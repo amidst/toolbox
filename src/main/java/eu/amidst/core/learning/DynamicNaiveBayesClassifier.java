@@ -5,13 +5,11 @@ import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.DynamicVariables;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
@@ -69,10 +67,10 @@ public class DynamicNaiveBayesClassifier {
     }
 
     public void learn(DataBase dataBase){
-        LearningEngine.setDynamicStructuralLearningAlgorithm(this::dynamicNaiveBayesStructure);
-        MaximumLikelihood.setParallelMode(this.isParallelMode());
-        LearningEngine.setDynamicParameterLearningAlgorithm(MaximumLikelihood::learnDynamic);
-        bnModel = LearningEngine.learnDynamicModel(dataBase);
+        LearningEngineForDBN.setDynamicStructuralLearningAlgorithm(this::dynamicNaiveBayesStructure);
+        MaximumLikelihoodForBN.setParallelMode(this.isParallelMode());
+        LearningEngineForDBN.setDynamicParameterLearningAlgorithm(MaximumLikelihoodForDBN::learnDynamic);
+        bnModel = LearningEngineForDBN.learnDynamicModel(dataBase);
     }
 
     public static void main(String[] args) throws IOException {

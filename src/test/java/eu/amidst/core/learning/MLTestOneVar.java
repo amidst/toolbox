@@ -9,10 +9,7 @@ import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetworkWriter;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
@@ -54,11 +51,11 @@ public class MLTestOneVar {
         //Structure learning is excluded from the test, i.e., so we use here the same initial network structure net.getDAG()
 
         //Parameter Learning
-        MaximumLikelihood.setBatchSize(10);
-        MaximumLikelihood.setParallelMode(false);
+        MaximumLikelihoodForBN.setBatchSize(10);
+        MaximumLikelihoodForBN.setParallelMode(false);
 
         //using Maximum likelihood learnParametersStaticModel
-        BayesianNetwork bn = MaximumLikelihood.learnParametersStaticModel(net.getDAG(), data);
+        BayesianNetwork bn = MaximumLikelihoodForBN.learnParametersStaticModel(net.getDAG(), data);
         System.out.println(bn.toString());
 
 
