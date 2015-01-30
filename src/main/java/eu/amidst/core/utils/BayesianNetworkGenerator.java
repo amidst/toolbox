@@ -20,6 +20,11 @@ public final class BayesianNetworkGenerator {
     private static int numberOfDiscreteVars = 10;
     private static int numberOfContinuousVars = 0;
     private static int numberOfStates = 2;
+    private static int seed;
+
+    public static void setSeed(int seed) {
+        BayesianNetworkGenerator.seed = seed;
+    }
 
     public static void setNumberOfVars(int numberOfVars) {
         BayesianNetworkGenerator.numberOfVars = numberOfVars;
@@ -41,7 +46,7 @@ public final class BayesianNetworkGenerator {
         BayesianNetworkGenerator.numberOfStates = numberOfStates;
     }
 
-    public static BayesianNetwork generateNaiveBayes(Random random, int nClassLabels){
+    public static BayesianNetwork generateNaiveBayes(int nClassLabels){
 
         StaticVariables staticVariables  = new StaticVariables();
 
@@ -62,7 +67,7 @@ public final class BayesianNetworkGenerator {
 
         BayesianNetwork network = BayesianNetwork.newBayesianNetwork(dag);
 
-        network.randomInitialization(random);
+        network.randomInitialization(new Random(seed));
 
         return network;
     }
@@ -92,8 +97,8 @@ public final class BayesianNetworkGenerator {
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
         BayesianNetworkGenerator.setNumberOfStates(2);
-
-        BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+        BayesianNetworkGenerator.setSeed(0);
+        BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
 
         BayesianNetworkWriter.saveToFile(naiveBayes, "networks/NB-10.ser");
 

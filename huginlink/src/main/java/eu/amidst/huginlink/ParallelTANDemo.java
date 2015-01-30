@@ -88,7 +88,9 @@ public class ParallelTANDemo {
         BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
         BayesianNetworkGenerator.setNumberOfStates(2);
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+        BayesianNetworkGenerator.setSeed(0);
+
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -141,7 +143,9 @@ public class ParallelTANDemo {
         BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
         BayesianNetworkGenerator.setNumberOfStates(2);
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+        BayesianNetworkGenerator.setSeed(0);
+
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(true);
         sampler.sampleToAnARFFFile(dataFile, sampleSize);
@@ -192,7 +196,8 @@ public class ParallelTANDemo {
             BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
             BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
             BayesianNetworkGenerator.setNumberOfStates(numStates);
-            BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+            BayesianNetworkGenerator.setSeed(0);
+            BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setParallelMode(true);

@@ -21,7 +21,8 @@ public class DynamicNaiveBayesClassifierDemo {
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         BayesianNetworkGenerator.setNumberOfStates(3);
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+        BayesianNetworkGenerator.setSeed(0);
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
         int sampleSize = 10000000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
