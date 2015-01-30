@@ -53,10 +53,10 @@ public class NaiveBayesClassifier {
     }
 
     public void learn(DataBase dataBase){
-        LearningEngine.setStaticStructuralLearningAlgorithm(this::staticNaiveBayesStructure);
-        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
-        MaximumLikelihood.setParallelMode(this.isParallelMode());
-        bnModel = LearningEngine.learnStaticModel(dataBase);
+        LearningEngineForBN.setStaticStructuralLearningAlgorithm(this::staticNaiveBayesStructure);
+        LearningEngineForBN.setStaticParameterLearningAlgorithm(MaximumLikelihoodForBN::learnParametersStaticModel);
+        MaximumLikelihoodForBN.setParallelMode(this.isParallelMode());
+        bnModel = LearningEngineForBN.learnStaticModel(dataBase);
         //DAG dag = this.staticNaiveBayesStructure(dataBase);
         //bnModel = MaximumLikelihood.learnParametersStaticModel(dag,dataBase);
     }

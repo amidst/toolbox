@@ -45,9 +45,9 @@ public class MLMultinomialsNormalsTest {
             // and just learn then test the parameter learning
 
             //Parameter Learning
-            MaximumLikelihood.setBatchSize(1000);
-            MaximumLikelihood.setParallelMode(true);
-            BayesianNetwork bnet = MaximumLikelihood.learnParametersStaticModel(trueBN.getDAG(), data);
+            MaximumLikelihoodForBN.setBatchSize(1000);
+            MaximumLikelihoodForBN.setParallelMode(true);
+            BayesianNetwork bnet = MaximumLikelihoodForBN.learnParametersStaticModel(trueBN.getDAG(), data);
 
             //Check if the probability distributions of each node
             for (Variable var : trueBN.getStaticVariables()) {

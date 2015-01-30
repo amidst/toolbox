@@ -3,15 +3,11 @@ package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.models.*;
-import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.core.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
-import scala.util.DynamicVariable;
 
 import java.io.IOException;
 import java.util.Random;
@@ -54,12 +50,12 @@ public class MLDBNTest {
         // and just apply then test parameter learning
 
         //Parameter Learning
-        MaximumLikelihood.setBatchSize(1000);
-        MaximumLikelihood.setParallelMode(true);
+        MaximumLikelihoodForBN.setBatchSize(1000);
+        MaximumLikelihoodForBN.setParallelMode(true);
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        DynamicBayesianNetwork bnet = MaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
+        DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
         System.out.println(watch.stop());
         System.out.println();

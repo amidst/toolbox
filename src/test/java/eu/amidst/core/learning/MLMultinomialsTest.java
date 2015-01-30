@@ -1,23 +1,15 @@
 package eu.amidst.core.learning;
 
-import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
-import eu.amidst.core.distribution.ConditionalDistribution;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -52,9 +44,9 @@ public class MLMultinomialsTest {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        MaximumLikelihood.setBatchSize(1000);
-        MaximumLikelihood.setParallelMode(true);
-        BayesianNetwork bnet = MaximumLikelihood.learnParametersStaticModel(asianet.getDAG(), data);
+        MaximumLikelihoodForBN.setBatchSize(1000);
+        MaximumLikelihoodForBN.setParallelMode(true);
+        BayesianNetwork bnet = MaximumLikelihoodForBN.learnParametersStaticModel(asianet.getDAG(), data);
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getStaticVariables()) {
