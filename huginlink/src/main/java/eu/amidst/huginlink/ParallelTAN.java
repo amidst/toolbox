@@ -8,8 +8,8 @@ import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnMemory;
 import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.learning.LearningEngine;
-import eu.amidst.core.learning.MaximumLikelihood;
+import eu.amidst.core.learning.LearningEngineForBN;
+import eu.amidst.core.learning.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -143,11 +143,11 @@ public class ParallelTAN {
 
         //TODO uncomment this and solve the problem
         //LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
-        MaximumLikelihood.setBatchSize(this.batchSize);
-        MaximumLikelihood.setParallelMode(this.parallelMode);
-        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
+        MaximumLikelihoodForBN.setBatchSize(this.batchSize);
+        MaximumLikelihoodForBN.setParallelMode(this.parallelMode);
+        LearningEngineForBN.setStaticParameterLearningAlgorithm(MaximumLikelihoodForBN::learnParametersStaticModel);
 
-        return LearningEngine.learnStaticModel(dataBase);
+        return LearningEngineForBN.learnStaticModel(dataBase);
     }
 
     public static void main(String[] args) throws ExceptionHugin, IOException {

@@ -1,14 +1,11 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
@@ -45,9 +42,9 @@ public class MLNormalsTest {
 
 
         //Parameter Learning
-        MaximumLikelihood.setBatchSize(1000);
-        MaximumLikelihood.setParallelMode(true);
-        BayesianNetwork bnet = MaximumLikelihood.learnParametersStaticModel(testnet.getDAG(), data);
+        MaximumLikelihoodForBN.setBatchSize(1000);
+        MaximumLikelihoodForBN.setParallelMode(true);
+        BayesianNetwork bnet = MaximumLikelihoodForBN.learnParametersStaticModel(testnet.getDAG(), data);
 
         //Check the probability distributions of each node
         for (Variable var : testnet.getStaticVariables()) {
@@ -81,9 +78,9 @@ public class MLNormalsTest {
 
 
         //Parameter Learning
-        MaximumLikelihood.setBatchSize(1000);
-        MaximumLikelihood.setParallelMode(true);
-        BayesianNetwork bnet = MaximumLikelihood.learnParametersStaticModel(testnet.getDAG(), data);
+        MaximumLikelihoodForBN.setBatchSize(1000);
+        MaximumLikelihoodForBN.setParallelMode(true);
+        BayesianNetwork bnet = MaximumLikelihoodForBN.learnParametersStaticModel(testnet.getDAG(), data);
 
         //Check the probability distributions of each node
         for (Variable var : testnet.getStaticVariables()) {
