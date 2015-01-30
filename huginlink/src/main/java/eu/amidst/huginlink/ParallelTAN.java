@@ -155,7 +155,9 @@ public class ParallelTAN {
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(2000);
         BayesianNetworkGenerator.setNumberOfStates(10);
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(new Random(0), 2);
+        BayesianNetworkGenerator.setSeed(0);
+
+        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
         int sampleSize = 5000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
