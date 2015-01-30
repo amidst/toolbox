@@ -102,30 +102,29 @@ A BN defines a joint probability in the exponential family with a natural (or ca
 
 \begin{equation}
 \label{Equation:EFCanonical}
-p(\bm x | \theta) = h(x)~exp(\theta^T s(\bm x) - A(\theta) )
+p(\bm x | \theta) = h(x)~exp\big(\theta^T s(\bm x) - A(\theta) \big)
 \end{equation}
 
-\noindent where $\theta$ is a natural parameter that belongs to the \emph{natural parameter space} defined as follows:
+\noindent where $h(x)$ is the base measure, $A$ is the log partition function, and $\theta$ is a natural parameter that belongs to the \emph{natural parameter space} $\Theta$ defined as follows:
 
 \begin{equation}
 \label{Equation:NPS}
-\Theta \equiv \{ \theta \in\Re^K: \int_{\bm x} h(\bm x)~exp(\theta^T s(\bm x) - A(\theta) )~d\bm x < \infty \}
+\Theta \equiv \{ \theta \in\Re^K: \int_{\bm x} h(\bm x)~exp\big(\theta^T s(\bm x) \big)~d\bm x < \infty \}
 \end{equation}
 
-\noindent where $s(\bm x)$ is the vector of sufficient statistics belonging to $\mathcal{S} \subseteq\Re^K$, $A$ is the log partition function, and $h(x)$ is the base measure. 
+\noindent where $s(\bm x)$ is the vector of sufficient statistics belonging to $\mathcal{S} \subseteq\Re^K$.
 
 In addition, the \emph{expectation or moment parameter} $\mu\in\mathcal{S}$ can be used as well to parametrize probability
-distributions of the exponential family. $\mu$ is defined as the expected vector of sufficient statistics with respect to $\theta$:
+distributions of the exponential family. $\mu$ is defined as the \emph{expected vector of sufficient statistics} with respect to $\theta$:
 
 \begin{equation}
 \label{Equation:NaturalToMoment}
 \begin{array}{lll}
-\bm \mu & \triangleq & \e{s(\bm x)|\theta}  = \int s(\bm x)~p(\bm x|\theta)~d\bm x\\
+\bm \mu & \triangleq & \e{s(\bm x)|\theta}  = \int_{\bm x} s(\bm x)~p(\bm x|\theta)~d\bm x\\
 \end{array}
 \end{equation}
 
-The \emph{natural parameter} $\theta$ associated to an \emph{moment parameter} $\mu$ is obtained by solving the following optimization 
-problem:
+The \emph{natural parameter} $\theta$ associated to an \emph{moment parameter} $\mu$ is obtained by solving the following optimization problem denoted as:
  
 \begin{eqnarray}
 \label{Equation:MomentToNatural}
@@ -231,8 +230,8 @@ By using Equation \ref{Equation:EqCED}, a CEF-BN can be represented in the follo
 \begin{eqnarray}
 \label{Equation:CEFSS}
 \ln p(X_1,\ldots, X_n) &=& \sum_{i=1}^n \ln p(X_i|Pa(X_i))\nonumber\\
-&=& \sum_{i=1}^n \theta_i \big(Pa(X_i)\big)^T s_i(X_i) - B\Big(\theta\big(Pa(X_i)\big)\Big)\nonumber\\
-&=& \sum_{i=1}^n \theta_i^T~s_i\big(X_i, Pa(X_i)\big) - B(\theta_i)\nonumber\\
+&=& \sum_{i=1}^n \theta_i \big(Pa(X_i)\big)^T s_i(X_i) - A_i\Big(\theta\big(Pa(X_i)\big)\Big)\nonumber\\
+&=& \sum_{i=1}^n \theta_i^T~s_i\big(X_i, Pa(X_i)\big) - B_i(\theta_i)\nonumber\\
 &=&
 \begin{pmatrix}
 \theta_1\\
@@ -285,10 +284,10 @@ The transformation from moment to natural parameters also decomposes. Let us sta
 \label{Equation:CEFBN_MomentToNatural}
 \theta(\mu) &=& \arg\max_{\theta\in\Theta} \theta^T\mu
 -A(\theta)\nonumber \\
-&=& \arg\max_{(\theta_1,\ldots, \theta_n) \in\Theta} \sum_{i=1}^n \theta_i^T \mu_i - B(\theta_i) 
+&=& \arg\max_{(\theta_1,\ldots, \theta_n) \in\Theta} \sum_{i=1}^n \theta_i^T \mu_i - B_i(\theta_i) 
 \end{eqnarray}
 
-Given that $\theta_i$ parameters are independent, the above maximization problem fully decomposes into local maximization problems, one for each conditional probability distribution:  
+Given that $\theta_i$ parameters are independent, the above maximization problem fully decomposes into local maximization problems, one for each CPD:  
 
 \begin{eqnarray}
 \label{Equation:CEFBN_MomentToNaturalLocal}
@@ -419,17 +418,17 @@ Let us assume that we are given a set of $m$ i.i.d. data samples $D=\{\bm x^{(1)
 &=& \arg\max_{\theta \in \Theta} \theta^T\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)  - A(\theta) \\
 \end{eqnarray*}
 
-\noindent where the last part is achieved by diving the optimized equation by the number of samples $m$, what does not affect the result of the optimization. 
+\noindent where the last part is achieved by dividing the optimized equation by the number of samples $m$, what does not affect the result of the optimization. 
 
-As widely known, the maximum likelihood is equivalent to a transformation form moment to natural parameters as stated in Equation \ref{Equation:MomentToNatural}, 
+As widely known, the maximum likelihood is equivalent to a transformation form moment to natural parameters as stated in Equation \ref{Equation:MomentToNatural}: 
 
-$$\theta^\star = \theta\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)$$
+$$\theta^\star = \theta (\mu) = \theta\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)$$
 
-As shown in Section \ref{Section:CEFBN:MomentToNatural}, this problem decomposes for each conditional probability distribution.  The above formation can be expressed in terms of local transformations defined in Equation \ref{Equation:CEFBN_MomentToNaturalLocal}, 
+As shown in Section \ref{Section:CEFBN:MomentToNatural}, this problem decomposes for each CPD. The above formation can be expressed in terms of local transformations defined in Equation \ref{Equation:CEFBN_MomentToNaturalLocal}:
 
 $$\theta_i^\star = \theta_i\Big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i)\Big)$$
 
-To better understand the above decomposition, we should notice that $\theta_i(\mu_i)$ is directly related to maximum likelihood estimation of the conditional distribution $p(X_i|Pa(X_i))$, 
+To better understand the above decomposition, we should notice that $\theta_i(\mu_i)$ is directly related to maximum likelihood estimation of the conditional distribution $p(X_i|Pa(X_i))$:
 
 \begin{eqnarray*}
 \theta^\star  &=& \arg\max_{\theta_i \in \Theta_i} \sum_{j=1}^m \ln p(x_i^{(j)}|\bm{pa}^{(j)}_i,\theta) \\
@@ -438,9 +437,9 @@ To better understand the above decomposition, we should notice that $\theta_i(\m
 &=& \arg\max_{\theta_i \in \Theta_i} \theta_i^T\Big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i) \Big)  - B_i(\theta) \\
 \end{eqnarray*}
 
-\noindent where $\bm{pa}^{(j)}_i$ corresponds to the assignment to the parents of $X_i$ according the to the $j$-th data sample $\bm x^{(j)}$.
+\noindent where $\bm{pa}^{(j)}_i$ corresponds to the $X_i$ parents values in the $j$-th data sample $\bm x^{(j)}$.
 
-For those conditional distributions with multinomial parents, the problem further decomposes as shown in Section \ref{Section:CD_With_MParents:MomentToNatural}. 
+For those conditional distributions with multinomial parents, the problem further decomposes as previously shown in Section \ref{Section:CD_With_MParents:MomentToNatural}. 
 
 
 %
@@ -469,24 +468,24 @@ For those conditional distributions with multinomial parents, the problem furthe
 %------------------------------------------------------------------------------------------------------
 
 
-%------------------------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------------------------------------------------------------
 \begin{appendices}
+%--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+%------------------------------------------------------------------------------------------------------
+\section{Regular EF: moment parameters equal the gradient of the log-normalizer}\label{appendix:regularEFequality}
 %------------------------------------------------------------------------------------------------------
 
-\section{Regular EF: moment parameters equal the gradient of the log-normalizer}\label{appendix:regularEFequality}
-%\appendix
-%\vspace{20mm}
-%\begin{center}
-%{\LARGE \textbf{APPENDIX}}
-%\end{center}
 
 %------------------------------------------------------------------------------------------------------
 \section{Conditional distributions with multinomial parents: proof of EF representation}\label{appendix:CD_With_MParents:Representation}
 %------------------------------------------------------------------------------------------------------
 
- %-----------------------------------------------------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------------------------------
 \section{EF representation: A binary child given a binary parent}
-%-----------------------------------------------------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------------------------------
 
 Let $X$ and $Y$ be two binary variables. The log-conditional probability of the child-node $X$ given its parent-node $Y$ is expressed as follows:
 
@@ -496,7 +495,6 @@ Let $X$ and $Y$ be two binary variables. The log-conditional probability of the 
 \end{eqnarray*}
 
 This conditional probability distribution can be expressed in different exponential forms as follows:
-
 
 \begin{itemize}
 
