@@ -168,6 +168,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
     @Override
+    public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
+        return 0;
+    }
+
+    @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
         return null;
     }
@@ -191,11 +196,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return variance;
     }
 
-
-
     public CompoundVector createEmtpyCompoundVector() {
         return new CompoundVector(nOfParents);
     }
+
+
 
     public static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 

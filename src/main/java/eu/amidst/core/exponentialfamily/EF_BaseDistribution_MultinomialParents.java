@@ -156,6 +156,11 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @Override
+    public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
+        return 0;
+    }
+
+    @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
         return null;
     }
