@@ -63,6 +63,23 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 this.parents.add(v);
         }
 
+        CompoundVector globalMomentsParam = this.createCompoundVector();
+
+        for (int i = 0; i < numberOfConfigurations(); i++) {
+            MomentParameters moment = this.getEF_BaseDistribution(i).getMomentParameters();
+            globalMomentsParam.setBaseConf(i, 1.0);
+            //moment.multiplyBy(globalMomentsParam.getBaseConf(i)); Not necessary, since it will always be 1 right?
+            globalMomentsParam.setVectorByPosition(i,moment);
+        }
+
+        CompoundVector vectorNatural = this.createCompoundVector();
+
+        for (int i = 0; i < numberOfConfigurations(); i++) {
+            vectorNatural.setBaseConf(i, -this.getEF_BaseDistribution(i).computeLogNormalizer());
+            vectorNatural.setVectorByPosition(i, this.getEF_BaseDistribution(i).getNaturalParameters());
+        }
+
+        this.naturalParameters = vectorNatural;
 
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
