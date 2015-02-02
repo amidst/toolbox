@@ -21,8 +21,6 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
     int nOfParents;
 
-    double variance;
-
     public EF_Normal_NormalParents(Variable var_, List<Variable> parents_) {
 
         this.var = var_;
@@ -69,7 +67,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
 
         double beta_0 = mean_X - beta.dotProduct(mean_Y);
-        variance = cov_XX - beta.dotProduct(cov_XY);
+        double variance = cov_XX - beta.dotProduct(cov_XY);
 
 
         /*
@@ -150,13 +148,15 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
     @Override
     public double computeLogBaseMeasure(DataInstance dataInstance) {
-        return 0.5*Math.log(2*Math.PI);
+        return -0.5*Math.log(2*Math.PI);
     }
 
     @Override
     public double computeLogNormalizer() {
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
         double theta_0 = globalNaturalParameters.get(0);
+        double theta_Minus1 = globalNaturalParameters.getcovbaseMatrix().getEntry(0,0);
+        double variance = -0.5/theta_Minus1;
         double beta_0 = theta_0 * variance;
 
         return (beta_0*beta_0)/(2*variance) + Math.log(variance);
@@ -182,19 +182,22 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return null;
     }
 
+    public double getVariance(){
+        double theta_Minus1 = ((CompoundVector)this.naturalParameters).getcovbaseMatrix().getEntry(0,0);
+        return -0.5/theta_Minus1;
+    }
 
     public double[] getAllBetaValues(){
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
         double[] theta_beta = globalNaturalParameters.getXYbaseMatrix().toArray();
+        double variance = getVariance();
         double beta0 = theta_beta[0]*variance;
         double[] beta = Arrays.stream(theta_beta).map(w->-w*2*variance/beta0).toArray();
         beta[0] = beta0;
         return beta;
     }
 
-    public double getVariance(){
-        return variance;
-    }
+
 
     public CompoundVector createEmtpyCompoundVector() {
         return new CompoundVector(nOfParents);
@@ -341,7 +344,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         public double dotProduct(CompoundVector vec) {
-            return 0.0;
+            double result = 0.0;
+            result = this.getXYbaseMatrix().dotProduct(vec.getXYbaseMatrix()); //theta1
+            result += this.getcovbaseMatrix().getRowVector(0).dotProduct(vec.getcovbaseMatrix().getRowVector(0));//theta2^1
+            result += this.getcovbaseMatrix().getRowVector(1).dotProduct(vec.getcovbaseMatrix().getRowVector(1));//theta2^2
+            return result;
         }
 
         public void copy(CompoundVector vector) {
