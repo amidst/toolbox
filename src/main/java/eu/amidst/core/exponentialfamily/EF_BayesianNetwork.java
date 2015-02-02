@@ -32,7 +32,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
         sizeSS=0;
         for (ConditionalDistribution dist: network.getDistributions()){
             EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
-            distributionList.set(ef_dist.getVariable().getVarID(), ef_dist);
+            distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
 
