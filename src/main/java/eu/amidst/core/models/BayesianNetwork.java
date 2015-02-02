@@ -9,6 +9,7 @@
 package eu.amidst.core.models;
 
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
@@ -70,6 +71,7 @@ public final class BayesianNetwork implements Serializable {
     // public List<Variable> getListOfVariables() {
     //     return this.getStaticVariables().getListOfVariables();
     // }
+
 
     private void initializeDistributions() {
 
