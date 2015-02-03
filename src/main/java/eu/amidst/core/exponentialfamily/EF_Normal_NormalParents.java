@@ -304,14 +304,15 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             XYbaseVector.setSubVector(1,val);
         }
 
-        public void setThetaCov_NatParam(double theta_Minus1, double[] theta_beta, double variance2Inv){
+        public void setThetaCov_NatParam(double theta_Minus1, double[] beta, double variance2Inv){
             double[] theta_Minus1array = {theta_Minus1};
+            double[] theta_beta = Arrays.stream(beta).map(w -> w * variance2Inv).toArray();
             RealVector covXY = new ArrayRealVector(theta_Minus1array, theta_beta);
             covbaseVector.setColumnVector(0, covXY);
             covbaseVector.setRowVector(0, covXY);
 
-            RealVector beta = new ArrayRealVector(theta_beta);
-            RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv);
+            RealVector betaRV = new ArrayRealVector(beta);
+            RealMatrix theta_betaBeta = betaRV.outerProduct(betaRV).scalarMultiply(-variance2Inv*2);
             covbaseVector.setSubMatrix(theta_betaBeta.getData(),1,1);
         }
 
