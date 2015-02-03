@@ -20,6 +20,7 @@ package eu.amidst.core.exponentialfamily;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
@@ -176,6 +177,16 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        return null;
+    }
+
+    @Override
+    public EF_UnivariateDistribution getEmptyEFUnivariateDistribution() {
+        return null;
+    }
+
+    @Override
+    public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
         return null;
     }
 
