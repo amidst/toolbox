@@ -3,6 +3,7 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
@@ -44,6 +45,16 @@ public class EF_Indicator extends EF_ConditionalDistribution{
 
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        return null;
+    }
+
+    @Override
+    public EF_UnivariateDistribution getEmptyEFUnivariateDistribution() {
+        return null;
+    }
+
+    @Override
+    public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
         return null;
     }
 
