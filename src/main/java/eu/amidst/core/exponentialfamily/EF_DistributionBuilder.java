@@ -205,7 +205,7 @@ public final class EF_DistributionBuilder {
          */
         double variance2Inv =  1.0/(2*variance);
         //IntStream.range(0,coeffParents.length).forEach(i-> coeffParents[i]*=(beta_0*variance2Inv));
-        double[] theta0_beta = Arrays.stream(coeffParents).map(w->w*beta_0*variance2Inv).toArray();
+        double[] theta0_beta = Arrays.stream(coeffParents).map(w->-w*beta_0*variance2Inv).toArray();
         naturalParameters.setThetaBeta0Beta_NatParam(theta0_beta);
 
         /*
