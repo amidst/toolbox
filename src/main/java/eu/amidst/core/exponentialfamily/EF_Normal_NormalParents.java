@@ -35,7 +35,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         nOfParents = parents.size();
-        sizeSS = nOfParents^2 + 3 * nOfParents + 2 ; // (n+1)^2 (covariance matrix of YX) + n (E(Y)) + 1 (E(X))
+        sizeSS = nOfParents*nOfParents + 3 * nOfParents + 2 ; // (n+1)^2 (covariance matrix of YX) + n (E(Y)) + 1 (E(X))
 
         this.var=var_;
         this.momentParameters = this.createEmtpyCompoundVector();
@@ -95,12 +95,12 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         /*
          * 4) theta_beta
          */
-        RealVector theta_beta = beta.mapMultiply(1.0 / variance);
+        RealVector theta_beta = beta.mapMultiply(variance2Inv);
 
         /*
          * 5) theta_betaBeta
          */
-        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv);
+        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv*2);
 
         /*
          * Store natural parameters
@@ -222,7 +222,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             // E(XY) - Index (i * (noParents+1) ) + j (+ noParents + 1)
             covbaseVector = new Array2DRowRealMatrix(nOfParents+1,nOfParents+1);
 
-            size = nOfParents^2 + 3 * nOfParents + 2;
+            size = nOfParents*nOfParents + 3 * nOfParents + 2;
 
         }
 
@@ -345,8 +345,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         public double dotProduct(CompoundVector vec) {
-            double result = 0.0;
-            result = this.getXYbaseMatrix().dotProduct(vec.getXYbaseMatrix()); //theta1
+            double result = this.getXYbaseMatrix().dotProduct(vec.getXYbaseMatrix()); //theta1
             result += this.getcovbaseMatrix().getRowVector(0).dotProduct(vec.getcovbaseMatrix().getRowVector(0));//theta2^1
             result += this.getcovbaseMatrix().getRowVector(1).dotProduct(vec.getcovbaseMatrix().getRowVector(1));//theta2^2
             return result;
