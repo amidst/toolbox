@@ -216,8 +216,7 @@ public final class EF_DistributionBuilder {
         /*
          * 4) theta_beta & 5) theta_betaBeta
          */
-        double[] theta_beta = Arrays.stream(coeffParents).map(w -> w / variance).toArray();
-        naturalParameters.setThetaCov_NatParam(theta_Minus1,theta_beta, variance2Inv);
+        naturalParameters.setThetaCov_NatParam(theta_Minus1,coeffParents, variance2Inv);
 
         ef_normal_normalParents.setNaturalParameters(naturalParameters);
         return ef_normal_normalParents;
