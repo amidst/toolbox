@@ -15,6 +15,7 @@ import eu.amidst.core.variables.StaticVariables;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,8 +37,13 @@ public class EF_BayesianNetwork extends EF_Distribution {
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
 
-        this.momentParameters = this.createZeroedMomentParameters();
-        this.naturalParameters = this.createZeroedNaturalParameters();
+        CompoundVector vectorNatural = this.createEmtpyCompoundVector();
+
+        for (EF_ConditionalDistribution dist : distributionList){
+            vectorNatural.setVectorByPosition(dist.getVariable().getVarID(), dist.getNaturalParameters());
+        }
+        this.naturalParameters = vectorNatural;
+        this.momentParameters = null;
     }
 
     public EF_BayesianNetwork(DAG  dag){
@@ -51,12 +57,18 @@ public class EF_BayesianNetwork extends EF_Distribution {
         sizeSS=0;
         for (ParentSet parentSet: parentSets){
             ConditionalDistribution dist = DistributionBuilder.newDistribution(parentSet.getMainVar(), parentSet.getParents());
+            dist.randomInitialization(new Random(0));
             EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
             distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
-        this.momentParameters = this.createZeroedMomentParameters();
-        this.naturalParameters = this.createZeroedNaturalParameters();
+        CompoundVector vectorNatural = this.createEmtpyCompoundVector();
+
+        for (EF_ConditionalDistribution dist : distributionList){
+            vectorNatural.setVectorByPosition(dist.getVariable().getVarID(), dist.getNaturalParameters());
+        }
+        this.naturalParameters = vectorNatural;
+        this.momentParameters = null;
     }
 
     public BayesianNetwork toBayesianNetwork(DAG dag){
