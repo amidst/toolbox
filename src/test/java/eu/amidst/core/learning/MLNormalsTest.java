@@ -103,43 +103,43 @@ public class MLNormalsTest {
         assertTrue(bnet.equalBNs(testnet,0.05));
     }
 
-    @Test
-    public void testingProbabilities_Gaussians1Parent() throws IOException, ClassNotFoundException {
-
-
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
-
-        System.out.println("\nNormal_1NormalParents probabilities comparison \n ");
-
-        //Sampling
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
-        sampler.setSeed(0);
-        sampler.setParallelMode(true);
-        try{
-            sampler.sampleToAnARFFFile("./data/Normal_1NormalParents.arff", 100000);
-        } catch (IOException ex){
-        }
-
-        //Load the sampled data
-        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/Normal_1NormalParents.arff")));
-
-
-        //Compare predictions between distributions and EF distributions.
-
-        EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
-
-
-
-        for(DataInstance e: data){
-            double ef_logProb = 0,logProb = 0;
-            for(EF_ConditionalDistribution ef_dist: ef_testnet.getDistributionList()){
-                ef_logProb += ef_dist.computeLogProbabilityOf(e);
-            }
-            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
-            System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
-            assertEquals(logProb, ef_logProb, 0.05);
-
-        }
-    }
+//    @Test
+//    public void testingProbabilities_Gaussians1Parent() throws IOException, ClassNotFoundException {
+//
+//
+//        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
+//
+//        System.out.println("\nNormal_1NormalParents probabilities comparison \n ");
+//
+//        //Sampling
+//        BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
+//        sampler.setSeed(0);
+//        sampler.setParallelMode(true);
+//        try{
+//            sampler.sampleToAnARFFFile("./data/Normal_1NormalParents.arff", 100000);
+//        } catch (IOException ex){
+//        }
+//
+//        //Load the sampled data
+//        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/Normal_1NormalParents.arff")));
+//
+//
+//        //Compare predictions between distributions and EF distributions.
+//
+//        EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
+//
+//
+//
+//        for(DataInstance e: data){
+//            double ef_logProb = 0,logProb = 0;
+//            for(EF_ConditionalDistribution ef_dist: ef_testnet.getDistributionList()){
+//                ef_logProb += ef_dist.computeLogProbabilityOf(e);
+//            }
+//            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+//            System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+//            assertEquals(logProb, ef_logProb, 0.05);
+//
+//        }
+//    }
 
 }
