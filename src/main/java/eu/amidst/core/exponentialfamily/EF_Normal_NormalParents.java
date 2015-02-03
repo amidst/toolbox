@@ -159,7 +159,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         double variance = -0.5/theta_Minus1;
         double beta_0 = theta_0 * variance;
 
-        return (beta_0*beta_0)/(2*variance) + Math.log(variance);
+        return (beta_0*beta_0)/(2*variance) + 0.5*Math.log(variance);
     }
 
     @Override
