@@ -311,7 +311,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             covbaseVector.setRowVector(0, covXY);
 
             RealVector beta = new ArrayRealVector(theta_beta);
-            RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(variance2Inv);
+            RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv);
             covbaseVector.setSubMatrix(theta_betaBeta.getData(),1,1);
         }
 
