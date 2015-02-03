@@ -794,7 +794,7 @@ Similarly the above log-conditional probability can be expressed in the followin
 
 $$\bm Z = ( X, \bm Y)$$
 \begin{eqnarray*}
-\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{Y})\\\\
+\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) + h(\mathbf{X})\\\\
 &=&
 \begin{pmatrix}
 \thb_1 \\
@@ -804,7 +804,7 @@ $$\bm Z = ( X, \bm Y)$$
 \Z   \\
 \Z^T\Z   \\
 \end{pmatrix}
-- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma} + \tfrac{1}{2}\ln{(2\pi)}\right)
+- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) - \tfrac{1}{2}\ln{(2\pi)}
 \end{eqnarray*}
 
 
@@ -840,7 +840,7 @@ $$\bm Z = ( X, \bm Y)$$
 \begin{eqnarray*}
 \thb_2 &=& 
 \begin{pmatrix}
--2\sigma^{-2}   &  \beb \sigma^{-2}/2\\
+-0.5\sigma^{-2}   &  \beb \sigma^{-2}/2\\
 \beb \sigma^{-2}/2   & -\beb \beb^T \sigma^{-2}
 \end{pmatrix}
 = 
@@ -904,7 +904,7 @@ Via inference.
 X\\
 X^2\\
 \end{pmatrix}
-- \left(\frac{\mu_{X|Y}^2}{2\sigma^2} + \ln{\sigma} + \tfrac{1}{2}\ln{(2\pi)}\right) \\\\
+- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) - \tfrac{1}{2}\ln{(2\pi)} \\\\
 &=&
 \begin{pmatrix}
 \theta_1^1+2\thb_2^{12} \E(\Y)\\
