@@ -122,7 +122,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
     @Override
-    public SufficientStatistics getSufficientStatistics(DataInstance data) {
+    public SufficientStatistics getSufficientStatistics(Assignment data) {
         CompoundVector vectorSS = this.createEmtpyCompoundVector();
 
         double[] Xarray = {data.getValue(this.var)};
