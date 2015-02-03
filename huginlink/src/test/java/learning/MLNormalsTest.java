@@ -6,6 +6,7 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.learning.MaximumLikelihoodForBN;
@@ -17,6 +18,7 @@ import eu.amidst.core.variables.Variable;
 
 import org.junit.Test;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +36,12 @@ public class MLNormalsTest {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromHugin("networks/Normal_1NormalParents.net");
 
+        Normal_NormalParents dist = (Normal_NormalParents) testnet.getDistributions().get(1);
+
+        dist.getCoeffParents()[0]=0.0;
+
+        System.out.println(testnet.toString());
+
         System.out.println("\nNormal_1NormalParents probabilities comparison \n ");
 
         //Sampling
@@ -41,7 +49,7 @@ public class MLNormalsTest {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
         try{
-            sampler.sampleToAnARFFFile("./data/Normal_1NormalParents.arff", 100000);
+            sampler.sampleToAnARFFFile("./data/Normal_1NormalParents.arff", 10);
         } catch (IOException ex){
         }
 
@@ -67,12 +75,14 @@ public class MLNormalsTest {
         }
     }
 
-/*    @Test
+    /*
+    @Test
     public void testingProbabilities_NormalMultinomial() throws IOException, ClassNotFoundException, ExceptionHugin  {
 
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromHugin("networks/Normal_MultinomialParents.net");
 
+        System.out.println(testnet.toString());
         System.out.println("\nNormal_MultinomialParents probabilities comparison \n ");
 
         //Sampling
@@ -80,7 +90,7 @@ public class MLNormalsTest {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
         try{
-            sampler.sampleToAnARFFFile("./data/Normal_MultinomialParents.arff", 100000);
+            sampler.sampleToAnARFFFile("./data/Normal_MultinomialParents.arff", 10);
         } catch (IOException ex){
         }
 
@@ -104,7 +114,8 @@ public class MLNormalsTest {
             assertEquals(logProb, ef_logProb, 0.05);
 
         }
-    }*/
+    }
+    */
 
 }
 
