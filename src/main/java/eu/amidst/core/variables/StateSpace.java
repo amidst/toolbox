@@ -1,9 +1,13 @@
 package eu.amidst.core.variables;
 
+import java.io.Serializable;
+
 /**
  * Created by andresmasegosa on 25/11/14.
  */
-public abstract class StateSpace {
+public abstract class StateSpace implements Serializable {
+
+    private static final long serialVersionUID = 4158293895929418259L;
 
     private StateSpaceType stateSpaceType;
     private String unit="NA";
