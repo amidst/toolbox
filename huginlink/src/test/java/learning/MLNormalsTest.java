@@ -37,7 +37,7 @@ public class MLNormalsTest {
 
         Normal_NormalParents dist = (Normal_NormalParents) testnet.getDistributions().get(1);
 
-        dist.getCoeffParents()[0]=1.0;
+        dist.getCoeffParents()[0]=1;
         dist.setSd(1.0);
 
         System.out.println(testnet.toString());
