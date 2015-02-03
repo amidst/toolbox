@@ -69,7 +69,7 @@ public class EF_Indicator extends EF_ConditionalDistribution{
     }
 
     @Override
-    public SufficientStatistics getSufficientStatistics(DataInstance data) {
+    public SufficientStatistics getSufficientStatistics(Assignment data) {
         return null;
     }
 
