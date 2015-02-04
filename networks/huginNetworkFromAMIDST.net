@@ -6,13 +6,13 @@ net
 node A
 {
     label = "A";
-    states = ("State_0" "State_1");
+    states = ("1" "2");
 }
 
 node B
 {
     label = "B";
-    states = ("State_0" "State_1" "State_2");
+    states = ("1" "2" "3");
 }
 
 continuous node C
@@ -26,7 +26,7 @@ continuous node D
 node E
 {
     label = "E";
-    states = ("State_0" "State_1");
+    states = ("1" "2");
 }
 
 continuous node G
@@ -64,12 +64,12 @@ potential (D)
 potential (E | B A)
 {
     data
-     = ((( 0.2 0.8 )	%  B=State_0  A=State_0
-	 ( 0.1 0.9 ))	%  B=State_0  A=State_1
-	(( 0.8 0.2 )	%  B=State_1  A=State_0
-	 ( 0.45 0.55 ))	%  B=State_1  A=State_1
-	(( 0.35 0.65 )	%  B=State_2  A=State_0
-	 ( 0.9 0.1 )));	%  B=State_2  A=State_1
+     = ((( 0.2 0.8 )	%  B=1  A=1
+	 ( 0.1 0.9 ))	%  B=1  A=2
+	(( 0.8 0.2 )	%  B=2  A=1
+	 ( 0.45 0.55 ))	%  B=2  A=2
+	(( 0.35 0.65 )	%  B=3  A=1
+	 ( 0.9 0.1 )));	%  B=3  A=2
 }
 
 potential (G | C D)
@@ -80,21 +80,21 @@ potential (G | C D)
 potential (H | B A)
 {
     data
-     = (( normal ( 2, 2.25 )	%  B=State_0  A=State_0
-	  normal ( -1, 0.25 ) )	%  B=State_0  A=State_1
-	( normal ( 3, 0.64 )	%  B=State_1  A=State_0
-	  normal ( 2, 1 ) )	%  B=State_1  A=State_1
-	( normal ( 5, 0.64 )	%  B=State_2  A=State_0
-	  normal ( 1.5, 0.49 ) ));	%  B=State_2  A=State_1
+     = (( normal ( 2, 2.25 )	%  B=1  A=1
+	  normal ( -1, 0.25 ) )	%  B=1  A=2
+	( normal ( 3, 0.64 )	%  B=2  A=1
+	  normal ( 2, 1 ) )	%  B=2  A=2
+	( normal ( 5, 0.64 )	%  B=3  A=1
+	  normal ( 1.5, 0.49 ) ));	%  B=3  A=2
 }
 
 potential (I | B A C D)
 {
     data
-     = (( normal ( 0.5 + 0.25 * C + 0.4 * D, 0.81 )	%  B=State_0  A=State_0
-	  normal ( -0.1 - 0.5 * C + 0.2 * D, 0.36 ) )	%  B=State_0  A=State_1
-	( normal ( 2.1 + 1.2 * C - 0.3 * D, 1.21 )	%  B=State_1  A=State_0
-	  normal ( 2.1 + 1.25 * C + 0.9 * D, 0.9025 ) )	%  B=State_1  A=State_1
-	( normal ( 1.5 - 0.41 * C + 0.5 * D, 2.25 )	%  B=State_2  A=State_0
-	  normal ( 0.3 * D, 0.0625 ) ));	%  B=State_2  A=State_1
+     = (( normal ( 0.5 + 0.25 * C + 0.4 * D, 0.81 )	%  B=1  A=1
+	  normal ( -0.1 - 0.5 * C + 0.2 * D, 0.36 ) )	%  B=1  A=2
+	( normal ( 2.1 + 1.2 * C - 0.3 * D, 1.21 )	%  B=2  A=1
+	  normal ( 2.1 + 1.25 * C + 0.9 * D, 0.9025 ) )	%  B=2  A=2
+	( normal ( 1.5 - 0.41 * C + 0.5 * D, 2.25 )	%  B=3  A=1
+	  normal ( 0.3 * D, 0.0625 ) ));	%  B=3  A=2
 }

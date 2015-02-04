@@ -63,3 +63,6 @@ doc/testEvaluation/*
 huginlib/*
 maven_startup.sh
 *.jnilib
+
+# hugin aux files
+networks/*.hlg
