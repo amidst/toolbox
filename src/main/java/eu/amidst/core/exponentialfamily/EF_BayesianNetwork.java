@@ -151,20 +151,23 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     public boolean equal_efBN(EF_BayesianNetwork ef_bayesianNetwork, double threshold){
-        boolean equals = true;
-        for (EF_ConditionalDistribution dist: this.getDistributionList()){
-            equals = equals && dist.getClass().getName().equals(ef_bayesianNetwork.getDistribution(dist.getVariable()));
-            List<Variable> thisVars = dist.getConditioningVariables();
-            List<Variable> efBNVars = ef_bayesianNetwork.getDistribution(dist.getVariable()).getConditioningVariables();
-            equals = equals && thisVars.size()==efBNVars.size();
-            for(Variable var: thisVars){
-                equals = equals && efBNVars.contains(var);
+
+        for (EF_ConditionalDistribution this_dist: this.getDistributionList()){
+            EF_ConditionalDistribution ef_dist = ef_bayesianNetwork.getDistribution(this_dist.getVariable());
+            if(!this_dist.getClass().getName().equals(ef_dist.getClass().getName()))
+                return false;
+            List<Variable> this_Vars = this_dist.getConditioningVariables();
+            List<Variable> ef_Vars = ef_dist.getConditioningVariables();
+            if(this_Vars.size()!=ef_Vars.size())
+                return false;
+            for(Variable var: this_Vars){
+                if(!ef_Vars.contains(var))
+                    return false;
             }
         }
-        if(equals)
-            return this.getNaturalParameters().equals(ef_bayesianNetwork.getNaturalParameters());
-        else
-            return false;
+
+        return this.getNaturalParameters().equalsVector(ef_bayesianNetwork.getNaturalParameters(), threshold);
+
     }
 
     /*
