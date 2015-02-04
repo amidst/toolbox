@@ -56,9 +56,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         double cov_XX = globalMomentParam.getcovbaseMatrix().getEntry(0, 0) - mean_X*mean_X;
         RealMatrix cov_YY = globalMomentParam.getcovbaseMatrix().getSubMatrix(1, nOfParents, 1, nOfParents).
-                            subtract(mean_Y.outerProduct(mean_Y));
+                subtract(mean_Y.outerProduct(mean_Y));
         RealVector cov_XY = globalMomentParam.getcovbaseMatrix().getSubMatrix(0, 0, 1, nOfParents).getRowVector(0).
-                            subtract(mean_Y.mapMultiply(mean_X));
+                subtract(mean_Y.mapMultiply(mean_X));
         //RealVector cov_YX = cov_XY; //outerProduct transposes the vector automatically
 
         /*
@@ -129,8 +129,8 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         double[] Xarray = {data.getValue(this.var)};
 
         double[] Yarray = this.parents.stream()
-                                         .mapToDouble(w->data.getValue(w))
-                                         .toArray();
+                .mapToDouble(w->data.getValue(w))
+                .toArray();
         RealVector XYRealVector = new ArrayRealVector(Xarray,Yarray);
         vectorSS.setXYbaseVector(XYRealVector);
 
@@ -201,10 +201,10 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
     public double[] getAllBetaValues(){
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
-        double[] theta_beta = globalNaturalParameters.getXYbaseMatrix().toArray();
+        double[] theta_beta0beta = globalNaturalParameters.getXYbaseMatrix().toArray();
         double variance = getVariance();
-        double beta0 = theta_beta[0]*variance;
-        double[] beta = Arrays.stream(theta_beta).map(w->-w*2*variance/beta0).toArray();
+        double beta0 = theta_beta0beta[0]*variance;
+        double[] beta = Arrays.stream(theta_beta0beta).map(w->-w*variance/beta0).toArray();
         beta[0] = beta0;
         return beta;
     }
@@ -324,7 +324,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             covbaseVector.setRowVector(0, covXY);
 
             RealVector betaRV = new ArrayRealVector(beta);
-            RealMatrix theta_betaBeta = betaRV.outerProduct(betaRV).scalarMultiply(-variance2Inv*2);
+            RealMatrix theta_betaBeta = betaRV.outerProduct(betaRV).scalarMultiply(-variance2Inv);
             covbaseVector.setSubMatrix(theta_betaBeta.getData(),1,1);
         }
 
@@ -353,8 +353,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         @Override
         public double dotProduct(Vector vec) {
-          return this.dotProduct((CompoundVector)vec);
+            return this.dotProduct((CompoundVector)vec);
         }
+
 
         public double dotProduct(CompoundVector vec) {
             double result = this.getXYbaseMatrix().dotProduct(vec.getXYbaseMatrix()); //theta1

@@ -24,7 +24,7 @@ public final class EF_DistributionBuilder {
         if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal")) {
             return toDistribution((eu.amidst.core.exponentialfamily.EF_Normal) dist);
         }else if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Multinomial")) {
-                return toDistribution((eu.amidst.core.exponentialfamily.EF_Multinomial)dist);
+            return toDistribution((eu.amidst.core.exponentialfamily.EF_Multinomial)dist);
         }else{
             throw new IllegalArgumentException("This univariate distribution can not be converted to an exponential form: "+ dist.getClass().getName());
         }
@@ -246,4 +246,3 @@ public final class EF_DistributionBuilder {
 
 
 }
-
