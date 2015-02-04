@@ -1,7 +1,5 @@
 package eu.amidst.core.utils;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
@@ -16,17 +14,64 @@ public interface Vector {
 
     public int size();
 
-    public void sum(Vector vector);
+    public default void sum(Vector vector){
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors do not have same size.");
 
-    public default void substract(Vector vector){
-            throw new NotImplementedException();
+        for (int i = 0; i < vector.size(); i++) {
+            this.set(i,this.get(i)+vector.get(i));
+        }
     }
 
-    public void copy(Vector vector);
 
-    public void divideBy(double val);
+    public default void substract(Vector vector){
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors do not have same size.");
 
-    public double dotProduct(Vector vec);
+        for (int i = 0; i < vector.size(); i++) {
+            this.set(i,this.get(i)-vector.get(i));
+        }
+    }
+
+    public default void copy(Vector vector){
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors do not have same size.");
+
+        for (int i = 0; i < vector.size(); i++) {
+            this.set(i,vector.get(i));
+        }
+    }
+
+    public default void divideBy(double val){
+        for (int i = 0; i < this.size(); i++) {
+            this.set(i,this.get(i)/val);
+        }
+    }
+
+    public default double dotProduct(Vector vector){
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors do not have same size.");
+
+        double sum=0;
+        for (int i = 0; i < vector.size(); i++) {
+            sum+=this.get(i)*vector.get(i);
+        }
+
+        return sum;
+    }
+
+    public default boolean equalsVector(Vector vector){
+
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors do not have same size.");
+
+        for (int i = 0; i < vector.size(); i++) {
+            if (this.get(i)!=vector.get(i))
+                return false;
+        }
+
+        return true;
+    }
 
     public static Vector sumVector(Vector vec1, Vector vec2){
         vec2.sum(vec1);
