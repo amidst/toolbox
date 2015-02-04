@@ -48,6 +48,12 @@ public interface Vector {
         }
     }
 
+    public default void multiplyBy(double val){
+        for (int i = 0; i < this.size(); i++) {
+            this.set(i,this.get(i)*val);
+        }
+    }
+
     public default double dotProduct(Vector vector){
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors do not have same size.");
