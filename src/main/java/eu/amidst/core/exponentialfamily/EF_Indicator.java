@@ -79,7 +79,7 @@ public class EF_Indicator extends EF_ConditionalDistribution{
     }
 
     @Override
-    public double computeLogBaseMeasure(DataInstance dataInstance) {
+    public double computeLogBaseMeasure(Assignment dataInstance) {
         return 0;
     }
 

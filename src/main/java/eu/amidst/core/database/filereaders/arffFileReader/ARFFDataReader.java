@@ -90,7 +90,7 @@ public class ARFFDataReader implements DataFileReader {
     }
 
     private static Attribute createAttributeFromLine(int index, String line){
-        String[] parts = line.split(" ");
+        String[] parts = line.split(" |\t");
 
         if (!parts[0].trim().startsWith("@attribute"))
             throw new IllegalArgumentException("Attribute line does not start with @attribute");
