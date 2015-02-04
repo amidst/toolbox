@@ -20,6 +20,15 @@ public final class EF_DistributionBuilder {
         //Not called
     }
 
+    public static UnivariateDistribution toUnivariateDistribution(EF_UnivariateDistribution dist) {
+        if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal")) {
+            return toDistribution((eu.amidst.core.exponentialfamily.EF_Normal) dist);
+        }else if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Multinomial")) {
+                return toDistribution((eu.amidst.core.exponentialfamily.EF_Multinomial)dist);
+        }else{
+            throw new IllegalArgumentException("This univariate distribution can not be converted to an exponential form: "+ dist.getClass().getName());
+        }
+    }
     public static EF_ConditionalDistribution toEFDistributionGeneral(ConditionalDistribution dist) {
 
         if (dist.getClass().getName().equals("eu.amidst.core.distribution.Multinomial_MultinomialParents")) {

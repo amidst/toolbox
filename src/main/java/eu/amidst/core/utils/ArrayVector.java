@@ -38,6 +38,13 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         }
     }
 
+    @Override
+    public void substract(Vector vector) {
+        for (int i = 0; i < vector.size(); i++) {
+            this.array[i]-=vector.get(i);
+        }
+    }
+
     public void copy(Vector vector){
         this.copy((ArrayVector)vector);
     }
