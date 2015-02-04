@@ -34,6 +34,11 @@ public class EF_Indicator extends EF_ConditionalDistribution{
     }
 
     @Override
+    public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        throw new UnsupportedOperationException("No Implemented. This method is no really needed");
+    }
+
+    @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
         return 0;
     }
