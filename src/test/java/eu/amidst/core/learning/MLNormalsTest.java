@@ -1,6 +1,5 @@
 package eu.amidst.core.learning;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.StaticDataInstance;
@@ -28,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public class MLNormalsTest {
 
     @Test
-    public void testingProbabilities_NormalNormal1Parent() throws IOException, ClassNotFoundException, ExceptionHugin  {
+    public void testingProbabilities_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
 
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
@@ -75,7 +74,7 @@ public class MLNormalsTest {
 
 
     @Test
-    public void testingML_NormalNormal1Parent() throws IOException, ClassNotFoundException, ExceptionHugin  {
+    public void testingML_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
 
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
@@ -103,7 +102,7 @@ public class MLNormalsTest {
     }
 
     @Test
-    public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException, ExceptionHugin {
+    public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
         //BayesianNetwork testnet = eu.amidst.core.models.BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
@@ -134,7 +133,7 @@ public class MLNormalsTest {
     }
 
     @Test
-    public void testingProbabilities_NormalMultinomial() throws IOException, ClassNotFoundException, ExceptionHugin  {
+    public void testingProbabilities_NormalMultinomial() throws IOException, ClassNotFoundException  {
 
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_MultinomialParents.ser");
