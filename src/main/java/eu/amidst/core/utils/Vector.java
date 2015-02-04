@@ -66,13 +66,13 @@ public interface Vector {
         return sum;
     }
 
-    public default boolean equalsVector(Vector vector){
+    public default boolean equalsVector(Vector vector, double threshold){
 
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors do not have same size.");
 
         for (int i = 0; i < vector.size(); i++) {
-            if (this.get(i)!=vector.get(i))
+            if (Math.abs(this.get(i) - vector.get(i)) > threshold)
                 return false;
         }
 
