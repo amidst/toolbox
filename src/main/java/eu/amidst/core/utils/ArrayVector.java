@@ -19,14 +19,17 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         this.array=vec;
     }
 
+    @Override
     public double get(int i){
         return this.array[i];
     }
 
+    @Override
     public void set(int i, double val){
         this.array[i]=val;
     }
 
+    @Override
     public int size(){
         return this.array.length;
     }
@@ -45,6 +48,7 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         }
     }
 
+    @Override
     public void copy(Vector vector){
         this.copy((ArrayVector)vector);
     }
@@ -59,12 +63,18 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         System.arraycopy(vector.getArray(),0,this.array,0,vector.getArray().length);
     }
 
+    @Override
     public void divideBy(double val){
         for (int i = 0; i < this.array.length ; i++) {
             this.array[i]/=val;
         }
     }
 
+    public void multiplyBy(double val){
+        for (int i = 0; i < this.array.length ; i++) {
+            this.array[i]*=val;
+        }
+    }
     @Override
     public double dotProduct(Vector vector) {
         double sum=0;

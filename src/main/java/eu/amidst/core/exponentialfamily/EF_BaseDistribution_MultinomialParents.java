@@ -19,13 +19,13 @@ package eu.amidst.core.exponentialfamily;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.*;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalDistribution {
@@ -34,9 +34,12 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     private final List<E> distributions;
     private final List<Variable> multinomialParents;
 
+    private boolean isBaseConditionalDistribution;
+
     public List<Variable> getMultinomialParents() {
         return multinomialParents;
     }
+
 
     public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
 
@@ -51,24 +54,24 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         this.multinomialParents = multinomialParents1;
         this.distributions = distributions1;
 
-
         this.parents = new ArrayList();
         for (Variable v : this.multinomialParents)
             this.parents.add(v);
 
-        E dist = distributions.get(0);
-
-        if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_ConditionalDistribution")) {
-            EF_ConditionalDistribution distCond = (EF_ConditionalDistribution) dist;
-            for (Variable v : distCond.getConditioningVariables())
+        if (distributions.get(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_ConditionalDistribution")) {
+            this.isBaseConditionalDistribution=true;
+            for (Variable v : this.getBaseEFConditionalDistribution(0).getConditioningVariables()) {
                 this.parents.add(v);
+            }
+        }else{
+            this.isBaseConditionalDistribution=false;
         }
 
         CompoundVector vectorNatural = this.createCompoundVector();
 
         for (int i = 0; i < numberOfConfigurations(); i++) {
-            vectorNatural.setBaseConf(i, -this.getEF_BaseDistribution(i).computeLogNormalizer());
-            vectorNatural.setVectorByPosition(i, this.getEF_BaseDistribution(i).getNaturalParameters());
+            vectorNatural.setBaseConf(i, -this.getEFBaseDistribution(i).computeLogNormalizer());
+            vectorNatural.setVectorByPosition(i, this.getEFBaseDistribution(i).getNaturalParameters());
         }
 
         this.naturalParameters = vectorNatural;
@@ -79,18 +82,30 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     }
 
+    public boolean isBaseConditionalDistribution() {
+        return isBaseConditionalDistribution;
+    }
+
+    public EF_ConditionalDistribution getBaseEFConditionalDistribution(int multinomialIndex) {
+        return (EF_ConditionalDistribution)this.getEFBaseDistribution(multinomialIndex);
+    }
+
+    public EF_UnivariateDistribution getBaseEFUnivariateDistribution(int multinomialIndex) {
+        return (EF_UnivariateDistribution)this.getEFBaseDistribution(multinomialIndex);
+    }
+
     public void setEF_BaseDistribution(int indexMultinomial, E baseDist) {
         this.distributions.set(indexMultinomial, baseDist);
     }
 
-    public E getEF_BaseDistribution(int indexMultinomial) {
+    public E getEFBaseDistribution(int indexMultinomial) {
 
         return distributions.get(indexMultinomial);
     }
 
-    public E getEF_BaseDistribution(DataInstance dataInstance) {
+    public E getEFBaseDistribution(DataInstance dataInstance) {
         int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, dataInstance);
-        return getEF_BaseDistribution(position);
+        return getEFBaseDistribution(position);
     }
 
     @Override
@@ -102,7 +117,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         vector.setBaseConf(position, 1.0);
 
-        SufficientStatistics sufficientStatisticsBase = this.getEF_BaseDistribution(position).getSufficientStatistics(instance);
+        SufficientStatistics sufficientStatisticsBase = this.getEFBaseDistribution(position).getSufficientStatistics(instance);
 
         vector.setVectorByPosition(position, sufficientStatisticsBase);
 
@@ -115,13 +130,15 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     public int sizeOfBaseSufficientStatistics() {
-        return this.getEF_BaseDistribution(0).sizeOfSufficientStatistics();
+        return this.getEFBaseDistribution(0).sizeOfSufficientStatistics();
     }
 
+    @Override
     public int sizeOfSufficientStatistics() {
         return numberOfConfigurations() + numberOfConfigurations() * sizeOfBaseSufficientStatistics();
     }
 
+    @Override
     public void updateNaturalFromMomentParameters() {
 
         CompoundVector globalMomentsParam = (CompoundVector) this.momentParameters;
@@ -129,15 +146,15 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         for (int i = 0; i < numberOfConfigurations(); i++) {
             MomentParameters moment = (MomentParameters) globalMomentsParam.getVectorByPosition(i);
             moment.divideBy(globalMomentsParam.getBaseConf(i));
-            this.getEF_BaseDistribution(i).setMomentParameters(moment);
+            this.getEFBaseDistribution(i).setMomentParameters(moment);
         }
 
         CompoundVector vectorNatural = this.createCompoundVector();
 
 
         for (int i = 0; i < numberOfConfigurations(); i++) {
-            vectorNatural.setBaseConf(i, -this.getEF_BaseDistribution(i).computeLogNormalizer());
-            vectorNatural.setVectorByPosition(i, this.getEF_BaseDistribution(i).getNaturalParameters());
+            vectorNatural.setBaseConf(i, -this.getEFBaseDistribution(i).computeLogNormalizer());
+            vectorNatural.setVectorByPosition(i, this.getEFBaseDistribution(i).getNaturalParameters());
         }
 
         this.naturalParameters = vectorNatural;
@@ -145,6 +162,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return;
     }
 
+    @Override
     public void updateMomentFromNaturalParameters() {
         throw new UnsupportedOperationException("Method not implemented yet!");
     }
@@ -152,7 +170,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, dataInstance);
-        return this.getEF_BaseDistribution(position).computeLogBaseMeasure(dataInstance);
+        return this.getEFBaseDistribution(position).computeLogBaseMeasure(dataInstance);
     }
 
     @Override
@@ -166,19 +184,126 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return this.createCompoundVector();
     }
 
+
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
-        return 0;
+
+        int nConf = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
+
+        double expectedLogNormalizer = 0;
+
+        for (int i = 0; i < nConf; i++) {
+            double[] assignment = MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents, i);
+            double momentValue = 1;
+            for (int j = 0; j < assignment.length; j++) {
+                momentValue*=momentParents.get(this.multinomialParents.get(i)).get(j);
+            }
+
+            double partialLogNormalizer = 0;
+
+            if (this.isBaseConditionalDistribution) {
+                partialLogNormalizer = this.getBaseEFConditionalDistribution(i).getExpectedLogNormalizer(momentParents);
+            }else{
+                partialLogNormalizer = this.getBaseEFUnivariateDistribution(i).computeLogNormalizer();
+            }
+
+            expectedLogNormalizer+=momentValue*partialLogNormalizer;
+        }
+
+        return expectedLogNormalizer;
     }
 
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
-        return null;
+
+        int nConf = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
+
+        NaturalParameters expectedNaturalFromParents = null;
+
+        for (int i = 0; i < nConf; i++) {
+            double[] assignment = MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents, i);
+            double momentValue = 1;
+            for (int j = 0; j < assignment.length; j++) {
+                momentValue*=momentParents.get(this.multinomialParents.get(i)).get(j);
+            }
+            NaturalParameters paritalExpectedNatural = null;
+
+            if (this.isBaseConditionalDistribution) {
+                paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalFromParents(momentParents);
+            }else{
+                paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).getNaturalParameters();
+            }
+
+            paritalExpectedNatural.multiplyBy(momentValue);
+            if (expectedNaturalFromParents==null){
+                expectedNaturalFromParents=paritalExpectedNatural;
+            }else {
+                expectedNaturalFromParents.sum(paritalExpectedNatural);
+            }
+        }
+
+        return expectedNaturalFromParents;
     }
 
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-        return null;
+        NaturalParameters expectedNaturalFromParents = null;
+
+        int indexOfParent = this.multinomialParents.indexOf(parent);
+
+        if (indexOfParent!=-1 && parent.isMultinomial())
+            throw new IllegalArgumentException("Parent Variable is multinomial and not included in the list of multinomial parents");
+
+        if (indexOfParent!=-1 && this.isBaseConditionalDistribution() && !this.getBaseEFConditionalDistribution(0).getConditioningVariables().contains(parent))
+            throw new IllegalArgumentException("Parent Variable is no multinomial and is not included in the list of parents of the base distribution");
+
+        if (indexOfParent!=-1) {
+
+            expectedNaturalFromParents = new ArrayVector(parent.getNumberOfStates());
+
+            int nConf = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
+
+            for (int state = 0; state<parent.getNumberOfStates(); state++) {
+                double partialSum = 0;
+                for (int i = 0; i < nConf; i++) {
+                    double[] assignment = MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents, i);
+
+                    if (assignment[indexOfParent]!=state)
+                        continue;
+
+                    double momentValue = 1;
+                    for (int j = 0; j < assignment.length; j++) {
+                        if (j==indexOfParent)
+                            continue;
+                        momentValue *= momentChildCoParents.get(this.multinomialParents.get(i)).get(j);
+                    }
+                    NaturalParameters paritalExpectedNatural = null;
+
+                    double localSum = 0;
+                    if (this.isBaseConditionalDistribution) {
+                        paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalFromParents(momentChildCoParents);
+                        localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
+                        localSum -= this.getBaseEFConditionalDistribution(i).getExpectedLogNormalizer(momentChildCoParents);
+                    } else {
+                        paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).getNaturalParameters();
+                        localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
+                        localSum -= this.getBaseEFUnivariateDistribution(i).computeLogNormalizer();
+                    }
+
+                    localSum*=momentValue;
+
+                    partialSum+=localSum;
+                }
+
+                expectedNaturalFromParents.set(state,partialSum);
+            }
+        }else{
+
+            
+
+        }
+        return expectedNaturalFromParents;
+
     }
 
     @Override
@@ -192,7 +317,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     private CompoundVector createCompoundVector() {
-        return new CompoundVector((EF_Distribution)this.getEF_BaseDistribution(0), this.numberOfConfigurations());
+        return new CompoundVector((EF_Distribution)this.getEFBaseDistribution(0), this.numberOfConfigurations());
     }
 
     //TODO: Replace this CompoundVector by the compoundvector of indicator
