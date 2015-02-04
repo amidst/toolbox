@@ -27,7 +27,7 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     }
 
     @Override
-    public double computeLogBaseMeasure(DataInstance dataInstance){
+    public double computeLogBaseMeasure(Assignment dataInstance){
         return this.computeLogBaseMeasure(dataInstance.getValue(this.getVariable()));
     }
 }

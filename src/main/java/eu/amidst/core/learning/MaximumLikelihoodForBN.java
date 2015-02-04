@@ -60,7 +60,8 @@ public final class MaximumLikelihoodForBN {
                     dataInstanceCount.getAndIncrement();
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumSS);
+                .reduce(SufficientStatistics::sumVector).get();
+                //.reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumVector);
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
