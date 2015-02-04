@@ -12,6 +12,7 @@ import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,6 +87,10 @@ public class EF_BayesianNetwork extends EF_Distribution {
         return distributionList;
     }
 
+    public EF_ConditionalDistribution getDistribution(Variable var) {
+        return distributionList.get(var.getVarID());
+    }
+
     @Override
     public void updateNaturalFromMomentParameters() {
 
@@ -143,6 +148,26 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
     private CompoundVector createEmtpyCompoundVector() {
         return new CompoundVector(this.distributionList.size(), this.sizeOfSufficientStatistics());
+    }
+
+    public boolean equal_efBN(EF_BayesianNetwork ef_bayesianNetwork, double threshold){
+
+        for (EF_ConditionalDistribution this_dist: this.getDistributionList()){
+            EF_ConditionalDistribution ef_dist = ef_bayesianNetwork.getDistribution(this_dist.getVariable());
+            if(!this_dist.getClass().getName().equals(ef_dist.getClass().getName()))
+                return false;
+            List<Variable> this_Vars = this_dist.getConditioningVariables();
+            List<Variable> ef_Vars = ef_dist.getConditioningVariables();
+            if(this_Vars.size()!=ef_Vars.size())
+                return false;
+            for(Variable var: this_Vars){
+                if(!ef_Vars.contains(var))
+                    return false;
+            }
+        }
+
+        return this.getNaturalParameters().equalsVector(ef_bayesianNetwork.getNaturalParameters(), threshold);
+
     }
 
     /*
