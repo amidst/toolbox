@@ -20,6 +20,8 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
 
     //public EFConditionalDistribution getEFConditionalByInstantiatingTo(DataInstance instance);
 
+    public abstract double getExpectedLogNormalizer(Variable parent, Map<Variable,MomentParameters> momentChildCoParents);
+
     public abstract double getExpectedLogNormalizer(Map<Variable,MomentParameters> momentParents);
 
     public abstract NaturalParameters getExpectedNaturalFromParents(Map<Variable,MomentParameters> momentParents);
