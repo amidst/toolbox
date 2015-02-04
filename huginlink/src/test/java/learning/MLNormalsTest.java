@@ -85,6 +85,40 @@ public class MLNormalsTest {
 
 
     @Test
+    public void testingML_NormalNormal1Parent() throws IOException, ClassNotFoundException, ExceptionHugin  {
+
+
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromHugin("networks/Normal_1NormalParents.net");
+        //BayesianNetwork testnet = eu.amidst.core.models.BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
+        System.out.println("\nNormal_NormalParents network \n ");
+
+        //Sampling
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
+        sampler.setSeed(0);
+        sampler.setParallelMode(true);
+        try{
+            sampler.sampleToAnARFFFile("./data/Normal_1NormalParents.arff", 100000);
+        } catch (IOException ex){
+        }
+
+        //Load the sampled data
+        DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/Normal_1NormalParents.arff")));
+
+
+        //Parameter Learning
+        MaximumLikelihoodForBN.setBatchSize(1000);
+        MaximumLikelihoodForBN.setParallelMode(true);
+        BayesianNetwork bnet = MaximumLikelihoodForBN.learnParametersStaticModel(testnet.getDAG(), data);
+
+        EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
+
+        EF_BayesianNetwork ef_bnet = new EF_BayesianNetwork(bnet);
+
+        //TODO: Implement equals method for all NaturalParameters.
+        assertTrue(ef_bnet.equal_efBN(ef_testnet,0.05));
+    }
+
+    @Test
     public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException, ExceptionHugin {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromHugin("networks/Normal_NormalParents.net");
@@ -163,4 +197,3 @@ public class MLNormalsTest {
 
 
 }
-
