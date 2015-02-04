@@ -829,11 +829,15 @@ $$\bm Z = ( X, \bm Y)$$
 \begin{eqnarray*}
 \thb_1 &=& 
 \begin{pmatrix}
-\beta_0\sigma^{-2} & -\beta_0\beb^T0.5\sigma^{-2}
+\beta_0\sigma^{-2} & -\beta_0\beb\sigma^{-2}
 \end{pmatrix}
 =
 \begin{pmatrix}
 \theta_1^1 & \thb_1^2
+\end{pmatrix}
+=\beta_0\sigma^{-2}
+\begin{pmatrix}
+1 & -\beb
 \end{pmatrix}
 \end{eqnarray*}
 
@@ -848,11 +852,11 @@ $$\bm Z = ( X, \bm Y)$$
 \theta_2^{11}   &  \thb_2^{12} \\
 \thb_2^{21}   &  \thb_2^{22}
 \end{pmatrix}
-%= \sigma^{-2}/2
-%\begin{pmatrix}
-%-4   &  \beb \\
-%\beb & -2\beb \beb^T 
-%\end{pmatrix}
+= 0.5\sigma^{-2}
+\begin{pmatrix}
+-1   &  \beb \\
+\beb    & -\beb \beb^T 
+\end{pmatrix}
 \end{eqnarray*}
 
 \begin{itemize}
