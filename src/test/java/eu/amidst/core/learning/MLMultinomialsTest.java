@@ -1,6 +1,7 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.models.BayesianNetwork;
@@ -32,14 +33,16 @@ public class MLMultinomialsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        try{
-        sampler.sampleToAnARFFFile("./data/asiaSamples.arff", 10000);
+        /*try{
+            sampler.sampleToAnARFFFile("./data/asiaSamples.arff", 10000);
         } catch (IOException ex){
-        }
+        }*/
 
         //Load the sampled data
-        DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/asiaSamples.arff")));
+        //DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/asiaSamples.arff")));
 
+        //Load the sampled data
+        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(10000);
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
 

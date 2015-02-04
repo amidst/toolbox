@@ -14,7 +14,6 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
-import COM.hugin.HAPI.ExceptionHugin;
 
 import java.io.IOException;
 

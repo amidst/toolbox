@@ -1,6 +1,7 @@
 package eu.amidst.examples;
 
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
@@ -30,7 +31,7 @@ public class DynamicNaiveBayesClassifierDemo {
         String file = "./datasets/randomdata.arff";
         sampler.sampleToAnARFFFile(file,sampleSize);
 
-        DataBase data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
+        DataBase<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
