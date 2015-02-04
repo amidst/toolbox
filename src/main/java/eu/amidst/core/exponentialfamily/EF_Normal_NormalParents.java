@@ -102,7 +102,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         /*
          * 5) theta_betaBeta
          */
-        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv);
+        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv*2);
 
         /*
          * Store natural parameters
@@ -149,7 +149,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
 
     @Override
-    public double computeLogBaseMeasure(DataInstance dataInstance) {
+    public double computeLogBaseMeasure(Assignment dataInstance) {
         return -0.5*Math.log(2*Math.PI);
     }
 
@@ -324,7 +324,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             covbaseVector.setRowVector(0, covXY);
 
             RealVector betaRV = new ArrayRealVector(beta);
-            RealMatrix theta_betaBeta = betaRV.outerProduct(betaRV).scalarMultiply(-variance2Inv);
+            RealMatrix theta_betaBeta = betaRV.outerProduct(betaRV).scalarMultiply(-variance2Inv*2);
             covbaseVector.setSubMatrix(theta_betaBeta.getData(),1,1);
         }
 
