@@ -19,7 +19,6 @@ import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
-import java.util.Random;
 
 
 /**
@@ -87,7 +86,7 @@ public class ParallelTAN {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         Domain huginNetwork = null;
         try {
-            huginNetwork = ConverterToHugin.convertToHugin(bn);
+            huginNetwork = BNConverterToHugin.convertToHugin(bn);
 
             DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory, dataBase);
 
@@ -132,7 +131,7 @@ public class ParallelTAN {
             //huginNetwork.uncompile();
 
 
-            return (eu.amidst.huginlink.ConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
+            return (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
         } catch (ExceptionHugin exceptionHugin) {
             throw new IllegalStateException("Huging Exeception: " + exceptionHugin.getMessage());
         }
