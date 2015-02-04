@@ -10,6 +10,7 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.Vector;
 
@@ -66,20 +67,20 @@ public abstract class EF_Distribution {
 
     public abstract void updateMomentFromNaturalParameters();
 
-    public abstract SufficientStatistics getSufficientStatistics(DataInstance data);
+    public abstract SufficientStatistics getSufficientStatistics(Assignment data);
 
     public abstract int sizeOfSufficientStatistics();
 
-    public abstract double computeLogBaseMeasure(DataInstance dataInstance);
+    public abstract double computeLogBaseMeasure(Assignment dataInstance);
 
     public abstract double computeLogNormalizer();
 
-    public double computeProbabilityOf(StaticDataInstance dataInstance){
+    public double computeProbabilityOf(Assignment dataInstance){
         return Math.exp(this.computeLogProbabilityOf(dataInstance));
     }
 
     //TODO: the logbasemeasure and the lognormalizer are positives or negatives terms (Andres)
-    public double computeLogProbabilityOf(DataInstance dataInstance){
+    public double computeLogProbabilityOf(Assignment dataInstance){
         return this.naturalParameters.dotProduct(this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) - this.computeLogNormalizer();
     }
 
