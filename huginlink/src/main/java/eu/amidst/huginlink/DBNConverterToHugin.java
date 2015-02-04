@@ -25,6 +25,8 @@ public class DBNConverterToHugin {
         huginDBN = new Class(new ClassCollection()); // I'm not sure about creating a new ClassCollection but it works!
     }
 
+
+
     private void setNodesAndTemporalClones(DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
 
         DynamicVariables dynamicVars = amidstDBN.getDynamicVariables();
