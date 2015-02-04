@@ -5,6 +5,7 @@ import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.database.DataInstance;
 
 import org.apache.commons.math.linear.*;
 
@@ -85,7 +86,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
          * 2) theta_0Theta
          */
         double variance2Inv =  1.0/(2*variance);
-        RealVector theta_0Theta = beta.mapMultiply(-beta_0 * variance2Inv);
+        RealVector theta_0Theta = beta.mapMultiply(-beta_0 / variance);
         ((CompoundVector) this.naturalParameters).setXYbaseVector(new ArrayRealVector(theta_0array, theta_0Theta.getData()));
 
         /*
