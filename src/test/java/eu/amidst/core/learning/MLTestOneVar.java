@@ -37,17 +37,13 @@ public class MLTestOneVar {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(net);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        try{
-            sampler.sampleToAnARFFFile("./data/OneVar10samples.arff", 10);
-        } catch (IOException ex){
-        }
         System.out.println(watch.stop());
+
         DataBase<StaticDataInstance> data = sampler.sampleToDataBase(10);
         data.stream().forEach( e -> System.out.println(e.toString(net.getStaticVariables().getListOfVariables())));
 
         //Load the sampled data
-        data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/OneVar10samples.arff")));
-
+        data = sampler.sampleToDataBase(10);
         //Structure learning is excluded from the test, i.e., so we use here the same initial network structure net.getDAG()
 
         //Parameter Learning
