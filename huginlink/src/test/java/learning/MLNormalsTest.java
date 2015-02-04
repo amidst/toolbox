@@ -11,6 +11,7 @@ import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.learning.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.huginlink.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
@@ -37,8 +38,9 @@ public class MLNormalsTest {
 
         Normal_NormalParents dist = (Normal_NormalParents) testnet.getDistributions().get(1);
 
-        dist.getCoeffParents()[0]=0.7;
-        dist.setSd(2.0);
+        //dist.getCoeffParents()[0]=0;
+        //dist.setIntercept(0.1);
+        //dist.setSd(2.234);
 
         System.out.println(testnet.toString());
 
@@ -60,7 +62,13 @@ public class MLNormalsTest {
         //Compare predictions between distributions and EF distributions.
 
         EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
+        HashMapAssignment dataTmp = new HashMapAssignment(2);
+        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("A"), 1.0);
+        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
 
+
+        System.out.println(testnet.getDistributions().get(1).getLogConditionalProbability(dataTmp));
+        System.out.println(ef_testnet.getDistributionList().get(1).computeLogProbabilityOf(dataTmp));
 
 
         for(DataInstance e: data){
@@ -69,13 +77,14 @@ public class MLNormalsTest {
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
             logProb = testnet.getLogProbabiltyOfFullAssignment(e);
-            System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
-            assertEquals(logProb, ef_logProb, 0.05);
+            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            assertEquals(logProb, ef_logProb, 0.0001);
 
         }
     }
 
-/*    @Test
+
+    @Test
     public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException, ExceptionHugin {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromHugin("networks/Normal_NormalParents.net");
@@ -110,8 +119,8 @@ public class MLNormalsTest {
 
         //Or check directly if the true and learned networks are equals
         assertTrue(bnet.equalBNs(testnet,0.05));
-    }*/
-    /*
+    }
+
     @Test
     public void testingProbabilities_NormalMultinomial() throws IOException, ClassNotFoundException, ExceptionHugin  {
 
@@ -151,7 +160,7 @@ public class MLNormalsTest {
 
         }
     }
-    */
+
 
 }
 
