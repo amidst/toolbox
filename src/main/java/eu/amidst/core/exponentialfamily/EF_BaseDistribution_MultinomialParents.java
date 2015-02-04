@@ -94,11 +94,11 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @Override
-    public SufficientStatistics getSufficientStatistics(DataInstance instance) {
+    public SufficientStatistics getSufficientStatistics(Assignment instance) {
 
         CompoundVector vector = this.createCompoundVector();
 
-        int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, instance);
+        int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, instance);
 
         vector.setBaseConf(position, 1.0);
 
@@ -149,8 +149,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         throw new UnsupportedOperationException("Method not implemented yet!");
     }
 
-    public double computeLogBaseMeasure(DataInstance dataInstance) {
-        int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, dataInstance);
+    @Override
+    public double computeLogBaseMeasure(Assignment dataInstance) {
+        int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, dataInstance);
         return this.getEF_BaseDistribution(position).computeLogBaseMeasure(dataInstance);
     }
 
@@ -319,6 +320,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
             return sum;
         }
+
+
     }
 
     private static class SparseVector implements Vector {

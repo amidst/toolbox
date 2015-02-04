@@ -10,6 +10,7 @@ import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
 
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     @Override
-    public SufficientStatistics getSufficientStatistics(DataInstance data) {
+    public SufficientStatistics getSufficientStatistics(Assignment data) {
         CompoundVector vectorSS = this.createEmtpyCompoundVector();//.createCompoundVector();
 
         this.distributionList.stream().forEach(w -> {
@@ -122,7 +123,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     @Override
-    public double computeLogBaseMeasure(DataInstance dataInstance) {
+    public double computeLogBaseMeasure(Assignment dataInstance) {
         return this.distributionList.stream().mapToDouble(w -> w.computeLogBaseMeasure(dataInstance)).sum();
     }
 
