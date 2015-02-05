@@ -814,15 +814,15 @@ $$\bm Z = ( X, \bm Y)$$
 \begin{eqnarray*}
 \Z &=& 
 \begin{pmatrix}
-\E(X) & \E(\Y)
+X & Y
 \end{pmatrix}
 \end{eqnarray*}
 
 \begin{eqnarray*}
 \Z^T\Z &=& 
 \begin{pmatrix}
-\E(XX^T)   & \E(X\Y) \\
-\E(\Y X^T) & \E(\Y \Y^T)
+XX^T   & X\Y \\
+\Y X^T & Y \Y^T
 \end{pmatrix}
 \end{eqnarray*}
 
@@ -850,7 +850,7 @@ $$\bm Z = ( X, \bm Y)$$
 = 
 \begin{pmatrix}
 \theta_{\mbox{-}1}   &  \thb_{\beb} \\
-\thb_{\beb^T}   &  \thb_{\beb\beb}
+\thb_{\beb}^T   &  \thb_{\beb\beb}
 \end{pmatrix}
 = 0.5\sigma^{-2}
 \begin{pmatrix}
@@ -911,7 +911,7 @@ X^2\\
 - \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) - \tfrac{1}{2}\ln{(2\pi)} \\\\
 &=&
 \begin{pmatrix}
-\theta_{\beta_0}+2\thb_{\beb} \E(\Y)\\
+\theta_{\beta_0}+2\thb_{\beb} \Y\\
 \theta_{\mbox{-}1}\\
 \end{pmatrix}^T
 \begin{pmatrix}
@@ -922,7 +922,7 @@ X^2\\
 %&+&
 % \ln{\frac{1}{\sqrt{2(\theta_{\beta_0}+2\thb_{\beb} \E(\Y))}}} 
 &-& 
-\left(\ln{\sigma} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y -\frac{\theta_{\beta_0}}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
+\left(\ln{\sigma} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y -\frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
 \end{eqnarray*}
 
 
@@ -935,15 +935,21 @@ X^2\\
 &=&
 \begin{pmatrix}
 \thb_{\beta_0\beb}^i + 2\thb_{\beb}^iX \\
-\thb_{\beb\beb}^i 
+\thb_{\beb\beb}^{ii} 
 \end{pmatrix}^T
 \begin{pmatrix}
 Y^i\\
 {Y^i}^2\\
 \end{pmatrix}\\
-&+& \thb_{\beta_0\beb}'Y' + 2\thb_{\beb}'XY'  + \thb_{\beb\beb}'Y'Y' + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
+&+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'YY + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
 &-& \left( \frac{\theta_{\beta_0}}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
 \end{eqnarray*}
+
+where $\thb_{\cdot}^i$ is the $i$th component of $\thb_{\cdot}$,\\
+where $\thb_{\beta_0\beb}' = \thb_{\beta_0\beb}$ with $\thb_{\beta_0\beb}^i = 0$,\\
+where $\thb_{\beb}' = \thb_{\beb}$ with $\thb_{\beb}^i = 0$,\\
+where $\thb_{\beb\beb}' = \thb_{\beb\beb}$ with $\thb_{\beb\beb}^i = 0$.
+
 
 \end{itemize}
 
