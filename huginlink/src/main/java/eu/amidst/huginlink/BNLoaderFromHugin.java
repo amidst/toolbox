@@ -10,7 +10,7 @@ import eu.amidst.core.models.BayesianNetwork;
 /**
  * Created by afa on 11/12/14.
  */
-public class BayesianNetworkLoader {
+public class BNLoaderFromHugin {
 
     public static BayesianNetwork loadFromHugin(String file) throws ExceptionHugin {
 
