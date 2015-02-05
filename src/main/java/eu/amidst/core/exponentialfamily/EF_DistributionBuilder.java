@@ -48,15 +48,15 @@ public final class EF_DistributionBuilder {
 
         if (dist.getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents")) {
             EF_BaseDistribution_MultinomialParents newDist = (EF_BaseDistribution_MultinomialParents)dist;
-            if (newDist.getEFBaseDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Multinomial")){
+            if (newDist.getBaseEFDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Multinomial")){
                 EF_BaseDistribution_MultinomialParents<EF_Multinomial> newDistMulti =  (EF_BaseDistribution_MultinomialParents<EF_Multinomial>)dist;
-                return toDistribution(newDistMulti,newDistMulti.getEFBaseDistribution(0));
-            }else if (newDist.getEFBaseDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal")){
+                return toDistribution(newDistMulti,newDistMulti.getBaseEFDistribution(0));
+            }else if (newDist.getBaseEFDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal")){
                 EF_BaseDistribution_MultinomialParents<EF_Normal> newDistMulti =  (EF_BaseDistribution_MultinomialParents<EF_Normal>)dist;
-                return toDistribution(newDistMulti,newDistMulti.getEFBaseDistribution(0));
-            }else if (newDist.getEFBaseDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal_NormalParents")) {
+                return toDistribution(newDistMulti,newDistMulti.getBaseEFDistribution(0));
+            }else if (newDist.getBaseEFDistribution(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_Normal_NormalParents")) {
                 EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents> newDistMulti =  (EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents>)dist;
-                return toDistribution(newDistMulti,newDistMulti.getEFBaseDistribution(0));
+                return toDistribution(newDistMulti,newDistMulti.getBaseEFDistribution(0));
             }else {
                 throw new IllegalArgumentException("This conditional distribution can not be converted to an exponential form: "+ dist.getClass().getName());
             }
@@ -74,7 +74,7 @@ public final class EF_DistributionBuilder {
         Normal_MultinomialNormalParents newDist = new Normal_MultinomialNormalParents(dist.getVariable(), dist.getConditioningVariables());
 
         for (int i = 0; i < dist.numberOfConfigurations(); i++) {
-            newDist.setNormal_NormalParentsDistribution(i, EF_DistributionBuilder.toDistribution(dist.getEFBaseDistribution(i)));
+            newDist.setNormal_NormalParentsDistribution(i, EF_DistributionBuilder.toDistribution(dist.getBaseEFDistribution(i)));
         }
 
         return newDist;
@@ -98,7 +98,7 @@ public final class EF_DistributionBuilder {
         Normal_MultinomialParents newDist = new Normal_MultinomialParents(dist.getVariable(), dist.getConditioningVariables());
 
         for (int i = 0; i < dist.numberOfConfigurations(); i++) {
-            newDist.setNormal(i, EF_DistributionBuilder.toDistribution(dist.getEFBaseDistribution(i)));
+            newDist.setNormal(i, EF_DistributionBuilder.toDistribution(dist.getBaseEFDistribution(i)));
         }
 
         return newDist;
@@ -122,7 +122,7 @@ public final class EF_DistributionBuilder {
         Multinomial_MultinomialParents multi = new Multinomial_MultinomialParents(dist.getVariable(), dist.getConditioningVariables());
 
         for (int i = 0; i < dist.numberOfConfigurations(); i++) {
-            multi.setMultinomial(i, EF_DistributionBuilder.toDistribution(dist.getEFBaseDistribution(i)));
+            multi.setMultinomial(i, EF_DistributionBuilder.toDistribution(dist.getBaseEFDistribution(i)));
         }
 
         return multi;
