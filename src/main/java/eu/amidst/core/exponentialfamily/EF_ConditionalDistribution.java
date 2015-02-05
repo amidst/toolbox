@@ -28,7 +28,7 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
 
     public abstract NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable,MomentParameters> momentChildCoParents);
 
-    public abstract EF_UnivariateDistribution getEmptyEFUnivariateDistribution();
+    public abstract EF_UnivariateDistribution getNewBaseEFUnivariateDistribution();
 
     public abstract EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment);
 
