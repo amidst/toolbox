@@ -1,10 +1,9 @@
 package eu.amidst.core.models;
 
-import eu.amidst.examples.BNExample;
-import eu.amidst.examples.DBNExample;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -12,25 +11,37 @@ import java.io.IOException;
  */
 public class DynamicBayesianNetworkLoaderTest {
 
-    //TODO Implement a test comparing all the elements of the BayesianNetwork before saving the file and after loading it
     @Before
     public void setUp() throws IOException, ClassNotFoundException {
-
-        DynamicBayesianNetwork dbn1 = DBNExample.getAmidst_DBN_Example();
-
-        System.out.println("------------  DBN model before saving the object  --------------");
-        System.out.println(dbn1.toString());
-        DynamicBayesianNetworkWriter.saveToFile(dbn1, "networks/dbn.dbn");
-
-        System.out.println("------------  DBN model loaded from the file -------------------");
-        DynamicBayesianNetwork dbn2 = DynamicBayesianNetworkLoader.loadFromFile("networks/dbn.dbn");
-        System.out.println(dbn2.toString());
 
     }
 
     @Test
-    public void test(){
-
+    public void test() throws Exception {
+        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networks");
     }
 
+    public static void loadAndTestFilesFromFolder(final String folderName) throws Exception {
+
+        File folder = new File(folderName);
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                loadAndTestFilesFromFolder(fileEntry.getName());
+            } else {
+                String fileName = fileEntry.getName();
+                String fullFileName = folderName + "/" + fileName;
+
+                if (fileName.endsWith(".dbn")) { //Dynamic BN
+
+                    DynamicBayesianNetwork amidstDBN = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
+                    DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullFileName);
+
+                    DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
+
+                    if (!amidstDBN.equalDBNs(amidstDBN2, 0.0))
+                        throw new Exception("Dynamic Bayesian network loader for " + fileName + " failed. ");
+                }
+            }
+        }
+    }
 }
