@@ -756,7 +756,7 @@ Let $X$ be a normal variable and $ \mathbf{Y} = \{Y_1,\ldots,Y_n\}$ denote the s
 
 The log-conditional probability of $X$ given its parents $\mathbf{Y}$ can be expressed as follows:
 
-$$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2\pi}} \me^{-\frac{(y-(\beta_0+ \bs \beta^T \cdot \bm Y))^2}{2\sigma^2}} \right)$$
+$$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2\pi}} \me^{-\frac{(x-(\beta_0+ \bs \beta^T \cdot \bm Y))^2}{2\sigma^2}} \right)$$
 
 where
 
@@ -833,7 +833,7 @@ $$\bm Z = ( X, \bm Y)$$
 \end{pmatrix}
 =
 \begin{pmatrix}
-\theta_1^1 & \thb_1^2
+\theta_{\beta_0} & \thb_{\beta_0\beb}
 \end{pmatrix}
 =\beta_0\sigma^{-2}
 \begin{pmatrix}
@@ -849,8 +849,8 @@ $$\bm Z = ( X, \bm Y)$$
 \end{pmatrix}
 = 
 \begin{pmatrix}
-\theta_2^{11}   &  \thb_2^{12} \\
-\thb_2^{21}   &  \thb_2^{22}
+\theta_{\mbox{-}1}   &  \thb_{\beb} \\
+\thb_{\beb^T}   &  \thb_{\beb\beb}
 \end{pmatrix}
 = 0.5\sigma^{-2}
 \begin{pmatrix}
@@ -911,18 +911,18 @@ X^2\\
 - \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) - \tfrac{1}{2}\ln{(2\pi)} \\\\
 &=&
 \begin{pmatrix}
-\theta_1^1+2\thb_2^{12} \E(\Y)\\
-\theta_2^{11}\\
+\theta_{\beta_0}+2\thb_{\beb} \E(\Y)\\
+\theta_{\mbox{-}1}\\
 \end{pmatrix}^T
 \begin{pmatrix}
 X\\
 X^2\\
 \end{pmatrix}\\
-%- \left(\frac{\ln{(2\theta_2^{11}})}{2}-\theta_2^{11}\left(\theta_1^1+2\thb_2^{12} \E(\Y)\right)^2 \right) \\
+%- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_{\beta_0}+2\thb_{\beb} \E(\Y)\right)^2 \right) \\
 %&+&
-% \ln{\frac{1}{\sqrt{2(\theta_1^1+2\thb_2^{12} \E(\Y))}}} 
+% \ln{\frac{1}{\sqrt{2(\theta_{\beta_0}+2\thb_{\beb} \E(\Y))}}} 
 &-& 
-\left(\theta_1^1 - \thb_1^2 \Y - \thb_2^{22}\Y\Y + \ln{\sigma} + \tfrac{1}{2}\ln{(2\pi)}\right) + 0 \\
+\left(\ln{\sigma} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y -\frac{\theta_{\beta_0}}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
 \end{eqnarray*}
 
 
@@ -934,14 +934,15 @@ X^2\\
 \ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(\mathbf{Y_i}) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
 &=&
 \begin{pmatrix}
-\thb_1^2 \Y' + \thb_2^{12}X\Y' + \thb_2^{21}\Y'X\\
-\thb_2^{22}\Y'\Y' 
+\thb_{\beta_0\beb}^i + 2\thb_{\beb}^iX \\
+\thb_{\beb\beb}^i 
 \end{pmatrix}^T
 \begin{pmatrix}
-Y_i\\
-Y_i^2\\
+Y^i\\
+{Y^i}^2\\
 \end{pmatrix}\\
-&-& \left(\theta_1^1(1-X) - \thb_2^{11}XX + \ln{\sigma} + \tfrac{1}{2}\ln{(2\pi)} \right)
+&+& \thb_{\beta_0\beb}'Y' + 2\thb_{\beb}'XY'  + \thb_{\beb\beb}'Y'Y' + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
+&-& \left( \frac{\theta_{\beta_0}}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
 \end{eqnarray*}
 
 \end{itemize}
