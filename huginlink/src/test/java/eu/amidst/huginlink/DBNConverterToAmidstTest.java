@@ -21,7 +21,7 @@ public class DBNConverterToAmidstTest {
         //The name of the DBN must be the same as the name of the .net file !!!
         String nameModel = "huginDBNFromAMIDST";
         huginDBN.setName(nameModel);
-        String outFile = new String("networks/"+nameModel+".net");
+        String outFile = new String("networks/"+nameModel+".oobn");
         huginDBN.saveAsNet(outFile);
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
 
@@ -34,7 +34,7 @@ public class DBNConverterToAmidstTest {
         nameModel = "huginDBNFromAMIDST2";
         //The name of the DBN must be the same as the name of the .net file !!!
         huginDBN.setName(nameModel);
-        outFile = new String("networks/"+nameModel+".net");
+        outFile = new String("networks/"+nameModel+".oobn");
         huginDBN.saveAsNet(outFile);
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
 

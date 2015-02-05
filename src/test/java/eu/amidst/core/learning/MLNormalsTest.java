@@ -29,7 +29,7 @@ public class MLNormalsTest {
     public void testingProbabilities_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
 
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
 
         Normal_NormalParents dist = (Normal_NormalParents) testnet.getDistributions().get(1);
 
@@ -76,7 +76,7 @@ public class MLNormalsTest {
     public void testingML_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
 
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.ser");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
         //BayesianNetwork testnet = eu.amidst.core.models.BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
         System.out.println("\nNormal_NormalParents network \n ");
 
@@ -102,8 +102,7 @@ public class MLNormalsTest {
     @Test
     public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
-        //BayesianNetwork testnet = eu.amidst.core.models.BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.ser");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.bn");
         System.out.println("\nNormal_NormalParents network \n ");
 
         //Sampling
@@ -134,7 +133,7 @@ public class MLNormalsTest {
     public void testingProbabilities_NormalMultinomial() throws IOException, ClassNotFoundException  {
 
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_MultinomialParents.ser");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_MultinomialParents.bn");
 
         System.out.println(testnet.toString());
         System.out.println("\nNormal_MultinomialParents probabilities comparison \n ");

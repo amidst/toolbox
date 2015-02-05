@@ -19,7 +19,7 @@ public class DBNConverterToHuginTest {
         DynamicBayesianNetwork amidstDBN = DBNExample.getAmidst_DBN_Example();
         System.out.println("\n\nConverting the AMIDST Dynamic BN into Hugin format ...");
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
-        String outFile = new String("networks/huginDBNFromAMIDST.net");
+        String outFile = new String("networks/huginDBNFromAMIDST.oobn");
 
         //The name of the DBN must be the same as the name of the out file !!!
         huginDBN.setName("huginDBNFromAMIDST");

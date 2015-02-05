@@ -29,7 +29,7 @@ public class BNConverterToAmidstTest {
         BayesianNetwork amidstBN2 = BNConverterToAMIDST.convertToAmidst(huginBN2);
         System.out.println("\nAMIDST network object created.");
 
-        BayesianNetworkWriter.saveToFile(amidstBN2, "networks/asia.ser");
+        BNWriterToHugin.saveToHuginFile(amidstBN2, "networks/asia.bn");
 
 
     }

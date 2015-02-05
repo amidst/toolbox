@@ -1,78 +1,68 @@
 package eu.amidst.huginlink;
 
-import COM.hugin.HAPI.*;
 import eu.amidst.core.models.*;
-
-import java.io.BufferedReader;
+import eu.amidst.core.models.DynamicBayesianNetworkWriter;
+import eu.amidst.core.models.BayesianNetworkWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 /**
  * Created by afa on 3/2/15.
  */
 public class FileConverterFromHuginToAmidst {
 
-    public static String getModelType(String fullName) {
+    public static void convertFilesFromFolder(final String folderName) throws Exception {
 
-        String line = null;
-        try {
-            BufferedReader bufferReader = new BufferedReader(new FileReader(fullName));
-            do {
-                line = bufferReader.readLine();
-            } while (line.isEmpty() &&
-                     line.compareTo("net")!=0 &&
-                     line.substring(0,5).compareTo("class")!=0 &&
-                     line!=null);
-            bufferReader.close();
+        File folder = new File(folderName);
 
-        } catch (Exception e) {
-            System.out.println("Error while reading file line by line:" + e.getMessage());
-        }
-
-        if (line == null) return null;
-        if (line.compareTo("net")==0) return "BN";
-        if (line.substring(0,5).compareTo("class")==0) return "DBN";
-        return null;
-    }
-
-    public static void convertFilesFromFolder(final File folder) throws ExceptionHugin, IOException, ClassNotFoundException {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
-                convertFilesFromFolder(fileEntry);
+                convertFilesFromFolder(fileEntry.getName());
             } else {
+
+                String amidstBNExtension = ".bn";
+                String amidstDBNExtension = ".dbn";
+                String huginBNExtension = ".net";
+                String huginDBNExtension =".oobn";
+
                 String fileName = fileEntry.getName();
-                if(fileName.endsWith(".net")) {
-                    String amidstName = fileName.substring(0,fileName.length()-4)+".ser";
-                    String fullAmidstName = folder.getName() + "/" + amidstName;
-                    String fullName = folder.getName() + "/" + fileName;
-                    if (FileConverterFromHuginToAmidst.getModelType(fullName)=="BN"){
-                        System.out.println("Converting " + fileName +" to " + amidstName);
-                        ParseListener parseListener = new DefaultClassParseListener();
-                        Domain huginBN = new Domain (fullName, parseListener);
-                        BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
-                        BayesianNetworkWriter.saveToFile(amidstBN,fullAmidstName);
+                String fullFileName = folder.getName() + "/" + fileName;
 
-                        //Move to test
-                        BayesianNetwork amidstBN2 = BayesianNetworkLoader.loadFromFile(fullAmidstName);
-                        System.out.println(amidstBN.equalBNs(amidstBN2, 0.00000001));
+                if (fileName.endsWith(huginBNExtension)) { //Static BN
 
+                    String modelName = fileName.substring(0, fileName.length() - 4);
+                    String amidstFileName = modelName + amidstBNExtension;
+                    String fullAmidstFileName = folder.getName() + "/" + amidstFileName;
 
-                    }
-//                    else
-//                    {
-//                        if (FileConverterFromHuginToAmidst.getModelType(fullName) == "DBN") {
-//                            Class huginDBN = new Class(new ClassCollection(), fullName);
-//
-//                            DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
-//                            DynamicBayesianNetworkWriter.saveToFile(amidstDBN, amidstName);
-//                            System.out.println("Converting " + fileName +" to " + amidstName);
-//
-//                        }
-//                    }
+                    System.out.println("Converting " + fileName + " to " + amidstFileName);
+
+                    BayesianNetwork amidstBN = BNLoaderFromHugin.loadFromFile(fullFileName);
+                    BayesianNetworkWriter.saveToFile(amidstBN, fullAmidstFileName);
+
+                    //***************************************** TEST PART **********************************************
+                    BayesianNetwork amidstBN2 = BayesianNetworkLoader.loadFromFile(fullAmidstFileName);
+                    if(!amidstBN.equalBNs(amidstBN2, 0.0))
+                       throw new Exception("Conversion from " + fileName + " to " + amidstFileName + " failed. ");
+                    //**************************************************************************************************
+                }
+
+                if (fileName.endsWith(huginDBNExtension)) { //Dynamic BN
+                    String modelName = fileName.substring(0, fileName.length() - 5);
+                    String amidstFileName = modelName + amidstDBNExtension;
+                    String fullAmidstFileName = folder.getName() + "/" + amidstFileName;
+
+                    System.out.println("Converting " + fileName + " to " + amidstFileName);
+
+                    DynamicBayesianNetwork amidstDBN = DBNLoaderFromHugin.loadFromFile(fullFileName);
+                    DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullAmidstFileName);
+
+                    //***************************************** TEST PART **********************************************
+                    DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullAmidstFileName);
+                    if(!amidstDBN.equalDBNs(amidstDBN2, 0.0))
+                        throw new Exception("Conversion from " + fileName + " to " + amidstFileName + " failed. ");
+                    //**************************************************************************************************
+
                 }
             }
         }
     }
-
 }
