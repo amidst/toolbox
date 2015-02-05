@@ -131,7 +131,7 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
     }
 
     @Override
-    public boolean equalDist(ConditionalDistribution dist, double threshold) {
+    public boolean equalDist(Distribution dist, double threshold) {
         if (dist.getClass().getName().equals("eu.amidst.core.distribution.Multinomial_LogisticParents"))
             return this.equalDist((Multinomial_LogisticParents)dist,threshold);
         return false;

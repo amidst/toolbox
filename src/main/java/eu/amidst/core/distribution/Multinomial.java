@@ -125,6 +125,13 @@ public class Multinomial extends UnivariateDistribution  {
         probabilities = Utils.normalize(probabilities);
     }
 
+    @Override
+    public boolean equalDist(Distribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Multinomial"))
+            return this.equalDist((Multinomial)dist,threshold);
+        return false;
+    }
+
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("[ ");

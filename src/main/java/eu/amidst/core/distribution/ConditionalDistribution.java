@@ -49,6 +49,4 @@ public abstract class ConditionalDistribution extends Distribution {
 
     public abstract UnivariateDistribution getUnivariateDistribution(Assignment assignment);
 
-    public abstract boolean equalDist(ConditionalDistribution dist, double threshold);
-
 }

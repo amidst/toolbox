@@ -186,7 +186,7 @@ public class Normal_NormalParents extends ConditionalDistribution {
     }
 
     @Override
-    public boolean equalDist(ConditionalDistribution dist, double threshold) {
+    public boolean equalDist(Distribution dist, double threshold) {
         if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal_NormalParents"))
             return this.equalDist((Normal_NormalParents)dist,threshold);
         return false;
