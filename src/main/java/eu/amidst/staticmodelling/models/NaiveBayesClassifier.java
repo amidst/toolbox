@@ -33,7 +33,7 @@ public class NaiveBayesClassifier extends LearnableModel implements Classifier {
 
 
         for (int i = 0; i < this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
-            if (Utils.isMissing(data.getValue(i)) || i==this.getClassVarID())
+            if (Utils.isMissingValue(data.getValue(i)) || i==this.getClassVarID())
                 continue;
             Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
             potResult.combine(pot);

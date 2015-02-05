@@ -190,7 +190,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     }
 
     @Override
-    public boolean equalDist(ConditionalDistribution dist, double threshold) {
+    public boolean equalDist(Distribution dist, double threshold) {
         if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal_MultinomialNormalParents"))
             return this.equalDist((Normal_MultinomialNormalParents)dist,threshold);
         return false;
