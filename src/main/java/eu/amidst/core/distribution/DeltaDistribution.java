@@ -44,4 +44,21 @@ public class DeltaDistribution extends UnivariateDistribution {
     public void randomInitialization(Random random) {
 
     }
+
+    @Override
+    public boolean equalDist(Distribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.DeltaDistribution"))
+            return this.equalDist((DeltaDistribution)dist,threshold);
+        return false;
+    }
+
+    public boolean equalDist(DeltaDistribution dist, double threshold) {
+        if (dist.getVariable()!=dist.getVariable())
+            return false;
+
+        if (deltaValue!=dist.getDeltaValue())
+            return false;
+
+        return true;
+    }
 }

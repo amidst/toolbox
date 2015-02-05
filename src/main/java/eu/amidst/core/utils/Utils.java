@@ -19,11 +19,12 @@ public final class Utils {
         //Not called
     }
 
+
     public static double missingValue(){
         return Double.NaN;
     }
 
-    public static boolean isMissing(double val){
+    public static boolean isMissingValue(double val){
         return Double.isNaN(val);
     }
 
