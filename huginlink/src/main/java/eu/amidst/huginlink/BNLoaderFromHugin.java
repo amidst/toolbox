@@ -12,7 +12,7 @@ import eu.amidst.core.models.BayesianNetwork;
  */
 public class BNLoaderFromHugin {
 
-    public static BayesianNetwork loadFromHugin(String file) throws ExceptionHugin {
+    public static BayesianNetwork loadFromFile(String file) throws ExceptionHugin {
 
         ParseListener parseListener = new DefaultClassParseListener();
         Domain huginBN = new Domain (file, parseListener);

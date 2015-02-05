@@ -20,10 +20,10 @@ public class DynamicBayesianNetworkLoaderTest {
 
         System.out.println("------------  DBN model before saving the object  --------------");
         System.out.println(dbn1.toString());
-        DynamicBayesianNetworkWriter.saveToFile(dbn1, "networks/dbn.ser");
+        DynamicBayesianNetworkWriter.saveToFile(dbn1, "networks/dbn.dbn");
 
         System.out.println("------------  DBN model loaded from the file -------------------");
-        DynamicBayesianNetwork dbn2 = DynamicBayesianNetworkLoader.loadFromFile("networks/dbn.ser");
+        DynamicBayesianNetwork dbn2 = DynamicBayesianNetworkLoader.loadFromFile("networks/dbn.dbn");
         System.out.println(dbn2.toString());
 
     }

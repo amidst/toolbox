@@ -103,7 +103,7 @@ public class DynamicBayesianNetworkGenerator {
         System.out.println(dynamicNaiveBayes.getDynamicDAG().toString());
         System.out.println(dynamicNaiveBayes.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dynamicNaiveBayes, "networks/DynamicNB-10.ser");
+        DynamicBayesianNetworkWriter.saveToFile(dynamicNaiveBayes, "networks/DynamicNB-10.dbn");
 
     }
 }

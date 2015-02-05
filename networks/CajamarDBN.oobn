@@ -1,0 +1,238 @@
+class CajamarDBN
+{
+    inputs = ();
+    outputs = ();
+    node_size = (0 0);
+
+    node DEBT
+    {
+	label = "DEBT";
+	states = ("1" "2" "3");
+    }
+
+    temporal T_DEBT : DEBT
+    {
+	label = "T_DEBT";
+    }
+
+    node INCOMES
+    {
+	label = "INCOMES";
+	states = ("1" "2" "3");
+    }
+
+    temporal T_INCOMES : INCOMES
+    {
+	label = "T_INCOMES";
+    }
+
+    node BALANCE
+    {
+	label = "BALANCE";
+	states = ("1" "2" "3");
+    }
+
+    temporal T_BALANCE : BALANCE
+    {
+	label = "T_BALANCE";
+    }
+
+    node CARD_MOV
+    {
+	label = "CARD_MOV";
+	states = ("1" "2" "3");
+    }
+
+    temporal T_CARD_MOV : CARD_MOV
+    {
+	label = "T_CARD_MOV";
+    }
+
+    node CARD_MOV_IMP
+    {
+	label = "CARD_MOV_IMP";
+	states = ("1" "2" "3");
+    }
+
+    temporal T_CARD_MOV_IMP : CARD_MOV_IMP
+    {
+	label = "T_CARD_MOV_IMP";
+    }
+
+    node PREVIOUS_MORTGAGE_BEHAVIOUR
+    {
+	label = "PREVIOUS_MORTGAGE_BEHAVIOUR";
+	states = ("0" "1" "2" "3");
+    }
+
+    temporal T_PREVIOUS_MORTGAGE_BEHAVIOUR : PREVIOUS_MORTGAGE_BEHAVIOUR
+    {
+	label = "T_PREVIOUS_MORTGAGE_BEHAVIOUR";
+    }
+
+    node PREVIOUS_CREDIT_BEHAVIOUR
+    {
+	label = "PREVIOUS_CREDIT_BEHAVIOUR";
+	states = ("0" "1" "2" "3");
+    }
+
+    temporal T_PREVIOUS_CREDIT_BEHAVIOUR : PREVIOUS_CREDIT_BEHAVIOUR
+    {
+	label = "T_PREVIOUS_CREDIT_BEHAVIOUR";
+    }
+
+    node PREVIOUS_CARD_BEHAVIOUR
+    {
+	label = "PREVIOUS_CARD_BEHAVIOUR";
+	states = ("0" "1" "2" "3");
+    }
+
+    temporal T_PREVIOUS_CARD_BEHAVIOUR : PREVIOUS_CARD_BEHAVIOUR
+    {
+	label = "T_PREVIOUS_CARD_BEHAVIOUR";
+    }
+
+    node PREVIOUS_UNCOVERED
+    {
+	label = "PREVIOUS_UNCOVERED";
+	states = ("0" "1" "2" "3");
+    }
+
+    temporal T_PREVIOUS_UNCOVERED : PREVIOUS_UNCOVERED
+    {
+	label = "T_PREVIOUS_UNCOVERED";
+    }
+
+    node PREVIOUS_OTHER
+    {
+	label = "PREVIOUS_OTHER";
+	states = ("0" "1" "2" "3");
+    }
+
+    temporal T_PREVIOUS_OTHER : PREVIOUS_OTHER
+    {
+	label = "T_PREVIOUS_OTHER";
+    }
+
+    node DEFAULT
+    {
+	label = "DEFAULT";
+	states = ("0" "1");
+    }
+
+    temporal T_DEFAULT : DEFAULT
+    {
+	label = "T_DEFAULT";
+    }
+
+    potential (T_DEBT)
+    {
+	data = ( 0.454322 0.149502 0.396177 );
+    }
+
+    potential (DEBT)
+    {
+	data = ( 0.450391 0.216287 0.333323 );
+    }
+
+    potential (T_INCOMES)
+    {
+	data = ( 0.371615 0.40342 0.224965 );
+    }
+
+    potential (INCOMES)
+    {
+	data = ( 0.538585 0.187157 0.274258 );
+    }
+
+    potential (T_BALANCE)
+    {
+	data = ( 0.171255 0.43786 0.390884 );
+    }
+
+    potential (BALANCE)
+    {
+	data = ( 0.33219 0.335005 0.332805 );
+    }
+
+    potential (T_CARD_MOV)
+    {
+	data = ( 0.699761 0.204411 0.0958272 );
+    }
+
+    potential (CARD_MOV)
+    {
+	data = ( 0.798266 0.0862735 0.115461 );
+    }
+
+    potential (T_CARD_MOV_IMP)
+    {
+	data = ( 0.204585 0.0324292 0.762985 );
+    }
+
+    potential (CARD_MOV_IMP)
+    {
+	data = ( 0.537934 0.187139 0.274927 );
+    }
+
+    potential (T_PREVIOUS_MORTGAGE_BEHAVIOUR)
+    {
+	data = ( 0.458206 0.0496412 0.296993 0.19516 );
+    }
+
+    potential (PREVIOUS_MORTGAGE_BEHAVIOUR)
+    {
+	data = ( 0.654647 0.256822 0.0861835 0.0023477 );
+    }
+
+    potential (T_PREVIOUS_CREDIT_BEHAVIOUR)
+    {
+	data = ( 0.258727 0.330185 0.162383 0.248705 );
+    }
+
+    potential (PREVIOUS_CREDIT_BEHAVIOUR)
+    {
+	data = ( 0.540826 0.313796 0.131969 0.0134092 );
+    }
+
+    potential (T_PREVIOUS_CARD_BEHAVIOUR)
+    {
+	data = ( 0.251421 0.280276 0.287681 0.180622 );
+    }
+
+    potential (PREVIOUS_CARD_BEHAVIOUR)
+    {
+	data = ( 0.533934 0.319052 0.140255 0.00675923 );
+    }
+
+    potential (T_PREVIOUS_UNCOVERED)
+    {
+	data = ( 0.429295 0.0639358 0.0396496 0.46712 );
+    }
+
+    potential (PREVIOUS_UNCOVERED)
+    {
+	data = ( 0.533893 0.320996 0.138293 0.00681742 );
+    }
+
+    potential (T_PREVIOUS_OTHER)
+    {
+	data = ( 0.353479 0.349894 0.0700836 0.226544 );
+    }
+
+    potential (PREVIOUS_OTHER)
+    {
+	data = ( 0.764888 0.171835 0.0584219 0.00485586 );
+    }
+
+    potential (T_DEFAULT)
+    {
+	data = ( 0.0590336 0.940966 );
+    }
+
+    potential (DEFAULT | T_DEFAULT)
+    {
+	data = (( 0.927666 0.0723343 )	%  T_DEFAULT=0
+		( 0.900913 0.0990873 ));	%  T_DEFAULT=1
+    }
+} % class CajamarDBN

@@ -19,10 +19,10 @@ public class BayesianNetworkLoaderTest {
 
         System.out.println("------------  BN model before saving the object  --------------");
         System.out.println(bn1.toString());
-        BayesianNetworkWriter.saveToFile(bn1, "networks/bn.ser");
+        BayesianNetworkWriter.saveToFile(bn1, "networks/bn.bn");
 
         System.out.println("------------  BN model loaded from the file -------------------");
-        BayesianNetwork bn2 = BayesianNetworkLoader.loadFromFile("networks/bn.ser");
+        BayesianNetwork bn2 = BayesianNetworkLoader.loadFromFile("networks/bn.bn");
         System.out.println(bn2.toString());
 
 

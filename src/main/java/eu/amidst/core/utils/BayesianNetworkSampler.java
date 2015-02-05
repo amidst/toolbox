@@ -165,7 +165,7 @@ public class BayesianNetworkSampler  {
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("networks/asia.ser");
+        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(0);
