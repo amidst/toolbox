@@ -1,12 +1,10 @@
 package eu.amidst.core.inference.VMP_;
 
-import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +32,7 @@ public class Node {
 
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
-        this.QDist= this.PDist.getEmptyEFUnivariateDistribution();
+        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution();
     }
 
     public List<Node> getParents() {
@@ -55,7 +53,7 @@ public class Node {
 
     public void setAssignment(Assignment assignment) {
         this.assignment = assignment;
-        if (this.assignment.getValue(this.getMainVariable())!= Utils.missingValue()){
+        if (!Utils.isMissingValue(this.assignment.getValue(this.getMainVariable()))){
             this.observed=true;
             sufficientStatistics = this.QDist.getSufficientStatistics(assignment);
         }
@@ -94,10 +92,17 @@ public class Node {
                 .collect(Collectors.toList());
 
         if (!isObserved()) {
-            messages.add(
-                    new Message(this.getMainVariable(),
-                            this.PDist.getExpectedNaturalFromParents(momentParents)
-                    ));
+            if (this.parents.isEmpty()){
+                messages.add(
+                        new Message(this.getMainVariable(),
+                                this.PDist.getNaturalParameters()
+                        ));
+            }else {
+                messages.add(
+                        new Message(this.getMainVariable(),
+                                this.PDist.getExpectedNaturalFromParents(momentParents)
+                        ));
+            }
         }
 
         return messages.stream();

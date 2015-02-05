@@ -30,4 +30,6 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     public double computeLogBaseMeasure(Assignment dataInstance){
         return this.computeLogBaseMeasure(dataInstance.getValue(this.getVariable()));
     }
+
+    public abstract EF_UnivariateDistribution deepCopy();
 }

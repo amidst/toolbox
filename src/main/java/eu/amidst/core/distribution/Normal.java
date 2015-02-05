@@ -116,6 +116,13 @@ public class Normal extends UnivariateDistribution {
         this.setSd(random.nextDouble()*10);
     }
 
+    @Override
+    public boolean equalDist(Distribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal"))
+            return this.equalDist((Normal)dist,threshold);
+        return false;
+    }
+
     public String toString() {
         return "Normal [ mu = " + this.getMean() + ", sd = "+ this.getSd() +" ]";
     }

@@ -125,6 +125,27 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
 
     }
 
+    public Variable addHiddenMultionomialVariable(String name, int nOfStates) {
+        VariableBuilder builder = new VariableBuilder();
+        builder.setName(name);
+        builder.setDistributionType(DistType.MULTINOMIAL);
+        builder.setStateSpace(new FiniteStateSpace(nOfStates));
+        builder.setObservable(false);
+
+        return this.addHiddenVariable(builder);
+
+    }
+
+    public Variable addHiddenGaussianVariable(String name, int nOfStates) {
+        VariableBuilder builder = new VariableBuilder();
+        builder.setName(name);
+        builder.setDistributionType(DistType.GAUSSIAN);
+        builder.setStateSpace(new RealStateSpace());
+        builder.setObservable(false);
+
+        return this.addHiddenVariable(builder);
+    }
+
     public Variable addHiddenVariable(VariableBuilder builder) {
 
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());

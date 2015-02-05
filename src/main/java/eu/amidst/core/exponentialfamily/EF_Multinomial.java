@@ -77,4 +77,13 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         return this.var.getNumberOfStates();
     }
 
+
+    @Override
+    public EF_UnivariateDistribution deepCopy() {
+
+        EF_Multinomial copy = new EF_Multinomial(this.getVariable());
+        copy.getNaturalParameters().copy(this.getNaturalParameters());
+
+        return copy;
+    }
 }
