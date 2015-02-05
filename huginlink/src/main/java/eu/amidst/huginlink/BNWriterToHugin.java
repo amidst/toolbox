@@ -7,7 +7,7 @@ import eu.amidst.core.models.BayesianNetwork;
 /**
  * Created by afa on 11/12/14.
  */
-public class BayesianNetworkWriter {
+public class BNWriterToHugin {
 
     public static void saveToHuginFile(BayesianNetwork amidstBN, String file) throws ExceptionHugin {
         Domain huginBN = BNConverterToHugin.convertToHugin(amidstBN);
