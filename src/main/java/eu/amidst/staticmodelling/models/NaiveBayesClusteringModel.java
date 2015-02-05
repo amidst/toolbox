@@ -67,14 +67,14 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         for (int i=0; i<this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
             if (i==this.getHiddenClassID())
                 continue;
-            if (Utils.isMissing(data.getValue(i)))
+            if (Utils.isMissingValue(data.getValue(i)))
                 continue;
 
             Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
             potResult.combine(pot);
         }
 
-        if (Utils.isMissing(data.getValue(varID))) {
+        if (Utils.isMissingValue(data.getValue(varID))) {
             Potential pot = this.getBayesianNetwork().getDistribution(varID).getRestrictedPotential(data);
             potResult.combine(pot);
         }
@@ -84,13 +84,13 @@ public class NaiveBayesClusteringModel extends LearnableModel{
 
     public double[] clusterMemberShip(DataInstance data){
 
-        if (!Utils.isMissing(data.getValue(this.getHiddenClassID())))
+        if (!Utils.isMissingValue(data.getValue(this.getHiddenClassID())))
             return null;//Error
 
         PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getDistribution(this.getHiddenClassID()).getRestrictedPotential(data);
 
         for (int i=0; i<this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
-            if (Utils.isMissing(data.getValue(i)) || i==this.getHiddenClassID())
+            if (Utils.isMissingValue(data.getValue(i)) || i==this.getHiddenClassID())
                 continue;
             Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
             potResult.combine(pot);

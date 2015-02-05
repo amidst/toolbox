@@ -54,7 +54,7 @@ public class EF_Indicator extends EF_ConditionalDistribution{
     }
 
     @Override
-    public EF_UnivariateDistribution getEmptyEFUnivariateDistribution() {
+    public EF_UnivariateDistribution getNewBaseEFUnivariateDistribution() {
         return null;
     }
 

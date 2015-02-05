@@ -34,9 +34,7 @@ public interface SufficientStatistics extends Vector {
         System.out.println(out3.get(0) + ", " + out3.get(1));
      */
     public static SufficientStatistics sumVector(SufficientStatistics vec1, SufficientStatistics vec2){
-        //vec2.sum(vec1);
-        //return vec2;
-        vec1.sum(vec2);
-        return vec1;
+        vec2.sum(vec1);
+        return vec2;
     }
 }

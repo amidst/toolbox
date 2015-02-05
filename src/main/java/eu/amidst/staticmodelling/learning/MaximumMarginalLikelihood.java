@@ -39,7 +39,7 @@ public class MaximumMarginalLikelihood implements LearningAlgorithm{
     public void updateModel(DataInstance dataInstance) {
         BayesianNetwork bn = model.getBayesianNetwork();
         for (int i = 0; i<bn.getNumberOfDynamicVars(); i++){
-            if (Utils.isMissing(dataInstance.getValue(i)) && bn.getVariableByName(i).isLeave())
+            if (Utils.isMissingValue(dataInstance.getValue(i)) && bn.getVariableByName(i).isLeave())
                 continue;
 
             ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getDistribution(i);
