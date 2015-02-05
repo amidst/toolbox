@@ -18,7 +18,6 @@ import java.util.*;
  * Created by afa on 13/1/15.
  */
 
-//TODO Move this class to the module huginLink
 public class InferenceDemo {
 
     public static void printBeliefs (Domain domainObject) throws ExceptionHugin {

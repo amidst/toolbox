@@ -133,7 +133,7 @@ public class ParallelTAN {
 
             return (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
         } catch (ExceptionHugin exceptionHugin) {
-            throw new IllegalStateException("Huging Exeception: " + exceptionHugin.getMessage());
+            throw new IllegalStateException("Hugig Exeception: " + exceptionHugin.getMessage());
         }
     }
 

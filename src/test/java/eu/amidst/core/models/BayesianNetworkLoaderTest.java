@@ -1,9 +1,9 @@
 package eu.amidst.core.models;
 
-import eu.amidst.examples.BNExample;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -11,36 +11,37 @@ import java.io.IOException;
  */
 public class BayesianNetworkLoaderTest {
 
-    //TODO Implement a test comparing all the elements of the BayesianNetwork before saving the file and after loading it
     @Before
     public void setUp() throws IOException, ClassNotFoundException {
-
-        BayesianNetwork bn1 = BNExample.getAmidst_BN_Example();
-
-        System.out.println("------------  BN model before saving the object  --------------");
-        System.out.println(bn1.toString());
-        BayesianNetworkWriter.saveToFile(bn1, "networks/bn.bn");
-
-        System.out.println("------------  BN model loaded from the file -------------------");
-        BayesianNetwork bn2 = BayesianNetworkLoader.loadFromFile("networks/bn.bn");
-        System.out.println(bn2.toString());
-
-
-        //TODO move this piece of code to the module huginLink
-        //String file = new String("networks/huginNetworkFromAMIDST.net");
-        //BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromHugin(file);
-        //System.out.println("\nAMIDST network loaded from Hugin file.");
-        //System.out.println(amidstBN.getDAG().toString());
-        //System.out.println(amidstBN.toString());
-        //String file2 = new String("networks/huginNetworkFromAMIDST2.net");
-        //BayesianNetworkWriter.saveToHuginFile(amidstBN,file2);
-        //System.out.println("\nAMIDST network save to Hugin file.");
 
     }
 
     @Test
-    public void test(){
-
+    public void test() throws Exception {
+        BayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networks");
     }
 
+    public static void loadAndTestFilesFromFolder(final String folderName) throws Exception {
+
+        File folder = new File(folderName);
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                loadAndTestFilesFromFolder(fileEntry.getName());
+            } else {
+                String fileName = fileEntry.getName();
+                String fullFileName = folderName + "/" + fileName;
+
+                if (fileName.endsWith(".bn")) { //Static BN
+
+                    BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromFile(fullFileName);
+                    BayesianNetworkWriter.saveToFile(amidstBN, fullFileName);
+
+                    BayesianNetwork amidstBN2 = BayesianNetworkLoader.loadFromFile(fullFileName);
+
+                    if (!amidstBN.equalBNs(amidstBN2, 0.0))
+                        throw new Exception("Bayesian network loader for " + fileName + " failed. ");
+                }
+            }
+        }
+    }
 }
