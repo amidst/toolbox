@@ -45,7 +45,7 @@ public class ParallelTANDemo {
         String dataFile = new String("/Users/afa/Pigs.arff");
 
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.ser");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.bn");
 
 
         //int sampleSize = 100000;

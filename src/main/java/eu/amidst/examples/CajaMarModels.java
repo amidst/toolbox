@@ -165,7 +165,7 @@ public final class CajaMarModels {
         }
         System.out.println(logProb);
 
-        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/HuginCajaMarDefaulterPredictor.ser");
+        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/HuginCajaMarDefaulterPredictor.dbn");
 
     }
     public static void main(String[] args) throws IOException, ClassNotFoundException {

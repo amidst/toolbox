@@ -23,7 +23,7 @@ public class MLMultinomialsTest {
     public void testingML() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.ser");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().toString());
