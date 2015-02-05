@@ -37,4 +37,18 @@ public class Uniform extends UnivariateDistribution {
     public void randomInitialization(Random random) {
 
     }
+
+    @Override
+    public boolean equalDist(Distribution dist, double threshold) {
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Uniform"))
+            return this.equalDist((DeltaDistribution)dist,threshold);
+        return false;
+    }
+
+    public boolean equalDist(Uniform dist, double threshold) {
+        if (dist.getVariable()!=dist.getVariable())
+            return false;
+
+        return true;
+    }
 }
