@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Created by ana@cs.aau.dk on 22/01/15.
- * TODO: test probability dist of EF is equal to regular dist.
  *
  */
 public class MLNormalsTest {
@@ -97,7 +96,6 @@ public class MLNormalsTest {
 
         EF_BayesianNetwork ef_bnet = new EF_BayesianNetwork(bnet);
 
-        //TODO: Implement equals method for all NaturalParameters.
         assertTrue(ef_bnet.equal_efBN(ef_testnet,0.05));
     }
 
