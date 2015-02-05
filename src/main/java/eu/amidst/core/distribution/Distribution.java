@@ -31,4 +31,7 @@ public abstract class Distribution implements Serializable {
     public abstract String label();
 
     public abstract void randomInitialization(Random random);
+
+    public abstract boolean equalDist(Distribution dist, double threshold);
+
 }

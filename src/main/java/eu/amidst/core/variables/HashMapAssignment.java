@@ -27,8 +27,8 @@ public class HashMapAssignment implements DataInstance {
             return val.doubleValue();
         }
         else {
-            throw new IllegalArgumentException("No value stored for the requested variable: "+key.getName());
-            //return Utils.missingValue();
+            //throw new IllegalArgumentException("No value stored for the requested variable: "+key.getName());
+            return Utils.missingValue();
         }
     }
     public void putValue(Variable var, double val) {
