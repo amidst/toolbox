@@ -100,9 +100,9 @@ public final class BayesianNetworkGenerator {
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
 
-        BayesianNetworkWriter.saveToFile(naiveBayes, "networks/NB-10.ser");
+        BayesianNetworkWriter.saveToFile(naiveBayes, "networks/NB-10.bn");
 
-        BayesianNetwork naiveBayes2 = BayesianNetworkLoader.loadFromFile("networks/NB-10.ser");
+        BayesianNetwork naiveBayes2 = BayesianNetworkLoader.loadFromFile("networks/NB-10.bn");
         System.out.println(naiveBayes2.toString());
     }
 }

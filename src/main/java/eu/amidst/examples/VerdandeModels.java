@@ -156,7 +156,7 @@ public final class VerdandeModels {
         DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKF.ser");
+        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKF.dbn");
 
     }
 
@@ -335,7 +335,7 @@ public final class VerdandeModels {
         DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKFwithMG.ser");
+        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKFwithMG.dbn");
 
     }
 
@@ -389,7 +389,7 @@ public final class VerdandeModels {
         System.out.println(dbn.toString());
 
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOHMM.ser");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOHMM.dbn");
 
     }
 

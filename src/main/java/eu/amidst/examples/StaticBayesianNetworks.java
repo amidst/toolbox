@@ -123,7 +123,7 @@ public final class StaticBayesianNetworks {
         }
         System.out.println(logProb);
 
-        BayesianNetworkWriter.saveToFile(bn,"networks/huginStaticBNExample.ser");
+        BayesianNetworkWriter.saveToFile(bn,"networks/huginStaticBNExample.bn");
     }
 
     /**
@@ -221,7 +221,7 @@ public final class StaticBayesianNetworks {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         System.out.println(bn.toString());
 
-        BayesianNetworkWriter.saveToFile(bn,"networks/huginStaticBNHiddenExample.ser");
+        BayesianNetworkWriter.saveToFile(bn,"networks/huginStaticBNHiddenExample.bn");
 
     }
 
