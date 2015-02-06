@@ -1,4 +1,4 @@
-package eu.amidst.huginlink;
+package eu.amidst.huginlink.inference;
 
 
 import COM.hugin.HAPI.*;
@@ -9,6 +9,7 @@ import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.huginlink.converters.DBNConverterToHugin;
 
 import java.io.IOException;
 import java.util.*;

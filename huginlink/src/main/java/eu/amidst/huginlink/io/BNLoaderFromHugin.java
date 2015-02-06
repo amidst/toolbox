@@ -1,10 +1,11 @@
-package eu.amidst.huginlink;
+package eu.amidst.huginlink.io;
 
 import COM.hugin.HAPI.DefaultClassParseListener;
 import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.ParseListener;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 
 
 /**
