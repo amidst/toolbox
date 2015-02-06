@@ -88,33 +88,37 @@ public class Node {
                 .filter(node -> !node.isObserved())
                 .map(parent ->
                         new Message<>(parent.getMainVariable(),
-                                this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentParents), this.messageDone(parent.getMainVariable())))
+                                this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentParents), this.messageDoneToParent(parent.getMainVariable())))
                 .collect(Collectors.toList());
 
         if (!isObserved()) {
-            if (this.parents.isEmpty()){
                 messages.add(
                         new Message(this.getMainVariable(),
-                                this.PDist.getNaturalParameters()
+                                this.PDist.getExpectedNaturalFromParents(momentParents),
+                                this.messageDoneFromParents()
                         ));
-            }else {
-                messages.add(
-                        new Message(this.getMainVariable(),
-                                this.PDist.getExpectedNaturalFromParents(momentParents)
-                        ));
-            }
         }
 
         return messages.stream();
     }
 
-    private boolean messageDone(Variable parent){
+    private boolean messageDoneToParent(Variable parent){
 
         if (!this.isObserved())
             return false;
 
         for (Node node : this.getParents()){
             if (node.getMainVariable()!=parent && !node.isObserved())
+                return false;
+        }
+
+        return true;
+    }
+
+    private boolean messageDoneFromParents(){
+
+        for (Node node : this.getParents()){
+            if (!node.isObserved())
                 return false;
         }
 
