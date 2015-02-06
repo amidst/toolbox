@@ -41,7 +41,11 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
     @Override
     public double computeLogNormalizer() {
-        return 0;
+        double sum = 0;
+        for (int i = 0; i < this.naturalParameters.size(); i++) {
+            sum+=Math.exp(this.naturalParameters.get(i));
+        }
+        return Math.log(sum);
     }
 
     @Override
@@ -68,7 +72,7 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     public void updateMomentFromNaturalParameters() {
         int nstates= var.getNumberOfStates();
         for (int i=0; i<nstates; i++){
-            this.momentParameters.set(i, Math.exp(this.naturalParameters.get(i)));
+            this.momentParameters.set(i, Math.exp(this.naturalParameters.get(i) - this.computeLogNormalizer()));
         }
     }
 
