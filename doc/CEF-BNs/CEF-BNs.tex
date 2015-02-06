@@ -898,7 +898,7 @@ Via inference.
 \item \textbf{Second form}:
 
 \begin{eqnarray*}
-\ln p(X\mid \mathbf{Y}) &=& \theta(\mathbf{Y})^T s(X) - A \big(\theta(\mathbf{Y})\big) + h(\mathbf{Y})\\\\
+\ln p(X\mid \mathbf{Y}) &=& \theta(\mathbf{Y})^T s(X) - A \big(\theta(\mathbf{Y})\big) + h(\mathbf{X})\\\\
 &=&
 \begin{pmatrix}
 \frac{\mu_{X|Y}}{\sigma^2}\\
@@ -922,7 +922,7 @@ X^2\\
 %&+&
 % \ln{\frac{1}{\sqrt{2(\theta_{\beta_0}+2\thb_{\beb} \E(\Y))}}} 
 &-& 
-\left(\ln{\sigma} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y -\frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
+\left(0.5\ln{(-2\theta_{\mbox{-}1})} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y -\frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
 \end{eqnarray*}
 
 

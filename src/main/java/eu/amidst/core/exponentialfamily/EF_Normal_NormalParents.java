@@ -1,5 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
+import com.esotericsoftware.kryo.util.IntArray;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
@@ -52,7 +53,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
          */
         CompoundVector globalMomentParam = (CompoundVector)this.momentParameters;
         double mean_X = globalMomentParam.getXYbaseMatrix().getEntry(0);
-        RealVector mean_Y = globalMomentParam.getXYbaseMatrix().getSubVector(1,nOfParents);
+        RealVector mean_Y = globalMomentParam.getTheta_beta0BetaRV();
 
         double cov_XX = globalMomentParam.getcovbaseMatrix().getEntry(0, 0) - mean_X*mean_X;
         RealMatrix cov_YY = globalMomentParam.getcovbaseMatrix().getSubMatrix(1, nOfParents, 1, nOfParents).
@@ -174,19 +175,77 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         throw new UnsupportedOperationException("No Implemented. This method is no really needed");
     }
 
+    /**
+     * Of the second form. Needed to calculate the lower bound.
+     *
+     * @param momentParents
+     * @return
+     */
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
-        return 0;
+        CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
+        double logNorm = 0.5*Math.log(2*globalNaturalParameters.getTheta_Minus1());
+
+        double[] Yarray = new double[nOfParents];
+        this.getConditioningVariables().stream().
+                forEach(parent -> Yarray[parent.getVarID()] = momentParents.get(parent).get(0));
+        RealVector Y = new ArrayRealVector(Yarray);
+
+        logNorm -= globalNaturalParameters.getTheta_beta0BetaRV().
+                dotProduct(new ArrayRealVector(Y));
+
+        RealMatrix YY = Y.outerProduct(Y);
+        logNorm -= IntStream.range(1,nOfParents).mapToDouble(p ->
+                globalNaturalParameters.getTheta_BetaBetaRM().getRowVector(p).dotProduct(YY.getRowVector(p))).sum();
+
+        logNorm -= Math.pow(globalNaturalParameters.getTheta_beta0(),2)/(4*globalNaturalParameters.getTheta_Minus1());
+
+        return logNorm;
     }
 
+
+    /**
+     * Of the second form.
+     * @param momentParents
+     * @return
+     */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
-        return null;
+        NaturalParameters naturalParameters = new ArrayVector(2);
+        CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
+
+        double[] Yarray = new double[nOfParents];
+        this.getConditioningVariables().stream().
+                forEach(parent -> Yarray[parent.getVarID()] = momentParents.get(parent).get(0));
+        RealVector Y = new ArrayRealVector(Yarray);
+        naturalParameters.set(0,globalNaturalParameters.getTheta_beta0() +
+                2*globalNaturalParameters.getTheta_BetaRV().dotProduct(Y));
+
+        naturalParameters.set(1,globalNaturalParameters.getTheta_Minus1());
+
+        return naturalParameters;
     }
 
+    /**
+     * It is the message to one node to its parent @param parent, taking into account the suff. stat. if it is observed
+     * or the moment parameters if not, and incorporating the message (with moment param.) received from all co-parents.
+     * (Third form EF equations).
+     *
+     * @param parent
+     * @param momentChildCoParents
+     * @return
+     */
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-        return null;
+        NaturalParameters naturalParameters = new ArrayVector(2);
+        CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
+
+        naturalParameters.set(0,globalNaturalParameters.getTheta_beta0Beta()[parent.getVarID()]+
+                2*globalNaturalParameters.getTheta_Beta()[parent.getVarID()]*momentChildCoParents.get(var).get(0));
+
+        naturalParameters.set(1,globalNaturalParameters.getTheta_BetaBeta()[parent.getVarID()][parent.getVarID()]);
+
+        return naturalParameters;
     }
 
     @Override
@@ -333,6 +392,41 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
             covbaseVector.setSubMatrix(theta_betaBeta.getData(),1,1);
         }
 
+        public double getTheta_beta0(){
+            return XYbaseVector.getEntry(0);
+        }
+
+        public double[] getTheta_beta0Beta(){
+            return getXYbaseMatrix().getSubVector(1,nOfParents).toArray();
+
+        }
+
+        public double getTheta_Minus1(){
+            return getcovbaseMatrix().getEntry(0,0);
+        }
+
+        public double[] getTheta_Beta(){
+            return getcovbaseMatrix().getSubMatrix(0,1,0,nOfParents).getRow(0);
+        }
+
+        public double[][] getTheta_BetaBeta(){
+            return getcovbaseMatrix().getSubMatrix(1,1,nOfParents,nOfParents).getData();
+        }
+
+
+        public RealVector getTheta_beta0BetaRV(){
+            return getXYbaseMatrix().getSubVector(1,nOfParents);
+        }
+
+        public RealVector getTheta_BetaRV(){
+            return getcovbaseMatrix().getSubMatrix(0,1,0,nOfParents).getRowVector(0);
+        }
+
+        public RealMatrix getTheta_BetaBetaRM(){
+            return getcovbaseMatrix().getSubMatrix(1, 1, nOfParents, nOfParents);
+        }
+
+
 
         @Override
         public int size() {
@@ -363,9 +457,12 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
 
         public double dotProduct(CompoundVector vec) {
+            //TODO Test this with more than 1 parent
             double result = this.getXYbaseMatrix().dotProduct(vec.getXYbaseMatrix()); //theta1
             result += this.getcovbaseMatrix().getRowVector(0).dotProduct(vec.getcovbaseMatrix().getRowVector(0));//theta2^1
             result += this.getcovbaseMatrix().getRowVector(1).dotProduct(vec.getcovbaseMatrix().getRowVector(1));//theta2^2
+            //result += IntStream.range(0,nOfParents).mapToDouble(p ->
+            //           this.getcovbaseMatrix().getRowVector(p).dotProduct(vec.getcovbaseMatrix().getRowVector(p))).sum();
             return result;
         }
 
