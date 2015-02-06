@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class MLNormalsTest {
 
+    //TODO: Test more than 1 parent
+
     @Test
     public void testingProbabilities_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
 

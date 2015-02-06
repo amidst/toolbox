@@ -85,7 +85,7 @@ public class Node {
         momentParents.put(this.getMainVariable(), this.getQMomentParameters());
 
         List<Message<NaturalParameters>> messages = this.parents.stream()
-                .filter(node -> !node.isObserved())
+                .filter(parent -> !parent.isObserved())
                 .map(parent ->
                         new Message<>(parent.getMainVariable(),
                                 this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentParents), this.messageDone(parent.getMainVariable())))
