@@ -1,5 +1,6 @@
 package eu.amidst.huginlink;
 
+import eu.amidst.huginlink.converters.FileConverterFromHuginToAmidst;
 import org.junit.Before;
 import org.junit.Test;
 
