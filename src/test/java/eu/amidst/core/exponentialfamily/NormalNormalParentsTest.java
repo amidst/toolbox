@@ -1,0 +1,69 @@
+package eu.amidst.core.exponentialfamily;
+
+import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.distribution.Normal_NormalParents;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.variables.HashMapAssignment;
+import org.junit.Test;
+
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+
+/**
+ * Created by Hanen on 06/02/15.
+ */
+public class NormalNormalParentsTest {
+
+    @Test
+    public void testingProbabilities_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
+
+
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+
+        Normal_NormalParents dist = (Normal_NormalParents) testnet.getDistributions().get(1);
+
+        //dist.getCoeffParents()[0]=0;
+        //dist.setIntercept(0.1);
+        //dist.setSd(2.234);
+
+        System.out.println(testnet.toString());
+
+        System.out.println("\nNormal_1NormalParents probabilities comparison \n ");
+
+        //Sampling
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
+        sampler.setSeed(0);
+        sampler.setParallelMode(true);
+        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(100000);
+
+        //Compare predictions between distributions and EF distributions.
+
+        EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
+        HashMapAssignment dataTmp = new HashMapAssignment(2);
+        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("A"), 1.0);
+        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
+
+
+        System.out.println(testnet.getDistributions().get(1).getLogConditionalProbability(dataTmp));
+        System.out.println(ef_testnet.getDistributionList().get(1).computeLogProbabilityOf(dataTmp));
+
+
+        for(DataInstance e: data){
+            double ef_logProb = 0,logProb = 0;
+            for(EF_ConditionalDistribution ef_dist: ef_testnet.getDistributionList()){
+                ef_logProb += ef_dist.computeLogProbabilityOf(e);
+            }
+            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            assertEquals(logProb, ef_logProb, 0.0001);
+
+        }
+    }
+
+
+}
