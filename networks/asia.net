@@ -1,4 +1,4 @@
-net
+Enet
 {
     node_size = (179 50);
     HR_Grid_X = "10";
