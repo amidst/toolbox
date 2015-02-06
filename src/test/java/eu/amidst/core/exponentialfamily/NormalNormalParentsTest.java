@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 public class NormalNormalParentsTest {
 
     @Test
-    public void testingProbabilities_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
+    public void testingProbabilities_Normal1NormalParent() throws IOException, ClassNotFoundException  {
 
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
@@ -65,5 +65,41 @@ public class NormalNormalParentsTest {
         }
     }
 
+    @Test
+    public void testingProbabilities_Normal2NormalParents() throws IOException, ClassNotFoundException  {
+
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.bn");
+
+        System.out.println(testnet.toString());
+
+        System.out.println("\nNormal_2NormalParents probabilities comparison \n ");
+
+        //Sampling
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
+        sampler.setSeed(0);
+        sampler.setParallelMode(true);
+        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(100000);
+
+        //Compare predictions between distributions and EF distributions.
+        EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
+
+        HashMapAssignment dataTmp = new HashMapAssignment(2);
+        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("A"), 1.0);
+        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
+        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("C"), 1.0);
+
+        System.out.println(testnet.getDistributions().get(2).getLogConditionalProbability(dataTmp));
+        System.out.println(ef_testnet.getDistributionList().get(2).computeLogProbabilityOf(dataTmp));
+
+        for(DataInstance e: data){
+            double ef_logProb = 0,logProb = 0;
+            for(EF_ConditionalDistribution ef_dist: ef_testnet.getDistributionList()){
+                ef_logProb += ef_dist.computeLogProbabilityOf(e);
+            }
+            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+            System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            assertEquals(logProb, ef_logProb, 0.5);
+        }
+    }
 
 }
