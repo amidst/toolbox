@@ -7,8 +7,11 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.MultinomialIndex;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.huginlink.converters.BNConverterToAMIDST;
+import eu.amidst.huginlink.converters.BNConverterToHugin;
 import org.junit.Before;
 import org.junit.Test;
 

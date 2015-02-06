@@ -1,4 +1,4 @@
-package eu.amidst.huginlink;
+package eu.amidst.huginlink.learning;
 
 
 import COM.hugin.HAPI.ExceptionHugin;
@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 import java.lang.Runtime;
 
 import org.apache.commons.cli.*;

@@ -1,4 +1,4 @@
-package eu.amidst.huginlink;
+package eu.amidst.huginlink.learning;
 
 
 import COM.hugin.HAPI.Domain;
@@ -17,6 +17,8 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.ReservoirSampling;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.huginlink.converters.BNConverterToAMIDST;
+import eu.amidst.huginlink.converters.BNConverterToHugin;
 
 import java.io.IOException;
 
