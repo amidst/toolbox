@@ -1,8 +1,9 @@
-package eu.amidst.huginlink;
+package eu.amidst.huginlink.io;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.Class;
 import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.huginlink.converters.DBNConverterToHugin;
 
 
 /**
