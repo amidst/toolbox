@@ -79,6 +79,11 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
     }
 
     @Override
+    public BayesianNetwork getModel() {
+        return amidstBN;
+    }
+
+    @Override
     public void setEvidence(Assignment assignment) {
 
         ((HashMapAssignment)assignment).entrySet().stream()
