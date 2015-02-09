@@ -31,8 +31,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
         }
     }
 
-    public static void printBelief(Node node) throws ExceptionHugin {
-
+    private void printBelief(Node node) throws ExceptionHugin {
         if (node instanceof DiscreteNode) {
             DiscreteNode dNode = (DiscreteNode) node;
             int n = (int) dNode.getNumberOfStates();
@@ -47,9 +46,8 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
         }
     }
 
-    public static void printBeliefs (Domain domain) throws ExceptionHugin {
-
-        NodeList nodes = domain.getNodes();
+    private void printBeliefs () throws ExceptionHugin {
+        NodeList nodes = huginBN.getNodes();
         java.util.ListIterator it = nodes.listIterator();
         while (it.hasNext()) {
             Node node = (Node) it.next();
