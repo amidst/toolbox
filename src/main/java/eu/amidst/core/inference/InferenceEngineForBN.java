@@ -16,7 +16,7 @@ import java.util.Random;
  */
 public final class InferenceEngineForBN {
 
-    private static InferenceAlgorithmForBN inferenceAlgorithmForBN = new RandomInferenceAlgorithm();
+    private static InferenceAlgorithmForBN inferenceAlgorithmForBN = new VMP();
 
     public static void setInferenceAlgorithmForBN(InferenceAlgorithmForBN inferenceAlgorithmForBN) {
         InferenceEngineForBN.inferenceAlgorithmForBN = inferenceAlgorithmForBN;
@@ -36,6 +36,10 @@ public final class InferenceEngineForBN {
 
     public static <E extends UnivariateDistribution> E getPosterior(Variable var){
         return inferenceAlgorithmForBN.getPosterior(var);
+    }
+
+    public static <E extends UnivariateDistribution> E getPosterior(String name){
+        return inferenceAlgorithmForBN.getPosterior(inferenceAlgorithmForBN.getModel().getStaticVariables().getVariableByName(name));
     }
 
     public static void main(String[] arguments){

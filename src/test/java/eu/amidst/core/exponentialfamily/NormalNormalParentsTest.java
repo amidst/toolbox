@@ -83,7 +83,7 @@ public class NormalNormalParentsTest {
         //Compare predictions between distributions and EF distributions.
         EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
 
-        HashMapAssignment dataTmp = new HashMapAssignment(2);
+        HashMapAssignment dataTmp = new HashMapAssignment(3);
         dataTmp.setValue(testnet.getStaticVariables().getVariableByName("A"), 1.0);
         dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
         dataTmp.setValue(testnet.getStaticVariables().getVariableByName("C"), 1.0);
@@ -98,7 +98,7 @@ public class NormalNormalParentsTest {
             }
             logProb = testnet.getLogProbabiltyOf(e);
             System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
-            assertEquals(logProb, ef_logProb, 0.5);
+            assertEquals(logProb, ef_logProb, 0.0001);
         }
     }
 
