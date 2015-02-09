@@ -14,6 +14,8 @@ public interface InferenceAlgorithmForBN {
 
     public void setModel(BayesianNetwork model);
 
+    public BayesianNetwork getModel();
+
     public void setEvidence(Assignment assignment);
 
     public <E extends UnivariateDistribution> E getPosterior(Variable var);

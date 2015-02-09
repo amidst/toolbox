@@ -9,6 +9,7 @@ import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.VMP_.Message;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
@@ -16,7 +17,9 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+import scala.tools.cmd.gen.AnyVals;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,10 +73,10 @@ public class VMP implements InferenceAlgorithmForBN {
 
 
             //Test whether all nodes are done.
-            //if (numberOfNotDones==0) {
-            //    convergence = true;
-            //    break;
-            //}
+            if (numberOfNotDones==0) {
+                convergence = true;
+                break;
+            }
 
             //Compute lower-bound
             //double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
@@ -105,6 +108,12 @@ public class VMP implements InferenceAlgorithmForBN {
     }
 
     @Override
+    public BayesianNetwork getModel() {
+        return this.model;
+    }
+
+
+    @Override
     public void setEvidence(Assignment assignment_) {
         this.assignment = assignment_;
     }
@@ -115,8 +124,14 @@ public class VMP implements InferenceAlgorithmForBN {
     }
 
 
-    public static void main(String[] arguments) {
+    public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/asia.bn");
+
+        InferenceEngineForBN.setModel(bn);
+        InferenceEngineForBN.compileModel();
+
+        System.out.println(InferenceEngineForBN.getPosterior("B").toString());
 
 
     }

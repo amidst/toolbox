@@ -25,6 +25,11 @@ public class RandomInferenceAlgorithm implements InferenceAlgorithmForBN{
     }
 
     @Override
+    public BayesianNetwork getModel() {
+        return this.model;
+    }
+
+    @Override
     public void setEvidence(Assignment assignment_) {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(model);
         sampler.setSeed(0);
