@@ -58,7 +58,7 @@ public class NormalNormalParentsTest {
             for(EF_ConditionalDistribution ef_dist: ef_testnet.getDistributionList()){
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
-            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+            logProb = testnet.getLogProbabiltyOf(e);
             //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             assertEquals(logProb, ef_logProb, 0.0001);
 
@@ -96,7 +96,7 @@ public class NormalNormalParentsTest {
             for(EF_ConditionalDistribution ef_dist: ef_testnet.getDistributionList()){
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
-            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+            logProb = testnet.getLogProbabiltyOf(e);
             System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             assertEquals(logProb, ef_logProb, 0.5);
         }

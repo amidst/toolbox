@@ -19,7 +19,6 @@ package eu.amidst.core.exponentialfamily;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -198,7 +197,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         double expectedLogNormalizer = 0;
 
         for (int i = 0; i < nConf; i++) {
-            double[] assignment = MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents, i);
+            double[] assignment = MultinomialIndex.getVariableArrayAssignmentFromIndex(this.multinomialParents, i);
             double momentValue = 1;
             for (int j = 0; j < assignment.length; j++) {
                 momentValue*=momentParents.get(this.multinomialParents.get(j)).get((int)assignment[j]);
@@ -226,7 +225,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         NaturalParameters expectedNaturalFromParents = null;
 
         for (int i = 0; i < nConf; i++) {
-            double[] assignment = MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents, i);
+            double[] assignment = MultinomialIndex.getVariableArrayAssignmentFromIndex(this.multinomialParents, i);
             double momentValue = 1;
             for (int j = 0; j < assignment.length; j++) {
                 momentValue*=momentParents.get(this.multinomialParents.get(j)).get((int)assignment[j]);
@@ -236,7 +235,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             if (this.isBaseConditionalDistribution) {
                 paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalFromParents(momentParents);
             }else{
-                paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).getNaturalParameters();
+                paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroedNaturalParameters();
+                paritalExpectedNatural.copy(this.getBaseEFUnivariateDistribution(i).getNaturalParameters());
             }
 
             paritalExpectedNatural.multiplyBy(momentValue);
@@ -268,7 +268,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             for (int state = 0; state<parent.getNumberOfStates(); state++) {
                 double partialSum = 0;
                 for (int i = 0; i < nConf; i++) {
-                    double[] assignment = MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents, i);
+                    double[] assignment = MultinomialIndex.getVariableArrayAssignmentFromIndex(this.multinomialParents, i);
 
                     if (assignment[indexOfMultinomialParent]!=state)
                         continue;
@@ -287,7 +287,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                         localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
                         localSum -= this.getBaseEFConditionalDistribution(i).getExpectedLogNormalizer(momentChildCoParents);
                     } else {
-                        paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).getNaturalParameters();
+                        paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroedNaturalParameters();
+                        paritalExpectedNatural.copy(this.getBaseEFUnivariateDistribution(i).getNaturalParameters());
                         localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
                         localSum -= this.getBaseEFUnivariateDistribution(i).computeLogNormalizer();
                     }
@@ -316,7 +317,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             int nConf = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
 
             for (int i = 0; i < nConf; i++) {
-                double[] assignment = MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents, i);
+                double[] assignment = MultinomialIndex.getVariableArrayAssignmentFromIndex(this.multinomialParents, i);
                 double momentValue = 1;
                 for (int j = 0; j < assignment.length; j++) {
                     momentValue *= momentChildCoParents.get(this.multinomialParents.get(j)).get((int)assignment[j]);
@@ -327,7 +328,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 if (this.isBaseConditionalDistribution) {
                     paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalToParent(parent, momentChildCoParents);
                 } else {
-                    paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).getNaturalParameters();
+                    paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroedNaturalParameters();
+                    paritalExpectedNatural.copy(this.getBaseEFUnivariateDistribution(i).getNaturalParameters());
                 }
 
                 paritalExpectedNatural.multiplyBy(momentValue);

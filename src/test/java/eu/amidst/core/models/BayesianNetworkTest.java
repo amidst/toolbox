@@ -1,8 +1,6 @@
 package eu.amidst.core.models;
 
-import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
@@ -63,7 +61,7 @@ public class BayesianNetworkTest {
 
         double logProb = 0;
         for (StaticDataInstance instance : data) {
-            logProb += bn.getLogProbabiltyOfFullAssignment(instance);
+            logProb += bn.getLogProbabiltyOf(instance);
         }
 
         System.out.println(logProb);
