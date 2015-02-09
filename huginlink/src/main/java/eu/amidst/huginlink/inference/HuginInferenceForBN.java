@@ -61,6 +61,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
     public void compileModel() {
         try {
             this.huginBN.compile();
+            huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
         } catch (ExceptionHugin exceptionHugin) {
             exceptionHugin.printStackTrace();
         }
@@ -98,7 +99,6 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
 
         try {
-            huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
             Node huginNode = huginBN.getNodeByName(var.getName());
 
             if (var.isMultinomial()) {
