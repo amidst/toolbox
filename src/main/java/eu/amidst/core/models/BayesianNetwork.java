@@ -93,7 +93,7 @@ public final class BayesianNetwork implements Serializable {
         this.distributions = Collections.unmodifiableList(this.distributions);
     }
 
-    public double getLogProbabiltyOfFullAssignment(Assignment assignment) {
+    public double getLogProbabiltyOf(Assignment assignment) {
         double logProb = 0;
         for (Variable var : this.getStaticVariables()) {
             if (assignment.getValue(var) == Utils.missingValue()) {

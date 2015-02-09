@@ -4,15 +4,9 @@ import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.distribution.Normal_NormalParents;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
-import eu.amidst.core.learning.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -60,7 +54,7 @@ public class BaseDistributionMultinomialParentsTest {
                     ef_logProb += ef_dist.computeLogProbabilityOf(e);
                 }
 
-            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+            logProb = testnet.getLogProbabiltyOf(e);
 
             //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             assertEquals(logProb, ef_logProb, 0.0001);
@@ -93,7 +87,7 @@ public class BaseDistributionMultinomialParentsTest {
             for(EF_ConditionalDistribution ef_dist: ef_testnet.getDistributionList()){
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
-            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+            logProb = testnet.getLogProbabiltyOf(e);
             //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             assertEquals(logProb, ef_logProb, 0.0001);
 
@@ -126,7 +120,7 @@ public class BaseDistributionMultinomialParentsTest {
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
 
-            logProb = testnet.getLogProbabiltyOfFullAssignment(e);
+            logProb = testnet.getLogProbabiltyOf(e);
 
             System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             assertEquals(logProb, ef_logProb, 0.5);

@@ -119,7 +119,7 @@ public final class StaticBayesianNetworks {
          */
         double logProb = 0;
         for (StaticDataInstance instance : data) {
-            logProb += bn.getLogProbabiltyOfFullAssignment(instance);
+            logProb += bn.getLogProbabiltyOf(instance);
         }
         System.out.println(logProb);
 

@@ -1,5 +1,6 @@
 package eu.amidst.core.inference.VMP_;
 
+import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
@@ -9,16 +10,10 @@ import eu.amidst.core.variables.Variable;
 public class Message<E extends Vector> {
     Variable variable;
     E vector;
-    boolean done;
+    boolean done=false;
 
-    public Message(Variable variable_, E vector_, boolean done_) {
+    public Message(Variable variable_) {
         this.variable = variable_;
-        this.vector = vector_;
-        this.done = done_;
-    }
-
-    public Message(Variable variable, E vector) {
-        this(variable,vector,false);
     }
 
     public boolean isDone() {
@@ -31,6 +26,10 @@ public class Message<E extends Vector> {
 
     public Variable getVariable() {
         return variable;
+    }
+
+    public void setVector(E vector) {
+        this.vector = vector;
     }
 
     public E getVector() {

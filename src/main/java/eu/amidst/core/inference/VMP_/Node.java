@@ -85,21 +85,31 @@ public class Node {
         momentParents.put(this.getMainVariable(), this.getQMomentParameters());
 
         List<Message<NaturalParameters>> messages = this.parents.stream()
-                .filter(parent -> !parent.isObserved())
-                .map(parent ->
-                        new Message<>(parent.getMainVariable(),
-                                this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentParents), this.messageDoneToParent(parent.getMainVariable())))
-                .collect(Collectors.toList());
+                                                                .filter(parent -> !parent.isObserved())
+                                                                .map(parent -> this.newMessageToParent(parent, momentParents))
+                                                                .collect(Collectors.toList());
 
         if (!isObserved()) {
-                messages.add(
-                        new Message(this.getMainVariable(),
-                                this.PDist.getExpectedNaturalFromParents(momentParents),
-                                this.messageDoneFromParents()
-                        ));
+            messages.add(this.newSelfMessage(momentParents));
         }
 
         return messages.stream();
+    }
+
+    public Message<NaturalParameters> newMessageToParent(Node parent, Map<Variable, MomentParameters> momentParents){
+        Message<NaturalParameters> message = new Message<>(parent.getMainVariable());
+        message.setVector(this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentParents));
+        message.setDone(this.messageDoneToParent(parent.getMainVariable()));
+
+        return message;
+    }
+
+    public Message<NaturalParameters> newSelfMessage(Map<Variable, MomentParameters> momentParents) {
+        Message<NaturalParameters> message = new Message(this.getMainVariable());
+        message.setVector(this.PDist.getExpectedNaturalFromParents(momentParents));
+        message.setDone(this.messageDoneFromParents());
+
+        return message;
     }
 
     private boolean messageDoneToParent(Variable parent){
@@ -146,11 +156,11 @@ public class Node {
         if (!isObserved()) {
             expectedNatural.substract(this.QDist.getNaturalParameters());
             elbo += expectedNatural.dotProduct(this.QDist.getMomentParameters());
-            elbo += this.PDist.getExpectedLogNormalizer(momentParents);
-            elbo -= this.QDist.computeLogNormalizer();
+            elbo -= this.PDist.getExpectedLogNormalizer(momentParents);
+            elbo += this.QDist.computeLogNormalizer();
         }else {
             elbo += expectedNatural.dotProduct(this.sufficientStatistics);
-            elbo += this.PDist.getExpectedLogNormalizer(momentParents);
+            elbo -= this.PDist.getExpectedLogNormalizer(momentParents);
             elbo += this.PDist.computeLogBaseMeasure(this.assignment);
         }
 
