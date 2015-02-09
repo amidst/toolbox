@@ -73,9 +73,9 @@ public class MLNormalsTest {
 
         //Check the probability distributions of each node
         for (Variable var : testnet.getStaticVariables()) {
-            //System.out.println("\n------ Variable " + var.getName() + " ------");
-            //System.out.println("\nTrue distribution:\n"+ testnet.getDistribution(var));
-            //System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
+            System.out.println("\n------ Variable " + var.getName() + " ------");
+            System.out.println("\nTrue distribution:\n"+ testnet.getDistribution(var));
+            System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
             assertTrue(bnet.getDistribution(var).equalDist(testnet.getDistribution(var), 0.05));
         }
 
