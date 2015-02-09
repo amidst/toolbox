@@ -87,7 +87,7 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
         EF_Multinomial copy = new EF_Multinomial(this.getVariable());
         copy.getNaturalParameters().copy(this.getNaturalParameters());
-
+        copy.getMomentParameters().copy(this.getMomentParameters());
         return copy;
     }
 }
