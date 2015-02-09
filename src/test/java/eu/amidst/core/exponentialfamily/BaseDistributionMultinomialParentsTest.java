@@ -29,10 +29,10 @@ public class BaseDistributionMultinomialParentsTest {
 
         //Here we had to modify the CPT of the variable E because no smoothing is considered yet
         Multinomial_MultinomialParents distE = testnet.getDistribution(testnet.getStaticVariables().getVariableByName("E"));
-        distE.getMultinomial(0).setProbabilities(new double[]{0.9, 0.1});
-        distE.getMultinomial(1).setProbabilities(new double[]{0.9, 0.1});
-        distE.getMultinomial(2).setProbabilities(new double[]{0.9, 0.1});
-        distE.getMultinomial(3).setProbabilities(new double[]{0.1, 0.9});
+        //distE.getMultinomial(0).setProbabilities(new double[]{0.9, 0.1});
+        //distE.getMultinomial(1).setProbabilities(new double[]{0.9, 0.1});
+        //distE.getMultinomial(2).setProbabilities(new double[]{0.9, 0.1});
+        //distE.getMultinomial(3).setProbabilities(new double[]{0.1, 0.9});
 
         System.out.println(testnet.toString());
 
@@ -123,7 +123,7 @@ public class BaseDistributionMultinomialParentsTest {
             logProb = testnet.getLogProbabiltyOf(e);
 
             System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
-            assertEquals(logProb, ef_logProb, 0.5);
+            assertEquals(logProb, ef_logProb, 0.0001);
 
         }
     }
