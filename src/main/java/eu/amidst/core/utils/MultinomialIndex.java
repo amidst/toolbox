@@ -1,6 +1,7 @@
 package eu.amidst.core.utils;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
@@ -109,7 +110,7 @@ public final class MultinomialIndex {
      * @param index The position of the <code>Assignment</code>.
      * @return An array of <code>double</code> with the values of the variables representing the assignment.
      */
-    public static double[] getVariableAssignmentFromIndex (List<Variable> vars, int index) {
+    public static double[] getVariableArrayAssignmentFromIndex(List<Variable> vars, int index) {
 
         double[] assignment = new double[vars.size()];
         int n = vars.size();
@@ -122,6 +123,18 @@ public final class MultinomialIndex {
         return assignment;
     }
 
+    public static Assignment getVariableAssignmentFromIndex(List<Variable> vars, int index) {
+
+        HashMapAssignment assignment = new HashMapAssignment(vars.size());
+        int n = vars.size();
+        int lastPhiStride = 1;
+
+        for (int i=0; i<n; i++){
+            assignment.setValue(vars.get(i),Math.floor(index/(double)lastPhiStride) % vars.get(i).getNumberOfStates());
+            lastPhiStride=lastPhiStride*vars.get(i).getNumberOfStates();
+        }
+        return assignment;
+    }
     /**
      * Computes the number of possible assignments for a list of variables
      * @param vars The <code>List</code> of variables.

@@ -1,15 +1,16 @@
 package eu.amidst.core.inference;
 
-import eu.amidst.core.distribution.DistributionBuilder;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.UnivariateDistribution;
+import com.google.common.util.concurrent.AtomicDouble;
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
+import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.VMP_.Message;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -19,6 +20,8 @@ import eu.amidst.core.variables.Variable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -44,8 +47,13 @@ public class VMP implements InferenceAlgorithmForBN {
         boolean convergence = false;
         double elbo = 0;
         while (!convergence) {
+            //System.out.println(nodes.get(0).getQDist().getMomentParameters().get(0));
+            //System.out.println(nodes.get(1).getQDist().getMomentParameters().get(1));
+
+            AtomicDouble newelbo = new AtomicDouble(0);
             //Send and combine messages
             Map<Variable, Optional<Message<NaturalParameters>>> group = nodes.stream()
+                    .peek(node -> newelbo.addAndGet(node.computeELBO()))
                     .flatMap(node -> node.computeMessages())
                     .collect(
                             Collectors.groupingBy(Message::getVariable,
@@ -53,23 +61,29 @@ public class VMP implements InferenceAlgorithmForBN {
                     );
 
             //Set Messages
-            group.entrySet().stream().forEach(e ->
-                    nodes.get(e.getKey().getVarID()).updateCombinedMessage(e.getValue().get()));
+            int numberOfNotDones = group.entrySet().stream()
+                    .mapToInt(e -> {
+                        Node node = nodes.get(e.getKey().getVarID());
+                        node.updateCombinedMessage(e.getValue().get());
+                        return (node.isDone())? 0:1;})
+                    .sum();
 
 
             //Test whether all nodes are done.
-            boolean notAllDone = nodes.stream().filter(e -> !e.isDone()).findFirst().isPresent();
-            if (!notAllDone) {
-                convergence = true;
-                break;
-            }
+            //if (numberOfNotDones==0) {
+            //    convergence = true;
+            //    break;
+            //}
 
             //Compute lower-bound
-            double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
-            if (Math.abs(newelbo - elbo) < 0.001) {
+            //double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
+            if (Math.abs(newelbo.get() - elbo) < 0.00001) {
                 convergence = true;
             }
-            elbo = newelbo;
+            elbo = newelbo.get();
+            System.out.println(elbo);
+
+
         }
     }
 
@@ -103,28 +117,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
     public static void main(String[] arguments) {
 
-        StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A",2);
-        Variable varB = variables.addHiddenMultionomialVariable("B",2);
 
-        DAG dag = new DAG(variables);
-
-        dag.getParentSet(varB).addParent(varA);
-
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
-
-        System.out.println(bn.toString());
-
-        HashMapAssignment assignment = new HashMapAssignment(1);
-
-        InferenceEngineForBN.setInferenceAlgorithmForBN(new VMP());
-        InferenceEngineForBN.setModel(bn);
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
-
-        Multinomial postB = InferenceEngineForBN.getPosterior(varB);
-
-        System.out.println("P(B) = " + postB.toString());
 
     }
 }
