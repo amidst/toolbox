@@ -53,14 +53,14 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         this.copy((ArrayVector)vector);
     }
 
-    public double[] getArray(){
+    public double[] toArray(){
         return this.array;
     }
 
     public void copy(ArrayVector vector){
         if (vector.size()!=vector.size())
             throw new IllegalArgumentException("Vectors with different sizes");
-        System.arraycopy(vector.getArray(),0,this.array,0,vector.getArray().length);
+        System.arraycopy(vector.toArray(),0,this.array,0,vector.toArray().length);
     }
 
     @Override

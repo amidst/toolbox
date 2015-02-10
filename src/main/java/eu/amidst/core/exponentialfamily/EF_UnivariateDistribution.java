@@ -4,6 +4,8 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 
+import java.util.Random;
+
 /**
  * Created by andresmasegosa on 12/11/14.
  */
@@ -32,4 +34,6 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     }
 
     public abstract EF_UnivariateDistribution deepCopy();
+
+    public abstract EF_UnivariateDistribution randomInitialization(Random rand);
 }

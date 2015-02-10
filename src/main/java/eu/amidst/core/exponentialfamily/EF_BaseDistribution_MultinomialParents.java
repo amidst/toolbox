@@ -57,7 +57,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         for (Variable v : this.multinomialParents)
             this.parents.add(v);
 
-        if (distributions.get(0).getClass().getName().equals("eu.amidst.core.exponentialfamily.EF_ConditionalDistribution")) {
+        if (distributions.get(0) instanceof EF_ConditionalDistribution){
             this.isBaseConditionalDistribution=true;
             for (Variable v : this.getBaseEFConditionalDistribution(0).getConditioningVariables()) {
                 this.parents.add(v);

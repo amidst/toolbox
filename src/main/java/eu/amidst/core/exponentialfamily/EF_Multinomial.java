@@ -1,9 +1,12 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
+
+import java.util.Random;
 
 /**
  * Created by andresmasegosa on 13/11/14.
@@ -72,6 +75,16 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     }
 
     @Override
+    public void setNaturalParameters(NaturalParameters parameters) {
+        this.naturalParameters=parameters;//.copy(parameters);
+        int maxIndex = Utils.maxIndex(((ArrayVector)parameters).toArray());
+        double maxValue = parameters.get(maxIndex);
+        for (int i = 0; i < parameters.size(); i++) {
+            parameters.set(i,parameters.get(i)-maxValue);
+        }
+        this.updateMomentFromNaturalParameters();
+    }
+    @Override
     public void updateMomentFromNaturalParameters() {
         int nstates= var.getNumberOfStates();
         for (int i=0; i<nstates; i++){
@@ -92,5 +105,20 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
         return copy;
+    }
+
+    @Override
+    public EF_UnivariateDistribution randomInitialization(Random random) {
+        double[] probabilities = new double[this.var.getNumberOfStates()];
+        for (int i = 0; i < probabilities.length; i++) {
+            probabilities[i] = random.nextDouble();
+        }
+        probabilities = Utils.normalize(probabilities);
+        for (int i = 0; i < probabilities.length; i++) {
+            this.getMomentParameters().set(i,probabilities[i]);
+        }
+        this.updateNaturalFromMomentParameters();
+
+        return this;
     }
 }
