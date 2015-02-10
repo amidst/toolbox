@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class NormalNormalParentsTest {
 
+
     @Test
     public void testingProbabilities_Normal1NormalParent() throws IOException, ClassNotFoundException  {
 
@@ -65,6 +66,7 @@ public class NormalNormalParentsTest {
         }
     }
 
+
     @Test
     public void testingProbabilities_Normal2NormalParents() throws IOException, ClassNotFoundException  {
 
@@ -97,7 +99,7 @@ public class NormalNormalParentsTest {
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
             logProb = testnet.getLogProbabiltyOf(e);
-            System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             assertEquals(logProb, ef_logProb, 0.0001);
         }
     }
