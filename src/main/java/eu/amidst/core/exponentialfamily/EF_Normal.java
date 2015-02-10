@@ -4,6 +4,8 @@ import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
+import java.util.Random;
+
 /**
  * Created by andresmasegosa on 13/11/14.
  */
@@ -58,6 +60,17 @@ public class EF_Normal extends EF_UnivariateDistribution {
         copy.getNaturalParameters().copy(this.getNaturalParameters());
 
         return copy;
+    }
+
+    @Override
+    public EF_UnivariateDistribution randomInitialization(Random random) {
+
+        this.getMomentParameters().set(0,random.nextGaussian()*10);
+        this.getMomentParameters().set(1,random.nextDouble()*10);
+
+        this.updateNaturalFromMomentParameters();
+
+        return this;
     }
 
     @Override
