@@ -150,6 +150,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return this.getProbabilities().length;
     }
 
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("");

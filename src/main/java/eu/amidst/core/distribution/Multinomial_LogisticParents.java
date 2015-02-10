@@ -115,6 +115,7 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
         }
     }
 
+    @Override
     public String toString() {
 
         StringBuilder str = new StringBuilder();

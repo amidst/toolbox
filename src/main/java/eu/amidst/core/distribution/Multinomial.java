@@ -132,6 +132,7 @@ public class Multinomial extends UnivariateDistribution  {
         return false;
     }
 
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("[ ");
