@@ -80,6 +80,12 @@ public class IndicatorDistribution extends ConditionalDistribution {
         return false;
     }
 
+    @Override
+    //TODO
+    public String toString() {
+        return null;
+    }
+
     public boolean equalDist(IndicatorDistribution dist, double threshold) {
         return this.getConditionalDistribution().equalDist(dist.getConditionalDistribution(),threshold);
     }

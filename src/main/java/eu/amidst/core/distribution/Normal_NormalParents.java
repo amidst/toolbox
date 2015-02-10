@@ -173,6 +173,7 @@ public class Normal_NormalParents extends ConditionalDistribution {
         }
     }
 
+    @Override
     public String toString(){
         StringBuilder str = new StringBuilder();
         str.append("[ alpha = " +this.getIntercept() + ", ");
