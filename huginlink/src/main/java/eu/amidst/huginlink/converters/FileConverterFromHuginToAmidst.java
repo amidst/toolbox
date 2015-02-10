@@ -7,12 +7,14 @@ import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Created by afa on 3/2/15.
  */
 public class FileConverterFromHuginToAmidst {
 
+    // TODO Use stream() for processing files instead.
     public static void convertFilesFromFolder(final String folderName) throws Exception {
 
         File folder = new File(folderName);
