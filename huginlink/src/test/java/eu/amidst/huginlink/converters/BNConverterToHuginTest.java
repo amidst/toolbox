@@ -1,4 +1,4 @@
-package eu.amidst.huginlink;
+package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.*;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;

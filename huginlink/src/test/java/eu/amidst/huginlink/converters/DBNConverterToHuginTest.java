@@ -1,4 +1,4 @@
-package eu.amidst.huginlink;
+package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.Class;
 import COM.hugin.HAPI.ExceptionHugin;
