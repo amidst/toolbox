@@ -459,10 +459,8 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         public double dotProduct(CompoundVector vec) {
             //TODO Test this with more than 1 parent
             double result = this.getXYbaseMatrix().dotProduct(vec.getXYbaseMatrix()); //theta1
-            result += this.getcovbaseMatrix().getRowVector(0).dotProduct(vec.getcovbaseMatrix().getRowVector(0));//theta2^1
-            result += this.getcovbaseMatrix().getRowVector(1).dotProduct(vec.getcovbaseMatrix().getRowVector(1));//theta2^2
-            //result += IntStream.range(0,nOfParents).mapToDouble(p ->
-            //           this.getcovbaseMatrix().getRowVector(p).dotProduct(vec.getcovbaseMatrix().getRowVector(p))).sum();
+            result += IntStream.range(0,nOfParents+1).mapToDouble(p ->
+                       this.getcovbaseMatrix().getRowVector(p).dotProduct(vec.getcovbaseMatrix().getRowVector(p))).sum();
             return result;
         }
 
