@@ -34,6 +34,11 @@ public class BNConverterToAmidstTest {
         BNWriterToHugin.saveToHuginFile(amidstBN2, "networks/asia.bn");
 
 
+
+        parseListener = new DefaultClassParseListener();
+        huginBN = new Domain ("networks/IS.net", parseListener);
+        BayesianNetworkWriter.saveToFile(BNConverterToAMIDST.convertToAmidst(huginBN), "networks/IS.bn");
+
     }
 
     @Test
