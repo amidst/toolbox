@@ -34,4 +34,6 @@ public abstract class Distribution implements Serializable {
 
     public abstract boolean equalDist(Distribution dist, double threshold);
 
+    public abstract String toString();
+
 }
