@@ -178,7 +178,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     }
 
 
-
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("");

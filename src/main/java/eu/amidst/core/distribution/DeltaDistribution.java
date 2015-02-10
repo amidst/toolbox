@@ -52,6 +52,12 @@ public class DeltaDistribution extends UnivariateDistribution {
         return false;
     }
 
+    @Override
+    //TODO
+    public String toString() {
+        return null;
+    }
+
     public boolean equalDist(DeltaDistribution dist, double threshold) {
         if (dist.getVariable()!=dist.getVariable())
             return false;

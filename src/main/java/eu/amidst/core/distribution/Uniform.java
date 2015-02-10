@@ -45,10 +45,16 @@ public class Uniform extends UnivariateDistribution {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return null;
+    }
+
     public boolean equalDist(Uniform dist, double threshold) {
         if (dist.getVariable()!=dist.getVariable())
             return false;
 
         return true;
     }
+
 }

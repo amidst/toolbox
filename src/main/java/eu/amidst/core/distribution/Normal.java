@@ -123,6 +123,7 @@ public class Normal extends UnivariateDistribution {
         return false;
     }
 
+    @Override
     public String toString() {
         return "Normal [ mu = " + this.getMean() + ", sd = "+ this.getSd() +" ]";
     }
