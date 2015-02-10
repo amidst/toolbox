@@ -1,5 +1,6 @@
 package eu.amidst.core.inference;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
@@ -17,6 +18,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+import org.apache.commons.lang.time.StopWatch;
 import scala.tools.cmd.gen.AnyVals;
 
 import java.io.IOException;
@@ -48,7 +50,7 @@ public class VMP implements InferenceAlgorithmForBN {
         }
 
         boolean convergence = false;
-        double elbo = 0;
+        double elbo = Double.NEGATIVE_INFINITY;
         while (!convergence) {
             //System.out.println(nodes.get(0).getQDist().getMomentParameters().get(0));
             //System.out.println(nodes.get(1).getQDist().getMomentParameters().get(1));
@@ -75,13 +77,15 @@ public class VMP implements InferenceAlgorithmForBN {
             //Test whether all nodes are done.
             if (numberOfNotDones==0) {
                 convergence = true;
-                break;
             }
 
             //Compute lower-bound
             //double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
             if (Math.abs(newelbo.get() - elbo) < 0.00001) {
                 convergence = true;
+            }
+            if (newelbo.get()< elbo){
+                throw new UnsupportedOperationException("The elbo is not monotonically increasing");
             }
             elbo = newelbo.get();
             System.out.println(elbo);
@@ -127,12 +131,22 @@ public class VMP implements InferenceAlgorithmForBN {
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/asia.bn");
+        //bn.randomInitialization(new Random(0));
 
-        InferenceEngineForBN.setModel(bn);
-        InferenceEngineForBN.compileModel();
+        for (int i = 0; i < 20; i++) {
 
-        System.out.println(InferenceEngineForBN.getPosterior("B").toString());
 
+            //bn.randomInitialization(new Random(0));
+
+            InferenceEngineForBN.setModel(bn);
+
+            Stopwatch watch = Stopwatch.createStarted();
+            InferenceEngineForBN.compileModel();
+            System.out.println(watch.stop());
+
+
+            //System.out.println(InferenceEngineForBN.getPosterior("R_LNLBE_MEDD2_DISP_EW").toString());
+        }
 
     }
 }

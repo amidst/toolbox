@@ -8,6 +8,7 @@ import eu.amidst.core.variables.Variable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,7 +33,7 @@ public class Node {
 
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
-        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution();
+        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(0));
     }
 
     public List<Node> getParents() {
