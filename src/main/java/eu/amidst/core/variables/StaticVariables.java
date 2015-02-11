@@ -136,7 +136,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
 
     }
 
-    public Variable addHiddenGaussianVariable(String name, int nOfStates) {
+    public Variable addHiddenGaussianVariable(String name) {
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
         builder.setDistributionType(DistType.GAUSSIAN);
