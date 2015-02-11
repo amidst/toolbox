@@ -3,6 +3,7 @@ package eu.amidst.core.variables;
 import eu.amidst.core.database.Attribute;
 
 /**
+ * TODO Implements toString method
  * Created by afa on 02/07/14.
  */
 public interface Variable {

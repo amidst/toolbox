@@ -5,10 +5,7 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +15,8 @@ import java.util.stream.Stream;
 public class Node {
 
     List<Node> parents;
+
+    List<Node> children;
 
     Assignment assignment;
 
@@ -33,7 +32,17 @@ public class Node {
 
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
-        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(0));
+        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(1));
+        this.parents = new ArrayList<>();
+        this.children = new ArrayList<>();
+    }
+
+    public List<Node> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Node> children) {
+        this.children = children;
     }
 
     public List<Node> getParents() {
@@ -97,9 +106,9 @@ public class Node {
         return messages.stream();
     }
 
-    public Message<NaturalParameters> newMessageToParent(Node parent, Map<Variable, MomentParameters> momentParents){
+    public Message<NaturalParameters> newMessageToParent(Node parent, Map<Variable, MomentParameters> momentChildCoParents){
         Message<NaturalParameters> message = new Message<>(parent.getMainVariable());
-        message.setVector(this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentParents));
+        message.setVector(this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentChildCoParents));
         message.setDone(this.messageDoneToParent(parent.getMainVariable()));
 
         return message;
