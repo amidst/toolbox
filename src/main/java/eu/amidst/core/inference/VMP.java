@@ -65,7 +65,6 @@ public class VMP implements InferenceAlgorithmForBN {
                     momentChildCoParents.put(children.getMainVariable(), children.getQMomentParameters());
                     selfMessage = Message.combine(children.newMessageToParent(node,momentChildCoParents), selfMessage);
                 }
-                System.out.println(node.getMainVariable().getName());
                 node.updateCombinedMessage(selfMessage);
 
                 done &= node.isDone();
