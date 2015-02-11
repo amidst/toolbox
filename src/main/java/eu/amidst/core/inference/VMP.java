@@ -3,10 +3,7 @@ package eu.amidst.core.inference;
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
-import eu.amidst.core.exponentialfamily.EF_Multinomial;
-import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP_.Message;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.models.BayesianNetwork;
@@ -22,10 +19,7 @@ import org.apache.commons.lang.time.StopWatch;
 import scala.tools.cmd.gen.AnyVals;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -45,6 +39,60 @@ public class VMP implements InferenceAlgorithmForBN {
 
     @Override
     public void compileModel() {
+        if (assignment != null) {
+            nodes.stream().forEach(node -> node.setAssignment(assignment));
+        }
+
+        boolean convergence = false;
+        double elbo = Double.NEGATIVE_INFINITY;
+        while (!convergence) {
+            //System.out.println(nodes.get(0).getQDist().getMomentParameters().get(0));
+            //System.out.println(nodes.get(1).getQDist().getMomentParameters().get(1));
+
+            boolean done = true;
+            for (Node node : nodes) {
+                Map<Variable, MomentParameters> momentParents = new HashMap<>();
+
+                node.getParents().stream().forEach(p -> momentParents.put(p.getMainVariable(), p.getQMomentParameters()));
+
+                momentParents.put(node.getMainVariable(), node.getQMomentParameters());
+
+                Message<NaturalParameters> selfMessage = node.newSelfMessage(momentParents);
+
+                for (Node children: node.getChildren()){
+                    Map<Variable, MomentParameters> momentChildCoParents = new HashMap<>();
+                    children.getParents().stream().forEach(p -> momentChildCoParents.put(p.getMainVariable(), p.getQMomentParameters()));
+                    momentChildCoParents.put(children.getMainVariable(), children.getQMomentParameters());
+                    selfMessage = Message.combine(children.newMessageToParent(node,momentChildCoParents), selfMessage);
+                }
+                System.out.println(node.getMainVariable().getName());
+                node.updateCombinedMessage(selfMessage);
+
+                done &= node.isDone();
+            }
+
+            if (done) {
+                convergence = true;
+            }
+
+            //Compute lower-bound
+            double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
+            if (Math.abs(newelbo - elbo) < 0.00001) {
+                convergence = true;
+            }
+            if (newelbo< elbo){
+                throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
+            }
+            elbo = newelbo;
+            System.out.println(elbo);
+
+            //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(0).getQDist()).toString());
+            //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(1).getQDist()).toString());
+            //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(2).getQDist()).toString());
+        }
+    }
+
+    public void compileModelParallel() {
         if (assignment != null) {
             nodes.stream().forEach(node -> node.setAssignment(assignment));
         }
@@ -85,12 +133,14 @@ public class VMP implements InferenceAlgorithmForBN {
                 convergence = true;
             }
             if (newelbo.get()< elbo){
-                throw new UnsupportedOperationException("The elbo is not monotonically increasing");
+                //throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo.get());
             }
             elbo = newelbo.get();
             System.out.println(elbo);
 
-
+            System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(0).getQDist()).toString());
+            System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(1).getQDist()).toString());
+            System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(2).getQDist()).toString());
         }
     }
 
@@ -107,6 +157,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
         for (Node node : nodes){
             node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> nodes.get(var.getVarID())).collect(Collectors.toList()));
+            node.getPDist().getConditioningVariables().stream().forEach(var -> nodes.get(var.getVarID()).getChildren().add(node));
         }
 
     }
@@ -130,23 +181,17 @@ public class VMP implements InferenceAlgorithmForBN {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/asia.bn");
-        //bn.randomInitialization(new Random(0));
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
+        bn.randomInitialization(new Random(0));
 
-        for (int i = 0; i < 20; i++) {
+        InferenceEngineForBN.setModel(bn);
 
-
-            //bn.randomInitialization(new Random(0));
-
-            InferenceEngineForBN.setModel(bn);
-
-            Stopwatch watch = Stopwatch.createStarted();
-            InferenceEngineForBN.compileModel();
-            System.out.println(watch.stop());
+        Stopwatch watch = Stopwatch.createStarted();
+        InferenceEngineForBN.compileModel();
+        System.out.println(watch.stop());
 
 
-            //System.out.println(InferenceEngineForBN.getPosterior("R_LNLBE_MEDD2_DISP_EW").toString());
-        }
+        System.out.println(InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableById(0)).toString());
 
     }
 }

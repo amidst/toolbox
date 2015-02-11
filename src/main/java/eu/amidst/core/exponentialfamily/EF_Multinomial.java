@@ -77,13 +77,10 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     @Override
     public void setNaturalParameters(NaturalParameters parameters) {
         this.naturalParameters=parameters;//.copy(parameters);
-        int maxIndex = Utils.maxIndex(((ArrayVector)parameters).toArray());
-        double maxValue = parameters.get(maxIndex);
-        for (int i = 0; i < parameters.size(); i++) {
-            parameters.set(i,parameters.get(i)-maxValue);
-        }
+        this.naturalParameters = Utils.logNormalize(this.naturalParameters);
         this.updateMomentFromNaturalParameters();
     }
+
     @Override
     public void updateMomentFromNaturalParameters() {
         int nstates= var.getNumberOfStates();
