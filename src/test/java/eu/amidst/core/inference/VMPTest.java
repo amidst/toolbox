@@ -839,26 +839,39 @@ public class VMPTest extends TestCase {
         StaticVariables variables = new StaticVariables();
         Variable varA = variables.addHiddenMultionomialVariable("A", 2);
         Variable varB = variables.addHiddenMultionomialVariable("B", 2);
+        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
-        dag.getParentSet(varB).addParent(varA);
+        dag.getParentSet(varC).addParent(varA);
+        dag.getParentSet(varC).addParent(varB);
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
         Multinomial_MultinomialParents distA = bn.getDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getDistribution(varB);
+        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
 
-        distA.getMultinomial(0).setProbabilities(new double[]{0.9, 0.1});
-        distB.getMultinomial(0).setProbabilities(new double[]{1.0, 0.0});
-        distB.getMultinomial(1).setProbabilities(new double[]{0.0, 1.0});
+
+        distA.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
+        distB.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
+
+        //distC.getMultinomial(0).setProbabilities(new double[]{1.0, 0.0});
+        //distC.getMultinomial(1).setProbabilities(new double[]{0.0, 1.0});
+        //distC.getMultinomial(2).setProbabilities(new double[]{0.0, 1.0});
+        //distC.getMultinomial(3).setProbabilities(new double[]{1.0, 0.0});
+
+
+        double val=1e-20;
+
+        distC.getMultinomial(0).setProbabilities(new double[]{1-val, val});
+        distC.getMultinomial(1).setProbabilities(new double[]{1-val, val});
+        distC.getMultinomial(2).setProbabilities(new double[]{1-val, val});
+        distC.getMultinomial(3).setProbabilities(new double[]{val, 1-val});
 
         //bn.randomInitialization(new Random(0));
 
-        double[] pA = distA.getMultinomial(0).getProbabilities();
-        double[][] pB = new double[2][];
-        pB[0] = distB.getMultinomial(0).getProbabilities();
-        pB[1] = distB.getMultinomial(1).getProbabilities();
+
 
         System.out.println(bn.toString());
 
@@ -870,53 +883,55 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Multinomial qADist = ((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        EF_Multinomial qBDist = ((EF_Multinomial) vmp.nodes.get(1).getQDist());
+        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
+        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
+        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(2).getQDist());
 
-        double[] qA = new double[2];
-        qA[0] = qADist.getMomentParameters().get(0);
-        qA[1] = qADist.getMomentParameters().get(1);
-
-        double[] qB = new double[2];
-        qB[0] = qBDist.getMomentParameters().get(0);
-        qB[1] = qBDist.getMomentParameters().get(1);
 
         //InferenceEngineForBN.setEvidence(assignment);
         InferenceEngineForBN.compileModel();
 
-        Multinomial postA = InferenceEngineForBN.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
-        Multinomial postB = InferenceEngineForBN.getPosterior(varB);
-        System.out.println("P(B) = " + postB.toString());
+        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
+        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
+        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
 
-
+        List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
         double oldvalue = 0;
+
+
         while (!convergence) {
 
-            qA[0] = Math.exp(qB[0] * Math.log(pB[0][0]) + qB[1] * Math.log(pB[0][1]) + Math.log(pA[0]));
-            qA[1] = Math.exp(qB[0] * Math.log(pB[1][0]) + qB[1] * Math.log(pB[1][1]) + Math.log(pA[1]));
+            //double[] probsA = averageLog(varA, varB, varC, qBDist, qCDist, bn);
+            //double[] probsB = averageLog(varB, varA, varC, qADist, qCDist, bn);
+            //double[] probsC = averageLog(varC, varA, varB, qADist, qBDist, bn);
 
-            Utils.normalize(qA);
+            //qADist.setProbabilities(probsA);
+            //qBDist.setProbabilities(probsB);
+            //qCDist.setProbabilities(probsC);
 
-            qB[0] = Math.exp(qA[0] * Math.log(pB[0][0] * pA[0]) + qA[1] * Math.log(pB[1][0] * pA[1]));
-            qB[1] = Math.exp(qA[0] * Math.log(pB[0][1] * pA[0]) + qA[1] * Math.log(pB[1][1] * pA[1]));
+            qADist.setProbabilities(averageLog(varA, varB, varC, qBDist, qCDist, bn));
+            qBDist.setProbabilities(averageLog(varB, varA, varC, qADist, qCDist, bn));
+            qCDist.setProbabilities(averageLog(varC, varA, varB, qADist, qBDist, bn));
 
-            Utils.normalize(qB);
-
-            if (Math.abs(qA[0] + qB[0] - oldvalue) < 0.001) {
+            if (Math.abs(qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0) - oldvalue) < 0.00001) {
                 convergence = true;
             }
 
-            oldvalue = qA[0] + qB[0];
-
-
+            oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
+            System.out.println(oldvalue);
+            //System.out.println("P'(A) = " + qADist.toString());
+            //System.out.println("P'(B) = " + qBDist.toString());
+            //System.out.println("P'(C) = " + qCDist.toString());
         }
-        System.out.println(qA[0]);
-        System.out.println(qB[0]);
 
-        assertEquals(postA.getProbabilities()[0], qA[0], 0.01);
-        assertEquals(postB.getProbabilities()[0], qB[0], 0.01);
+        System.out.println("P'(A) = " + qADist.toString());
+        System.out.println("P'(B) = " + qBDist.toString());
+        System.out.println("P'(C) = " + qCDist.toString());
+
+        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
 
     }
 
@@ -936,7 +951,7 @@ public class VMPTest extends TestCase {
 
         for (int i = 0; i < nVar; i++) {
             //dag.getParentSet(variables.getVariableByName(i+"")).addParent(varA);
-            dag.getParentSet(varA).addParent(variables.getVariableByName(i+""));
+            dag.getParentSet(varA).addParent(variables.getVariableByName(i + ""));
 
         }
 
