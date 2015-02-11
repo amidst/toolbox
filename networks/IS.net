@@ -1,6 +1,11 @@
 net
 {
     node_size = (80 40);
+    HR_realname_A = "A";
+    HR_realname_B = "B";
+    HR_realname_C = "C";
+    HR_realname_D = "D";
+    HR_realname_E = "E";
     HR_DBN_Num_Slices = "5";
     HR_Desc = "";
     HR_OOBN_CheckConsistency = "1";
@@ -123,5 +128,5 @@ potential (B | A)
 
 potential (A)
 {
-    data = ( 0.4 0.6 );
+    data = ( 0.1 0.9 );
 }
