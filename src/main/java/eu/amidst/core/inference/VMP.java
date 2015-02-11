@@ -180,7 +180,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
         bn.randomInitialization(new Random(0));
 
         InferenceEngineForBN.setModel(bn);
