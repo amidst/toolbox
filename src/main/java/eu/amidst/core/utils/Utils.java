@@ -18,6 +18,47 @@ public final class Utils {
         //Not called
     }
 
+    public static <E extends Vector> E normalize(E vector){
+
+        double sum = Utils.sum(vector);
+        for (int i = 0; i < vector.size(); i++) {
+            vector.set(i,vector.get(i)/sum);
+        }
+
+        return vector;
+    }
+
+
+    public static <E extends Vector> E logNormalize(E vector){
+
+        int maxIndex = Utils.maxIndex(vector);
+        double maxValue = vector.get(maxIndex);
+        for (int i = 0; i < vector.size(); i++) {
+            vector.set(i,vector.get(i)-maxValue);
+        }
+
+        return vector;
+    }
+
+    public static double sum(Vector vector){
+        double sum = 0;
+        for (int i=0; i<vector.size(); i++){
+            sum += vector.get(i);
+        }
+        return sum;
+    }
+
+    public static int maxIndex(Vector vector){
+        double max = Double.NEGATIVE_INFINITY;
+        int index = -1;
+        for (int i=0; i<vector.size(); i++){
+            if (vector.get(i)>max) {
+                max = vector.get(i);
+                index = i;
+            }
+        }
+        return index;
+    }
 
     public static double missingValue(){
         return Double.NaN;
