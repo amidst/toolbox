@@ -1,13 +1,10 @@
 package eu.amidst.core.inference;
 
 import eu.amidst.core.database.Attributes;
+import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DataOnMemoryListContainer;
-import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
-import eu.amidst.core.exponentialfamily.EF_Multinomial;
-import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.distribution.*;
+import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -31,7 +28,13 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
     private long sampleSize;
     private Assignment evidence;
     private List<ConditionalDistribution> samplingDistributions;
+    private ArrayList<Double> weights;
+
     private boolean parallelMode = true;
+
+    public Assignment getEvidence() {
+        return evidence;
+    }
 
     public boolean isParallelMode() {
         return parallelMode;
@@ -41,16 +44,13 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         this.parallelMode = parallelMode_;
     }
 
-
-
-    public ImportanceSampling(BayesianNetwork model_, Assignment evidence_, long sampleSize_) {
+    public ImportanceSampling(BayesianNetwork model_, long sampleSize_) {
 
         this.model = model_;
-        this.evidence = evidence_;
         this.sampleSize = sampleSize_;
         Attributes attributes= this.model.getDAG().getStaticVariables().getAttributes();
         this.simulatedSample = new DataOnMemoryListContainer(attributes);
-
+        this.weights = new ArrayList<>((int)this.sampleSize);
     }
 
     public List<ConditionalDistribution> getSamplingDistributions() {
@@ -70,22 +70,62 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         this.sampleSize = sampleSize;
     }
 
-
-    //This method will consist in sampling instances to estimate probabilities afterwards in method getPosterior(var), right?
-    //CHECK IF THE SIMULATED VALUE MATCHES WITH THE EVIDENCE!!!!!!
     @Override
     public void compileModel() {
 
-        HashMapAssignment assignment;
+        HashMapAssignment samplingAssignment;
+        HashMapAssignment modelAssignment;
 
+        Random random = new Random();
         for(int i=0;i<sampleSize;i++) {
-            assignment = new HashMapAssignment(1);
-            for (ConditionalDistribution dist : this.getSamplingDistributions()) {
-                UnivariateDistribution univariateDistribution = dist.getUnivariateDistribution(assignment);
-                double simulatedValue = univariateDistribution.sample(new Random());
-                assignment.putValue(dist.getVariable(),simulatedValue);
+            samplingAssignment = new HashMapAssignment(1);
+            modelAssignment = new HashMapAssignment(1);
+            double numerator = 1.0;
+            double denominator = 1.0;
+
+            for (ConditionalDistribution samplingDistribution : this.getSamplingDistributions()) {
+
+                Variable samplingVar = samplingDistribution.getVariable();
+                Variable modelVar = this.model.getStaticVariables().getVariableById(samplingVar.getVarID());
+
+//                System.out.println("----------------------------");
+//                System.out.println("SAMPLING VAR: " +samplingVar.getName());
+//                System.out.println("MODEL VAR: " + modelVar.getName());
+
+                //Denominator
+                UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(samplingAssignment);
+                double simulatedValue = univariateSamplingDistribution.sample(random);
+
+
+//                System.out.println("\nSAMPLING DISTRIBUTION ("+univariateSamplingDistribution.getVariable().getName()+ ")");
+//                System.out.println(univariateSamplingDistribution);
+//                System.out.println("\nSimulated value:" + simulatedValue);
+
+                denominator = denominator/univariateSamplingDistribution.getProbability(simulatedValue);
+
+                //Numerator
+//                System.out.println("ASSIGNMENT");
+//                for(Variable v:this.model.getStaticVariables().getListOfVariables()){
+//                    System.out.println(modelAssignment.getValue(v));
+//                }
+
+
+
+                UnivariateDistribution univariateModelDistribution = this.model.getDistributions().get(samplingVar.getVarID()).getUnivariateDistribution(modelAssignment);
+
+//                System.out.println("\nMODEL DISTRIBUTION ("+univariateModelDistribution.getVariable().getName()+ ")");
+//                System.out.println(univariateModelDistribution);
+//                System.out.println("\nProbability: "+univariateModelDistribution.getProbability(simulatedValue));
+
+
+                numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
+                modelAssignment.putValue(this.model.getStaticVariables().getVariableById(samplingVar.getVarID()),simulatedValue);
+                samplingAssignment.putValue(samplingVar,simulatedValue);
             }
-            simulatedSample.add(assignment);
+
+            double weight = numerator*denominator;
+            this.weights.add(weight);
+            simulatedSample.add(modelAssignment);
         }
     }
 
@@ -101,80 +141,136 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
     @Override
     public void setEvidence(Assignment evidence_) {
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(model);
-        sampler.setSeed(0);
-        sampler.setParallelMode(false);
-        evidence = sampler.sampleToDataBase(1).stream().findFirst().get();
+        this.evidence = evidence_;
     }
 
     @Override
-    //For continuous variables, obtain a Gaussian distributions. In theory we should go for a Mixture of Gaussians instead!!!
+    //TODO For continuous variables, instead of returning a Gaussian distributions, we should implement a Mixture of Gaussians instead!!!
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
 
-        EF_Multinomial ef_multinomial = new EF_Multinomial(var);
-        ef_multinomial.createZeroedSufficientStatistics();
-
-        Stream<HashMapAssignment> samples = this.simulatedSample.stream();
-
+        // TODO Could we build this object in a general way for Multinomial and Normal
+        EF_UnivariateDistribution ef_univariateDistribution=null;
+        if (var.isMultinomial()){
+            ef_univariateDistribution = new EF_Multinomial(var);
+        }
+        else if (var.isGaussian()) {
+            ef_univariateDistribution = new EF_Normal(var);
+        }
+        else {
+            throw new IllegalArgumentException("Variable type not allowed.");
+        }
+        //---------------------------------------------------------
         AtomicInteger dataInstanceCount = new AtomicInteger(0);
-
+        Stream<HashMapAssignment> samples = this.simulatedSample.stream();
         SufficientStatistics sumSS = samples
                 .peek(w -> {
                     dataInstanceCount.getAndIncrement();
                 })
-                .map(ef_multinomial::getSufficientStatistics)
+                .map(ef_univariateDistribution::getSufficientStatistics)
                 .reduce(SufficientStatistics::sumVector).get();
-
-        //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
+        ef_univariateDistribution.setMomentParameters(sumSS);
+        return (E)EF_DistributionBuilder.toUnivariateDistribution(ef_univariateDistribution);
 
-        ef_multinomial.setMomentParameters(sumSS);
-
-        Multinomial dist = EF_DistributionBuilder.toDistribution(ef_multinomial);
-
-        return (E)dist;
     }
 
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
 
+
+        /*******************************************************************************************************/
+        /************************************* MODEL DISTRIBUTIONS  ********************************************/
+        /*******************************************************************************************************/
+
+        BayesianNetwork bn2 = BayesianNetworkLoader.loadFromFile("networks/IS.bn");
+        StaticVariables variables2 = bn2.getStaticVariables();
+
+        Variable varA = variables2.getVariableByName("A");
+        Variable varB = variables2.getVariableByName("B");
+        Variable varC = variables2.getVariableByName("C");
+        Variable varD = variables2.getVariableByName("D");
+        Variable varE = variables2.getVariableByName("E");
+
+        List<ConditionalDistribution> modelDistributions = new ArrayList(bn2.getDistributions());
+        Collections.reverse(modelDistributions);
+
+        System.out.println("============================================================");
+        System.out.println("================= MODEL DISTRIBUTIONS ======================");
+        System.out.println("============================================================");
+
+        modelDistributions.stream().forEach(e-> {
+            System.out.println(e.getVariable().getName());
+            System.out.println(e);
+        });
+
+        /*******************************************************************************************************/
+        /************************************ SAMPLING DISTRIBUTIONS *******************************************/
+        /*******************************************************************************************************/
+
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/IS.bn");
-
         StaticVariables variables = bn.getStaticVariables();
-
         Variable A = variables.getVariableByName("A");
         Variable B = variables.getVariableByName("B");
         Variable C = variables.getVariableByName("C");
         Variable D = variables.getVariableByName("D");
         Variable E = variables.getVariableByName("E");
 
+        // Variable A
+        Multinomial_MultinomialParents distA = bn.getDistribution(A);
+        distA.getProbabilities()[0].setProbabilities(new double[]{0.15, 0.85});
 
-        // TOPOLOGICAL ORDER
-        //---------------------------------------------------------------------------------
-        List<ConditionalDistribution> distributions = new ArrayList(bn.getDistributions());
-        Collections.reverse(distributions);
+        // Variable B
+        Multinomial_MultinomialParents distB = bn.getDistribution(B);
+        distB.getMultinomial(0).setProbabilities(new double[]{0.15,0.85});
+        distB.getMultinomial(1).setProbabilities(new double[]{0.75,0.25});
 
-        distributions.stream().forEach(e-> {
+        // Variable C
+        Normal_MultinomialParents distC = bn.getDistribution(C);
+        distC.getNormal(0).setMean(3.1);
+        distC.getNormal(0).setSd(0.9660254037);
+        distC.getNormal(1).setMean(2.1);
+        distC.getNormal(1).setSd(0.848683);
+
+        //Variable D
+        Normal_MultinomialNormalParents distD = bn.getDistribution(D);
+        distD.getNormal_NormalParentsDistribution(0).setIntercept(2.1);
+        distD.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{2.1});
+        distD.getNormal_NormalParentsDistribution(0).setSd(1.1);
+
+        distD.getNormal_NormalParentsDistribution(1).setIntercept(0.6);
+        distD.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.6});
+        distD.getNormal_NormalParentsDistribution(1).setSd(1.5142);
+
+        //Variable E
+        Normal_NormalParents distE  = bn.getDistribution(E);
+        distE.setIntercept(2.4);
+        distE.setCoeffParents(new double[]{4.1});
+        distE.setSd(1.2832);
+
+        List<ConditionalDistribution> samplingDistributions = new ArrayList(bn.getDistributions());
+        Collections.reverse(samplingDistributions);
+
+        System.out.println("============================================================");
+        System.out.println("== SAMPLING DISTRIBUTIONS (MODEL DISTRIBUTIONS WITH NOISE) =");
+        System.out.println("============================================================");
+
+        samplingDistributions.stream().forEach(e-> {
             System.out.println(e.getVariable().getName());
             System.out.println(e);
         });
-        //---------------------------------------------------------------------------------
 
-        ImportanceSampling inferenceEngine = new ImportanceSampling(bn,null,1000);
-        inferenceEngine.setSamplingDistributions(distributions);
+        System.out.println("============================================================");
+        System.out.println("==================== IMPORTANCE SAMPLING ===================");
+        System.out.println("============================================================");
+
+        ImportanceSampling inferenceEngine = new ImportanceSampling(bn2,1000);
+        inferenceEngine.setEvidence(null);
+        inferenceEngine.setSamplingDistributions(samplingDistributions);
         inferenceEngine.compileModel();
 
+        //inferenceEngine.weights.stream().forEach(System.out::println);
 
-
-        System.out.println("\n A -> " + inferenceEngine.getPosterior(A).toString());
-
-
-
-
-
-
-
-
+        System.out.println("\n varA -> " + inferenceEngine.getPosterior(varA).toString());
 
 
 

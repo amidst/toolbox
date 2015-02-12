@@ -184,18 +184,19 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
-        double logNorm = 0.5*Math.log(2*globalNaturalParameters.getTheta_Minus1());
+        double logNorm = -0.5*Math.log(-2*globalNaturalParameters.getTheta_Minus1());
 
         double[] Yarray = new double[nOfParents];
-        this.getConditioningVariables().stream().
-                forEach(parent -> Yarray[parent.getVarID()] = momentParents.get(parent).get(0));
+        for (int i = 0; i < nOfParents; i++) {
+            Yarray[i] = momentParents.get(this.getConditioningVariables().get(i)).get(0);
+        }
         RealVector Y = new ArrayRealVector(Yarray);
 
         logNorm -= globalNaturalParameters.getTheta_beta0BetaRV().
                 dotProduct(new ArrayRealVector(Y));
 
         RealMatrix YY = Y.outerProduct(Y);
-        logNorm -= IntStream.range(1,nOfParents).mapToDouble(p ->
+        logNorm -= IntStream.range(0,nOfParents).mapToDouble(p ->
                 globalNaturalParameters.getTheta_BetaBetaRM().getRowVector(p).dotProduct(YY.getRowVector(p))).sum();
 
         logNorm -= Math.pow(globalNaturalParameters.getTheta_beta0(),2)/(4*globalNaturalParameters.getTheta_Minus1());
@@ -215,8 +216,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
 
         double[] Yarray = new double[nOfParents];
-        this.getConditioningVariables().stream().
-                forEach(parent -> Yarray[parent.getVarID()] = momentParents.get(parent).get(0));
+        for (int i = 0; i < nOfParents; i++) {
+            Yarray[i] = momentParents.get(this.getConditioningVariables().get(i)).get(0);
+        }
         RealVector Y = new ArrayRealVector(Yarray);
         naturalParameters.set(0,globalNaturalParameters.getTheta_beta0() +
                 2*globalNaturalParameters.getTheta_BetaRV().dotProduct(Y));
@@ -240,10 +242,12 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         NaturalParameters naturalParameters = new ArrayVector(2);
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
 
-        naturalParameters.set(0,globalNaturalParameters.getTheta_beta0Beta()[parent.getVarID()]+
-                2*globalNaturalParameters.getTheta_Beta()[parent.getVarID()]*momentChildCoParents.get(var).get(0));
+        int parentID=this.getConditioningVariables().indexOf(parent);
 
-        naturalParameters.set(1,globalNaturalParameters.getTheta_BetaBeta()[parent.getVarID()][parent.getVarID()]);
+        naturalParameters.set(0,globalNaturalParameters.getTheta_beta0Beta()[parentID]+
+                2*globalNaturalParameters.getTheta_Beta()[parentID]*momentChildCoParents.get(var).get(0));
+
+        naturalParameters.set(1,globalNaturalParameters.getTheta_BetaBeta()[parentID][parentID]);
 
         return naturalParameters;
     }
@@ -406,11 +410,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         public double[] getTheta_Beta(){
-            return getcovbaseMatrix().getSubMatrix(0,1,0,nOfParents).getRow(0);
+            return getcovbaseMatrix().getSubMatrix(0,0,1,nOfParents).getRow(0);
         }
 
         public double[][] getTheta_BetaBeta(){
-            return getcovbaseMatrix().getSubMatrix(1,1,nOfParents,nOfParents).getData();
+            return getcovbaseMatrix().getSubMatrix(1,nOfParents,1,nOfParents).getData();
         }
 
 
@@ -419,11 +423,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         }
 
         public RealVector getTheta_BetaRV(){
-            return getcovbaseMatrix().getSubMatrix(0,1,0,nOfParents).getRowVector(0);
+            return getcovbaseMatrix().getSubMatrix(0,0,1,nOfParents).getRowVector(0);
         }
 
         public RealMatrix getTheta_BetaBetaRM(){
-            return getcovbaseMatrix().getSubMatrix(1, 1, nOfParents, nOfParents);
+            return getcovbaseMatrix().getSubMatrix(1, nOfParents, 1, nOfParents);
         }
 
 
