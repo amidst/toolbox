@@ -18,6 +18,8 @@ import junit.framework.TestCase;
 public class VMPNormalTest extends TestCase {
 
 
+
+/*
     public static void test1() {
 
         StaticVariables variables = new StaticVariables();
@@ -70,10 +72,56 @@ public class VMPNormalTest extends TestCase {
         System.out.println("P(B) = " + postB.toString());
 
 
-    }
+    }*/
 
-    /*
+
     public static void test2() {
+        StaticVariables variables = new StaticVariables();
+        Variable varA = variables.addHiddenGaussianVariable("A");
+        Variable varB = variables.addHiddenGaussianVariable("B");
+        Variable varC = variables.addHiddenGaussianVariable("C");
+
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(varC).addParent(varA);
+        dag.getParentSet(varC).addParent(varB);
+
+        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+
+        Normal_MultinomialParents distA = bn.getDistribution(varA);
+        Normal_MultinomialParents distB = bn.getDistribution(varB);
+        Normal_NormalParents distC = bn.getDistribution(varC);
+
+
+        distA.getNormal(0).setMean(0);
+        distA.getNormal(0).setSd(1);
+        distB.getNormal(0).setMean(0);
+        distB.getNormal(0).setSd(1);
+        distC.setIntercept(0);
+        distC.setSd(1);
+        distC.setCoeffParents(new double[]{1, 1});
+
+
+        System.out.println(bn.toString());
+
+
+        VMP vmp = new VMP();
+        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
+        InferenceEngineForBN.setModel(bn);
+
+
+        //InferenceEngineForBN.setEvidence(assignment);
+        InferenceEngineForBN.compileModel();
+
+        Normal postA = InferenceEngineForBN.getPosterior(varA);
+        System.out.println("P(A) = " + postA.toString());
+        Normal postB = InferenceEngineForBN.getPosterior(varB);
+        System.out.println("P(B) = " + postB.toString());
+        Normal postC = InferenceEngineForBN.getPosterior(varC);
+        System.out.println("P(C) = " + postC.toString());
+    }
+    /*
+    public static void test3() {
 
         StaticVariables variables = new StaticVariables();
         Variable varA = variables.addHiddenMultionomialVariable("A", 2);

@@ -934,7 +934,7 @@ X^2\\
 \ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(\mathbf{Y_i}) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
 &=&
 \begin{pmatrix}
-\thb_{\beta_0\beb}^i + 2\thb_{\beb}^iX \\
+\thb_{\beta_0\beb}^i + 2\thb_{\beb}^iX + 2\thb_{\beb\beb}^{'T}\Y\Y \\
 \thb_{\beb\beb}^{ii} 
 \end{pmatrix}^T
 \begin{pmatrix}
@@ -948,7 +948,8 @@ Y^i\\
 where $\thb_{\cdot}^i$ is the $i$th component of $\thb_{\cdot}$,\\
 where $\thb_{\beta_0\beb}' = \thb_{\beta_0\beb}$ with $\thb_{\beta_0\beb}^i = 0$,\\
 where $\thb_{\beb}' = \thb_{\beb}$ with $\thb_{\beb}^i = 0$,\\
-where $\thb_{\beb\beb}' = \thb_{\beb\beb}$ with $\thb_{\beb\beb}^i = 0$.
+where $\thb_{\beb\beb}' = \thb_{\beb\beb}$ with $\thb_{\beb\beb}^i = 0$, $\thb_{\beb\beb}^{i\cdot} = 0$  and $\thb_{\beb\beb}^{\cdot i} = 0$ ,\\
+where $\thb_{\beb\beb}^{'} = \thb_{\beb\beb}^{i}$ with $ \thb_{\beb\beb}^{ii} = 0$.\\
 
 
 \end{itemize}
