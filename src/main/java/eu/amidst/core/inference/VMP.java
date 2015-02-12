@@ -236,8 +236,6 @@ public class VMP implements InferenceAlgorithmForBN {
         System.out.println(bn.getNumberOfVars());
         System.out.println(bn.getDistributions().stream().mapToInt(p->p.getNumberOfFreeParameters()).max().getAsInt());
 
-        bn.randomInitialization(new Random(0));
-
         VMP vmp = new VMP();
         vmp.setParallelMode(true);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
@@ -246,7 +244,6 @@ public class VMP implements InferenceAlgorithmForBN {
         for (int i = 0; i < 20; i++)
         {
             InferenceEngineForBN.setModel(bn);
-            //bn.randomInitialization(new Random(i));
 
             Stopwatch watch = Stopwatch.createStarted();
             InferenceEngineForBN.compileModel();
