@@ -30,11 +30,23 @@ public class Node {
 
     boolean isDone = false;
 
+    boolean active = true;
+
+
+
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
         this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(1));
         this.parents = new ArrayList<>();
         this.children = new ArrayList<>();
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public List<Node> getChildren() {
@@ -95,11 +107,12 @@ public class Node {
         momentParents.put(this.getMainVariable(), this.getQMomentParameters());
 
         List<Message<NaturalParameters>> messages = this.parents.stream()
+                                                                .filter(node -> node.isActive())
                                                                 .filter(parent -> !parent.isObserved())
                                                                 .map(parent -> this.newMessageToParent(parent, momentParents))
                                                                 .collect(Collectors.toList());
 
-        if (!isObserved()) {
+        if (!isObserved() && isActive()) {
             messages.add(this.newSelfMessage(momentParents));
         }
 
