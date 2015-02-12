@@ -38,7 +38,7 @@ public class VMPNormalTest extends TestCase {
         distA.getNormal(0).setSd(1);
         distB.setIntercept(1);
         distB.setSd(1);
-        distB.setCoeffParents(new double[] {1});
+        distB.setCoeffParents(new double[]{1});
 
 
         System.out.println(bn.toString());
