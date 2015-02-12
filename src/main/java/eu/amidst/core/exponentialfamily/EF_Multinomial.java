@@ -13,6 +13,7 @@ import java.util.Random;
  */
 public class EF_Multinomial extends EF_UnivariateDistribution {
 
+    static double THRESHOLD = 1e-10;
     /**
      * The class constructor.
      * @param var The variable of the distribution.
@@ -68,7 +69,9 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         int nstates= var.getNumberOfStates();
         for (int i=0; i<nstates; i++){
             if (this.momentParameters.get(i) == 0)
-                this.naturalParameters.set(i, -Double.MAX_VALUE);
+                this.naturalParameters.set(i, Math.log(THRESHOLD));
+            else if (this.momentParameters.get(i) == 1)
+                this.naturalParameters.set(i, Math.log(1-THRESHOLD));
             else
                 this.naturalParameters.set(i, Math.log(this.momentParameters.get(i)));
         }
