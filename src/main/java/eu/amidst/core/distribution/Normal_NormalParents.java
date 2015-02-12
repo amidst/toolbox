@@ -95,6 +95,9 @@ public class Normal_NormalParents extends ConditionalDistribution {
      * @param coeffParents1 An array of <code>double</code> with the coefficients, one for each parent.
      */
     public void setCoeffParents(double[] coeffParents1) {
+        if(coeffParents1.length != this.coeffParents.length)
+            throw new UnsupportedOperationException("The number of beta parameters for the Normal_Normal distribution" +
+                    " does not match with the number of parents");
         this.coeffParents = coeffParents1;
     }
 
