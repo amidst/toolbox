@@ -197,7 +197,10 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         RealMatrix YY = Y.outerProduct(Y);
         logNorm -= IntStream.range(0,nOfParents).mapToDouble(p ->
-                globalNaturalParameters.getTheta_BetaBetaRM().getRowVector(p).dotProduct(YY.getRowVector(p))).sum();
+        {
+                return globalNaturalParameters.getTheta_BetaBetaRM().getRowVector(p).dotProduct(YY.getRowVector(p));
+        })
+                .sum();
 
         logNorm -= Math.pow(globalNaturalParameters.getTheta_beta0(),2)/(4*globalNaturalParameters.getTheta_Minus1());
 
@@ -244,10 +247,22 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         int parentID=this.getConditioningVariables().indexOf(parent);
 
-        naturalParameters.set(0,globalNaturalParameters.getTheta_beta0Beta()[parentID]+
-                2*globalNaturalParameters.getTheta_Beta()[parentID]*momentChildCoParents.get(var).get(0));
+        RealVector theta_BetaBetaPrima = globalNaturalParameters.getTheta_BetaBetaRM().getRowVector(parentID);//.copy();
+        theta_BetaBetaPrima.setEntry(parentID, 0);
 
-        naturalParameters.set(1,globalNaturalParameters.getTheta_BetaBeta()[parentID][parentID]);
+        double[] Yarray = new double[nOfParents];
+        for (int i = 0; i < nOfParents; i++) {
+            Yarray[i] = momentChildCoParents.get(this.getConditioningVariables().get(i)).get(0);
+        }
+        double Y_i = Yarray[parentID];
+        RealVector YY_i = new ArrayRealVector(Yarray);
+        YY_i.mapMultiplyToSelf(Y_i);
+
+        naturalParameters.set(0,globalNaturalParameters.getTheta_beta0Beta()[parentID]+
+                2*globalNaturalParameters.getTheta_Beta()[parentID]*momentChildCoParents.get(var).get(0)+
+                2*theta_BetaBetaPrima.dotProduct(YY_i));
+
+        naturalParameters.set(1, globalNaturalParameters.getTheta_BetaBeta()[parentID][parentID]);
 
         return naturalParameters;
     }
