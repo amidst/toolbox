@@ -36,7 +36,7 @@ public class Node {
 
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
-        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(1));
+        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(0));
         this.parents = new ArrayList<>();
         this.children = new ArrayList<>();
     }

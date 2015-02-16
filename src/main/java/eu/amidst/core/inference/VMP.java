@@ -108,11 +108,11 @@ public class VMP implements InferenceAlgorithmForBN {
             if (Math.abs(newelbo - elbo) < 0.0001) {
                 convergence = true;
             }
-            if (newelbo< elbo){
+            if (!convergence && newelbo< elbo){
                 throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
             }
             elbo = newelbo;
-            //System.out.println(elbo);
+            System.out.println(elbo);
 
             //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(0).getQDist()).toString());
             //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(1).getQDist()).toString());
