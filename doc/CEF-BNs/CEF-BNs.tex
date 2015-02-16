@@ -756,11 +756,15 @@ Let $X$ be a normal variable and $ \mathbf{Y} = \{Y_1,\ldots,Y_n\}$ denote the s
 
 The log-conditional probability of $X$ given its parents $\mathbf{Y}$ can be expressed as follows:
 
-$$ \ln p(X|Y_1,\ldots,Y_n) = \ln \left(\frac{1}{\sigma \sqrt{2\pi}} \me^{-\frac{(x-(\beta_0+ \bs \beta^T \cdot \bm Y))^2}{2\sigma^2}} \right)$$
+\begin{eqnarray*}
+\ln p(X|Y_1,\ldots,Y_n) &=& \ln \left(\frac{1}{\sigma \sqrt{2\pi}} \me^{-\frac{(x-(\beta_0+ \bs \beta^T \cdot \bm Y))^2}{2\sigma^2}} \right)\\\\
+&=&
+- \ln{\sigma} - 0.5\ln{(2\pi)} - \frac{(x-\beta_0 - \bs \beta^T \mathbf{Y})^2}{2\sigma^2}
+\end{eqnarray*}
 
 where
 
-\begin{tabular}{p{4cm}p{4cm}}
+\begin{tabular}{p{5.5cm}p{5.5cm}}
 \begin{eqnarray*}
 \bs \beta &=& 
 \begin{pmatrix}
@@ -922,7 +926,7 @@ X^2\\
 %&+&
 % \ln{\frac{1}{\sqrt{2(\theta_{\beta_0}+2\thb_{\beb} \E(\Y))}}} 
 &-& 
-\left(-0.5\ln{(-2\theta_{\mbox{-}1})} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y -\frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
+\left(-0.5\ln{(-2\theta_{\mbox{-}1})} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y^T -\frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
 \end{eqnarray*}
 
 
@@ -934,22 +938,23 @@ X^2\\
 \ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(\mathbf{Y_i}) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
 &=&
 \begin{pmatrix}
-\thb_{\beta_0\beb}^i + 2\thb_{\beb}^iX + 2\thb_{\beb\beb}^{'T}\Y\Y \\
+\thb_{\beta_0\beb}^i + 2\thb_{\beb}^iX + 2\thb_{\beb\beb}^{'i \cdot}\Y \\
 \thb_{\beb\beb}^{ii} 
 \end{pmatrix}^T
 \begin{pmatrix}
 Y^i\\
 {Y^i}^2\\
 \end{pmatrix}\\
-&+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'YY + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
+&+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'\Y\Y^T + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
 &-& \left( \frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
 \end{eqnarray*}
 
 where $\thb_{\cdot}^i$ is the $i$th component of $\thb_{\cdot}$,\\
+where $\thb_{\beb\beb}^{'i\cdot} = \thb_{\beb\beb}^{i\cdot}$ with $\thb_{\beb\beb}^{ii} = 0$, (vector)\\
 where $\thb_{\beta_0\beb}' = \thb_{\beta_0\beb}$ with $\thb_{\beta_0\beb}^i = 0$,\\
 where $\thb_{\beb}' = \thb_{\beb}$ with $\thb_{\beb}^i = 0$,\\
-where $\thb_{\beb\beb}' = \thb_{\beb\beb}$ with $\thb_{\beb\beb}^i = 0$, $\thb_{\beb\beb}^{i\cdot} = 0$  and $\thb_{\beb\beb}^{\cdot i} = 0$ ,\\
-where $\thb_{\beb\beb}^{'} = \thb_{\beb\beb}^{i}$ with $ \thb_{\beb\beb}^{ii} = 0$.\\
+where $\thb_{\beb\beb}' = \thb_{\beb\beb}$ with $\thb_{\beb\beb}^{ii} = 0$, $\thb_{\beb\beb}^{i\cdot} = 0$  and $\thb_{\beb\beb}^{\cdot i} = 0$.\\
+
 
 
 \end{itemize}
