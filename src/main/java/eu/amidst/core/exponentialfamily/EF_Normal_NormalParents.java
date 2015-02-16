@@ -254,9 +254,9 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         for (int i = 0; i < nOfParents; i++) {
             Yarray[i] = momentChildCoParents.get(this.getConditioningVariables().get(i)).get(0);
         }
-        double Y_i = Yarray[parentID];
+        //double Y_i = Yarray[parentID];
         RealVector YY_i = new ArrayRealVector(Yarray);
-        YY_i.mapMultiplyToSelf(Y_i);
+        //YY_i.mapMultiplyToSelf(Y_i);
 
         naturalParameters.set(0,globalNaturalParameters.getTheta_beta0Beta()[parentID]+
                 2*globalNaturalParameters.getTheta_Beta()[parentID]*momentChildCoParents.get(var).get(0)+

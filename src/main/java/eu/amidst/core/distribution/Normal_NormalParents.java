@@ -174,6 +174,7 @@ public class Normal_NormalParents extends ConditionalDistribution {
         for (int j = 0; j < this.coeffParents.length; j++) {
             this.coeffParents[j]=random.nextGaussian();
         }
+        this.sd = random.nextDouble()+0.1;
     }
 
     @Override
