@@ -2,9 +2,12 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DynamicDataInstance;
+import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.Vector;
+
+import java.util.stream.Collectors;
 
 /**
  * Created by andresmasegosa on 13/01/15.
@@ -19,6 +22,16 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
     public EF_DynamicBayesianNetwork(DynamicDAG dag) {
         this.bayesianNetworkTime0 = new EF_BayesianNetwork(dag.getParentSetsTime0());
         this.bayesianNetworkTimeT = new EF_BayesianNetwork(dag.getParentSetsTimeT());
+    }
+
+    public EF_DynamicBayesianNetwork(DynamicBayesianNetwork dbn){
+        this.bayesianNetworkTime0 = new EF_BayesianNetwork();
+        this.bayesianNetworkTimeT = new EF_BayesianNetwork();
+
+        this.bayesianNetworkTime0.setDistributionList(dbn.getDistributionsTime0().stream().map(EF_DistributionBuilder::toEFDistributionGeneral).collect(Collectors.toList()));
+        this.bayesianNetworkTimeT.setDistributionList(dbn.getDistributionsTimeT().stream().map(EF_DistributionBuilder::toEFDistributionGeneral).collect(Collectors.toList()));
+
+
     }
 
     @Override

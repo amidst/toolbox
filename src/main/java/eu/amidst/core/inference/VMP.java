@@ -8,26 +8,15 @@ import eu.amidst.core.inference.VMP_.Message;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.Utils;
-import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import org.apache.commons.lang.time.StopWatch;
-import scala.tools.cmd.gen.AnyVals;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.counting;
 
 /**
  * Created by andresmasegosa on 03/02/15.
@@ -38,6 +27,7 @@ public class VMP implements InferenceAlgorithmForBN {
     EF_BayesianNetwork ef_model;
     Assignment assignment = new HashMapAssignment(0);
     List<Node> nodes;
+    Map<Variable,Node> variablesToNode;
     boolean parallelMode = false;
     int seed = 0;
 
@@ -58,7 +48,7 @@ public class VMP implements InferenceAlgorithmForBN {
     }
 
     @Override
-    public void compileModel() {
+    public void runInference() {
         if (parallelMode)
             this.compileModelParallel();
         else
@@ -71,9 +61,8 @@ public class VMP implements InferenceAlgorithmForBN {
 
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
-        while (!convergence) {
-            //System.out.println(nodes.get(0).getQDist().getMomentParameters().get(0));
-            //System.out.println(nodes.get(1).getQDist().getMomentParameters().get(1));
+        int niter = 0;
+        while (!convergence && (niter++)<100) {
 
             boolean done = true;
             for (Node node : nodes) {
@@ -112,12 +101,10 @@ public class VMP implements InferenceAlgorithmForBN {
                 throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
             }
             elbo = newelbo;
-            System.out.println(elbo);
+            //System.out.println(elbo);
 
-            //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(0).getQDist()).toString());
-            //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(1).getQDist()).toString());
-            //System.out.println(EF_DistributionBuilder.toDistribution((EF_Multinomial) nodes.get(2).getQDist()).toString());
         }
+        System.out.println("N Iter: "+niter +", elbo:"+elbo);
     }
 
     public void compileModelParallel() {
@@ -128,29 +115,28 @@ public class VMP implements InferenceAlgorithmForBN {
         Random rand = new Random(this.getSeed());
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
-        while (!convergence) {
-            //System.out.println(nodes.get(0).getQDist().getMomentParameters().get(0));
-            //System.out.println(nodes.get(1).getQDist().getMomentParameters().get(1));
+        int niter = 0;
+        while (!convergence && (niter++)<1000) {
             AtomicDouble newelbo = new AtomicDouble(0);
             int numberOfNotDones = 0;
 
-            //nodes.stream().forEach( node -> node.setActive(node.getMainVariable().getVarID()%2==0));
+            //nodesTimeT.stream().forEach( node -> node.setActive(node.getMainVariable().getVarID()%2==0));
             nodes.stream().forEach( node -> node.setActive(rand.nextBoolean()));
-            //nodes.stream().forEach( node -> node.setActive(rand.nextInt()%2!=0));
+            //nodes.stream().forEach( node -> node.setActive(rand.nextInt()%100==0));
 
             //Send and combine messages
             Map<Variable, Optional<Message<NaturalParameters>>> group = nodes.parallelStream()
                     .peek(node -> newelbo.addAndGet(node.computeELBO()))
                     .flatMap(node -> node.computeMessages())
                     .collect(
-                            Collectors.groupingBy(Message::getVariable,
+                            Collectors.groupingBy(Message::getVariable,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
                     );
 
             //Set Messages
             numberOfNotDones += group.entrySet().parallelStream()
                     .mapToInt(e -> {
-                        Node node = nodes.get(e.getKey().getVarID());
+                        Node node = this.getNodeOfVar(e.getKey());
                         node.updateCombinedMessage(e.getValue().get());
                         return (node.isDone()) ? 0 : 1;
                     })
@@ -163,54 +149,89 @@ public class VMP implements InferenceAlgorithmForBN {
                     //.peek(node -> newelbo.addAndGet(node.computeELBO()))
                     .flatMap(node -> node.computeMessages())
                     .collect(
-                            Collectors.groupingBy(Message::getVariable,
+                            Collectors.groupingBy(Message::getVariable,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
                     );
 
             //Set Messages
             numberOfNotDones += group.entrySet().parallelStream()
                     .mapToInt(e -> {
-                        Node node = nodes.get(e.getKey().getVarID());
+                        Node node = this.getNodeOfVar(e.getKey());
                         node.updateCombinedMessage(e.getValue().get());
                         return (node.isDone()) ? 0 : 1;
                     })
                     .sum();
 
 
-            //Test whether all nodes are done.
+            //Test whether all nodesTimeT are done.
             if (numberOfNotDones == 0) {
                 convergence = true;
             }
 
             //Compute lower-bound
-            //newelbo.set(this.nodes.parallelStream().mapToDouble(Node::computeELBO).sum());
+            //newelbo.set(this.nodesTimeT.parallelStream().mapToDouble(Node::computeELBO).sum());
             if (Math.abs(newelbo.get() - elbo) < 0.0001) {
                 convergence = true;
             }
-            if (newelbo.get()< elbo){
+            if (!convergence && newelbo.get()< elbo){
                 //throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo.get());
             }
             elbo = newelbo.get();
             //System.out.println(elbo);
         }
+        System.out.println("N Iter: "+niter +", elbo:"+elbo);
     }
 
     @Override
     public void setModel(BayesianNetwork model_) {
         model = model_;
-        ef_model = new EF_BayesianNetwork(this.model);
+        this.setEFModel(new EF_BayesianNetwork(this.model));
+    }
 
+    public void setEFModel(EF_BayesianNetwork model){
+        ef_model = model;
+
+        variablesToNode = new ConcurrentHashMap<>();
         nodes = ef_model.getDistributionList()
                 .stream()
-                .map(dist -> new Node(dist))
+                .map(dist -> {
+                    Node node = new Node(dist);
+                    variablesToNode.put(dist.getVariable(), node);
+                    return node;
+                })
                 .collect(Collectors.toList());
 
+        for (Node node : nodes){
+            node.setParents(node.getPDist().getConditioningVariables().stream().map(this::getNodeOfVar).collect(Collectors.toList()));
+            node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var).getChildren().add(node));
+        }
+    }
+
+    public Node getNodeOfVar(Variable variable){
+        return this.variablesToNode.get(variable);
+    }
+    public List<Node> getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List<Node> nodes) {
+        this.nodes = nodes;
+        variablesToNode = new ConcurrentHashMap<>();
+
+        nodes.stream().forEach( node -> variablesToNode.put(node.getMainVariable(),node));
 
         for (Node node : nodes){
-            node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> nodes.get(var.getVarID())).collect(Collectors.toList()));
-            node.getPDist().getConditioningVariables().stream().forEach(var -> nodes.get(var.getVarID()).getChildren().add(node));
-        }
+            node.setParents(
+                    node.getPDist()
+                    .getConditioningVariables()
+                    .stream()
+                    .map(this::getNodeOfVar)
+                    .collect(Collectors.toList())
+            );
 
+            node.getPDist().getConditioningVariables().stream()
+                    .forEach(var -> this.getNodeOfVar(var).getChildren().add(node));
+        }
     }
 
     @Override
@@ -226,7 +247,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
     @Override
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
-        return (E) EF_DistributionBuilder.toUnivariateDistribution(this.nodes.get(var.getVarID()).getQDist());
+        return (E) EF_DistributionBuilder.toUnivariateDistribution(this.getNodeOfVar(var).getQDist());
     }
 
 
@@ -237,7 +258,8 @@ public class VMP implements InferenceAlgorithmForBN {
         System.out.println(bn.getDistributions().stream().mapToInt(p->p.getNumberOfFreeParameters()).max().getAsInt());
 
         VMP vmp = new VMP();
-        vmp.setParallelMode(true);
+        vmp.setSeed(10);
+        vmp.setParallelMode(false);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
 
         double avg  = 0;
@@ -246,7 +268,7 @@ public class VMP implements InferenceAlgorithmForBN {
             InferenceEngineForBN.setModel(bn);
 
             Stopwatch watch = Stopwatch.createStarted();
-            InferenceEngineForBN.compileModel();
+            InferenceEngineForBN.runInference();
             System.out.println(watch.stop());
             avg += watch.elapsed(TimeUnit.MILLISECONDS);
         }

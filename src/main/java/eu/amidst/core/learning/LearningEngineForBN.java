@@ -8,6 +8,11 @@ import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 /**
+ *
+ * TODO Add a method for updating a model with one data instance:
+ *
+ * public BayesianNetwork updateModel(BayesianNetwork model, DataInstance instance);
+ *
  * Created by andresmasegosa on 06/01/15.
  */
 public final class LearningEngineForBN {
@@ -58,6 +63,7 @@ public final class LearningEngineForBN {
 
         return network;
     }
+
 
     public static void main(String[] args) throws Exception{
 

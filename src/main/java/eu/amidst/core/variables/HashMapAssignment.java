@@ -1,26 +1,29 @@
 package eu.amidst.core.variables;
 
 import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.utils.Utils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 03/11/14.
  */
-public class HashMapAssignment implements DataInstance {
-    private HashMap<Variable,Double> assignment;
+public class HashMapAssignment implements DataInstance, DynamicDataInstance {
+    private Map<Variable,Double> assignment;
     int sequenceID;
     int timeID;
 
     public HashMapAssignment(int nOfVars){
-        assignment = new HashMap(nOfVars);
+        assignment = new ConcurrentHashMap(nOfVars);
     }
 
+    @Override
     public double getValue(Variable key){
         Double val = assignment.get(key);
         if (val!=null){
@@ -31,10 +34,12 @@ public class HashMapAssignment implements DataInstance {
             return Utils.missingValue();
         }
     }
-    public void putValue(Variable var, double val) {
+    @Override
+    public void setValue(Variable var, double val) {
         this.assignment.put(var,val);
     }
 
+    @Override
     public int getSequenceID() {
         return sequenceID;
     }
@@ -43,6 +48,7 @@ public class HashMapAssignment implements DataInstance {
         this.sequenceID = sequenceID;
     }
 
+    @Override
     public int getTimeID() {
         return timeID;
     }
@@ -51,9 +57,6 @@ public class HashMapAssignment implements DataInstance {
         this.timeID = timeID;
     }
 
-    public void setValue(Variable var, Double value){
-        assignment.put(var, value);
-    }
 
     // Now you can use the following loop to iterate over all assignments:
     // for (Map.Entry<Variable, Double> entry : assignment.entrySet()) return entry;

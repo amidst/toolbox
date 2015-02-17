@@ -32,13 +32,19 @@ public class Node {
 
     boolean active = true;
 
-
+    Variable mainVar;
 
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
-        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(0));
+        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(1));
         this.parents = new ArrayList<>();
         this.children = new ArrayList<>();
+        this.mainVar = this.PDist.getVariable();
+    }
+
+
+    public void setPDist(EF_ConditionalDistribution PDist) {
+        this.PDist = PDist;
     }
 
     public boolean isActive() {
@@ -94,7 +100,11 @@ public class Node {
     }
 
     public Variable getMainVariable(){
-        return this.PDist.getVariable();
+        return this.mainVar;
+    }
+
+    public void setMainVar(Variable mainVar) {
+        this.mainVar = mainVar;
     }
 
     public Stream<Message<NaturalParameters>> computeMessages(){

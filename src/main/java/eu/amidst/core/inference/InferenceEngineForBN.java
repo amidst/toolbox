@@ -8,9 +8,6 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
-import java.util.Arrays;
-import java.util.Random;
-
 /**
  * Created by andresmasegosa on 30/01/15.
  */
@@ -22,8 +19,8 @@ public final class InferenceEngineForBN {
         InferenceEngineForBN.inferenceAlgorithmForBN = inferenceAlgorithmForBN;
     }
 
-    public static void compileModel(){
-        inferenceAlgorithmForBN.compileModel();
+    public static void runInference(){
+        inferenceAlgorithmForBN.runInference();
     }
 
     public static void setModel(BayesianNetwork model){
@@ -58,7 +55,7 @@ public final class InferenceEngineForBN {
 
         InferenceEngineForBN.setModel(bn);
         InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         Normal posteriorOfA = InferenceEngineForBN.getPosterior(varA);
 

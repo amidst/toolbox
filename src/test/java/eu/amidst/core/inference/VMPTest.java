@@ -69,7 +69,7 @@ public class VMPTest extends TestCase {
         qB[1] = qBDist.getMomentParameters().get(1);
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         Multinomial postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
@@ -139,7 +139,7 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setModel(bn);
 
         InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         Multinomial postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
@@ -192,7 +192,7 @@ public class VMPTest extends TestCase {
 
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -292,7 +292,7 @@ public class VMPTest extends TestCase {
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varC, 0.0);
         InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -380,7 +380,7 @@ public class VMPTest extends TestCase {
 
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -455,7 +455,7 @@ public class VMPTest extends TestCase {
 
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -532,7 +532,7 @@ public class VMPTest extends TestCase {
 
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -606,7 +606,7 @@ public class VMPTest extends TestCase {
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varC, 0.0);
         InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -674,7 +674,7 @@ public class VMPTest extends TestCase {
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varA, 0.0);
         InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -749,7 +749,7 @@ public class VMPTest extends TestCase {
         assignment.setValue(varB, 0.0);
 
         InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
 
@@ -795,7 +795,7 @@ public class VMPTest extends TestCase {
 
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -889,7 +889,7 @@ public class VMPTest extends TestCase {
 
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
@@ -959,7 +959,7 @@ public class VMPTest extends TestCase {
         bn.randomInitialization(new Random(0));
 
         InferenceEngineForBN.setModel(bn);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
 

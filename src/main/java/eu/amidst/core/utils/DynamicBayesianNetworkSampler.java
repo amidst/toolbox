@@ -171,7 +171,7 @@ public class DynamicBayesianNetworkSampler {
 
         for (Variable var : causalOrderTime0) {
             double sampledValue = network.getDistributionsTime0().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
-            dataPresent.putValue(var, sampledValue);
+            dataPresent.setValue(var, sampledValue);
         }
 
         DynamicDataInstanceImpl d = new DynamicDataInstanceImpl(null,dataPresent, sequenceID, 0);
@@ -180,7 +180,7 @@ public class DynamicBayesianNetworkSampler {
 
         dataPast = new HashMapAssignment(network.getNumberOfVars());
         for (Variable var: network.getDynamicVariables().getListOfDynamicVariables()){
-            dataPast.putValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+            dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
         }
         dataPresent = new HashMapAssignment(network.getNumberOfVars());
 
@@ -189,14 +189,14 @@ public class DynamicBayesianNetworkSampler {
 
             for (Variable var : causalOrderTimeT) {
                 double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(d2).sample(random);
-                dataPresent.putValue(var, sampledValue);
+                dataPresent.setValue(var, sampledValue);
             }
 
             allAssignments.add(d2);
 
             dataPast = new HashMapAssignment(network.getNumberOfVars());
             for (Variable var: network.getDynamicVariables().getListOfDynamicVariables()){
-                dataPast.putValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+                dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
             }
             dataPresent = new HashMapAssignment(network.getNumberOfVars());
 
@@ -226,6 +226,15 @@ public class DynamicBayesianNetworkSampler {
                 return dataPast.getValue(var);
             }else {
                 return dataPresent.getValue(var);
+            }
+        }
+
+        @Override
+        public void setValue(Variable var, double value) {
+            if (var.isTemporalClone()){
+                dataPast.setValue(var,value);
+            }else {
+                dataPresent.setValue(var, value);
             }
         }
 
