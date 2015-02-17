@@ -36,7 +36,7 @@ public class VMPNormalTest extends TestCase {
             InferenceEngineForBN.setModel(bn);
 
             Stopwatch watch = Stopwatch.createStarted();
-            InferenceEngineForBN.compileModel();
+            InferenceEngineForBN.runInference();
             System.out.println(watch.stop());
 
             bn.getStaticVariables().getListOfVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableByName(var.getName())).toString()));
@@ -94,7 +94,7 @@ public class VMPNormalTest extends TestCase {
         qB[1] = qBDist.getMomentParameters().get(1);
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         Normal postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
@@ -175,7 +175,7 @@ public class VMPNormalTest extends TestCase {
         qC[1] = qCDist.getMomentParameters().get(1);
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         Normal postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
@@ -259,7 +259,7 @@ public class VMPNormalTest extends TestCase {
         qC[1] = qCDist.getMomentParameters().get(1);
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         Normal postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
@@ -341,7 +341,7 @@ public class VMPNormalTest extends TestCase {
         qC[1] = qCDist.getMomentParameters().get(1);
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.compileModel();
+        InferenceEngineForBN.runInference();
 
         Normal postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
