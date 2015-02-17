@@ -13,6 +13,7 @@ import eu.amidst.core.database.Attributes;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by afa on 02/07/14.
@@ -23,13 +24,13 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
 
     private List<Variable> allVariables;
 
-    private HashMap<String, Integer> mapping;
+    private Map<String, Integer> mapping;
 
     Attributes attributes;
 
     public StaticVariables() {
         this.allVariables = new ArrayList<>();
-        this.mapping = new HashMap<>();
+        this.mapping = new ConcurrentHashMap<>();
     }
 
     /**
@@ -39,7 +40,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
     public StaticVariables(Attributes atts) {
         this.attributes= new Attributes(atts.getList());
         this.allVariables = new ArrayList<>();
-        this.mapping = new HashMap<>();
+        this.mapping = new ConcurrentHashMap<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
