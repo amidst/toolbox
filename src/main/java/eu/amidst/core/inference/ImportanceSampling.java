@@ -71,7 +71,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
     }
 
     @Override
-    public void compileModel() {
+    public void runInference() {
 
         HashMapAssignment samplingAssignment;
         HashMapAssignment modelAssignment;
@@ -119,8 +119,8 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
 
                 numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
-                modelAssignment.putValue(this.model.getStaticVariables().getVariableById(samplingVar.getVarID()),simulatedValue);
-                samplingAssignment.putValue(samplingVar,simulatedValue);
+                modelAssignment.setValue(this.model.getStaticVariables().getVariableById(samplingVar.getVarID()),simulatedValue);
+                samplingAssignment.setValue(samplingVar,simulatedValue);
             }
 
             double weight = numerator*denominator;
@@ -266,7 +266,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         ImportanceSampling inferenceEngine = new ImportanceSampling(bn2,1000);
         inferenceEngine.setEvidence(null);
         inferenceEngine.setSamplingDistributions(samplingDistributions);
-        inferenceEngine.compileModel();
+        inferenceEngine.runInference();
 
         //inferenceEngine.weights.stream().forEach(System.out::println);
 

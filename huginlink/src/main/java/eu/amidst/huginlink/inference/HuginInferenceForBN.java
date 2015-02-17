@@ -58,7 +58,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
     }
 
     @Override
-    public void compileModel() {
+    public void runInference() {
         try {
             this.huginBN.compile();
             huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
@@ -152,7 +152,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
         HuginInferenceForBN inferenceForBN = new HuginInferenceForBN();
         inferenceForBN.setModel(bn);
         inferenceForBN.setEvidence(assignment);
-        inferenceForBN.compileModel();
+        inferenceForBN.runInference();
 
         //---------------------------------------------------------------------------
 
