@@ -25,6 +25,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalDistribution {
@@ -511,7 +512,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             this.baseSize = baseVector.size();
             this.numVectors = numVectors1;
             nonZeroEntries=0;
-            vectorMap = new HashMap<Integer,Vector>();
+            vectorMap = new ConcurrentHashMap<Integer,Vector>();
         }
 
         public void setVectorByPosition(int position, Vector vec) {
@@ -589,7 +590,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             if (vector.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
-            vectorMap = new HashMap<Integer,Vector>();
+            vectorMap = new ConcurrentHashMap<Integer,Vector>();
 
             vector.nonZeroEntries().forEach(entry -> {
                 Vector newVector = this.vectorBuilder.createZeroedVector();

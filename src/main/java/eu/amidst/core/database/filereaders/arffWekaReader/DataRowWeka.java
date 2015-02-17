@@ -18,4 +18,9 @@ public class DataRowWeka implements DataRow{
     public double getValue(Attribute att) {
         return dataRow.value(att.getIndex());
     }
+
+    @Override
+    public void setValue(Attribute att, double value) {
+
+    }
 }

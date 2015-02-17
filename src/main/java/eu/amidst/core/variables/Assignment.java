@@ -11,6 +11,8 @@ public interface Assignment {
 
     double getValue(Variable var);
 
+    void setValue(Variable var, double value);
+
     // TODO Check THIS!!
     default String toString(List<Variable> vars){
         StringBuilder builder = new StringBuilder(vars.size()*2);

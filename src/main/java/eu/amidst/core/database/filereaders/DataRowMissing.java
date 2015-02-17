@@ -11,4 +11,9 @@ public class DataRowMissing implements DataRow{
     public double getValue(Attribute att) {
         return Double.NaN;
     }
+
+    @Override
+    public void setValue(Attribute att, double value) {
+
+    }
 }
