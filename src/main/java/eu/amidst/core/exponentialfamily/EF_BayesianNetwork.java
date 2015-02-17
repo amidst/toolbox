@@ -29,6 +29,13 @@ public class EF_BayesianNetwork extends EF_Distribution {
     List<EF_ConditionalDistribution> distributionList;
     int sizeSS;
 
+    public EF_BayesianNetwork() {
+        distributionList = new ArrayList<>();
+        sizeSS=0;
+        this.naturalParameters = this.createEmtpyCompoundVector();
+        this.momentParameters = null;
+    }
+
     public EF_BayesianNetwork(BayesianNetwork network){
         distributionList = new ArrayList(network.getNumberOfVars());
 
@@ -36,6 +43,24 @@ public class EF_BayesianNetwork extends EF_Distribution {
         for (ConditionalDistribution dist: network.getDistributions()){
             EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
             distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
+            sizeSS+=ef_dist.sizeOfSufficientStatistics();
+        }
+
+        CompoundVector vectorNatural = this.createEmtpyCompoundVector();
+
+        for (EF_ConditionalDistribution dist : distributionList){
+            vectorNatural.setVectorByPosition(dist.getVariable().getVarID(), dist.getNaturalParameters());
+        }
+        this.naturalParameters = vectorNatural;
+        this.momentParameters = null;
+    }
+
+    public void setDistributionList(List<EF_ConditionalDistribution> distributionList_) {
+
+        distributionList = distributionList_;
+
+        sizeSS=0;
+        for (EF_ConditionalDistribution ef_dist: distributionList){
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
 
@@ -86,6 +111,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
     public List<EF_ConditionalDistribution> getDistributionList() {
         return distributionList;
     }
+
 
     public EF_ConditionalDistribution getDistribution(Variable var) {
         return distributionList.get(var.getVarID());

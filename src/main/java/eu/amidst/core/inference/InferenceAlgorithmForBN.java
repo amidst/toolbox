@@ -10,7 +10,7 @@ import eu.amidst.core.variables.Variable;
  */
 public interface InferenceAlgorithmForBN {
 
-    public void compileModel();
+    public void runInference();
 
     public void setModel(BayesianNetwork model);
 

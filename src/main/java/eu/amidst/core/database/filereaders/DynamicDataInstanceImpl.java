@@ -36,6 +36,15 @@ class DynamicDataInstanceImpl implements DynamicDataInstance {
     }
 
     @Override
+    public void setValue(Variable var, double value) {
+        if (var.isTemporalClone()){
+            dataRowPast.setValue(var.getAttribute(), value);
+        }else {
+            dataRowPresent.setValue(var.getAttribute(), value);
+        }
+    }
+
+    @Override
     public int getSequenceID() {
         return sequenceID;
     }

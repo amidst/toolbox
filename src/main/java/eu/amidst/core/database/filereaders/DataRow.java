@@ -9,6 +9,7 @@ public interface DataRow {
 
     double getValue(Attribute att);
 
+    void setValue(Attribute att, double value);
 }
 
 

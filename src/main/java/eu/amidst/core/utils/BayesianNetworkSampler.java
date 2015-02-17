@@ -5,21 +5,16 @@ import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetworkWriter;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -142,6 +137,11 @@ public class BayesianNetworkSampler  {
                         return this.assignment.getValue(var);
                     }
 
+                    @Override
+                    public void setValue(Variable var, double value) {
+                        this.assignment.setValue(var, value);
+                    }
+
                 }
                 return this.sampler.getSampleStream(this.nSamples).map(a -> new TemporalDataInstance(a));
             }
@@ -156,7 +156,7 @@ public class BayesianNetworkSampler  {
         HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
         for (Variable var : causalOrder) {
             double sampledValue = network.getDistribution(var).getUnivariateDistribution(assignment).sample(random);
-            assignment.putValue(var, sampledValue);
+            assignment.setValue(var, sampledValue);
         }
         return assignment;
     }

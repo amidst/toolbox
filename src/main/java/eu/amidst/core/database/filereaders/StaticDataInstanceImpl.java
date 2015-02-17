@@ -20,4 +20,9 @@ class StaticDataInstanceImpl implements StaticDataInstance {
         return dataRow.getValue(var.getAttribute());
     }
 
+    @Override
+    public void setValue(Variable var, double value) {
+        this.dataRow.setValue(var.getAttribute(), value);
+    }
+
 }

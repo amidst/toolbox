@@ -169,5 +169,10 @@ public class ARFFDataReader implements DataFileReader {
         public double getValue(Attribute att) {
             return data[att.getIndex()];
         }
+
+        @Override
+        public void setValue(Attribute att, double value) {
+            this.data[att.getIndex()]=value;
+        }
     }
 }

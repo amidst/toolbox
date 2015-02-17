@@ -15,7 +15,7 @@ public class RandomInferenceAlgorithm implements InferenceAlgorithmForBN{
     Assignment assignment;
 
     @Override
-    public void compileModel() {
+    public void runInference() {
 
     }
 

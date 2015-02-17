@@ -21,6 +21,7 @@ import eu.amidst.core.database.Attributes;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by afa on 02/07/14.
@@ -32,19 +33,19 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     private List<Variable> allVariables;
     private List<Variable> temporalClones;
 
-    private HashMap<String, Integer> mapping;
+    private Map<String, Integer> mapping;
 
     public DynamicVariables() {
         this.allVariables = new ArrayList();
         this.temporalClones = new ArrayList();
-        this.mapping = new HashMap<>();
+        this.mapping = new ConcurrentHashMap<>();
     }
 
     public DynamicVariables(Attributes atts) {
 
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
-        this.mapping = new HashMap<>();
+        this.mapping = new ConcurrentHashMap<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder = new VariableBuilder(att);
@@ -65,7 +66,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
      * Constructor where the distribution type of random variables is provided as an argument.
      *
      */
-    public DynamicVariables(Attributes atts, HashMap<Attribute, DistType> typeDists) {
+    public DynamicVariables(Attributes atts, Map<Attribute, DistType> typeDists) {
 
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
