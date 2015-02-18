@@ -21,6 +21,7 @@ import java.util.Random;
 public class VMPTest extends TestCase {
 
 
+    // A -> B
     public static void test1() {
 
         StaticVariables variables = new StaticVariables();
@@ -107,7 +108,7 @@ public class VMPTest extends TestCase {
 
     }
 
-
+    // A -> (B=0.0)
     public static void test2() {
 
         StaticVariables variables = new StaticVariables();
@@ -148,6 +149,7 @@ public class VMPTest extends TestCase {
 
     }
 
+    // (A,B) -> C
     public static void test3() {
 
         StaticVariables variables = new StaticVariables();
@@ -250,6 +252,7 @@ public class VMPTest extends TestCase {
         return Utils.normalize(output);
     }
 
+    // (A,B) -> (C==0)
     public static void test4() {
 
         StaticVariables variables = new StaticVariables();
@@ -343,6 +346,7 @@ public class VMPTest extends TestCase {
         return Utils.normalize(output);
     }
 
+    //A->C, B->C, A->B
     public static void test5() {
 
         StaticVariables variables = new StaticVariables();
@@ -419,6 +423,7 @@ public class VMPTest extends TestCase {
 
     }
 
+    //C->A, C->B
     public static void test6() {
 
         StaticVariables variables = new StaticVariables();
@@ -494,6 +499,7 @@ public class VMPTest extends TestCase {
 
     }
 
+    //C->A, C->B, B->A
     public static void test7() {
 
         StaticVariables variables = new StaticVariables();
@@ -570,7 +576,7 @@ public class VMPTest extends TestCase {
 
 
     }
-
+    //C->A, C->B; C=0
     public static void test8() {
 
         StaticVariables variables = new StaticVariables();
@@ -639,6 +645,7 @@ public class VMPTest extends TestCase {
     }
 
 
+    //C->A, C->B, A=0
     public static void test9() {
 
         StaticVariables variables = new StaticVariables();
@@ -706,7 +713,7 @@ public class VMPTest extends TestCase {
 
     }
 
-
+    //C->A, C->B, A=0, B=0
     public static void test10() {
 
         StaticVariables variables = new StaticVariables();
@@ -758,6 +765,7 @@ public class VMPTest extends TestCase {
 
     }
 
+    //A->B->C
     public static void test11() {
 
         StaticVariables variables = new StaticVariables();
@@ -834,6 +842,7 @@ public class VMPTest extends TestCase {
 
     }
 
+    //A->B->C, B=1.0
     public static void test12() {
 
         StaticVariables variables = new StaticVariables();
