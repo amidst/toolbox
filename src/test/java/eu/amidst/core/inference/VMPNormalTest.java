@@ -44,7 +44,6 @@ public class VMPNormalTest extends TestCase {
         }
     }
 
-
     //Test with a BN containing 2 Guassian variables A->B
     public static void test2() throws IOException, ClassNotFoundException{
 
@@ -68,9 +67,6 @@ public class VMPNormalTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        //bn.randomInitialization(new Random(0));
-
-
         double meanPA =  distA.getNormal(0).getMean();
         double sdPA =  distA.getNormal(0).getSd();
 
@@ -85,14 +81,12 @@ public class VMPNormalTest extends TestCase {
         EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
 
-
         double meanQA= qADist.getMomentParameters().get(0);
         double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
 
         double meanQB= qBDist.getMomentParameters().get(0);
         double sdQB= Math.sqrt(qBDist.getMomentParameters().get(1) - qBDist.getMomentParameters().get(0)*qBDist.getMomentParameters().get(0));
 
-        //InferenceEngineForBN.setEvidence(assignment);
         InferenceEngineForBN.runInference();
 
         Normal postA = InferenceEngineForBN.getPosterior(varA);
@@ -100,16 +94,16 @@ public class VMPNormalTest extends TestCase {
         Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
 
-
         boolean convergence = false;
         double oldvalue = 0;
 
         while(!convergence){
 
             sdQA = Math.sqrt(Math.pow(b1PB*b1PB/(sdPB*sdPB) + 1.0/(sdPA*sdPA),-1));
-            meanQA = sdQA*sdQA*(b1PB*meanQB/(sdPB*sdPB) - b0PB*b1PB/(sdPB*sdPB) + meanPA/(sdPA*sdPA)); //Equation
-            sdQB = sdPB;//
-            meanQB = sdQB*sdQB*(b0PB/(sdPB*sdPB) + b1PB*meanQA/(sdPB*sdPB));//Eq
+            meanQA = sdQA*sdQA*(b1PB*meanQB/(sdPB*sdPB) - b0PB*b1PB/(sdPB*sdPB) + meanPA/(sdPA*sdPA));
+
+            sdQB = sdPB;
+            meanQB = sdQB*sdQB*(b0PB/(sdPB*sdPB) + b1PB*meanQA/(sdPB*sdPB));
 
             if (Math.abs(sdQA + meanQA + sdQB + meanQB - oldvalue) < 0.001) {
                 convergence = true;
@@ -118,15 +112,14 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQA + meanQA + sdQB + meanQB ;
         }
 
-        System.out.println(sdQA +", "+  meanQA +", "+  sdQB +", "+  meanQB );
+        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+
         Assert.assertEquals(postA.getMean(),meanQA,0.01);
         Assert.assertEquals(postA.getSd(),sdQA,0.01);
         Assert.assertEquals(postB.getMean(),meanQB,0.01);
         Assert.assertEquals(postB.getSd(),sdQB,0.01);
-
-        //to be finished
     }
-
 
     //Test with a BN containing 3 Guassian variables A->C<-B
     public static void test3() throws IOException, ClassNotFoundException{
@@ -159,19 +152,16 @@ public class VMPNormalTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        //bn.randomInitialization(new Random(0));
+        double meanPA =  distA.getNormal(0).getMean();
+        double sdPA =  distA.getNormal(0).getSd();
 
-        HashMapAssignment assignment = new HashMapAssignment(1);
-        assignment.setValue(varA, 1.0);
+        double meanPB =  distB.getNormal(0).getMean();
+        double sdPB =  distB.getNormal(0).getSd();
 
-        double pMeanA =  distA.getNormal(0).getMean();
-        double pSdA =  distA.getNormal(0).getSd();
-
-        double pMeanB =  distB.getNormal(0).getMean();
-        double pSdB =  distB.getNormal(0).getSd();
-
-        double pMeanC =  distC.getNormal(assignment).getMean();
-        double pSdC =  distC.getNormal(assignment).getSd();
+        double b0PC =  distC.getIntercept();
+        double b1PC = distC.getCoeffParents()[0];
+        double b2PC = distC.getCoeffParents()[1];
+        double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
@@ -181,17 +171,14 @@ public class VMPNormalTest extends TestCase {
         EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
         EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
 
-        double[] qA = new double[2];
-        qA[0] = qADist.getMomentParameters().get(0);
-        qA[1] = qADist.getMomentParameters().get(1);
+        double meanQA= qADist.getMomentParameters().get(0);
+        double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
 
-        double[] qB = new double[2];
-        qB[0] = qBDist.getMomentParameters().get(0);
-        qB[1] = qBDist.getMomentParameters().get(1);
+        double meanQB= qBDist.getMomentParameters().get(0);
+        double sdQB= Math.sqrt(qBDist.getMomentParameters().get(1) - qBDist.getMomentParameters().get(0) * qBDist.getMomentParameters().get(0));
 
-        double[] qC = new double[2];
-        qC[0] = qCDist.getMomentParameters().get(0);
-        qC[1] = qCDist.getMomentParameters().get(1);
+        double meanQC= qCDist.getMomentParameters().get(0);
+        double sdQC= Math.sqrt(qCDist.getMomentParameters().get(1) - qCDist.getMomentParameters().get(0)*qCDist.getMomentParameters().get(0));
 
         //InferenceEngineForBN.setEvidence(assignment);
         InferenceEngineForBN.runInference();
@@ -200,17 +187,45 @@ public class VMPNormalTest extends TestCase {
         System.out.println("P(A) = " + postA.toString());
         Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varB));
+        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
         System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
 
-        //to be finished
-    }
+        while(!convergence){
 
+            sdQA = Math.sqrt(Math.pow(b1PC*b1PC/(sdPC*sdPC) + 1.0/(sdPA*sdPA),-1));
+            meanQA = sdQA*sdQA*(b1PC*meanQC/(sdPC*sdPC) - b0PC*b1PC/(sdPC*sdPC) - b1PC*b2PC*meanQB/(sdPC*sdPC) + meanPA/(sdPA*sdPA));
 
-    //Test with a BN containing 3 Guassian variables such that C has two parents A->C<-B, and B has one parent A->B
+            sdQB = Math.sqrt(Math.pow(b2PC*b2PC/(sdPC*sdPC) + 1.0/(sdPB*sdPB),-1));
+            meanQB = sdQB*sdQB*(b2PC*meanQC/(sdPC*sdPC) - b0PC*b2PC/(sdPC*sdPC) - b1PC*b2PC*meanQA/(sdPC*sdPC) + meanPB/(sdPB*sdPB));
+
+            sdQC = sdPC;//
+            meanQC = sdQC*sdQC*(b0PC/(sdPC*sdPC) + b1PC*meanQA/(sdPC*sdPC) + b2PC*meanQB/(sdPC*sdPC));
+
+            if (Math.abs(sdQA + meanQA + sdQB + meanQB + sdQC + meanQC - oldvalue) < 0.001) {
+                convergence = true;
+            }
+            oldvalue = sdQA + meanQA + sdQB + meanQB + sdQC + meanQC;
+        }
+
+        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+
+        Assert.assertEquals(postA.getMean(),meanQA,0.01);
+        Assert.assertEquals(postA.getSd(),sdQA,0.01);
+
+        Assert.assertEquals(postB.getMean(),meanQB,0.01);
+        Assert.assertEquals(postB.getSd(),sdQB,0.01);
+
+        Assert.assertEquals(postC.getMean(),meanQC,0.01);
+        Assert.assertEquals(postC.getSd(),sdQC,0.01);
+
+   }
+
+    //Test with a BN containing 3 Guassian variables A->C<-B  And C is Observed
     public static void test4() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
@@ -222,20 +237,18 @@ public class VMPNormalTest extends TestCase {
 
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
-        dag.getParentSet(varB).addParent(varA);
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
         Normal_MultinomialParents distA = bn.getDistribution(varA);
-        Normal_NormalParents distB = bn.getDistribution(varB);
+        Normal_MultinomialParents distB = bn.getDistribution(varB);
         Normal_NormalParents distC = bn.getDistribution(varC);
 
         distA.getNormal(0).setMean(1);
         distA.getNormal(0).setSd(0.5);
 
-        distB.setIntercept(1.5);
-        distB.setCoeffParents(new double[]{1});
-        distB.setSd(0.8);
+        distB.getNormal(0).setMean(1.2);
+        distB.getNormal(0).setSd(0.8);
 
         distC.setIntercept(1);
         distC.setCoeffParents(new double[]{1, 1});
@@ -243,19 +256,16 @@ public class VMPNormalTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        //bn.randomInitialization(new Random(0));
+        double meanPA =  distA.getNormal(0).getMean();
+        double sdPA =  distA.getNormal(0).getSd();
 
-        HashMapAssignment assignment = new HashMapAssignment(1);
-        assignment.setValue(varA, 1.0);
+        double meanPB =  distB.getNormal(0).getMean();
+        double sdPB =  distB.getNormal(0).getSd();
 
-        double pMeanA =  distA.getNormal(0).getMean();
-        double pSdA =  distA.getNormal(0).getSd();
-
-        double pMeanB =  distB.getNormal(assignment).getMean();
-        double pSdB =  distB.getNormal(assignment).getSd();
-
-        double pMeanC =  distC.getNormal(assignment).getMean();
-        double pSdC =  distC.getNormal(assignment).getSd();
+        double b0PC =  distC.getIntercept();
+        double b1PC = distC.getCoeffParents()[0];
+        double b2PC = distC.getCoeffParents()[1];
+        double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
@@ -265,32 +275,50 @@ public class VMPNormalTest extends TestCase {
         EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
         EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
 
-        double[] qA = new double[2];
-        qA[0] = qADist.getMomentParameters().get(0);
-        qA[1] = qADist.getMomentParameters().get(1);
+        double meanQA= qADist.getMomentParameters().get(0);
+        double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
 
-        double[] qB = new double[2];
-        qB[0] = qBDist.getMomentParameters().get(0);
-        qB[1] = qBDist.getMomentParameters().get(1);
+        double meanQB= qBDist.getMomentParameters().get(0);
+        double sdQB= Math.sqrt(qBDist.getMomentParameters().get(1) - qBDist.getMomentParameters().get(0) * qBDist.getMomentParameters().get(0));
 
-        double[] qC = new double[2];
-        qC[0] = qCDist.getMomentParameters().get(0);
-        qC[1] = qCDist.getMomentParameters().get(1);
+        double meanQC= 0.7;
 
-        //InferenceEngineForBN.setEvidence(assignment);
+        HashMapAssignment assignment = new HashMapAssignment(1);
+        assignment.setValue(varC, 0.7);
+
+        InferenceEngineForBN.setEvidence(assignment);
+
         InferenceEngineForBN.runInference();
 
         Normal postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
         Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varB));
-        System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
 
-        //to be finished
+        while(!convergence){
+
+            sdQA = Math.sqrt(Math.pow(b1PC*b1PC/(sdPC*sdPC) + 1.0/(sdPA*sdPA),-1));
+            meanQA = sdQA*sdQA*(b1PC*meanQC/(sdPC*sdPC) - b0PC*b1PC/(sdPC*sdPC) - b1PC*b2PC*meanQB/(sdPC*sdPC) + meanPA/(sdPA*sdPA));
+
+            sdQB = Math.sqrt(Math.pow(b2PC*b2PC/(sdPC*sdPC) + 1.0/(sdPB*sdPB),-1));
+            meanQB = sdQB*sdQB*(b2PC*meanQC/(sdPC*sdPC) - b0PC*b2PC/(sdPC*sdPC) - b1PC*b2PC*meanQA/(sdPC*sdPC) + meanPB/(sdPB*sdPB));
+
+            if (Math.abs(sdQA + meanQA + sdQB + meanQB - oldvalue) < 0.001) {
+                convergence = true;
+            }
+            oldvalue = sdQA + meanQA + sdQB + meanQB;
+        }
+
+        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+
+        Assert.assertEquals(postA.getMean(),meanQA,0.01);
+        Assert.assertEquals(postA.getSd(),sdQA,0.01);
+        Assert.assertEquals(postB.getMean(),meanQB,0.01);
+        Assert.assertEquals(postB.getSd(),sdQB,0.01);
     }
 
     //Test with a BN containing 3 Guassian variables such that C has two children A and B: i.e., C->A and C->B
@@ -325,19 +353,16 @@ public class VMPNormalTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        //bn.randomInitialization(new Random(0));
+        double b0PA =  distA.getIntercept();
+        double b1PA = distA.getCoeffParents()[0];
+        double sdPA =  distA.getSd();
 
-        HashMapAssignment assignment = new HashMapAssignment(1);
-        assignment.setValue(varA, 1.0);
+        double b0PB =  distB.getIntercept();
+        double b1PB = distB.getCoeffParents()[0];
+        double sdPB =  distB.getSd();
 
-        double pMeanA =  distA.getNormal(assignment).getMean();
-        double pSdA =  distA.getNormal(assignment).getSd();
-
-        double pMeanB =  distB.getNormal(assignment).getMean();
-        double pSdB =  distB.getNormal(assignment).getSd();
-
-        double pMeanC =  distC.getNormal(0).getMean();
-        double pSdC =  distC.getNormal(0).getSd();
+        double meanPC =  distC.getNormal(0).getMean();
+        double sdPC =  distC.getNormal(0).getSd();
 
         VMP vmp = new VMP();
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
@@ -347,32 +372,141 @@ public class VMPNormalTest extends TestCase {
         EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
         EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
 
-        double[] qA = new double[2];
-        qA[0] = qADist.getMomentParameters().get(0);
-        qA[1] = qADist.getMomentParameters().get(1);
+        double meanQA= qADist.getMomentParameters().get(0);
+        double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
 
-        double[] qB = new double[2];
-        qB[0] = qBDist.getMomentParameters().get(0);
-        qB[1] = qBDist.getMomentParameters().get(1);
+        double meanQB= qBDist.getMomentParameters().get(0);
+        double sdQB= Math.sqrt(qBDist.getMomentParameters().get(1) - qBDist.getMomentParameters().get(0) * qBDist.getMomentParameters().get(0));
 
-        double[] qC = new double[2];
-        qC[0] = qCDist.getMomentParameters().get(0);
-        qC[1] = qCDist.getMomentParameters().get(1);
+        double meanQC= qCDist.getMomentParameters().get(0);
+        double sdQC= Math.sqrt(qCDist.getMomentParameters().get(1) - qCDist.getMomentParameters().get(0)*qCDist.getMomentParameters().get(0));
 
-        //InferenceEngineForBN.setEvidence(assignment);
         InferenceEngineForBN.runInference();
 
         Normal postA = InferenceEngineForBN.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
         Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varB));
+        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
         System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
 
-        //to be finished
+        while(!convergence){
+            sdQA = sdPA;
+            meanQA = sdQA*sdQA*(b0PA/(sdPA*sdPA) + b1PA*meanQC/(sdPA*sdPA));
+
+            sdQB = sdPB;
+            meanQB = sdQB*sdQB*(b0PB/(sdPB*sdPB) + b1PB*meanQC/(sdPB*sdPB));
+
+            sdQC = Math.sqrt(Math.pow(b1PA*b1PA/(sdPA*sdPA) + b1PB*b1PB/(sdPB*sdPB) + 1.0/(sdPC*sdPC),-1));
+            meanQC = sdQC*sdQC*(b1PA*meanQA/(sdPA*sdPA) - b0PA*b1PA/(sdPA*sdPA) + b1PB*meanQB/(sdPB*sdPB) - b0PB*b1PB/(sdPB*sdPB) + meanPC/(sdPC*sdPC));
+
+            if (Math.abs(sdQA + meanQA + sdQB + meanQB + sdQC + meanQC - oldvalue) < 0.001) {
+                convergence = true;
+            }
+            oldvalue = sdQA + meanQA + sdQB + meanQB + sdQC + meanQC;
+        }
+
+        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+
+        Assert.assertEquals(postA.getMean(),meanQA,0.01);
+        Assert.assertEquals(postA.getSd(),sdQA,0.01);
+        Assert.assertEquals(postB.getMean(),meanQB,0.01);
+        Assert.assertEquals(postB.getSd(),sdQB,0.01);
+
+        Assert.assertEquals(postC.getMean(),meanQC,0.01);
+        Assert.assertEquals(postC.getSd(),sdQC,0.01);
+    }
+
+    //Test with a BN containing 3 Guassian variables such that C has two children A and B: i.e., C->A and C->B
+    //In this test, Both A and B are observed
+    public static void test6() throws IOException, ClassNotFoundException{
+
+        StaticVariables variables = new StaticVariables();
+        Variable varA = variables.addHiddenGaussianVariable("A");
+        Variable varB = variables.addHiddenGaussianVariable("B");
+        Variable varC = variables.addHiddenGaussianVariable("C");
+
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(varA).addParent(varC);
+        dag.getParentSet(varB).addParent(varC);
+
+        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+
+        Normal_NormalParents distA = bn.getDistribution(varA);
+        Normal_NormalParents distB = bn.getDistribution(varB);
+        Normal_MultinomialParents distC = bn.getDistribution(varC);
+
+        distA.setIntercept(1);
+        distA.setCoeffParents(new double[]{1});
+        distA.setSd(0.5);
+
+        distB.setIntercept(1.5);
+        distB.setCoeffParents(new double[]{1});
+        distB.setSd(0.8);
+
+        distC.getNormal(0).setMean(1);
+        distC.getNormal(0).setSd(0.5);
+
+        System.out.println(bn.toString());
+
+        double b0PA =  distA.getIntercept();
+        double b1PA = distA.getCoeffParents()[0];
+        double sdPA =  distA.getSd();
+
+        double b0PB =  distB.getIntercept();
+        double b1PB = distB.getCoeffParents()[0];
+        double sdPB =  distB.getSd();
+
+        double meanPC =  distC.getNormal(0).getMean();
+        double sdPC =  distC.getNormal(0).getSd();
+
+        VMP vmp = new VMP();
+        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
+        InferenceEngineForBN.setModel(bn);
+
+        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
+        EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
+
+        double meanQA= 0.7;
+        double meanQB= 0.2;
+
+        HashMapAssignment assignment = new HashMapAssignment(1);
+        assignment.setValue(varA, 0.7);
+        assignment.setValue(varB, 0.2);
+
+        double meanQC= qCDist.getMomentParameters().get(0);
+        double sdQC= Math.sqrt(qCDist.getMomentParameters().get(1) - qCDist.getMomentParameters().get(0)*qCDist.getMomentParameters().get(0));
+
+        InferenceEngineForBN.setEvidence(assignment);
+        InferenceEngineForBN.runInference();
+
+        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
+        System.out.println("P(C) = " + postC.toString());
+
+        boolean convergence = false;
+        double oldvalue = 0;
+
+        while(!convergence){
+            sdQC = Math.sqrt(Math.pow(b1PA*b1PA/(sdPA*sdPA) + b1PB*b1PB/(sdPB*sdPB) + 1.0/(sdPC*sdPC),-1));
+            meanQC = sdQC*sdQC*(b1PA*meanQA/(sdPA*sdPA) - b0PA*b1PA/(sdPA*sdPA) + b1PB*meanQB/(sdPB*sdPB) - b0PB*b1PB/(sdPB*sdPB) + meanPC/(sdPC*sdPC));
+
+            if (Math.abs(sdQC + meanQC - oldvalue) < 0.001) {
+                convergence = true;
+            }
+            oldvalue = sdQC + meanQC;
+        }
+
+        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+
+        Assert.assertEquals(postC.getMean(),meanQC,0.01);
+        Assert.assertEquals(postC.getSd(),sdQC,0.01);
     }
 
 }
