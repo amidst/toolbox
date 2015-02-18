@@ -1,28 +1,21 @@
 package eu.amidst.core.inference;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.*;
-import eu.amidst.core.inference.VMP_.Message;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DynamicAssignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +35,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     VMP vmpTimeT;
 
     int timeID;
+    int sequenceID;
 
     public DynamicVMP(){
         this.vmpTime0 = new VMP();
@@ -83,10 +77,13 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         nodesClone = this.ef_model.getBayesianNetworkTime0().getDistributionList()
                 .stream()
                 .map(dist -> {
+                    EF_UnivariateDistribution uni = dist.getNewBaseEFUnivariateDistribution();
+                    uni.setVariable(this.model.getDynamicVariables().getTemporalClone(dist.getVariable()));
+
                     EF_ConditionalDistribution pDist = new EF_BaseDistribution_MultinomialParents(new ArrayList<Variable>(),
-                            Arrays.asList(dist.getNewBaseEFUnivariateDistribution()));
+                            Arrays.asList(uni));
+
                     Node node = new Node(pDist);
-                    node.setMainVar(this.model.getDynamicVariables().getTemporalClone(pDist.getVariable()));
                     node.setActive(false);
                     return node;
                 })
@@ -104,9 +101,22 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         return this.model;
     }
 
+    @Override
+    public void reset(){
+        this.timeID=-1;
+        this.sequenceID=-1;
+        this.vmpTime0.getNodes().stream().forEach(Node::resetQDist);
+        this.vmpTimeT.getNodes().stream().forEach(Node::resetQDist);
+    }
 
     @Override
     public void addDynamicEvidence(DynamicAssignment assignment_) {
+        if (this.sequenceID!= -1 && this.sequenceID != assignment_.getSequenceID())
+            throw new IllegalArgumentException("The sequence ID does not match. If you want to change the sequence, invoke reset method");
+
+        if (this.timeID>= assignment_.getTimeID())
+            throw new IllegalArgumentException("The provided assignment is not posterior to the previous provided assignment.");
+
         this.assignment = assignment_;
     }
 
@@ -115,9 +125,43 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         return (getTimeIDOfPosterior()==0)? this.vmpTime0.getPosterior(var): this.vmpTimeT.getPosterior(var);
     }
 
+    private static void moveNodeQDist(Node toTemporalCloneNode, Node fromNode){
+            EF_UnivariateDistribution uni = fromNode.getQDist().deepCopy();
+            ((EF_BaseDistribution_MultinomialParents)toTemporalCloneNode.getPDist()).setBaseEFDistribution(0,uni);
+            toTemporalCloneNode.setQDist(uni);
+    }
+
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
-        return null;
+
+        if (timeID==-1){
+            this.vmpTime0.setEvidence(null);
+            this.vmpTime0.runInference();
+            this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> {
+                Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
+            });
+            this.moveWindow(nTimesAhead-1);
+            E resultQ = this.getFilteredPosterior(var);
+            this.vmpTime0.getNodes().stream().forEach(Node::resetQDist);
+            this.vmpTimeT.getNodes().stream().forEach(Node::resetQDist);
+
+            return resultQ;
+        }else {
+
+            Map<Variable, EF_UnivariateDistribution> map = new HashMap<>();
+
+            //Create at copy of Qs
+            this.vmpTimeT.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> map.put(node.getMainVariable(), node.getQDist().deepCopy()));
+
+            this.moveWindow(nTimesAhead);
+            E resultQ = this.getFilteredPosterior(var);
+
+            //Come to the original state
+            map.entrySet().forEach(e -> this.vmpTimeT.getNodeOfVar(e.getKey()).setQDist(e.getValue()));
+
+            return resultQ;
+        }
     }
 
     @Override
@@ -133,33 +177,63 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     @Override
     public void runInference(){
 
+        if (this.timeID==-1 && assignment.getTimeID()>0) {
+            this.vmpTime0.setEvidence(null);
+            this.vmpTime0.runInference();
+            this.timeID=0;
+            this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> {
+                Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
+            });
+        }
+
         if (assignment.getTimeID()==0) {
+
             this.vmpTime0.setEvidence(this.assignment);
             this.vmpTime0.runInference();
             this.timeID=0;
 
             this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> {
                 Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
-                ((EF_BaseDistribution_MultinomialParents) this.vmpTimeT.getNodeOfVar(temporalClone).getPDist()).setBaseEFDistribution(0, node.getQDist().deepCopy());
+                moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
             });
 
         }else{
+
+            if ((this.assignment.getTimeID() - this.timeID)>1)
+                this.moveWindow(this.assignment.getTimeID() - this.timeID - 1);
+
             this.timeID=this.assignment.getTimeID();
             this.vmpTimeT.setEvidence(this.assignment);
             this.vmpTimeT.runInference();
             this.vmpTimeT.getNodes().stream()
-                    .filter(node -> !node.getMainVariable().isTemporalClone() && !node.isObserved())
+                    .filter(node -> !node.getMainVariable().isTemporalClone())
+                    .filter(node -> !node.isObserved())
                     .forEach(node -> {
                         Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
-                        ((EF_BaseDistribution_MultinomialParents) this.vmpTimeT.getNodeOfVar(temporalClone).getPDist()).setBaseEFDistribution(0, node.getQDist().deepCopy());
+                        moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
                     });
         }
 
     }
 
+    private void moveWindow(int nsteps){
+        for (int i = 0; i < nsteps; i++) {
+            this.vmpTimeT.setEvidence(null);
+            this.vmpTimeT.runInference();
+            this.vmpTimeT.getNodes().stream()
+                    .filter(node -> !node.getMainVariable().isTemporalClone())
+                    .forEach(node -> {
+                        Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                        moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
+                    });
+        }
+    }
+
+
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        String file = "./datasets/bank_data_train.arff";
+        String file = "./datasets/bank_data_train_small.arff";
         DataBase<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
@@ -181,14 +255,20 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         InferenceEngineForDBN.setModel(bn);
         Variable defaultVar = bn.getDynamicVariables().getVariableByName("DEFAULT");
         UnivariateDistribution dist = null;
+        UnivariateDistribution distAhead = null;
+
         for(DynamicDataInstance instance: data){
-            if (instance.getTimeID()==0 && dist != null)
+
+            if (instance.getTimeID()==0 && dist != null) {
                 System.out.println(dist.toString());
+                //System.out.println(distAhead.toString());
+                InferenceEngineForDBN.reset();
+            }
             instance.setValue(defaultVar, Utils.missingValue());
             InferenceEngineForDBN.addDynamicEvidence(instance);
             InferenceEngineForDBN.runInference();
             dist = InferenceEngineForDBN.getFilteredPosterior(defaultVar);
+            //distAhead = InferenceEngineForDBN.getPredictivePosterior(defaultVar,2);
         }
-
     }
 }
