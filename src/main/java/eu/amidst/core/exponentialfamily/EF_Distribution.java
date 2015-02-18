@@ -21,7 +21,7 @@ public abstract class EF_Distribution {
     /**
      * The variable of the distribution
      */
-    protected Variable var;
+    protected Variable var = null;
 
     protected NaturalParameters naturalParameters;
 
@@ -35,6 +35,13 @@ public abstract class EF_Distribution {
     public final Variable getVariable() {
 
         return this.var;
+    }
+
+    public final void setVariable(Variable var_){
+        if (this.var!=null && (this.var.getDistributionType()!=var_.getDistributionType()))
+            throw new IllegalArgumentException("Variable does not have equal distribution type or state space");
+
+        this.var = var_;
     }
 
     public final NaturalParameters getNaturalParameters() {
