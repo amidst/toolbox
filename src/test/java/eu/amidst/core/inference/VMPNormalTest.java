@@ -15,6 +15,7 @@ import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
+import org.junit.Assert;
 
 import java.io.IOException;
 import java.util.Random;
@@ -69,14 +70,13 @@ public class VMPNormalTest extends TestCase {
 
         //bn.randomInitialization(new Random(0));
 
-        HashMapAssignment assignment = new HashMapAssignment(1);
-        assignment.setValue(varA, 1.0);
 
-        double pMeanA =  distA.getNormal(0).getMean();
-        double pSdA =  distA.getNormal(0).getSd();
+        double meanPA =  distA.getNormal(0).getMean();
+        double sdPA =  distA.getNormal(0).getSd();
 
-        double pMeanB =  distB.getNormal(assignment).getMean();
-        double pSdB =  distB.getNormal(assignment).getSd();
+        double b0PB =  distB.getIntercept();
+        double b1PB = distB.getCoeffParents()[0];
+        double sdPB =  distB.getSd();
 
         VMP vmp = new VMP();
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
@@ -85,13 +85,12 @@ public class VMPNormalTest extends TestCase {
         EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
 
-        double[] qA = new double[2];
-        qA[0] = qADist.getMomentParameters().get(0);
-        qA[1] = qADist.getMomentParameters().get(1);
 
-        double[] qB = new double[2];
-        qB[0] = qBDist.getMomentParameters().get(0);
-        qB[1] = qBDist.getMomentParameters().get(1);
+        double meanQA= qADist.getMomentParameters().get(0);
+        double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
+
+        double meanQB= qBDist.getMomentParameters().get(0);
+        double sdQB= Math.sqrt(qBDist.getMomentParameters().get(1) - qBDist.getMomentParameters().get(0)*qBDist.getMomentParameters().get(0));
 
         //InferenceEngineForBN.setEvidence(assignment);
         InferenceEngineForBN.runInference();
@@ -104,6 +103,26 @@ public class VMPNormalTest extends TestCase {
 
         boolean convergence = false;
         double oldvalue = 0;
+
+        while(!convergence){
+
+            sdQA = Math.sqrt(Math.pow(b1PB*b1PB/(sdPB*sdPB) + 1.0/(sdPA*sdPA),-1));
+            meanQA = sdQA*sdQA*(b1PB*meanQB/(sdPB*sdPB) - b0PB*b1PB/(sdPB*sdPB) + meanPA/(sdPA*sdPA)); //Equation
+            sdQB = sdPB;//
+            meanQB = sdQB*sdQB*(b0PB/(sdPB*sdPB) + b1PB*meanQA/(sdPB*sdPB));//Eq
+
+            if (Math.abs(sdQA + meanQA + sdQB + meanQB - oldvalue) < 0.001) {
+                convergence = true;
+            }
+
+            oldvalue = sdQA + meanQA + sdQB + meanQB ;
+        }
+
+        System.out.println(sdQA +", "+  meanQA +", "+  sdQB +", "+  meanQB );
+        Assert.assertEquals(postA.getMean(),meanQA,0.01);
+        Assert.assertEquals(postA.getSd(),sdQA,0.01);
+        Assert.assertEquals(postB.getMean(),meanQB,0.01);
+        Assert.assertEquals(postB.getSd(),sdQB,0.01);
 
         //to be finished
     }
