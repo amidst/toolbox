@@ -34,14 +34,37 @@ public class Node {
 
     Variable mainVar;
 
+    int seed = 0;
+
+    boolean parallelActivated = true;
+
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
-        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(1));
+        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(this.seed));
         this.parents = new ArrayList<>();
         this.children = new ArrayList<>();
         this.mainVar = this.PDist.getVariable();
     }
 
+    public boolean isParallelActivated() {
+        return parallelActivated;
+    }
+
+    public void setParallelActivated(boolean parallelActivated) {
+        this.parallelActivated = parallelActivated;
+    }
+
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    public void resetQDist(){
+        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(this.seed));
+    }
 
     public void setPDist(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
@@ -81,7 +104,11 @@ public class Node {
 
     public void setAssignment(Assignment assignment) {
         this.assignment = assignment;
-        if (!Utils.isMissingValue(this.assignment.getValue(this.getMainVariable()))){
+        if (this.assignment==null || Utils.isMissingValue(this.assignment.getValue(this.getMainVariable()))){
+            this.observed=false;
+            sufficientStatistics=null;
+            resetQDist();
+        }else {
             this.observed=true;
             sufficientStatistics = this.QDist.getSufficientStatistics(assignment);
         }
@@ -89,6 +116,10 @@ public class Node {
 
     public EF_UnivariateDistribution getQDist() {
         return (isObserved())? null: QDist;
+    }
+
+    public void setQDist(EF_UnivariateDistribution QDist) {
+        this.QDist = QDist;
     }
 
     public MomentParameters getQMomentParameters(){
@@ -103,11 +134,7 @@ public class Node {
         return this.mainVar;
     }
 
-    public void setMainVar(Variable mainVar) {
-        this.mainVar = mainVar;
-    }
-
-    public Stream<Message<NaturalParameters>> computeMessages(){
+    public Stream<Message<NaturalParameters>> computeMessagesParallelVMP(){
 
 
         Map<Variable, MomentParameters> momentParents = new HashMap<>();
@@ -117,12 +144,13 @@ public class Node {
         momentParents.put(this.getMainVariable(), this.getQMomentParameters());
 
         List<Message<NaturalParameters>> messages = this.parents.stream()
-                                                                .filter(node -> node.isActive())
+                                                                .filter(parent -> parent.isActive())
                                                                 .filter(parent -> !parent.isObserved())
+                                                                .filter(parent -> parent.isParallelActivated())
                                                                 .map(parent -> this.newMessageToParent(parent, momentParents))
                                                                 .collect(Collectors.toList());
 
-        if (!isObserved() && isActive()) {
+        if (isActive() && isParallelActivated() && !isObserved()) {
             messages.add(this.newSelfMessage(momentParents));
         }
 
@@ -151,7 +179,7 @@ public class Node {
             return false;
 
         for (Node node : this.getParents()){
-            if (node.getMainVariable()!=parent && !node.isObserved())
+            if (node.isActive() && node.getMainVariable()!=parent && !node.isObserved())
                 return false;
         }
 
@@ -161,7 +189,7 @@ public class Node {
     private boolean messageDoneFromParents(){
 
         for (Node node : this.getParents()){
-            if (!node.isObserved())
+            if (node.isActive() && !node.isObserved())
                 return false;
         }
 
@@ -199,4 +227,5 @@ public class Node {
 
         return  elbo;
     }
+
 }
