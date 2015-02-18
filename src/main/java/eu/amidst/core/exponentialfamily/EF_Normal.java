@@ -65,10 +65,13 @@ public class EF_Normal extends EF_UnivariateDistribution {
     @Override
     public EF_UnivariateDistribution randomInitialization(Random random) {
 
-        this.getMomentParameters().set(0,random.nextGaussian()*10);
-        this.getMomentParameters().set(1,random.nextDouble()*10);
+        double mean = random.nextGaussian()*10;
+        double sd = random.nextDouble()+ 0.1;
 
-        this.updateNaturalFromMomentParameters();
+        this.getNaturalParameters().set(0,mean/(sd*sd));
+        this.getNaturalParameters().set(1,-1/(2*sd*sd));
+
+        this.updateMomentFromNaturalParameters();
 
         return this;
     }

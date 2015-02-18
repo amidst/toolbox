@@ -26,6 +26,8 @@ public final class InferenceEngineForDBN {
         InferenceEngineForDBN.inferenceAlgorithmForDBN = inferenceAlgorithmForDBN;
     }
 
+    public static void reset() {inferenceAlgorithmForDBN.reset();}
+
     public static void runInference(){
         inferenceAlgorithmForDBN.runInference();
     }
