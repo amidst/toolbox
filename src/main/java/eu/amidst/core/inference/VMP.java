@@ -54,10 +54,9 @@ public class VMP implements InferenceAlgorithmForBN {
         else
             this.compileModelSerial();
     }
+
     public void compileModelSerial() {
-        if (assignment != null) {
-            nodes.stream().forEach(node -> node.setAssignment(assignment));
-        }
+        nodes.stream().forEach(node -> node.setAssignment(assignment));
 
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
@@ -108,26 +107,26 @@ public class VMP implements InferenceAlgorithmForBN {
     }
 
     public void compileModelParallel() {
-        if (assignment != null) {
-            nodes.stream().forEach(node -> node.setAssignment(assignment));
-        }
+        nodes.stream().forEach(node -> node.setAssignment(assignment));
+
+        nodes.stream().filter(Node::isActive).forEach( node -> node.setParallelActivated(false));
 
         Random rand = new Random(this.getSeed());
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
         int niter = 0;
-        while (!convergence && (niter++)<1000) {
+        while (!convergence && (niter++)<100) {
             AtomicDouble newelbo = new AtomicDouble(0);
             int numberOfNotDones = 0;
 
             //nodesTimeT.stream().forEach( node -> node.setActive(node.getMainVariable().getVarID()%2==0));
-            nodes.stream().forEach( node -> node.setActive(rand.nextBoolean()));
+            nodes.stream().filter(Node::isActive).forEach(node -> node.setParallelActivated(rand.nextBoolean()));
             //nodes.stream().forEach( node -> node.setActive(rand.nextInt()%100==0));
 
             //Send and combine messages
             Map<Variable, Optional<Message<NaturalParameters>>> group = nodes.parallelStream()
-                    .peek(node -> newelbo.addAndGet(node.computeELBO()))
-                    .flatMap(node -> node.computeMessages())
+                    //.peek(node -> newelbo.addAndGet(node.computeELBO()))
+                    .flatMap(node -> node.computeMessagesParallelVMP())
                     .collect(
                             Collectors.groupingBy(Message::getVariable,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
@@ -142,12 +141,12 @@ public class VMP implements InferenceAlgorithmForBN {
                     })
                     .sum();
 
-            nodes.stream().forEach( node -> node.setActive(!node.isActive()));
+            nodes.stream().filter(Node::isActive).forEach(node -> node.setParallelActivated(!node.isParallelActivated()));
 
             //Send and combine messages
             group = nodes.parallelStream()
-                    //.peek(node -> newelbo.addAndGet(node.computeELBO()))
-                    .flatMap(node -> node.computeMessages())
+                    .peek(node -> newelbo.addAndGet(node.computeELBO()))
+                    .flatMap(node -> node.computeMessagesParallelVMP())
                     .collect(
                             Collectors.groupingBy(Message::getVariable,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
@@ -169,7 +168,7 @@ public class VMP implements InferenceAlgorithmForBN {
             }
 
             //Compute lower-bound
-            //newelbo.set(this.nodesTimeT.parallelStream().mapToDouble(Node::computeELBO).sum());
+            //newelbo.set(this.nodes.parallelStream().mapToDouble(Node::computeELBO).sum());
             if (Math.abs(newelbo.get() - elbo) < 0.0001) {
                 convergence = true;
             }
@@ -258,8 +257,8 @@ public class VMP implements InferenceAlgorithmForBN {
         System.out.println(bn.getDistributions().stream().mapToInt(p->p.getNumberOfFreeParameters()).max().getAsInt());
 
         VMP vmp = new VMP();
-        vmp.setSeed(10);
-        vmp.setParallelMode(false);
+        //vmp.setSeed(10);
+        vmp.setParallelMode(true);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
 
         double avg  = 0;
