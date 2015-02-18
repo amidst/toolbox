@@ -22,6 +22,8 @@ public interface InferenceAlgorithmForDBN {
 
     public void addDynamicEvidence(DynamicAssignment assignment);
 
+    public void reset();
+
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var);
 
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead);
