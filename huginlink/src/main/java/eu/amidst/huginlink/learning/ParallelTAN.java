@@ -12,9 +12,7 @@ import eu.amidst.core.learning.LearningEngineForBN;
 import eu.amidst.core.learning.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
-import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.utils.ReservoirSampling;
+import eu.amidst.core.utils.*;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
@@ -26,20 +24,20 @@ import java.io.IOException;
 /**
  * Created by afa on 9/12/14.
  */
-public class ParallelTAN {
+public class ParallelTAN implements AmidstOptionsHandler {
+
 
     private int numSamplesOnMemory;
-    private int numCores;
+    private int numCores = Runtime.getRuntime().availableProcessors();
     private int batchSize;
     String nameRoot;
     String nameTarget;
     boolean parallelMode;
 
+
+
+
     public ParallelTAN() {
-        this.numSamplesOnMemory = 10000;
-        this.batchSize = 1000;
-        this.numCores = Runtime.getRuntime().availableProcessors();
-        this.parallelMode=true;
     }
 
     public void setParallelMode(boolean parallelMode) {
@@ -86,7 +84,11 @@ public class ParallelTAN {
         StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
         DAG dag = new DAG(modelHeader);
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+
+
         Domain huginNetwork = null;
+
+
         try {
             huginNetwork = BNConverterToHugin.convertToHugin(bn);
 
@@ -151,7 +153,47 @@ public class ParallelTAN {
         return LearningEngineForBN.learnStaticModel(dataBase);
     }
 
+    @Override
+    public String listOptions(){
+
+        return  this.classNameID() +",\\"+
+                "-numSamplesOnMemory, 1000, Number of samples on memory\\" +
+                "-numCores,"+Runtime.getRuntime().availableProcessors()+", Number of cores\\" +
+                "-batchSize, 1000, Batch size\\"+
+                "-nameRoot, root, Name of root variable.\\" +
+                "-nameTarget, target, Name of target variable\\" +
+                "-parallelMode, true, Run in parallel\\";
+    }
+
+    public void loadOptions(){
+        this.setNumSamplesOnMemory(this.getIntOption("-numSamplesOnMemory"));
+        this.setNumCores(this.getIntOption("-numCores"));
+        this.setBatchSize(this.getIntOption("-batchSize"));
+        this.setNameRoot(this.getOption("-nameRoot"));
+        this.setNameTarget(this.getOption("-nameTarget"));
+        this.setParallelMode(this.getBooleanOption("-parallelMode"));
+    }
+
+    @Override
+    public String listOptionsRecursively() {
+        return this.listOptions()
+                + "\n" + BayesianNetwork.listOptionsRecursively()
+                + "\n" + AmidstOptionsHandler.listOptionsRecursively(BayesianNetworkSampler.class);
+    }
+
+    @Override
+    public String classNameID() {
+        return "eu.amidst.huginlink.learning.ParallelTAN";
+    }
+
+
+
     public static void main(String[] args) throws ExceptionHugin, IOException {
+
+
+        OptionParser.setArgsOptions(ParallelTAN.class,args);
+
+        BayesianNetworkGenerator.loadOptions();
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(2000);
@@ -162,6 +204,8 @@ public class ParallelTAN {
 
         int sampleSize = 5000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.loadOptions();
+
         sampler.setParallelMode(true);
         DataBase<StaticDataInstance> data =  sampler.sampleToDataBase(sampleSize);
 
@@ -170,6 +214,8 @@ public class ParallelTAN {
             int numCores = i;
             System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
             ParallelTAN tan = new ParallelTAN();
+            tan.setOptions(args);
+            //tan.loadOptionsFromFile("configurationFiles/conf.txt");
             tan.setNumCores(numCores);
             tan.setNumSamplesOnMemory(samplesOnMemory);
             tan.setNameRoot(bn.getStaticVariables().getListOfVariables().get(0).getName());

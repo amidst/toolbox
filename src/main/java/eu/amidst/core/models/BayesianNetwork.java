@@ -10,6 +10,7 @@ package eu.amidst.core.models;
 
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.utils.AmidstOptionsHandler;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
@@ -149,6 +150,23 @@ public final class BayesianNetwork implements Serializable {
             }
         }
         return equals;
+    }
+
+    public static String listOptions() {
+        return  classNameID();
+    }
+
+    public static String listOptionsRecursively() {
+        return listOptions()
+                + "\n" +  "test";
+    }
+
+    public static String classNameID() {
+        return "eu.amidst.core.models.BayesianNetwork";
+    }
+
+    public static void loadOptions() {
+
     }
 }
 

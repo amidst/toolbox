@@ -37,6 +37,7 @@ public class ParallelTANDemo {
     static int batchSize = 1000;
     static int numStates = 2;
 
+
     public static void demoPigs() throws ExceptionHugin, IOException, ClassNotFoundException {
 
 
@@ -236,6 +237,10 @@ public class ParallelTANDemo {
             tan.setNameTarget(nameTarget);
             tan.setNumCores(numCores);
             tan.setBatchSize(batchSize);
+
+
+
+
             BayesianNetwork model = tan.learnBN(data);
         }
 
@@ -243,6 +248,9 @@ public class ParallelTANDemo {
     }
 
     public static void useGnuParser(final String[] commandLineArguments) {
+
+
+
         final CommandLineParser cmdLineGnuParser = new GnuParser();
 
         final Options gnuOptions = constructOptions();

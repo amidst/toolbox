@@ -1,8 +1,5 @@
 package eu.amidst.core.utils;
 
-import eu.amidst.core.inference.VMP;
-
-import java.util.HashMap;
 
 /**
  * Created by ana@cs.aau.dk on 17/02/15.
@@ -23,13 +20,16 @@ public interface AmidstOptionsHandler {
         return OptionParser.parse(classNameID(), listOptions(), optionName);
     }
 
-    public default void setOptions(String[] args) throws ClassNotFoundException{
+    public default void setOptions(String[] args){
         OptionParser.setArgsOptions(classNameID(),args);
         this.loadOptions();
     }
 
-    public default void setConfFileName(String fileName){
+    public default void loadOptionsFromFile(String fileName){
         OptionParser.setConfFileName(fileName);
+        OptionParser.loadFileOptions();
+        OptionParser.loadDefaultOptions(classNameID());
+        this.loadOptions();
     }
 
     public default int getIntOption(String optionName){
@@ -44,7 +44,7 @@ public interface AmidstOptionsHandler {
         return this.getOption(optionName).equalsIgnoreCase("true") || this.getOption(optionName).equalsIgnoreCase("T");
     }
 
-    public static String getListOptions(Class obj){
+    public static String listOptions(Class obj){
         try {
             return ((AmidstOptionsHandler) obj.newInstance()).listOptionsRecursively();
         }catch (Exception e){
@@ -52,11 +52,11 @@ public interface AmidstOptionsHandler {
         }
     }
 
-    public static String getListOptionsRecursively(Class obj){
+    public static String listOptionsRecursively(Class obj){
         try {
             return ((AmidstOptionsHandler) obj.newInstance()).listOptionsRecursively();
         }catch (Exception e){
-            throw new IllegalArgumentException("The class obj does not exist");
+            throw new IllegalArgumentException("The class "+ obj +" does not exist");
         }
     }
 
