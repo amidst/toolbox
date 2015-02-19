@@ -33,15 +33,15 @@ potential (DiscreteVar0 | ClassVar)
 potential (GaussianVar0 | ClassVar)
 {
     data
-     = ( normal ( 9.84575, 14.8371 )	%  ClassVar=0.0
-	 normal ( -16.8341, 96.9913 ) );	%  ClassVar=1.0
+     = ( normal ( 9.84575, 0.235409 )	%  ClassVar=0.0
+	 normal ( -16.8341, 1.17688 ) );	%  ClassVar=1.0
 }
 
 potential (GaussianVar1 | ClassVar)
 {
     data
-     = ( normal ( -3.90167, 2.1492 )	%  ClassVar=0.0
-	 normal ( -6.43389, 0.054001 ) );	%  ClassVar=1.0
+     = ( normal ( -3.90167, 0.0608124 )	%  ClassVar=0.0
+	 normal ( -6.43389, 0.0151876 ) );	%  ClassVar=1.0
 }
 
 potential (ClassVar)
