@@ -107,7 +107,7 @@ public class Node {
         if (this.assignment==null || Utils.isMissingValue(this.assignment.getValue(this.getMainVariable()))){
             this.observed=false;
             sufficientStatistics=null;
-            resetQDist();
+            //if (this.isActive()) resetQDist();
         }else {
             this.observed=true;
             sufficientStatistics = this.QDist.getSufficientStatistics(assignment);
