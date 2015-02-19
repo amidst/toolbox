@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/12/14.
  */
-public class BayesianNetworkSampler  {
+public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     private BayesianNetwork network;
 
@@ -34,6 +34,9 @@ public class BayesianNetworkSampler  {
     private int seed = 0;
 
     private Stream<Assignment> sampleStream;
+
+
+    public BayesianNetworkSampler(){}
 
     public BayesianNetworkSampler(BayesianNetwork network1){
         network=network1;
@@ -160,6 +163,28 @@ public class BayesianNetworkSampler  {
         }
         return assignment;
     }
+
+    public String listOptions(){
+        return  classNameID() +",\\"+
+                "-parallelMode, 10, Total number of variables\\" +
+                "-seed, 0, seed for random number generator\\";
+    }
+
+    @Override
+    public String listOptionsRecursively() {
+        return this.listOptions()
+                + "\n" + network.listOptionsRecursively();
+    }
+
+    public void loadOptions(){
+        parallelMode = getBooleanOption("-parallelMode");
+        seed = getIntOption("-seed");
+    }
+
+    public String classNameID(){
+        return "eu.amidst.core.utils.BayesianNetworkSampler";
+    }
+
 
     public static void main(String[] args) throws Exception{
 
