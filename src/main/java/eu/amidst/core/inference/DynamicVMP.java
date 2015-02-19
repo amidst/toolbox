@@ -218,15 +218,28 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     }
 
     private void moveWindow(int nsteps){
+        //The first step we need to manually move the evidence from master to clone variables.
+        HashMapAssignment newassignment =null;
+
+        if (this.assignment!=null) {
+            newassignment=new HashMapAssignment(this.model.getNumberOfDynamicVars());
+            for (Variable var : this.model.getDynamicVariables()) {
+                newassignment.setValue(this.model.getDynamicVariables().getTemporalClone(var), this.assignment.getValue(var));
+                newassignment.setValue(var, Utils.missingValue());
+            }
+        }
+
         for (int i = 0; i < nsteps; i++) {
-            this.vmpTimeT.setEvidence(null);
+            this.vmpTimeT.setEvidence(newassignment);
             this.vmpTimeT.runInference();
             this.vmpTimeT.getNodes().stream()
                     .filter(node -> !node.getMainVariable().isTemporalClone())
+                    .filter(node -> !node.isObserved())
                     .forEach(node -> {
                         Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
                         moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
                     });
+            newassignment=null;
         }
     }
 
@@ -251,6 +264,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
         System.out.println("Computing Probabilities of Defaulting for 10 clients using Hugin API:\n");
 
+
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new DynamicVMP());
         InferenceEngineForDBN.setModel(bn);
         Variable defaultVar = bn.getDynamicVariables().getVariableByName("DEFAULT");
@@ -261,14 +275,14 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
             if (instance.getTimeID()==0 && dist != null) {
                 System.out.println(dist.toString());
-                //System.out.println(distAhead.toString());
+                System.out.println(distAhead.toString());
                 InferenceEngineForDBN.reset();
             }
             instance.setValue(defaultVar, Utils.missingValue());
             InferenceEngineForDBN.addDynamicEvidence(instance);
             InferenceEngineForDBN.runInference();
             dist = InferenceEngineForDBN.getFilteredPosterior(defaultVar);
-            //distAhead = InferenceEngineForDBN.getPredictivePosterior(defaultVar,2);
+            distAhead = InferenceEngineForDBN.getPredictivePosterior(defaultVar,1);
         }
     }
 }
