@@ -48,7 +48,7 @@ public interface AmidstOptionsHandler {
         try {
             return ((AmidstOptionsHandler) obj.newInstance()).listOptionsRecursively();
         }catch (Exception e){
-            throw new IllegalArgumentException("The class obj does not exist");
+            throw new IllegalArgumentException("The class " +obj+ " does not exist");
         }
     }
 
