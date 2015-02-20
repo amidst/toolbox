@@ -28,7 +28,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
 
     private int numSamplesOnMemory;
-    private int numCores = Runtime.getRuntime().availableProcessors();
+    private int numCores;
     private int batchSize;
     String nameRoot;
     String nameTarget;
