@@ -1,13 +1,9 @@
 package eu.amidst.core.inference;
 
-import eu.amidst.core.database.*;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.LocalRandomGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
@@ -18,9 +14,7 @@ import eu.amidst.core.variables.Variable;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
@@ -35,7 +29,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
     private List<Variable> causalOrder;
     public Stream<WeightedAssignment> weightedSampleStream;
     private int seed = 0;
-    //TODO Remember that the sampling distributions must be restricted to the evidence
+    //TODO The sampling distributions must be restricted to the evidence
     private Assignment evidence;
     private boolean parallelMode = true;
 
@@ -91,19 +85,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
             UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(samplingAssignment);
 
             double simulatedValue;
-
-            //System.out.println("Model var:" + modelVar.getName());
-            //System.out.println(this.evidence.getValue(modelVar));
-
-            //Variable is evidenced
-            //  if (Double.isNaN(this.evidence.getValue(modelVar))) {
-                simulatedValue = univariateSamplingDistribution.sample(random);
-            //}
-            //Variable is evidenced
-            //else {
-            //     simulatedValue = this.evidence.getValue(modelVar);
-            //}
-
+            simulatedValue = univariateSamplingDistribution.sample(random);
             denominator = denominator/univariateSamplingDistribution.getProbability(simulatedValue);
             UnivariateDistribution univariateModelDistribution = this.model.getDistribution(modelVar).getUnivariateDistribution(modelAssignment);
             numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
@@ -112,9 +94,6 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         }
         double weight = numerator*denominator;
         WeightedAssignment weightedAssignment = new WeightedAssignment(samplingAssignment,weight);
-
-        //System.out.println(weightedAssignment.toString());
-
         return weightedAssignment;
     }
 
@@ -146,11 +125,11 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
     }
 
     @Override
-    //TODO For continuous variables, instead of returning a Gaussian distributions, we should implement a Mixture of Gaussians instead!!!
+    //TODO For continuous variables, instead of returning a Gaussian distributions, we should return a Mixture of Gaussians instead!!!
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
 
         Variable samplingVar = this.samplingModel.getStaticVariables().getVariableById(var.getVarID());
-        // TODO Could we build this object in a general way for Multinomial and Normal
+        // TODO Could we build this object in a general way for Multinomial and Normal?
         EF_UnivariateDistribution ef_univariateDistribution;
         if (var.isMultinomial()){
             ef_univariateDistribution = new EF_Multinomial(samplingVar);
@@ -261,8 +240,8 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
         HashMapAssignment evidence = new HashMapAssignment(0);
 
-        //evidence.setValue(varA,0.0);
-        //evidence.setValue(varD,7.0);
+        //evidence.setValue(varA,1.0);
+        //evidence.setValue(varB,1.0);
 
 
 
@@ -284,17 +263,35 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         System.out.println("============================================================");
         System.out.println("================= IMPORTANCE SAMPLING ======================");
         System.out.println("============================================================");
+
         ImportanceSampling IS = new ImportanceSampling();
         IS.setModel(model);
         IS.setSamplingModel(samplingModel);
         IS.setSampleSize(200000);
         IS.setEvidence(evidence);
-        IS.setParallelMode(true);
+        IS.setParallelMode(false);
+
+
         IS.runInference();
+        UnivariateDistribution posteriorDistribution = IS.getPosterior(varA);
+        System.out.println("A: " + posteriorDistribution.toString());
 
+        IS.runInference();
+        posteriorDistribution = IS.getPosterior(varB);
+        System.out.println("B: " + posteriorDistribution.toString());
 
-        UnivariateDistribution posteriorDistribution = IS.getPosterior(varE);
-        System.out.println(posteriorDistribution.toString());
+        IS.runInference();
+        posteriorDistribution = IS.getPosterior(varC);
+        System.out.println("C: " + posteriorDistribution.toString());
+
+        IS.runInference();
+        posteriorDistribution = IS.getPosterior(varD);
+        System.out.println("D: " + posteriorDistribution.toString());
+
+        IS.runInference();
+        posteriorDistribution = IS.getPosterior(varE);
+        System.out.println("E: " + posteriorDistribution.toString());
+
 
     }
 
