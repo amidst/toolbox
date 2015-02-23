@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
-public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInstance>, DataOnDisk<DynamicDataInstance>, DataOnStream<DynamicDataInstance> {
+public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInstance>, DataOnDisk<DynamicDataInstance> {
 
     private DataFileReader reader;
     private Iterator<DataRow> dataRowIterator;
@@ -43,13 +43,13 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInst
         }
 
         try {
-            attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
+            attSequenceID = this.reader.getAttributes().getAttributeByName(Attributes.SEQUENCE_ID_ATT_NAME);
             sequenceID = (int)present.getValue(attSequenceID);
         }catch (UnsupportedOperationException e){
             attSequenceID = null;
         }
         try {
-            attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
+            attTimeID = this.reader.getAttributes().getAttributeByName(Attributes.TIME_ID_ATT_NAME);
             timeID = (int)present.getValue(attSequenceID);
         }catch (UnsupportedOperationException e){
             attTimeID = null;
@@ -125,5 +125,9 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInst
     @Override
     public void close() {
         this.reader.close();
+    }
+
+    @Override
+    public void restart() {
     }
 }

@@ -66,15 +66,15 @@ public class MLDBNTest {
             // time 0
             System.out.println("\nTrue distribution at time 0:\n" + dynamicNB.getDistributionTime0(var));
             System.out.println("\nLearned distribution at time 0:\n"+ bnet.getDistributionTime0(var));
-            assertTrue(bnet.getDistributionTime0(var).equalDist(dynamicNB.getDistributionTime0(var), 0.05));
+            assertTrue(bnet.getDistributionTime0(var).equalDist(dynamicNB.getDistributionTime0(var), 0.01));
             // time T
             System.out.println("\nTrue distribution at time T:\n"+ dynamicNB.getDistributionTimeT(var));
             System.out.println("\nLearned distribution at time T:\n"+ bnet.getDistributionTimeT(var));
-            assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.05));
+            assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.01));
         }
 
         //Or check directly if the true and learned dynamic networks are equals
-        assertTrue(bnet.equalDBNs(dynamicNB,0.05));
+        assertTrue(bnet.equalDBNs(dynamicNB,0.01));
     }
 
 }

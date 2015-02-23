@@ -7,7 +7,7 @@ import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP_.Message;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;

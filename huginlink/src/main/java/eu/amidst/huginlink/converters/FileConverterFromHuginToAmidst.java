@@ -1,13 +1,14 @@
 package eu.amidst.huginlink.converters;
 
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DynamicBayesianNetworkLoader;
 import eu.amidst.core.models.*;
-import eu.amidst.core.models.DynamicBayesianNetworkWriter;
-import eu.amidst.core.models.BayesianNetworkWriter;
+import eu.amidst.core.io.DynamicBayesianNetworkWriter;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 
 import java.io.File;
-import java.util.Arrays;
 
 /**
  * Created by afa on 3/2/15.

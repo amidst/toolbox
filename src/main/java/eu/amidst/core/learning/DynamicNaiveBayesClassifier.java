@@ -2,8 +2,11 @@ package eu.amidst.core.learning;
 
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DynamicDataInstance;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
@@ -85,9 +88,10 @@ public class DynamicNaiveBayesClassifier {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(false);
         String file = "./datasets/randomdata.arff";
-        sampler.sampleToAnARFFFile(file,sampleSize);
+        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
+        ARFFDataWriter.writeToARFFFile(dataBase, file);
 
-        DataBase<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         for (int i = 1; i <= 1; i++) {
             DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();

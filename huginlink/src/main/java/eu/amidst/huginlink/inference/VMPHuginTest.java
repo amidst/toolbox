@@ -1,19 +1,14 @@
 package eu.amidst.huginlink.inference;
 
-import com.google.common.base.Stopwatch;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.DAG;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import org.junit.Before;
-import junit.framework.Test;
 import junit.framework.TestCase;
 
 import java.io.IOException;

@@ -4,15 +4,9 @@ import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.distribution.Normal_NormalParents;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
-import eu.amidst.core.learning.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
 import java.io.IOException;

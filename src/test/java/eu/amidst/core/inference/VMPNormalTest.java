@@ -3,14 +3,10 @@ package eu.amidst.core.inference;
 //import cern.jet.random.Normal;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.exponentialfamily.EF_Normal;
-import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
@@ -18,7 +14,6 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * Created by ana@cs.aau.dk on 10/02/15.
