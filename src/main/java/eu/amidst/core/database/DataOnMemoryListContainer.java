@@ -44,4 +44,9 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
         return this.instanceList.stream();
     }
 
+    @Override
+    public void close() {
+
+    }
+
 }

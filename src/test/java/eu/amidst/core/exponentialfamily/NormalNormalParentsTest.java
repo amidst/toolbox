@@ -5,7 +5,7 @@ import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.HashMapAssignment;
 import org.junit.Test;

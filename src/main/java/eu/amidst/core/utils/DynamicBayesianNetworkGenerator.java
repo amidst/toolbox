@@ -1,10 +1,10 @@
 package eu.amidst.core.utils;
 
+import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 

@@ -2,7 +2,7 @@ package eu.amidst.core.learning;
 
 import eu.amidst.core.database.DataBase;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;

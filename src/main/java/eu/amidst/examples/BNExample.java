@@ -1,8 +1,11 @@
 package eu.amidst.examples;
 
+import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StaticVariables;
@@ -15,7 +18,7 @@ public class BNExample {
 
     public static BayesianNetwork getAmidst_BN_Example() {
 
-        DataOnDisk data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticData.arff"));
+        DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
         StaticVariables variables = new StaticVariables(data.getAttributes());
 
         Variable a = variables.getVariableByName("A");

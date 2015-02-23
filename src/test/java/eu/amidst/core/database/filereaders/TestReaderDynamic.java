@@ -33,7 +33,8 @@ public class TestReaderDynamic {
 
 
     public static void loadFileAndInitialize(String s) {
-        reader = new ARFFDataReader(s);
+        reader = new ARFFDataReader();
+        reader.loadFromFile(s);
         attributes = reader.getAttributes();
         dataOnDisk = new DynamicDataOnDiskFromFile(reader);
         dataOnDiskIterator = dataOnDisk.iterator();

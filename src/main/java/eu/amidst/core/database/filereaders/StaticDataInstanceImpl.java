@@ -1,5 +1,6 @@
 package eu.amidst.core.database.filereaders;
 
+import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.variables.Variable;
@@ -16,13 +17,13 @@ class StaticDataInstanceImpl implements StaticDataInstance {
     }
 
     @Override
-    public double getValue(Variable var) {
-        return dataRow.getValue(var.getAttribute());
+    public double getValue(Attribute att) {
+        return dataRow.getValue(att);
     }
 
     @Override
-    public void setValue(Variable var, double value) {
-        this.dataRow.setValue(var.getAttribute(), value);
+    public void setValue(Attribute att, double value) {
+        this.dataRow.setValue(att, value);
     }
 
 }

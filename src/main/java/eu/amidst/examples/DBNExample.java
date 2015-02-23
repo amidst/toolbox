@@ -1,9 +1,12 @@
 package eu.amidst.examples;
 
+import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffWekaReader.WekaDataFileReader;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.Assignment;
@@ -18,7 +21,7 @@ public class DBNExample {
 
     public static DynamicBayesianNetwork getAmidst_DBN_Example()  {
 
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataDiscrete.arff"));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDiscrete.arff");
 
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
@@ -169,7 +172,7 @@ public class DBNExample {
 
     public static DynamicBayesianNetwork getAmidst_DBN_Example2() {
 
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new WekaDataFileReader("datasets/syntheticDataDiscrete.arff"));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDiscrete.arff");
 
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);

@@ -16,14 +16,18 @@ public class DAGTest {
 
 /* Very simple example to test the DAG class*/
 
-    ARFFDataReader reader = new ARFFDataReader("data/dataWeka/contact-lenses.arff");
-    StaticVariables variables = new StaticVariables(reader.getAttributes());
-    DAG dag = new DAG(variables);
-    DAG dag2 = new DAG(variables);
+
 
     @Test
     public void testingDAG() {
-        StaticVariables variables = dag.getStaticVariables();
+
+        ARFFDataReader reader = new ARFFDataReader();
+        reader.loadFromFile("data/dataWeka/contact-lenses.arff");
+        StaticVariables variables = new StaticVariables(reader.getAttributes());
+        DAG dag = new DAG(variables);
+        DAG dag2 = new DAG(variables);
+
+        variables = dag.getStaticVariables();
         Variable A = variables.getVariableById(0);
         Variable B = variables.getVariableById(1);
         Variable C = variables.getVariableById(2);

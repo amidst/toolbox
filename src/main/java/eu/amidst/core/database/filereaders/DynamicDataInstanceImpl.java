@@ -1,5 +1,6 @@
 package eu.amidst.core.database.filereaders;
 
+import eu.amidst.core.database.Attribute;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.variables.Variable;
@@ -27,21 +28,31 @@ class DynamicDataInstanceImpl implements DynamicDataInstance {
     }
 
     @Override
-    public double getValue(Variable var) {
-        if (var.isTemporalClone()){
-            return dataRowPast.getValue(var.getAttribute());
+    public double getValue(Attribute att, boolean present) {
+        if (present){
+            return dataRowPresent.getValue(att);
         }else {
-            return dataRowPresent.getValue(var.getAttribute());
+            return dataRowPast.getValue(att);
         }
     }
 
     @Override
-    public void setValue(Variable var, double value) {
-        if (var.isTemporalClone()){
-            dataRowPast.setValue(var.getAttribute(), value);
+    public void setValue(Attribute att, double value, boolean present) {
+        if (present){
+            dataRowPresent.setValue(att, value);
         }else {
-            dataRowPresent.setValue(var.getAttribute(), value);
+            dataRowPast.setValue(att, value);
         }
+    }
+
+    @Override
+    public double getValue(Attribute att) {
+        return this.dataRowPresent.getValue(att);
+    }
+
+    @Override
+    public void setValue(Attribute att, double val) {
+        this.dataRowPresent.setValue(att,val);
     }
 
     @Override
