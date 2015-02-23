@@ -901,33 +901,33 @@ Via inference.
 \vspace{0.5in}
 \item \textbf{Second form}:
 
-\begin{eqnarray*}
-\ln p(X\mid \mathbf{Y}) &=& \theta(\mathbf{Y})^T s(X) - A \big(\theta(\mathbf{Y})\big) + h(\mathbf{X})\\\\
+\begin{eqnarray}\label{NormalGNomal2form}
+\ln p(X\mid \mathbf{Y}) &=& \theta(\mathbf{Y})^T s(X) - A \big(\theta(\mathbf{Y})\big) + h(\mathbf{X})\\\nonumber\\
 &=&
 \begin{pmatrix}
-\frac{\mu_{X|Y}}{\sigma^2}\\
-\frac{-1}{2\sigma^2}\\
+\frac{\mu_{X|Y}}{\sigma^2} \nonumber\\
+\frac{-1}{2\sigma^2} \nonumber\\
 \end{pmatrix}^T
 \begin{pmatrix}
 X\\
 X^2\\
 \end{pmatrix}
-- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) - \tfrac{1}{2}\ln{(2\pi)} \\\\
+- \left( \frac{\beta_0^2}{2\sigma^2} + \ln{\sigma}\right) - \tfrac{1}{2}\ln{(2\pi)} \nonumber\\\nonumber\\
 &=&
 \begin{pmatrix}
-\theta_{\beta_0}+2\thb_{\beb} \Y\\
-\theta_{\mbox{-}1}\\
+\theta_{\beta_0}+2\thb_{\beb} \Y \nonumber\\
+\theta_{\mbox{-}1} \nonumber\\
 \end{pmatrix}^T
 \begin{pmatrix}
-X\\
-X^2\\
-\end{pmatrix}\\
+X \nonumber\\
+X^2 \nonumber\\
+\end{pmatrix}\nonumber\\
 %- \left(\frac{\ln{(2\theta_{\mbox{-}1}})}{2}-\theta_{\mbox{-}1}\left(\theta_{\beta_0}+2\thb_{\beb} \E(\Y)\right)^2 \right) \\
 %&+&
 % \ln{\frac{1}{\sqrt{2(\theta_{\beta_0}+2\thb_{\beb} \E(\Y))}}} 
 &-& 
-\left(-0.5\ln{(-2\theta_{\mbox{-}1})} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y^T -\frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)}\\
-\end{eqnarray*}
+\left(-0.5\ln{(-2\theta_{\mbox{-}1})} - \thb_{\beta_0\beb} \Y - \thb_{\beb\beb}\Y\Y^T -\frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}}\right) - \tfrac{1}{2}\ln{(2\pi)} \nonumber
+\end{eqnarray}
 
 
 
@@ -935,15 +935,15 @@ X^2\\
 \item \textbf{Third form (for each parent $Y_i$, $\Y' = \Y \setminus Y_i $)}: 
 
 \begin{eqnarray*}
-\ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(\mathbf{Y_i}) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
+\ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(Y_i) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
 &=&
 \begin{pmatrix}
 \thb_{\beta_0\beb}^i + 2\thb_{\beb}^iX + 2\thb_{\beb\beb}^{'i \cdot}\Y \\
 \thb_{\beb\beb}^{ii} 
 \end{pmatrix}^T
 \begin{pmatrix}
-Y^i\\
-{Y^i}^2\\
+Y_i\\
+{Y_i}^2\\
 \end{pmatrix}\\
 &+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'\Y\Y^T + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
 &-& \left( \frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
@@ -956,8 +956,103 @@ where $\thb_{\beb}' = \thb_{\beb}$ with $\thb_{\beb}^i = 0$,\\
 where $\thb_{\beb\beb}' = \thb_{\beb\beb}$ with $\thb_{\beb\beb}^{ii} = 0$, $\thb_{\beb\beb}^{i\cdot} = 0$  and $\thb_{\beb\beb}^{\cdot i} = 0$.\\
 
 
+\end{itemize}
+
+\newpage
+%-----------------------------------------------------------------------------------------------------------------------------------
+\section{EF representation: A normal child given a set of normal parents and a gamma parent}
+%-----------------------------------------------------------------------------------------------------------------------------------
+
+Let $X$ be a normal variable and $ \mathbf{Y} = \{Y_1,\ldots,Y_n\}$ denote the set of parents of $X$, such that all of them are normal. $beta_0$, $ \beb = \{beta_1,\ldots,beta_n\}$ now represents normal variables (prior distributions of of the beta parameters) and $\gamma$ is an inverse gamma distribution (prior distribution of the parameter $\sigma^2$).
+
+The log-conditional probability of $X$ given its parents $\mathbf{Y}, \beb, \gamma$ can be expressed as follows:
+
+\begin{eqnarray*}
+\ln p(X|Y_1,\ldots,Y_n,\beb,\gamma) &=& \ln \left(\frac{1}{\sigma \sqrt{2\pi}} \me^{-\frac{(x-(\beta_0+ \bs \beta^T \cdot \bm Y))^2}{2\sigma^2}} \right)\\\\
+&=&
+- \ln{\sigma} - 0.5\ln{(2\pi)} - \frac{(x-\beta_0 - \bs \beta^T \mathbf{Y})^2}{2\sigma^2}
+\end{eqnarray*}
+
+
+Note that here all $\beb$ and $\sigma^2$ values must be taken from the moment parameters of these variables, not the natural parameters of $X$.
+
+\begin{itemize} 
+
+\item \textbf{Second form (messages from $\beb$ and $\gamma$ variables to $X$)}:
+
+As in \ref{NormalGNomal2form}, but now the natural parameters should be taken from the moment parameters of the parent variables, and not the natural parameters of $X$.
+
+\item \textbf{Third form (messages from $X$ to $\beta_0$)}:
+\begin{eqnarray*}
+\ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beb,\gamma)^T s(\beta_0) - A \big(\theta(X,\Y,\beb,\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
+&=&
+\begin{pmatrix}
+X\sigma^{-2} - \beb^T \Y \sigma^{-2} \\
+-0.5\sigma^{-2}
+\end{pmatrix}^T
+\begin{pmatrix}
+\beta_0\\
+\beta_0^2\\
+\end{pmatrix}\\
+&-& X^2 0.5\sigma^{-2} - \beb^T \beb \Y^T \Y 0.5\sigma^{-2}  + X\beb^T \Y \sigma^{-2} - \ln{\sigma} - 0.5\ln{(2\pi)}
+\end{eqnarray*}
+
+
+\item \textbf{Third form (messages from $X$ to $\beb$)}:
+\begin{eqnarray*}
+\ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beta_0,\beb',\gamma)^T s(\beta_i) - A \big(\theta(X,\Y,\beta_0,\beb',\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
+&=&
+\begin{pmatrix}
+\beta_0 Y_i \alpha^{-2} + Y_i X \alpha^{-2} + \beb' Y_i \Y' \\
+0.5Y_iY_i \alpha^{-2}
+\end{pmatrix}^T
+\begin{pmatrix}
+\beta^i\\
+{Y^i}^2\\
+\end{pmatrix}\\
+&+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'\Y\Y^T + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
+&-& \left( \frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
+\end{eqnarray*}
+
+where $\beb' = \beb$ where $\beta_i = 0$,\\
+
+
+\item \textbf{Third form (messages from $X$ to $\gamma$ ($\sigma^2$))}:
+\begin{eqnarray*}
+\ln p(X|Y_1,\ldots,Y_n,\beb,\gamma) &=& \theta(X,\Y, \beta_0, \beb)^T s(\gamma) - A \big(\theta(X,\Y,\beta_0,\beb) \big) + h(\mathbf{\Y,\beta_0, \beb})\\\\
+&=&
+\begin{pmatrix}
+-\frac{1}{2}\\
+-\frac{(X-\beta_0-\beb)^2}{2}
+\end{pmatrix}^T
+\begin{pmatrix}
+\ln{\alpha^2}\\
+\frac{1}{\alpha^2}
+\end{pmatrix}
+ - 0.5\ln{(2\pi)}
+\end{eqnarray*}
+
 
 \end{itemize}
+
+
+\subsection{Inverse gamma distribution}
+
+Let $\gamma$ be an inverse gamma variable with parameters $\alpha, \beta$. The log-conditional probability of $\gamma$ can be expressed as follows:
+
+\begin{eqnarray*}
+\ln p(\gamma) &=& \ln \left( \frac{\beta^{\alpha}}{\Gamma(\alpha)} \gamma^{-\alpha-1} e^{-\frac{\beta}{\gamma}} \right)\\\\
+&=&
+\begin{pmatrix}
+\ln \gamma \\
+\frac{1}{\gamma}
+\end{pmatrix}^T
+\begin{pmatrix}
+\alpha - 1\\
+\beta
+\end{pmatrix}
++ \ln{\Gamma(\alpha)} - \alpha \ln{\beta} + h(\gamma)
+\end{eqnarray*}
 
 \newpage
 %-----------------------------------------------------------------------------------------------------------------------------------
