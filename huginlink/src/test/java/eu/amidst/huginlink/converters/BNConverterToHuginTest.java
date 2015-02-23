@@ -33,7 +33,8 @@ public class BNConverterToHuginTest {
 
         //**************************************** Synthetic data ******************************************************
 
-        ARFFDataReader fileReader = new ARFFDataReader(new String("datasets/syntheticData.arff"));
+        ARFFDataReader fileReader = new ARFFDataReader();
+        fileReader.loadFromFile("datasets/syntheticData.arff");
         StaticVariables modelHeader = new StaticVariables(fileReader.getAttributes());
 
 

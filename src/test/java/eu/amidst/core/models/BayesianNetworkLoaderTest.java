@@ -1,5 +1,7 @@
 package eu.amidst.core.models;
 
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import org.junit.Before;
 import org.junit.Test;
 

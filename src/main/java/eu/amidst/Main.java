@@ -52,6 +52,13 @@ public class Main {
 package eu.amidst;
 
 
+import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.io.DataStreamLoader;
+
 import java.util.*;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
@@ -96,6 +103,16 @@ public class Main {
 
 
      System.out.println(letterToCount.toString());
+
+
+
+     DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
+
+     Iterator<StaticDataInstance> it = data.iterator();
+     for (int i = 0; i < 3; i++) {
+         System.out.println(it.next().toString());
+     }
+
  }
 
 }

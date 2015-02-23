@@ -33,7 +33,35 @@ public class ARFFDataReader implements DataFileReader {
     private Path pathFile;
     private StateSpaceType[] stateSpace;
 
-    public ARFFDataReader(String pathString) {
+    private static Attribute createAttributeFromLine(int index, String line){
+        String[] parts = line.split(" |\t");
+
+        if (!parts[0].trim().startsWith("@attribute"))
+            throw new IllegalArgumentException("Attribute line does not start with @attribute");
+
+        String name = parts[1].trim();
+        name = StringUtils.strip(name,"'");
+
+        parts[2]=line.substring(parts[0].length() + parts[1].length() + 2);
+
+        parts[2]=parts[2].trim();
+
+        if (parts[2].equals("real") || parts[2].equals("numeric")){
+            return new Attribute(index, name, new RealStateSpace());
+        }else if (parts[2].startsWith("{")){
+            String[] states = parts[2].substring(1,parts[2].length()-1).split(",");
+
+            List<String> statesNames = Arrays.stream(states).map(String::trim).collect(Collectors.toList());
+
+            return new Attribute(index, name, new FiniteStateSpace(statesNames));
+        }else{
+            throw new UnsupportedOperationException("We can not create an attribute from this line: "+line);
+        }
+
+    }
+
+    @Override
+    public void loadFromFile(String pathString) {
         pathFile = Paths.get(pathString);
         try {
             Optional<String> atRelation = Files.lines(pathFile)
@@ -87,33 +115,6 @@ public class ARFFDataReader implements DataFileReader {
         }catch (IOException ex){
             throw new UncheckedIOException(ex);
         }
-    }
-
-    private static Attribute createAttributeFromLine(int index, String line){
-        String[] parts = line.split(" |\t");
-
-        if (!parts[0].trim().startsWith("@attribute"))
-            throw new IllegalArgumentException("Attribute line does not start with @attribute");
-
-        String name = parts[1].trim();
-        name = StringUtils.strip(name,"'");
-
-        parts[2]=line.substring(parts[0].length() + parts[1].length() + 2);
-
-        parts[2]=parts[2].trim();
-
-        if (parts[2].equals("real") || parts[2].equals("numeric")){
-            return new Attribute(index, name, new RealStateSpace());
-        }else if (parts[2].startsWith("{")){
-            String[] states = parts[2].substring(1,parts[2].length()-1).split(",");
-
-            List<String> statesNames = Arrays.stream(states).map(String::trim).collect(Collectors.toList());
-
-            return new Attribute(index, name, new FiniteStateSpace(statesNames));
-        }else{
-            throw new UnsupportedOperationException("We can not create an attribute from this line: "+line);
-        }
-
     }
 
     @Override

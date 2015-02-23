@@ -2,8 +2,11 @@ package eu.amidst.core.utils;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.*;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.*;
+import org.apache.commons.lang.math.IntRange;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -12,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -34,27 +38,21 @@ public class DynamicBayesianNetworkSampler {
     }
 
 
-    public Stream<DynamicDataInstance> getSampleStream(int nSequences, int sequenceLength) {
+    public Stream<DynamicAssignment> getSampleStream(int nSequences, int sequenceLength) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
 
-        List<DynamicDataInstance> dbnsample = new ArrayList(nSequences);
+        IntStream stream = (parallelMode)? IntStream.range(0,nSequences): IntStream.range(0,nSequences).parallel();
 
-        for(int i=0; i< nSequences;i++){
-            List<DynamicDataInstance> oneseq = sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength);
-            for(int j=0; j< oneseq.size();j++) {
-                dbnsample.add(oneseq.get(j));
-            }
-        }
-        return dbnsample.stream();
+        return stream.mapToObj(Integer::new).flatMap(i-> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength));
     }
 
-    public List<DynamicDataInstance> getSampleList(int nSequences, int sequenceLength){
+    public List<DynamicAssignment> getSampleList(int nSequences, int sequenceLength){
         return this.getSampleStream(nSequences,sequenceLength).collect(Collectors.toList());
     }
 
-    public Iterable<DynamicDataInstance> getSampleIterator(int nSequences, int sequenceLength){
-        class I implements Iterable<DynamicDataInstance>{
-            public Iterator<DynamicDataInstance> iterator(){
+    public Iterable<DynamicAssignment> getSampleIterator(int nSequences, int sequenceLength){
+        class I implements Iterable<DynamicAssignment>{
+            public Iterator<DynamicAssignment> iterator(){
                 return getSampleStream(nSequences,sequenceLength).iterator();
             }
         }
@@ -69,206 +67,118 @@ public class DynamicBayesianNetworkSampler {
         this.parallelMode = parallelMode;
     }
 
-    public void sampleToAnARFFFile(String path, int nSequences, int sequenceLength) throws IOException {
-
-        List<Variable> variables = network.getDynamicVariables().getListOfDynamicVariables();
-
-        FileWriter fw = new FileWriter(path);
-        fw.write("@relation dataset\n\n");
-
-        for (Variable v : variables){
-            fw.write(v.toARFFString()+"\n");
-        }
-
-        fw.write("\n\n@data\n\n");
-
-        this.getSampleStream(nSequences,sequenceLength).forEach(e -> {
-            try {
-                fw.write(e.toARFFString(variables) + "\n");
-            } catch (IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
-        });
-
-        fw.close();
-    }
-
 
     public DataBase<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){
-
-        class TemporalDataBase implements DataBase{
-            Attributes atts;
-            DynamicBayesianNetworkSampler sampler;
-            int sequenceLength;
-            int nSequences;
-
-            TemporalDataBase(DynamicBayesianNetworkSampler sampler1, int nSequences1, int sequenceLength1){
-                this.sampler=sampler1;
-                this.nSequences = nSequences1;
-                this.sequenceLength = sequenceLength1;
-                List<Attribute> list = this.sampler.network.getDynamicVariables().getListOfDynamicVariables().stream()
-                        .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpace())).collect(Collectors.toList());
-                this.atts= new Attributes(list);
-            }
-
-            @Override
-            public Attributes getAttributes() {
-                return atts;
-            }
-
-            @Override
-            public Stream<DynamicDataInstance> stream() {
-/*
-                class TemporalDynamicDataInstance implements DataInstance{
-
-                    HashMapAssignment dataPast;
-                    HashMapAssignment dataPresent;
-                    int sequenceID;
-                    int timeID;
-
-                    TemporalDynamicDataInstance(HashMapAssignment dataPast1, HashMapAssignment dataPresent1, int sequenceID1, int timeID1){
-                        this.dataPast=dataPast1;
-                        this.dataPresent = dataPresent1;
-                        this.sequenceID = sequenceID1;
-                        this.timeID = timeID1;
-                    }
-
-                    @Override
-                    public double getValue(Variable var) {
-                        if (var.isTemporalClone()){
-                            return dataPast.getValue(var);
-                        }else {
-                            return dataPresent.getValue(var);
-                        }
-                    }
-
-                    @Override
-                    public int getSequenceID() {
-                        return sequenceID;
-                    }
-
-                    @Override
-                    public int getTimeID() {
-                        return timeID;
-                    }
-                }
-*/
-                return this.sampler.getSampleStream(this.nSequences,this.sequenceLength);//.map((a,b) -> new TemporalDynamicDataInstance(a));
-            }
-        }
-
         return new TemporalDataBase(this,nSequences,sequenceLength);
     }
 
 
     // Sample a stream of assignments of length "sequenceLength" for a given sequence "sequenceID"
-    private static List<DynamicDataInstance> sample(DynamicBayesianNetwork network, List<Variable> causalOrderTime0, List<Variable> causalOrderTimeT, Random random, int sequenceID, int sequenceLength) {
+    private static Stream<DynamicDataInstance> sample(DynamicBayesianNetwork network, List<Variable> causalOrderTime0, List<Variable> causalOrderTimeT, Random random, int sequenceID, int sequenceLength) {
 
-        List<DynamicDataInstance> allAssignments = new ArrayList(sequenceLength);
 
-        HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
-        HashMapAssignment dataPresent = new HashMapAssignment(network.getNumberOfVars());
+        final HashMapAssignment[] data = new HashMapAssignment[2];
 
-        for (Variable var : causalOrderTime0) {
-            double sampledValue = network.getDistributionsTime0().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
-            dataPresent.setValue(var, sampledValue);
-        }
+        return IntStream.range(0, sequenceLength).mapToObj( k ->
+        {
+            if (k==0) {
+                HashMapAssignment dataPresent = new HashMapAssignment(network.getNumberOfVars());
 
-        DynamicDataInstanceImpl d = new DynamicDataInstanceImpl(null,dataPresent, sequenceID, 0);
+                for (Variable var : causalOrderTime0) {
+                    double sampledValue = network.getDistributionsTime0().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
+                    dataPresent.setValue(var, sampledValue);
+                }
 
-        allAssignments.add(d);
+                DynamicDataInstanceImpl d = new DynamicDataInstanceImpl(network, null, dataPresent, sequenceID, 0);
 
-        dataPast = new HashMapAssignment(network.getNumberOfVars());
-        for (Variable var: network.getDynamicVariables().getListOfDynamicVariables()){
-            dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
-        }
-        dataPresent = new HashMapAssignment(network.getNumberOfVars());
+                HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
+                for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
+                    dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+                }
+                data[0] = dataPast;
+                data[1] = dataPresent;
 
-        for(int k=1; k< sequenceLength;k++) {
-            DynamicDataInstance d2 = new DynamicDataInstanceImpl(dataPast, dataPresent, sequenceID, k);
+                return d;
+            }else {
+                HashMapAssignment dataPresent = new HashMapAssignment(network.getNumberOfVars());
 
-            for (Variable var : causalOrderTimeT) {
-                double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(d2).sample(random);
-                dataPresent.setValue(var, sampledValue);
+                DynamicDataInstance d = new DynamicDataInstanceImpl(network, data[0], dataPresent, sequenceID, k);
+
+                for (Variable var : causalOrderTimeT) {
+                    double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(d).sample(random);
+                    dataPresent.setValue(var, sampledValue);
+                }
+
+                HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
+                for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
+                    dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+                }
+                data[0] = dataPast;
+                data[1] = dataPresent;
+
+                return d;
             }
-
-            allAssignments.add(d2);
-
-            dataPast = new HashMapAssignment(network.getNumberOfVars());
-            for (Variable var: network.getDynamicVariables().getListOfDynamicVariables()){
-                dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
-            }
-            dataPresent = new HashMapAssignment(network.getNumberOfVars());
-
-        }
-        return allAssignments;
-        //return allAssignments.stream();
+        });
     }
 
+    static class TemporalDataBase implements DataBase{
+        Attributes atts;
+        DynamicBayesianNetworkSampler sampler;
+        int sequenceLength;
+        int nSequences;
+
+        TemporalDataBase(DynamicBayesianNetworkSampler sampler1, int nSequences1, int sequenceLength1){
+            this.sampler=sampler1;
+            this.nSequences = nSequences1;
+            this.sequenceLength = sequenceLength1;
+            List<Attribute> list = new ArrayList<>();
+
+            list.add(new Attribute(0,Attributes.SEQUENCE_ID_ATT_NAME, new RealStateSpace()));
+            list.add(new Attribute(1,Attributes.TIME_ID_ATT_NAME, new RealStateSpace()));
+            list.addAll(this.sampler.network.getDynamicVariables().getListOfDynamicVariables().stream()
+                    .map(var -> new Attribute(var.getVarID() + 2, var.getName(), var.getStateSpace())).collect(Collectors.toList()));
+            this.atts= new Attributes(list);
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return atts;
+        }
+
+        @Override
+        public Stream<DynamicDataInstance> stream() {
+            return this.sampler.getSampleStream(this.nSequences,this.sequenceLength).map( e -> (DynamicDataInstanceImpl)e);
+        }
+
+        @Override
+        public void close() {
+
+        }
+    }
 
     static class DynamicDataInstanceImpl implements DynamicDataInstance {
 
+        DynamicBayesianNetwork dbn;
         private HashMapAssignment dataPresent;
         private HashMapAssignment dataPast;
         private int sequenceID;
         private int timeID;
 
-        public DynamicDataInstanceImpl(HashMapAssignment dataPast1, HashMapAssignment dataPresent1, int sequenceID1, int timeID1){
+        public DynamicDataInstanceImpl(DynamicBayesianNetwork dbn_, HashMapAssignment dataPast1, HashMapAssignment dataPresent1, int sequenceID1, int timeID1){
+            this.dbn=dbn_;
             dataPresent = dataPresent1;
             dataPast =  dataPast1;
             this.sequenceID = sequenceID1;
             this.timeID = timeID1;
         }
 
-        @Override
-        public double getValue(Variable var) {
-            if (var.isTemporalClone()){
-                return dataPast.getValue(var);
-            }else {
-                return dataPresent.getValue(var);
-            }
-        }
 
-        @Override
-        public void setValue(Variable var, double value) {
-            if (var.isTemporalClone()){
-                dataPast.setValue(var,value);
-            }else {
-                dataPresent.setValue(var, value);
-            }
-        }
 
         @Override
         public String toString(List<Variable> vars) {
             StringBuilder builder = new StringBuilder(vars.size()*2);
             vars.stream().limit(vars.size()-1).forEach(var -> builder.append(this.getValue(var)+","));
             builder.append(this.getValue(vars.get(vars.size()-1)));
-            return builder.toString();
-        }
-
-        @Override
-        public String toARFFString(List<Variable> vars) {
-            StringBuilder builder = new StringBuilder(vars.size()*2);
-
-            for(int i=0; i<vars.size()-1;i++) {
-                if (vars.get(i).getStateSpace().getStateSpaceType() == StateSpaceType.FINITE_SET) {
-                    FiniteStateSpace stateSpace = vars.get(i).getStateSpace();
-                    String nameState = stateSpace.getStatesName((int) this.getValue(vars.get(i)));
-                    builder.append(nameState + ",");
-                }
-                else{
-                    builder.append(this.getValue(vars.get(i))+ ",");
-                }
-            }
-
-            if(vars.get(vars.size()-1).getStateSpace().getStateSpaceType()  == StateSpaceType.FINITE_SET) {
-                FiniteStateSpace stateSpace = vars.get(vars.size() - 1).getStateSpace();
-                String nameState = stateSpace.getStatesName((int) this.getValue(vars.get(vars.size() - 1)));
-                builder.append(nameState);
-            }
-            else{
-                builder.append(this.getValue(vars.get(vars.size() - 1)));
-            }
             return builder.toString();
         }
 
@@ -281,6 +191,47 @@ public class DynamicBayesianNetworkSampler {
         public int getTimeID() {
             return timeID;
         }
+
+        @Override
+        public double getValue(Variable var) {
+            if (var.isTemporalClone()) {
+                return dataPast.getValue(var);
+            } else {
+                return dataPresent.getValue(var);
+            }
+        }
+
+        @Override
+        public void setValue(Variable var, double val) {
+            if (var.isTemporalClone()) {
+                dataPast.setValue(var, val);
+            } else {
+                dataPresent.setValue(var, val);
+            }
+        }
+
+        @Override
+        public double getValue(Attribute att, boolean present) {
+            if (att.getIndex() == 0) {
+                return this.sequenceID;
+            } else if (att.getIndex() == 1){
+                return this.timeID;
+            }else{
+                return this.getValue(dbn.getDynamicVariables().getVariableById(att.getIndex() - 2));
+            }
+        }
+
+        @Override
+        public void setValue(Attribute att, double val, boolean present) {
+            if (att.getIndex() == 0) {
+                this.sequenceID = (int)val;
+            } else if (att.getIndex() == 1){
+                this.timeID = (int) val;
+            }else {
+                this.setValue(dbn.getDynamicVariables().getVariableById(att.getIndex() - 2), val);
+            }
+        }
+
     }
 
 
@@ -298,16 +249,16 @@ public class DynamicBayesianNetworkSampler {
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-
-        sampler.sampleToAnARFFFile("./data/dnb-samples.arff",3, 2);
+        DataBase<DynamicDataInstance> dataBase = sampler.sampleToDataBase(3,2);
+        ARFFDataWriter.writeToARFFFile(dataBase, "./data/dnb-samples.arff");
 
         System.out.println(watch.stop());
 
 
-        for (DynamicDataInstance dynamicdatainstance : sampler.getSampleIterator(3, 2)){
-            System.out.println("\nSequence ID" + dynamicdatainstance.getSequenceID());
-            System.out.println("\nTime ID" + dynamicdatainstance.getTimeID());
-            System.out.println(dynamicdatainstance.toString(network.getDynamicVariables().getListOfDynamicVariables()));
+        for (DynamicAssignment dynamicdataassignment : sampler.getSampleIterator(3, 2)){
+            System.out.println("\nSequence ID" + dynamicdataassignment.getSequenceID());
+            System.out.println("\nTime ID" + dynamicdataassignment.getTimeID());
+            System.out.println(dynamicdataassignment.toString(network.getDynamicVariables().getListOfDynamicVariables()));
         }
 
         //for (DynamicDataInstance dynamicdatainstance : sampler.getSampleList(2, 10)){

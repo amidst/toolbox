@@ -8,7 +8,19 @@ import eu.amidst.core.variables.Variable;
  */
 public interface DataInstance extends Assignment{
 
-    double getValue(Variable var);
+    @Override
+    default double getValue(Variable var){
+        return this.getValue(var.getAttribute());
+    }
+
+    @Override
+    default void setValue(Variable var, double value){
+        this.setValue(var.getAttribute(), value);
+    }
+
+    double getValue(Attribute att);
+
+    void setValue(Attribute att, double val);
 
 }
 

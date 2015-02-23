@@ -3,8 +3,9 @@ package eu.amidst.examples;
 import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkWriter;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.*;
 
@@ -33,7 +34,7 @@ public final class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticData.arff"));
+        DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
 
 
         /**
@@ -139,8 +140,7 @@ public final class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new StaticDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticData.arff"));
-
+        DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
 
         /**
          * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)

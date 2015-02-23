@@ -1,8 +1,8 @@
 package eu.amidst.core.utils;
 
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetworkWriter;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.*;
 
@@ -47,8 +47,6 @@ public final class BayesianNetworkGenerator{
     }
 
     public static BayesianNetwork generateNaiveBayes(int nClassLabels){
-
-        loadOptions();
 
         StaticVariables staticVariables  = new StaticVariables();
 
@@ -140,12 +138,12 @@ public final class BayesianNetworkGenerator{
 
     public static void main(String[] agrs) throws IOException, ClassNotFoundException {
 
+        BayesianNetworkGenerator.loadOptions();
+
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
         BayesianNetworkGenerator.setNumberOfStates(2);
         BayesianNetworkGenerator.setSeed(0);
-
-        BayesianNetworkGenerator.loadOptions();
 
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
 

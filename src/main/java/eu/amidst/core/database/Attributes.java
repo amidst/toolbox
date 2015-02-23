@@ -3,15 +3,20 @@ package eu.amidst.core.database;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
 /**
  * Created by sigveh on 10/16/14.
  */
-public class Attributes implements Serializable {
+public class Attributes implements Serializable, Iterable<Attribute> {
 
     private static final long serialVersionUID = -1877629684033612201L;
+
+    public static final String TIME_ID_ATT_NAME = "TIME_ID";
+
+    public static final String SEQUENCE_ID_ATT_NAME = "SEQUENCE_ID";
 
     private List<Attribute> attributes;
 
@@ -33,7 +38,7 @@ public class Attributes implements Serializable {
         List<Attribute> attributeList = new ArrayList<>();
         for(Attribute att: getList()){
             String name = att.getName();
-            if(!name.equals("TIME_ID") && !name.equals("SEQUENCE_ID")){
+            if(!name.equals(Attributes.TIME_ID_ATT_NAME) && !name.equals(Attributes.SEQUENCE_ID_ATT_NAME)){
                 attributeList.add(att);
             }
         }
@@ -47,5 +52,10 @@ public class Attributes implements Serializable {
             if(att.getName().equals(name)){ return att;}
         }
         throw new UnsupportedOperationException("Attribute "+name+" is not part of the list of Attributes");
+    }
+
+    @Override
+    public Iterator<Attribute> iterator() {
+        return attributes.iterator();
     }
 }

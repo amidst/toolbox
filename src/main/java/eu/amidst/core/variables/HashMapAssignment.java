@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 /**
  * Created by ana@cs.aau.dk on 03/11/14.
  */
-public class HashMapAssignment implements DataInstance, DynamicDataInstance {
+public class HashMapAssignment implements Assignment, DynamicAssignment {
     private Map<Variable,Double> assignment;
     int sequenceID;
     int timeID;

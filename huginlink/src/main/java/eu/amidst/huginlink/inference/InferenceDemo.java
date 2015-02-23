@@ -6,6 +6,7 @@ import COM.hugin.HAPI.Class;
 import eu.amidst.core.database.*;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.Variable;
@@ -48,7 +49,7 @@ public class InferenceDemo {
         //************************************************************
 
         String file = "./datasets/bank_data_train.arff";
-        DataBase<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         //System.out.println("ATTRIBUTES:");
         //data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));
@@ -76,7 +77,7 @@ public class InferenceDemo {
          //************************************************************
 
          file = "./datasets/bank_data_predict.arff";
-         data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
+         data = DynamicDataStreamLoader.loadFromFile(file);
 
          // The value of the timeWindow must be sampleSize-1 at maximum
          int timeSlices = 9;

@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class StaticDataOnDiskFromFile implements DataOnDisk<StaticDataInstance>, DataOnStream<StaticDataInstance> {
+public class StaticDataOnDiskFromFile implements DataOnDisk<StaticDataInstance> {
 
     DataFileReader reader;
 

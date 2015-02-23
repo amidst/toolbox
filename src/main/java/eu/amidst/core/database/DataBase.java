@@ -1,6 +1,5 @@
 package eu.amidst.core.database;
 
-import eu.amidst.core.database.filereaders.DataRow;
 import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
 import java.util.Iterator;
@@ -15,6 +14,9 @@ public interface DataBase <E extends DataInstance> extends Iterable<E> {
 
     Stream<E> stream();
 
+
+    void close();
+
     default Stream<E> parallelStream(int batchSize){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), batchSize);
     }
@@ -27,7 +29,12 @@ public interface DataBase <E extends DataInstance> extends Iterable<E> {
         return this.stream().iterator();
     }
 
-    default void close(){
-        //Only needed if iterator is not based on streams.
+    default Stream<DataOnMemory<E>> streamOfBatches(int batchSize){
+        return BatchesSpliterator.toFixedBatchStream(this,batchSize);
     }
+
+    default Stream<DataOnMemory<E>> parallelStreamOfBatches(int batchSize){
+        return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.streamOfBatches(batchSize), 1);
+    }
+
 }

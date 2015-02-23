@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-public class StaticDataOnMemoryFromFile implements DataOnMemory<StaticDataInstance>, DataOnDisk<StaticDataInstance>, DataOnStream<StaticDataInstance> {
+public class StaticDataOnMemoryFromFile implements DataOnMemory<StaticDataInstance>, DataOnDisk<StaticDataInstance> {
 
     private DataFileReader reader;
 
@@ -67,4 +67,8 @@ public class StaticDataOnMemoryFromFile implements DataOnMemory<StaticDataInstan
         this.reader.close();
     }
 
+    @Override
+    public void restart() {
+
+    }
 }

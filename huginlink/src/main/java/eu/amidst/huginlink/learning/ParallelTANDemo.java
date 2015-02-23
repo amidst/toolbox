@@ -5,10 +5,13 @@ import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 
 import eu.amidst.core.database.DataBase;
+import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 
@@ -59,7 +62,7 @@ public class ParallelTANDemo {
         for (Integer samplesOnMemory : vSamplesOnMemory) {
             for (Integer numCores : vNumCores) {
                 System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
-                DataBase data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+                DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile(dataFile);
 
                 ParallelTAN tan = new ParallelTAN();
                 tan.setNumCores(numCores);
@@ -95,8 +98,10 @@ public class ParallelTANDemo {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(true);
-        sampler.sampleToAnARFFFile(dataFile, sampleSize);
-        data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
+        ARFFDataWriter.writeToARFFFile(dataBase, dataFile);
+
+        data = DataStreamLoader.loadFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
         System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, 1 core(s) ...");
 
@@ -116,7 +121,7 @@ public class ParallelTANDemo {
 
         System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
 
-        data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+        data = DataStreamLoader.loadFromFile(dataFile);
 
         tan = new ParallelTAN();
         tan.setParallelMode(true);
@@ -148,8 +153,10 @@ public class ParallelTANDemo {
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(true);
-        sampler.sampleToAnARFFFile(dataFile, sampleSize);
-        data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
+        ARFFDataWriter.writeToARFFFile(dataBase, dataFile);
+
+        data = DataStreamLoader.loadFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
 
     /* Get information about the model: Root and Target */
@@ -201,12 +208,14 @@ public class ParallelTANDemo {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setParallelMode(true);
-            sampler.sampleToAnARFFFile(dataFile, sampleSize);
-            data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+            DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
+            ARFFDataWriter.writeToARFFFile(dataBase, dataFile);
+
+            data = DataStreamLoader.loadFromFile(dataFile);
             nOfVars = numContVars + numDiscVars;
             System.out.println("Learning TAN: " + nOfVars + " variables, " + numStates + " states/var, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
         } else {
-            data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFileInput));
+            data = DataStreamLoader.loadFromFile(dataFile);
             numDiscVars = data.getAttributes().getNumberOfAttributes();
             nOfVars = numContVars + numDiscVars;
             System.out.println("Learning TAN: " + nOfVars + " variables, " + " samples on file " + dataFileInput + "," + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");

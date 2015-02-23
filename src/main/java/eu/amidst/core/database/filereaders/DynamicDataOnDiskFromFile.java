@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Created by ana@cs.aau.dk on 12/11/14.
  */
-public class DynamicDataOnDiskFromFile implements DataOnDisk<DynamicDataInstance>, DataOnStream<DynamicDataInstance> {
+public class DynamicDataOnDiskFromFile implements DataOnDisk<DynamicDataInstance>{
 
     private DataFileReader reader;
 
