@@ -1,9 +1,12 @@
 package eu.amidst.examples;
 
+import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.io.DynamicBayesianNetworkWriter;
+import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
@@ -36,7 +39,7 @@ public final class CajaMarModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataCajaMar.arff"));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataCajaMar.arff");
 
 
         /**

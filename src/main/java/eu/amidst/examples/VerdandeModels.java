@@ -2,9 +2,13 @@ package eu.amidst.examples;
 
 
 import eu.amidst.core.database.Attribute;
+import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnDisk;
+import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.io.DynamicBayesianNetworkWriter;
+import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
 
@@ -37,7 +41,7 @@ public final class VerdandeModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataVerdandeScenario1.arff"));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataVerdandeScenario1.arff");
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -156,7 +160,7 @@ public final class VerdandeModels {
         DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKF.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOSKF.dbn");
 
     }
 
@@ -170,7 +174,7 @@ public final class VerdandeModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataVerdandeScenario2.arff"));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataVerdandeScenario2.arff");
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -343,7 +347,7 @@ public final class VerdandeModels {
      * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
     public static void VerdandeInputOutputHMM() throws IOException {
-        DataOnDisk data = new DynamicDataOnDiskFromFile(new ARFFDataReader("datasets/syntheticDataVerdandeScenario3.arff"));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
         Attribute attDepth = data.getAttributes().getAttributeByName("depth");
         Attribute attGammaDiff = data.getAttributes().getAttributeByName("gammaDiff");

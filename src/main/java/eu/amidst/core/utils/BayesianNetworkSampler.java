@@ -3,15 +3,13 @@ package eu.amidst.core.utils;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.database.*;
+import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -43,18 +41,6 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         this.causalOrder=Utils.getCausalOrder(network.getDAG());
     }
 
-
-    /*public Stream<Assignment> getSampleStream(int nSamples) {
-        if (parallelMode){
-            LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-            sampleStream = IntStream.range(0, nSamples).parallel().mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
-        }else{
-            Random random  = new Random(seed);
-            sampleStream =  IntStream.range(0, nSamples).mapToObj(e -> sample(network, causalOrder, random));
-        }
-        return sampleStream;
-    }*/
-
     private Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
@@ -80,32 +66,6 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     public void setParallelMode(boolean parallelMode) {
         this.parallelMode = parallelMode;
-    }
-
-    public void sampleToAnARFFFile(String path, int nSamples) throws IOException {
-
-        List<Variable> variables = network.getStaticVariables().getListOfVariables();
-
-        FileWriter fw = new FileWriter(path);
-        fw.write("@relation dataset\n\n");
-
-        for (Variable v : variables){
-            fw.write(v.toARFFString()+"\n");
-        }
-
-        fw.write("\n\n@data\n\n");
-
-
-        this.getSampleStream(nSamples).forEach(e -> {
-            try {
-                fw.write(e.toARFFString(variables) + "\n");
-            } catch (IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
-        });
-
-        fw.close();
-
     }
 
     public DataBase<StaticDataInstance> sampleToDataBase(int nSamples){
@@ -135,6 +95,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                     TemporalDataInstance(Assignment assignment1){
                         this.assignment=assignment1;
                     }
+
                     @Override
                     public double getValue(Variable var) {
                         return this.assignment.getValue(var);
@@ -145,8 +106,22 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                         this.assignment.setValue(var, value);
                     }
 
+                    @Override
+                    public double getValue(Attribute att) {
+                        return this.assignment.getValue(sampler.network.getStaticVariables().getVariableById(att.getIndex()));
+                    }
+
+                    @Override
+                    public void setValue(Attribute att, double value) {
+                        this.assignment.setValue(sampler.network.getStaticVariables().getVariableById(att.getIndex()), value);
+                    }
                 }
                 return this.sampler.getSampleStream(this.nSamples).map(a -> new TemporalDataInstance(a));
+            }
+
+            @Override
+            public void close() {
+
             }
         }
 
@@ -196,7 +171,9 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
 
-        sampler.sampleToAnARFFFile("data/asisa-samples.arff", 10);
+        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(10);
+
+        ARFFDataWriter.writeToARFFFile(dataBase,"data/asisa-samples.arff");
 
         System.out.println(watch.stop());
 

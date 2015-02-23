@@ -12,6 +12,8 @@ import java.util.stream.Stream;
  */
 public interface DataFileReader extends Iterable<DataRow> {
 
+    void loadFromFile(String path);
+
     Attributes getAttributes();
 
     boolean doesItReadThisFileExtension(String fileExtension);

@@ -1,6 +1,7 @@
 package eu.amidst.core.database.filereaders;
 
 import eu.amidst.core.database.Attribute;
+import eu.amidst.core.database.Attributes;
 import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.database.DynamicDataInstance;
 
@@ -55,13 +56,13 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
         }
 
         try {
-            attSequenceID = this.reader.getAttributes().getAttributeByName("SEQUENCE_ID");
+            attSequenceID = this.reader.getAttributes().getAttributeByName(Attributes.SEQUENCE_ID_ATT_NAME);
             sequenceID = (int)present.getValue(attSequenceID);
         }catch (UnsupportedOperationException e){
             attSequenceID = null;
         }
         try {
-            attTimeID = this.reader.getAttributes().getAttributeByName("TIME_ID");
+            attTimeID = this.reader.getAttributes().getAttributeByName(Attributes.TIME_ID_ATT_NAME);
             timeID = (int)present.getValue(attTimeID);
         }catch (UnsupportedOperationException e){
             attTimeID = null;

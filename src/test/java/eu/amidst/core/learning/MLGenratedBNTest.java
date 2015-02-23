@@ -20,6 +20,7 @@ public class MLGenratedBNTest {
     @Test
     public void testingMLGeneratedBN() throws IOException, ClassNotFoundException {
 
+        BayesianNetworkGenerator.loadOptions();
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(10);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(1);
@@ -33,7 +34,7 @@ public class MLGenratedBNTest {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
 
-        DataBase data = sampler.sampleToDataBase(10000000);
+        DataBase data = sampler.sampleToDataBase(1000000);
 
 
         //Parameter Learning
@@ -46,11 +47,11 @@ public class MLGenratedBNTest {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ naiveBayes.getDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
-            assertTrue(bnet.getDistribution(var).equalDist(naiveBayes.getDistribution(var), 0.05));
+            assertTrue(bnet.getDistribution(var).equalDist(naiveBayes.getDistribution(var), 0.02));
         }
 
         //Or check directly if the true and learned networks are equals
-        assertTrue(bnet.equalBNs(naiveBayes,0.05));
+        assertTrue(bnet.equalBNs(naiveBayes,0.02));
     }
 
 }

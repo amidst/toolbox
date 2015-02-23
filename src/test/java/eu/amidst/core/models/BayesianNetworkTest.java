@@ -1,9 +1,11 @@
 package eu.amidst.core.models;
 
+import eu.amidst.core.database.DataBase;
 import eu.amidst.core.database.DataOnDisk;
 import eu.amidst.core.database.StaticDataInstance;
 import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
 import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.*;
 import org.junit.Test;
 
@@ -15,7 +17,7 @@ import static org.junit.Assert.*;
  */
 public class BayesianNetworkTest {
 
-    DataOnDisk<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("datasets/syntheticData.arff")));
+    DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
 
     @Test
     public void testingBN(){

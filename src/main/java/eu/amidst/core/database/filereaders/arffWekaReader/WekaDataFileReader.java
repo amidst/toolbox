@@ -26,11 +26,11 @@ public class WekaDataFileReader implements DataFileReader, Iterator<DataRow>{
     /* We need to read an instance in advance to know if we have reached the EOF*/
     private Instance present = null;
 
-    public WekaDataFileReader(String s){
-
+    @Override
+    public void loadFromFile(String path) {
         try {
             arffLoader = new ArffLoader();
-            File file = new File(s);
+            File file = new File(path);
             arffLoader.setFile(file);
             dataStructure = arffLoader.getStructure();
         }catch(IOException e){

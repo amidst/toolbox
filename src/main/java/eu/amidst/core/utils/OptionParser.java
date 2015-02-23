@@ -18,7 +18,8 @@ public class OptionParser {
     private static HashMap<String,HashMap<String,String>> allOptions;
     private static String confFileNameDefault = "configurationFiles/conf.txt";
     private static String confFileName = "";
-    private static String[] commandLineOptions;
+    private static String[] commandLineOptions = new String[0];
+
     /**
      * Contains all options (recursive one included) that are used for a particular execution
      */

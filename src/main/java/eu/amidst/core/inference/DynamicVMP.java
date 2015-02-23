@@ -7,6 +7,7 @@ import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP_.Node;
+import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.utils.Utils;
@@ -247,7 +248,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
         String file = "./datasets/bank_data_train_small.arff";
-        DataBase<DynamicDataInstance> data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
+        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
@@ -256,7 +257,8 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         DynamicBayesianNetwork bn = model.getDynamicBNModel();
 
         file = "./datasets/bank_data_predict.arff";
-        data = new DynamicDataOnDiskFromFile(new ARFFDataReader(file));
+        data = DynamicDataStreamLoader.loadFromFile(file);
+
 
         // The value of the timeWindow must be sampleSize-1 at maximum
         int timeSlices = 9;
