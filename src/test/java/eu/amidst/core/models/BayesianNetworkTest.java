@@ -1,10 +1,7 @@
 package eu.amidst.core.models;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.*;
 import org.junit.Test;
@@ -17,7 +14,7 @@ import static org.junit.Assert.*;
  */
 public class BayesianNetworkTest {
 
-    DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
+    DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
 
     @Test
     public void testingBN(){
@@ -62,7 +59,7 @@ public class BayesianNetworkTest {
         assertFalse(bn.getDAG().containCycles());
 
         double logProb = 0;
-        for (StaticDataInstance instance : data) {
+        for (DataInstance instance : data) {
             logProb += bn.getLogProbabiltyOf(instance);
         }
 

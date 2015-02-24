@@ -1,15 +1,11 @@
 package eu.amidst.core.utils;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.*;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.*;
-import org.apache.commons.lang.math.IntRange;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -68,8 +64,8 @@ public class DynamicBayesianNetworkSampler {
     }
 
 
-    public DataBase<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){
-        return new TemporalDataBase(this,nSequences,sequenceLength);
+    public DataStream<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){
+        return new TemporalDataStream(this,nSequences,sequenceLength);
     }
 
 
@@ -121,13 +117,13 @@ public class DynamicBayesianNetworkSampler {
         });
     }
 
-    static class TemporalDataBase implements DataBase{
+    static class TemporalDataStream implements DataStream {
         Attributes atts;
         DynamicBayesianNetworkSampler sampler;
         int sequenceLength;
         int nSequences;
 
-        TemporalDataBase(DynamicBayesianNetworkSampler sampler1, int nSequences1, int sequenceLength1){
+        TemporalDataStream(DynamicBayesianNetworkSampler sampler1, int nSequences1, int sequenceLength1){
             this.sampler=sampler1;
             this.nSequences = nSequences1;
             this.sequenceLength = sequenceLength1;
@@ -152,6 +148,16 @@ public class DynamicBayesianNetworkSampler {
 
         @Override
         public void close() {
+
+        }
+
+        @Override
+        public boolean isRestartable() {
+            return false;
+        }
+
+        @Override
+        public void restart() {
 
         }
     }
@@ -249,8 +255,8 @@ public class DynamicBayesianNetworkSampler {
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<DynamicDataInstance> dataBase = sampler.sampleToDataBase(3,2);
-        ARFFDataWriter.writeToARFFFile(dataBase, "./data/dnb-samples.arff");
+        DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(3,2);
+        ARFFDataWriter.writeToARFFFile(dataStream, "./data/dnb-samples.arff");
 
         System.out.println(watch.stop());
 

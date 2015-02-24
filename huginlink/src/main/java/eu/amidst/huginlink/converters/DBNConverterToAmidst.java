@@ -2,8 +2,8 @@ package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.Attributes;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;

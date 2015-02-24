@@ -1,11 +1,9 @@
 package eu.amidst.core.learning;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DynamicDataInstance;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
@@ -16,7 +14,6 @@ import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * Created by andresmasegosa on 06/01/15.
@@ -48,9 +45,9 @@ public class DynamicNaiveBayesClassifier {
         return bnModel;
     }
 
-    private DynamicDAG dynamicNaiveBayesStructure(DataBase dataBase){
+    private DynamicDAG dynamicNaiveBayesStructure(DataStream<DynamicDataInstance> dataStream){
 
-        DynamicVariables modelHeader = new DynamicVariables(dataBase.getAttributes());
+        DynamicVariables modelHeader = new DynamicVariables(dataStream.getAttributes());
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
         DynamicDAG dag = new DynamicDAG(modelHeader);
 
@@ -69,11 +66,11 @@ public class DynamicNaiveBayesClassifier {
         return dag;
     }
 
-    public void learn(DataBase dataBase){
+    public void learn(DataStream<DynamicDataInstance> dataStream){
         LearningEngineForDBN.setDynamicStructuralLearningAlgorithm(this::dynamicNaiveBayesStructure);
         MaximumLikelihoodForBN.setParallelMode(this.isParallelMode());
         LearningEngineForDBN.setDynamicParameterLearningAlgorithm(MaximumLikelihoodForDBN::learnDynamic);
-        bnModel = LearningEngineForDBN.learnDynamicModel(dataBase);
+        bnModel = LearningEngineForDBN.learnDynamicModel(dataStream);
     }
 
     public static void main(String[] args) throws IOException {
@@ -88,10 +85,10 @@ public class DynamicNaiveBayesClassifier {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(false);
         String file = "./datasets/randomdata.arff";
-        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
-        ARFFDataWriter.writeToARFFFile(dataBase, file);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+        ARFFDataWriter.writeToARFFFile(dataStream, file);
 
-        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         for (int i = 1; i <= 1; i++) {
             DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();

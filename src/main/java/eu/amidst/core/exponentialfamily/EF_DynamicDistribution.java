@@ -8,8 +8,7 @@
 
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DynamicDataInstance;
+import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 

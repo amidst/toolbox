@@ -1,9 +1,8 @@
 package eu.amidst.core.models;
 
 
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.variables.*;
-import java.util.*;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

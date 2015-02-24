@@ -1,9 +1,7 @@
 package eu.amidst.core.inference;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DynamicDataInstance;
-import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP_.Node;
@@ -248,7 +246,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
         String file = "./datasets/bank_data_train_small.arff";
-        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
