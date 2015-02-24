@@ -1,11 +1,10 @@
-package eu.amidst.core.database;
+package eu.amidst.core.datastream;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Created by sigveh on 10/16/14.

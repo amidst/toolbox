@@ -1,8 +1,7 @@
 package eu.amidst.core.learning;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 
@@ -11,5 +10,5 @@ import eu.amidst.core.models.DynamicDAG;
  */
 @FunctionalInterface
 public interface DynamicParameterLearningAlgorithm {
-       public DynamicBayesianNetwork learn(DynamicDAG dag, DataBase dataBase);
+       public DynamicBayesianNetwork learn(DynamicDAG dag, DataStream<DynamicDataInstance> dataStream);
 }

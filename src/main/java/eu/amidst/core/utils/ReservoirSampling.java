@@ -1,16 +1,9 @@
 package eu.amidst.core.utils;
 
-import eu.amidst.core.database.*;
-import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamLoader;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by andresmasegosa on 10/12/14.
@@ -18,13 +11,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ReservoirSampling {
 
     //TODO Be careful with use of "add(int pos, element)" of List!!!!!!
-    public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataBase<StaticDataInstance> dataBase){
+    public static DataOnMemory samplingNumberOfSamples(int numberOfSamples, DataStream<? extends DataInstance> dataStream){
 
         Random random = new Random(0);
-        DataOnMemoryListContainer<StaticDataInstance> dataOnMemoryList = new DataOnMemoryListContainer(dataBase.getAttributes());
+        DataOnMemoryListContainer<DataInstance> dataOnMemoryList = new DataOnMemoryListContainer(dataStream.getAttributes());
         int count = 0;
 
-        for (StaticDataInstance instance : dataBase){
+        for (DataInstance instance : dataStream){
             if (count<numberOfSamples) {
                 dataOnMemoryList.add(instance);
             }else{
@@ -37,7 +30,7 @@ public class ReservoirSampling {
         return dataOnMemoryList;
     }
 
-    public static DataOnMemory samplingNumberOfGBs(double numberOfGB, DataBase dataOnStream) {
+    public static DataOnMemory samplingNumberOfGBs(double numberOfGB, DataStream<? extends DataInstance> dataOnStream) {
         double numberOfBytesPerSample = dataOnStream.getAttributes().getList().size()*8.0;
 
         //We assume an overhead of 10%.
@@ -47,8 +40,8 @@ public class ReservoirSampling {
     }
 
     public static void main(String[] args) throws Exception {
-        DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticDataCajaMar.arff");
-        DataOnMemory<StaticDataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticDataCajaMar.arff");
+        DataOnMemory<DataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
 
 
 

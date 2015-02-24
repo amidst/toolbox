@@ -1,7 +1,7 @@
-package eu.amidst.core.database.filereaders;
+package eu.amidst.core.datastream.filereaders;
 
-import eu.amidst.core.database.*;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class TestReaderDynamic {
     private static Variable var;
     private static List<Variable> obsVars;
     private static List<Variable> temporalClones;
-    private static DataOnDisk<DynamicDataInstance> dataOnDisk;
+    private static DataStream<DynamicDataInstance> dataOnDisk;
     private static Iterator<DynamicDataInstance> dataOnDiskIterator;
 
 
@@ -36,7 +36,7 @@ public class TestReaderDynamic {
         reader = new ARFFDataReader();
         reader.loadFromFile(s);
         attributes = reader.getAttributes();
-        dataOnDisk = new DynamicDataOnDiskFromFile(reader);
+        dataOnDisk = new DynamicDataStreamFromFile(reader);
         dataOnDiskIterator = dataOnDisk.iterator();
         dynamicVariables = new DynamicVariables(attributes);
         obsVars = dynamicVariables.getListOfDynamicVariables();

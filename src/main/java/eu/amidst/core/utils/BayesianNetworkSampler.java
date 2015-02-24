@@ -2,8 +2,8 @@ package eu.amidst.core.utils;
 
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.*;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.variables.Assignment;
@@ -68,13 +68,13 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         this.parallelMode = parallelMode;
     }
 
-    public DataBase<StaticDataInstance> sampleToDataBase(int nSamples){
-        class TemporalDataBase implements DataBase<StaticDataInstance>{
+    public DataStream<DataInstance> sampleToDataBase(int nSamples){
+        class TemporalDataStream implements DataStream<DataInstance> {
             Attributes atts;
             BayesianNetworkSampler sampler;
             int nSamples;
 
-            TemporalDataBase(BayesianNetworkSampler sampler1, int nSamples1){
+            TemporalDataStream(BayesianNetworkSampler sampler1, int nSamples1){
                 this.sampler=sampler1;
                 this.nSamples = nSamples1;
                 List<Attribute> list = this.sampler.network.getStaticVariables().getListOfVariables().stream()
@@ -88,8 +88,8 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
             }
 
             @Override
-            public Stream<StaticDataInstance> stream() {
-                class TemporalDataInstance implements StaticDataInstance{
+            public Stream<DataInstance> stream() {
+                class TemporalDataInstance implements DataInstance{
 
                     Assignment assignment;
                     TemporalDataInstance(Assignment assignment1){
@@ -123,9 +123,19 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
             public void close() {
 
             }
+
+            @Override
+            public boolean isRestartable() {
+                return false;
+            }
+
+            @Override
+            public void restart() {
+
+            }
         }
 
-        return new TemporalDataBase(this,nSamples);
+        return new TemporalDataStream(this,nSamples);
 
     }
 
@@ -171,9 +181,9 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
 
-        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(10);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(10);
 
-        ARFFDataWriter.writeToARFFFile(dataBase,"data/asisa-samples.arff");
+        ARFFDataWriter.writeToARFFFile(dataStream,"data/asisa-samples.arff");
 
         System.out.println(watch.stop());
 

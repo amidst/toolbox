@@ -1,8 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -42,7 +41,7 @@ public class BaseDistributionMultinomialParentsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
         //Compare predictions between distributions and EF distributions.
 
@@ -75,7 +74,7 @@ public class BaseDistributionMultinomialParentsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
 
         //Compare predictions between distributions and EF distributions.
@@ -107,7 +106,7 @@ public class BaseDistributionMultinomialParentsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
 
         //Compare predictions between distributions and EF distributions.

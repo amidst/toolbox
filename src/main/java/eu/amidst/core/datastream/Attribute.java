@@ -8,7 +8,7 @@
  */
 
 
-package eu.amidst.core.database;
+package eu.amidst.core.datastream;
 
 import eu.amidst.core.variables.FiniteStateSpace;
 import eu.amidst.core.variables.RealStateSpace;

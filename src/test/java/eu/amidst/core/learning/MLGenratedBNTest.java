@@ -1,6 +1,6 @@
 package eu.amidst.core.learning;
 
-import eu.amidst.core.database.DataBase;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -8,7 +8,6 @@ import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Random;
 
 import static org.junit.Assert.assertTrue;
 
@@ -34,7 +33,7 @@ public class MLGenratedBNTest {
         sampler.setSeed(0);
         sampler.setParallelMode(true);
 
-        DataBase data = sampler.sampleToDataBase(1000000);
+        DataStream data = sampler.sampleToDataBase(1000000);
 
 
         //Parameter Learning

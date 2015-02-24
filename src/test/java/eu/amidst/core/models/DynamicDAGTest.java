@@ -1,11 +1,8 @@
 package eu.amidst.core.models;
 
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.DynamicDataInstance;
-import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.variables.*;
 import org.junit.Test;
@@ -24,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 public class DynamicDAGTest {
 
 
-    DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDaimler.arff");
+    DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDaimler.arff");
 
     @Test
     public void testingDynamicDAG() {

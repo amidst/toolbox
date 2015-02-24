@@ -5,9 +5,9 @@ import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.*;
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnMemory;
-import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.learning.LearningEngineForBN;
 import eu.amidst.core.learning.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
@@ -80,8 +80,8 @@ public class ParallelTAN implements AmidstOptionsHandler {
         this.nameTarget = nameTarget;
     }
 
-    public DAG learnDAG(DataBase dataBase) throws ExceptionHugin {
-        StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
+    public DAG learnDAG(DataStream dataStream) throws ExceptionHugin {
+        StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
         DAG dag = new DAG(modelHeader);
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
@@ -92,7 +92,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         try {
             huginNetwork = BNConverterToHugin.convertToHugin(bn);
 
-            DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory, dataBase);
+            DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory, dataStream);
 
             // Set the number of cases
             int numCases = dataOnMemory.getNumberOfDataInstances();
@@ -142,7 +142,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     }
 
 
-    public BayesianNetwork learnBN(DataBase<StaticDataInstance> dataBase) throws ExceptionHugin {
+    public BayesianNetwork learnBN(DataStream<DataInstance> dataStream) throws ExceptionHugin {
 
         //TODO uncomment this and solve the problem
         //LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
@@ -150,7 +150,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         MaximumLikelihoodForBN.setParallelMode(this.parallelMode);
         LearningEngineForBN.setStaticParameterLearningAlgorithm(MaximumLikelihoodForBN::learnParametersStaticModel);
 
-        return LearningEngineForBN.learnStaticModel(dataBase);
+        return LearningEngineForBN.learnStaticModel(dataStream);
     }
 
     @Override
@@ -207,7 +207,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         sampler.loadOptions();
 
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data =  sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data =  sampler.sampleToDataBase(sampleSize);
 
         for (int i = 1; i <= 4; i++) {
             int samplesOnMemory = 1000;

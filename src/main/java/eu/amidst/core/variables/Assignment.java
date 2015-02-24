@@ -1,7 +1,5 @@
 package eu.amidst.core.variables;
 
-import eu.amidst.core.database.Attribute;
-
 import java.util.List;
 
 /**

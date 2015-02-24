@@ -1,14 +1,13 @@
 package eu.amidst.core.learning;
 
-import eu.amidst.core.database.DataBase;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-
-import java.util.Random;
 
 /**
  * Created by andresmasegosa on 06/01/15.
@@ -40,8 +39,8 @@ public class NaiveBayesClassifier {
         return bnModel;
     }
 
-    private DAG staticNaiveBayesStructure(DataBase dataBase){
-        StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
+    private DAG staticNaiveBayesStructure(DataStream<DataInstance> dataStream){
+        StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
         DAG dag = new DAG(modelHeader);
         if (parallelMode)
@@ -52,13 +51,13 @@ public class NaiveBayesClassifier {
         return dag;
     }
 
-    public void learn(DataBase dataBase){
+    public void learn(DataStream<DataInstance> dataStream){
         LearningEngineForBN.setStaticStructuralLearningAlgorithm(this::staticNaiveBayesStructure);
         LearningEngineForBN.setStaticParameterLearningAlgorithm(MaximumLikelihoodForBN::learnParametersStaticModel);
         MaximumLikelihoodForBN.setParallelMode(this.isParallelMode());
-        bnModel = LearningEngineForBN.learnStaticModel(dataBase);
-        //DAG dag = this.staticNaiveBayesStructure(dataBase);
-        //bnModel = MaximumLikelihood.learnParametersStaticModel(dag,dataBase);
+        bnModel = LearningEngineForBN.learnStaticModel(dataStream);
+        //DAG dag = this.staticNaiveBayesStructure(dataStream);
+        //bnModel = MaximumLikelihood.learnParametersStaticModel(dag,dataStream);
     }
 
     public static void main(String[] args){
@@ -73,7 +72,7 @@ public class NaiveBayesClassifier {
         int sampleSize = 100;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(false);
-        DataBase data =  sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data =  sampler.sampleToDataBase(sampleSize);
 
         for (int i = 1; i <= 10; i++) {
             NaiveBayesClassifier model = new NaiveBayesClassifier();
