@@ -1,8 +1,6 @@
 package eu.amidst.examples;
 
-import eu.amidst.core.database.*;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkWriter;
@@ -34,7 +32,7 @@ public final class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
 
 
         /**
@@ -119,7 +117,7 @@ public final class StaticBayesianNetworks {
          * 3. We accumulate these log-probs and finally we print the log-prob of the data set.
          */
         double logProb = 0;
-        for (StaticDataInstance instance : data) {
+        for (DataInstance instance : data) {
             logProb += bn.getLogProbabiltyOf(instance);
         }
         System.out.println(logProb);
@@ -140,7 +138,7 @@ public final class StaticBayesianNetworks {
          * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
 
         /**
          * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)

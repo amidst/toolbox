@@ -3,9 +3,7 @@ package eu.amidst.huginlink.inference;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.core.database.*;
-import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
@@ -49,7 +47,7 @@ public class InferenceDemo {
         //************************************************************
 
         String file = "./datasets/bank_data_train.arff";
-        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         //System.out.println("ATTRIBUTES:");
         //data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));

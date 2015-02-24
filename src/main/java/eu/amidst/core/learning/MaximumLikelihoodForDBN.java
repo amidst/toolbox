@@ -1,14 +1,10 @@
 package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DynamicDataInstance;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.ArrayVector;
@@ -44,15 +40,15 @@ public final class MaximumLikelihoodForDBN {
         MaximumLikelihoodForDBN.parallelMode = parallelMode;
     }
 
-    public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataBase<DynamicDataInstance> dataBase) {
+    public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataStream<DynamicDataInstance> dataStream) {
 
         EF_DynamicBayesianNetwork efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dag);
 
         Stream<DynamicDataInstance> stream = null;
         if (parallelMode){
-            stream = dataBase.parallelStream(batchSize);
+            stream = dataStream.parallelStream(batchSize);
         }else{
-            stream = dataBase.stream();
+            stream = dataStream.stream();
         }
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);

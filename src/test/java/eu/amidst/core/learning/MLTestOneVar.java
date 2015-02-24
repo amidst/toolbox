@@ -2,8 +2,8 @@ package eu.amidst.core.learning;
 
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -37,7 +37,7 @@ public class MLTestOneVar {
         sampler.setParallelMode(true);
         System.out.println(watch.stop());
 
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(10);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10);
         data.stream().forEach( e -> System.out.println(e.toString(net.getStaticVariables().getListOfVariables())));
 
         //Load the sampled data

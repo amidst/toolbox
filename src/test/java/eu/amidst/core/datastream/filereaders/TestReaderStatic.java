@@ -7,11 +7,11 @@
  * ********************************************************
  */
 
-package eu.amidst.core.database.filereaders;
+package eu.amidst.core.datastream.filereaders;
 
 
-import eu.amidst.core.database.*;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
@@ -31,17 +31,17 @@ public class TestReaderStatic {
     private static Attributes attributes;
     private static StaticVariables staticVariables;
     private static DataRow datarow = null;
-    private static StaticDataInstance nextInstance = null;
+    private static DataInstance nextInstance = null;
     private static int index;
     private static Variable var;
-    private static DataOnDisk<StaticDataInstance> dataOnDiskReader;
-    private static Iterator<StaticDataInstance> dataOnDiskIterator;
+    private static DataStream<DataInstance> dataOnDiskReader;
+    private static Iterator<DataInstance> dataOnDiskIterator;
 
 
     public static void loadFileAndInitializeStatic(){
         reader = new ARFFDataReader();
         reader.loadFromFile("data/dataWeka/labor.arff");
-        dataOnDiskReader = new StaticDataOnDiskFromFile(reader);
+        dataOnDiskReader = new DataStreamFromFile(reader);
         dataOnDiskIterator = dataOnDiskReader.iterator();
         attributes = dataOnDiskReader.getAttributes();
         staticVariables = new StaticVariables(attributes);
@@ -120,7 +120,7 @@ public class TestReaderStatic {
 
         /* Number of instances */
         int instanceCounter = 0;
-        for (StaticDataInstance dataInstance: dataOnDiskReader){
+        for (DataInstance dataInstance: dataOnDiskReader){
             instanceCounter++;
         }
         assertEquals(57, instanceCounter);

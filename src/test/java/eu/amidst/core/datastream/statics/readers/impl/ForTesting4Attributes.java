@@ -1,8 +1,8 @@
-package eu.amidst.core.database.statics.readers.impl;
+package eu.amidst.core.datastream.statics.readers.impl;
 
 import com.google.common.collect.ImmutableList;
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.Attributes;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.StateSpaceType;
 
 import java.util.List;

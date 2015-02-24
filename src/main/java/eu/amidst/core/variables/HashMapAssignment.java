@@ -1,15 +1,10 @@
 package eu.amidst.core.variables;
 
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.DynamicDataInstance;
 import eu.amidst.core.utils.Utils;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 03/11/14.

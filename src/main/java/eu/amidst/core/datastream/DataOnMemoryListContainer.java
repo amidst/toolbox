@@ -1,4 +1,4 @@
-package eu.amidst.core.database;
+package eu.amidst.core.datastream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,9 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
     List<E> instanceList;
     Attributes attributes;
 
-    public DataOnMemoryListContainer(Attributes attributes1){
+    public DataOnMemoryListContainer(Attributes attributes_){
         this.instanceList=new ArrayList();
-        this.attributes=attributes1;
+        this.attributes=attributes_;
     }
 
     public void add(E data){
@@ -46,6 +46,16 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
 
     @Override
     public void close() {
+
+    }
+
+    @Override
+    public boolean isRestartable() {
+        return true;
+    }
+
+    @Override
+    public void restart() {
 
     }
 

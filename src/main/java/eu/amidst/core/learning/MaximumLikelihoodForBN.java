@@ -1,11 +1,9 @@
 package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DynamicDataInstance;
-import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.models.*;
 import eu.amidst.core.utils.ArrayVector;
@@ -41,16 +39,16 @@ public final class MaximumLikelihoodForBN {
         MaximumLikelihoodForBN.parallelMode = parallelMode;
     }
 
-    public static BayesianNetwork learnParametersStaticModel(DAG dag, DataBase<StaticDataInstance> dataBase) {
+    public static BayesianNetwork learnParametersStaticModel(DAG dag, DataStream<DataInstance> dataStream) {
 
         EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
 
 
-        Stream<StaticDataInstance> stream = null;
+        Stream<DataInstance> stream = null;
         if (parallelMode){
-            stream = dataBase.parallelStream(batchSize);
+            stream = dataStream.parallelStream(batchSize);
         }else{
-            stream = dataBase.stream();
+            stream = dataStream.stream();
         }
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);

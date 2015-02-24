@@ -1,12 +1,9 @@
 package eu.amidst.examples;
 
 
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.DynamicDataInstance;
-import eu.amidst.core.database.filereaders.DynamicDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.io.DynamicBayesianNetworkWriter;
@@ -42,7 +39,7 @@ public final class DaimlerModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataBase<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDaimler.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDaimler.arff");
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)

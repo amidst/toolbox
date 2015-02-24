@@ -1,17 +1,13 @@
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.database.DataInstance;
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.distribution.DistributionBuilder;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.CompoundVector;
-import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -19,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa on 06/01/15.

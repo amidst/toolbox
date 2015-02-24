@@ -1,4 +1,4 @@
-package eu.amidst.core.database;
+package eu.amidst.core.datastream;
 
 import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
@@ -8,14 +8,17 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 11/12/14.
  */
-public interface DataBase <E extends DataInstance> extends Iterable<E> {
+public interface DataStream<E extends DataInstance> extends Iterable<E> {
 
     Attributes getAttributes();
 
     Stream<E> stream();
 
-
     void close();
+
+    boolean isRestartable();
+
+    void restart();
 
     default Stream<E> parallelStream(int batchSize){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), batchSize);
