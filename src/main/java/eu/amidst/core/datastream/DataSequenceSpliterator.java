@@ -33,9 +33,10 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
     }
 
     @Override public Spliterator<DataSequence> trySplit() {
+        if (!advance) return null;
+
         final HoldingConsumer<DynamicDataInstance> holder = new HoldingConsumer<>();
 
-        if (!advance) return null;
 
         final DataSequenceImpl container = new DataSequenceImpl(dataStream.getAttributes());
         final DataSequenceImpl[] a = new DataSequenceImpl[1];
@@ -52,15 +53,18 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
             container.add(tailInstance);
         }
 
+        container.setSeqId(tailInstance.getSequenceID());
+
         while ((advance=spliterator.tryAdvance(holder)) && holder.value.getSequenceID()==tailInstance.getSequenceID()){
             tailInstance=holder.value;
             container.add(tailInstance);
         };
 
+        tailInstance=holder.value;
+
         if (est != Long.MAX_VALUE) est -= container.getNumberOfDataInstances();
 
         if (container.getNumberOfDataInstances()>0) {
-            container.setSeqId(tailInstance.getSequenceID());
             return spliterator(a, 0, 1, characteristics());
         }else{
             return null;
@@ -69,11 +73,12 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
 
     @Override
     public boolean tryAdvance(Consumer<? super DataSequence> action) {
+        if (!advance) return false;
+
         final HoldingConsumer<DynamicDataInstance> holder = new HoldingConsumer<>();
 
         final DataSequenceImpl container = new DataSequenceImpl(dataStream.getAttributes());
 
-        if (!advance) return false;
 
 
         if (tailInstance==null) {
@@ -87,16 +92,19 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
             container.add(tailInstance);
         }
 
+        container.setSeqId(tailInstance.getSequenceID());
+
+
         while ((advance=spliterator.tryAdvance(holder)) && holder.value.getSequenceID()==tailInstance.getSequenceID()){
             tailInstance=holder.value;
             container.add(tailInstance);
         };
 
+        tailInstance=holder.value;
 
         if (est != Long.MAX_VALUE) est -= container.getNumberOfDataInstances();
 
         if (container.getNumberOfDataInstances()>0) {
-            container.setSeqId(tailInstance.getSequenceID());
             action.accept(container);
             return true;
         }else{

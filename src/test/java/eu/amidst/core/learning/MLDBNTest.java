@@ -3,6 +3,7 @@ package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.models.*;
 import eu.amidst.core.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.core.utils.DynamicBayesianNetworkSampler;
@@ -43,7 +44,7 @@ public class MLDBNTest {
 
         //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
 
-        DataStream data = sampler.sampleToDataBase(10000,100);
+        DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(10000,100);
 
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Dynamic Naive Bayes network structure
