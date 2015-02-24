@@ -31,13 +31,6 @@ public class MLMultinomialsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        /*try{
-            sampler.sampleToAnARFFFile("./data/asiaSamples.arff", 10000);
-        } catch (IOException ex){
-        }*/
-
-        //Load the sampled data
-        //DataStream data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/asiaSamples.arff")));
 
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataBase(10000);

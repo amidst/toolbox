@@ -1,5 +1,6 @@
 package eu.amidst.core.learning;
 
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -33,7 +34,7 @@ public class MLMultinomialsNormalsTest {
             sampler.setParallelMode(true);
 
             //Load the sampled data
-            DataStream data = sampler.sampleToDataBase(100000);
+            DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
             //try{
             //    sampler.sampleToAnARFFFile("./data/WasteIncineratorSamples.arff", 10000);

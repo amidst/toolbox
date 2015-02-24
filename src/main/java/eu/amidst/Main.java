@@ -106,7 +106,7 @@ public class Main {
 
      Iterator<DataInstance> it = data.iterator();
      for (int i = 0; i < 3; i++) {
-         System.out.println(it.next().toString());
+         System.out.println(it.next().toString(data.getAttributes()));
      }
 
  }

@@ -17,10 +17,10 @@ public final class BayesianNetworkGenerator{
 
     private static int numberOfVars;
     private static int numberOfLinks;
-    private static int numberOfDiscreteVars;
-    private static int numberOfContinuousVars;
-    private static int numberOfStates;
-    private static int seed;
+    private static int numberOfDiscreteVars = 10;
+    private static int numberOfContinuousVars = 10;
+    private static int numberOfStates = 2;
+    private static int seed = 0;
 
     public static void setSeed(int seed) {
         BayesianNetworkGenerator.seed = seed;
@@ -150,6 +150,7 @@ public final class BayesianNetworkGenerator{
         BayesianNetworkWriter.saveToFile(naiveBayes, "networks/NB-10.bn");
 
         BayesianNetwork naiveBayes2 = BayesianNetworkLoader.loadFromFile("networks/NB-10.bn");
+
         System.out.println(naiveBayes2.toString());
     }
 
