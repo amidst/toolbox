@@ -1,4 +1,4 @@
-package eu.amidst.core.database;
+package eu.amidst.core.datastream;
 
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;

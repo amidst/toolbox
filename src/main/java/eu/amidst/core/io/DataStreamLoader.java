@@ -1,10 +1,10 @@
 package eu.amidst.core.io;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.database.filereaders.DataFileReader;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.filereaders.DataFileReader;
+import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
 /**
  * Created by andresmasegosa on 23/02/15.
@@ -17,9 +17,9 @@ public final class DataStreamLoader {
         dataFileReader = dataFileReader;
     }
 
-    public static DataBase<StaticDataInstance> loadFromFile(String path){
+    public static DataStream<DataInstance> loadFromFile(String path){
         dataFileReader.loadFromFile(path);
-        return new StaticDataOnDiskFromFile(dataFileReader);
+        return new DataStreamFromFile(dataFileReader);
     }
 
 }

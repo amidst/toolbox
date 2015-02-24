@@ -8,8 +8,8 @@
 
 package eu.amidst.core.variables;
 
-import eu.amidst.core.database.Attribute;
-import eu.amidst.core.database.Attributes;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
 
 import java.io.Serializable;
 import java.util.*;

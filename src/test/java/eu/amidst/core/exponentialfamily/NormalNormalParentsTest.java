@@ -1,8 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataInstance;
-import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -40,7 +39,7 @@ public class NormalNormalParentsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
         //Compare predictions between distributions and EF distributions.
 
@@ -80,7 +79,7 @@ public class NormalNormalParentsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
         //Compare predictions between distributions and EF distributions.
         EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);

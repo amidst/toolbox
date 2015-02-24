@@ -1,5 +1,5 @@
 package eu.amidst.core.utils;
-import eu.amidst.core.database.DataInstance;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;

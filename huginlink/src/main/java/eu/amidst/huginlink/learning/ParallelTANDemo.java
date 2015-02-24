@@ -4,11 +4,9 @@ package eu.amidst.huginlink.learning;
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -62,7 +60,7 @@ public class ParallelTANDemo {
         for (Integer samplesOnMemory : vSamplesOnMemory) {
             for (Integer numCores : vNumCores) {
                 System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
-                DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile(dataFile);
+                DataStream<DataInstance> data = DataStreamLoader.loadFromFile(dataFile);
 
                 ParallelTAN tan = new ParallelTAN();
                 tan.setNumCores(numCores);
@@ -83,7 +81,7 @@ public class ParallelTANDemo {
         int numContVars = 0;
         String nameRoot = "";
         String nameTarget = "";
-        DataBase data;
+        DataStream data;
         int nOfVars;
 
         //It may need many GBs, so avoid putting this file in a Dropbox folder!!!
@@ -98,8 +96,8 @@ public class ParallelTANDemo {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
-        ARFFDataWriter.writeToARFFFile(dataBase, dataFile);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+        ARFFDataWriter.writeToARFFFile(dataStream, dataFile);
 
         data = DataStreamLoader.loadFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
@@ -140,7 +138,7 @@ public class ParallelTANDemo {
         int numContVars = 0;
         String nameRoot = "";
         String nameTarget = "";
-        DataBase data;
+        DataStream data;
         int nOfVars;
 
     /* Generate some fake data and write to file */
@@ -153,8 +151,8 @@ public class ParallelTANDemo {
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
-        ARFFDataWriter.writeToARFFFile(dataBase, dataFile);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+        ARFFDataWriter.writeToARFFFile(dataStream, dataFile);
 
         data = DataStreamLoader.loadFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
@@ -190,7 +188,7 @@ public class ParallelTANDemo {
         int numContVars = 0;
         String nameRoot = "";
         String nameTarget = "";
-        DataBase data;
+        DataStream data;
         int nOfVars;
 
 
@@ -208,8 +206,8 @@ public class ParallelTANDemo {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setParallelMode(true);
-            DataBase<StaticDataInstance> dataBase = sampler.sampleToDataBase(sampleSize);
-            ARFFDataWriter.writeToARFFFile(dataBase, dataFile);
+            DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+            ARFFDataWriter.writeToARFFFile(dataStream, dataFile);
 
             data = DataStreamLoader.loadFromFile(dataFile);
             nOfVars = numContVars + numDiscVars;

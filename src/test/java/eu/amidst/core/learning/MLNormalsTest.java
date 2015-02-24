@@ -1,7 +1,7 @@
 package eu.amidst.core.learning;
 
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.StaticDataInstance;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -33,7 +33,7 @@ public class MLNormalsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
 
         //Parameter Learning
@@ -58,7 +58,7 @@ public class MLNormalsTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataBase<StaticDataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
 
         //Parameter Learning

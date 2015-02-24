@@ -1,7 +1,8 @@
 package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.database.DataBase;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StaticVariables;
@@ -23,8 +24,8 @@ public final class LearningEngineForBN {
     private static StaticStructuralLearningAlgorithm staticStructuralLearningAlgorithm = LearningEngineForBN::staticNaiveBayesStructure;
 
 
-    private static DAG staticNaiveBayesStructure(DataBase dataBase){
-        StaticVariables modelHeader = new StaticVariables(dataBase.getAttributes());
+    private static DAG staticNaiveBayesStructure(DataStream<DataInstance> dataStream){
+        StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
         DAG dag = new DAG(modelHeader);
         Variable classVar = modelHeader.getVariableById(modelHeader.getNumberOfVars()-1);
         dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
@@ -41,17 +42,17 @@ public final class LearningEngineForBN {
         LearningEngineForBN.staticStructuralLearningAlgorithm = staticStructuralLearningAlgorithm;
     }
 
-    public static BayesianNetwork learnParameters(DAG dag, DataBase database){
-        return staticParameterLearningAlgorithm.learn(dag,database);
+    public static BayesianNetwork learnParameters(DAG dag, DataStream<DataInstance> dataStream){
+        return staticParameterLearningAlgorithm.learn(dag,dataStream);
     }
 
 
-    public static DAG learnDAG(DataBase dataBase){
-        return staticStructuralLearningAlgorithm.learn(dataBase);
+    public static DAG learnDAG(DataStream<DataInstance> dataStream){
+        return staticStructuralLearningAlgorithm.learn(dataStream);
     }
 
 
-    public static BayesianNetwork learnStaticModel(DataBase database){
+    public static BayesianNetwork learnStaticModel(DataStream<DataInstance> database){
 
         Stopwatch watch = Stopwatch.createStarted();
         DAG dag = staticStructuralLearningAlgorithm.learn(database);
@@ -68,7 +69,7 @@ public final class LearningEngineForBN {
     public static void main(String[] args) throws Exception{
 
 //        String dataFile = new String("./datasets/Pigs.arff");
-//        DataBase<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
+//        DataStream<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
 //
 //        ParallelTAN tan= new ParallelTAN();
 //        tan.setNumCores(4);
