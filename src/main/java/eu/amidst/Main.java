@@ -51,12 +51,8 @@ public class Main {
 
 package eu.amidst;
 
-
-import eu.amidst.core.database.DataBase;
-import eu.amidst.core.database.DataOnDisk;
-import eu.amidst.core.database.StaticDataInstance;
-import eu.amidst.core.database.filereaders.StaticDataOnDiskFromFile;
-import eu.amidst.core.database.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 
 import java.util.*;
@@ -106,9 +102,9 @@ public class Main {
 
 
 
-     DataBase<StaticDataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
+     DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
 
-     Iterator<StaticDataInstance> it = data.iterator();
+     Iterator<DataInstance> it = data.iterator();
      for (int i = 0; i < 3; i++) {
          System.out.println(it.next().toString());
      }
