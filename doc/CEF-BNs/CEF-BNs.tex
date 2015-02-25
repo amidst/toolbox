@@ -982,6 +982,21 @@ Note that here all $\beb$ and $\sigma^2$ values must be taken from the moment pa
 
 As in \ref{NormalGNomal2form}, but now the natural parameters should be taken from the moment parameters of the parent variables, and not the natural parameters of $X$.
 
+\begin{eqnarray*}
+\ln p(X\mid \mathbf{Y}) &=& \theta(\mathbf{Y})^T s(X) - A \big(\theta(\mathbf{Y})\big) + h(\mathbf{X})\\\\
+&=&
+\begin{pmatrix}
+\frac{\beta_0}{\sigma^2} + \frac{\beb}{\sigma^2} \Y\\
+\frac{-1}{2\sigma^2}\\
+\end{pmatrix}^T
+\begin{pmatrix}
+X \\
+X^2 \\
+\end{pmatrix}\\ 
+&-& 
+\left(-0.5\ln{(\frac{1}{\sigma^2})} + \frac{\beta_0\beb}{\sigma^2} \Y + \frac{\beb\beb^T}{2\sigma^2}\Y\Y^T +\frac{\beta_0}{2\sigma^2}\right) - \tfrac{1}{2}\ln{(2\pi)} 
+\end{eqnarray*}
+
 \item \textbf{Third form (messages from $X$ to $\beta_0$)}:
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beb,\gamma)^T s(\beta_0) - A \big(\theta(X,\Y,\beb,\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
