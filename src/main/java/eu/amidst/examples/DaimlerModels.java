@@ -101,7 +101,7 @@ public final class DaimlerModels {
         variableBuilder.setName("A_LAT");
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpace(new RealStateSpace());
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
+        variableBuilder.setDistributionType(DistType.NORMAL);
         Variable aLAT = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();

@@ -126,7 +126,7 @@ public final class Utils {
     }
 
     public static boolean isLinkCLG(Variable child, Variable parent){
-        return !(child.isMultinomial() && parent.isGaussian());
+        return !(child.isMultinomial() && parent.isNormal());
     }
 
     public static List<Variable> getCausalOrder(DAG dag){
@@ -224,7 +224,7 @@ public final class Utils {
         if (amidstVar.isMultinomial()){
             return 0;
         }
-        else if (amidstVar.isGaussian()) {
+        else if (amidstVar.isNormal()) {
 
             boolean multinomialParents = false;
             boolean normalParents = false;
@@ -232,7 +232,7 @@ public final class Utils {
             for (Variable v : conditioningVariables) {
                 if (v.isMultinomial()) {
                     multinomialParents = true;
-                } else if (v.isGaussian()) {
+                } else if (v.isNormal()) {
                     normalParents = true;
                 } else {
                     throw new IllegalArgumentException("Unrecognized DistributionType. ");
@@ -309,7 +309,7 @@ public final class Utils {
         builder.setStateSpace(variable.getStateSpace());
         switch (variable.getStateSpace().getStateSpaceType()) {
             case REAL:
-                builder.setDistributionType(DistType.GAUSSIAN);
+                builder.setDistributionType(DistType.NORMAL);
                 break;
             case FINITE_SET:
                 builder.setDistributionType(DistType.MULTINOMIAL);
