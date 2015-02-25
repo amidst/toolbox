@@ -37,35 +37,19 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
     public Class huginDBN;
     public Domain domainObject;
     //For now we assume a time window equals to 1
-    private static final int timeWindow = 1;
+    private final int timeWindow = 1;
     private DynamicAssignment assignment = new HashMapAssignment(0);
 
+    int timeID;
+    int sequenceID;
+
+    public HuginInferenceForDBN() {
+        this.timeID=-1;
+    }
+
     @Override
-    public void runInference() {
-        try {
-            domainObject.uncompile();
-            domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
-            domainObject.compile();
-        } catch (ExceptionHugin exceptionHugin) {
-            exceptionHugin.printStackTrace();
-        }
-    }
-
-
-    public DynamicAssignment getAssignment() {
-        return assignment;
-    }
-
-    public void setAssignment(DynamicAssignment assignment_) {
-        this.assignment = assignment_;
-    }
-
-    public Domain getDomainObject() {
-        return domainObject;
-    }
-
-    public void setDomainObject(Domain domainObject) {
-        this.domainObject = domainObject;
+    public DynamicBayesianNetwork getModel() {
+        return this.amidstDBN;
     }
 
     @Override
@@ -87,36 +71,51 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
     }
 
     @Override
-    public DynamicBayesianNetwork getModel() {
-        return this.amidstDBN;
-    }
-
-    @Override
     public void addDynamicEvidence(DynamicAssignment assignment_) {
 
-        //Can I remove this?
+
+        if (this.sequenceID != -1 && this.sequenceID != assignment_.getSequenceID())
+            throw new IllegalArgumentException("The sequence ID does not match. If you want to change the sequence, invoke reset method");
+
+        if (this.timeID >= assignment_.getTimeID())
+            throw new IllegalArgumentException("The provided assignment is not posterior to the previous provided assignment.");
+
+        this.assignment = assignment_;
+
+    }
+    @Override
+    public void runInference() {
         try {
-            this.domainObject.retractFindings();
+            domainObject.uncompile();
+            if (assignment.getTimeID()==0) {
+                this.setAssignmentToHuginModel(this.assignment, 0);
+                this.timeID = 0;
+            } else{
+                this.timeID = this.getTimeIDOfLastEvidence();
+                this.setAssignmentToHuginModel(this.assignment, 1);
+            }
+
+            domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
+            domainObject.compile();
+
         } catch (ExceptionHugin exceptionHugin) {
             exceptionHugin.printStackTrace();
         }
-        //System.out.println("ENTERING DYNAMIC EVIDENCE: [ ");
-        this.assignment = assignment_;
+    }
 
+
+    public void setAssignmentToHuginModel(DynamicAssignment assignment, int time) {
         List<Variable> dynamicVariables = amidstDBN.getDynamicVariables().getListOfDynamicVariables();
 
         for (Variable var : dynamicVariables) {
             if (var.getVarID() != 10) {
                 if (var.isMultinomial()) {
-                    //System.out.print("\n    " +var.getName() + ": " + assignment.getValue(var));
                     try {
-                        LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T1." + var.getName());
+                        LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + time + "." + var.getName());
                         node.selectState((long) assignment.getValue(var));
                     } catch (ExceptionHugin exceptionHugin) {
                         exceptionHugin.printStackTrace();
                     }
-                } else if (var.isNormal()) {
-                    System.out.println("IMPLEMENT!!!!");
                 }
             }
         }
@@ -124,68 +123,88 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
 
     @Override
     public void reset() {
-
+//        //Can I remove this?
+//        try {
+//            this.domainObject.retractFindings();
+//        } catch (ExceptionHugin exceptionHugin) {
+//            exceptionHugin.printStackTrace();
+//        }
+        //System.out.println("ENTERING DYNAMIC EVIDENCE: [ ");
+        this.timeID = -1;
+        this.sequenceID=-1;
     }
 
     @Override
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
         UnivariateDistribution posteriorDistribution = null;
 
+        String targetVariableName = (getTimeIDOfPosterior()==0)? "T0." : "T"+this.timeWindow+".";
         try {
-            domainObject.computeDBNPredictions(1);
-            LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T1." + var.getName());
-            posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+            LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName(targetVariableName + var.getName());
+            posteriorDistribution = DistributionBuilder.newUnivariateDistribution(var);
 
             double[] probabilities = new double[(int) node.getNumberOfStates()];
             for (int i = 0; i < node.getNumberOfStates(); i++) {
                 probabilities[i] = node.getBelief(i);
             }
             ((Multinomial) posteriorDistribution).setProbabilities(probabilities);
+            domainObject.moveDBNWindow(1);
+
         } catch (ExceptionHugin exceptionHugin) {
             exceptionHugin.printStackTrace();
         }
+
         return ((E) posteriorDistribution);
     }
 
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
-        UnivariateDistribution posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+
+        UnivariateDistribution posteriorDistribution = null;
         try {
-            domainObject.moveDBNWindow(nTimesAhead);
 
-            LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + nTimesAhead + "." + var.getName());
-            posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
 
+            LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T1."+ var.getName());
+
+
+            //Only works for discrete nodes in Hugin!!!
+            this.domainObject.computeDBNPredictions(nTimesAhead+1);
+
+
+            posteriorDistribution = DistributionBuilder.newUnivariateDistribution(var);
             double[] probabilities = new double[(int) node.getNumberOfStates()];
             for (int i = 0; i < node.getNumberOfStates(); i++) {
-                probabilities[i] = node.getBelief(i);
+                probabilities[i] = node.getPredictedBelief(i,nTimesAhead);
             }
             ((Multinomial) posteriorDistribution).setProbabilities(probabilities);
+
 
         } catch (ExceptionHugin exceptionHugin) {
             exceptionHugin.printStackTrace();
         }
-        return (E) posteriorDistribution;
+
+        //Mirar Hugin API computeDBNPredictions, getBeliefAhead etc
+
+        return (E)posteriorDistribution;
     }
 
     @Override
     public int getTimeIDOfLastEvidence() {
-        return 0;
+        return this.assignment.getTimeID();
     }
 
     @Override
     public int getTimeIDOfPosterior() {
-        return 0;
+        return this.timeID;
     }
-
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, ExceptionHugin {
 
         //**************************************************************************************************************
         // LEARN A DYNAMIC BAYESIAN NETWORK
         //**************************************************************************************************************
-
-       /* String file = "./datasets/bank_data_train.arff";
+/*
+        String file = "./datasets/bank_data_train.arff";
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
@@ -218,26 +237,26 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         //Domain domainObject = huginInferenceForDBN.getDomainObject();
         //BNWriterToHugin.saveToHuginFile(BNConverterToAMIDST.convertToAmidst(domainObject),"networks/CajamarDomainTimeWindow"+HuginInferenceForDBN.timeWindow +".net");
 
-
         UnivariateDistribution dist = null;
-       // UnivariateDistribution distAhead = null;
+        UnivariateDistribution distAhead = null;
+
         Variable defaultVar = amidstDBN.getDynamicVariables().getVariableByName("DEFAULT");
 
         for (DynamicDataInstance instance : data) {
 
-           if (instance.getTimeID()==0 && dist != null) {
-              // System.out.print("\nTIME_ID: " + instance.getTimeID() + " SEQUENCE_ID: " + instance.getSequenceID() + "\n");
-               System.out.println(dist.toString());
-               //System.out.println(distAhead.toString());
-               InferenceEngineForDBN.reset();
-           }
+
+            if (instance.getTimeID()==0 && dist != null) {
+                System.out.println(dist.toString());
+                //System.out.println(distAhead.toString());
+                InferenceEngineForDBN.reset();
+            }
+            System.out.print("TIME_ID: " + instance.getTimeID() + " - SEQUENCE_ID: " + instance.getSequenceID() + "\n");
+
             instance.setValue(defaultVar, Utils.missingValue());
             InferenceEngineForDBN.addDynamicEvidence(instance);
             InferenceEngineForDBN.runInference();
             dist = InferenceEngineForDBN.getFilteredPosterior(defaultVar);
-            //System.out.println(dist.toString());
-           //distAhead = InferenceEngineForDBN.getPredictivePosterior(defaultVar,1);
-            //System.out.println(distAhead.toString());
+           // distAhead = InferenceEngineForDBN.getPredictivePosterior(defaultVar,1);
 
         }
     }
