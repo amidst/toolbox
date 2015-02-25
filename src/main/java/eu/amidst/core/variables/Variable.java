@@ -32,8 +32,8 @@ public interface Variable {
     @Override
     boolean equals(Object o);
 
-    default boolean isGaussian(){
-        return(this.getDistributionType().compareTo(DistType.GAUSSIAN)==0);
+    default boolean isNormal(){
+        return(this.getDistributionType().compareTo(DistType.NORMAL)==0);
     }
 
     default boolean isMultinomial(){
@@ -44,13 +44,13 @@ public interface Variable {
         return(this.getDistributionType().compareTo(DistType.MULTINOMIAL_LOGISTIC)==0);
     }
 
-    default boolean isIndicator(){
-        return(this.getDistributionType().compareTo(DistType.INDICATOR)==0);
-    }
+    //default boolean isIndicator(){
+    //    return(this.getDistributionType().compareTo(DistType.INDICATOR)==0);
+    //}
 
     default String toARFFString(){
 
-        if (this.isGaussian()) {
+        if (this.isNormal()) {
             return "@attribute " + this.getName() + " real";
         }else{
             StringBuilder stringBuilder = new StringBuilder("@attribute " + this.getName() + " {");

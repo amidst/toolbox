@@ -1,5 +1,6 @@
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
@@ -36,4 +37,5 @@ public abstract class Distribution implements Serializable {
 
     public abstract String toString();
 
+    public abstract double getLogProbability(Assignment assignment);
 }

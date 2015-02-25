@@ -1,5 +1,7 @@
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.variables.Assignment;
+
 import java.util.Random;
 
 /**
@@ -19,6 +21,11 @@ public abstract class UnivariateDistribution extends Distribution {
      */
     public double getProbability(double value){
         return Math.exp(this.getLogProbability(value));
+    }
+
+    @Override
+    public double getLogProbability(Assignment assignment){
+        return this.getLogProbability(assignment.getValue(this.var));
     }
 
     /**
