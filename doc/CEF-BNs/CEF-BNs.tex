@@ -1044,14 +1044,14 @@ Let $\gamma$ be an inverse gamma variable with parameters $\alpha, \beta$. The l
 \ln p(\gamma) &=& \ln \left( \frac{\beta^{\alpha}}{\Gamma(\alpha)} \gamma^{-\alpha-1} e^{-\frac{\beta}{\gamma}} \right)\\\\
 &=&
 \begin{pmatrix}
-\ln \gamma \\
-\frac{1}{\gamma}
+-\alpha - 1\\
+-\beta
 \end{pmatrix}^T
 \begin{pmatrix}
-\alpha - 1\\
-\beta
+\ln \gamma \\
+\frac{1}{\gamma}
 \end{pmatrix}
-+ \ln{\Gamma(\alpha)} - \alpha \ln{\beta} + h(\gamma)
+- \left(\ln{\Gamma(\alpha)} - \alpha \ln{\beta}\right) + 0
 \end{eqnarray*}
 
 \newpage

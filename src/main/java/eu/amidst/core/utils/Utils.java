@@ -321,6 +321,27 @@ public final class Utils {
         return builder;
     }
 
+    /**
+     *
+     * Inverse digamma function.  The digamma function is the
+     * derivative of the log gamma function.  This calculates the value
+     * Y > 0 for a value X such that digamma(Y) = X.
+     *
+     * This algorithm is from Paul Fackler:
+     * http://www4.ncsu.edu/~pfackler/
+     *
+     * @param X
+     * @return Y value such as Digamma(Y) = X
+     */
+    public static double invDigamma(double X){
+        double L = 1;
+        double Y = Math.exp(X);
+        while (L > 10e-8) {
+            Y = Y + L * (X - org.apache.commons.math3.special.Gamma.digamma(Y));
+            L = L / 2;
+        }
+        return Y;
+    }
 
     //*********************************************************************************
 //            //Simulate a sample from a Hugin network
