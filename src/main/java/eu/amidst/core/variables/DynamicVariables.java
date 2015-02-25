@@ -100,6 +100,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return allVariables.get(var.getVarID());
     }
 
+    /*
     public Variable addIndicatorDynamicVariable(Variable var) {
         if (!var.isObservable()) {
             throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
@@ -126,7 +127,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return varNew;
 
     }
-
+*/
     public Variable addObservedDynamicVariable(Attribute att) {
 
         VariableImplementation var = new VariableImplementation(new VariableBuilder(att), allVariables.size());
