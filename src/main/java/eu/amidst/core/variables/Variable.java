@@ -44,6 +44,10 @@ public interface Variable {
         return(this.getDistributionType().compareTo(DistType.MULTINOMIAL_LOGISTIC)==0);
     }
 
+    default boolean isInverseGamma(){
+        return(this.getDistributionType().compareTo(DistType.INV_GAMMA)==0);
+    }
+
     default boolean isIndicator(){
         return(this.getDistributionType().compareTo(DistType.INDICATOR)==0);
     }
