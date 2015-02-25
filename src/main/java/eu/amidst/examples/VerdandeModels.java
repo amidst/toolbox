@@ -94,7 +94,7 @@ public final class VerdandeModels {
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpace(new RealStateSpace());
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
+        variableBuilder.setDistributionType(DistType.NORMAL);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
@@ -238,7 +238,7 @@ public final class VerdandeModels {
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
         variableBuilder.setStateSpace(new RealStateSpace());
-        variableBuilder.setDistributionType(DistType.GAUSSIAN);
+        variableBuilder.setDistributionType(DistType.NORMAL);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
