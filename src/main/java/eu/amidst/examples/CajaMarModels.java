@@ -72,7 +72,7 @@ public final class CajaMarModels {
          * We can create indicator variables. For doing that, we just simply call the method "addIndicatorDynamicVariable"
          * of DynamicVariables object.
          */
-        Variable indicatorSalary = dynamicVariables.addIndicatorDynamicVariable(salary);
+        //Variable indicatorSalary = dynamicVariables.addIndicatorDynamicVariable(salary);
 
 
         /**
@@ -105,7 +105,7 @@ public final class CajaMarModels {
 
         dynamicDAG.getParentSetTimeT(salary).addParent(defaulter);
         dynamicDAG.getParentSetTimeT(salary).addParent(dynamicVariables.getTemporalClone(salary));
-        dynamicDAG.getParentSetTimeT(salary).addParent(indicatorSalary);
+        //dynamicDAG.getParentSetTimeT(salary).addParent(indicatorSalary);
 
 
 

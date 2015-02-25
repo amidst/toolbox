@@ -38,7 +38,7 @@ public class BNConverterToHugin {
                     String stateName = ((FiniteStateSpace)amidstVar.getStateSpace()).getStatesName(j);
                     n.setStateLabel(j, stateName);
                 }
-            } else if (amidstVar.isGaussian()) {
+            } else if (amidstVar.isNormal()) {
                 ContinuousChanceNode c = new ContinuousChanceNode(this.huginBN);
                 c.setName(amidstVar.getName());
             } else {

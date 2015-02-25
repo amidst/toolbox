@@ -218,4 +218,15 @@ public class DAG implements Serializable {
             }
         }
     }
+
+    public static void main(String[] args) throws Exception {
+
+
+        DAG dag = null;
+
+        dag.getParentSets().stream().mapToInt(parentset -> parentset.getNumberOfParents()).sum();
+
+
+    }
+
 }

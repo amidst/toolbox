@@ -17,9 +17,9 @@ public class IndicatorDistribution extends ConditionalDistribution {
     private Variable indicatorVar;
 
     public IndicatorDistribution(Variable indicatorVar1, ConditionalDistribution conditionalDistribution1) {
-        if (!indicatorVar1.isIndicator()) {
-            throw new IllegalArgumentException("IndicatorVar_ should be of indicator type");
-        }
+        //if (!indicatorVar1.isIndicator()) {
+        //    throw new IllegalArgumentException("IndicatorVar_ should be of indicator type");
+        //}
         this.var = conditionalDistribution1.getVariable();
         this.parents = new ArrayList<>();
         for (Variable var: conditionalDistribution1.getConditioningVariables()){
