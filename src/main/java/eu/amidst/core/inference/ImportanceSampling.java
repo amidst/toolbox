@@ -134,7 +134,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         if (var.isMultinomial()){
             ef_univariateDistribution = new EF_Multinomial(samplingVar);
         }
-        else if (var.isGaussian()) {
+        else if (var.isNormal()) {
             ef_univariateDistribution = new EF_Normal(samplingVar);
         }
         else {

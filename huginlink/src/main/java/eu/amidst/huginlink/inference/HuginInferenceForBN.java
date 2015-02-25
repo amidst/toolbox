@@ -23,7 +23,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
         if (n.isMultinomial()){
             ((DiscreteNode)huginBN.getNodeByName(n.getName())).selectState(value);
         }
-        else if (n.isGaussian()) {
+        else if (n.isNormal()) {
             ((ContinuousChanceNode)huginBN.getNodeByName(n.getName())).enterValue(value);
         }
         else {
@@ -108,7 +108,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
                 }
                 return (E)dist;
             }
-            else if (var.isGaussian()) {
+            else if (var.isNormal()) {
                 Normal dist = new Normal(var);
                 dist.setMean(((ContinuousChanceNode)huginNode).getMean());
                 dist.setSd(Math.sqrt(((ContinuousChanceNode) huginNode).getVariance()));
