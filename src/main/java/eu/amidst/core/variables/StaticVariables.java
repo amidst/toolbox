@@ -83,6 +83,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         return attributes;
     }
 
+    /*
     public Variable addIndicatorVariable(Variable var) {
         if (!var.isObservable()) {
             throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
@@ -99,7 +100,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         this.mapping.put(varNew.getName(), varNew.getVarID());
         allVariables.add(varNew);
         return varNew;
-    }
+    }*/
 
     public Variable addObservedVariable(Attribute att) {
 
@@ -140,7 +141,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
     public Variable addHiddenGaussianVariable(String name) {
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
-        builder.setDistributionType(DistType.GAUSSIAN);
+        builder.setDistributionType(DistType.NORMAL);
         builder.setStateSpace(new RealStateSpace());
         builder.setObservable(false);
 

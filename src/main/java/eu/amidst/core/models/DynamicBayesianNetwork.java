@@ -74,11 +74,11 @@ public final class DynamicBayesianNetwork implements Serializable {
             int varID = var.getVarID();
 
             /* Distributions at time t */
-            this.distributionsTimeT.add(varID, DistributionBuilder.newDistribution(var, this.dynamicDAG.getParentSetTimeT(var).getParents()));
+            this.distributionsTimeT.add(varID, DistributionBuilder.newConditionalDistribution(var, this.dynamicDAG.getParentSetTimeT(var).getParents()));
             this.dynamicDAG.getParentSetTimeT(var).blockParents();
 
             /* Distributions at time 0 */
-            this.distributionsTime0.add(varID, DistributionBuilder.newDistribution(var, this.dynamicDAG.getParentSetTime0(var).getParents()));
+            this.distributionsTime0.add(varID, DistributionBuilder.newConditionalDistribution(var, this.dynamicDAG.getParentSetTime0(var).getParents()));
             this.dynamicDAG.getParentSetTime0(var).blockParents();
         }
 

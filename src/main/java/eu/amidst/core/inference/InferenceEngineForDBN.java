@@ -1,5 +1,6 @@
 package eu.amidst.core.inference;
 
+import eu.amidst.core.datastream.DataSequence;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.DynamicAssignment;
@@ -14,9 +15,6 @@ public final class InferenceEngineForDBN {
 
 
     private static InferenceAlgorithmForDBN inferenceAlgorithmForDBN;// = new VMP();
-
-    private static Stream<DynamicAssignment> dataSequence;
-
 
     public static InferenceAlgorithmForDBN getInferenceAlgorithmForDBN() {
         return inferenceAlgorithmForDBN;
@@ -61,35 +59,31 @@ public final class InferenceEngineForDBN {
     }
 
 
-    public static void setDataSequence(Stream<DynamicAssignment> dataSequence_){
-        dataSequence=dataSequence_;
-    }
-
-    public static <E extends UnivariateDistribution> Stream<E> getStreamOfFilteredPosteriors(Variable var){
-        return dataSequence.map( data -> {
+    public static <E extends UnivariateDistribution> Stream<E> getStreamOfFilteredPosteriors(DataSequence dataSequence, Variable var){
+        return dataSequence.stream().map( data -> {
             inferenceAlgorithmForDBN.addDynamicEvidence(data);
             inferenceAlgorithmForDBN.runInference();
             return inferenceAlgorithmForDBN.getFilteredPosterior(var);
         });
     }
 
-    public static <E extends UnivariateDistribution> Stream<E> getStreamOfPredictivePosteriors(Variable var, int nTimesAhead){
-        return dataSequence.map( data -> {
+    public static <E extends UnivariateDistribution> Stream<E> getStreamOfPredictivePosteriors(DataSequence dataSequence, Variable var, int nTimesAhead){
+        return dataSequence.stream().map( data -> {
             inferenceAlgorithmForDBN.addDynamicEvidence(data);
             inferenceAlgorithmForDBN.runInference();
             return inferenceAlgorithmForDBN.getPredictivePosterior(var, nTimesAhead);
         });
     }
 
-    public static <E extends UnivariateDistribution> E getLastFilteredPosteriorInTheSequence(Variable var){
+    public static <E extends UnivariateDistribution> E getLastFilteredPosteriorInTheSequence(DataSequence dataSequence, Variable var){
         final UnivariateDistribution[] dist = new UnivariateDistribution[1];
-        getStreamOfFilteredPosteriors(var).forEach(e -> dist[0]=e);
+        getStreamOfFilteredPosteriors(dataSequence, var).forEach(e -> dist[0]=e);
         return (E)dist[0];
     }
 
-    public static <E extends UnivariateDistribution> E getLastPredictivePosteriorInTheSequence(Variable var, int nTimesAhead){
+    public static <E extends UnivariateDistribution> E getLastPredictivePosteriorInTheSequence(DataSequence dataSequence, Variable var, int nTimesAhead){
         final UnivariateDistribution[] dist = new UnivariateDistribution[1];
-        getStreamOfPredictivePosteriors(var, nTimesAhead).forEach(e -> dist[0]=e);
+        getStreamOfPredictivePosteriors(dataSequence, var, nTimesAhead).forEach(e -> dist[0]=e);
         return (E)dist[0];
     }
 

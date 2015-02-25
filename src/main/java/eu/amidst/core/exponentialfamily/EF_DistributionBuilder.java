@@ -152,7 +152,6 @@ public final class EF_DistributionBuilder {
 
     }
 
-
     public static Normal toDistribution(EF_Normal efNormal) {
 
         Normal normal = new Normal(efNormal.getVariable());
@@ -164,7 +163,6 @@ public final class EF_DistributionBuilder {
 
         return normal;
     }
-
 
     public static EF_Multinomial toEFDistribution(Multinomial dist) {
         EF_Multinomial efMultinomial = new EF_Multinomial(dist.getVariable());

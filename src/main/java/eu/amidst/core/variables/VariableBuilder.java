@@ -22,7 +22,7 @@ public final class VariableBuilder {
         this.stateSpace = att.getStateSpace();
         switch (att.getStateSpace().getStateSpaceType()) {
             case REAL:
-                this.distributionType = DistType.GAUSSIAN;
+                this.distributionType = DistType.NORMAL;
                 break;
             case FINITE_SET:
                 this.distributionType = DistType.MULTINOMIAL;

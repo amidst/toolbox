@@ -115,7 +115,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
                     } catch (ExceptionHugin exceptionHugin) {
                         exceptionHugin.printStackTrace();
                     }
-                } else if (var.isGaussian()) {
+                } else if (var.isNormal()) {
                     System.out.println("IMPLEMENT!!!!");
                 }
             }
@@ -134,7 +134,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         try {
             domainObject.computeDBNPredictions(1);
             LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T1." + var.getName());
-            posteriorDistribution = DistributionBuilder.newDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+            posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
 
             double[] probabilities = new double[(int) node.getNumberOfStates()];
             for (int i = 0; i < node.getNumberOfStates(); i++) {
@@ -149,12 +149,12 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
 
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
-        UnivariateDistribution posteriorDistribution = DistributionBuilder.newDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+        UnivariateDistribution posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
         try {
             domainObject.moveDBNWindow(nTimesAhead);
 
             LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + nTimesAhead + "." + var.getName());
-            posteriorDistribution = DistributionBuilder.newDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+            posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
 
             double[] probabilities = new double[(int) node.getNumberOfStates()];
             for (int i = 0; i < node.getNumberOfStates(); i++) {

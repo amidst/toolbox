@@ -234,7 +234,7 @@ public class BNConverterToHuginTest {
 
     private void testVariableType(Variable amidstVar, Node huginVar) throws ExceptionHugin {
         boolean amidstMultinomialVar = amidstVar.isMultinomial();
-        boolean amidstNormalVar = amidstVar.isGaussian();
+        boolean amidstNormalVar = amidstVar.isNormal();
         boolean huginMultinomialVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0;
         boolean huginNormalVar = huginVar.getKind().compareTo(NetworkModel.H_KIND_CONTINUOUS) == 0;
 
