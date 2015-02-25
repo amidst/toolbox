@@ -9,8 +9,6 @@
 package eu.amidst.core.models;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.utils.AmidstOptionsHandler;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.StaticVariables;
@@ -87,7 +85,7 @@ public final class BayesianNetwork implements Serializable {
             ParentSet parentSet = this.getDAG().getParentSet(var);
 
             int varID = var.getVarID();
-            this.distributions.add(varID, DistributionBuilder.newDistribution(var, parentSet.getParents()));
+            this.distributions.add(varID, DistributionBuilder.newConditionalDistribution(var, parentSet.getParents()));
             parentSet.blockParents();
         }
 

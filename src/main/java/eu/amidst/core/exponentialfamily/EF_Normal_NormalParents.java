@@ -26,11 +26,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         this.var = var_;
         this.parents = parents_;
 
-        if (!var_.isGaussian())
+        if (!var_.isNormal())
             throw new UnsupportedOperationException("Creating a Normal|Normal EF distribution for a non-gaussian child variable.");
 
         for (Variable v : parents) {
-            if (!v.isGaussian())
+            if (!v.isNormal())
                 throw new UnsupportedOperationException("Creating a Normal|Normal EF distribution for a non-gaussian parent variable.");
         }
 

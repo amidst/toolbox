@@ -1,6 +1,5 @@
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -14,20 +13,35 @@ public final class DistributionBuilder {
     private DistributionBuilder(){
         //Not called
     }
-    public static ConditionalDistribution newDistribution(Variable mainVar, List<Variable> conditioningVars){
+
+    public static UnivariateDistribution newUnivariateDistribution(Variable mainVar) {
+        if (mainVar.isMultinomial()){
+            return new Multinomial(mainVar);
+        }else if (mainVar.isNormal()) {
+            return new Normal(mainVar);
+        }else{
+            throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
+        }
+    }
+
+    public static ConditionalDistribution newConditionalDistribution(Variable mainVar, List<Variable> conditioningVars) {
+        return null;
+    }
+    /*
+    public static ConditionalDistribution newConditionalDistribution(Variable mainVar, List<Variable> conditioningVars){
 
         if (mainVar.isMultinomial()){
             return new Multinomial_MultinomialParents(mainVar, conditioningVars);
-        }else if (mainVar.isGaussian()) {
+        }else if (mainVar.isNormal()) {
             boolean multinomialParents = false;
             boolean normalParents = false;
             boolean indicator = false;
 
-            /* The parents of a gaussian variable are either multinomial and/or normal */
+            //The parents of a gaussian variable are either multinomial and/or normal
             for (Variable v : conditioningVars) {
                 if (v.isMultinomial() || (v.isMultinomialLogistic())) {
                     multinomialParents = true;
-                } else if (v.isGaussian()) {
+                } else if (v.isNormal()) {
                     normalParents = true;
                 } else if (v.isIndicator()) {
                     indicator = true;
@@ -51,7 +65,7 @@ public final class DistributionBuilder {
                     throw new IllegalArgumentException("The indicator var does not correspond to the main var.");
                 }
 
-                ConditionalDistribution dist = newDistribution(mainVar,newconditioningVars);
+                ConditionalDistribution dist = newConditionalDistribution(mainVar, newconditioningVars);
 
                 return new IndicatorDistribution(indicatorVar,dist);
 
@@ -72,4 +86,5 @@ public final class DistributionBuilder {
             throw new IllegalArgumentException("Error in variable DistributionBuilder. Unrecognized DistributionType. ");
         }
     }
+        */
 }

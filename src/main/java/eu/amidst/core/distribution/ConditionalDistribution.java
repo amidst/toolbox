@@ -49,4 +49,10 @@ public abstract class ConditionalDistribution extends Distribution {
 
     public abstract UnivariateDistribution getUnivariateDistribution(Assignment assignment);
 
+
+    @Override
+    public double getLogProbability(Assignment assignment){
+        return this.getLogConditionalProbability(assignment);
+    }
+
 }

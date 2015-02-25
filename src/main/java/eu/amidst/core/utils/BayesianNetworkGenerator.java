@@ -85,7 +85,7 @@ public final class BayesianNetworkGenerator{
     private static VariableBuilder generateContinuousVariable(String name){
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
-        builder.setDistributionType(DistType.GAUSSIAN);
+        builder.setDistributionType(DistType.NORMAL);
         builder.setStateSpace(new RealStateSpace());
         builder.setObservable(false);
 
