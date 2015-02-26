@@ -1,4 +1,7 @@
-package eu.amidst.core.variables;
+package eu.amidst.core.variables.stateSpaceTypes;
+
+import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -6,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by andresmasegosa on 25/11/14.
  */
-public class FiniteStateSpace extends StateSpace implements Iterable<String> {
+public class FiniteStateSpace extends StateSpaceType implements Iterable<String> {
 
     private int numberOfStates;
     private final List<String> statesNames;
@@ -15,7 +18,7 @@ public class FiniteStateSpace extends StateSpace implements Iterable<String> {
 
 
     public FiniteStateSpace(int numberOfStates1) {
-        super(StateSpaceType.FINITE_SET);
+        super(StateSpaceTypeEnum.FINITE_SET);
         this.numberOfStates=numberOfStates1;
         this.statesNames = new ArrayList<>();
         this.mapStatesNames = new ConcurrentHashMap<>();
@@ -28,7 +31,7 @@ public class FiniteStateSpace extends StateSpace implements Iterable<String> {
     }
 
     public FiniteStateSpace(List<String> statesNames1) {
-        super(StateSpaceType.FINITE_SET);
+        super(StateSpaceTypeEnum.FINITE_SET);
         this.numberOfStates=statesNames1.size();
         this.statesNames = new ArrayList<>();
         this.mapStatesNames = new ConcurrentHashMap<>();

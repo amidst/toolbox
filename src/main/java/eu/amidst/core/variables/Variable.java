@@ -1,6 +1,10 @@
 package eu.amidst.core.variables;
 
 import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.UnivariateDistribution;
+
+import java.util.List;
 
 /**
  * TODO Implements toString method
@@ -14,17 +18,27 @@ public interface Variable {
 
     boolean isObservable();
 
-    <E extends StateSpace> E getStateSpace();
+    <E extends StateSpaceType> E getStateSpaceType();
 
     int getNumberOfStates();
 
-    DistType getDistributionType();
+    DistributionTypeEnum getDistributionTypeEnum();
+
+    <E extends DistributionType> E getDistributionType();
 
     boolean isTemporalClone();
 
     boolean isDynamicVariable();
 
     Attribute getAttribute();
+
+    default <E extends UnivariateDistribution> E newUnivariateDistribution(){
+        return this.getDistributionType().newUnivariateDistribution();
+    }
+
+    default <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents){
+        return this.getDistributionType().newConditionalDistribution(parents);
+    }
 
     @Override
     int hashCode();
@@ -33,32 +47,19 @@ public interface Variable {
     boolean equals(Object o);
 
     default boolean isNormal(){
-        return(this.getDistributionType().compareTo(DistType.NORMAL)==0);
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.NORMAL)==0);
     }
 
     default boolean isMultinomial(){
-        return(this.getDistributionType().compareTo(DistType.MULTINOMIAL)==0);
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.MULTINOMIAL)==0);
     }
 
     default boolean isMultinomialLogistic(){
-        return(this.getDistributionType().compareTo(DistType.MULTINOMIAL_LOGISTIC)==0);
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.MULTINOMIAL_LOGISTIC)==0);
     }
 
     //default boolean isIndicator(){
-    //    return(this.getDistributionType().compareTo(DistType.INDICATOR)==0);
+    //    return(this.getDistributionTypeEnum().compareTo(DistType.INDICATOR)==0);
     //}
-
-    default String toARFFString(){
-
-        if (this.isNormal()) {
-            return "@attribute " + this.getName() + " real";
-        }else{
-            StringBuilder stringBuilder = new StringBuilder("@attribute " + this.getName() + " {");
-            FiniteStateSpace stateSpace = this.getStateSpace();
-            stateSpace.getStatesNames().stream().limit(stateSpace.getNumberOfStates()-1).forEach(e -> stringBuilder.append(e+", "));
-            stringBuilder.append(stateSpace.getStatesName(stateSpace.getNumberOfStates()-1)+"}");
-            return stringBuilder.toString();
-        }
-    }
 
 }

@@ -4,9 +4,9 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.filereaders.DataFileReader;
 import eu.amidst.core.datastream.filereaders.DataRow;
-import eu.amidst.core.variables.FiniteStateSpace;
-import eu.amidst.core.variables.RealStateSpace;
-import eu.amidst.core.variables.StateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.variables.StateSpaceType;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
@@ -43,17 +43,17 @@ public class WekaDataFileReader implements DataFileReader, Iterator<DataRow>{
         List<Attribute> attrs = new ArrayList<>();
         while (attributesWeka.hasMoreElements()) {
             attrWeka = (weka.core.Attribute) attributesWeka.nextElement();
-            StateSpace stateSpaceAtt=null;
+            StateSpaceType stateSpaceTypeAtt =null;
             if(attrWeka.isNominal()){
                 String[] vals = new String[attrWeka.numValues()];
                 for (int i=0; i<attrWeka.numValues(); i++) {
                     vals[i] = attrWeka.value(i);
                 }
-                stateSpaceAtt = new FiniteStateSpace(attrWeka.numValues());
+                stateSpaceTypeAtt = new FiniteStateSpace(attrWeka.numValues());
             }else{
-                stateSpaceAtt = new RealStateSpace();
+                stateSpaceTypeAtt = new RealStateSpace();
             }
-            Attribute att = new Attribute(attrWeka.index(),attrWeka.name(),stateSpaceAtt);
+            Attribute att = new Attribute(attrWeka.index(),attrWeka.name(), stateSpaceTypeAtt);
             attrs.add(att);
         }
         attributes = new Attributes(attrs);

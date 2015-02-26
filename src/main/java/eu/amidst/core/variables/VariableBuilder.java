@@ -9,8 +9,8 @@ import eu.amidst.core.datastream.Attribute;
 public final class VariableBuilder {
     private static String name;
     private static boolean observable;
-    private static StateSpace stateSpace;
-    private static DistType distributionType;
+    private static StateSpaceType stateSpaceType;
+    private static DistributionTypeEnum distributionType;
     private static Attribute attribute;
 
     public VariableBuilder() {
@@ -19,24 +19,24 @@ public final class VariableBuilder {
     public VariableBuilder(Attribute att){
         this.name = att.getName();
         this.observable = true;
-        this.stateSpace = att.getStateSpace();
-        switch (att.getStateSpace().getStateSpaceType()) {
+        this.stateSpaceType = att.getStateSpaceType();
+        switch (att.getStateSpaceType().getStateSpaceTypeEnum()) {
             case REAL:
-                this.distributionType = DistType.NORMAL;
+                this.distributionType = DistributionTypeEnum.NORMAL;
                 break;
             case FINITE_SET:
-                this.distributionType = DistType.MULTINOMIAL;
+                this.distributionType = DistributionTypeEnum.MULTINOMIAL;
                 break;
             default:
-                throw new IllegalArgumentException(" The string \"" + att.getStateSpace() + "\" does not map to any Type.");
+                throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
         }
         this.attribute = att;
     }
 
-    public VariableBuilder(Attribute att, DistType typeDist){
+    public VariableBuilder(Attribute att, DistributionTypeEnum typeDist){
         this.name = att.getName();
         this.observable = true;
-        this.stateSpace = att.getStateSpace();
+        this.stateSpaceType = att.getStateSpaceType();
         this.distributionType = typeDist;
         this.attribute = att;
     }
@@ -49,11 +49,11 @@ public final class VariableBuilder {
         return observable;
     }
 
-    public static StateSpace getStateSpace() {
-        return stateSpace;
+    public static StateSpaceType getStateSpaceType() {
+        return stateSpaceType;
     }
 
-    public static DistType getDistributionType() {
+    public static DistributionTypeEnum getDistributionType() {
         return distributionType;
     }
 
@@ -67,11 +67,11 @@ public final class VariableBuilder {
         VariableBuilder.observable = observable;
     }
 
-    public static void setStateSpace(StateSpace stateSpace) {
-        VariableBuilder.stateSpace = stateSpace;
+    public static void setStateSpaceType(StateSpaceType stateSpaceType) {
+        VariableBuilder.stateSpaceType = stateSpaceType;
     }
 
-    public static void setDistributionType(DistType distributionType) {
+    public static void setDistributionType(DistributionTypeEnum distributionType) {
         VariableBuilder.distributionType = distributionType;
     }
 

@@ -78,7 +78,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                 this.sampler=sampler1;
                 this.nSamples = nSamples1;
                 List<Attribute> list = this.sampler.network.getStaticVariables().getListOfVariables().stream()
-                        .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpace())).collect(Collectors.toList());
+                        .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpaceType())).collect(Collectors.toList());
                 this.atts= new Attributes(list);
             }
 
@@ -143,7 +143,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
         HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
         for (Variable var : causalOrder) {
-            double sampledValue = network.getDistribution(var).getUnivariateDistribution(assignment).sample(random);
+            double sampledValue = network.getConditionalDistribution(var).getUnivariateDistribution(assignment).sample(random);
             assignment.setValue(var, sampledValue);
         }
         return assignment;

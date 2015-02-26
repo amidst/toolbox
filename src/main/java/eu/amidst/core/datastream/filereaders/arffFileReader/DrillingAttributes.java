@@ -3,7 +3,7 @@ package eu.amidst.core.datastream.filereaders.arffFileReader;
 import com.google.common.collect.ImmutableList;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class DrillingAttributes extends Attributes {
 
-    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceType.REAL, 0);
-    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceType.REAL, 0);
-    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceType.REAL, 0);
+    private static final Attribute MFI = new Attribute(0, "MFI", "m3/s", StateSpaceTypeEnum.REAL, 0);
+    private static final Attribute SPP = new Attribute(1, "MFI", "Pa", StateSpaceTypeEnum.REAL, 0);
+    private static final Attribute RPM = new Attribute(2, "RPM", "1/s", StateSpaceTypeEnum.REAL, 0);
 
 
     private static List<Attribute> attributesDrilling;

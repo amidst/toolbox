@@ -1,9 +1,10 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.DistType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.Random;
@@ -120,5 +121,16 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         this.updateNaturalFromMomentParameters();
 
         return this;
+    }
+
+    @Override
+    public Multinomial toUnivariateDistribution() {
+        Multinomial multinomial = new Multinomial(this.getVariable());
+
+        for (int i = 0; i < multinomial.getVariable().getNumberOfStates(); i++) {
+            multinomial.setProbabilityOfState(i, this.getMomentParameters().get(i));
+        }
+
+        return multinomial;
     }
 }

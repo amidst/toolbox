@@ -4,9 +4,9 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.filereaders.DataFileReader;
 import eu.amidst.core.datastream.filereaders.DataRow;
-import eu.amidst.core.variables.FiniteStateSpace;
-import eu.amidst.core.variables.RealStateSpace;
-import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import org.eclipse.jetty.io.UncheckedIOException;
 import org.apache.commons.lang.StringUtils;
 
@@ -29,7 +29,7 @@ public class ARFFDataReader implements DataFileReader {
     private Attributes attributes;
     private int dataLineCount;
     private Path pathFile;
-    private StateSpaceType[] stateSpace;
+    private StateSpaceTypeEnum[] stateSpace;
 
     private static Attribute createAttributeFromLine(int index, String line){
         String[] parts = line.split(" |\t");
@@ -105,10 +105,10 @@ public class ARFFDataReader implements DataFileReader {
 
 
             //
-            stateSpace=new StateSpaceType[atts.size()];
+            stateSpace=new StateSpaceTypeEnum[atts.size()];
 
             for (Attribute att: atts){
-                stateSpace[att.getIndex()] = att.getStateSpace().getStateSpaceType();
+                stateSpace[att.getIndex()] = att.getStateSpaceType().getStateSpaceTypeEnum();
             }
         }catch (IOException ex){
             throw new UncheckedIOException(ex);
@@ -152,12 +152,12 @@ public class ARFFDataReader implements DataFileReader {
                     data[i] = Double.NaN;
                 }
                 else {
-                    switch (atts.getList().get(i).getStateSpace().getStateSpaceType()) {
+                    switch (atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum()) {
                         case REAL:
                             data[i] = Double.parseDouble(parts[i]);
                             break;
                         case FINITE_SET:
-                            FiniteStateSpace finiteStateSpace = atts.getList().get(i).getStateSpace();
+                            FiniteStateSpace finiteStateSpace = atts.getList().get(i).getStateSpaceType();
                             data[i] = finiteStateSpace.getIndexOfState(parts[i]);
                     }
                 }

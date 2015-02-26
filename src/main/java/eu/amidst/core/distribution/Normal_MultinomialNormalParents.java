@@ -12,6 +12,10 @@
 
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_Multinomial;
+import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -33,22 +37,20 @@ import java.util.Random;
 public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
 
-    /**
-     * The list of multinomial parents
-     */
-    private List<Variable> multinomialParents;
-
-    /**
-     * The list of normal parents
-     */
-    private List<Variable> normalParents;
 
     /**
      * An array of <code>Normal_NormalParents</code> objects, one for each configuration of the multinomial parents. These objects are
      * ordered according to the criteria implemented in class utils.MultinomialIndex
      */
-    private Normal_NormalParents[] distribution;
+    private BaseDistribution_MultinomialParents<Normal_NormalParents> base;
 
+
+    public Normal_MultinomialNormalParents(BaseDistribution_MultinomialParents<Normal_NormalParents> base_) {
+        this.base=base_;
+        this.var=this.base.getVariable();
+        this.parents=this.base.getConditioningVariables();
+        this.parents = Collections.unmodifiableList(this.parents);
+    }
 
     /**
      * The class constructor.
@@ -58,29 +60,10 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     public Normal_MultinomialNormalParents(Variable var1, List<Variable> parents1) {
 
         this.var = var1;
-        this.multinomialParents = new ArrayList<Variable>();
-        this.normalParents = new ArrayList<Variable>();
         this.parents = parents1;
 
-        for (Variable parent : parents) {
+        this.base = new BaseDistribution_MultinomialParents<>(var1,parents1);
 
-            if (parent.isMultinomial()) {
-                this.multinomialParents.add(parent);
-            } else {
-                this.normalParents.add(parent);
-            }
-        }
-
-        //Initialize the distribution with a Normal_NormalParents(var, normalParents) for each configuration of the parents.
-        int size = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
-        this.distribution = new Normal_NormalParents[size];
-        for (int i = 0; i < size; i++) {
-            this.distribution[i] = new Normal_NormalParents(var, normalParents);
-        }
-
-        //Make them unmodifiable
-        this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
-        this.normalParents = Collections.unmodifiableList(this.normalParents);
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
@@ -95,11 +78,11 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
      * argument.
      */
     public Normal_NormalParents getNormal_NormalParentsDistribution(Assignment assignment) {
-        int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
-        return distribution[position];
+        return this.base.getBaseDistribution(assignment);
+
     }
     public Normal_NormalParents getNormal_NormalParentsDistribution(int i) {
-        return distribution[i];
+        return this.base.getBaseDistribution(i);
 
     }
 
@@ -109,7 +92,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
      * @param distribution A <code>Normal_NormalParents</code> distribution.
      */
     public void setNormal_NormalParentsDistribution(int position, Normal_NormalParents distribution) {
-        this.distribution[position] = distribution;
+        this.base.setBaseDistribution(position,distribution);
     }
 
     /**
@@ -120,8 +103,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
      * @param distribution A <code>Normal_NormalParents</code> distribution.
      */
     public void setNormal_NormalParentsDistribution(Assignment assignment, Normal_NormalParents distribution) {
-        int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, assignment);
-        this.setNormal_NormalParentsDistribution(position, distribution);
+        this.base.setBaseDistribution(assignment, distribution);
     }
 
 
@@ -150,16 +132,16 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     }
 
     public List<Variable> getMultinomialParents() {
-        return multinomialParents;
+        return base.getMultinomialParents();
     }
 
 
     public List<Variable> getNormalParents() {
-        return normalParents;
+        return base.getNonMultinomialParents();
     }
 
-    public Normal_NormalParents[] getDistribution() {
-        return distribution;
+    public List<Normal_NormalParents> getDistribution() {
+        return base.getBaseDistributions();
     }
 
     public String label(){
@@ -168,13 +150,13 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
     @Override
     public void randomInitialization(Random random) {
-        for (int i = 0; i < this.distribution.length; i++) {
-            this.distribution[i].randomInitialization(random);
+        for (int i = 0; i < this.getNumberOfParentAssignments(); i++) {
+            this.base.getBaseDistribution(i).randomInitialization(random);
         }
     }
 
     public int getNumberOfParentAssignments(){
-        return this.distribution.length;
+        return this.base.getBaseDistributions().size();
     }
 
 
@@ -198,10 +180,14 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
     public boolean equalDist(Normal_MultinomialNormalParents dist, double threshold) {
         boolean equals = true;
-        for (int i = 0; i < this.getDistribution().length; i++) {
+        for (int i = 0; i < this.getDistribution().size(); i++) {
             equals = equals && this.getNormal_NormalParentsDistribution(i).equalDist(dist.getNormal_NormalParentsDistribution(i), threshold);
         }
         return equals;
     }
 
+    @Override
+    public EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents> toEFConditionalDistribution(){
+        return (EF_BaseDistribution_MultinomialParents<EF_Normal_NormalParents>)this.base.toEFConditionalDistribution();
+    }
 }

@@ -8,7 +8,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -40,10 +40,10 @@ public class BNConverterToAMIDST {
             Node n = (Node)huginNodes.get(i);
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 int numStates = (int)((DiscreteChanceNode)n).getNumberOfStates();
-                atts.add(new Attribute(i, n.getName(), "", StateSpaceType.FINITE_SET, numStates));
+                atts.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.FINITE_SET, numStates));
             }
             else if (n.getKind().compareTo(NetworkModel.H_KIND_CONTINUOUS) == 0) {
-                atts.add(new Attribute(i, n.getName(), "", StateSpaceType.REAL, 0));
+                atts.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.REAL, 0));
             }
         }
         StaticVariables staticVariables = new StaticVariables(new Attributes(atts));
@@ -89,6 +89,20 @@ public class BNConverterToAMIDST {
         this.amidstBN = BayesianNetwork.newBayesianNetwork(dag);
     }
 
+    private void setMultinomial(Node huginVar) throws ExceptionHugin {
+        int indexNode = this.huginBN.getNodes().indexOf(huginVar);
+        Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
+        int numStates = amidstVar.getNumberOfStates();
+
+        double[] huginProbabilities = huginVar.getTable().getData();
+        double[] amidstProbabilities = new double[numStates];
+        for (int k = 0; k < numStates; k++) {
+            amidstProbabilities[k] = huginProbabilities[k];
+        }
+        Multinomial dist = this.amidstBN.getDistribution(amidstVar);
+        dist.setProbabilities(amidstProbabilities);
+    }
+
     private void setMultinomial_MultinomialParents(Node huginVar) throws ExceptionHugin {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
@@ -100,16 +114,16 @@ public class BNConverterToAMIDST {
         List<Variable> parents = this.amidstBN.getDAG().getParentSet(amidstVar).getParents();
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(parents);
 
-       // int pos=0;
-        for(int i=0;i<numParentAssignments;i++){
+        // int pos=0;
+        for (int i = 0; i < numParentAssignments; i++) {
 
             double[] amidstProbabilities = new double[numStates];
-            for(int k=0;k<numStates;k++){
-                amidstProbabilities[k] = huginProbabilities[i*numStates+k];
+            for (int k = 0; k < numStates; k++) {
+                amidstProbabilities[k] = huginProbabilities[i * numStates + k];
             }
             Multinomial_MultinomialParents dist = this.amidstBN.getDistribution(amidstVar);
             dist.getMultinomial(i).setProbabilities(amidstProbabilities);
-          //  pos = pos+numStates;
+            //  pos = pos+numStates;
         }
     }
 
@@ -144,19 +158,30 @@ public class BNConverterToAMIDST {
         normal.setSd(Math.sqrt(huginVariance));
     }
 
+    private void setNormal(Node huginVar) throws ExceptionHugin {
+        int indexNode = this.huginBN.getNodes().indexOf(huginVar);
+        Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
+
+        List<Variable> conditioningVariables = this.amidstBN.getDAG().getParentSet(amidstVar).getParents();
+        int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
+            Normal dist = this.amidstBN.getDistribution(amidstVar);
+            this.setNormal(huginVar, dist, 0);
+
+    }
+
     private void setNormal_MultinomialParents(Node huginVar) throws ExceptionHugin {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
         Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
-        Normal_MultinomialParents dist = this.amidstBN.getDistribution(amidstVar);
 
-        List<Variable> conditioningVariables = dist.getConditioningVariables();
+        List<Variable> conditioningVariables = this.amidstBN.getDAG().getParentSet(amidstVar).getParents();
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
-
-        for(int i=0;i<numParentAssignments;i++) {
+        Normal_MultinomialParents dist = this.amidstBN.getDistribution(amidstVar);
+        for (int i = 0; i < numParentAssignments; i++) {
             Normal normal = dist.getNormal(i);
-            this.setNormal(huginVar,normal, i);
+            this.setNormal(huginVar, normal, i);
         }
+
     }
 
     private void setNormal_MultinomialNormalParents(Node huginVar) throws ExceptionHugin {
@@ -216,6 +241,12 @@ public class BNConverterToAMIDST {
                     break;
                 case 3:
                     this.setNormal_MultinomialNormalParents(huginVar);
+                    break;
+                case 4:
+                    this.setMultinomial(huginVar);
+                    break;
+                case 5:
+                    this.setNormal(huginVar);
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized DistributionType. ");

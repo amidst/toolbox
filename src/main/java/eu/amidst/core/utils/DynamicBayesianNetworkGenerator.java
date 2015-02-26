@@ -3,6 +3,8 @@ package eu.amidst.core.utils;
 import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.IOException;
 import java.util.Random;
@@ -74,8 +76,8 @@ public class DynamicBayesianNetworkGenerator {
     private static VariableBuilder generateDiscreteVariable(String name, int numberOfStates){
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
-        builder.setDistributionType(DistType.MULTINOMIAL);
-        builder.setStateSpace(new FiniteStateSpace(numberOfStates));
+        builder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
+        builder.setStateSpaceType(new FiniteStateSpace(numberOfStates));
         builder.setObservable(false);
 
         return builder;
@@ -84,8 +86,8 @@ public class DynamicBayesianNetworkGenerator {
     private static VariableBuilder generateContinuousVariable(String name){
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
-        builder.setDistributionType(DistType.NORMAL);
-        builder.setStateSpace(new RealStateSpace());
+        builder.setDistributionType(DistributionTypeEnum.NORMAL);
+        builder.setStateSpaceType(new RealStateSpace());
         builder.setObservable(false);
 
         return builder;
