@@ -982,6 +982,21 @@ Note that here all $\beb$ and $\sigma^2$ values must be taken from the moment pa
 
 As in \ref{NormalGNomal2form}, but now the natural parameters should be taken from the moment parameters of the parent variables, and not the natural parameters of $X$.
 
+\begin{eqnarray*}
+\ln p(X\mid \mathbf{Y}) &=& \theta(\mathbf{Y})^T s(X) - A \big(\theta(\mathbf{Y})\big) + h(\mathbf{X})\\\\
+&=&
+\begin{pmatrix}
+\frac{\beta_0}{\sigma^2} + \frac{\beb}{\sigma^2} \Y\\
+\frac{-1}{2\sigma^2}\\
+\end{pmatrix}^T
+\begin{pmatrix}
+X \\
+X^2 \\
+\end{pmatrix}\\ 
+&-& 
+\left(-0.5\ln{(\frac{1}{\sigma^2})} + \frac{\beta_0\beb}{\sigma^2} \Y + \frac{\beb\beb^T}{2\sigma^2}\Y\Y^T +\frac{\beta_0}{2\sigma^2}\right) - \tfrac{1}{2}\ln{(2\pi)} 
+\end{eqnarray*}
+
 \item \textbf{Third form (messages from $X$ to $\beta_0$)}:
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beb,\gamma)^T s(\beta_0) - A \big(\theta(X,\Y,\beb,\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
@@ -1003,18 +1018,18 @@ X\sigma^{-2} - \beb^T \Y \sigma^{-2} \\
 \ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beta_0,\beb',\gamma)^T s(\beta_i) - A \big(\theta(X,\Y,\beta_0,\beb',\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
 &=&
 \begin{pmatrix}
-\beta_0 Y_i \alpha^{-2} + Y_i X \alpha^{-2} + \beb' Y_i \Y' \\
-0.5Y_iY_i \alpha^{-2}
+-\beta_0 Y_i \sigma^{-2} + Y_i X \sigma^{-2} - \beb_i' Y_i \Y' \sigma^{-2} \\
+-0.5Y_iY_i \sigma^{-2}
 \end{pmatrix}^T
 \begin{pmatrix}
 \beta^i\\
-{Y^i}^2\\
+{\beta_i}^2\\
 \end{pmatrix}\\
 &+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'\Y\Y^T + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
 &-& \left( \frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
 \end{eqnarray*}
 
-where $\beb' = \beb$ where $\beta_i = 0$,\\
+where $\beb_i' = \beb$ where $\beta_i = 0$,\\
 
 
 \item \textbf{Third form (messages from $X$ to $\gamma$ ($\sigma^2$))}:
@@ -1023,15 +1038,32 @@ where $\beb' = \beb$ where $\beta_i = 0$,\\
 &=&
 \begin{pmatrix}
 -\frac{1}{2}\\
--\frac{(X-\beta_0-\beb)^2}{2}
+-\frac{(X-\beta_0-\beb\Y)^2}{2}
 \end{pmatrix}^T
 \begin{pmatrix}
-\ln{\alpha^2}\\
-\frac{1}{\alpha^2}
+\ln{\sigma^2}\\
+\frac{1}{\sigma^2}
 \end{pmatrix}
  - 0.5\ln{(2\pi)}
 \end{eqnarray*}
 
+\item \textbf{Third form (for each parent $Y_i$, $\Y' = \Y \setminus Y_i $)}: 
+
+\begin{eqnarray*}
+\ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(Y_i) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
+&=&
+\begin{pmatrix}
+-\beta_0\beta_i \sigma^{-2} + \beta_i X \sigma^{-2} - \beta_i\beb_i' \Y' \sigma^{-2} \\
+-0.5\beta_i\beta_i \sigma^{-2} 
+\end{pmatrix}^T
+\begin{pmatrix}
+Y_i\\
+{Y_i}^2\\
+\end{pmatrix}\\
+&+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'\Y\Y^T + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
+&-& \left( \frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
+\end{eqnarray*}
+where $\beb_i' = \beb$ where $\beta_i = 0$,\\
 
 \end{itemize}
 

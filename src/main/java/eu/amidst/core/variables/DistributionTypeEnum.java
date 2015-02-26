@@ -10,7 +10,7 @@ import eu.amidst.core.variables.distributionTypes.NormalType;
  */
 
 public enum DistributionTypeEnum {
-    MULTINOMIAL, NORMAL, MULTINOMIAL_LOGISTIC;// INDICATOR;
+    MULTINOMIAL, NORMAL, MULTINOMIAL_LOGISTIC, INV_GAMMA;// INDICATOR;
 
     public <E extends DistributionType> E newDistributionType(Variable var) {
         switch (this) {
