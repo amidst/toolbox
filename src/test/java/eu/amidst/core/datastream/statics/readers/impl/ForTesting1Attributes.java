@@ -3,7 +3,7 @@ package eu.amidst.core.datastream.statics.readers.impl;
 import com.google.common.collect.ImmutableList;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 
 import java.util.List;
 
@@ -12,16 +12,16 @@ import java.util.List;
  */
 public class ForTesting1Attributes extends Attributes {
 
-    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.FINITE_SET, 2);
-    private final Attribute F1 = new Attribute(0, "F1", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F2 = new Attribute(1, "F2", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F3 = new Attribute(2, "F3", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F4 = new Attribute(3, "F4", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F5 = new Attribute(4, "F5", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F6 = new Attribute(5, "F6", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F7 = new Attribute(6, "F7", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F8 = new Attribute(7, "F8", "NA", StateSpaceType.REAL, 0);
-    private final Attribute F9 = new Attribute(8, "F9", "NA", StateSpaceType.REAL, 0);
+    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceTypeEnum.FINITE_SET, 2);
+    private final Attribute F1 = new Attribute(0, "F1", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F2 = new Attribute(1, "F2", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F3 = new Attribute(2, "F3", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F4 = new Attribute(3, "F4", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F5 = new Attribute(4, "F5", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F6 = new Attribute(5, "F6", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F7 = new Attribute(6, "F7", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F8 = new Attribute(7, "F8", "NA", StateSpaceTypeEnum.REAL, 0);
+    private final Attribute F9 = new Attribute(8, "F9", "NA", StateSpaceTypeEnum.REAL, 0);
 
 
     private static List<Attribute> attributesTesting1;

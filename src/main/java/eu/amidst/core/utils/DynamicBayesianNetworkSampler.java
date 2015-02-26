@@ -5,6 +5,7 @@ import eu.amidst.core.datastream.*;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -132,7 +133,7 @@ public class DynamicBayesianNetworkSampler {
             list.add(new Attribute(0,Attributes.SEQUENCE_ID_ATT_NAME, new RealStateSpace()));
             list.add(new Attribute(1,Attributes.TIME_ID_ATT_NAME, new RealStateSpace()));
             list.addAll(this.sampler.network.getDynamicVariables().getListOfDynamicVariables().stream()
-                    .map(var -> new Attribute(var.getVarID() + 2, var.getName(), var.getStateSpace())).collect(Collectors.toList()));
+                    .map(var -> new Attribute(var.getVarID() + 2, var.getName(), var.getStateSpaceType())).collect(Collectors.toList()));
             this.atts= new Attributes(list);
         }
 

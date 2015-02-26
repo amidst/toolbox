@@ -40,10 +40,10 @@ public class Node {
 
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
-        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(this.seed));
+        this.mainVar = this.PDist.getVariable();
+        this.QDist= this.mainVar.newUnivariateDistribution().toEFUnivariateDistribution().randomInitialization(new Random(this.seed));
         this.parents = new ArrayList<>();
         this.children = new ArrayList<>();
-        this.mainVar = this.PDist.getVariable();
     }
 
     public boolean isParallelActivated() {
@@ -63,7 +63,7 @@ public class Node {
     }
 
     public void resetQDist(){
-        this.QDist= this.PDist.getNewBaseEFUnivariateDistribution().randomInitialization(new Random(this.seed));
+        this.QDist= this.mainVar.newUnivariateDistribution().toEFUnivariateDistribution().randomInitialization(new Random(this.seed));
     }
 
     public void setPDist(EF_ConditionalDistribution PDist) {

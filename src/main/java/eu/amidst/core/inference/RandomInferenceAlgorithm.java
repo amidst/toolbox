@@ -39,7 +39,7 @@ public class RandomInferenceAlgorithm implements InferenceAlgorithmForBN{
 
     @Override
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
-        return (E)this.model.getDistribution(var).getUnivariateDistribution(this.assignment);
+        return (E)this.model.getConditionalDistribution(var).getUnivariateDistribution(this.assignment);
     }
 
 }

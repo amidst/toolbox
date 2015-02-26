@@ -42,7 +42,7 @@ public class MaximumMarginalLikelihood implements LearningAlgorithm{
             if (Utils.isMissingValue(dataInstance.getValue(i)) && bn.getVariableByName(i).isLeave())
                 continue;
 
-            ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getDistribution(i);
+            ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getNormalDistributions(i);
             Distribution.ExpectationParameters expPara = estimator.getExpectationParameters();
             Potential pot = model.inferenceForLearning(dataInstance, i);
             ExponentialFamilyDistribution.SufficientStatistics expSuffStatistics = estimator.getExpectedSufficientStatistics(dataInstance, pot);

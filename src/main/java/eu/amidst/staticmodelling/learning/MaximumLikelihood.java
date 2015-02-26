@@ -37,7 +37,7 @@ public class MaximumLikelihood implements LearningAlgorithm{
             if (Utils.isMissingValue(dataInstance.getValue(i)) && bn.getVariableByName(i).isLeave())
                 continue;
 
-            ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getDistribution(i);
+            ExponentialFamilyDistribution estimator = (ExponentialFamilyDistribution)bn.getNormalDistributions(i);
             Distribution.ExpectationParameters expPara = estimator.getExpectationParameters();
             ExponentialFamilyDistribution.SufficientStatistics suffStatistics = estimator.getSufficientStatistics(dataInstance);
             Utils.accumulatedSumVectors(expPara.getExpectationParameters(), ((MultinomialDistribution.SufficientStatistics)suffStatistics).getCounts());

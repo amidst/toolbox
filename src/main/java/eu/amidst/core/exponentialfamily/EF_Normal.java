@@ -1,5 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
@@ -74,6 +76,19 @@ public class EF_Normal extends EF_UnivariateDistribution {
         this.updateMomentFromNaturalParameters();
 
         return this;
+    }
+
+    @Override
+    public Normal toUnivariateDistribution() {
+
+        Normal normal = new Normal(this.getVariable());
+        double mean = this.getMomentParameters().get(EF_Normal.EXPECTED_MEAN);
+        double sigma = this.getMomentParameters().get(EF_Normal.EXPECTED_SQUARE) - mean * mean;
+
+        normal.setMean(mean);
+        normal.setSd(Math.sqrt(sigma));
+
+        return normal;
     }
 
     @Override

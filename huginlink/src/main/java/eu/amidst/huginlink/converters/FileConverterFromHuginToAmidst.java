@@ -71,4 +71,9 @@ public class FileConverterFromHuginToAmidst {
             }
         }
     }
+
+
+    public static void main(String[] agrs) throws Exception {
+        FileConverterFromHuginToAmidst.convertFilesFromFolder("networks");
+    }
 }

@@ -1,5 +1,7 @@
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.Assignment;
 
 import java.util.Random;
@@ -13,27 +15,35 @@ import java.util.Random;
  */
 public abstract class UnivariateDistribution extends Distribution {
 
-    public UnivariateDistribution(){}
+    public UnivariateDistribution() {
+    }
+
     /**
      * Evaluates the distribution in a given point.
+     *
      * @param value The point to be evaluated.
      * @return A <code>double</code> value with the evaluated distribution.
      */
-    public double getProbability(double value){
+    public double getProbability(double value) {
         return Math.exp(this.getLogProbability(value));
     }
 
     @Override
-    public double getLogProbability(Assignment assignment){
+    public double getLogProbability(Assignment assignment) {
         return this.getLogProbability(assignment.getValue(this.var));
     }
 
     /**
      * Evaluates the distribution in a given point.
+     *
      * @param value The point to be evaluated.
      * @return A <code>double</code> value with the logarithm of the evaluated distribution.
      */
     public abstract double getLogProbability(double value);
 
     public abstract double sample(Random rand);
+
+    public <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution() {
+            throw new UnsupportedOperationException("This distribution is not convertible to EF form");
+    }
 }

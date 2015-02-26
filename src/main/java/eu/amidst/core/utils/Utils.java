@@ -5,6 +5,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,10 +126,6 @@ public final class Utils {
         return Utils.normalize(normalizedVals);
     }
 
-    public static boolean isLinkCLG(Variable child, Variable parent){
-        return !(child.isMultinomial() && parent.isNormal());
-    }
-
     public static List<Variable> getCausalOrder(DAG dag){
         StaticVariables variables = dag.getStaticVariables();
         int nNrOfAtts = variables.getNumberOfVars();
@@ -219,12 +216,13 @@ public final class Utils {
     public static int getConditionalDistributionType(Variable amidstVar, BayesianNetwork amidstBN) {
 
         int type = -1;
-        List<Variable> conditioningVariables = amidstBN.getDistribution(amidstVar).getConditioningVariables();
+        List<Variable> conditioningVariables = amidstBN.getConditionalDistribution(amidstVar).getConditioningVariables();
 
-        if (amidstVar.isMultinomial()){
+        if (amidstVar.isMultinomial() && conditioningVariables.size()>0){
             return 0;
-        }
-        else if (amidstVar.isNormal()) {
+        }else if (amidstVar.isMultinomial() && conditioningVariables.size()==0){
+            return 4;
+        }else if (amidstVar.isNormal()) {
 
             boolean multinomialParents = false;
             boolean normalParents = false;
@@ -240,9 +238,11 @@ public final class Utils {
             }
             if (normalParents && !multinomialParents) {
                 return 1;
-            } else if ((!normalParents & multinomialParents) || (conditioningVariables.size() == 0)) {
+            } else if (conditioningVariables.size() == 0){
+                return 5;
+            } else if (!normalParents && multinomialParents) {
                 return 2;
-            } else if (normalParents & multinomialParents) {
+            } else if (normalParents && multinomialParents) {
                 return 3;
             } else {
                 throw new IllegalArgumentException("Unrecognized DistributionType. ");
@@ -302,8 +302,8 @@ public final class Utils {
             nstates = variable.getNumberOfStates();
         }
 
-        builder.setStateSpace(new FiniteStateSpace(nstates));
-        builder.setDistributionType(DistType.MULTINOMIAL);
+        builder.setStateSpaceType(new FiniteStateSpace(nstates));
+        builder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
 
         /*
         builder.setStateSpace(variable.getStateSpace());

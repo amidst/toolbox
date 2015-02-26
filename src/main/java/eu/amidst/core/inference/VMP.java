@@ -246,7 +246,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
     @Override
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
-        return (E) EF_DistributionBuilder.toUnivariateDistribution(this.getNodeOfVar(var).getQDist());
+        return this.getNodeOfVar(var).getQDist().toUnivariateDistribution();
     }
 
 
@@ -254,7 +254,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin4.bn");
         System.out.println(bn.getNumberOfVars());
-        System.out.println(bn.getDistributions().stream().mapToInt(p->p.getNumberOfFreeParameters()).max().getAsInt());
+        System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfFreeParameters()).max().getAsInt());
 
         VMP vmp = new VMP();
         //vmp.setSeed(10);
