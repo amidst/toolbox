@@ -229,16 +229,6 @@ public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
     }
 
     @Override
-    public EF_UnivariateDistribution getNewBaseEFUnivariateDistribution() {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
-    }
-
-    @Override
-    public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
-    }
-
-    @Override
     public <E extends ConditionalDistribution> E toConditionalDistribution() {
         return null;
     }
