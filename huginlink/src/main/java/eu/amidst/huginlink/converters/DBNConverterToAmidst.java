@@ -4,12 +4,13 @@ import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.DynamicVariables;
-import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class DBNConverterToAmidst {
             //Only temporal master nodes
             if (n.getTemporalMaster()==null) {
                 int numStates = (int) ((DiscreteChanceNode) n).getNumberOfStates();
-                atts.add(new Attribute(i, n.getName(), "", StateSpaceType.FINITE_SET, numStates));
+                atts.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.FINITE_SET, numStates));
             }
         }
 
@@ -109,28 +110,49 @@ public class DBNConverterToAmidst {
 
             //************************************ TIME T *****************************************************
             double[] huginProbabilitiesTimeT = huginVar.getTable().getData();
-            Multinomial_MultinomialParents dist_TimeT = amidstDBN.getDistributionTimeT(amidstVar);
             List<Variable> parentsTimeT = amidstDBN.getDynamicDAG().getParentSetTimeT(amidstVar).getParents();
-            int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(parentsTimeT);
-            int numStates = amidstVar.getNumberOfStates();
-            for (int i = 0; i < numParentAssignments; i++) {
+            if (parentsTimeT.size()==0){
+                Multinomial dist_TimeT = amidstDBN.getDistributionTimeT(amidstVar);
+                int numStates = amidstVar.getNumberOfStates();
                 double[] amidstProbabilities = new double[numStates];
                 for (int k = 0; k < numStates; k++) {
-                    amidstProbabilities[k] = huginProbabilitiesTimeT[i * numStates + k];
+                    amidstProbabilities[k] = huginProbabilitiesTimeT[k];
                 }
-                dist_TimeT.getMultinomial(i).setProbabilities(amidstProbabilities);
+                dist_TimeT.setProbabilities(amidstProbabilities);
+            }else {
+                Multinomial_MultinomialParents dist_TimeT = amidstDBN.getDistributionTimeT(amidstVar);
+                int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(parentsTimeT);
+                int numStates = amidstVar.getNumberOfStates();
+                for (int i = 0; i < numParentAssignments; i++) {
+                    double[] amidstProbabilities = new double[numStates];
+                    for (int k = 0; k < numStates; k++) {
+                        amidstProbabilities[k] = huginProbabilitiesTimeT[i * numStates + k];
+                    }
+                    dist_TimeT.getMultinomial(i).setProbabilities(amidstProbabilities);
+                }
             }
             //************************************ TIME 0 *****************************************************
             double[] huginProbabilitiesTime0 = huginTemporalClone.getTable().getData();
-            Multinomial_MultinomialParents dist_Time0 = amidstDBN.getDistributionTime0(amidstVar);
             List<Variable> parentsTime0 = amidstDBN.getDynamicDAG().getParentSetTime0(amidstVar).getParents();
-            int numParentAssignmentsTime0 = MultinomialIndex.getNumberOfPossibleAssignments(parentsTime0);
-            for (int i = 0; i < numParentAssignmentsTime0; i++) {
+            if (parentsTime0.size()==0) {
+                Multinomial dist_Time0 = amidstDBN.getDistributionTime0(amidstVar);
+                int numStates = amidstVar.getNumberOfStates();
                 double[] amidstProbabilities = new double[numStates];
-                for (int k = 0; k < numStates; k++) {
-                    amidstProbabilities[k] = huginProbabilitiesTime0[i * numStates + k];
+                    for (int k = 0; k < numStates; k++) {
+                        amidstProbabilities[k] = huginProbabilitiesTime0[k];
+                    }
+                    dist_Time0.setProbabilities(amidstProbabilities);
+            }else {
+                Multinomial_MultinomialParents dist_Time0 = amidstDBN.getDistributionTime0(amidstVar);
+                int numParentAssignmentsTime0 = MultinomialIndex.getNumberOfPossibleAssignments(parentsTime0);
+                int numStates = amidstVar.getNumberOfStates();
+                for (int i = 0; i < numParentAssignmentsTime0; i++) {
+                    double[] amidstProbabilities = new double[numStates];
+                    for (int k = 0; k < numStates; k++) {
+                        amidstProbabilities[k] = huginProbabilitiesTime0[i * numStates + k];
+                    }
+                    dist_Time0.getMultinomial(i).setProbabilities(amidstProbabilities);
                 }
-                dist_Time0.getMultinomial(i).setProbabilities(amidstProbabilities);
             }
         }
     }

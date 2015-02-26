@@ -8,9 +8,10 @@ import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.DynamicVariables;
-import eu.amidst.core.variables.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class DBNConverterToHugin {
             n.setLabel(amidstVar.getName());
 
             for (int j=0;j<n.getNumberOfStates();j++){
-                    String stateName = ((FiniteStateSpace)amidstVar.getStateSpace()).getStatesName(j);
+                    String stateName = ((FiniteStateSpace)amidstVar.getStateSpaceType()).getStatesName(j);
                     n.setStateLabel(j, stateName);
             }
             Node huginVar = this.huginDBN.getNodeByName(amidstVar.getName());
@@ -90,18 +91,28 @@ public class DBNConverterToHugin {
             //Master nodes. TIME T from AMIDST
             if (huginNode.getTemporalMaster() == null) {
                 Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getName());
-                dist = amidstDBN.getDistributionTimeT(amidstVar);
+                if (amidstDBN.getDistributionTimeT(amidstVar) instanceof Multinomial){
+                    dist = new Multinomial_MultinomialParents(amidstVar,new ArrayList());
+                    dist.setMultinomial(0,amidstDBN.getDistributionTimeT(amidstVar));
+                }else {
+                    dist = amidstDBN.getDistributionTimeT(amidstVar);
+                }
                 nStates = amidstVar.getNumberOfStates();
             }
 
             //Temporal clones. TIME 0 from AMIDST
             if(huginNode.getTemporalClone()==null){
                 Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getTemporalMaster().getName());
-                dist = amidstDBN.getDistributionTime0(amidstVar);
+                if (amidstDBN.getDistributionTime0(amidstVar) instanceof Multinomial){
+                    dist = new Multinomial_MultinomialParents(amidstVar,new ArrayList());
+                    dist.setMultinomial(0,amidstDBN.getDistributionTime0(amidstVar));
+                }else {
+                    dist = amidstDBN.getDistributionTime0(amidstVar);
+                }
                 nStates = amidstVar.getNumberOfStates();
             }
 
-            Multinomial[] probabilities = dist.getProbabilities();
+            List<Multinomial> probabilities = dist.getMultinomialDistributions();
             List<Variable> conditioningVariables = dist.getConditioningVariables();
             int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
 
@@ -109,7 +120,7 @@ public class DBNConverterToHugin {
             double[] finalArray = new double[sizeArray];
 
             for (int j = 0; j < numParentAssignments; j++) {
-                double[] sourceArray = probabilities[j].getProbabilities();
+                double[] sourceArray = probabilities.get(j).getProbabilities();
                 System.arraycopy(sourceArray, 0, finalArray, j * nStates, nStates);
             }
             huginNode.getTable().setData(finalArray);

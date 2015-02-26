@@ -2,7 +2,6 @@ package eu.amidst.core.inference;
 
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.exponentialfamily.EF_DistributionBuilder;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -34,16 +33,16 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
+        Multinomial distA = bn.getDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getDistribution(varB);
 
-        distA.getMultinomial(0).setProbabilities(new double[]{0.9, 0.1});
+        distA.setProbabilities(new double[]{0.9, 0.1});
         distB.getMultinomial(0).setProbabilities(new double[]{0.75, 0.25});
         distB.getMultinomial(1).setProbabilities(new double[]{0.25, 0.75});
 
         //bn.randomInitialization(new Random(0));
 
-        double[] pA = distA.getMultinomial(0).getProbabilities();
+        double[] pA = distA.getProbabilities();
         double[][] pB = new double[2][];
         pB[0] = distB.getMultinomial(0).getProbabilities();
         pB[1] = distB.getMultinomial(1).getProbabilities();
@@ -121,10 +120,10 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
+        Multinomial distA = bn.getDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getDistribution(varB);
 
-        distA.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
+        distA.setProbabilities(new double[]{0.5, 0.5});
         distB.getMultinomial(0).setProbabilities(new double[]{0.75, 0.25});
         distB.getMultinomial(1).setProbabilities(new double[]{0.25, 0.75});
 
@@ -164,12 +163,12 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
+        Multinomial distA = bn.getDistribution(varA);
+        Multinomial distB = bn.getDistribution(varB);
         Multinomial_MultinomialParents distC = bn.getDistribution(varC);
 
-        distA.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
-        distB.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
+        distA.setProbabilities(new double[]{0.5, 0.5});
+        distB.setProbabilities(new double[]{0.5, 0.5});
 
         distC.getMultinomial(0).setProbabilities(new double[]{0.25, 0.75});
         distC.getMultinomial(1).setProbabilities(new double[]{0.2, 0.8});
@@ -188,9 +187,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(2).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -200,7 +199,7 @@ public class VMPTest extends TestCase {
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
         System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
 
-        //assertEquals(postA.getProbabilities()[0],0.75,0.01);
+        //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
@@ -267,12 +266,12 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
+        Multinomial distA = bn.getDistribution(varA);
+        Multinomial distB = bn.getDistribution(varB);
         Multinomial_MultinomialParents distC = bn.getDistribution(varC);
 
-        distA.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
-        distB.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
+        distA.setProbabilities(new double[]{0.5, 0.5});
+        distB.setProbabilities(new double[]{0.5, 0.5});
 
         distC.getMultinomial(0).setProbabilities(new double[]{0.25, 0.75});
         distC.getMultinomial(1).setProbabilities(new double[]{0.2, 0.8});
@@ -288,8 +287,8 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -362,9 +361,6 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
 
         bn.randomInitialization(new Random(0));
 
@@ -378,9 +374,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(2).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -390,7 +386,7 @@ public class VMPTest extends TestCase {
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
         System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
 
-        //assertEquals(postA.getProbabilities()[0],0.75,0.01);
+        //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
@@ -438,10 +434,6 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
-
         bn.randomInitialization(new Random(0));
 
         System.out.println(bn.toString());
@@ -454,9 +446,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(2).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -466,7 +458,7 @@ public class VMPTest extends TestCase {
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
         System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
 
-        //assertEquals(postA.getProbabilities()[0],0.75,0.01);
+        //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
@@ -516,10 +508,6 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
-
         bn.randomInitialization(new Random(0));
 
         System.out.println(bn.toString());
@@ -532,9 +520,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(2).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -544,7 +532,7 @@ public class VMPTest extends TestCase {
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
         System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
 
-        //assertEquals(postA.getProbabilities()[0],0.75,0.01);
+        //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
@@ -591,9 +579,6 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
 
 
         bn.randomInitialization(new Random(0));
@@ -605,8 +590,8 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -660,11 +645,6 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
-
-
         bn.randomInitialization(new Random(0));
 
         System.out.println(bn.toString());
@@ -674,8 +654,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(varC.getVarID()).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(varB.getVarID()).getQDist());
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -730,9 +711,9 @@ public class VMPTest extends TestCase {
 
         Multinomial_MultinomialParents distA = bn.getDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
+        Multinomial distC = bn.getDistribution(varC);
 
-        distC.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
+        distC.setProbabilities(new double[]{0.5, 0.5});
 
         distA.getMultinomial(0).setProbabilities(new double[]{0.7, 0.3});
         distA.getMultinomial(1).setProbabilities(new double[]{0.2, 0.8});
@@ -746,10 +727,6 @@ public class VMPTest extends TestCase {
         VMP vmp = new VMP();
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
-
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(varC.getVarID()).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(varB.getVarID()).getQDist());
-
 
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varA, 0.0);
@@ -781,10 +758,6 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
-
         bn.randomInitialization(new Random(0));
 
         System.out.println(bn.toString());
@@ -797,9 +770,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(2).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -809,7 +782,7 @@ public class VMPTest extends TestCase {
         System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
         System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
 
-        //assertEquals(postA.getProbabilities()[0],0.75,0.01);
+        //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
@@ -857,13 +830,13 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
+        Multinomial distA = bn.getDistribution(varA);
+        Multinomial distB = bn.getDistribution(varB);
         Multinomial_MultinomialParents distC = bn.getDistribution(varC);
 
 
-        distA.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
-        distB.getMultinomial(0).setProbabilities(new double[]{0.5, 0.5});
+        distA.setProbabilities(new double[]{0.5, 0.5});
+        distB.setProbabilities(new double[]{0.5, 0.5});
 
         //distC.getMultinomial(0).setProbabilities(new double[]{1.0, 0.0});
         //distC.getMultinomial(1).setProbabilities(new double[]{0.0, 1.0});
@@ -892,9 +865,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        Multinomial qBDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(1).getQDist());
-        Multinomial qCDist = EF_DistributionBuilder.toDistribution((EF_Multinomial) vmp.nodes.get(2).getQDist());
+        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);

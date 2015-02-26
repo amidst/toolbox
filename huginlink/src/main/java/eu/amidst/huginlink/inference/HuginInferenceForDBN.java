@@ -4,28 +4,21 @@ import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
-import eu.amidst.core.distribution.DistributionBuilder;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.InferenceAlgorithmForDBN;
 import eu.amidst.core.inference.InferenceEngineForDBN;
 import eu.amidst.core.io.DynamicBayesianNetworkLoader;
-import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.io.DynamicDataStreamLoader;
-import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.DynamicAssignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
-import eu.amidst.huginlink.io.BNWriterToHugin;
-import eu.amidst.huginlink.io.DBNWriterToHugin;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -134,7 +127,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         try {
             domainObject.computeDBNPredictions(1);
             LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T1." + var.getName());
-            posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+            posteriorDistribution = var.newUnivariateDistribution();
 
             double[] probabilities = new double[(int) node.getNumberOfStates()];
             for (int i = 0; i < node.getNumberOfStates(); i++) {
@@ -149,12 +142,12 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
 
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
-        UnivariateDistribution posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+        UnivariateDistribution posteriorDistribution = var.newUnivariateDistribution();
         try {
             domainObject.moveDBNWindow(nTimesAhead);
 
             LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + nTimesAhead + "." + var.getName());
-            posteriorDistribution = DistributionBuilder.newConditionalDistribution(var, new ArrayList<>()).getUnivariateDistribution(null);
+            posteriorDistribution = var.newUnivariateDistribution();
 
             double[] probabilities = new double[(int) node.getNumberOfStates()];
             for (int i = 0; i < node.getNumberOfStates(); i++) {

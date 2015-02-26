@@ -18,6 +18,7 @@ package eu.amidst.core.variables;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.io.Serializable;
 import java.util.*;
@@ -66,7 +67,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
      * Constructor where the distribution type of random variables is provided as an argument.
      *
      */
-    public DynamicVariables(Attributes atts, Map<Attribute, DistType> typeDists) {
+    public DynamicVariables(Attributes atts, Map<Attribute, DistributionTypeEnum> typeDists) {
 
         this.allVariables = new ArrayList<>();
         this.temporalClones = new ArrayList<>();
@@ -143,9 +144,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return var;
     }
 
-    public Variable addObservedDynamicVariable(Attribute att, DistType distType) {
+    public Variable addObservedDynamicVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
         VariableBuilder variableBuilder = new VariableBuilder(att);
-        variableBuilder.setDistributionType(distType);
+        variableBuilder.setDistributionType(distributionTypeEnum);
         VariableImplementation var = new VariableImplementation(variableBuilder, allVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
@@ -178,7 +179,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             throw new IllegalArgumentException("A Real variable should be created from an observed variable");
         }
 
-        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL) {
+        if (var.getStateSpaceType().getStateSpaceTypeEnum()!= StateSpaceTypeEnum.REAL) {
             throw new IllegalArgumentException("An Real variable should be created from a real variable");
         }
 
@@ -261,8 +262,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         private String name;
         private int varID;
         private boolean observable;
-        private StateSpace stateSpace;
-        private DistType distributionType;
+        private StateSpaceType stateSpaceType;
+        private DistributionTypeEnum distributionTypeEnum;
+        private DistributionType distributionType;
         private Attribute attribute;
         private final boolean isTemporalClone;
         private int numberOfStates = -1;
@@ -274,14 +276,16 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             this.name = builder.getName();
             this.varID = varID;
             this.observable = builder.isObservable();
-            this.stateSpace = builder.getStateSpace();
-            this.distributionType = builder.getDistributionType();
+            this.stateSpaceType = builder.getStateSpaceType();
+            this.distributionTypeEnum = builder.getDistributionType();
             this.attribute = builder.getAttribute();
             this.isTemporalClone = false;
 
-            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
+            if (this.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
             }
+
+            this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 
         /*
@@ -291,14 +295,17 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             this.name = variable.getName()+"_TClone";
             this.varID = variable.getVarID();
             this.observable = variable.isObservable();
-            this.stateSpace = variable.getStateSpace();
-            this.distributionType = variable.getDistributionType();
+            this.stateSpaceType = variable.getStateSpaceType();
+            this.distributionTypeEnum = variable.getDistributionTypeEnum();
             this.attribute = variable.getAttribute();
             this.isTemporalClone = true;
 
-            if (this.getStateSpace().getStateSpaceType()==StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
+            if (this.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
             }
+
+            this.distributionType=distributionTypeEnum.newDistributionType(this);
+
         }
 
         public String getName() {
@@ -314,8 +321,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
 
         @Override
-        public <E extends StateSpace> E getStateSpace() {
-            return (E)stateSpace;
+        public <E extends StateSpaceType> E getStateSpaceType() {
+            return (E) stateSpaceType;
         }
 
         @Override
@@ -323,8 +330,13 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return this.numberOfStates;
         }
 
-        public DistType getDistributionType() {
-            return distributionType;
+        public DistributionTypeEnum getDistributionTypeEnum() {
+            return distributionTypeEnum;
+        }
+
+        @Override
+        public <E extends DistributionType> E getDistributionType() {
+            return (E)this.distributionType;
         }
 
         public boolean isTemporalClone(){

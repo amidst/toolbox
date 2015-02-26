@@ -12,6 +12,7 @@ package eu.amidst.core.models;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -74,11 +75,11 @@ public final class DynamicBayesianNetwork implements Serializable {
             int varID = var.getVarID();
 
             /* Distributions at time t */
-            this.distributionsTimeT.add(varID, DistributionBuilder.newConditionalDistribution(var, this.dynamicDAG.getParentSetTimeT(var).getParents()));
+            this.distributionsTimeT.add(varID, var.newConditionalDistribution(this.dynamicDAG.getParentSetTimeT(var).getParents()));
             this.dynamicDAG.getParentSetTimeT(var).blockParents();
 
             /* Distributions at time 0 */
-            this.distributionsTime0.add(varID, DistributionBuilder.newConditionalDistribution(var, this.dynamicDAG.getParentSetTime0(var).getParents()));
+            this.distributionsTime0.add(varID, var.newConditionalDistribution(this.dynamicDAG.getParentSetTime0(var).getParents()));
             this.dynamicDAG.getParentSetTime0(var).blockParents();
         }
 
@@ -95,12 +96,20 @@ public final class DynamicBayesianNetwork implements Serializable {
         return this.dynamicDAG.getDynamicVariables();
     }
 
-    public <E extends ConditionalDistribution> E getDistributionTimeT(Variable var) {
+    public <E extends ConditionalDistribution> E getConditionalDistributionTimeT(Variable var) {
         return (E) this.distributionsTimeT.get(var.getVarID());
     }
 
-    public <E extends ConditionalDistribution> E getDistributionTime0(Variable var) {
+    public <E extends ConditionalDistribution> E getConditionalDistributionTime0(Variable var) {
         return (E) this.distributionsTime0.get(var.getVarID());
+    }
+
+    public <E extends Distribution> E getDistributionTimeT(Variable var) {
+        return DistributionTypeEnum.conditionalDistributionToDistribution(this.getConditionalDistributionTimeT(var));
+    }
+
+    public <E extends Distribution> E getDistributionTime0(Variable var) {
+        return DistributionTypeEnum.conditionalDistributionToDistribution(this.getConditionalDistributionTime0(var));
     }
 
     public DynamicDAG getDynamicDAG (){
@@ -166,13 +175,13 @@ public final class DynamicBayesianNetwork implements Serializable {
         for (Variable var: this.getDynamicVariables()){
 
             if (this.getDynamicDAG().getParentSetTime0(var).getNumberOfParents()==0){
-                str.append("P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ");
+                str.append("P(" + var.getName()+" [" +var.getDistributionTypeEnum().toString()+ "]) follows a ");
                 str.append(this.getDistributionTime0(var).label()+"\n");
             }else {
-                str.append("P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ");
+                str.append("P(" + var.getName() + " [" + var.getDistributionTypeEnum().toString() + "]" + " : ");
 
                 for (Variable parent : this.getDynamicDAG().getParentSetTime0(var)) {
-                    str.append(parent.getName() + " [" + parent.getDistributionType().toString() + "], ");
+                    str.append(parent.getName() + " [" + parent.getDistributionTypeEnum().toString() + "], ");
                 }
                 if (this.getDynamicDAG().getParentSetTime0(var).getNumberOfParents() > 0){
                     str.substring(0, str.length() - 2);
@@ -189,13 +198,13 @@ public final class DynamicBayesianNetwork implements Serializable {
         for (Variable var: this.getDynamicVariables()){
 
             if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents()==0){
-                str.append("P(" + var.getName()+" [" +var.getDistributionType().toString()+ "]) follows a ");
+                str.append("P(" + var.getName()+" [" +var.getDistributionTypeEnum().toString()+ "]) follows a ");
                 str.append(this.getDistributionTimeT(var).label()+"\n");
             }else {
-                str.append("P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ");
+                str.append("P(" + var.getName() + " [" + var.getDistributionTypeEnum().toString() + "]" + " : ");
 
                 for (Variable parent : this.getDynamicDAG().getParentSetTimeT(var)) {
-                    str.append(parent.getName() + " [" + parent.getDistributionType().toString() + "], ");
+                    str.append(parent.getName() + " [" + parent.getDistributionTypeEnum().toString() + "], ");
                 }
                 if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents() > 0){
                     str.substring(0, str.length() - 2);

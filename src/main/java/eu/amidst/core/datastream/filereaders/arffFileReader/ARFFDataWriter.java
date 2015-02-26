@@ -6,6 +6,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.filereaders.DataFileWriter;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,11 +53,11 @@ public class ARFFDataWriter implements DataFileWriter {
 
 
     public static String attributeToARFFString(Attribute att){
-        if (att.getStateSpace().getStateSpaceType()== StateSpaceType.REAL) {
+        if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.REAL) {
             return "@attribute " + att.getName() + " real";
-        } else if (att.getStateSpace().getStateSpaceType()== StateSpaceType.FINITE_SET) {
+        } else if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
             StringBuilder stringBuilder = new StringBuilder("@attribute " + att.getName() + " {");
-            FiniteStateSpace stateSpace = att.getStateSpace();
+            FiniteStateSpace stateSpace = att.getStateSpaceType();
             stateSpace.getStatesNames().stream().limit(stateSpace.getNumberOfStates()-1).forEach(e -> stringBuilder.append(e+", "));
             stringBuilder.append(stateSpace.getStatesName(stateSpace.getNumberOfStates()-1)+"}");
             return stringBuilder.toString();
@@ -70,25 +71,25 @@ public class ARFFDataWriter implements DataFileWriter {
 
         //MEJORAR PONER CUANDO REAL
         for(int i=0; i<atts.getNumberOfAttributes()-1;i++) {
-            if (atts.getList().get(i).getStateSpace().getStateSpaceType() == StateSpaceType.FINITE_SET) {
-                FiniteStateSpace stateSpace = atts.getList().get(i).getStateSpace();
+            if (atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
+                FiniteStateSpace stateSpace = atts.getList().get(i).getStateSpaceType();
                 String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getList().get(i)));
                 builder.append(nameState + ",");
-            }else if (atts.getList().get(i).getStateSpace().getStateSpaceType() == StateSpaceType.REAL) {
+            }else if (atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.REAL) {
                 builder.append(assignment.getValue(atts.getList().get(i))+ ",");
             }else{
-                throw new IllegalArgumentException("Illegal State Space Type: " + atts.getList().get(i).getStateSpace().getStateSpaceType());
+                throw new IllegalArgumentException("Illegal State Space Type: " + atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum());
             }
         }
 
-        if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpace().getStateSpaceType()  == StateSpaceType.FINITE_SET) {
-            FiniteStateSpace stateSpace = atts.getList().get(atts.getNumberOfAttributes() - 1).getStateSpace();
+        if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.FINITE_SET) {
+            FiniteStateSpace stateSpace = atts.getList().get(atts.getNumberOfAttributes() - 1).getStateSpaceType();
             String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getList().get(atts.getNumberOfAttributes() - 1)));
             builder.append(nameState);
-        }else if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpace().getStateSpaceType()  == StateSpaceType.REAL) {
+        }else if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.REAL) {
             builder.append(assignment.getValue(atts.getList().get(atts.getNumberOfAttributes() - 1)));
         }else{
-            throw new IllegalArgumentException("Illegal State Space Type: " + atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpace().getStateSpaceType());
+            throw new IllegalArgumentException("Illegal State Space Type: " + atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum());
         }
         return builder.toString();
     }

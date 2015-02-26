@@ -1,5 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
@@ -271,6 +273,19 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     @Override
     public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
         throw new UnsupportedOperationException("Method not implemented yet!");
+    }
+
+    @Override
+    public Normal_NormalParents toConditionalDistribution() {
+        Normal_NormalParents normal_normal = new Normal_NormalParents(this.getVariable(), this.getConditioningVariables());
+
+        double[] allBeta = this.getAllBetaValues();
+
+        normal_normal.setIntercept(allBeta[0]);
+        normal_normal.setCoeffParents(Arrays.copyOfRange(allBeta, 1, allBeta.length));
+        normal_normal.setSd(Math.sqrt(this.getVariance()));
+
+        return normal_normal;
     }
 
     public double getVariance(){

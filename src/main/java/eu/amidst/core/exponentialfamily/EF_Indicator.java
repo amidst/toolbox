@@ -1,6 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -59,6 +60,11 @@ public class EF_Indicator extends EF_ConditionalDistribution{
 
     @Override
     public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
+        return null;
+    }
+
+    @Override
+    public <E extends ConditionalDistribution> E toConditionalDistribution() {
         return null;
     }
 

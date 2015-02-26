@@ -25,7 +25,7 @@ public class NormalNormalParentsTest {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
 
-        Normal_NormalParents dist = (Normal_NormalParents) testnet.getDistributions().get(1);
+        Normal_NormalParents dist = (Normal_NormalParents) testnet.getConditionalDistributions().get(1);
 
         //dist.getCoeffParents()[0]=0;
         //dist.setIntercept(0.1);
@@ -49,7 +49,7 @@ public class NormalNormalParentsTest {
         dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
 
 
-        System.out.println(testnet.getDistributions().get(1).getLogConditionalProbability(dataTmp));
+        System.out.println(testnet.getConditionalDistributions().get(1).getLogConditionalProbability(dataTmp));
         System.out.println(ef_testnet.getDistributionList().get(1).computeLogProbabilityOf(dataTmp));
 
 
@@ -89,7 +89,7 @@ public class NormalNormalParentsTest {
         dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
         dataTmp.setValue(testnet.getStaticVariables().getVariableByName("C"), 1.0);
 
-        System.out.println(testnet.getDistributions().get(2).getLogConditionalProbability(dataTmp));
+        System.out.println(testnet.getConditionalDistributions().get(2).getLogConditionalProbability(dataTmp));
         System.out.println(ef_testnet.getDistributionList().get(2).computeLogProbabilityOf(dataTmp));
 
         for(DataInstance e: data){

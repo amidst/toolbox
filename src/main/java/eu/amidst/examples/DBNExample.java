@@ -2,6 +2,7 @@ package eu.amidst.examples;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.DynamicBayesianNetwork;
@@ -92,8 +93,8 @@ public class DBNExample {
         // ********************************************************************************************
 
         // Variable A
-        Multinomial_MultinomialParents distA_Time0 = amidstDBN.getDistributionTime0(A);
-        distA_Time0.getMultinomial(0).setProbabilities(new double[]{0.3, 0.7});
+        Multinomial distA_Time0 = amidstDBN.getDistributionTime0(A);
+        distA_Time0.setProbabilities(new double[]{0.3, 0.7});
 
         // Variable B
         Multinomial_MultinomialParents distB_Time0 = amidstDBN.getDistributionTime0(B);

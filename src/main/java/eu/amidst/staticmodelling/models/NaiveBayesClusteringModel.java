@@ -59,7 +59,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
     public Potential inferenceForLearning(DataInstance data, int varID) {
 
         if (varID==this.getHiddenClassID()) {
-            return this.getBayesianNetwork().getDistribution(this.hiddenClassID).getRestrictedPotential(data);
+            return this.getBayesianNetwork().getNormalDistributions(this.hiddenClassID).getRestrictedPotential(data);
         }
 
         PotentialTable potResult = new PotentialTable(this.getBayesianNetwork().getVariableByName(varID).getNumberOfStates());
@@ -70,12 +70,12 @@ public class NaiveBayesClusteringModel extends LearnableModel{
             if (Utils.isMissingValue(data.getValue(i)))
                 continue;
 
-            Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
+            Potential pot = this.getBayesianNetwork().getNormalDistributions(i).getRestrictedPotential(data);
             potResult.combine(pot);
         }
 
         if (Utils.isMissingValue(data.getValue(varID))) {
-            Potential pot = this.getBayesianNetwork().getDistribution(varID).getRestrictedPotential(data);
+            Potential pot = this.getBayesianNetwork().getNormalDistributions(varID).getRestrictedPotential(data);
             potResult.combine(pot);
         }
 
@@ -87,12 +87,12 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         if (!Utils.isMissingValue(data.getValue(this.getHiddenClassID())))
             return null;//Error
 
-        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getDistribution(this.getHiddenClassID()).getRestrictedPotential(data);
+        PotentialTable potResult = (PotentialTable) this.getBayesianNetwork().getNormalDistributions(this.getHiddenClassID()).getRestrictedPotential(data);
 
         for (int i=0; i<this.getBayesianNetwork().getNumberOfDynamicVars(); i++) {
             if (Utils.isMissingValue(data.getValue(i)) || i==this.getHiddenClassID())
                 continue;
-            Potential pot = this.getBayesianNetwork().getDistribution(i).getRestrictedPotential(data);
+            Potential pot = this.getBayesianNetwork().getNormalDistributions(i).getRestrictedPotential(data);
             potResult.combine(pot);
         }
         potResult.normalize();

@@ -87,7 +87,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
             double simulatedValue;
             simulatedValue = univariateSamplingDistribution.sample(random);
             denominator = denominator/univariateSamplingDistribution.getProbability(simulatedValue);
-            UnivariateDistribution univariateModelDistribution = this.model.getDistribution(modelVar).getUnivariateDistribution(modelAssignment);
+            UnivariateDistribution univariateModelDistribution = this.model.getConditionalDistribution(modelVar).getUnivariateDistribution(modelAssignment);
             numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
             modelAssignment.setValue(modelVar,simulatedValue);
             samplingAssignment.setValue(samplingVar, simulatedValue);
@@ -157,7 +157,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
         ef_univariateDistribution.setMomentParameters(sumSS);
 
-        Distribution posteriorDistribution = EF_DistributionBuilder.toUnivariateDistribution(ef_univariateDistribution);
+        Distribution posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
 
         //Normalize Multinomial distributions
         if(var.isMultinomial()) {
@@ -180,7 +180,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
         // Variable A
         Multinomial_MultinomialParents distA = samplingBN.getDistribution(A);
-        distA.getProbabilities()[0].setProbabilities(new double[]{0.15, 0.85});
+        distA.getMultinomialDistributions().get(0).setProbabilities(new double[]{0.15, 0.85});
 
         // Variable B
         Multinomial_MultinomialParents distB = samplingBN.getDistribution(B);
@@ -225,7 +225,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         System.out.println("============================================================");
 
 
-        model.getDistributions().stream().forEach(e-> {
+        model.getConditionalDistributions().stream().forEach(e-> {
             System.out.println(e.getVariable().getName());
             System.out.println(e);
         });
@@ -253,7 +253,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         System.out.println("== SAMPLING DISTRIBUTIONS (MODEL DISTRIBUTIONS WITH NOISE) =");
         System.out.println("============================================================");
 
-        samplingModel.getDistributions().stream().forEach(e-> {
+        samplingModel.getConditionalDistributions().stream().forEach(e-> {
             System.out.println(e.getVariable().getName());
             System.out.println(e);
         });

@@ -13,9 +13,11 @@
 
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,34 +36,33 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
      * An array of <code>Multinomial</code> objects, one for each configuration of the parents. These objects are ordered
      * according to the criteria implemented in class utils.MultinomialIndex
      */
-    private Multinomial[] probabilities;
+    private BaseDistribution_MultinomialParents<Multinomial> base;
+
+
+    public Multinomial_MultinomialParents(BaseDistribution_MultinomialParents<Multinomial> base_) {
+        this.base=base_;
+        this.var=this.base.getVariable();
+        this.parents=this.base.getConditioningVariables();
+        this.parents = Collections.unmodifiableList(this.parents);
+    }
 
     /**
-     * The class constructor.
-     *
-     * @param var1     The variable of the distribution.
-     * @param parents1 The set of parents of the variable.
-     */
+         * The class constructor.
+         *
+         * @param var1     The variable of the distribution.
+         * @param parents1 The set of parents of the variable.
+         */
     public Multinomial_MultinomialParents(Variable var1, List<Variable> parents1) {
 
+        this.base = new BaseDistribution_MultinomialParents<>(var1, parents1);
         this.var = var1;
         this.parents = parents1;
-
-        // Computes the size of the array of probabilities as the number of possible assignments for the parents.
-        int size = MultinomialIndex.getNumberOfPossibleAssignments(this.parents);
-
-        // Initialize the distribution uniformly for each configuration of the parents.
-        this.probabilities = new Multinomial[size];
-        for (int i = 0; i < size; i++) {
-            this.probabilities[i] = new Multinomial(this.var);
-        }
-
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
-    public Multinomial[] getProbabilities() {
-        return this.probabilities;
+    public List<Multinomial> getMultinomialDistributions() {
+        return this.base.getBaseDistributions();
     }
 
     /**
@@ -71,7 +72,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
      * @param multinomialDistribution A <code>Multinomial</code> object.
      */
     public void setMultinomial(int position, Multinomial multinomialDistribution) {
-        this.probabilities[position] = multinomialDistribution;
+        this.base.setBaseDistribution(position, multinomialDistribution);
     }
 
     /**
@@ -82,8 +83,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
      * @param multinomialDistribution A <code>Multinomial</code> object.
      */
     public void setMultinomial(Assignment parentAssignment, Multinomial multinomialDistribution) {
-        int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents, parentAssignment);
-        this.setMultinomial(position, multinomialDistribution);
+        this.base.setBaseDistribution(parentAssignment, multinomialDistribution);
     }
 
     /**
@@ -93,12 +93,11 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
      * @return A <code>Multinomial</code> object.
      */
     public Multinomial getMultinomial(Assignment parentAssignment) {
-        int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents, parentAssignment);
-        return probabilities[position];
+        return this.base.getBaseDistribution(parentAssignment);
     }
 
     public Multinomial getMultinomial(int position) {
-        return probabilities[position];
+        return this.base.getBaseDistribution(position);
     }
 
     /**
@@ -122,7 +121,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     @Override
     public int getNumberOfFreeParameters() {
         int n = 0;
-        for (Multinomial dist : this.getProbabilities()) {
+        for (Multinomial dist : this.getMultinomialDistributions()) {
             n += dist.getNumberOfFreeParameters();
         }
         return n;
@@ -132,7 +131,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         //TODO Explain this !!!
         // if (this.getConditioningVariables().size() == 0) {
         //Both ifs are equivalent but when reading a serializable object the first gives a NullPointerException. WHY?
-        if (this.getProbabilities().length==1) {
+        if (this.getMultinomialDistributions().size() == 1) {
             return "Multinomial";
         } else {
             return "Multinomial|Multinomial";
@@ -141,13 +140,13 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
     @Override
     public void randomInitialization(Random random) {
-        for (int i = 0; i < this.probabilities.length; i++) {
-            this.probabilities[i].randomInitialization(random);
+        for (Multinomial multinomial : this.getMultinomialDistributions()) {
+            multinomial.randomInitialization(random);
         }
     }
 
     public int getNumberOfParentAssignments() {
-        return this.getProbabilities().length;
+        return this.getMultinomialDistributions().size();
     }
 
     @Override
@@ -166,15 +165,20 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist.getClass().getName().equals("eu.amidst.core.distribution.Multinomial_MultinomialParents"))
-            return this.equalDist((Multinomial_MultinomialParents)dist,threshold);
+            return this.equalDist((Multinomial_MultinomialParents) dist, threshold);
         return false;
     }
 
     public boolean equalDist(Multinomial_MultinomialParents dist, double threshold) {
         boolean equals = true;
-        for (int i = 0; i < this.probabilities.length; i++) {
-            equals = equals && this.getMultinomial(i).equalDist(dist.getMultinomial(i),threshold);
+        for (int i = 0; i < this.getNumberOfParentAssignments(); i++) {
+            equals = equals && this.getMultinomial(i).equalDist(dist.getMultinomial(i), threshold);
         }
         return equals;
+    }
+
+    @Override
+    public EF_BaseDistribution_MultinomialParents<EF_Multinomial> toEFConditionalDistribution() {
+        return (EF_BaseDistribution_MultinomialParents<EF_Multinomial>)this.base.toEFConditionalDistribution();
     }
 }

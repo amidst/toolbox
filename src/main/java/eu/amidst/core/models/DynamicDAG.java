@@ -160,8 +160,9 @@ public class DynamicDAG implements Serializable {
 
         //TODO Gives an error trying to add a duplicate parent in the following structure: A -> B <- Aclone. Are are considering A and AClone the same variables?
         public void addParent(Variable var) {
-            if (!Utils.isLinkCLG(mainVar, var)) {
-                throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
+            if (!mainVar.getDistributionType().isParentCompatible(var)){
+                throw new IllegalArgumentException("Adding a parent of type "+var.getDistributionTypeEnum().toString()+"which is not compatible" +
+                        "with children variable of type "+this.mainVar.getDistributionTypeEnum().toString());
             }
 
             if (this.contains(var)) {

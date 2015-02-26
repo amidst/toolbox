@@ -8,6 +8,8 @@ import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,15 +95,15 @@ public final class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new RealStateSpace());
-        variableBuilder.setDistributionType(DistType.NORMAL);
+        variableBuilder.setStateSpaceType(new RealStateSpace());
+        variableBuilder.setDistributionType(DistributionTypeEnum.NORMAL);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Normal_Abnormal");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new FiniteStateSpace(Arrays.asList("Normal", "Abnormal")));
-        variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Normal", "Abnormal")));
+        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
         Variable normalAbnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
 
@@ -237,15 +239,15 @@ public final class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new RealStateSpace());
-        variableBuilder.setDistributionType(DistType.NORMAL);
+        variableBuilder.setStateSpaceType(new RealStateSpace());
+        variableBuilder.setDistributionType(DistributionTypeEnum.NORMAL);
         Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Mixture");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new FiniteStateSpace(2));
-        variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(2));
+        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
         Variable mixture = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         /**
@@ -357,15 +359,15 @@ public final class VerdandeModels {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("FormationNo");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new FiniteStateSpace(2));
-        variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(2));
+        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
         Variable formationNo = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("Shift");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new FiniteStateSpace(2));
-        variableBuilder.setDistributionType(DistType.MULTINOMIAL);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(2));
+        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
         Variable shift = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
 
