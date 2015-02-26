@@ -349,20 +349,6 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return expectedNaturalToParents;
     }
 
-    @Override
-    public EF_UnivariateDistribution getNewBaseEFUnivariateDistribution() {
-
-        if (this.isBaseConditionalDistribution()){
-            return this.getBaseEFConditionalDistribution(0).getNewBaseEFUnivariateDistribution();
-        }else{
-            return this.getBaseEFUnivariateDistribution(0).deepCopy();
-        }
-    }
-
-    @Override
-    public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
-        throw new UnsupportedOperationException("Method not implemented yet!");
-    }
 
     @Override
     public BaseDistribution_MultinomialParents<Distribution> toConditionalDistribution() {
