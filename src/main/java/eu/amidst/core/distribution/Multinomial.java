@@ -11,6 +11,9 @@
  */
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.exponentialfamily.EF_Multinomial;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 
@@ -153,5 +156,21 @@ public class Multinomial extends UnivariateDistribution  {
            equals = equals && Math.abs(this.getProbabilityOfState(i) - dist.getProbabilityOfState(i)) <= threshold;
         }
         return equals;
+    }
+
+
+    @Override
+    public EF_Multinomial toEFUnivariateDistribution() {
+        EF_Multinomial efMultinomial = new EF_Multinomial(this.getVariable());
+
+        MomentParameters momentParameters = efMultinomial.createZeroedMomentParameters();
+
+        for (int i = 0; i < this.getVariable().getNumberOfStates(); i++) {
+            momentParameters.set(i, this.getProbabilityOfState(i));
+        }
+
+        efMultinomial.setMomentParameters(momentParameters);
+
+        return efMultinomial;
     }
 }

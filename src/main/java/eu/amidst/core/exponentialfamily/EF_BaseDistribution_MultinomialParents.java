@@ -19,6 +19,9 @@ package eu.amidst.core.exponentialfamily;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -359,6 +362,22 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     @Override
     public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
         throw new UnsupportedOperationException("Method not implemented yet!");
+    }
+
+    @Override
+    public BaseDistribution_MultinomialParents<Distribution> toConditionalDistribution() {
+        BaseDistribution_MultinomialParents<Distribution> base = new BaseDistribution_MultinomialParents<>(this.var,this.getConditioningVariables());
+        if (this.isBaseConditionalDistribution()) {
+            for (int i = 0; i < this.numberOfConfigurations(); i++) {
+                base.setBaseDistribution(i, this.getBaseEFConditionalDistribution(i).toConditionalDistribution());
+            }
+        }else{
+            for (int i = 0; i < this.numberOfConfigurations(); i++) {
+                base.setBaseDistribution(i, this.getBaseEFUnivariateDistribution(i).toUnivariateDistribution());
+            }
+        }
+
+        return base;
     }
 
     private CompoundVector createCompoundVector() {

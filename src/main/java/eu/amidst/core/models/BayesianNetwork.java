@@ -11,6 +11,7 @@ package eu.amidst.core.models;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -51,8 +52,12 @@ public final class BayesianNetwork implements Serializable {
         this.distributions = dists;
     }
 
-    public <E extends ConditionalDistribution> E getDistribution(Variable var) {
+    public <E extends ConditionalDistribution> E getConditionalDistribution(Variable var) {
         return (E) distributions.get(var.getVarID());
+    }
+
+    public <E extends Distribution> E getDistribution(Variable var) {
+        return DistributionTypeEnum.conditionalDistributionToDistribution(this.getConditionalDistribution(var));
     }
 
     public int getNumberOfVars() {
@@ -85,7 +90,7 @@ public final class BayesianNetwork implements Serializable {
             ParentSet parentSet = this.getDAG().getParentSet(var);
 
             int varID = var.getVarID();
-            this.distributions.add(varID, DistributionBuilder.newConditionalDistribution(var, parentSet.getParents()));
+            this.distributions.add(varID, var.newConditionalDistribution(parentSet.getParents()));
             parentSet.blockParents();
         }
 
@@ -104,7 +109,7 @@ public final class BayesianNetwork implements Serializable {
         return logProb;
     }
 
-    public List<ConditionalDistribution> getDistributions() {
+    public List<ConditionalDistribution> getConditionalDistributions() {
         return this.distributions;
     }
 
@@ -116,13 +121,13 @@ public final class BayesianNetwork implements Serializable {
         for (Variable var : this.getStaticVariables()) {
 
             if (this.getDAG().getParentSet(var).getNumberOfParents() == 0) {
-                str.append("P(" + var.getName() + " [" + var.getDistributionType().toString() + "]) follows a ");
+                str.append("P(" + var.getName() + " [" + var.getDistributionTypeEnum().toString() + "]) follows a ");
                 str.append(this.getDistribution(var).label() + "\n");
             } else {
-                str.append("P(" + var.getName() + " [" + var.getDistributionType().toString() + "]" + " : ");
+                str.append("P(" + var.getName() + " [" + var.getDistributionTypeEnum().toString() + "]" + " : ");
 
                 for (Variable parent : this.getDAG().getParentSet(var)) {
-                    str.append(parent.getName() + " [" + parent.getDistributionType().toString() + "], ");
+                    str.append(parent.getName() + " [" + parent.getDistributionTypeEnum().toString() + "], ");
                 }
                 if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) {
                     str.substring(0, str.length() - 2);

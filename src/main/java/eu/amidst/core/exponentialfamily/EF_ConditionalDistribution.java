@@ -1,5 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
@@ -32,4 +34,8 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
 
     public abstract EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment);
 
+    public abstract <E extends ConditionalDistribution> E toConditionalDistribution();
+    //{
+        //throw new UnsupportedOperationException("This EF distribution is not convertible to standard form");
+    //}
 }

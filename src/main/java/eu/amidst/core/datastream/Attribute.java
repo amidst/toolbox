@@ -10,10 +10,10 @@
 
 package eu.amidst.core.datastream;
 
-import eu.amidst.core.variables.FiniteStateSpace;
-import eu.amidst.core.variables.RealStateSpace;
-import eu.amidst.core.variables.StateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 
 import java.io.Serializable;
 
@@ -27,40 +27,40 @@ public final class Attribute implements Serializable {
 
     private final int index;
     private final String name;
-    private final StateSpace stateSpace;
+    private final StateSpaceType stateSpaceType;
 
-    public Attribute(int index, String name, String unit, StateSpaceType stateSpaceType1, int numberOfStates) {
+    public Attribute(int index, String name, String unit, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
 
         this.index = index;
         this.name = name;
-        if (stateSpaceType1==StateSpaceType.FINITE_SET) {
-            this.stateSpace = new FiniteStateSpace(numberOfStates);
-            this.stateSpace.setUnit(unit);
-        }else if (stateSpaceType1== StateSpaceType.REAL) {
-            this.stateSpace = new RealStateSpace();
-            this.stateSpace.setUnit(unit);
+        if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.FINITE_SET) {
+            this.stateSpaceType = new FiniteStateSpace(numberOfStates);
+            this.stateSpaceType.setUnit(unit);
+        }else if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.REAL) {
+            this.stateSpaceType = new RealStateSpace();
+            this.stateSpaceType.setUnit(unit);
         }else {
             throw new IllegalArgumentException("State Space not defined");
         }
     }
 
-    public Attribute(int index, String name, StateSpaceType stateSpaceType1, int numberOfStates) {
+    public Attribute(int index, String name, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
 
         this.index = index;
         this.name = name;
-        if (stateSpaceType1==StateSpaceType.FINITE_SET) {
-            this.stateSpace = new FiniteStateSpace(numberOfStates);
-        }else if (stateSpaceType1== StateSpaceType.REAL) {
-            this.stateSpace = new RealStateSpace();
+        if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.FINITE_SET) {
+            this.stateSpaceType = new FiniteStateSpace(numberOfStates);
+        }else if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.REAL) {
+            this.stateSpaceType = new RealStateSpace();
         }else {
             throw new IllegalArgumentException("State Space not defined");
         }
     }
 
-    public Attribute(int index, String name, StateSpace stateSpace1) {
+    public Attribute(int index, String name, StateSpaceType stateSpaceType1) {
         this.index = index;
         this.name = name;
-        this.stateSpace = stateSpace1;
+        this.stateSpaceType = stateSpaceType1;
     }
 
     public int getIndex() {
@@ -71,8 +71,8 @@ public final class Attribute implements Serializable {
         return name;
     }
 
-    public <E extends StateSpace> E getStateSpace() {
-        return (E)stateSpace;
+    public <E extends StateSpaceType> E getStateSpaceType() {
+        return (E) stateSpaceType;
     }
 
     @Override
@@ -87,7 +87,7 @@ public final class Attribute implements Serializable {
 
         Attribute attribute = (Attribute) o;
 
-        if (stateSpace.getStateSpaceType() != attribute.stateSpace.getStateSpaceType()){return false;}
+        if (stateSpaceType.getStateSpaceTypeEnum() != attribute.stateSpaceType.getStateSpaceTypeEnum()){return false;}
         if (!name.equals(attribute.name)) {return false;}
 
         return true;
@@ -96,7 +96,7 @@ public final class Attribute implements Serializable {
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + stateSpace.hashCode();
+        result = 31 * result + stateSpaceType.hashCode();
         return result;
     }
 }

@@ -48,6 +48,25 @@ public class BayesianNetworkTest {
 
         System.out.println(dag.toString());
 
+        /* testing adding duplicate parents */
+        try {
+            dag.getParentSet(E).addParent(A);
+            fail("Should throw an IllegalArgumentException because A is already a parent of E!");
+        } catch (IllegalArgumentException e) {
+            assertEquals(e.getMessage(), "Trying to add a duplicated parent");
+        }
+
+        /* testing adding a Gaussian variable as a parent to a Multinomial variable */
+
+        try {
+            dag.getParentSet(E).addParent(D);
+            fail("Should throw an IllegalArgumentException because No Gaussian Parent is allowed as parent of a Multinomial variable!");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        } catch (Exception e){
+            assertTrue(false);
+        }
+
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
         System.out.println(bn.toString());
@@ -64,23 +83,6 @@ public class BayesianNetworkTest {
         }
 
         System.out.println(logProb);
-
-        /* testing adding duplicate parents */
-        try {
-            dag.getParentSet(E).addParent(A);
-            fail("Should throw an IllegalArgumentException because A is already a parent of E!");
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Trying to add a duplicated parent");
-        }
-
-        /* testing adding a Gaussian variable as a parent to a Multinomial variable */
-
-        try {
-            dag.getParentSet(E).addParent(D);
-            fail("Should throw an IllegalArgumentException because No Gaussian Parent is allowed as parent of a Multinomial variable!");
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Adding a Gaussian variable as parent of a Multinomial variable");
-        }
     }
 
 }

@@ -1,5 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;

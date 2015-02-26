@@ -1,5 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.variables.Assignment;
 
 import java.util.Random;
@@ -34,4 +35,8 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     public abstract EF_UnivariateDistribution deepCopy();
 
     public abstract EF_UnivariateDistribution randomInitialization(Random rand);
+
+    public <E extends UnivariateDistribution> E toUnivariateDistribution(){
+        throw new UnsupportedOperationException("This EF distribution is not convertible to standard form");
+    }
 }

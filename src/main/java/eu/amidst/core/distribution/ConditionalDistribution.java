@@ -1,6 +1,7 @@
 package eu.amidst.core.distribution;
 
 
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
@@ -55,4 +56,7 @@ public abstract class ConditionalDistribution extends Distribution {
         return this.getLogConditionalProbability(assignment);
     }
 
+    public <E extends EF_ConditionalDistribution> E toEFConditionalDistribution(){
+        throw new UnsupportedOperationException("This distribution is not convertible to EF form");
+    }
 }

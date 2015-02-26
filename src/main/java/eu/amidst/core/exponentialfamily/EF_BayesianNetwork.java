@@ -1,7 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.DistributionBuilder;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
@@ -35,8 +34,8 @@ public class EF_BayesianNetwork extends EF_Distribution {
         distributionList = new ArrayList(network.getNumberOfVars());
 
         sizeSS=0;
-        for (ConditionalDistribution dist: network.getDistributions()){
-            EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
+        for (ConditionalDistribution dist: network.getConditionalDistributions()){
+            EF_ConditionalDistribution ef_dist = dist.toEFConditionalDistribution();
             distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
@@ -78,9 +77,9 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
         sizeSS=0;
         for (ParentSet parentSet: parentSets){
-            ConditionalDistribution dist = DistributionBuilder.newConditionalDistribution(parentSet.getMainVar(), parentSet.getParents());
+            ConditionalDistribution dist = parentSet.getMainVar().newConditionalDistribution(parentSet.getParents());
             dist.randomInitialization(new Random(0));
-            EF_ConditionalDistribution ef_dist = EF_DistributionBuilder.toEFDistributionGeneral(dist);
+            EF_ConditionalDistribution ef_dist = dist.toEFConditionalDistribution();
             distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
@@ -99,7 +98,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
     public static List<ConditionalDistribution> toConditionalDistribution(List<EF_ConditionalDistribution> ef_dists){
         ConditionalDistribution[] dists = new ConditionalDistribution[ef_dists.size()];
-        ef_dists.stream().forEach(dist -> dists[dist.getVariable().getVarID()] = EF_DistributionBuilder.toDistributionGeneral(dist));
+        ef_dists.stream().forEach(dist -> dists[dist.getVariable().getVarID()] = dist.toConditionalDistribution());
         return Arrays.asList(dists);
     }
 

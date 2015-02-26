@@ -76,8 +76,8 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         nodesClone = this.ef_model.getBayesianNetworkTime0().getDistributionList()
                 .stream()
                 .map(dist -> {
-                    EF_UnivariateDistribution uni = dist.getNewBaseEFUnivariateDistribution();
-                    uni.setVariable(this.model.getDynamicVariables().getTemporalClone(dist.getVariable()));
+                    Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(dist.getVariable());
+                    EF_UnivariateDistribution uni = temporalClone.getDistributionType().newUnivariateDistribution().toEFUnivariateDistribution();
 
                     EF_ConditionalDistribution pDist = new EF_BaseDistribution_MultinomialParents(new ArrayList<Variable>(),
                             Arrays.asList(uni));

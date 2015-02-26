@@ -5,6 +5,8 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -49,15 +51,15 @@ public class DynamicDAGTest {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("A_LAT");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new RealStateSpace());
-        variableBuilder.setDistributionType(DistType.NORMAL);
+        variableBuilder.setStateSpaceType(new RealStateSpace());
+        variableBuilder.setDistributionType(DistributionTypeEnum.NORMAL);
         Variable aLAT = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         variableBuilder = new VariableBuilder();
         variableBuilder.setName("LE");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new FiniteStateSpace(Arrays.asList("Yes", "No")));
-        variableBuilder.setDistributionType(DistType.MULTINOMIAL_LOGISTIC);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Yes", "No")));
+        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
         Variable latEv = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);

@@ -6,7 +6,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -35,14 +35,14 @@ public class BNConverterToHugin {
                 n.setNumberOfStates(amidstVar.getNumberOfStates());
                 n.setLabel(amidstVar.getName());
                 for (int j=0;j<n.getNumberOfStates();j++){
-                    String stateName = ((FiniteStateSpace)amidstVar.getStateSpace()).getStatesName(j);
+                    String stateName = ((FiniteStateSpace)amidstVar.getStateSpaceType()).getStatesName(j);
                     n.setStateLabel(j, stateName);
                 }
             } else if (amidstVar.isNormal()) {
                 ContinuousChanceNode c = new ContinuousChanceNode(this.huginBN);
                 c.setName(amidstVar.getName());
             } else {
-                throw new IllegalArgumentException("Unrecognized DistributionType:" + amidstVar.getDistributionType().toString());
+                throw new IllegalArgumentException("Unrecognized DistributionType:" + amidstVar.getDistributionTypeEnum().toString());
             }
         }
     }
@@ -60,11 +60,23 @@ public class BNConverterToHugin {
         }
     }
 
+    private void setMultinomial(Multinomial dist) throws ExceptionHugin {
+
+        Variable amidstVar = dist.getVariable();
+        Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
+        int nStates = amidstVar.getNumberOfStates();
+        double[] finalArray  = new double[nStates];
+
+        double[] sourceArray = dist.getProbabilities();
+        System.arraycopy(sourceArray, 0, finalArray, 0, nStates);
+        huginVar.getTable().setData(finalArray);
+    }
+
     private void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
         Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
-        Multinomial[] probabilities = dist.getProbabilities();
+        List<Multinomial> probabilities = dist.getMultinomialDistributions();
         List<Variable> conditioningVariables = dist.getConditioningVariables();
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
         int nStates = amidstVar.getNumberOfStates();
@@ -72,7 +84,7 @@ public class BNConverterToHugin {
         double[] finalArray  = new double[sizeArray];
 
         for(int i=0;i<numParentAssignments;i++){
-            double[] sourceArray = probabilities[i].getProbabilities();
+            double[] sourceArray = probabilities.get(i).getProbabilities();
             System.arraycopy(sourceArray, 0, finalArray, i*nStates, nStates);
         }
         huginVar.getTable().setData(finalArray);
@@ -99,6 +111,10 @@ public class BNConverterToHugin {
                     (ContinuousChanceNode)this.huginBN.getNodeByName(normalParents.get(i).getName());
             ((ContinuousChanceNode)huginVar).setBeta(coeffParents[i],huginParent,assign);
         }
+    }
+
+    private void setNormal(Normal dist) throws ExceptionHugin {
+        this.setNormal(dist,0);
     }
 
     private void setNormal(Normal dist, int i) throws ExceptionHugin {
@@ -151,6 +167,12 @@ public class BNConverterToHugin {
                     break;
                 case 3:
                     this.setNormal_MultinomialNormalParents(amidstBN.getDistribution(amidstVar));
+                    break;
+                case 4:
+                    this.setMultinomial(amidstBN.getDistribution(amidstVar));
+                    break;
+                case 5:
+                    this.setNormal(amidstBN.getDistribution(amidstVar));
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized DistributionType. ");

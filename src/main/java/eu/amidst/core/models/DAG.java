@@ -137,8 +137,9 @@ public class DAG implements Serializable {
 
 
         public void addParent(Variable var) {
-            if (!Utils.isLinkCLG(mainVar, var)) {
-                throw new IllegalArgumentException("Adding a Gaussian variable as parent of a Multinomial variable");
+            if (!mainVar.getDistributionType().isParentCompatible(var)){
+                throw new IllegalArgumentException("Adding a parent of type "+var.getDistributionTypeEnum().toString()+"which is not compatible" +
+                        "with children variable of type "+this.mainVar.getDistributionTypeEnum().toString());
             }
 
             if (this.contains(var)) {

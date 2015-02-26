@@ -10,6 +10,8 @@ package eu.amidst.core.variables;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.Serializable;
 import java.util.*;
@@ -57,7 +59,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
      * Constructor where the distribution type of random variables is provided as an argument.
      *
      */
-    public StaticVariables(Attributes atts, HashMap<Attribute, DistType> typeDists) {
+    public StaticVariables(Attributes atts, HashMap<Attribute, DistributionTypeEnum> typeDists) {
 
         this.allVariables = new ArrayList<>();
 
@@ -114,9 +116,9 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
 
     }
 
-    public Variable addObservedVariable(Attribute att, DistType distType) {
+    public Variable addObservedVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
         VariableBuilder builder = new VariableBuilder(att);
-        builder.setDistributionType(distType);
+        builder.setDistributionType(distributionTypeEnum);
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
@@ -130,8 +132,8 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
     public Variable addHiddenMultionomialVariable(String name, int nOfStates) {
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
-        builder.setDistributionType(DistType.MULTINOMIAL);
-        builder.setStateSpace(new FiniteStateSpace(nOfStates));
+        builder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
+        builder.setStateSpaceType(new FiniteStateSpace(nOfStates));
         builder.setObservable(false);
 
         return this.addHiddenVariable(builder);
@@ -141,8 +143,8 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
     public Variable addHiddenGaussianVariable(String name) {
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
-        builder.setDistributionType(DistType.NORMAL);
-        builder.setStateSpace(new RealStateSpace());
+        builder.setDistributionType(DistributionTypeEnum.NORMAL);
+        builder.setStateSpaceType(new RealStateSpace());
         builder.setObservable(false);
 
         return this.addHiddenVariable(builder);
@@ -204,8 +206,10 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         private String name;
         private int varID;
         private boolean observable;
-        private StateSpace stateSpace;
-        private DistType distributionType;
+        private StateSpaceType stateSpaceType;
+        private DistributionTypeEnum distributionTypeEnum;
+        private DistributionType distributionType;
+
         private Attribute attribute;
         private int numberOfStates = -1;
 
@@ -214,44 +218,58 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
             this.name = builder.getName();
             this.varID = varID;
             this.observable = builder.isObservable();
-            this.stateSpace = builder.getStateSpace();
-            this.distributionType = builder.getDistributionType();
+            this.stateSpaceType = builder.getStateSpaceType();
+            this.distributionTypeEnum = builder.getDistributionType();
             this.attribute = builder.getAttribute();
 
-            if (this.getStateSpace().getStateSpaceType() == StateSpaceType.FINITE_SET) {
-                this.numberOfStates = ((FiniteStateSpace) this.stateSpace).getNumberOfStates();
+            if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
             }
 
+            this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 
+        @Override
         public String getName() {
             return this.name;
         }
 
+        @Override
         public int getVarID() {
             return varID;
         }
 
+        @Override
         public boolean isObservable() {
             return observable;
         }
 
-        public <E extends StateSpace> E getStateSpace() {
-            return (E) stateSpace;
+        @Override
+        public <E extends StateSpaceType> E getStateSpaceType() {
+            return (E) stateSpaceType;
         }
 
-        public DistType getDistributionType() {
-            return distributionType;
+        @Override
+        public DistributionTypeEnum getDistributionTypeEnum() {
+            return distributionTypeEnum;
         }
 
+        @Override
+        public <E extends DistributionType> E getDistributionType() {
+            return (E)this.distributionType;
+        }
+
+        @Override
         public boolean isTemporalClone() {
             throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
         }
 
+        @Override
         public Attribute getAttribute() {
             return attribute;
         }
 
+        @Override
         public boolean isDynamicVariable() {
             return false;
         }

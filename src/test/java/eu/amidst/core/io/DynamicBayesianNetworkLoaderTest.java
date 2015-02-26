@@ -1,7 +1,6 @@
-package eu.amidst.core.models;
+package eu.amidst.core.io;
 
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.io.BayesianNetworkWriter;
+import eu.amidst.core.models.DynamicBayesianNetwork;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by afa on 11/12/14.
  */
-public class BayesianNetworkLoaderTest {
+public class DynamicBayesianNetworkLoaderTest {
 
     @Before
     public void setUp() throws IOException, ClassNotFoundException {
@@ -20,7 +19,7 @@ public class BayesianNetworkLoaderTest {
 
     @Test
     public void test() throws Exception {
-        BayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networks");
+        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networks");
     }
 
     public static void loadAndTestFilesFromFolder(final String folderName) throws Exception {
@@ -33,15 +32,15 @@ public class BayesianNetworkLoaderTest {
                 String fileName = fileEntry.getName();
                 String fullFileName = folderName + "/" + fileName;
 
-                if (fileName.endsWith(".bn")) { //Static BN
+                if (fileName.endsWith(".dbn")) { //Dynamic BN
 
-                    BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromFile(fullFileName);
-                    BayesianNetworkWriter.saveToFile(amidstBN, fullFileName);
+                    DynamicBayesianNetwork amidstDBN = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
+                    DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullFileName);
 
-                    BayesianNetwork amidstBN2 = BayesianNetworkLoader.loadFromFile(fullFileName);
+                    DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
 
-                    if (!amidstBN.equalBNs(amidstBN2, 0.0))
-                        throw new Exception("Bayesian network loader for " + fileName + " failed. ");
+                    if (!amidstDBN.equalDBNs(amidstDBN2, 0.0))
+                        throw new Exception("Dynamic Bayesian network loader for " + fileName + " failed. ");
                 }
             }
         }

@@ -3,7 +3,7 @@ package eu.amidst.core.datastream.statics.readers.impl;
 import com.google.common.collect.ImmutableList;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class ForTesting3Attributes extends Attributes {
 
-    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceType.FINITE_SET, 2);
-    private final Attribute TWO_NAMES = new Attribute(1, "TWO NAMES", "NA", StateSpaceType.FINITE_SET, 0);
-    private final Attribute THREE_NAMES_HERE = new Attribute(0, "THREE NAMES HERE", "NA", StateSpaceType.REAL, 0);
+    private final Attribute CLASS = new Attribute(0, "CLASS", "NA", StateSpaceTypeEnum.FINITE_SET, 2);
+    private final Attribute TWO_NAMES = new Attribute(1, "TWO NAMES", "NA", StateSpaceTypeEnum.FINITE_SET, 0);
+    private final Attribute THREE_NAMES_HERE = new Attribute(0, "THREE NAMES HERE", "NA", StateSpaceTypeEnum.REAL, 0);
 
     private static List<Attribute> attributesTesting3;
     {

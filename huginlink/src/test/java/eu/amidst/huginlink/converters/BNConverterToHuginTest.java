@@ -89,22 +89,22 @@ public class BNConverterToHuginTest {
 
 
         // Variable A
-        Multinomial_MultinomialParents distA = bn.getDistribution(A);
-        distA.getMultinomial(0).setProbabilities(new double[]{0.3,0.7});
+        Multinomial distA = bn.getDistribution(A);
+        distA.setProbabilities(new double[]{0.3,0.7});
 
         // Variable B
-        Multinomial_MultinomialParents distB = bn.getDistribution(B);
-        distB.getMultinomial(0).setProbabilities(new double[]{0.4,0.1,0.5});
+        Multinomial distB = bn.getDistribution(B);
+        distB.setProbabilities(new double[]{0.4,0.1,0.5});
 
         // Variable C
-        Normal_MultinomialParents distC = bn.getDistribution(C);
-        distC.getNormal(0).setMean(0.8);
-        distC.getNormal(0).setSd(1.5);
+        Normal distC = bn.getDistribution(C);
+        distC.setMean(0.8);
+        distC.setSd(1.5);
 
         // Variable D
-        Normal_MultinomialParents distD = bn.getDistribution(D);
-        distD.getNormal(0).setMean(1.3);
-        distD.getNormal(0).setSd(0.9);
+        Normal distD = bn.getDistribution(D);
+        distD.setMean(1.3);
+        distD.setSd(0.9);
 
         // Variable E
         Multinomial_MultinomialParents distE=bn.getDistribution(E);
@@ -301,22 +301,42 @@ public class BNConverterToHuginTest {
             case 3:
                 this.testNormal_MultinomialNormalParents(huginVar, amidstVar);
                 break;
+            case 4:
+                this.testMultinomial(huginVar, amidstVar);
+                break;
+            case 5:
+                this.testNormal(huginVar, amidstVar);
+                break;
             default:
                 throw new IllegalArgumentException("Unrecognized DistributionType. ");
         }
     }
 
+    private void testMultinomial(Node huginVar, Variable amidstVar) throws ExceptionHugin{
+        Multinomial dist = amidstBN.getDistribution(amidstVar);
+        double[] huginProbabilities = huginVar.getTable().getData();
+
+        int nStates = amidstVar.getNumberOfStates();
+
+        double[] amidstProbabilitiesAssignment_j = dist.getProbabilities();
+        for (int k = 0; k < nStates; k++) {
+            // Probability of the state k for the j assignment of the parents
+            assertEquals(amidstProbabilitiesAssignment_j[k], huginProbabilities[k], 0.0);
+        }
+
+    }
+
     private void testMultinomial_MultinomialParents(Node huginVar, Variable amidstVar) throws ExceptionHugin{
         Multinomial_MultinomialParents dist = amidstBN.getDistribution(amidstVar);
         double[] huginProbabilities = huginVar.getTable().getData();
-        Multinomial[] probabilities = dist.getProbabilities();
+        List<Multinomial> probabilities = dist.getMultinomialDistributions();
 
         int nStates = amidstVar.getNumberOfStates();
         int numParentAssignments =
                 MultinomialIndex.getNumberOfPossibleAssignments(dist.getConditioningVariables());
 
         for (int j = 0; j < numParentAssignments; j++) {
-            double[] amidstProbabilitiesAssignment_j = probabilities[j].getProbabilities();
+            double[] amidstProbabilitiesAssignment_j = probabilities.get(j).getProbabilities();
             for (int k = 0; k < nStates; k++) {
                 // Probability of the state k for the j assignment of the parents
                 assertEquals(amidstProbabilitiesAssignment_j[k], huginProbabilities[j * nStates + k], 0.0);
@@ -348,6 +368,20 @@ public class BNConverterToHuginTest {
         double varianceAmidst = Math.pow(dist1.getSd(),2);
         double varianceHugin = ((ContinuousChanceNode)huginVar).getGamma(assign_j);
         assertEquals(varianceAmidst,varianceHugin ,0.0000001);
+    }
+
+    private void testNormal (Node huginVar, Variable amidstVar) throws ExceptionHugin  {
+
+        Normal normal = amidstBN.getDistribution(amidstVar);
+
+        double mean_jAmidst = normal.getMean();
+        double mean_jHugin = ((ContinuousChanceNode)huginVar).getAlpha(0);
+        assertEquals(mean_jAmidst, mean_jHugin,0);
+
+        double variance_jAmidst = Math.pow(normal.getSd(),2);
+        double variance_jHugin = ((ContinuousChanceNode)huginVar).getGamma(0);
+        assertEquals(variance_jAmidst, variance_jHugin,0.0000001);
+
     }
 
     private void testNormal_MultinomialParents (Node huginVar, Variable amidstVar) throws ExceptionHugin  {

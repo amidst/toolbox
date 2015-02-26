@@ -6,6 +6,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.util.Arrays;
 
@@ -176,8 +177,8 @@ public final class StaticBayesianNetworks {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName("HiddenVar");
         variableBuilder.setObservable(false);
-        variableBuilder.setStateSpace(new FiniteStateSpace(Arrays.asList("TRUE","FALSE")));
-        variableBuilder.setDistributionType(DistType.MULTINOMIAL);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("TRUE", "FALSE")));
+        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
         Variable hidden = variables.addHiddenVariable(variableBuilder);
 
         /**

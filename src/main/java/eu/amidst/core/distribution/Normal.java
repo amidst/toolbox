@@ -9,6 +9,9 @@
 
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.exponentialfamily.EF_Normal;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.variables.Variable;
 
 import java.util.Random;
@@ -132,4 +135,14 @@ public class Normal extends UnivariateDistribution {
         return Math.abs(this.getMean() - dist.getMean()) <= threshold && Math.abs(this.getSd() - dist.getSd()) <= threshold;
     }
 
+    @Override
+    public EF_Normal toEFUnivariateDistribution() {
+
+        EF_Normal efNormal = new EF_Normal(this.getVariable());
+        MomentParameters momentParameters = efNormal.createZeroedMomentParameters();
+        momentParameters.set(EF_Normal.EXPECTED_MEAN, this.getMean());
+        momentParameters.set(EF_Normal.EXPECTED_SQUARE, this.getMean() * this.getMean() + this.getSd() * this.getSd());
+        efNormal.setMomentParameters(momentParameters);
+        return efNormal;
+    }
 }
