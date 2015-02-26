@@ -34,8 +34,7 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
 
     public abstract EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment);
 
-    public abstract <E extends ConditionalDistribution> E toConditionalDistribution();
-    //{
-        //throw new UnsupportedOperationException("This EF distribution is not convertible to standard form");
-    //}
+    public <E extends ConditionalDistribution> E toConditionalDistribution(){
+        throw new UnsupportedOperationException("This EF distribution is not convertible to standard form");
+    }
 }
