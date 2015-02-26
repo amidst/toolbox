@@ -66,4 +66,5 @@ public interface Variable {
     //    return(this.getDistributionTypeEnum().compareTo(DistType.INDICATOR)==0);
     //}
 
+
 }
