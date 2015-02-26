@@ -11,7 +11,18 @@ import eu.amidst.huginlink.converters.DBNConverterToHugin;
  */
 public class DBNWriterToHugin {
     public static void saveToHuginFile(DynamicBayesianNetwork amidstDBN, String file) throws ExceptionHugin {
+
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
+
+        //The network name must be the same as the file name (without .dbn)
+        String[] parts = file.split("/");
+        String fileName = parts[parts.length-1];
+        String networkName = fileName.substring(0,fileName.length()-5);
+
+
+        System.out.println(networkName);
+        huginDBN.setName(networkName);
+
         huginDBN.saveAsNet(file);
 
     }
