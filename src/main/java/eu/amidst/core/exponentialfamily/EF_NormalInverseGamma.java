@@ -155,7 +155,71 @@ public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
      */
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-        return null;
+
+        NaturalParameters naturalParameters = new ArrayVector(2);
+
+        double[] Beta_array = new double[Math.floorDiv(nOfParents,2)];
+        double[] Yarray = new double[Math.floorDiv(nOfParents,2)];
+        double beta0;
+        double invVariance;
+
+        for (int i = 0; i < realYVariables.size(); i++) {
+            Yarray[i] = momentChildCoParents.get(this.realYVariables.get(i)).get(0);
+        }
+        RealVector Y = new ArrayRealVector(Yarray);
+        for (int i = 0; i < betasVariables.size(); i++) {
+            Beta_array[i] = momentChildCoParents.get(this.betasVariables.get(i)).get(0);
+        }
+        RealVector Beta = new ArrayRealVector(Beta_array);
+
+        beta0 = momentChildCoParents.get(beta0Variable).get(0);
+        invVariance = momentChildCoParents.get(invGammaVariable).get(1);
+
+        double X = momentChildCoParents.get(var).get(0);
+
+        int parentID=this.getConditioningVariables().indexOf(parent);
+
+        // Message to a Y variable
+        if(realYVariables.contains(parent)){
+
+            RealVector BetaPrima = Beta.copy();
+            BetaPrima.setEntry(parentID, 0);
+
+            double beta_i = Beta.getEntry(parentID);
+
+            naturalParameters.set(0, -beta0*beta_i*invVariance +
+                    beta_i*X*invVariance - BetaPrima.mapMultiplyToSelf(beta_i*invVariance).dotProduct(Y));
+
+            naturalParameters.set(1, -0.5*beta_i*beta_i*invVariance);
+
+        // Message to a Beta variable
+        }else if(betasVariables.contains(parent)){
+
+            RealVector BetaPrima = Beta.copy();
+            BetaPrima.setEntry(parentID, 0);
+
+            double Y_i = Y.getEntry(parentID);
+
+            naturalParameters.set(0, -beta0*Y_i*invVariance +
+                    Y_i*X*invVariance - BetaPrima.mapMultiplyToSelf(Y_i*invVariance).dotProduct(Y));
+
+            naturalParameters.set(1, -0.5*Y_i*Y_i*invVariance);
+
+        // Message to a Beta0 variable
+        }else if(beta0Variable == parent){
+
+            naturalParameters.set(0, X*invVariance - Beta.mapMultiplyToSelf(invVariance).dotProduct(Y));
+            naturalParameters.set(1, -0.5*invVariance);
+
+        // Message to a inv-Gamma variable
+        }else{
+
+            naturalParameters.set(0, -0.5);
+            naturalParameters.set(1, -Math.pow(X-beta0-Beta.dotProduct(Y),2)*0.5);
+
+        }
+
+        return naturalParameters;
     }
 
     @Override
