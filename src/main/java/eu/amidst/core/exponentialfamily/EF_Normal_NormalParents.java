@@ -265,15 +265,6 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return naturalParameters;
     }
 
-    @Override
-    public EF_UnivariateDistribution getNewBaseEFUnivariateDistribution() {
-        return new EF_Normal(this.getVariable());
-    }
-
-    @Override
-    public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
-        throw new UnsupportedOperationException("Method not implemented yet!");
-    }
 
     @Override
     public Normal_NormalParents toConditionalDistribution() {

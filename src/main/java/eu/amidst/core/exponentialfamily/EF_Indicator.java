@@ -52,17 +52,6 @@ public class EF_Indicator extends EF_ConditionalDistribution{
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         return null;
     }
-
-    @Override
-    public EF_UnivariateDistribution getNewBaseEFUnivariateDistribution() {
-        return null;
-    }
-
-    @Override
-    public EF_UnivariateDistribution getEFUnivariateDistribution(Assignment assignment) {
-        return null;
-    }
-
     @Override
     public <E extends ConditionalDistribution> E toConditionalDistribution() {
         return null;
