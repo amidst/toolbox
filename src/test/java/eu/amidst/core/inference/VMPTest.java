@@ -24,8 +24,8 @@ public class VMPTest extends TestCase {
     public static void test1() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
 
         DAG dag = new DAG(variables);
 
@@ -111,8 +111,8 @@ public class VMPTest extends TestCase {
     public static void test2() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
 
         DAG dag = new DAG(variables);
 
@@ -152,9 +152,9 @@ public class VMPTest extends TestCase {
     public static void test3() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -255,9 +255,9 @@ public class VMPTest extends TestCase {
     public static void test4() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -349,9 +349,9 @@ public class VMPTest extends TestCase {
     public static void test5() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -423,9 +423,9 @@ public class VMPTest extends TestCase {
     public static void test6() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -495,9 +495,9 @@ public class VMPTest extends TestCase {
     public static void test7() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -568,9 +568,9 @@ public class VMPTest extends TestCase {
     public static void test8() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -634,9 +634,9 @@ public class VMPTest extends TestCase {
     public static void test9() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -698,9 +698,9 @@ public class VMPTest extends TestCase {
     public static void test10() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -746,9 +746,9 @@ public class VMPTest extends TestCase {
     public static void test11() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -819,9 +819,9 @@ public class VMPTest extends TestCase {
     public static void test12() {
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenMultionomialVariable("A", 2);
-        Variable varB = variables.addHiddenMultionomialVariable("B", 2);
-        Variable varC = variables.addHiddenMultionomialVariable("C", 2);
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varC = variables.newMultionomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -922,11 +922,11 @@ public class VMPTest extends TestCase {
 
         StaticVariables variables = new StaticVariables();
 
-        Variable varA = variables.addHiddenMultionomialVariable("A", 4);
+        Variable varA = variables.newMultionomialVariable("A", 4);
 
         int nVar = 3;
         for (int i = 0; i < nVar; i++) {
-            variables.addHiddenMultionomialVariable(i+"", 4);
+            variables.newMultionomialVariable(i + "", 4);
         }
 
         DAG dag = new DAG(variables);

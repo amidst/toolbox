@@ -35,7 +35,7 @@ public class NaiveBayesClusteringModel extends LearnableModel{
         VariableBuilder.setNumberOfStates(2);
         VariableBuilder.setStateSpace(StateSpaceType.FINITE_SET);
 
-        Variable hiddenVar = modelHeader.addHiddenDynamicVariable(builder);
+        Variable hiddenVar = modelHeader.newDynamicVariable(builder);
 
 
 

@@ -45,7 +45,7 @@ public final class DaimlerModels {
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
-         * in our data. In this case, we use the method "addObservedDynamicVariable" of the Dynamic Variable class.
+         * in our data. In this case, we use the method "newDynamicVariable" of the Dynamic Variable class.
          *
          * Here dynamic variable has the same type than static variables. However, there are two main differences
          *      - If we called to the method "isDynamic" of Variable class, it will return true.
@@ -76,14 +76,14 @@ public final class DaimlerModels {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
-        Variable vlatSIGMA = dynamicVariables.addObservedDynamicVariable(attVLATSIGMA);
-        Variable vlatMEAS = dynamicVariables.addObservedDynamicVariable(attVLATMEAS);
-        Variable olatSIGMA = dynamicVariables.addObservedDynamicVariable(attOLATSIGMA);
-        Variable olatMEAS = dynamicVariables.addObservedDynamicVariable(attOLATMEAS);
+        Variable vlatSIGMA = dynamicVariables.newDynamicVariable(attVLATSIGMA);
+        Variable vlatMEAS = dynamicVariables.newDynamicVariable(attVLATMEAS);
+        Variable olatSIGMA = dynamicVariables.newDynamicVariable(attOLATSIGMA);
+        Variable olatMEAS = dynamicVariables.newDynamicVariable(attOLATMEAS);
 
         /**
          * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
-         * we use addRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
+         * we use newRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this VariableBuilder to provide this information to
@@ -92,26 +92,16 @@ public final class DaimlerModels {
          * 2. Using VariableBuilder, we define the hidden variables and we explicitly indicate if the are Multinomial,
          * Gaussian or Multinomial_Logistic (i.e. a multinomial variable with continuous parents).
          *
-         * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
+         * 3. We finally create the hidden variable using the method "newDynamicVariable".
          *
          */
 
-        Variable vlatREAL = dynamicVariables.addRealDynamicVariable(vlatMEAS);
-        Variable olatREAL = dynamicVariables.addRealDynamicVariable(olatMEAS);
+        Variable vlatREAL = dynamicVariables.newRealDynamicVariable(vlatMEAS);
+        Variable olatREAL = dynamicVariables.newRealDynamicVariable(olatMEAS);
 
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("A_LAT");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new RealStateSpace());
-        variableBuilder.setDistributionType(DistributionTypeEnum.NORMAL);
-        Variable aLAT = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable aLAT = dynamicVariables.newGaussianDynamicVariable("A_LAT");
 
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("LE");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Yes", "No")));
-        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
-        Variable latEv = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable latEv = dynamicVariables.newMultinomialLogisticDynamicVariable("LE", Arrays.asList("Yes", "No"));
 
 
         /**

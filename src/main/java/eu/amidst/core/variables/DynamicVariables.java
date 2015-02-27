@@ -19,6 +19,7 @@ package eu.amidst.core.variables;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.Serializable;
 import java.util.*;
@@ -129,7 +130,41 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
     }
 */
-    public Variable addObservedDynamicVariable(Attribute att) {
+
+    public Variable newMultinomialLogisticDynamicVariable(Attribute att) {
+        return this.newDynamicVariable(att, DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
+    }
+
+    public Variable newMultinomialLogisticDynamicVariable(String name, int nOfStates) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(nOfStates));
+    }
+
+    public Variable newMultinomialLogisticDynamicVariable(String name, List<String> states) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(states));
+    }
+
+    public Variable newMultionomialDynamicVariable(Attribute att) {
+        return this.newDynamicVariable(att, DistributionTypeEnum.MULTINOMIAL);
+    }
+
+    public Variable newMultinomialDynamicVariable(String name, int nOfStates) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(nOfStates));
+    }
+
+    public Variable newMultinomialDynamicVariable(String name, List<String> states) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(states));
+    }
+
+    public Variable newGaussianDynamicVariable(Attribute att) {
+        return this.newDynamicVariable(att, DistributionTypeEnum.NORMAL);
+    }
+
+    public Variable newGaussianDynamicVariable(String name) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
+    }
+
+
+    public Variable newDynamicVariable(Attribute att) {
 
         VariableImplementation var = new VariableImplementation(new VariableBuilder(att), allVariables.size());
         if (mapping.containsKey(var.getName())) {
@@ -144,7 +179,26 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return var;
     }
 
-    public Variable addObservedDynamicVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
+    public Variable newDynamicVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
+        VariableBuilder variableBuilder = new VariableBuilder();
+        variableBuilder.setName(name);
+        variableBuilder.setDistributionType(distributionTypeEnum);
+        variableBuilder.setStateSpaceType(stateSpaceType);
+        variableBuilder.setObservable(false);
+        VariableImplementation var = new VariableImplementation(variableBuilder, allVariables.size());
+        if (mapping.containsKey(var.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(var.getName(), var.getVarID());
+        allVariables.add(var);
+
+        VariableImplementation temporalClone = new VariableImplementation(var);
+        temporalClones.add(var.getVarID(),temporalClone);
+
+        return var;
+    }
+
+    public Variable newDynamicVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
         VariableBuilder variableBuilder = new VariableBuilder(att);
         variableBuilder.setDistributionType(distributionTypeEnum);
         VariableImplementation var = new VariableImplementation(variableBuilder, allVariables.size());
@@ -159,7 +213,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
         return var;
     }
-    public Variable addHiddenDynamicVariable(VariableBuilder builder) {
+
+    public Variable newDynamicVariable(VariableBuilder builder) {
 
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName())) {
@@ -174,7 +229,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return var;
     }
 
-    public Variable addRealDynamicVariable(Variable var){
+    public Variable newRealDynamicVariable(Variable var){
         if (!var.isObservable()) {
             throw new IllegalArgumentException("A Real variable should be created from an observed variable");
         }
