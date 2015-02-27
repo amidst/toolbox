@@ -40,27 +40,17 @@ public class DynamicDAGTest {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
-        Variable vlatSIGMA = dynamicVariables.addObservedDynamicVariable(attVLATSIGMA);
-        Variable vlatMEAS = dynamicVariables.addObservedDynamicVariable(attVLATMEAS);
-        Variable olatSIGMA = dynamicVariables.addObservedDynamicVariable(attOLATSIGMA);
-        Variable olatMEAS = dynamicVariables.addObservedDynamicVariable(attOLATMEAS);
+        Variable vlatSIGMA = dynamicVariables.newDynamicVariable(attVLATSIGMA);
+        Variable vlatMEAS = dynamicVariables.newDynamicVariable(attVLATMEAS);
+        Variable olatSIGMA = dynamicVariables.newDynamicVariable(attOLATSIGMA);
+        Variable olatMEAS = dynamicVariables.newDynamicVariable(attOLATMEAS);
 
-        Variable vlatREAL = dynamicVariables.addRealDynamicVariable(vlatMEAS);
-        Variable olatREAL = dynamicVariables.addRealDynamicVariable(olatMEAS);
+        Variable vlatREAL = dynamicVariables.newRealDynamicVariable(vlatMEAS);
+        Variable olatREAL = dynamicVariables.newRealDynamicVariable(olatMEAS);
 
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("A_LAT");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new RealStateSpace());
-        variableBuilder.setDistributionType(DistributionTypeEnum.NORMAL);
-        Variable aLAT = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable aLAT = dynamicVariables.newGaussianDynamicVariable("A_LAT");
 
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("LE");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Yes", "No")));
-        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
-        Variable latEv = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable latEv = dynamicVariables.newMultinomialDynamicVariable("LE",Arrays.asList("Yes", "No"));
 
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 

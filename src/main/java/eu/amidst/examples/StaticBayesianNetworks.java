@@ -172,14 +172,10 @@ public final class StaticBayesianNetworks {
          * 2. Using VariableBuilder, we define a variable called HiddenVar, which is not observable (i.e. hidden), its state
          * space is a finite set with two elements, and its distribution type is multinomial.
          *
-         * 3. We finally create the hidden variable using the method "addHiddenVariable".
+         * 3. We finally create the hidden variable using the method "newVariable".
          */
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("HiddenVar");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("TRUE", "FALSE")));
-        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
-        Variable hidden = variables.addHiddenVariable(variableBuilder);
+
+        Variable hidden = variables.newMultionomialVariable("HiddenVar",Arrays.asList("TRUE", "FALSE"));
 
         /**
          * 1. Once we have defined your StaticVariables object, including the hidden variable,

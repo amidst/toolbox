@@ -44,7 +44,7 @@ public final class VerdandeModels {
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
-         * in our data. In this case, we use the method "addObservedDynamicVariable" of the Dynamic Variable class.
+         * in our data. In this case, we use the method "newDynamicVariable" of the Dynamic Variable class.
          *
          * Here dynamic variable has the same type than static variables. However, there are two main differences
          *      - If we called to the method "isDynamic" of Variable class, it will return true.
@@ -70,13 +70,13 @@ public final class VerdandeModels {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
-        Variable observedROP = dynamicVariables.addObservedDynamicVariable(attROP);
-        Variable observedTRQ = dynamicVariables.addObservedDynamicVariable(attTRQ);
+        Variable observedROP = dynamicVariables.newDynamicVariable(attROP);
+        Variable observedTRQ = dynamicVariables.newDynamicVariable(attTRQ);
 
 
         /**
          * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
-         * we use addRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
+         * we use newRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this VariableBuilder to provide this information to
@@ -85,26 +85,17 @@ public final class VerdandeModels {
          * 2. Using VariableBuilder, we define the hidden variables and we explicitly indicate if the are Multinomial,
          * Gaussian or Multinomial_Logistic (i.e. a multinomial variable with continuous parents).
          *
-         * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
+         * 3. We finally create the hidden variable using the method "newDynamicVariable".
          *
          * 4. Variables RealTRQ and HiddenVar are part of the continuous sub-netwok of figure 4.28 of Deliverable 2.1
          */
 
-        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);
+        Variable realTRQ = dynamicVariables.newRealDynamicVariable(observedTRQ);
 
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("HiddenVar");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new RealStateSpace());
-        variableBuilder.setDistributionType(DistributionTypeEnum.NORMAL);
-        Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
 
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("Normal_Abnormal");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Normal", "Abnormal")));
-        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
-        Variable normalAbnormal = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable hidden = dynamicVariables.newGaussianDynamicVariable("HiddenVar");
+
+        Variable normalAbnormal = dynamicVariables.newMultinomialLogisticDynamicVariable("Normal_Abnormal", Arrays.asList("Normal", "Abnormal"));
 
 
         /**
@@ -177,7 +168,7 @@ public final class VerdandeModels {
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
-         * in our data. In this case, we use the method "addObservedDynamicVariable" of the Dynamic Variable class.
+         * in our data. In this case, we use the method "newDynamicVariable" of the Dynamic Variable class.
          *
          * Here dynamic variable has the same type than static variables. However, there are two main differences
          *      - If we called to the method "isDynamic" of Variable class, it will return true.
@@ -210,16 +201,16 @@ public final class VerdandeModels {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
-        Variable observedWOB = dynamicVariables.addObservedDynamicVariable(attWOB);
-        Variable observedRPMB = dynamicVariables.addObservedDynamicVariable(attRPM);
-        Variable observedMFI = dynamicVariables.addObservedDynamicVariable(attMFI);
-        Variable observedTRQ = dynamicVariables.addObservedDynamicVariable(attTRQ);
-        Variable observedROP = dynamicVariables.addObservedDynamicVariable(attROP);
-        Variable observedPRESSURE = dynamicVariables.addObservedDynamicVariable(attPRESSURE);
+        Variable observedWOB = dynamicVariables.newDynamicVariable(attWOB);
+        Variable observedRPMB = dynamicVariables.newDynamicVariable(attRPM);
+        Variable observedMFI = dynamicVariables.newDynamicVariable(attMFI);
+        Variable observedTRQ = dynamicVariables.newDynamicVariable(attTRQ);
+        Variable observedROP = dynamicVariables.newDynamicVariable(attROP);
+        Variable observedPRESSURE = dynamicVariables.newDynamicVariable(attPRESSURE);
 
         /**
          * 1. We now create the hidden variables. If a hidden variable can be created from an real observed Variable
-         * we use addRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
+         * we use newRealDynamicVariable directly. Otherwise, we make use of the class VariableBuilder. When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this VariableBuilder to provide this information to
@@ -228,27 +219,17 @@ public final class VerdandeModels {
          * 2. Using VariableBuilder, we define the hidden variables and we explicitly indicate if the are Multinomial,
          * Gaussian or Multinomial_Logistic (i.e. a multinomial variable with continuous parents).
          *
-         * 3. We finally create the hidden variable using the method "addHiddenDynamicVariable".
+         * 3. We finally create the hidden variable using the method "newDynamicVariable".
          */
 
         /* In Figure 4.29, these 3 variables are part of the Continuous subnetwork */
-        Variable realTRQ = dynamicVariables.addRealDynamicVariable(observedTRQ);
-        Variable realROP = dynamicVariables.addRealDynamicVariable(observedROP);
-        Variable realPRESSURE = dynamicVariables.addRealDynamicVariable(observedPRESSURE);
+        Variable realTRQ = dynamicVariables.newRealDynamicVariable(observedTRQ);
+        Variable realROP = dynamicVariables.newRealDynamicVariable(observedROP);
+        Variable realPRESSURE = dynamicVariables.newRealDynamicVariable(observedPRESSURE);
 
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("HiddenVar");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new RealStateSpace());
-        variableBuilder.setDistributionType(DistributionTypeEnum.NORMAL);
-        Variable hidden = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable hidden = dynamicVariables.newGaussianDynamicVariable("HiddenVar");
 
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("Mixture");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new FiniteStateSpace(2));
-        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
-        Variable mixture = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable mixture = dynamicVariables.newMultinomialDynamicVariable("Mixture",2);
 
         /**
          * 1. Once we have defined your DynamicVariables object the next step is to create a dynamic DAG
@@ -353,22 +334,12 @@ public final class VerdandeModels {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
-        Variable observedDepth = dynamicVariables.addObservedDynamicVariable(attDepth);
-        Variable observedGammaDiff = dynamicVariables.addObservedDynamicVariable(attGammaDiff);
+        Variable observedDepth = dynamicVariables.newDynamicVariable(attDepth);
+        Variable observedGammaDiff = dynamicVariables.newDynamicVariable(attGammaDiff);
 
-        VariableBuilder variableBuilder = new VariableBuilder();
-        variableBuilder.setName("FormationNo");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new FiniteStateSpace(2));
-        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
-        Variable formationNo = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable formationNo = dynamicVariables.newMultinomialDynamicVariable("FormationNo", 2);
 
-        variableBuilder = new VariableBuilder();
-        variableBuilder.setName("Shift");
-        variableBuilder.setObservable(false);
-        variableBuilder.setStateSpaceType(new FiniteStateSpace(2));
-        variableBuilder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
-        Variable shift = dynamicVariables.addHiddenDynamicVariable(variableBuilder);
+        Variable shift = dynamicVariables.newMultinomialDynamicVariable("Shift",2);
 
 
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
