@@ -304,5 +304,10 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         public int getNumberOfStates() {
             return this.numberOfStates;
         }
+
+        @Override
+        public int hashCode(){
+            return this.name.hashCode();
+        }
     }
 }
