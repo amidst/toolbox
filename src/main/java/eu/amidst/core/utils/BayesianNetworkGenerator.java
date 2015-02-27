@@ -54,12 +54,12 @@ public final class BayesianNetworkGenerator{
 
 
         IntStream.range(0,numberOfDiscreteVars-1)
-                .forEach(i -> staticVariables.addHiddenVariable(generateDiscreteVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates)));
+                .forEach(i -> staticVariables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
         IntStream.range(0,numberOfContinuousVars)
-                .forEach(i -> staticVariables.addHiddenVariable(generateContinuousVariable("GaussianVar" + i)));
+                .forEach(i -> staticVariables.newGaussianVariable("GaussianVar" + i));
 
-        Variable classVar = staticVariables.addHiddenVariable(generateDiscreteVariable("ClassVar", nClassLabels));
+        Variable classVar = staticVariables.newMultionomialVariable("ClassVar", nClassLabels);
 
         DAG dag = new DAG(staticVariables);
 
@@ -73,27 +73,6 @@ public final class BayesianNetworkGenerator{
 
         return network;
     }
-
-    private static VariableBuilder generateDiscreteVariable(String name, int numberOfStates){
-        VariableBuilder builder = new VariableBuilder();
-        builder.setName(name);
-        builder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
-        builder.setStateSpaceType(new FiniteStateSpace(numberOfStates));
-        builder.setObservable(false);
-
-        return builder;
-    }
-
-    private static VariableBuilder generateContinuousVariable(String name){
-        VariableBuilder builder = new VariableBuilder();
-        builder.setName(name);
-        builder.setDistributionType(DistributionTypeEnum.NORMAL);
-        builder.setStateSpaceType(new RealStateSpace());
-        builder.setObservable(false);
-
-        return builder;
-    }
-
 
     public static String listOptions(){
         return  classNameID() +", "+

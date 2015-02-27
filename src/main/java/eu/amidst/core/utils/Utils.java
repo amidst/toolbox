@@ -270,7 +270,7 @@ public final class Utils {
         StaticVariables staticVariables = new StaticVariables();
         for (Variable dyVar: areParents){
             VariableBuilder builder = VariableToVariableBuilder(dyVar);
-            staticVariables.addHiddenVariable(builder);
+            staticVariables.newVariable(builder);
         }
 
         DAG dag = new DAG(staticVariables);

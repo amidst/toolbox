@@ -104,19 +104,53 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         return varNew;
     }*/
 
-    public Variable addObservedVariable(Attribute att) {
 
-        VariableImplementation var = new VariableImplementation(new VariableBuilder(att), allVariables.size());
-        if (mapping.containsKey(var.getName())) {
-            throw new IllegalArgumentException("Attribute list contains duplicated names");
-        }
-        this.mapping.put(var.getName(), var.getVarID());
-        allVariables.add(var);
-        return var;
+
+    public Variable newMultionomialVariable(Attribute att) {
+        return this.newVariable(att, DistributionTypeEnum.MULTINOMIAL);
+    }
+
+    public Variable newMultionomialVariable(String name, int nOfStates) {
+        return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(nOfStates));
+    }
+
+    public Variable newMultionomialVariable(String name, List<String> states) {
+        return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(states));
+    }
+
+    public Variable newMultinomialLogisticVariable(Attribute att) {
+        return this.newVariable(att, DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
+    }
+
+    public Variable newMultinomialLogisticVariable(String name, int nOfStates) {
+        return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(nOfStates));
+    }
+
+    public Variable newMultinomialLogisticVariable(String name, List<String> states) {
+        return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(states));
+    }
+
+
+    public Variable newGaussianVariable(Attribute att) {
+        return this.newVariable(att, DistributionTypeEnum.NORMAL);
+    }
+
+    public Variable newGaussianVariable(String name) {
+        return this.newVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
+    }
+
+    public Variable newVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
+        VariableBuilder builder = new VariableBuilder();
+        builder.setName(name);
+        builder.setDistributionType(distributionTypeEnum);
+        builder.setStateSpaceType(stateSpaceType);
+        builder.setObservable(false);
+
+        return this.newVariable(builder);
 
     }
 
-    public Variable addObservedVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
+    public Variable newVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
         VariableBuilder builder = new VariableBuilder(att);
         builder.setDistributionType(distributionTypeEnum);
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
@@ -129,29 +163,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
 
     }
 
-    public Variable addHiddenMultionomialVariable(String name, int nOfStates) {
-        VariableBuilder builder = new VariableBuilder();
-        builder.setName(name);
-        builder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
-        builder.setStateSpaceType(new FiniteStateSpace(nOfStates));
-        builder.setObservable(false);
-
-        return this.addHiddenVariable(builder);
-
-    }
-
-    public Variable addHiddenGaussianVariable(String name) {
-        VariableBuilder builder = new VariableBuilder();
-        builder.setName(name);
-        builder.setDistributionType(DistributionTypeEnum.NORMAL);
-        builder.setStateSpaceType(new RealStateSpace());
-        builder.setObservable(false);
-
-        return this.addHiddenVariable(builder);
-    }
-
-    public Variable addHiddenVariable(VariableBuilder builder) {
-
+    public Variable newVariable(VariableBuilder builder) {
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names: " + var.getName());

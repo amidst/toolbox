@@ -43,8 +43,8 @@ public class VMPNormalTest extends TestCase {
     public static void test2() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenGaussianVariable("A");
-        Variable varB = variables.addHiddenGaussianVariable("B");
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
 
         DAG dag = new DAG(variables);
 
@@ -120,9 +120,9 @@ public class VMPNormalTest extends TestCase {
     public static void test3() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenGaussianVariable("A");
-        Variable varB = variables.addHiddenGaussianVariable("B");
-        Variable varC = variables.addHiddenGaussianVariable("C");
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
 
@@ -224,9 +224,9 @@ public class VMPNormalTest extends TestCase {
     public static void test4() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenGaussianVariable("A");
-        Variable varB = variables.addHiddenGaussianVariable("B");
-        Variable varC = variables.addHiddenGaussianVariable("C");
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
 
@@ -320,9 +320,9 @@ public class VMPNormalTest extends TestCase {
     public static void test5() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenGaussianVariable("A");
-        Variable varB = variables.addHiddenGaussianVariable("B");
-        Variable varC = variables.addHiddenGaussianVariable("C");
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
 
@@ -422,9 +422,9 @@ public class VMPNormalTest extends TestCase {
     public static void test6() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenGaussianVariable("A");
-        Variable varB = variables.addHiddenGaussianVariable("B");
-        Variable varC = variables.addHiddenGaussianVariable("C");
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
 
@@ -509,9 +509,9 @@ public class VMPNormalTest extends TestCase {
     public static void test7() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenGaussianVariable("A");
-        Variable varB = variables.addHiddenGaussianVariable("B");
-        Variable varC = variables.addHiddenGaussianVariable("C");
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
 
@@ -615,9 +615,9 @@ public class VMPNormalTest extends TestCase {
     public static void test8() throws IOException, ClassNotFoundException{
 
         StaticVariables variables = new StaticVariables();
-        Variable varA = variables.addHiddenGaussianVariable("A");
-        Variable varB = variables.addHiddenGaussianVariable("B");
-        Variable varC = variables.addHiddenGaussianVariable("C");
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
 
