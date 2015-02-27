@@ -42,15 +42,15 @@ public class DynamicBayesianNetworkGenerator {
         DynamicVariables dynamicVariables  = new DynamicVariables();
 
         //class variable which is always discrete
-        Variable classVar = dynamicVariables.addHiddenDynamicVariable(generateDiscreteVariable("ClassVar", numberClassStates));
+        Variable classVar = dynamicVariables.newMultinomialDynamicVariable("ClassVar", numberClassStates);
 
         //Discrete variables
         IntStream.range(1, numberOfDiscreteVars+1)
-                .forEach(i -> dynamicVariables.addHiddenDynamicVariable(generateDiscreteVariable("DiscreteVar" + i, DynamicBayesianNetworkGenerator.numberOfStates)));
+                .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("DiscreteVar" + i, DynamicBayesianNetworkGenerator.numberOfStates));
 
         //Continuous variables
         IntStream.range(1,numberOfContinuousVars+1)
-                .forEach(i -> dynamicVariables.addHiddenDynamicVariable(generateContinuousVariable("ContinuousVar" + i)));
+                .forEach(i -> dynamicVariables.newGaussianDynamicVariable("ContinuousVar" + i));
 
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
@@ -71,26 +71,6 @@ public class DynamicBayesianNetworkGenerator {
         network.randomInitialization(random);
 
         return network;
-    }
-
-    private static VariableBuilder generateDiscreteVariable(String name, int numberOfStates){
-        VariableBuilder builder = new VariableBuilder();
-        builder.setName(name);
-        builder.setDistributionType(DistributionTypeEnum.MULTINOMIAL);
-        builder.setStateSpaceType(new FiniteStateSpace(numberOfStates));
-        builder.setObservable(false);
-
-        return builder;
-    }
-
-    private static VariableBuilder generateContinuousVariable(String name){
-        VariableBuilder builder = new VariableBuilder();
-        builder.setName(name);
-        builder.setDistributionType(DistributionTypeEnum.NORMAL);
-        builder.setStateSpaceType(new RealStateSpace());
-        builder.setObservable(false);
-
-        return builder;
     }
 
     public static void main(String[] agrs) throws IOException, ClassNotFoundException {
