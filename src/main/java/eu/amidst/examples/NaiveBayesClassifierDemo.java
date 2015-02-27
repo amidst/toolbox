@@ -13,13 +13,16 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 public class NaiveBayesClassifierDemo {
     public static void main(String[] args) {
 
+        BayesianNetworkGenerator.loadOptions();
+
+        BayesianNetworkGenerator.setSeed(0);
         BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(50000);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
         BayesianNetworkGenerator.setNumberOfStates(10);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
-        BayesianNetworkGenerator.setSeed(0);
+        System.out.println(bn.toString());
 
-        int sampleSize = 100;
+        int sampleSize = 10000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setParallelMode(true);
         DataStream<DataInstance> data =  sampler.sampleToDataBase(sampleSize);

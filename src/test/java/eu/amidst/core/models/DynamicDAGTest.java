@@ -50,7 +50,7 @@ public class DynamicDAGTest {
 
         Variable aLAT = dynamicVariables.newGaussianDynamicVariable("A_LAT");
 
-        Variable latEv = dynamicVariables.newMultinomialDynamicVariable("LE",Arrays.asList("Yes", "No"));
+        Variable latEv = dynamicVariables.newMultinomialLogisticDynamicVariable("LE",Arrays.asList("Yes", "No"));
 
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
