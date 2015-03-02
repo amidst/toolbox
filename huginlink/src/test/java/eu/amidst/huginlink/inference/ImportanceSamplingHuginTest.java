@@ -1,0 +1,135 @@
+package eu.amidst.huginlink.inference;
+import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.variables.HashMapAssignment;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.IOException;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * Created by afa on 1/3/15.
+ * Test to check the Importance Sampling algorithm against Hugin inference engine (without evidences!!)
+ */
+public class ImportanceSamplingHuginTest {
+
+    @Before
+    public void setUp() {
+
+    }
+
+    @Test
+    public void test() throws IOException, ClassNotFoundException {
+
+        BayesianNetwork model = BayesianNetworkLoader.loadFromFile("networks/IS.bn");
+
+        //**************************************************************************************************************
+        // MODEL DISTRIBUTIONS
+        //**************************************************************************************************************
+        //System.out.println("MODEL DISTRIBUTIONS");
+        //model.getConditionalDistributions().stream().forEach(e-> {
+        //     System.out.println(e.getVariable().getName());
+        //     System.out.println(e);
+        //});
+
+        StaticVariables variables = model.getStaticVariables();
+        Variable varA = variables.getVariableByName("A");
+        Variable varB = variables.getVariableByName("B");
+        Variable varC = variables.getVariableByName("C");
+        Variable varD = variables.getVariableByName("D");
+        Variable varE = variables.getVariableByName("E");
+
+        HashMapAssignment evidence = new HashMapAssignment(0);
+        //evidence.setValue(varA,1.0);
+
+        //**************************************************************************************************************
+        // HUGIN INFERENCE
+        //**************************************************************************************************************
+
+        HuginInferenceForBN huginInferenceForBN = new HuginInferenceForBN();
+        huginInferenceForBN.setModel(model);
+        huginInferenceForBN.setEvidence(evidence);
+        huginInferenceForBN.runInference();
+
+        //**************************************************************************************************************
+        // IMPORTANCE SAMPLING INFERENCE
+        //**************************************************************************************************************
+
+        BayesianNetwork samplingModel = ImportanceSamplingHuginTest.getNoisyModel();
+        //System.out.println("  SAMPLING DISTRIBUTIONS (MODEL DISTRIBUTIONS WITH NOISE) ");
+        //samplingModel.getConditionalDistributions().stream().forEach(e-> {
+        //    System.out.println(e.getVariable().getName());
+        //    System.out.println(e);
+        //});
+        ImportanceSampling IS = new ImportanceSampling();
+        IS.setModel(model);
+        IS.setSamplingModel(samplingModel);
+        IS.setSampleSize(200000);
+        IS.setEvidence(evidence);
+        IS.setParallelMode(true);
+
+        //**************************************************************************************************************
+
+        double threshold = 0.005;
+
+        /* runInference() method must be called each time we compute a posterior because the Stream of Weighted
+           Assignments is closed (reduced) in method getPosterior(var).*/
+        IS.runInference(); assertTrue(IS.getPosterior(varA).equalDist(huginInferenceForBN.getPosterior(varA),threshold));
+        IS.runInference(); assertTrue(IS.getPosterior(varB).equalDist(huginInferenceForBN.getPosterior(varB),threshold));
+        IS.runInference(); assertTrue(IS.getPosterior(varC).equalDist(huginInferenceForBN.getPosterior(varC),threshold));
+        IS.runInference(); assertTrue(IS.getPosterior(varD).equalDist(huginInferenceForBN.getPosterior(varD),threshold));
+        IS.runInference(); assertTrue(IS.getPosterior(varE).equalDist(huginInferenceForBN.getPosterior(varE),threshold));
+
+        }
+
+    private static BayesianNetwork getNoisyModel() throws IOException, ClassNotFoundException {
+
+        BayesianNetwork samplingBN = BayesianNetworkLoader.loadFromFile("networks/IS.bn");
+        StaticVariables variables = samplingBN.getStaticVariables();
+        Variable A = variables.getVariableByName("A");
+        Variable B = variables.getVariableByName("B");
+        Variable C = variables.getVariableByName("C");
+        Variable D = variables.getVariableByName("D");
+        Variable E = variables.getVariableByName("E");
+
+        // Variable A
+        Multinomial distA = samplingBN.getDistribution(A);
+        distA.setProbabilities(new double[]{0.15, 0.85});
+
+        // Variable B
+        Multinomial_MultinomialParents distB = samplingBN.getDistribution(B);
+        distB.getMultinomial(0).setProbabilities(new double[]{0.15,0.85});
+        distB.getMultinomial(1).setProbabilities(new double[]{0.75,0.25});
+
+        // Variable C
+        Normal_MultinomialParents distC = samplingBN.getDistribution(C);
+        distC.getNormal(0).setMean(3.1);
+        distC.getNormal(0).setSd(0.9660254037);
+        distC.getNormal(1).setMean(2.1);
+        distC.getNormal(1).setSd(0.848683);
+
+        //Variable D
+        Normal_MultinomialNormalParents distD = samplingBN.getDistribution(D);
+        distD.getNormal_NormalParentsDistribution(0).setIntercept(2.1);
+        distD.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{2.1});
+        distD.getNormal_NormalParentsDistribution(0).setSd(1.1);
+
+        distD.getNormal_NormalParentsDistribution(1).setIntercept(0.6);
+        distD.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.6});
+        distD.getNormal_NormalParentsDistribution(1).setSd(1.5142);
+
+        //Variable E
+        Normal_NormalParents distE  = samplingBN.getDistribution(E);
+        distE.setIntercept(2.4);
+        distE.setCoeffParents(new double[]{4.1});
+        distE.setSd(1.2832);
+
+        return(samplingBN);
+    }
+
+}
