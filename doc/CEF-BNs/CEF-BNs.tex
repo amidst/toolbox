@@ -749,16 +749,16 @@ I(Y_i=y_i^{r_i}) \!
 \newpage
 
 %-----------------------------------------------------------------------------------------------------------------------------------
-\section{EF representation: A multinomial child given a set of multinomial and Dirichlet parents}
+\section{EF representation: A multinomial child given a Dirichlet parent}
 %-----------------------------------------------------------------------------------------------------------------------------------
 
-Let $X$ be a multinomial variable with $k$ possible values such that $k \geq 2$, and let $\mathbf{Y} =\{Y_1,\ldots,Y_n\}$ and $\rho$ denote the set of multinomial and dirichlet parents of $X$ respectively. %Each parent $Y_i$, $1 \geq i \geq n$, has $r_i$ possible values or states such that $r_i \geq 2$. A parental configuration for the child-node $X$ is then a set of $n$ elements $\{Y_1 = y_1^{v}, \ldots, Y_i = y_i^{v},\ldots, Y_n = y_n^{v} \}$ such that $y_i^{v}$ denotes a potential value of variable $Y_i$ such that  $1 \leq v \leq r_i$. Let $q = r_1 \times \ldots \times r_n$ denote the total number of parental configurations, and let $\mathbf{y}^l$ denote the $l^{th}$ parental configuration such that $1 \leq l \leq q$.
+Let $X$ be a multinomial variable with $k$ possible values such that $k \geq 2$, and let $\rho$ denote a dirichlet parents of $X$. %Each parent $Y_i$, $1 \geq i \geq n$, has $r_i$ possible values or states such that $r_i \geq 2$. A parental configuration for the child-node $X$ is then a set of $n$ elements $\{Y_1 = y_1^{v}, \ldots, Y_i = y_i^{v},\ldots, Y_n = y_n^{v} \}$ such that $y_i^{v}$ denotes a potential value of variable $Y_i$ such that  $1 \leq v \leq r_i$. Let $q = r_1 \times \ldots \times r_n$ denote the total number of parental configurations, and let $\mathbf{y}^l$ denote the $l^{th}$ parental configuration such that $1 \leq l \leq q$.
 
 The log-conditional probability of the child-node $X$ given its parent-nodes $\mathbf{Y}$ and $\rho$ can be expressed as follows:
 
-$$ \ln p(X \mid \mathbf{Y},\rho) = \sum_{j=1}^k \sum_{l=1}^q I(X=x^j) I(\mathbf{Y} =\mathbf{y}^l) \ln p_{x^j  \mid \mathbf{y}^l} $$
+$$ \ln p(X \mid \mathbf{Y},\rho) = \sum_{j=1}^k I(X=x^j)  \ln p_{x^j} $$
 
-Note that here all $\mathbf{Y}, I(\cdot)$ and $p(\cdot)$ values must be taken from the moment parameters of these variables, not the natural parameters of $X$.
+Note that here all $ I(\cdot)$ and $p(\cdot)$ values must be taken from the moment parameters of these variables, not the natural parameters of $X$.
 
 Similarly the above log-conditional probability can be expressed in the following exponential forms:
 
@@ -768,12 +768,12 @@ Similarly the above log-conditional probability can be expressed in the followin
 \item \textbf{Second form}:
 
 \begin{eqnarray*}
-\ln p(X \mid \mathbf{Y}) &=& \theta(\mathbf{Y})^Ts(X) - A(\mathbf{Y}) \\ \\
+\ln p(X \mid \mathbf{Y}) &=& \theta(\rho)^Ts(X) - A(\mathbf{Y}) \\ \\
 &=&
 \begin{pmatrix}
-I(\mathbf{Y}=\mathbf{y}^1) \ln p_{x^1\mid \mathbf{y}^1} + \ldots + I(\mathbf{Y}=\mathbf{y}^q)\ln p_{x^1\mid \mathbf{y}^q}\\
+\ln p_{x^1}\\
 \vdots \\
-I(\mathbf{Y}=\mathbf{y}^1) \ln p_{x^k\mid \mathbf{y}^1} + \ldots + I(\mathbf{Y}=\mathbf{y}^q)\ln p_{x^k\mid \mathbf{y}^q}\\
+\ln p_{x^k} \\
 \end{pmatrix}^T
 \begin{pmatrix}
 I(X=x^1) \\
@@ -781,21 +781,8 @@ I(X=x^1) \\
 I(X=x^k) 
 \end{pmatrix}
 - 0 \\ \\
-&=&
-\begin{pmatrix}
-\mathbf{m}^{\mathbf{Y}}_1 \cdot \theta_{11}  + m^{\mathbf{Y}}_q \cdot \theta_{1q} \\
-\vdots \\
-\mathbf{m}^{\mathbf{Y}}_1 \cdot \theta_{k1}  + m^{\mathbf{Y}}_q \cdot \theta_{kq}
-\end{pmatrix}^T
-\begin{pmatrix}
-I(X=x^1) \\
-\vdots \\
-I(X=x^k)
-\end{pmatrix}
-- 0 
 \end{eqnarray*}
 
-\noindent such that $\mathbf{m}^{\mathbf{Y}}_1 = \prod_{i=1}^n I( Y_i = y_i^1) = \prod_{i=1}^n m^{Y_i}_1$ denotes the expected sufficient statistics for the first parental configuration, and $\mathbf{m}^{\mathbf{Y}}_q = \prod_{i=1}^n I( Y_i = y_i^{r_i})  = \prod_{i=1}^n m^{Y_i}_{r_i} $ denotes the expected sufficient statistics for the last parental configuration.
 
 \vspace{0.5in}
 \item \textbf{Third form}:
@@ -803,35 +790,20 @@ I(X=x^k)
 %----------------------------------------- with one parent
 
 \begin{eqnarray*}
-\ln p(X\mid \mathbf{Y}) &=& \theta(X, \mathbf{Y'} )^T s(Y_i) - A(X) ~~\textrm{such~that} ~\mathbf{Y'} = \mathbf{Y} \setminus Y_i \\ \\
-&= &
-\begin{pmatrix}
-\! m^X_1 I(\mathbf{Y'} =\mathbf{y'}^1) \ln p_{x^1\mid \mathbf{y'}^1}  + \ldots + m^X_k I(\mathbf{Y'} =\mathbf{y'}^1) \ln p_{x^k\mid \mathbf{y'}^1}  \! \\
-\vdots \\
-\! m^X_1 I(\mathbf{Y'} =\mathbf{y'}^{q'})  \ln p_{x^1\mid \mathbf{y'}^{q'}}  + \ldots + m^X_k I(\mathbf{Y'} =\mathbf{y'}^{q'}) \ln p_{x^k\mid \mathbf{y'}^{q'}}\! 
-\end{pmatrix}^T \!
-\begin{pmatrix}
-I(Y_i=y_i^1) \! \\
-\vdots \\
-I(Y_i=y_i^{r_i}) \!
-\end{pmatrix}
-\! - 0 \! \\ \\
+\ln p(X \mid \mathbf{Y}) &=& \theta(X)^Ts(\rho) - A(X) \\ \\
 &=&
 \begin{pmatrix}
-\! m^X_1 \cdot  \mathbf{m}^{\mathbf{Y'}}_1 \cdot \theta'_{11}  +  \ldots + m^X_k \cdot \mathbf{m}^{\mathbf{Y'}}_1 \cdot \theta'_{k1}\\
+I(X=x^1) \\
 \vdots \\
-\! m^X_1 \cdot  \mathbf{m}^{\mathbf{Y'}}_{q'} \cdot \theta'_{1q'}   + \ldots + m^X_k \cdot  \mathbf{m}^{\mathbf{Y'}}_{q'} \cdot \theta'_{kq'}
-\end{pmatrix}^T \!
+I(X=x^k) 
+\end{pmatrix}^T
 \begin{pmatrix}
-I(Y_i=y_i^1) \! \\
+\ln p_{x^1}\\
 \vdots \\
-I(Y_i=y_i^{r_i}) \!
+\ln p_{x^k} \\
 \end{pmatrix}
-- 0 \!
+- 0 \\ \\
 \end{eqnarray*}
-
-
-\noindent where $\mathbf{m}^{\mathbf{Y'}}_1 =  I(\mathbf{Y'} =\mathbf{y'}^1) = I( Y_1 = y_1^1) \cdot \ldots I( Y_{i-1} = y_{i-1}^1) \cdot I( Y_{i+1}  = y_{i+1}^1) \cdot \ldots I( Y_{n}  = y_{n}^1)$ denotes the expected sufficient statistics for the first configuration of the parent set $\mathbf{Y'} = \mathbf{Y} \setminus Y_i$, and $\mathbf{m}^{\mathbf{Y'}}_{q'} = I(\mathbf{Y'} =\mathbf{y'}^{q'}) = I( Y_1 = y_1^{q'}) \cdot \ldots I( Y_{i-1} = y_{i-1}^{q'}) \cdot I( Y_{i+1}  = y_{i+1}^{q'}) \cdot \ldots I( Y_{n}  = y_{n}^{q'})$ denotes the expected sufficient statistics for the last configuration of the parent set $\mathbf{Y'}$, with $q' = q / r_i$ denotes the total number of configurations of the parent set $\mathbf{Y'}$.
 
 \end{itemize}
 
