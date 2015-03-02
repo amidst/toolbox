@@ -12,58 +12,108 @@ import java.util.Map;
 public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
 
 
-    @Override
-    public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-        return 0;
+    Variable dirichletVariable;
+    int nOfStates;
+
+    public EF_Multinomial_Dirichlet(Variable var, Variable dirichletVariable) {
+
+        if (!var.isMultinomial()) {
+            throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution for a non-multinomial variable.");
+        }
+
+        this.var=var;
+        nOfStates = var.getNumberOfStates();
+        this.dirichletVariable = dirichletVariable;
+        this.parents.add(dirichletVariable);
+
     }
 
+    /**
+     * Of the second form (message from all parents to X variable). Needed to calculate the lower bound.
+     *
+     * @param momentParents
+     * @return
+     */
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
-        return 0;
+
+        return 0.0;
     }
 
+    /**
+     * Of the second form (message from all parents to X variable).
+     * @param momentParents
+     * @return
+     */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
-        return null;
+
+        NaturalParameters naturalParameters = this.createZeroedNaturalParameters();
+
+        for (int i = 0; i < nOfStates; i++) {
+            naturalParameters.set(i, momentParents.get(this.dirichletVariable).get(0));
+        }
+
+        return naturalParameters;
+    }
+
+    /**
+     * It is the message to one node to its parent @param parent, taking into account the suff. stat. if it is observed
+     * or the moment parameters if not, and incorporating the message (with moment param.) received from all co-parents.
+     * (Third form EF equations).
+     *
+     * @param parent
+     * @param momentChildCoParents
+     * @return
+     */
+    @Override
+    public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        NaturalParameters naturalParameters = this.createZeroedNaturalParameters();
+
+        for (int i = 0; i < nOfStates; i++) {
+            naturalParameters.set(i, momentChildCoParents.get(this.var).get(i));
+        }
+
+        return naturalParameters;
     }
 
     @Override
-    public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-        return null;
+    public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        throw new UnsupportedOperationException("No Implemented. This method is no really needed");
     }
 
     @Override
     public void updateNaturalFromMomentParameters() {
-
+        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
     @Override
     public void updateMomentFromNaturalParameters() {
-
+        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
     @Override
     public SufficientStatistics getSufficientStatistics(Assignment data) {
-        return null;
+        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
     @Override
     public int sizeOfSufficientStatistics() {
-        return 0;
+        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
-        return 0;
+        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
     @Override
     public double computeLogNormalizer() {
-        return 0;
+        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
     @Override
     public Vector createZeroedVector() {
-        return null;
+        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 }
