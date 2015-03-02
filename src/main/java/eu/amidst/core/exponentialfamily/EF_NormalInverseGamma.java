@@ -1,71 +1,41 @@
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-import org.apache.commons.math.linear.ArrayRealVector;
-import org.apache.commons.math.linear.RealMatrix;
-import org.apache.commons.math.linear.RealVector;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 /**
- * Created by ana@cs.aau.dk on 25/02/15.
+ * Created by ana@cs.aau.dk on 27/02/15.
  */
 public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
 
-    int nOfParents;
-
-    List<Variable> realYVariables;
-    List<Variable> betasVariables;
-    Variable beta0Variable;
+    Variable meanVariable;
     Variable invGammaVariable;
 
-
-    /**
-     *
-     * @param var_ X variable
-     * @param parents_ Y real parent variables
-     * @param beta0 Beta0 parameter variable
-     * @param betas_ Beta parameter variables
-     * @param invGamma Inverse-gamma parameter variable
-     */
-    public EF_NormalInverseGamma(Variable var_, List<Variable> parents_, Variable beta0, List<Variable> betas_, Variable invGamma){
+    public EF_NormalInverseGamma(Variable var_, Variable mean, Variable invGamma){
         this.var = var_;
-        this.realYVariables = parents_;
-        this.betasVariables = betas_;
-        this.parents.addAll(parents_);
-        this.parents.addAll(betas_);
-        this.beta0Variable = beta0;
+        this.meanVariable = mean;
         this.invGammaVariable = invGamma;
+        this.parents.add(mean);
+        this.parents.add(invGamma);
 
         if (!var_.isNormal())
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian child variable.");
 
-        for (Variable v : realYVariables) {
-            if (!v.isNormal())
-                throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian parent variable.");
-        }
 
-        for (Variable v : betasVariables) {
-            if (!v.isNormal())
-                throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian parent variable.");
-        }
-
-        if(!beta0Variable.isNormal()){
+        if(!mean.isNormal()){
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian parent variable.");
         }
 
         if(!invGammaVariable.isInverseGamma()){
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-inverse-gamma parent variable.");
         }
-
-        nOfParents = parents.size();
     }
+
 
     /**
      * Of the second form (message from all parents to X variable). Needed to calculate the lower bound.
@@ -75,41 +45,11 @@ public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
      */
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
+        double mean = momentParents.get(meanVariable).get(0);
+        double invVariance = momentParents.get(invGammaVariable).get(1);
 
-        //From Beta_0, Beta, gamma and Y parents to variable X.
-        double[] Beta_array = new double[Math.floorDiv(nOfParents,2)];
-        double[] Yarray = new double[Math.floorDiv(nOfParents,2)];
-        double beta0;
-        double invVariance;
-
-        for (int i = 0; i < realYVariables.size(); i++) {
-            Yarray[i] = momentParents.get(this.realYVariables.get(i)).get(0);
-        }
-        RealVector Y = new ArrayRealVector(Yarray);
-        for (int i = 0; i < betasVariables.size(); i++) {
-            Beta_array[i] = momentParents.get(this.betasVariables.get(i)).get(0);
-        }
-        RealVector Beta = new ArrayRealVector(Beta_array);
-
-        beta0 = momentParents.get(beta0Variable).get(0);
-        invVariance = momentParents.get(invGammaVariable).get(1);
-
-        double logNorm = -0.5*Math.log(invVariance) + Beta.dotProduct(Y)*beta0*invVariance;
-
-        RealMatrix YY = Y.outerProduct(Y);
-        RealMatrix BetaBeta = Beta.outerProduct(Beta);
-
-        double betabeta = IntStream.range(0, betasVariables.size()).mapToDouble(p ->
-        {
-            return BetaBeta.getRowVector(p).dotProduct(YY.getRowVector(p));
-        })
-                .sum();
-
-        logNorm += betabeta*0.5*invVariance + beta0*beta0*0.5*invVariance;
-
-        return logNorm;
+        return 0.5*mean*invVariance - 0.5*Math.log(invVariance);
     }
-
 
     /**
      * Of the second form (message from all parents to X variable).
@@ -118,29 +58,14 @@ public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
      */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
+
         NaturalParameters naturalParameters = new ArrayVector(2);
 
-        //From Beta_0, Beta, gamma and Y parents to variable X.
-        double[] Beta_array = new double[Math.floorDiv(nOfParents,2)];
-        double[] Yarray = new double[Math.floorDiv(nOfParents,2)];
-        double beta0;
-        double invVariance;
+        double mean = momentParents.get(meanVariable).get(0);
+        double invVariance = momentParents.get(invGammaVariable).get(1);
 
-        for (int i = 0; i < realYVariables.size(); i++) {
-            Yarray[i] = momentParents.get(this.realYVariables.get(i)).get(0);
-        }
-        RealVector Y = new ArrayRealVector(Yarray);
-        for (int i = 0; i < betasVariables.size(); i++) {
-            Beta_array[i] = momentParents.get(this.betasVariables.get(i)).get(0);
-        }
-        RealVector Beta = new ArrayRealVector(Beta_array);
-
-        beta0 = momentParents.get(beta0Variable).get(0);
-        invVariance = momentParents.get(invGammaVariable).get(1);
-
-        naturalParameters.set(0,beta0*invVariance + Beta.mapMultiplyToSelf(invVariance).dotProduct(Y));
-
-        naturalParameters.set(1,-invVariance/2);
+        naturalParameters.set(0,mean*invVariance);
+        naturalParameters.set(1,-0.5*invVariance);
 
         return naturalParameters;
     }
@@ -159,65 +84,18 @@ public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
 
         NaturalParameters naturalParameters = new ArrayVector(2);
 
-        double[] Beta_array = new double[Math.floorDiv(nOfParents,2)];
-        double[] Yarray = new double[Math.floorDiv(nOfParents,2)];
-        double beta0;
-        double invVariance;
-
-        for (int i = 0; i < realYVariables.size(); i++) {
-            Yarray[i] = momentChildCoParents.get(this.realYVariables.get(i)).get(0);
-        }
-        RealVector Y = new ArrayRealVector(Yarray);
-        for (int i = 0; i < betasVariables.size(); i++) {
-            Beta_array[i] = momentChildCoParents.get(this.betasVariables.get(i)).get(0);
-        }
-        RealVector Beta = new ArrayRealVector(Beta_array);
-
-        beta0 = momentChildCoParents.get(beta0Variable).get(0);
-        invVariance = momentChildCoParents.get(invGammaVariable).get(1);
-
         double X = momentChildCoParents.get(var).get(0);
+        double invVariance = momentChildCoParents.get(invGammaVariable).get(1);
+        double mean = momentChildCoParents.get(meanVariable).get(0);
 
-        int parentID=this.getConditioningVariables().indexOf(parent);
-
-        // Message to a Y variable
-        if(realYVariables.contains(parent)){
-
-            RealVector BetaPrima = Beta.copy();
-            BetaPrima.setEntry(parentID, 0);
-
-            double beta_i = Beta.getEntry(parentID);
-
-            naturalParameters.set(0, -beta0*beta_i*invVariance +
-                    beta_i*X*invVariance - BetaPrima.mapMultiplyToSelf(beta_i*invVariance).dotProduct(Y));
-
-            naturalParameters.set(1, -0.5*beta_i*beta_i*invVariance);
-
-        // Message to a Beta variable
-        }else if(betasVariables.contains(parent)){
-
-            RealVector BetaPrima = Beta.copy();
-            BetaPrima.setEntry(parentID, 0);
-
-            double Y_i = Y.getEntry(parentID);
-
-            naturalParameters.set(0, -beta0*Y_i*invVariance +
-                    Y_i*X*invVariance - BetaPrima.mapMultiplyToSelf(Y_i*invVariance).dotProduct(Y));
-
-            naturalParameters.set(1, -0.5*Y_i*Y_i*invVariance);
-
-        // Message to a Beta0 variable
-        }else if(beta0Variable == parent){
-
-            naturalParameters.set(0, X*invVariance - Beta.mapMultiplyToSelf(invVariance).dotProduct(Y));
+        // Message to the mean (gaussian) variable
+        if(meanVariable == parent){
+            naturalParameters.set(0, X*invVariance);
             naturalParameters.set(1, -0.5*invVariance);
-
-        // Message to a inv-Gamma variable
+        // Message to the inv-Gamma variable
         }else{
-
-            naturalParameters.set(0, -0.5);
-            naturalParameters.set(1, -Math.pow(X-beta0-Beta.dotProduct(Y),2)*0.5);
-
+            naturalParameters.set(0,-0.5);
+            naturalParameters.set(1,-0.5*Math.pow(X-mean,2));
         }
 
         return naturalParameters;
@@ -229,43 +107,37 @@ public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
     }
 
     @Override
-    public <E extends ConditionalDistribution> E toConditionalDistribution() {
-        return null;
-    }
-
-    @Override
     public void updateNaturalFromMomentParameters() {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
 
     @Override
     public void updateMomentFromNaturalParameters() {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
 
     @Override
     public SufficientStatistics getSufficientStatistics(Assignment data) {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
 
     @Override
     public int sizeOfSufficientStatistics() {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
 
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
 
     @Override
     public double computeLogNormalizer() {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
 
     @Override
     public Vector createZeroedVector() {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
-
 }
