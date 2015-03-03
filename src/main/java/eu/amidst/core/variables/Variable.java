@@ -20,11 +20,15 @@ public interface Variable {
 
     <E extends StateSpaceType> E getStateSpaceType();
 
+    default StateSpaceTypeEnum getStateSpaceTypeEnum(){
+        return this.getStateSpaceType().getStateSpaceTypeEnum();
+    }
+
     int getNumberOfStates();
 
-    DistributionTypeEnum getDistributionTypeEnum();
-
     <E extends DistributionType> E getDistributionType();
+
+    DistributionTypeEnum getDistributionTypeEnum();
 
     boolean isTemporalClone();
 

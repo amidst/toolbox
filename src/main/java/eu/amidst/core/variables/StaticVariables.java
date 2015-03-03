@@ -130,13 +130,25 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(states));
     }
 
-
     public Variable newGaussianVariable(Attribute att) {
         return this.newVariable(att, DistributionTypeEnum.NORMAL);
     }
 
     public Variable newGaussianVariable(String name) {
         return this.newVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
+    }
+
+    public Variable newInverseGamma(String name){
+        return this.newVariable(name, DistributionTypeEnum.INV_GAMMA, new RealStateSpace());
+    }
+
+    public Variable newInverseGamma(Attribute att){
+        return this.newVariable(att, DistributionTypeEnum.INV_GAMMA);
+    }
+
+
+    public Variable newDirichlet(String name, int nOfStates) {
+        return this.newVariable(name, DistributionTypeEnum.DIRICHLET, new FiniteStateSpace(nOfStates));
     }
 
     public Variable newVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
