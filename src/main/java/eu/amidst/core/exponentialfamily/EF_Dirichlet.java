@@ -16,10 +16,11 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     int nOfStates;
 
 
-    public EF_Dirichlet(Variable var1, int nOfStates1) {
-
+    public EF_Dirichlet(Variable var1) {
+        if (!var1.isDirichlet())
+            throw new IllegalArgumentException("Non Dirichlet var");
         this.var=var1;
-        this.nOfStates = nOfStates1;
+        this.nOfStates = var.getNumberOfStates();
         this.naturalParameters = this.createZeroedNaturalParameters();
         this.momentParameters = this.createZeroedMomentParameters();
 
@@ -43,7 +44,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
 
     @Override
     public EF_UnivariateDistribution deepCopy() {
-        EF_Dirichlet copy = new EF_Dirichlet(this.getVariable(), this.nOfStates);
+        EF_Dirichlet copy = new EF_Dirichlet(this.getVariable());
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
         return copy;

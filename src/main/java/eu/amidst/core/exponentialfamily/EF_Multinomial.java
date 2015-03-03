@@ -5,8 +5,12 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -132,5 +136,15 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         }
 
         return multinomial;
+    }
+
+    @Override
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(StaticVariables variables){
+        Variable varDirichlet = variables.newDirichlet("n",this.var.getNumberOfStates());
+
+        EF_BaseDistribution_MultinomialParents<EF_Dirichlet> uni =
+                new EF_BaseDistribution_MultinomialParents<>(new ArrayList<>(), Arrays.asList(new EF_Dirichlet(varDirichlet)));
+
+        return Arrays.asList(new EF_Multinomial_Dirichlet(this.var, varDirichlet), uni);
     }
 }
