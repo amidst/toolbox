@@ -5,10 +5,12 @@ import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import org.apache.commons.math.linear.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -301,6 +303,34 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
 
+    @Override
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(StaticVariables variables) {
+        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
+
+        Variable varInvGamma = variables.newInverseGamma(this.var.getName()+"_InverseGamma_Parameter");
+
+        conditionalDistributions.add(
+                new EF_BaseDistribution_MultinomialParents<EF_InverseGamma>(new ArrayList<>(), Arrays.asList(new EF_InverseGamma(varInvGamma))));
+
+        Variable normalBeta0 = variables.newGaussianVariable(this.var.getName() + "_Beta0_Parameter");
+
+        conditionalDistributions.add(
+                new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(new EF_Normal(normalBeta0))));
+
+        List<Variable> betas = new ArrayList<>();
+        for (Variable variableParent: this.parents){
+            Variable normalBetai = variables.newGaussianVariable(this.var.getName()+"_Beta_"+variableParent.getName()+"_Parameter");
+            betas.add(normalBetai);
+            conditionalDistributions.add(
+                    new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(new EF_Normal(normalBetai))));
+        }
+
+        EF_Normal_Normal_InverseGamma condDist = new EF_Normal_Normal_InverseGamma(this.var,this.parents,normalBeta0, betas, varInvGamma);
+
+        conditionalDistributions.add(condDist);
+
+        return conditionalDistributions;
+    }
 
     public static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 

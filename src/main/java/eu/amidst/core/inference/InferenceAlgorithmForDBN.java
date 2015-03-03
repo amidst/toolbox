@@ -1,6 +1,7 @@
 package eu.amidst.core.inference;
 
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.Assignment;

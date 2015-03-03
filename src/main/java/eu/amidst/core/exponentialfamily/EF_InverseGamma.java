@@ -4,8 +4,12 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import org.apache.commons.math3.special.Gamma;
 
@@ -20,12 +24,12 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
 
     public EF_InverseGamma(Variable var1) {
 
-        this.var=var1;
+        this.var = var1;
         this.naturalParameters = this.createZeroedNaturalParameters();
         this.momentParameters = this.createZeroedMomentParameters();
 
-        this.momentParameters.set(LOGX,0);
-        this.momentParameters.set(INVX,1);
+        this.momentParameters.set(LOGX, 0);
+        this.momentParameters.set(INVX, 1);
         this.setMomentParameters(momentParameters);
     }
 
@@ -37,8 +41,8 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics vec = this.createZeroedSufficientStatistics();
-        vec.set(LOGX,Math.log(val));
-        vec.set(INVX,1.0/val);
+        vec.set(LOGX, Math.log(val));
+        vec.set(INVX, 1.0 / val);
         return vec;
     }
 
@@ -52,11 +56,11 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
 
     @Override
     public EF_UnivariateDistribution randomInitialization(Random random) {
-        double alpha = random.nextGaussian()*10 + 0.1;
-        double beta = random.nextDouble()*10 + 0.1;
+        double alpha = random.nextGaussian() * 10 + 0.1;
+        double beta = random.nextDouble() * 10 + 0.1;
 
-        this.getNaturalParameters().set(LOGX,-alpha - 1);
-        this.getNaturalParameters().set(INVX,-beta);
+        this.getNaturalParameters().set(LOGX, -alpha - 1);
+        this.getNaturalParameters().set(INVX, -beta);
 
         this.updateMomentFromNaturalParameters();
 
@@ -70,12 +74,12 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         // Coordinate ascent until convergence
         double newalpha = 0.0, alpha = 1.0;
         double newbeta = 0.0, beta = 1.0;
-        while(Math.abs(newalpha-alpha)>DELTA || Math.abs(newbeta-beta)>DELTA){
-            newalpha = Utils.invDigamma(Math.log(beta)-m0);
-            newbeta = newalpha/m1;
+        while (Math.abs(newalpha - alpha) > DELTA || Math.abs(newbeta - beta) > DELTA) {
+            newalpha = Utils.invDigamma(Math.log(beta) - m0);
+            newbeta = newalpha / m1;
         }
-        this.naturalParameters.set(0,newalpha);
-        this.naturalParameters.set(1,newbeta);
+        this.naturalParameters.set(0, newalpha);
+        this.naturalParameters.set(1, newbeta);
     }
 
     @Override
@@ -83,7 +87,7 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         double alpha = this.naturalParameters.get(0) - 1;
         double beta = -this.naturalParameters.get(1);
         this.momentParameters.set(0, Math.log(beta) - Gamma.digamma(alpha));
-        this.momentParameters.set(1, alpha/beta);
+        this.momentParameters.set(1, alpha / beta);
     }
 
     @Override
@@ -93,7 +97,7 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
 
     @Override
     public double computeLogNormalizer() {
-        double alpha = -this.momentParameters.get(0)-1;
+        double alpha = -this.momentParameters.get(0) - 1;
         double beta = -this.momentParameters.get(1);
         return Math.log(Gamma.gamma(alpha)) - alpha * Math.log(beta);
     }
@@ -102,4 +106,6 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     public Vector createZeroedVector() {
         return new ArrayVector(2);
     }
+
+
 }
