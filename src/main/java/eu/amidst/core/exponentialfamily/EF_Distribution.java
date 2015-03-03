@@ -9,8 +9,11 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.Vector;
+
+import java.util.List;
 
 /**
  * Created by andresmasegosa on 13/11/14.
@@ -47,17 +50,17 @@ public abstract class EF_Distribution {
     }
 
     public void setNaturalParameters(NaturalParameters parameters) {
-        this.naturalParameters=parameters;//.copy(parameters);
+        this.naturalParameters = parameters;//.copy(parameters);
         this.updateMomentFromNaturalParameters();
     }
 
     public void setMomentParameters(SufficientStatistics parameters) {
-        this.momentParameters=(MomentParameters)parameters;
+        this.momentParameters = (MomentParameters) parameters;
         this.updateNaturalFromMomentParameters();
     }
 
     public void setMomentParameters(MomentParameters parameters) {
-        this.momentParameters=parameters;// .copy(parameters);
+        this.momentParameters = parameters;// .copy(parameters);
         this.updateNaturalFromMomentParameters();
     }
 
@@ -73,28 +76,31 @@ public abstract class EF_Distribution {
 
     public abstract double computeLogNormalizer();
 
-    public double computeProbabilityOf(Assignment dataInstance){
+    public double computeProbabilityOf(Assignment dataInstance) {
         return Math.exp(this.computeLogProbabilityOf(dataInstance));
     }
 
     //TODO: the logbasemeasure and the lognormalizer are positives or negatives terms (Andres)
-    public double computeLogProbabilityOf(Assignment dataInstance){
+    public double computeLogProbabilityOf(Assignment dataInstance) {
         return this.naturalParameters.dotProduct(this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) - this.computeLogNormalizer();
     }
 
     public abstract Vector createZeroedVector();
 
-    public MomentParameters createZeroedMomentParameters(){
-        return (MomentParameters)this.createZeroedVector();
+    public MomentParameters createZeroedMomentParameters() {
+        return (MomentParameters) this.createZeroedVector();
     }
 
-    public SufficientStatistics createZeroedSufficientStatistics(){
-        return (SufficientStatistics)this.createZeroedVector();
+    public SufficientStatistics createZeroedSufficientStatistics() {
+        return (SufficientStatistics) this.createZeroedVector();
     }
 
-    public NaturalParameters createZeroedNaturalParameters(){
-        return (NaturalParameters)this.createZeroedVector();
+    public NaturalParameters createZeroedNaturalParameters() {
+        return (NaturalParameters) this.createZeroedVector();
     }
 
 
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(StaticVariables variables){
+        throw new UnsupportedOperationException("Not convertible to Learning distribution");
+    }
 }
