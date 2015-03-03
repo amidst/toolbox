@@ -36,4 +36,15 @@ public abstract class DistributionType  implements Serializable {
         }
         return true;
     }
+
+    public static boolean containsParentsThisDistributionType(List<Variable> parents, DistributionTypeEnum distributionTypeEnum){
+        for (Variable var : parents){
+            if (var.getDistributionTypeEnum()==distributionTypeEnum)
+                return true;
+        }
+
+        return false;
+    }
+
 }
+
