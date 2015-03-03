@@ -66,6 +66,10 @@ public interface Variable {
         return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.INV_GAMMA)==0);
     }
 
+    default  boolean isDirichlet(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.DIRICHLET)==0);
+    }
+
     //default boolean isIndicator(){
     //    return(this.getDistributionTypeEnum().compareTo(DistType.INDICATOR)==0);
     //}

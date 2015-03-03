@@ -4,8 +4,12 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -113,4 +117,23 @@ public class EF_Normal extends EF_UnivariateDistribution {
         return 2;
     }
 
+    @Override
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(StaticVariables variables) {
+        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
+
+        Variable varInvGamma = variables.newInverseGamma(this.var.getName()+"_InverseGamma_Parameter");
+
+        conditionalDistributions.add(
+                new EF_BaseDistribution_MultinomialParents<EF_InverseGamma>(new ArrayList<>(), Arrays.asList(new EF_InverseGamma(varInvGamma))));
+
+        Variable normalMean = variables.newGaussianVariable(this.var.getName() + "_Mean_Parameter");
+
+        conditionalDistributions.add(
+                new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(new EF_Normal(normalMean))));
+
+        EF_NormalInverseGamma dist = new EF_NormalInverseGamma(this.var, normalMean, varInvGamma);
+        conditionalDistributions.add(dist);
+
+        return conditionalDistributions;
+    }
 }

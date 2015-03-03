@@ -3,6 +3,8 @@ package eu.amidst.core.variables;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.distributionTypes.MultinomialLogisticType;
 import eu.amidst.core.variables.distributionTypes.MultinomialType;
 import eu.amidst.core.variables.distributionTypes.NormalType;
@@ -27,7 +29,15 @@ public abstract class DistributionType  implements Serializable {
 
     public abstract <E extends UnivariateDistribution> E newUnivariateDistribution();
 
+    public <E extends EF_UnivariateDistribution> E newEFUnivariateDistribution(){
+        return this.newUnivariateDistribution().toEFUnivariateDistribution();
+    }
+
     public abstract <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents);
+
+    public <E extends EF_ConditionalDistribution> E newEFConditionalDistribution(List<Variable> parents){
+        return this.newConditionalDistribution(parents).toEFConditionalDistribution();
+    }
 
     public boolean areParentsCompatible(List<Variable> parents){
         for(Variable parent: parents){

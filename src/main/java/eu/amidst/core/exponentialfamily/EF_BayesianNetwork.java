@@ -77,9 +77,9 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
         sizeSS=0;
         for (ParentSet parentSet: parentSets){
-            ConditionalDistribution dist = parentSet.getMainVar().newConditionalDistribution(parentSet.getParents());
-            dist.randomInitialization(new Random(0));
-            EF_ConditionalDistribution ef_dist = dist.toEFConditionalDistribution();
+            //ConditionalDistribution dist = parentSet.getMainVar().newConditionalDistribution(parentSet.getParents());
+            //dist.randomInitialization(new Random(0));
+            EF_ConditionalDistribution ef_dist = parentSet.getMainVar().getDistributionType().newEFConditionalDistribution(parentSet.getParents());
             distributionList.add(ef_dist.getVariable().getVarID(), ef_dist);
             sizeSS+=ef_dist.sizeOfSufficientStatistics();
         }
