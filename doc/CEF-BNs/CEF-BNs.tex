@@ -1216,35 +1216,16 @@ s(X) \cdot I(Y=y^2)
 \item \textbf{Second form}:
 
 \begin{eqnarray*}
-\ln p(X \mid Y) &=& \theta(Y)^Ts(X) - A(Y) \\
+\ln p(X \mid Y) &=& \theta(Y)^Ts(X) - A(\theta(Y)) \\
 &=&
-\begin{pmatrix}
-I(Y=y^1)\\
-I(Y=y^2)\\
-I(Y=y^1) \cdot \theta_{X1}\\
-I(Y=y^2) \cdot \theta_{X2}
-\end{pmatrix}^T
-\begin{pmatrix}
-- A(\theta_{X1}) \\
-- A(\theta_{X2}) \\
+\Big(I(Y=y^1) \cdot \theta_{X1} + I(Y=y^2) \cdot \theta_{X2}\Big)
 s(X) \\
-s(X) 
-\end{pmatrix}
-- 0 \\\\
+&&- I(Y=y^1) \cdot  A(\theta_{X1}) -  I(Y=y^2) \cdot A(\theta_{X2})\\\\
 &=&
-\begin{pmatrix}
-m^Y_1\\
-m^Y_2 \\
-m^Y_1 \cdot \theta_{X1}\\
-m^Y_2 \cdot \theta_{X2}
-\end{pmatrix}^T
-\begin{pmatrix}
-- A(\theta_{X1}) \\
-- A(\theta_{X2}) \\
-s(X) \\
+\Big(m^Y_1 \cdot \theta_{X1} + 
+m^Y_2 \cdot \theta_{X2}\Big)
 s(X) 
-\end{pmatrix}
-- 0 
+-  m^Y_1 \cdot  A(\theta_{X1}) -  m^Y_2  \cdot A(\theta_{X2})
 \end{eqnarray*}
 
 \item \textbf{Third form}:
@@ -1279,9 +1260,9 @@ Let $X$ be any base distribution, and let $\mathbf{Y} =\{Y_1,\ldots,Y_n\}$ denot
 The log-conditional probability of the child-node $X$ given its parent-nodes $\mathbf{Y}$ can be expressed as follows:
 
 \begin{eqnarray*}
-\ln p(X \mid Y) =  \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \ln p_{X \mid \mathbf{y}^l} ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
-= \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \Big(  \theta_{Xl}   \cdot  s(X)  \cdot  A(\theta_{Xl}) \Big)~~~~~~~~~~~~~\\
-= \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \theta_{Xl} \cdot s(X) - I(\mathbf{Y} =\mathbf{y}^l) \cdot A(\theta_{Xl})
+\ln p(X \mid \bm  Z, Y) =  \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \ln p_{X \mid \bm Z, \mathbf{y}^l} ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
+= \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \Big(  \theta_{Xl}   \cdot  s(X,\bm Z)  \cdot  A(\theta_{Xl}) \Big)~~~~~~~~~~~~~\\
+= \sum_{l=1}^q I(\mathbf{Y} =\mathbf{y}^l) \cdot \theta_{Xl} \cdot s(X,\bm Z) - I(\mathbf{Y} =\mathbf{y}^l) \cdot A(\theta_{Xl})
 \end{eqnarray*}
 
 This conditional probability distribution can be expressed in different exponential forms as follows:
@@ -1291,7 +1272,7 @@ This conditional probability distribution can be expressed in different exponent
 \item \textbf{First form}:
 
 \begin{eqnarray*}
-\ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) \\
+\ln p(X \mid \bm  Z, \mathbf{Y}) &=& \theta^T s(X,\bm Z, \mathbf{Y}) - A(\theta) \\
 &=&
 \begin{pmatrix}
 - A(\theta_{X1}) \\
@@ -1305,9 +1286,9 @@ This conditional probability distribution can be expressed in different exponent
 I(\mathbf{Y} =\mathbf{y}^1) \\
 \vdots \\
 I(\mathbf{Y} =\mathbf{y}^q) \\
-s(X) \cdot I(\mathbf{Y} =\mathbf{y}^1) \\
+s(X, \bm  Z) \cdot I(\mathbf{Y} =\mathbf{y}^1) \\
 \vdots \\
-s(X) \cdot I(\mathbf{Y} =\mathbf{y}^q)
+s(X, \bm  Z) \cdot I(\mathbf{Y} =\mathbf{y}^q)
 \end{pmatrix}
 - 0 
 \end{eqnarray*}
@@ -1315,43 +1296,15 @@ s(X) \cdot I(\mathbf{Y} =\mathbf{y}^q)
 \item \textbf{Second form}:
 
 \begin{eqnarray*}
-\ln p(X \mid \mathbf{Y} ) &=& \theta(\mathbf{Y} )^T s(X) - A(\mathbf{Y} ) \\
+\ln p(X \mid \bm  Z, \mathbf{Y} ) &=& \theta(\bm  Z, \mathbf{Y} )^T s(X) - A(\mathbf{Y} ) \\
 &=&
-\begin{pmatrix}
-I(\mathbf{Y} =\mathbf{y}^1)\\
-\vdots \\
-I(\mathbf{Y} =\mathbf{y}^q)\\
-I(\mathbf{Y} =\mathbf{y}^1) \cdot \theta_{X1}\\
-\vdots \\
-I(\mathbf{Y} =\mathbf{y}^q) \cdot \theta_{Xq}
-\end{pmatrix}^T
-\begin{pmatrix}
-- A(\theta_{X1}) \\
-\vdots \\
-- A(\theta_{Xq}) \\
-s(X) \\
-\vdots \\
-s(X) 
-\end{pmatrix}
-- 0 \\\\
+\Big(\sum^q_{l=1} I(\mathbf{Y} =\mathbf{y}^l) \cdot \theta_{X_l}(\bm  Z) \Big)
+s(X)
+- \sum^q_{l=1} I(\mathbf{Y} =\mathbf{y}^l) \cdot A(\theta_{X_l}(\bm Z)) \\\\
 &=&
-\begin{pmatrix}
-\mathbf{m}^\mathbf{Y}_1\\
-\vdots \\
-\mathbf{m}^\mathbf{Y}_q \\
-\mathbf{m}^\mathbf{Y}_1 \cdot \theta_{X1}\\
-\vdots \\
-\mathbf{m}^\mathbf{Y}_q \cdot \theta_{Xq}
-\end{pmatrix}^T
-\begin{pmatrix}
-- A(\theta_{X1}) \\
-\vdots \\
-- A(\theta_{Xq}) \\
-s(X) \\
-\vdots \\
-s(X) 
-\end{pmatrix}
-- 0 
+\Big(\sum^q_{l=1} \mathbf{m}^\mathbf{Y}_l \cdot \theta_{X_l}(\bm  Z) \Big)
+s(X)
+- \sum^q_{l=1} \mathbf{m}^\mathbf{Y}_l \cdot A(\theta_{X_l}(\bm Z)) \\\\
 \end{eqnarray*}
 
 \item \textbf{Third form}:
