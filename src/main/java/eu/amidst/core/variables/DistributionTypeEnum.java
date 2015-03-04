@@ -1,9 +1,7 @@
 package eu.amidst.core.variables;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.variables.distributionTypes.MultinomialLogisticType;
-import eu.amidst.core.variables.distributionTypes.MultinomialType;
-import eu.amidst.core.variables.distributionTypes.NormalType;
+import eu.amidst.core.variables.distributionTypes.*;
 
 /**
  * Created by Hanen on 05/11/14.
@@ -20,6 +18,12 @@ public enum DistributionTypeEnum {
                 return (E) new NormalType(var);
             case MULTINOMIAL_LOGISTIC:
                 return (E) new MultinomialLogisticType(var);
+            case NORMAL_PARAMETER:
+                return (E) new NormalParameterType(var);
+            case INV_GAMMA_PARAMETER:
+                return (E) new InverseGammaParameterType(var);
+            case DIRICHLET_PARAMETER:
+                return (E) new DirichletParameterType(var);
             default:
                 throw new IllegalArgumentException("Unknown Distribution Type");
         }

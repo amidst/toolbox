@@ -9,6 +9,7 @@ import org.apache.commons.math.linear.ArrayRealVector;
 import org.apache.commons.math.linear.RealMatrix;
 import org.apache.commons.math.linear.RealVector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -16,7 +17,7 @@ import java.util.stream.IntStream;
 /**
  * Created by ana@cs.aau.dk on 25/02/15.
  */
-public class EF_Normal_Normal_InverseGamma extends EF_ConditionalDistribution{
+public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistribution{
 
     int nOfParents;
 
@@ -67,6 +68,11 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalDistribution{
         }
 
         nOfParents = parents.size();
+
+        this.parametersParentVariables = new ArrayList();
+        this.parametersParentVariables.addAll(betasVariables);
+        this.parametersParentVariables.add(beta0Variable);
+        this.parametersParentVariables.add(invGammaVariable);
     }
 
     /**

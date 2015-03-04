@@ -4,12 +4,13 @@ import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
  * Created by ana@cs.aau.dk on 27/02/15.
  */
-public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
+public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution{
 
 
     Variable dirichletVariable;
@@ -20,11 +21,17 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
         if (!var.isMultinomial()) {
             throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution for a non-multinomial variable.");
         }
+        if (!dirichletVariable.isDirichletParameter()) {
+            throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution with a non-dirichlet variable.");
+        }
 
         this.var=var;
         nOfStates = var.getNumberOfStates();
         this.dirichletVariable = dirichletVariable;
         this.parents.add(dirichletVariable);
+
+        this.parametersParentVariables = new ArrayList();
+        this.parametersParentVariables.add(dirichletVariable);
 
     }
 
