@@ -1,5 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -122,5 +124,16 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
     @Override
     public Vector createZeroedVector() {
         throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
+    }
+
+    @Override
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+        Multinomial multinomial = new Multinomial(this.getVariable());
+
+        Vector vector = expectedParameters.get(this.dirichletVariable);
+
+
+
+        return null;
     }
 }

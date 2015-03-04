@@ -118,4 +118,5 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     public Vector createZeroedVector() {
         return new ArrayVector(nOfStates);
     }
+
 }
