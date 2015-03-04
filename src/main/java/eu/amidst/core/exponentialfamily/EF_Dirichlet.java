@@ -17,7 +17,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
 
 
     public EF_Dirichlet(Variable var1) {
-        if (!var1.isDirichlet())
+        if (!var1.isDirichletParameter())
             throw new IllegalArgumentException("Non Dirichlet var");
         this.var=var1;
         this.nOfStates = var.getNumberOfStates();

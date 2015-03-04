@@ -24,6 +24,9 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
 
     public EF_InverseGamma(Variable var1) {
 
+        if (!var1.isInverseGammaParameter())
+            throw new IllegalArgumentException("The variable is not Inverse Gamma parameter");
+
         this.var = var1;
         this.naturalParameters = this.createZeroedNaturalParameters();
         this.momentParameters = this.createZeroedMomentParameters();

@@ -64,14 +64,13 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         this.allVariables = new ArrayList<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
-            VariableBuilder builder;
+            Variable var;
             if (typeDists.containsKey(att)) {
-                builder = new VariableBuilder(att, typeDists.get(att));
+                var = this.newVariable(att, typeDists.get(att));
             }else{
-                builder = new VariableBuilder(att);
+                var = this.newVariable(att);
             }
 
-            VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             if (mapping.containsKey(var.getName())) {
                 throw new IllegalArgumentException("Attribute list contains duplicated names");
             }
@@ -138,30 +137,6 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         return this.newVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
     }
 
-    public Variable newInverseGamma(String name){
-        return this.newVariable(name, DistributionTypeEnum.INV_GAMMA, new RealStateSpace());
-    }
-
-    public Variable newInverseGamma(Attribute att){
-        return this.newVariable(att, DistributionTypeEnum.INV_GAMMA);
-    }
-
-
-    public Variable newDirichlet(String name, int nOfStates) {
-        return this.newVariable(name, DistributionTypeEnum.DIRICHLET, new FiniteStateSpace(nOfStates));
-    }
-
-    public Variable newVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
-        VariableBuilder builder = new VariableBuilder();
-        builder.setName(name);
-        builder.setDistributionType(distributionTypeEnum);
-        builder.setStateSpaceType(stateSpaceType);
-        builder.setObservable(false);
-
-        return this.newVariable(builder);
-
-    }
-
     public Variable newVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
         VariableBuilder builder = new VariableBuilder(att);
         builder.setDistributionType(distributionTypeEnum);
@@ -175,7 +150,28 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
 
     }
 
-    public Variable newVariable(VariableBuilder builder) {
+    public Variable newVariable(Attribute att) {
+        VariableBuilder builder = new VariableBuilder(att);
+        VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(var.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(var.getName(), var.getVarID());
+        allVariables.add(var);
+        return var;
+    }
+
+    private Variable newVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
+        VariableBuilder builder = new VariableBuilder();
+        builder.setName(name);
+        builder.setDistributionType(distributionTypeEnum);
+        builder.setStateSpaceType(stateSpaceType);
+        builder.setObservable(false);
+
+        return this.newVariable(builder);
+    }
+
+    private Variable newVariable(VariableBuilder builder) {
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names: " + var.getName());
@@ -295,6 +291,11 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
 
         @Override
         public boolean isDynamicVariable() {
+            return false;
+        }
+
+        @Override
+        public boolean isParameterVariable() {
             return false;
         }
 
