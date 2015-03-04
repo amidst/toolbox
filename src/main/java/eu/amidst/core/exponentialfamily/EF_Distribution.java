@@ -100,7 +100,7 @@ public abstract class EF_Distribution {
     }
 
 
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(StaticVariables variables){
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParametersVariables variables){
         throw new UnsupportedOperationException("Not convertible to Learning distribution");
     }
 }
