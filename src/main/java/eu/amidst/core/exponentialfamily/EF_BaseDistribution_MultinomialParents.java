@@ -410,7 +410,13 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
-        return null;
+
+        List<ConditionalDistribution> distributionList = new ArrayList<>();
+        for (EF_Distribution dist: this.distributions){
+            EF_ConditionalLearningDistribution learningDistribution = (EF_ConditionalLearningDistribution)dist;
+            distributionList.add(learningDistribution.toConditionalDistribution(expectedParameters));
+        }
+        return new BaseDistribution_MultinomialParents(this.multinomialParents,distributionList);
     }
 
     //TODO: Replace this CompoundVector by the compoundvector of indicator
