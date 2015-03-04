@@ -34,6 +34,8 @@ public interface Variable {
 
     boolean isDynamicVariable();
 
+    boolean isParameterVariable();
+
     Attribute getAttribute();
 
     default <E extends UnivariateDistribution> E newUnivariateDistribution(){
@@ -62,15 +64,19 @@ public interface Variable {
         return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.MULTINOMIAL_LOGISTIC)==0);
     }
 
-    default boolean isInverseGamma(){
-        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.INV_GAMMA)==0);
+    default boolean isInverseGammaParameter(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.INV_GAMMA_PARAMETER)==0);
     }
 
-    default  boolean isDirichlet(){
-        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.DIRICHLET)==0);
+    default  boolean isDirichletParameter(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.DIRICHLET_PARAMETER)==0);
     }
 
-    //default boolean isIndicator(){
+    default  boolean isNormalParameter(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.NORMAL_PARAMETER)==0);
+    }
+
+        //default boolean isIndicator(){
     //    return(this.getDistributionTypeEnum().compareTo(DistType.INDICATOR)==0);
     //}
 

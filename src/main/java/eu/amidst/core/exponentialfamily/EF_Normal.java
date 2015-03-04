@@ -118,15 +118,15 @@ public class EF_Normal extends EF_UnivariateDistribution {
     }
 
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(StaticVariables variables) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParametersVariables variables) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
-        Variable varInvGamma = variables.newInverseGamma(this.var.getName()+"_InverseGamma_Parameter");
+        Variable varInvGamma = variables.newInverseGammaParameter(this.var.getName()+"_InverseGamma_Parameter");
 
         conditionalDistributions.add(
                 new EF_BaseDistribution_MultinomialParents<EF_InverseGamma>(new ArrayList<>(), Arrays.asList(new EF_InverseGamma(varInvGamma))));
 
-        Variable normalMean = variables.newGaussianVariable(this.var.getName() + "_Mean_Parameter");
+        Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter");
 
         conditionalDistributions.add(
                 new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(new EF_Normal(normalMean))));

@@ -355,7 +355,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(StaticVariables variables) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParametersVariables variables) {
          List<EF_ConditionalDistribution> totalDists = this.distributions.stream()
                 .flatMap(dist -> dist.toExtendedLearningDistribution(variables).stream())
                 .collect(Collectors.toList());

@@ -27,11 +27,11 @@ public class EF_NormalInverseGamma extends EF_ConditionalDistribution{
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian child variable.");
 
 
-        if(!mean.isNormal()){
+        if(!mean.isNormalParameter()){
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian parent variable.");
         }
 
-        if(!invGammaVariable.isInverseGamma()){
+        if(!invGammaVariable.isInverseGammaParameter()){
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-inverse-gamma parent variable.");
         }
     }
