@@ -77,6 +77,16 @@ public class Normal extends UnivariateDistribution {
         this.sd = sd1;
     }
 
+
+    public void setVariance(double var){
+        this.sd=Math.sqrt(sd);
+    }
+
+    public double getVariance(){
+        return this.sd*this.sd;
+    }
+
+
     @Override
     public int getNumberOfFreeParameters() {
         return 2;
