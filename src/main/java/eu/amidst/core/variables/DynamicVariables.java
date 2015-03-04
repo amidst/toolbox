@@ -423,5 +423,10 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return this.name.hashCode();
         }
 
+        @Override
+        public boolean isParameterVariable() {
+            return false;
+        }
+
     }
 }
