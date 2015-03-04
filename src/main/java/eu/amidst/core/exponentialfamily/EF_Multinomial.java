@@ -1,11 +1,9 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -67,6 +65,11 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         SufficientStatistics vec = this.createZeroedSufficientStatistics();
         vec.set((int) val, 1);
         return vec;
+    }
+
+    @Override
+    public Vector getExpectedParameters() {
+        return this.momentParameters;
     }
 
     @Override
@@ -139,8 +142,8 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     }
 
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParametersVariables variables){
-        Variable varDirichlet = variables.newDirichletParameter("n",this.var.getNumberOfStates());
+    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables){
+        Variable varDirichlet = variables.newDirichletParameter("n", this.var.getNumberOfStates());
 
         EF_BaseDistribution_MultinomialParents<EF_Dirichlet> uni =
                 new EF_BaseDistribution_MultinomialParents<>(new ArrayList<>(), Arrays.asList(new EF_Dirichlet(varDirichlet)));

@@ -9,7 +9,6 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.Vector;
 
@@ -100,7 +99,9 @@ public abstract class EF_Distribution {
     }
 
 
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParametersVariables variables){
+    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables){
         throw new UnsupportedOperationException("Not convertible to Learning distribution");
     }
+
+
 }

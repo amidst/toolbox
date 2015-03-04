@@ -1,10 +1,8 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -56,6 +54,13 @@ public class EF_Normal extends EF_UnivariateDistribution {
         SufficientStatistics vec = this.createZeroedSufficientStatistics();
         vec.set(EXPECTED_MEAN,val);
         vec.set(EXPECTED_SQUARE,val*val);
+        return vec;
+    }
+
+    @Override
+    public Vector getExpectedParameters() {
+        Vector vec = new ArrayVector(1);
+        vec.set(0,this.momentParameters.get(0));
         return vec;
     }
 
@@ -118,8 +123,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
     }
 
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParametersVariables variables) {
-        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
+    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
+        List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
 
         Variable varInvGamma = variables.newInverseGammaParameter(this.var.getName()+"_InverseGamma_Parameter");
 
