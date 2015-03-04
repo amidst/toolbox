@@ -278,6 +278,7 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
 
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+
         return null;
     }
 }

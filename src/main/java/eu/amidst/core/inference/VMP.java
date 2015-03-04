@@ -234,7 +234,7 @@ public class VMP implements InferenceAlgorithmForBN {
     }
 
     @Override
-    public BayesianNetwork getModel() {
+    public BayesianNetwork getOriginalModel() {
         return this.model;
     }
 
@@ -249,6 +249,9 @@ public class VMP implements InferenceAlgorithmForBN {
         return this.getNodeOfVar(var).getQDist().toUnivariateDistribution();
     }
 
+    public <E extends EF_UnivariateDistribution> E getEFPosterior(Variable var) {
+        return (E)this.getNodeOfVar(var).getQDist();
+    }
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 

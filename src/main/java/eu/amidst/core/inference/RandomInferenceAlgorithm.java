@@ -25,7 +25,7 @@ public class RandomInferenceAlgorithm implements InferenceAlgorithmForBN{
     }
 
     @Override
-    public BayesianNetwork getModel() {
+    public BayesianNetwork getOriginalModel() {
         return this.model;
     }
 
