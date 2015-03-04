@@ -2,15 +2,21 @@
 \section{Data structures} \label{sec:DataStructures}
 %------------------------------------------------------------------------------------------------------------
 
-An overview of the different data structures of the AMIDST toolbox is illustrated in Figure \ref{Figure:ToolboxDataStructures}. These data structures basically define the main components that are used afterwards for implementing the AMIDST learning and inference algorithms. In what follows, we briefly define each component showing how it can be used through providing some code excerpts. 
+An overview of the data structures implemented in the AMIDST toolbox is illustrated in Figure \ref{Figure:ToolboxDataStructures}. These data structures basically define the main components that will be used afterwards for implementing the AMIDST learning and inference algorithms. 
+
+\vspace{-0.1in}
 
 \begin{figure}[ht!]
 \begin{center}
 \includegraphics[width=\linewidth]{./figures/DataStructure}
+\vspace{-0.5in}
 \caption{\label{Figure:ToolboxDataStructures} Illustration of AMIDST toolbox data structure components. Nomenclature: The boxes in the
       figure represent software components (sets, possibly singletons, of classes), a rounded-arc going from $X$ to $Y$ indicates that $Y$ 'uses/references' $X$, and an arc with an arrow from $X$ to $Y$ implies inheritance.}
 \end{center}
 \end{figure}
+
+In what follows, we briefly define each component and how it can be used in AMIDST toolbox through providing some code excerpts. 
+
 
 %------------------------------------------------------------------------------------------------------------
 \subsection{Probabilistic graphical model (\comp{PGM})}
