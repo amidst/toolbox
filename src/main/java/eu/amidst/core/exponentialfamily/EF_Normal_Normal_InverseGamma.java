@@ -1,6 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
@@ -279,6 +280,19 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
 
-        return null;
+        Normal_NormalParents dist = new Normal_NormalParents(this.var, this.realYVariables);
+
+        double[] coeffParameters = new double[this.realYVariables.size()];
+        for (int i = 0; i < this.realYVariables.size(); i++) {
+            coeffParameters[i]=expectedParameters.get(this.betasVariables.get(i)).get(0);
+        }
+
+        dist.setCoeffParents(coeffParameters);
+
+        dist.setIntercept(expectedParameters.get(this.beta0Variable).get(0));
+
+        dist.setSd(Math.sqrt(expectedParameters.get(this.invGammaVariable).get(0)));
+
+        return dist;
     }
 }

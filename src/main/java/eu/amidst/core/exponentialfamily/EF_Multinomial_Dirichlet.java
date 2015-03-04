@@ -1,5 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.Vector;
@@ -7,6 +8,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -132,8 +134,10 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
 
         Vector vector = expectedParameters.get(this.dirichletVariable);
 
+        for (int i = 0; i < this.nOfStates; i++) {
+            multinomial.setProbabilityOfState(i,vector.get(i));
 
-
-        return null;
+        }
+        return new BaseDistribution_MultinomialParents<Multinomial>(new ArrayList(), Arrays.asList(multinomial));
     }
 }
