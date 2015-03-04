@@ -1,5 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
@@ -143,5 +144,10 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
     @Override
     public Vector createZeroedVector() {
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
+    }
+
+    @Override
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+        return null;
     }
 }
