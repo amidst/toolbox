@@ -35,7 +35,7 @@ public final class InferenceEngineForDBN {
     }
 
     public static DynamicBayesianNetwork getModel(){
-        return inferenceAlgorithmForDBN.getModel();
+        return inferenceAlgorithmForDBN.getOriginalModel();
     }
 
     public static void addDynamicEvidence(DynamicAssignment assignment){
