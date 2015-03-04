@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by afa on 02/07/14.
  */
-public class ParametersVariables implements Iterable<Variable>, Serializable {
+public class ParameterVariables implements Iterable<Variable>, Serializable {
 
     private static final long serialVersionUID = 5077959998533923231L;
 
@@ -37,14 +37,14 @@ public class ParametersVariables implements Iterable<Variable>, Serializable {
 
     int baseIndex;
 
-    public ParametersVariables(StaticVariables staticVariables_) {
+    public ParameterVariables(StaticVariables staticVariables_) {
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
         this.staticVariables=staticVariables_;
         this.baseIndex=this.staticVariables.getNumberOfVars();
     }
 
-    public ParametersVariables(DynamicVariables dynamicVariables_) {
+    public ParameterVariables(DynamicVariables dynamicVariables_) {
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
         this.dynamicVariables=dynamicVariables_;

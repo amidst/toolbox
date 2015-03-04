@@ -1,6 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 
 import java.util.Random;
@@ -13,6 +14,8 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     public abstract double computeLogBaseMeasure(double val);
 
     public abstract SufficientStatistics getSufficientStatistics(double val);
+
+    public abstract Vector getExpectedParameters();
 
     public double computeProbabilityOf(double val){
         return Math.exp(this.computeLogProbabilityOf(val));
