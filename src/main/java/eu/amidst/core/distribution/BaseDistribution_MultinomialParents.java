@@ -29,6 +29,44 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
 
     private boolean isBaseConditionalDistribution;
 
+    public BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
+
+        if (distributions1.size() == 0) throw new IllegalArgumentException("Size of base distributions is zero");
+
+        int size = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents1);
+
+        if (size != distributions1.size())
+            throw new IllegalArgumentException("Size of base distributions list does not match with the number of parents configurations");
+
+        this.var = distributions1.get(0).getVariable();
+        this.multinomialParents = multinomialParents1;
+        this.baseDistributions = distributions1;
+
+
+        if (baseDistributions.get(0) instanceof ConditionalDistribution){
+            this.isBaseConditionalDistribution=true;
+            for (int i = 0; i < size; i++) {
+                for (Variable v : this.getBaseConditionalDistribution(i).getConditioningVariables()) {
+                    if (!this.parents.contains(v))
+                        this.parents.add(v);
+                }
+            }
+        }else{
+            this.isBaseConditionalDistribution=false;
+        }
+
+        for (Variable parent : parents) {
+            if (!parent.isMultinomial()) {
+                this.nonMultinomialParents.add(parent);
+            }
+        }
+
+        //Make them unmodifiable
+        this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
+        this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
+        this.parents = Collections.unmodifiableList(this.parents);
+    }
+
     public BaseDistribution_MultinomialParents(Variable var_, List<Variable> parents_) {
 
         this.var = var_;
