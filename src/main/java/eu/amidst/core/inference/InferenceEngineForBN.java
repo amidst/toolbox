@@ -36,7 +36,7 @@ public final class InferenceEngineForBN {
     }
 
     public static <E extends UnivariateDistribution> E getPosterior(String name){
-        return inferenceAlgorithmForBN.getPosterior(inferenceAlgorithmForBN.getModel().getStaticVariables().getVariableByName(name));
+        return inferenceAlgorithmForBN.getPosterior(inferenceAlgorithmForBN.getOriginalModel().getStaticVariables().getVariableByName(name));
     }
 
     public static void main(String[] arguments){

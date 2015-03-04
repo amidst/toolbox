@@ -96,7 +96,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     }
 
     @Override
-    public DynamicBayesianNetwork getModel() {
+    public DynamicBayesianNetwork getOriginalModel() {
         return this.model;
     }
 

@@ -15,7 +15,7 @@ public interface InferenceAlgorithmForBN {
 
     public void setModel(BayesianNetwork model);
 
-    public BayesianNetwork getModel();
+    public BayesianNetwork getOriginalModel();
 
     public void setEvidence(Assignment assignment);
 
