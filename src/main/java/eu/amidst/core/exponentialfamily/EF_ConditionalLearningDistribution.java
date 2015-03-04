@@ -1,5 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
@@ -17,6 +18,6 @@ public abstract class EF_ConditionalLearningDistribution extends EF_ConditionalD
         return parametersParentVariables;
     }
 
-    //public abstract EF_ConditionalDistribution toEFConditionalDistribution(Map<Variable, Vector> expectedParameters);
+    public abstract ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters);
 
 }

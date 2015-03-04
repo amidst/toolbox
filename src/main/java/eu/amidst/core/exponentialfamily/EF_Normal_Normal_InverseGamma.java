@@ -276,4 +276,8 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
     }
 
+    @Override
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+        return null;
+    }
 }
