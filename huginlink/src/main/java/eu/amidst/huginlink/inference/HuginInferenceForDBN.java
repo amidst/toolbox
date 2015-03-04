@@ -54,7 +54,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
     }
 
     @Override
-    public DynamicBayesianNetwork getModel() {
+    public DynamicBayesianNetwork getOriginalModel() {
         return this.amidstDBN;
     }
 

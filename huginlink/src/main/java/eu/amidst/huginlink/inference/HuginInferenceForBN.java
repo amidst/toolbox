@@ -78,7 +78,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
     }
 
     @Override
-    public BayesianNetwork getModel() {
+    public BayesianNetwork getOriginalModel() {
         return amidstBN;
     }
 

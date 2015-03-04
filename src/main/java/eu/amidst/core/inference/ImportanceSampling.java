@@ -115,7 +115,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
     }
 
     @Override
-    public BayesianNetwork getModel() {
+    public BayesianNetwork getOriginalModel() {
         return this.model;
     }
 

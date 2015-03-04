@@ -19,7 +19,7 @@ public interface InferenceAlgorithmForDBN {
 
     public void setModel(DynamicBayesianNetwork model);
 
-    public DynamicBayesianNetwork getModel();
+    public DynamicBayesianNetwork getOriginalModel();
 
     public void addDynamicEvidence(DynamicAssignment assignment);
 
