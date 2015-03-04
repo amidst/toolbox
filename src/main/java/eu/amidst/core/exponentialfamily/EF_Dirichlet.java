@@ -43,6 +43,23 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     }
 
     @Override
+    public Vector getExpectedParameters() {
+
+        double sum =0;
+
+        for (int i = 0; i < nOfStates; i++) {
+            sum+=this.naturalParameters.get(i)+1;
+        }
+
+        Vector vector = new ArrayVector(this.nOfStates);
+        for (int i = 0; i < nOfStates; i++) {
+            vector.set(i,(this.naturalParameters.get(i)+1)/sum);
+        }
+
+        return vector;
+    }
+
+    @Override
     public EF_UnivariateDistribution deepCopy() {
         EF_Dirichlet copy = new EF_Dirichlet(this.getVariable());
         copy.getNaturalParameters().copy(this.getNaturalParameters());

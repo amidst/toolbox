@@ -1,11 +1,9 @@
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import org.apache.commons.math.linear.*;
@@ -304,10 +302,10 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
 
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParametersVariables variables) {
-        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
+    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
+        List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
 
-        Variable varInvGamma = variables.newInverseGammaParameter(this.var.getName()+"_InverseGamma_Parameter");
+        Variable varInvGamma = variables.newInverseGammaParameter(this.var.getName() + "_InverseGamma_Parameter");
 
         conditionalDistributions.add(
                 new EF_BaseDistribution_MultinomialParents<EF_InverseGamma>(new ArrayList<>(), Arrays.asList(new EF_InverseGamma(varInvGamma))));
@@ -319,7 +317,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         List<Variable> betas = new ArrayList<>();
         for (Variable variableParent: this.parents){
-            Variable normalBetai = variables.newGaussianParameter(this.var.getName()+"_Beta_"+variableParent.getName()+"_Parameter");
+            Variable normalBetai = variables.newGaussianParameter(this.var.getName() + "_Beta_" + variableParent.getName() + "_Parameter");
             betas.add(normalBetai);
             conditionalDistributions.add(
                     new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(new EF_Normal(normalBetai))));

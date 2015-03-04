@@ -111,4 +111,13 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     }
 
 
+    @Override
+    public Vector getExpectedParameters() {
+        if ((-this.naturalParameters.get(0)-2)<=0){
+            throw new UnsupportedOperationException("The expected value is negative, so we do not have a valid inverse gamma distributions ");
+        }
+        Vector vec = new ArrayVector(1);
+        vec.set(0, -this.naturalParameters.get(1)/(-this.naturalParameters.get(0)-2));
+        return vec;
+    }
 }
