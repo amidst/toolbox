@@ -20,6 +20,7 @@ package eu.amidst.core.exponentialfamily;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
+import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
@@ -405,6 +406,11 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     private CompoundVector createCompoundVector() {
         return new CompoundVector((EF_Distribution)this.getBaseEFDistribution(0), this.numberOfConfigurations());
+    }
+
+    @Override
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+        return null;
     }
 
     //TODO: Replace this CompoundVector by the compoundvector of indicator
