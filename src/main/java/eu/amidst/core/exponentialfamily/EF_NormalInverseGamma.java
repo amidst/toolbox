@@ -58,7 +58,7 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
         double mean = momentParents.get(meanParameterVariable).get(0);
         double invVariance = momentParents.get(invGammaParameterVariable).get(1);
 
-        return 0.5*mean*invVariance - 0.5*Math.log(invVariance);
+        return 0.5*mean*mean*invVariance - 0.5*Math.log(invVariance);
     }
 
     /**
