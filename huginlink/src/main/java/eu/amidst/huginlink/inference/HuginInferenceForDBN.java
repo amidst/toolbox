@@ -2,53 +2,65 @@ package eu.amidst.huginlink.inference;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import COM.hugin.HAPI.Node;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.inference.InferenceAlgorithmForDBN;
-import eu.amidst.core.inference.InferenceEngineForDBN;
-import eu.amidst.core.inference.VMP_.*;
-import eu.amidst.core.io.DynamicBayesianNetworkLoader;
-import eu.amidst.core.io.DynamicBayesianNetworkWriter;
-import eu.amidst.core.io.DynamicDataStreamLoader;
-import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.DynamicAssignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
-import eu.amidst.huginlink.io.BNWriterToHugin;
-import eu.amidst.huginlink.io.DBNWriterToHugin;
 
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 
 /**
- * Created by afa on 23/2/15.
+ * This class provides an interface to perform inference over Dynamic Bayesian networks using the Hugin inference
+ * engine.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 23/2/15
  */
 public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
 
+    /**
+     * The Dynamic Bayesian network model in AMIDST format.
+     */
     public DynamicBayesianNetwork amidstDBN;
+
+    /**
+     * The Dynamic Bayesian network model in Hugin format.
+     */
     public Class huginDBN;
+
+    /**
+     * The expanded dynamic model in which the inference is performed.
+     */
     public Domain domainObject;
-    //For now we assume a time window equals to 1
+
+    /**
+     * The number of time slices in which the model is expanded. For now we assume a <code>timeWindow</code> equals to 1.
+     */
     public static final int timeWindow = 1;
+
+    /**
+     * The AMIDST assignment to be evidenced into the Hugin model.
+     */
     private DynamicAssignment assignment = new HashMapAssignment(0);
 
+    /**
+     * The time ID of the current assignment being processed.
+     */
     int timeID;
+
+    /**
+     * The sequence ID of the current assignment being processed. For the Cajamar case this corresponds to the client ID.
+     */
     int sequenceID;
 
+    /**
+     * Class constructor.
+     */
     public HuginInferenceForDBN() {
         this.timeID=-1;
     }
@@ -109,7 +121,11 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         }
     }
 
-
+    /**
+     * Sets the AMIDST evidence into a given time slice of the expanded Hugin model.
+     * @param assignment the evidence to be propagated.
+     * @param time the time slice in which the evidence is entered.
+     */
     public void setAssignmentToHuginModel(DynamicAssignment assignment, int time) {
         List<Variable> dynamicVariables = amidstDBN.getDynamicVariables().getListOfDynamicVariables();
         for (Variable var : dynamicVariables) {
