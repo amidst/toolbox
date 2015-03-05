@@ -257,8 +257,9 @@ public final class Utils {
      * derivative of the log gamma function.  This calculates the value
      * Y > 0 for a value X such that digamma(Y) = X.
      *
-     * This algorithm is from Paul Fackler:
+     * This algorithm is from Paul Fackler & Harvard Univesity:
      * http://www4.ncsu.edu/~pfackler/
+     * http://hips.seas.harvard.edu/content/inverse-digamma-function-matlab
      *
      * @param X
      * @return Y value such as Digamma(Y) = X
@@ -267,7 +268,7 @@ public final class Utils {
         double L = 1;
         double Y = Math.exp(X);
         while (L > 10e-8) {
-            Y = Y + L * (X - org.apache.commons.math3.special.Gamma.digamma(Y));
+            Y = Y + L * Math.signum(X - org.apache.commons.math3.special.Gamma.digamma(Y));
             L = L / 2;
         }
         return Y;

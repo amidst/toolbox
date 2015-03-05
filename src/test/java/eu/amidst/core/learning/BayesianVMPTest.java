@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class BayesianVMPTest extends TestCase {
 
+
     public static void test1() throws IOException, ClassNotFoundException {
         StaticVariables variables = new StaticVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
@@ -58,7 +59,7 @@ public class BayesianVMPTest extends TestCase {
         assertTrue(bn.equalBNs(learnBN,0.05));
     }
 
-    public static void test2() throws IOException, ClassNotFoundException{
+    public static void testAsia() throws IOException, ClassNotFoundException{
 
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
         asianet.randomInitialization(new Random(0));
@@ -78,6 +79,29 @@ public class BayesianVMPTest extends TestCase {
         System.out.println(asianet.toString());
         System.out.println(learnAsianet.toString());
         assertTrue(asianet.equalBNs(learnAsianet,0.05));
+
+    }
+
+    public static void testGaussian() throws IOException, ClassNotFoundException{
+
+        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal.bn");
+
+        System.out.println("\nOne normal variable network \n ");
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
+        sampler.setSeed(0);
+        sampler.setParallelMode(true);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100);
+
+        BayesianLearningEngineForBN.setDAG(oneNormalVarBN.getDAG());
+        BayesianLearningEngineForBN.setDataStream(data);
+        BayesianLearningEngineForBN.runLearning();
+
+        BayesianNetwork learntOneNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+
+        System.out.println(oneNormalVarBN.toString());
+        System.out.println(learntOneNormalVarBN.toString());
+        assertTrue(oneNormalVarBN.equalBNs(learntOneNormalVarBN,0.05));
 
     }
 
