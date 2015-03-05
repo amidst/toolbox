@@ -44,8 +44,11 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return multinomialParents;
     }
 
-
     public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
+        this(multinomialParents1,distributions1,true);
+    }
+
+    public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1, boolean initializeMomentNaturalParameters) {
 
         //if (multinomialParents1.size()==0) throw new IllegalArgumentException("Size of multinomial parents is zero");
         if (distributions1.size() == 0) throw new IllegalArgumentException("Size of base distributions is zero");
@@ -62,31 +65,34 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         for (Variable v : this.multinomialParents)
             this.parents.add(v);
 
-        if (distributions.get(0) instanceof EF_ConditionalDistribution){
-            this.isBaseConditionalDistribution=true;
+        if (distributions.get(0) instanceof EF_ConditionalDistribution) {
+            this.isBaseConditionalDistribution = true;
             for (int i = 0; i < size; i++) {
-               for (Variable v : this.getBaseEFConditionalDistribution(i).getConditioningVariables()) {
-                   if (!this.parents.contains(v))
+                for (Variable v : this.getBaseEFConditionalDistribution(i).getConditioningVariables()) {
+                    if (!this.parents.contains(v))
                         this.parents.add(v);
                 }
             }
-        }else{
-            this.isBaseConditionalDistribution=false;
+        } else {
+            this.isBaseConditionalDistribution = false;
         }
 
-        CompoundVector vectorNatural = this.createCompoundVector();
-
-        for (int i = 0; i < numberOfConfigurations(); i++) {
-            vectorNatural.setBaseConf(i, -this.getBaseEFDistribution(i).computeLogNormalizer());
-            vectorNatural.setVectorByPosition(i, this.getBaseEFDistribution(i).getNaturalParameters());
-        }
-
-        this.naturalParameters = vectorNatural;
+        this.naturalParameters = null;
         this.momentParameters = null;
+
+        if (initializeMomentNaturalParameters) {
+            CompoundVector vectorNatural = this.createCompoundVector();
+
+            for (int i = 0; i < numberOfConfigurations(); i++) {
+                vectorNatural.setBaseConf(i, -this.getBaseEFDistribution(i).computeLogNormalizer());
+                vectorNatural.setVectorByPosition(i, this.getBaseEFDistribution(i).getNaturalParameters());
+            }
+
+            this.naturalParameters = vectorNatural;
+        }
 
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
-
 
 
         //Update Parameters Variables
@@ -101,6 +107,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 }
             }
         }
+
+
     }
 
     public boolean isBaseConditionalDistribution() {
@@ -329,9 +337,11 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 throw new IllegalArgumentException("Parent Variable is no multinomial and based distribution has no parents");
 
 
-            int indexOfNonMultinomialParent = this.getBaseEFConditionalDistribution(0).getConditioningVariables().indexOf(parent);
 
-            if (indexOfNonMultinomialParent == -1)
+            //int indexOfNonMultinomialParent = this..getBaseEFConditionalDistribution(0).getConditioningVariables().indexOf(parent);
+            //if (indexOfMultinomialParent==-1)
+
+            if (!this.parents.contains(parent))
                 throw new IllegalArgumentException("Parent Variable is no multinomial and is not included in the list of parents of the base distribution");
 
 
@@ -382,7 +392,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 .collect(Collectors.toList());
 
         EF_BaseDistribution_MultinomialParents<EF_ConditionalLearningDistribution> base =
-                new EF_BaseDistribution_MultinomialParents<>(this.multinomialParents, dist_NoParameter);
+                new EF_BaseDistribution_MultinomialParents<>(this.multinomialParents, dist_NoParameter, false);
 
         dist_Parameter.add(base);
         return dist_Parameter;

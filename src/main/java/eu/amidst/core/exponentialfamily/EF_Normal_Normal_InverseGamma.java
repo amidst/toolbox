@@ -42,6 +42,7 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
         this.betasVariables = betas_;
         this.beta0Variable = beta0;
         this.invGammaVariable = invGamma;
+        this.parents = new ArrayList<>();
         this.parents.addAll(parents_);
         this.parents.addAll(betas_);
         this.parents.add(beta0);
@@ -259,12 +260,12 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
 
     @Override
     public int sizeOfSufficientStatistics() {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        return 0;
     }
 
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
-        throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
+        return -0.5*Math.log(2*Math.PI);
     }
 
     @Override

@@ -3,6 +3,7 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -12,6 +13,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
+ *
+ * //TODO suff. stats for first form to be implemented (if required)
  * Created by ana@cs.aau.dk on 27/02/15.
  */
 public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution{
@@ -32,6 +35,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
         this.var=var;
         nOfStates = var.getNumberOfStates();
         this.dirichletVariable = dirichletVariable;
+        this.parents = new ArrayList<>();
         this.parents.add(dirichletVariable);
 
         this.parametersParentVariables = new ArrayList();
@@ -59,7 +63,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
 
-        NaturalParameters naturalParameters = this.createZeroedNaturalParameters();
+        NaturalParameters naturalParameters = new ArrayVector(this.nOfStates);
 
         for (int i = 0; i < nOfStates; i++) {
             naturalParameters.set(i, momentParents.get(this.dirichletVariable).get(0));
@@ -79,7 +83,8 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
      */
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-        NaturalParameters naturalParameters = this.createZeroedNaturalParameters();
+
+        NaturalParameters naturalParameters = new ArrayVector(this.nOfStates);
 
         for (int i = 0; i < nOfStates; i++) {
             naturalParameters.set(i, momentChildCoParents.get(this.var).get(i));
@@ -110,12 +115,12 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
 
     @Override
     public int sizeOfSufficientStatistics() {
-        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
+        return 0;
     }
 
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
-        throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
+        return 0;
     }
 
     @Override
