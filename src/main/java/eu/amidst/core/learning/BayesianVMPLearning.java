@@ -33,7 +33,9 @@ public class BayesianVMPLearning implements BayesianLearningAlgorithmForBN {
     @Override
     public void runLearning() {
 
+        int cont=0;
         for(DataInstance dataInstance: data){
+            System.out.println("Sample: "+cont++);
             this.vmp.setEvidence(dataInstance);
             this.vmp.runInference();
             for (EF_ConditionalDistribution dist: this.ef_extendedBN.getDistributionList()){
@@ -72,6 +74,9 @@ public class BayesianVMPLearning implements BayesianLearningAlgorithmForBN {
         List<ConditionalDistribution> condDistList = new ArrayList<>();
 
         for (EF_ConditionalDistribution dist: this.ef_extendedBN.getDistributionList()) {
+            if (dist.getVariable().isParameterVariable())
+                continue;
+
             EF_ConditionalLearningDistribution distLearning = (EF_ConditionalLearningDistribution)dist;
             Map<Variable, Vector> expectedParameters = new HashMap<>();
             for(Variable var: distLearning.getParameterParentVariables()){
