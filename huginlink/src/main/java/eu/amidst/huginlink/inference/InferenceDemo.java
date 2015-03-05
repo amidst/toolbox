@@ -1,6 +1,5 @@
 package eu.amidst.huginlink.inference;
 
-
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
 import eu.amidst.core.datastream.*;
@@ -13,13 +12,21 @@ import eu.amidst.huginlink.converters.DBNConverterToHugin;
 import java.io.IOException;
 import java.util.*;
 
-
 /**
- * Created by afa on 13/1/15.
+ * This class is a demo for making inference in a Dynamic Bayesian network model learnt from Cajamar data using the
+ * Hugin inference engine.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 13/1/15
  */
-
 public class InferenceDemo {
 
+    /**
+     * Prints the belief of all the nodes in the Hugin domain.
+     * @param domainObject the expanded dynamic model.
+     * @throws ExceptionHugin
+     */
     public static void printBeliefs (Domain domainObject) throws ExceptionHugin {
 
         domainObject.getNodes().stream().forEach((node) -> {
@@ -37,10 +44,12 @@ public class InferenceDemo {
     }
 
 
-
+    /**
+     * The demo for the Cajamar case.
+     * @throws ExceptionHugin
+     * @throws IOException
+     */
     public static void demo() throws ExceptionHugin, IOException {
-
-
 
         //************************************************************
         //********************** LEARNING IN AMIDST ******************
