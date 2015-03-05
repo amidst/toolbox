@@ -12,21 +12,42 @@ import eu.amidst.core.variables.Variable;
 
 import java.util.List;
 
+/**
+ * This class converts a Bayesian network model from AMIDST to Hugin.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 14/11/14
+ */
 public class BNConverterToHugin {
 
+    /**
+     * The Bayesian network model in Hugin format.
+     */
     private Domain huginBN;
 
+    /**
+     * Class constructor.
+     *
+     * @throws ExceptionHugin
+     */
     public BNConverterToHugin() throws ExceptionHugin {
         huginBN = new Domain();
     }
 
+    /**
+     * Sets the Hugin nodes from the AMIDST variables.
+     *
+     * @param amidstBN the Bayesian network model in AMIDST format.
+     * @throws ExceptionHugin
+     */
     private void setNodes(BayesianNetwork amidstBN) throws ExceptionHugin {
 
         StaticVariables amidstVars = amidstBN.getStaticVariables();
         int size = amidstVars.getNumberOfVars();
 
-        //Hugin always inserts variables in position 0, i.e, for an order A,B,C, it stores C,B,A !!!
-        //A reverse order of the variables is used instead.
+        //Hugin always inserts variables at position 0, i.e, for an order A,B,C, it stores C,B,A !!!
+        //A reverse order of the variables is needed instead.
         for(int i=1;i<=size;i++){
             Variable amidstVar = amidstVars.getVariableById(size-i);
             if(amidstVar.isMultinomial()){
@@ -47,6 +68,12 @@ public class BNConverterToHugin {
         }
     }
 
+    /**
+     * Sets the Hugin model structure from the AMIDST DAG.
+     *
+     * @param amidstBN the Bayesian network model in AMIDST format.
+     * @throws ExceptionHugin
+     */
     private void setStructure (BayesianNetwork amidstBN) throws ExceptionHugin {
 
         DAG dag = amidstBN.getDAG();
@@ -60,6 +87,13 @@ public class BNConverterToHugin {
         }
     }
 
+    /**
+     * Sets the distribution of a multinomial variable in the Hugin network from the corresponding distribution in the
+     * AMIDST model.
+     *
+     * @param dist the AMIDST distribution to be converted.
+     * @throws ExceptionHugin
+     */
     private void setMultinomial(Multinomial dist) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
@@ -72,6 +106,13 @@ public class BNConverterToHugin {
         huginVar.getTable().setData(finalArray);
     }
 
+    /**
+     * Sets the distribution of a multinomial variable with multinomial parents in the Hugin network from the
+     * corresponding distribution in the AMIDST model.
+     *
+     * @param dist the AMIDST distribution to be converted.
+     * @throws ExceptionHugin
+     */
     private void setMultinomial_MultinomialParents(Multinomial_MultinomialParents dist) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
@@ -90,7 +131,17 @@ public class BNConverterToHugin {
         huginVar.getTable().setData(finalArray);
     }
 
-    private void setNormal_NormalParents(Normal_NormalParents dist, int assign) throws ExceptionHugin {
+    /**
+     * Sets the distribution of a normal variable with normal parents in the Hugin network from the corresponding
+     * distribution in the AMIDST model. This method is designed for setting this distribution in a given position in
+     * the list of distributions indexed by the multinomial parents assignments.
+     *
+     * @param dist the AMIDST distribution to be converted.
+     * @param i position in which the distribution will be located. Note that <code>i</code> is equal to 0 when the
+     *          variable has no multinomial parents.
+     * @throws ExceptionHugin
+     */
+    private void setNormal_NormalParents(Normal_NormalParents dist, int i) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
         List<Variable> normalParents = dist.getConditioningVariables();
@@ -99,24 +150,41 @@ public class BNConverterToHugin {
         Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
 
         double variance = Math.pow(dist.getSd(), 2);
-        ((ContinuousChanceNode)huginVar).setGamma(variance,assign);
+        ((ContinuousChanceNode)huginVar).setGamma(variance,i);
 
         double intercept = dist.getIntercept();
-        ((ContinuousChanceNode) huginVar).setAlpha(intercept, assign);
+        ((ContinuousChanceNode) huginVar).setAlpha(intercept, i);
 
-        double[] coeffParents = dist.getCoeffParents();
+        double[] coefficientsParents = dist.getCoeffParents();
 
-        for(int i=0;i<numNormalParents;i++) {
+        for(int j=0;j<numNormalParents;j++) {
             ContinuousChanceNode huginParent =
-                    (ContinuousChanceNode)this.huginBN.getNodeByName(normalParents.get(i).getName());
-            ((ContinuousChanceNode)huginVar).setBeta(coeffParents[i],huginParent,assign);
+                    (ContinuousChanceNode)this.huginBN.getNodeByName(normalParents.get(j).getName());
+            ((ContinuousChanceNode)huginVar).setBeta(coefficientsParents[j],huginParent,i);
         }
     }
 
+    /**
+     * Sets the distribution of a normal variable in the Hugin network from the corresponding distribution in the AMIDST
+     * model.
+     *
+     * @param dist the AMIDST distribution to be converted.
+     * @throws ExceptionHugin
+     */
     private void setNormal(Normal dist) throws ExceptionHugin {
         this.setNormal(dist,0);
     }
 
+    /**
+     * Sets the distribution of a normal variable in the Hugin network from the corresponding distribution in the AMIDST
+     * model. This method is designed for setting the distribution in a given position in the list of distributions
+     * indexed by the multinomial parents assignments.
+     *
+     * @param dist the AMIDST distribution to be converted.
+     * @param i position in which the distribution will be located. Note that <code>i</code> is equal to 0 when the
+     *          variable has no multinomial parents.
+     * @throws ExceptionHugin
+     */
     private void setNormal(Normal dist, int i) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
@@ -129,6 +197,13 @@ public class BNConverterToHugin {
         ((ContinuousChanceNode)huginVar).setGamma(Math.pow(sd,2),i);
     }
 
+    /**
+     * Sets the distribution of a normal variable with multinomial parents in the Hugin network from the corresponding
+     * distribution in the AMIDST model.
+     *
+     * @param dist the AMIDST distribution to be converted.
+     * @throws ExceptionHugin
+     */
     private void setNormal_MultinomialParents(Normal_MultinomialParents dist) throws ExceptionHugin {
 
         List<Variable> conditioningVariables = dist.getConditioningVariables();
@@ -140,10 +215,16 @@ public class BNConverterToHugin {
         }
     }
 
+    /**
+     * Sets the distribution of a normal variable with multinomial and normal parents in the Hugin network from the
+     * corresponding distribution in the AMIDST model.
+     *
+     * @param dist the AMIDST distribution to be converted.
+     * @throws ExceptionHugin
+     */
     private void setNormal_MultinomialNormalParents(Normal_MultinomialNormalParents dist) throws ExceptionHugin {
 
         List<Variable> multinomialParents = dist.getMultinomialParents();
-
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
 
         for(int i=0;i<numParentAssignments;i++) {
@@ -151,6 +232,13 @@ public class BNConverterToHugin {
         }
     }
 
+    /**
+     * Sets the distributions for all the variables in the Hugin network from the distributions in the AMIDST model.
+     * For each variable, the distribution type is determined and the corresponding conversion is carried out.
+     *
+     * @param amidstBN the Bayesian network model in AMIDST format.
+     * @throws ExceptionHugin
+     */
     private void setDistributions(BayesianNetwork amidstBN) throws ExceptionHugin {
 
         for (Variable amidstVar : amidstBN.getStaticVariables()) {
@@ -180,6 +268,12 @@ public class BNConverterToHugin {
         }
     }
 
+    /**
+     * Converts a Bayesian network from AMIDST to Hugin format.
+     * @param amidstBN the AMIDST Bayesian network to be converted.
+     * @return the converted Hugin Bayesian network.
+     * @throws ExceptionHugin
+     */
     public static Domain convertToHugin(BayesianNetwork amidstBN) throws ExceptionHugin {
 
         BNConverterToHugin converterToHugin  = new BNConverterToHugin();

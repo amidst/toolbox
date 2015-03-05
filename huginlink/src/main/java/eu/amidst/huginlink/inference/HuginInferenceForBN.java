@@ -12,13 +12,31 @@ import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;
 
 /**
- * Created by afa on 9/2/15.
+ * This class provides an interface to perform Bayesian network inference using the Hugin inference engine.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 9/2/15
  */
 public class HuginInferenceForBN implements InferenceAlgorithmForBN {
 
+    /**
+     * The Bayesian network model in AMIDST format.
+     */
     BayesianNetwork amidstBN;
+
+    /**
+     * The Bayesian network model in Hugin format.
+     */
     Domain huginBN;
 
+    /**
+     * Sets an evidence to a Hugin variable.
+     *
+     * @param n the AMIDST variable to be evidenced.
+     * @param value the evidenced value.
+     * @throws ExceptionHugin
+     */
     private void setVarEvidence(Variable n, long value) throws ExceptionHugin {
         if (n.isMultinomial()){
             ((DiscreteNode)huginBN.getNodeByName(n.getName())).selectState(value);
@@ -31,6 +49,12 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
         }
     }
 
+    /**
+     * Prints the belief of a Hugin node.
+     *
+     * @param node the node whose belief is printed.
+     * @throws ExceptionHugin
+     */
     private void printBelief(Node node) throws ExceptionHugin {
         if (node instanceof DiscreteNode) {
             DiscreteNode dNode = (DiscreteNode) node;
@@ -46,6 +70,11 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
         }
     }
 
+    /**
+     * Prints the beliefs of the Hugin network.
+     *
+     * @throws ExceptionHugin
+     */
     private void printBeliefs () throws ExceptionHugin {
         NodeList nodes = huginBN.getNodes();
         java.util.ListIterator it = nodes.listIterator();
