@@ -15,19 +15,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by afa on 7/1/15.
+ * This class converts a Dynamic Bayesian network model from AMIDST to Hugin. It works only for multinomial
+ * distributions.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 7/1/15
  */
 public class DBNConverterToHugin {
 
-    // The dynamic BN in Hugin
+    /**
+     * The Dynamic Bayesian network model in Hugin format.
+     */
     private Class huginDBN;
 
+    /**
+     * Class constructor.
+     *
+     * @throws ExceptionHugin
+     */
     public DBNConverterToHugin() throws ExceptionHugin {
-        huginDBN = new Class(new ClassCollection()); // I'm not sure about creating a new ClassCollection but it works!
+        huginDBN = new Class(new ClassCollection());
     }
 
-
-
+    /**
+     * Sets the nodes and temporal clones (if exist) in the Hugin network from the AMIDST model.
+     *
+     * @param amidstDBN the Dynamic Bayesian network model in AMIDST format.
+     * @throws ExceptionHugin
+     */
     private void setNodesAndTemporalClones(DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
 
         DynamicVariables dynamicVars = amidstDBN.getDynamicVariables();
@@ -54,6 +70,12 @@ public class DBNConverterToHugin {
         }
      }
 
+    /**
+     * Sets the Hugin model structure from the AMIDST Dynamic DAG.
+     *
+     * @param amidstDBN the Dynamic Bayesian network model in AMIDST format.
+     * @throws ExceptionHugin
+     */
     private void setStructure (DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
 
         DynamicDAG dynamicDAG = amidstDBN.getDynamicDAG();
@@ -79,6 +101,13 @@ public class DBNConverterToHugin {
         }
     }
 
+    /**
+     * Sets the distributions for all the variables in the Hugin network from the distributions in the AMIDST model.
+     * Note that only multinomial distributions are allowed in this conversion.
+     *
+     * @param amidstDBN the Dynamic Bayesian network model in AMIDST format.
+     * @throws ExceptionHugin
+     */
     private void setDistributions(DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
 
         NodeList huginNodes = this.huginDBN.getNodes();
@@ -127,6 +156,12 @@ public class DBNConverterToHugin {
         }
     }
 
+    /**
+     * Converts a Dynamic Bayesian network from AMIDST to Hugin format.
+     * @param amidstDBN the AMIDST Dynamic Bayesian network to be converted.
+     * @return the converted Hugin Dynamic Bayesian network.
+     * @throws ExceptionHugin
+     */
     public static Class convertToHugin(DynamicBayesianNetwork amidstDBN) throws ExceptionHugin {
 
         DBNConverterToHugin DBNconverterToHugin  = new DBNConverterToHugin();

@@ -6,11 +6,22 @@ import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.huginlink.converters.DBNConverterToAmidst;
 
 /**
- * Created by afa on 5/2/15.
+ * This class is a loader of dynamic Bayesian networks in AMIDST format from Hugin files.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 5/2/15
  */
 public class DBNLoaderFromHugin {
 
-    // In order to make it simpler, we suppose that the DBN model name is the file name without extension
+    /**
+     * Loads a AMIDST dynamic Bayesian network from a Hugin file by converting the format internally. In order to make
+     * it simpler, we suppose that the Hugin DBN model name is the file name without extension.
+     *
+     * @param file the file name in which the Hugin model is stored.
+     * @return a <code>DynamicBayesianNetwork</code> in AMIDST format.
+     * @throws ExceptionHugin
+     */
     public static DynamicBayesianNetwork loadFromFile(String file) throws ExceptionHugin {
 
         DefaultClassParseListener parseListener = new DefaultClassParseListener();
