@@ -39,7 +39,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
             throw new IllegalArgumentException("Size of base distributions list does not match with the number of parents configurations");
 
         this.var = distributions1.get(0).getVariable();
+        parents = new ArrayList<>();
         this.multinomialParents = multinomialParents1;
+        this.nonMultinomialParents = new ArrayList<>();
         this.baseDistributions = distributions1;
 
 
@@ -47,19 +49,17 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
             this.isBaseConditionalDistribution=true;
             for (int i = 0; i < size; i++) {
                 for (Variable v : this.getBaseConditionalDistribution(i).getConditioningVariables()) {
-                    if (!this.parents.contains(v))
-                        this.parents.add(v);
+                    if (!this.nonMultinomialParents.contains(v))
+                        this.nonMultinomialParents.add(v);
                 }
             }
         }else{
             this.isBaseConditionalDistribution=false;
         }
 
-        for (Variable parent : parents) {
-            if (!parent.isMultinomial()) {
-                this.nonMultinomialParents.add(parent);
-            }
-        }
+        this.parents.addAll(this.multinomialParents);
+        this.parents.addAll(this.nonMultinomialParents);
+
 
         //Make them unmodifiable
         this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
