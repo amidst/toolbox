@@ -349,6 +349,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             int nConf = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
 
             for (int i = 0; i < nConf; i++) {
+                if (!this.getBaseEFConditionalDistribution(i).getConditioningVariables().contains(parent))
+                    continue;
+
                 double[] assignment = MultinomialIndex.getVariableArrayAssignmentFromIndex(this.multinomialParents, i);
                 double momentValue = 1;
                 for (int j = 0; j < assignment.length; j++) {
@@ -378,29 +381,34 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @Override
-    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
-         List<EF_ConditionalLearningDistribution> totalDists = this.distributions.stream()
-                .flatMap(dist -> dist.toExtendedLearningDistribution(variables).stream())
-                .collect(Collectors.toList());
+    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables parameters) {
 
-        List<EF_ConditionalLearningDistribution> dist_NoParameter = totalDists.stream()
-                .filter(dist -> dist.getConditioningVariables().size() > 0)
-                .collect(Collectors.toList());
+        if (this.getConditioningVariables().size()==0){
+            return this.getBaseEFDistribution(0).toExtendedLearningDistribution(parameters);
+        }else {
+            List<EF_ConditionalLearningDistribution> totalDists = this.distributions.stream()
+                    .flatMap(dist -> dist.toExtendedLearningDistribution(parameters).stream())
+                    .collect(Collectors.toList());
 
-        List<EF_ConditionalLearningDistribution> dist_Parameter = totalDists.stream()
-                .filter(dist -> dist.getConditioningVariables().size()==0)
-                .collect(Collectors.toList());
+            List<EF_ConditionalLearningDistribution> dist_NoParameter = totalDists.stream()
+                    .filter(dist -> !dist.getVariable().isParameterVariable())
+                    .collect(Collectors.toList());
 
-        EF_BaseDistribution_MultinomialParents<EF_ConditionalLearningDistribution> base =
-                new EF_BaseDistribution_MultinomialParents<>(this.multinomialParents, dist_NoParameter, false);
+            List<EF_ConditionalLearningDistribution> dist_Parameter = totalDists.stream()
+                    .filter(dist -> dist.getVariable().isParameterVariable())
+                    .collect(Collectors.toList());
 
-        dist_Parameter.add(base);
-        return dist_Parameter;
+            EF_BaseDistribution_MultinomialParents<EF_ConditionalLearningDistribution> base =
+                    new EF_BaseDistribution_MultinomialParents<>(this.multinomialParents, dist_NoParameter, false);
+
+            dist_Parameter.add(base);
+            return dist_Parameter;
+        }
     }
 
     @Override
     public BaseDistribution_MultinomialParents<Distribution> toConditionalDistribution() {
-        BaseDistribution_MultinomialParents<Distribution> base = new BaseDistribution_MultinomialParents<Distribution>(this.var,this.getConditioningVariables());
+        BaseDistribution_MultinomialParents<Distribution> base = new BaseDistribution_MultinomialParents(this.var,this.getConditioningVariables());
         if (this.isBaseConditionalDistribution()) {
             for (int i = 0; i < this.numberOfConfigurations(); i++) {
                 base.setBaseDistribution(i, this.getBaseEFConditionalDistribution(i).toConditionalDistribution());
@@ -421,10 +429,16 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
 
-        List<ConditionalDistribution> distributionList = new ArrayList<>();
+        List<Distribution> distributionList = new ArrayList<>();
         for (EF_Distribution dist: this.distributions){
             EF_ConditionalLearningDistribution learningDistribution = (EF_ConditionalLearningDistribution)dist;
-            distributionList.add(learningDistribution.toConditionalDistribution(expectedParameters));
+            ConditionalDistribution conditionalDistribution = learningDistribution.toConditionalDistribution(expectedParameters);
+            if (conditionalDistribution instanceof BaseDistribution_MultinomialParents){
+                BaseDistribution_MultinomialParents base = (BaseDistribution_MultinomialParents)conditionalDistribution;
+                distributionList.add(base.getBaseDistribution(0));
+            }else {
+                distributionList.add(conditionalDistribution);
+            }
         }
         return new BaseDistribution_MultinomialParents(this.multinomialParents,distributionList);
     }
