@@ -64,10 +64,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
 
         NaturalParameters naturalParameters = new ArrayVector(this.nOfStates);
-
-        for (int i = 0; i < nOfStates; i++) {
-            naturalParameters.set(i, momentParents.get(this.dirichletVariable).get(0));
-        }
+        naturalParameters.copy(momentParents.get(this.dirichletVariable));
 
         return naturalParameters;
     }
@@ -86,9 +83,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
 
         NaturalParameters naturalParameters = new ArrayVector(this.nOfStates);
 
-        for (int i = 0; i < nOfStates; i++) {
-            naturalParameters.set(i, momentChildCoParents.get(this.var).get(i));
-        }
+        naturalParameters.copy(momentChildCoParents.get(this.var));
 
         return naturalParameters;
     }
