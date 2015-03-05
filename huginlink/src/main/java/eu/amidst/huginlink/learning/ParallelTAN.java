@@ -1,6 +1,5 @@
 package eu.amidst.huginlink.learning;
 
-
 import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.*;
@@ -22,24 +21,55 @@ import java.io.IOException;
 
 
 /**
- * Created by afa on 9/12/14.
+ * This class implements the parallel structural learning of a TAN model using the Hugin API. Parameter learning is
+ * performed using the AMIDST implementation through <code>MaximumLikelihoodForBN</code> class.
+ *
+ * @author Ana M. Martínez
+ * @version 1.0
+ * @since 9/12/15
  */
 public class ParallelTAN implements AmidstOptionsHandler {
 
-
+    /**
+     *
+     */
     private int numSamplesOnMemory;
+
+    /**
+     * Number of cores to be exploited during the parallel learning
+     */
     private int numCores;
+
+    /**
+     *
+     */
     private int batchSize;
+
+    /**
+     * Name of the variable acting as a root of the tree in the TAN model.
+     */
     String nameRoot;
+
+    /**
+     * Name of the class variable in the TAN model
+     */
     String nameTarget;
+    /**
+     * Indicates if the learning is executed in parallel exploiting the cores.
+     */
     boolean parallelMode;
 
-
-
-
+    /**
+     * Class constructor.
+     */
     public ParallelTAN() {
     }
 
+    /**
+     * Sets the execution mode: parallel or sequential.
+     *
+     * @param parallelMode a boolean indicating if the execution mode in parallel.
+     */
     public void setParallelMode(boolean parallelMode) {
         this.parallelMode = parallelMode;
         if (parallelMode)
@@ -49,6 +79,10 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
     }
 
+    /**
+     * Gets the batch size to be used during learning.
+     * @return
+     */
     public int getBatchSize() {
         return batchSize;
     }
@@ -64,30 +98,51 @@ public class ParallelTAN implements AmidstOptionsHandler {
         this.numSamplesOnMemory = numSamplesOnMemory_;
     }
 
+    /**
+     * Gets the number of cores used during learning.
+     * @return the number of cores.
+     */
     public int getNumCores() {
         return numCores;
     }
 
+    /**
+     * Sets the number of cores to be used during learning.
+     * @param numCores_
+     */
     public void setNumCores(int numCores_) {
         this.numCores = numCores_;
     }
 
+    /**
+     * Sets the name of the variable acting as a root of the tree in the TAN model
+     * @param nameRoot the name of the variable
+     */
     public void setNameRoot(String nameRoot) {
         this.nameRoot = nameRoot;
     }
 
+    /**
+     * Sets the name of the class variable in the TAN model.
+     * @param nameTarget the name of the variable
+     */
     public void setNameTarget(String nameTarget) {
         this.nameTarget = nameTarget;
     }
 
+    /**
+     * Learns a TAN structure from data using the Chow-Liu algorithm included in the Hugin API. Parallel learning is
+     * used only if the parallel mode is set to true.
+     * @param dataStream a stream of data instances to be processed during learning
+     * @return a <code>DAG</code> structure in AMIDST format.
+     * @throws ExceptionHugin
+     */
     public DAG learnDAG(DataStream dataStream) throws ExceptionHugin {
         StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
         DAG dag = new DAG(modelHeader);
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-
         Domain huginNetwork = null;
-
 
         try {
             huginNetwork = BNConverterToHugin.convertToHugin(bn);
@@ -97,9 +152,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
             // Set the number of cases
             int numCases = dataOnMemory.getNumberOfDataInstances();
             huginNetwork.setNumberOfCases(numCases);
-
             huginNetwork.setConcurrencyLevel(this.numCores);
-
             NodeList nodeList = huginNetwork.getNodes();
 
             // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
@@ -129,19 +182,18 @@ public class ParallelTAN implements AmidstOptionsHandler {
             huginNetwork.learnChowLiuTree(root, target);
             System.out.println("Structural Learning in Hugin: " + watch.stop());
 
-            //Parametric learning
-            //huginNetwork.compile();
-            //huginNetwork.learnTables();
-            //huginNetwork.uncompile();
-
-
             return (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
         } catch (ExceptionHugin exceptionHugin) {
             throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
         }
     }
 
-
+    /**
+     * Learns the parameters of a TAN structure by maximum likelihood using the AMIDST implementation.
+     * @param dataStream a stream of data instances for learning the parameters.
+     * @return a <code>BayesianNetwork</code> object in ADMIST format.
+     * @throws ExceptionHugin
+     */
     public BayesianNetwork learnBN(DataStream<DataInstance> dataStream) throws ExceptionHugin {
 
         //TODO uncomment this and solve the problem

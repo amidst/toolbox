@@ -11,11 +11,20 @@ import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 import java.io.File;
 
 /**
- * Created by afa on 3/2/15.
+ * This class converts a set of Hugin networks (static and dynamic) into AMIDST networks.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 3/2/15
  */
 public class FileConverterFromHuginToAmidst {
 
-    // TODO Use stream() for processing files instead.
+    /**
+     * Converts a set the Hugin network files (dynamic and static) into AMIDST format.
+     *
+     * @param folderName the path from which the conversion will be carried out (applied recursively in sub-folders too).
+     * @throws Exception
+     */
     public static void convertFilesFromFolder(final String folderName) throws Exception {
 
         File folder = new File(folderName);
@@ -66,14 +75,12 @@ public class FileConverterFromHuginToAmidst {
                     if(!amidstDBN.equalDBNs(amidstDBN2, 0.0))
                         throw new Exception("Conversion from " + fileName + " to " + amidstFileName + " failed. ");
                     //**************************************************************************************************
-
                 }
             }
         }
     }
 
-
-    public static void main(String[] agrs) throws Exception {
+    public static void main(String[] args) throws Exception {
         FileConverterFromHuginToAmidst.convertFilesFromFolder("networks");
     }
 }
