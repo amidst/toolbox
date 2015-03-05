@@ -1,7 +1,7 @@
 package eu.amidst.huginlink.converters;
 
-import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
+import COM.hugin.HAPI.*;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.distribution.Multinomial;
@@ -18,21 +18,43 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by afa on 7/1/15.
+ * This class converts a Dynamic Bayesian network model from Hugin to AMIDST. It works only for multinomial
+ * distributions.
+ *
+ * @author Antonio Fernández
+ * @version 1.0
+ * @since 7/1/15
  */
 public class DBNConverterToAmidst {
 
+    /**
+     * The Dynamic Bayesian network model in AMIDST format.
+     */
     private DynamicBayesianNetwork amidstDBN;
+
+    /**
+     * The Dynamic Bayesian network model in Hugin format.
+     */
     private Class huginDBN;
 
+
+    /**
+     * Class constructor.
+     *
+     * @param huginDBN_ the Hugin network to be converted.
+     */
     public DBNConverterToAmidst(Class huginDBN_){
         this.huginDBN = huginDBN_;
     }
 
+    /**
+     * Sets the AMIDST model structure (nodes and parents) from the Hugin network.
+     *
+     * @throws ExceptionHugin
+     */
     private void setNodesAndParents() throws ExceptionHugin {
 
-        List<Attribute> atts = new ArrayList<>();
-
+        List<Attribute> listOfAttributes = new ArrayList<>();
         NodeList huginNodes = this.huginDBN.getNodes();
         int numNodes = huginNodes.size();
 
@@ -45,11 +67,11 @@ public class DBNConverterToAmidst {
             //Only temporal master nodes
             if (n.getTemporalMaster()==null) {
                 int numStates = (int) ((DiscreteChanceNode) n).getNumberOfStates();
-                atts.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.FINITE_SET, numStates));
+                listOfAttributes.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.FINITE_SET, numStates));
             }
         }
 
-        Attributes attributes = new Attributes(atts);
+        Attributes attributes = new Attributes(listOfAttributes);
         DynamicVariables dynamicVariables = new DynamicVariables(attributes);
         DynamicDAG dynamicDAG  = new DynamicDAG(dynamicVariables);
 
@@ -99,6 +121,12 @@ public class DBNConverterToAmidst {
         this.amidstDBN = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
     }
 
+    /**
+     * Sets the distributions for all the variables in the AMIDST network from the distributions in the Hugin model.
+     * Both distributions at time t and time 0 are converted for each variable.
+     *
+     * @throws ExceptionHugin
+     */
     private void setDistributions() throws ExceptionHugin {
 
         List<Variable> amidstVars = amidstDBN.getDynamicVariables().getListOfDynamicVariables();
@@ -142,7 +170,7 @@ public class DBNConverterToAmidst {
                         amidstProbabilities[k] = huginProbabilitiesTime0[k];
                     }
                     dist_Time0.setProbabilities(amidstProbabilities);
-            }else {
+            } else {
                 Multinomial_MultinomialParents dist_Time0 = amidstDBN.getDistributionTime0(amidstVar);
                 int numParentAssignmentsTime0 = MultinomialIndex.getNumberOfPossibleAssignments(parentsTime0);
                 int numStates = amidstVar.getNumberOfStates();
@@ -157,6 +185,13 @@ public class DBNConverterToAmidst {
         }
     }
 
+    /**
+     * Converts a Dynamic Bayesian network from Hugin to AMIDST format.
+     *
+     * @param huginDBN the Hugin Dynamic Bayesian network to be converted.
+     * @return the converted AMIDST Dynamic Bayesian network.
+     * @throws ExceptionHugin
+     */
     public static DynamicBayesianNetwork convertToAmidst(Class huginDBN) throws ExceptionHugin {
 
         DBNConverterToAmidst DBNconverterToAMIDST = new DBNConverterToAmidst(huginDBN);
