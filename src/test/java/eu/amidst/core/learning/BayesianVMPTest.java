@@ -15,6 +15,7 @@ import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.util.Random;
 
 import static org.junit.Assert.assertTrue;
 
@@ -60,7 +61,7 @@ public class BayesianVMPTest extends TestCase {
     public static void test2() throws IOException, ClassNotFoundException{
 
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
-
+        asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
