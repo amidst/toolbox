@@ -1,6 +1,6 @@
 package eu.amidst.core.exponentialfamily;
 
-import cern.jet.stat.Gamma;
+import org.apache.commons.math3.special.Gamma;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
@@ -25,11 +25,30 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         this.momentParameters = this.createZeroedMomentParameters();
 
         for (int i = 0; i < nOfStates; i++) {
-            this.momentParameters.set(i,1.0/nOfStates);
+            this.naturalParameters.set(i,1.0);
         }
 
-        this.setMomentParameters(momentParameters);
+        updateMomentFromNaturalParameters();
+
+        //this.setMomentParameters(momentParameters);
     }
+
+    public EF_Dirichlet(Variable var1, double scale) {
+        if (!var1.isDirichletParameter())
+            throw new IllegalArgumentException("Non Dirichlet var");
+        this.var=var1;
+        this.nOfStates = var.getNumberOfStates();
+        this.naturalParameters = this.createZeroedNaturalParameters();
+        this.momentParameters = this.createZeroedMomentParameters();
+
+        for (int i = 0; i < nOfStates; i++) {
+            this.naturalParameters.set(i,scale - 1);
+        }
+
+        updateMomentFromNaturalParameters();
+    }
+
+
     @Override
     public double computeLogBaseMeasure(double val) {
         return 0;
@@ -92,7 +111,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         }
 
         for (int i = 0; i < nOfStates; i++) {
-            this.momentParameters.set(i, Gamma.gamma(this.naturalParameters.get(i)) - Gamma.gamma(sumOfU_i));
+            this.momentParameters.set(i, Gamma.digamma(this.naturalParameters.get(i)) - Gamma.digamma(sumOfU_i));
         }
     }
 
@@ -108,10 +127,10 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         double sumLogGammaOfU_i = 0;
         for (int i = 0; i < nOfStates; i++) {
             sumOfU_i += naturalParameters.get(i);
-            sumLogGammaOfU_i += Math.log(Gamma.gamma(naturalParameters.get(i)));
+            sumLogGammaOfU_i += Gamma.logGamma(naturalParameters.get(i));
         }
 
-        return sumLogGammaOfU_i - Math.log(Gamma.gamma(sumOfU_i));
+        return sumLogGammaOfU_i - Gamma.logGamma(sumOfU_i);
     }
 
     @Override

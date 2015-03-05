@@ -24,8 +24,12 @@ public final class BayesianLearningEngineForBN {
         bayesianLearningAlgorithmForBN.setDAG(dag);
     }
 
-    public void setDataStream(DataStream<DataInstance> data){
+    public static void setDataStream(DataStream<DataInstance> data){
         bayesianLearningAlgorithmForBN.setDataStream(data);
+    }
+
+    public static BayesianNetwork getLearntBayesianNetwork(){
+        return bayesianLearningAlgorithmForBN.getLearntBayesianNetwork();
     }
 
 
