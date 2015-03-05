@@ -1,6 +1,5 @@
 package eu.amidst.huginlink.learning;
 
-
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 
@@ -22,11 +21,13 @@ import java.lang.Runtime;
 
 import org.apache.commons.cli.*;
 
-
 /**
- * Created by afa on 16/12/14.
+ * This class implements the parallel learning of a TAN model.
+ *
+ * @author Ana M. Martínez
+ * @version 1.0
+ * @since 16/12/15
  */
-//TODO Move this class to the module huginLink
 public class ParallelTANDemo {
 
     static int numCores = Runtime.getRuntime().availableProcessors();
