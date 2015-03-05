@@ -179,7 +179,7 @@ public class Node {
             return false;
 
         for (Node node : this.getParents()){
-            if (node.isActive() && node.getMainVariable()!=parent && !node.isObserved())
+            if (node.isActive() && node.getMainVariable().getVarID()!=parent.getVarID() && !node.isObserved())
                 return false;
         }
 

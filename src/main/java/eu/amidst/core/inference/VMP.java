@@ -65,7 +65,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
             boolean done = true;
             for (Node node : nodes) {
-                if (!node.isActive())
+                if (!node.isActive() || node.isObserved())
                     continue;
 
                 Map<Variable, MomentParameters> momentParents = new HashMap<>();
