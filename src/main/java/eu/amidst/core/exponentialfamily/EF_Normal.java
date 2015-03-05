@@ -19,7 +19,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public static final int EXPECTED_SQUARE = 1;
 
     public EF_Normal(Variable var1) {
-        if (!var1.isNormal()) {
+        if (!var1.isNormal() && !var1.isParameterVariable()) {
             throw new UnsupportedOperationException("Creating a Gaussian EF distribution for a non-gaussian variable.");
         }
 
