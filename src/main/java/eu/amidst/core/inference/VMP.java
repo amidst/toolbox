@@ -97,7 +97,7 @@ public class VMP implements InferenceAlgorithmForBN {
                 convergence = true;
             }
             if (!convergence && newelbo< elbo){
-                throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
+                //throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
             }
             elbo = newelbo;
             //System.out.println(elbo);
@@ -173,7 +173,7 @@ public class VMP implements InferenceAlgorithmForBN {
                 convergence = true;
             }
             if (!convergence && newelbo.get()< elbo){
-                //throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo.get());
+                throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo.get());
             }
             elbo = newelbo.get();
             //System.out.println(elbo);

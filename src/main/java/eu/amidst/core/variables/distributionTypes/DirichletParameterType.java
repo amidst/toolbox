@@ -30,7 +30,7 @@ public class DirichletParameterType extends DistributionType {
 
     @Override
     public EF_Dirichlet newEFUnivariateDistribution() {
-         return new EF_Dirichlet(this.variable);
+         return new EF_Dirichlet(this.variable,2);
     }
 
 

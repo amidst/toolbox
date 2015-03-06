@@ -6,6 +6,8 @@ import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -25,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public class BayesianVMPTest extends TestCase {
 
 
-    public static void test1() throws IOException, ClassNotFoundException {
+    public static void testMultinomials() throws IOException, ClassNotFoundException {
         StaticVariables variables = new StaticVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
@@ -86,12 +88,23 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal.bn");
 
+        Variable varA = oneNormalVarBN.getStaticVariables().getVariableByName("A");
+        Normal dist = oneNormalVarBN.getDistribution(varA);
+
+        dist.setMean(-10);
+        dist.setSd(5);
+
+
+
         System.out.println("\nOne normal variable network \n ");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+
+        System.out.println(1+data.stream().mapToDouble(d -> Math.pow(d.getValue(varA)-10,2)).sum()/2.0);
+
 
         BayesianLearningEngineForBN.setDAG(oneNormalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);
@@ -101,7 +114,67 @@ public class BayesianVMPTest extends TestCase {
 
         System.out.println(oneNormalVarBN.toString());
         System.out.println(learntOneNormalVarBN.toString());
-        assertTrue(oneNormalVarBN.equalBNs(learntOneNormalVarBN,0.05));
+        assertTrue(oneNormalVarBN.equalBNs(learntOneNormalVarBN,0.1));
+
+    }
+
+    public static void testGaussian_1Gaussian() throws IOException, ClassNotFoundException{
+
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+
+        System.out.println("\nNormal|Normal variable network \n ");
+
+        Normal dist_B = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("B"));
+
+        dist_B.setMean(0.0);
+        dist_B.setSd(0.1);
+
+
+        Normal_NormalParents dist = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
+
+        dist.setCoeffParents(new double[]{1});
+        dist.setSd(0.1);
+        dist.setIntercept(0.5);
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
+        sampler.setSeed(0);
+        sampler.setParallelMode(true);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+
+        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
+        BayesianLearningEngineForBN.setDataStream(data);
+        BayesianLearningEngineForBN.runLearning();
+
+        BayesianNetwork learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+
+        System.out.println(normalVarBN.toString());
+        System.out.println(learntNormalVarBN.toString());
+        assertTrue(normalVarBN.equalBNs(learntNormalVarBN,0.1));
+
+    }
+
+    public static void testGaussian_2Gaussian() throws IOException, ClassNotFoundException{
+
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.bn");
+
+        normalVarBN.randomInitialization(new Random(0));
+        System.out.println("\nNormal|2Normal variable network \n ");
+
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
+        sampler.setSeed(0);
+        sampler.setParallelMode(true);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+
+        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
+        BayesianLearningEngineForBN.setDataStream(data);
+        BayesianLearningEngineForBN.runLearning();
+
+        BayesianNetwork learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+
+        System.out.println(normalVarBN.toString());
+        System.out.println(learntNormalVarBN.toString());
+        assertTrue(normalVarBN.equalBNs(learntNormalVarBN,0.1));
 
     }
 
