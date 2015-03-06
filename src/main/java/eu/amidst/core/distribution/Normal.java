@@ -79,7 +79,7 @@ public class Normal extends UnivariateDistribution {
 
 
     public void setVariance(double var){
-        this.sd=Math.sqrt(sd);
+        this.sd=Math.sqrt(var);
     }
 
     public double getVariance(){
