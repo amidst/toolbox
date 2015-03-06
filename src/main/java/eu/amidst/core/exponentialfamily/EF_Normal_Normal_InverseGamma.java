@@ -86,17 +86,19 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
 
+        int nOfBetas = this.betasVariables.size();
+
         //From Beta_0, Beta, gamma and Y parents to variable X.
-        double[] Beta_array = new double[Math.floorDiv(nOfParents-2,2)];
-        double[] Yarray = new double[Math.floorDiv(nOfParents-2,2)];
+        double[] Beta_array = new double[nOfBetas];
+        double[] Yarray = new double[nOfBetas];
         double beta0;
         double invVariance;
 
-        for (int i = 0; i < realYVariables.size(); i++) {
+        for (int i = 0; i < nOfBetas; i++) {
             Yarray[i] = momentParents.get(this.realYVariables.get(i)).get(0);
         }
         RealVector Y = new ArrayRealVector(Yarray);
-        for (int i = 0; i < betasVariables.size(); i++) {
+        for (int i = 0; i < nOfBetas; i++) {
             Beta_array[i] = momentParents.get(this.betasVariables.get(i)).get(0);
         }
         RealVector Beta = new ArrayRealVector(Beta_array);
@@ -106,16 +108,13 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
         double logStdDev = momentParents.get(invGammaVariable).get(0);
 
 
-        double logNorm = logStdDev + Beta.dotProduct(Y)*beta0*invVariance;
+        double logNorm = 0.5*logStdDev + Beta.dotProduct(Y)*beta0*invVariance;
 
         RealMatrix YY = Y.outerProduct(Y);
         RealMatrix BetaBeta = Beta.outerProduct(Beta);
 
-        double betabeta = IntStream.range(0, betasVariables.size()).mapToDouble(p ->
-        {
-            return BetaBeta.getRowVector(p).dotProduct(YY.getRowVector(p));
-        })
-                .sum();
+        double betabeta = IntStream.range(0, nOfBetas).mapToDouble(p ->
+                BetaBeta.getRowVector(p).dotProduct(YY.getRowVector(p))).sum();
 
         logNorm += betabeta*0.5*invVariance + beta0*beta0*0.5*invVariance;
 
@@ -130,19 +129,21 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
      */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
+
+        int nOfBetas = this.betasVariables.size();
         NaturalParameters naturalParameters = new ArrayVector(2);
 
         //From Beta_0, Beta, gamma and Y parents to variable X.
-        double[] Beta_array = new double[Math.floorDiv(nOfParents-2,2)];
-        double[] Yarray = new double[Math.floorDiv(nOfParents-2,2)];
+        double[] Beta_array = new double[nOfBetas];
+        double[] Yarray = new double[nOfBetas];
         double beta0;
         double invVariance;
 
-        for (int i = 0; i < realYVariables.size(); i++) {
+        for (int i = 0; i < nOfBetas; i++) {
             Yarray[i] = momentParents.get(this.realYVariables.get(i)).get(0);
         }
         RealVector Y = new ArrayRealVector(Yarray);
-        for (int i = 0; i < betasVariables.size(); i++) {
+        for (int i = 0; i < nOfBetas; i++) {
             Beta_array[i] = momentParents.get(this.betasVariables.get(i)).get(0);
         }
         RealVector Beta = new ArrayRealVector(Beta_array);
@@ -150,9 +151,9 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
         beta0 = momentParents.get(beta0Variable).get(0);
         invVariance = momentParents.get(invGammaVariable).get(1);
 
-        naturalParameters.set(0,beta0*invVariance + Beta.mapMultiplyToSelf(invVariance).dotProduct(Y));
+        naturalParameters.set(0, beta0 * invVariance + Beta.dotProduct(Y) * invVariance);
 
-        naturalParameters.set(1,-invVariance/2);
+        naturalParameters.set(1,-0.5*invVariance);
 
         return naturalParameters;
     }
@@ -171,16 +172,18 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
 
         NaturalParameters naturalParameters = new ArrayVector(2);
 
-        double[] Beta_array = new double[Math.floorDiv(nOfParents-2,2)];
-        double[] Yarray = new double[Math.floorDiv(nOfParents-2,2)];
+        int nOfBetas = this.betasVariables.size();
+
+        double[] Beta_array = new double[nOfBetas];
+        double[] Yarray = new double[nOfBetas];
         double beta0;
         double invVariance;
 
-        for (int i = 0; i < realYVariables.size(); i++) {
+        for (int i = 0; i < nOfBetas; i++) {
             Yarray[i] = momentChildCoParents.get(this.realYVariables.get(i)).get(0);
         }
         RealVector Y = new ArrayRealVector(Yarray);
-        for (int i = 0; i < betasVariables.size(); i++) {
+        for (int i = 0; i < nOfBetas; i++) {
             Beta_array[i] = momentChildCoParents.get(this.betasVariables.get(i)).get(0);
         }
         RealVector Beta = new ArrayRealVector(Beta_array);
@@ -190,7 +193,7 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
 
         double X = momentChildCoParents.get(var).get(0);
 
-        int parentID=this.getConditioningVariables().indexOf(parent);
+        int parentID=this.betasVariables.indexOf(parent);
 
         // Message to a Y variable
         if(realYVariables.contains(parent)){
@@ -200,8 +203,8 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
 
             double beta_i = Beta.getEntry(parentID);
 
-            naturalParameters.set(0, -beta0*beta_i*invVariance +
-                    beta_i*X*invVariance - BetaPrima.mapMultiplyToSelf(beta_i*invVariance).dotProduct(Y));
+            naturalParameters.set(0, -beta0 * beta_i * invVariance +
+                    beta_i * X * invVariance - BetaPrima.dotProduct(Y) * (beta_i*invVariance));
 
             naturalParameters.set(1, -0.5*beta_i*beta_i*invVariance);
 
@@ -213,15 +216,15 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
 
             double Y_i = Y.getEntry(parentID);
 
-            naturalParameters.set(0, -beta0*Y_i*invVariance +
-                    Y_i*X*invVariance - BetaPrima.mapMultiplyToSelf(Y_i*invVariance).dotProduct(Y));
+            naturalParameters.set(0, -beta0 * Y_i * invVariance +
+                    Y_i * X * invVariance - BetaPrima.dotProduct(Y) * (Y_i*invVariance));
 
             naturalParameters.set(1, -0.5*Y_i*Y_i*invVariance);
 
         // Message to the Beta0 variable
         }else if(beta0Variable == parent){
 
-            naturalParameters.set(0, X*invVariance - Beta.mapMultiplyToSelf(invVariance).dotProduct(Y));
+            naturalParameters.set(0, X * invVariance - Beta.dotProduct(Y) * invVariance);
             naturalParameters.set(1, -0.5*invVariance);
 
         // Message to the inv-Gamma variable
