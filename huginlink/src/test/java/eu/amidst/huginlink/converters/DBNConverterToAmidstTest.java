@@ -1,7 +1,10 @@
 package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.Class;
+import COM.hugin.HAPI.ClassCollection;
+import COM.hugin.HAPI.DefaultClassParseListener;
 import COM.hugin.HAPI.ExceptionHugin;
+import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.examples.DBNExample;
 import eu.amidst.huginlink.converters.DBNConverterToAmidst;
@@ -9,13 +12,15 @@ import eu.amidst.huginlink.converters.DBNConverterToHugin;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 /**
  * Created by afa on 12/1/15.
  */
 public class DBNConverterToAmidstTest {
 
     @Before
-    public void setUp() throws ExceptionHugin {
+    public void setUp() throws ExceptionHugin, IOException {
 
         DynamicBayesianNetwork amidstDBN = DBNExample.getAmidst_DBN_Example();
         System.out.println("\nConverting the AMIDST Dynamic BN into Hugin format ...");
