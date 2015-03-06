@@ -35,7 +35,7 @@ public class BayesianVMPLearning implements BayesianLearningAlgorithmForBN {
 
         int cont=0;
         for(DataInstance dataInstance: data){
-            System.out.println("Sample: "+cont++);
+            //System.out.println("Sample: "+cont++);
             this.vmp.setEvidence(dataInstance);
             this.vmp.runInference();
             for (EF_ConditionalDistribution dist: this.ef_extendedBN.getDistributionList()){
