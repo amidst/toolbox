@@ -69,6 +69,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         EF_Normal copy = new EF_Normal(this.getVariable());
         copy.getNaturalParameters().copy(this.getNaturalParameters());
+        copy.getMomentParameters().copy(this.getMomentParameters());
 
         return copy;
     }
