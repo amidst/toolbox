@@ -167,7 +167,7 @@ public class DAG implements Serializable {
             int numParents = getNumberOfParents();
 
             StringBuilder str = new StringBuilder();
-            str.append("{ ");
+            str.append("{");
 
             for (int i = 0; i < numParents; i++) {
                 Variable parent = getParents().get(i);
@@ -176,7 +176,7 @@ public class DAG implements Serializable {
                     str.append(", ");
                 }
             }
-            str.append(" }");
+            str.append("}");
             return str.toString();
         }
 
