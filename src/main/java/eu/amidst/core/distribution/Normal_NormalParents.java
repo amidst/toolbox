@@ -27,6 +27,7 @@ import java.util.Random;
  * <h2>This class implements a Conditional Linear Gaussian distribution, i.e. a distribution of a normal variable with
  * continuous normal parents.</h2>
  *
+ * TODO Reimplement the management of coffParents using a Map<Variale,Double>
  * @author Antonio Fernández
  * @version 1.0
  * @since 2014-11-4

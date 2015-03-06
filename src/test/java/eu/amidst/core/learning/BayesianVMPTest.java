@@ -91,7 +91,7 @@ public class BayesianVMPTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(100);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
 
         BayesianLearningEngineForBN.setDAG(oneNormalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);

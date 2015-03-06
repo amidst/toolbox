@@ -349,6 +349,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             int nConf = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
 
             for (int i = 0; i < nConf; i++) {
+                //TODO This might be inefficient for the use of sequential search in a list
                 if (!this.getBaseEFConditionalDistribution(i).getConditioningVariables().contains(parent))
                     continue;
 

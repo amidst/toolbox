@@ -53,6 +53,7 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     public EF_UnivariateDistribution deepCopy() {
         EF_InverseGamma copy = new EF_InverseGamma(this.getVariable());
         copy.getNaturalParameters().copy(this.getNaturalParameters());
+        copy.getMomentParameters().copy(this.getMomentParameters());
 
         return copy;
     }
