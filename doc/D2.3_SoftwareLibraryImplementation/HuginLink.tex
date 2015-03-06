@@ -1,42 +1,67 @@
 %------------------------------------------------------------------------------------------------------------
-\section{Hugin link} \label{sec:HuginLink}
+\section{HUGIN AMIDST API} \label{sec:HuginLink}
 %------------------------------------------------------------------------------------------------------------
 
-This component includes all the functionalities needed to link the AMIDST toolbox with the Hugin software. This connection is primarily ensured by converting Hugin models into AMIDST models, and vice versa. 
+The \comp{Hugin link} component consists of the functionalities implemented to link the AMIDST toolbox with the HUGIN software. This connection is primarily ensured by converting HUGIN models into AMIDST models, and vice versa. 
 
-This is extremely useful as it allows us for instance to test and assess some of the implemented AMIDST functionalities within a well-stablished platform as Hugin. For instance, a new inference algorithm implemented in AMIDST could be compared with some state-of-the-art algorithms included in Hugin. In addition, the connection with Hugin could be more efficient as it extends and provides some extra functionalities to AMIDST toolbox, such as the use of parallel TAN for structural learning. 
+This component is extremely useful as it allows us to test and assess some of the implemented AMIDST functionalities within a well-established platform as HUGIN. For instance, a new inference algorithm implemented in AMIDST could be compared with some state-of-the-art algorithms included in HUGIN. In addition, the connection with HUGIN efficiently extends AMIDST toolbox by providing some extra functionalities, such as the use of parallel TAN for BN structural learning. 
 
 %------------------------------------------------------------------------------------------------------------
-\subsection{BN converter from AMIDST to Hugin format} \label{ConverterFromAmidstToHugin}
+\subsection{Converters from AMIDST to HUGIN format} \label{ConverterFromAmidstToHugin}
 %------------------------------------------------------------------------------------------------------------
 
-This functionality addresses the conversion of a Bayesian network from AMIDST to Hugin. This conversion is done at ``object-level'', which is far more efficient that if done by converting the models to data files and, then, parsing them. 
+This functionality addresses the conversion of a \comp{BN} or a \comp{DBN} from AMIDST to HUGIN. This conversion is done at ``object-level'', which is far more efficient that if it would be done by converting the models to data files and, then, parsing them. 
 
-This is brief code fragment showing how to convert a BN from Amidst to Hugin format and stored it on a file. Then, we can open HUGIN and visually inspect the BN created with the AMIDST toolbox. 
+The following brief code fragment shows how to convert a \comp{BN} and a \comp{DBN} from AMIDST to HUGIN format, then store them in files. The files could be then accessed and opened using HUGIN software to visually check the created networks with the AMIDST toolbox. 
+
 
 \begin{table}[H]
 \begin{tabular}{l} \hline
+
+\%For a \comp{BN}:\\ 
 \texttt{BayesianNetwork amidstBN = BayesianNetwork.newBayesianNetwork(dag);}\\
-\texttt{Domain huginNetwork = ConverterToHugin.convertToHugin(amidstBN);}\\
-\texttt{huginNetwork.saveAsNet("networks/huginStaticBNHiddenExample.net");}\\ \hline
+\texttt{Domain huginBN = BNConverterToHugin.convertToHugin(amidstBN);;}\\
+\texttt{huginBN.saveAsNet("networks/huginNetworkFromAMIDST.net");}\\\\ 
+
+\%For a \comp{DBN}:\\ 
+        \texttt{DynamicBayesianNetwork amidstDBN =}\\ \texttt{~~~~~DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);}\\
+        \texttt{Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);}\\
+        \texttt{huginDBN.setName("huginDBNFromAMIDST");}\\
+        \texttt{huginDBN.saveAsNet("networks/huginDBNFromAMIDST.oobn");}\\ \hline
 
 \end{tabular}
 \end{table} 
 
 %------------------------------------------------------------------------------------------------------------
-\subsection{BN converter from Hugin to AMIDST format} \label{ConverterFromHuginToAmidst}
+\subsection{Converters from HUGIN to AMIDST format} \label{ConverterFromHuginToAmidst}
 %------------------------------------------------------------------------------------------------------------
 
-This functionality addresses the conversion of a Bayesian network from Hugin to Amidst. This conversion is done at ``object-level'', which is far more efficient that if done by converting the models to data files and, then, parsing them. 
+This functionality addresses the conversion of a \comp{BN} or a \comp{DBN} from HUGIN to AMIDST. As before, this conversion is also done at ``object-level''.
 
-This is brief code fragment showing how to convert a BN from Hugin to Amidst. 
+The following brief code fragment shows how to convert a \comp{BN} and a \comp{DBN} from HUGIN to AMIDST format, then store them in files. The files could be then accessed and used in AMIDST toolbox. 
+
 
 \begin{table}[H]
 \begin{tabular}{l} \hline
 
-\texttt{ParseListener parseListener = new DefaultClassParseListener();}\\    
-\texttt{Domain huginBN = new Domain ("networks/huginNetwork.net", parseListener);}\\
-\texttt{BayesianNetwork amidstBN = ConverterToAMIDST.convertToAmidst(huginBN);}\\  \hline 
+\%For a \comp{BN}:\\ 
 
+        \texttt{ParseListener parseListener = new DefaultClassParseListener();}\\
+        \texttt{Domain huginBN = new Domain ("networks/asia.net", parseListener);}\\
+        \texttt{BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);}\\
+        \texttt{BayesianNetworkWriter.saveToFile(amidstBN, "networks/asia.bn");}\\\\
+
+\%For a \comp{DBN}:\\ 
+        \texttt{DefaultClassParseListener parseListener = new DefaultClassParseListener();}\\
+        \texttt{ClassCollection cc = new ClassCollection();}\\
+        \texttt{String file = new String("networks/CajamarDBN.oobn");}\\
+        \texttt{cc.parseClasses (file, parseListener);}\\
+        \texttt{String[] aux = file.split("/");}\\
+        \texttt{String fileName = aux[aux.length-1];}\\
+        \texttt{String modelName = fileName.substring(0,fileName.length()-5);}\\
+        \texttt{Class HuginDBN = cc.getClassByName(modelName);}\\
+        \texttt{DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(HuginDBN);}\\
+        \texttt{DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.bn");}\\ \hline
+        
 \end{tabular}
 \end{table} 
