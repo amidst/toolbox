@@ -31,8 +31,8 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         this.naturalParameters = this.createZeroedNaturalParameters();
         this.momentParameters = this.createZeroedMomentParameters();
 
-        this.naturalParameters.set(0, -2.1); //alpha = -1.1
-        this.naturalParameters.set(1, -1);   //beta = -1
+        this.naturalParameters.set(0, -2.1); //alpha = 1.1
+        this.naturalParameters.set(1, -1);   //beta = 1
         this.setNaturalParameters(naturalParameters);
     }
 
