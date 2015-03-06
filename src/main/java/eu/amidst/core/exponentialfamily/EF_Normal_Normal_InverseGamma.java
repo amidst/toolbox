@@ -103,8 +103,10 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
 
         beta0 = momentParents.get(beta0Variable).get(0);
         invVariance = momentParents.get(invGammaVariable).get(1);
+        double logStdDev = momentParents.get(invGammaVariable).get(0);
 
-        double logNorm = -0.5*Math.log(invVariance) + Beta.dotProduct(Y)*beta0*invVariance;
+
+        double logNorm = logStdDev + Beta.dotProduct(Y)*beta0*invVariance;
 
         RealMatrix YY = Y.outerProduct(Y);
         RealMatrix BetaBeta = Beta.outerProduct(Beta);
