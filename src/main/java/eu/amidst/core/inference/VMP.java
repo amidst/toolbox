@@ -96,11 +96,11 @@ public class VMP implements InferenceAlgorithmForBN {
 
             //Compute lower-bound
             double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
-            if (Math.abs(newelbo - elbo) < 0.0001) {
+            if (Math.abs(newelbo - elbo) < 0.001) {
                 convergence = true;
             }
-            if (!convergence && newelbo< elbo){
-                //throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
+            if ((!convergence && newelbo< elbo) || Double.isNaN(elbo)){
+                throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
             }
             elbo = newelbo;
             //System.out.println(elbo);
@@ -177,7 +177,7 @@ public class VMP implements InferenceAlgorithmForBN {
                 convergence = true;
             }
             if ((!convergence && newelbo.get()< elbo) || Double.isNaN(elbo)){
-                throw new UnsupportedOperationException("The elbo is NaN or is not monotonically increasing: " + elbo + ", "+ newelbo.get());
+                //throw new UnsupportedOperationException("The elbo is NaN or is not monotonically increasing: " + elbo + ", "+ newelbo.get());
             }
             elbo = newelbo.get();
             //System.out.println(elbo);

@@ -30,7 +30,6 @@ public class MLMultinomialsTest {
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
 
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataBase(10000);

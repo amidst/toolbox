@@ -258,7 +258,6 @@ public class ParallelTAN implements AmidstOptionsHandler {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.loadOptions();
 
-        sampler.setParallelMode(true);
         DataStream<DataInstance> data =  sampler.sampleToDataBase(sampleSize);
 
         for (int i = 1; i <= 4; i++) {
