@@ -129,13 +129,13 @@ public class BayesianVMPTest extends TestCase {
         Normal dist_B = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("B"));
 
         dist_B.setMean(1);
-        dist_B.setSd(3);
+        dist_B.setSd(2);
 
 
         Normal_NormalParents dist = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
 
-        dist.setCoeffParents(new double[]{1.0});
-        dist.setSd(1);
+        dist.setCoeffParents(new double[]{2.0});
+        dist.setSd(0.5);
         dist.setIntercept(5);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
@@ -143,18 +143,23 @@ public class BayesianVMPTest extends TestCase {
         sampler.setParallelMode(false);
         DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
+        BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+
+        System.out.println(normalVarBN.toString());
+        System.out.println(learntNormalVarBN.toString());
+        assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+
         BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);
         BayesianLearningEngineForBN.runLearning();
 
         System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
-        BayesianNetwork learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
-
-        //learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), sampler.sampleToDataBase(10000));
+        learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
 
         System.out.println(normalVarBN.toString());
         System.out.println(learntNormalVarBN.toString());
         assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+
 
     }
 
