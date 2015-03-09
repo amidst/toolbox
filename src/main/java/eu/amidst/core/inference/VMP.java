@@ -30,6 +30,8 @@ public class VMP implements InferenceAlgorithmForBN {
     Map<Variable,Node> variablesToNode;
     boolean parallelMode = false;
     int seed = 0;
+    double probOfEvidence = Double.NaN;
+
 
     public boolean isParallelMode() {
         return parallelMode;
@@ -43,6 +45,7 @@ public class VMP implements InferenceAlgorithmForBN {
         return seed;
     }
 
+    @Override
     public void setSeed(int seed) {
         this.seed = seed;
     }
@@ -103,6 +106,7 @@ public class VMP implements InferenceAlgorithmForBN {
             //System.out.println(elbo);
 
         }
+        probOfEvidence = elbo;
         System.out.println("N Iter: "+niter +", elbo:"+elbo);
     }
 
@@ -178,6 +182,7 @@ public class VMP implements InferenceAlgorithmForBN {
             elbo = newelbo.get();
             //System.out.println(elbo);
         }
+        probOfEvidence = elbo;
         System.out.println("N Iter: "+niter +", elbo:"+elbo);
     }
 
@@ -204,6 +209,10 @@ public class VMP implements InferenceAlgorithmForBN {
             node.setParents(node.getPDist().getConditioningVariables().stream().map(this::getNodeOfVar).collect(Collectors.toList()));
             node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var).getChildren().add(node));
         }
+    }
+
+    public EF_BayesianNetwork getEFModel() {
+        return ef_model;
     }
 
     public Node getNodeOfVar(Variable variable){
@@ -247,6 +256,11 @@ public class VMP implements InferenceAlgorithmForBN {
     @Override
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
         return this.getNodeOfVar(var).getQDist().toUnivariateDistribution();
+    }
+
+    @Override
+    public double getLogProbabilityOfEvidence() {
+        return this.probOfEvidence;
     }
 
     public <E extends EF_UnivariateDistribution> E getEFPosterior(Variable var) {

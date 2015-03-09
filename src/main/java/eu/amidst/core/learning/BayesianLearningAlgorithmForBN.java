@@ -10,12 +10,18 @@ import eu.amidst.core.models.DAG;
  */
 public interface BayesianLearningAlgorithmForBN {
 
-    public void runLearning();
+    double updateModel(DataInstance dataInstance);
 
-    public void setDAG(DAG dag);
+    double getLogMarginalProbability();
 
-    public void setDataStream(DataStream<DataInstance> data);
+    void runLearning();
 
-    public BayesianNetwork getLearntBayesianNetwork();
+    void setDAG(DAG dag);
+
+    void setDataStream(DataStream<DataInstance> data);
+
+    BayesianNetwork getLearntBayesianNetwork();
+
+    public void setParallelMode(boolean parallelMode);
 
 }
