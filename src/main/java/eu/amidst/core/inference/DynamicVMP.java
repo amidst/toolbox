@@ -70,7 +70,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
         nodesTimeT = this.ef_model.getBayesianNetworkTimeT().getDistributionList()
                 .stream()
-                .map(dist -> new Node(dist))
+                .map(dist -> {Node node = new Node(dist); node.setSeed(this.getSeed()); return node;})
                 .collect(Collectors.toList());
 
         nodesClone = this.ef_model.getBayesianNetworkTime0().getDistributionList()
@@ -83,6 +83,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
                             Arrays.asList(uni));
 
                     Node node = new Node(pDist);
+                    node.setSeed(this.getSeed());
                     node.setActive(false);
                     return node;
                 })

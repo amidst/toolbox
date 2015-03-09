@@ -176,8 +176,8 @@ public class VMP implements InferenceAlgorithmForBN {
             if (Math.abs(newelbo.get() - elbo) < 0.0001) {
                 convergence = true;
             }
-            if (!convergence && newelbo.get()< elbo){
-                throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo.get());
+            if ((!convergence && newelbo.get()< elbo) || Double.isNaN(elbo)){
+                throw new UnsupportedOperationException("The elbo is NaN or is not monotonically increasing: " + elbo + ", "+ newelbo.get());
             }
             elbo = newelbo.get();
             //System.out.println(elbo);
@@ -200,6 +200,7 @@ public class VMP implements InferenceAlgorithmForBN {
                 .stream()
                 .map(dist -> {
                     Node node = new Node(dist);
+                    node.setSeed(this.getSeed());
                     variablesToNode.put(dist.getVariable(), node);
                     return node;
                 })
