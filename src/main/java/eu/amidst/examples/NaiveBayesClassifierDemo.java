@@ -24,7 +24,6 @@ public class NaiveBayesClassifierDemo {
 
         int sampleSize = 10000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        sampler.setParallelMode(true);
         DataStream<DataInstance> data =  sampler.sampleToDataBase(sampleSize);
 
         NaiveBayesClassifier model = new NaiveBayesClassifier();

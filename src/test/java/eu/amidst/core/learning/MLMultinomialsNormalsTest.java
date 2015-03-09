@@ -31,7 +31,6 @@ public class MLMultinomialsNormalsTest {
             //Sampling from trueBN
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(trueBN);
             sampler.setSeed(0);
-            sampler.setParallelMode(true);
 
             //Load the sampled data
             DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
