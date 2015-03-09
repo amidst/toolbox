@@ -21,4 +21,7 @@ public interface InferenceAlgorithmForBN {
 
     public <E extends UnivariateDistribution> E getPosterior(Variable var);
 
+    public double getLogProbabilityOfEvidence();
+
+    public void setSeed(int seed);
 }

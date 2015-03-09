@@ -31,6 +31,13 @@ public final class InferenceEngineForBN {
         inferenceAlgorithmForBN.setEvidence(assignment);
     }
 
+    public double getLogProbabilityOfEvidence(){
+        return inferenceAlgorithmForBN.getLogProbabilityOfEvidence();
+    }
+
+    public void setSeed(int seed){
+        inferenceAlgorithmForBN.setSeed(seed);
+    }
     public static <E extends UnivariateDistribution> E getPosterior(Variable var){
         return inferenceAlgorithmForBN.getPosterior(var);
     }
@@ -38,6 +45,7 @@ public final class InferenceEngineForBN {
     public static <E extends UnivariateDistribution> E getPosterior(String name){
         return inferenceAlgorithmForBN.getPosterior(inferenceAlgorithmForBN.getOriginalModel().getStaticVariables().getVariableByName(name));
     }
+
 
     public static void main(String[] arguments){
 

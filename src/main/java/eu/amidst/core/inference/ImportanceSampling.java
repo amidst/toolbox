@@ -167,4 +167,14 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
         return (E)posteriorDistribution;
     }
+
+    @Override
+    public double getLogProbabilityOfEvidence() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSeed(int seed) {
+        this.seed=seed;
+    }
 }
