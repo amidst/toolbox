@@ -10,29 +10,39 @@ import eu.amidst.core.models.DAG;
  */
 public final class BayesianLearningEngineForBN {
 
-    private static BayesianLearningAlgorithmForBN bayesianLearningAlgorithmForBN = new BayesianVMPLearning();
+    private static BayesianLearningAlgorithmForBN bayesianLearningAlgorithmForBN = new StreamingVariationalBayesVMP();
 
     public static void setBayesianLearningAlgorithmForBN(BayesianLearningAlgorithmForBN bayesianLearningAlgorithmForBN) {
         BayesianLearningEngineForBN.bayesianLearningAlgorithmForBN = bayesianLearningAlgorithmForBN;
     }
 
-    public static void runLearning(){
+    public static double updateModel(DataInstance dataInstance){
+        return bayesianLearningAlgorithmForBN.updateModel(dataInstance);
+    }
+
+    public static void runLearning() {
         bayesianLearningAlgorithmForBN.runLearning();
     }
 
-    public static void setDAG(DAG dag){
-        bayesianLearningAlgorithmForBN.setDAG(dag);
+    public static double getLogMarginalProbability(){
+        return bayesianLearningAlgorithmForBN.getLogMarginalProbability();
     }
+
 
     public static void setDataStream(DataStream<DataInstance> data){
         bayesianLearningAlgorithmForBN.setDataStream(data);
     }
 
+    public void setParallelMode(boolean parallelMode) {
+        bayesianLearningAlgorithmForBN.setParallelMode(parallelMode);
+    }
+    public static void setDAG(DAG dag){
+        bayesianLearningAlgorithmForBN.setDAG(dag);
+    }
+
     public static BayesianNetwork getLearntBayesianNetwork(){
         return bayesianLearningAlgorithmForBN.getLearntBayesianNetwork();
     }
-
-
 
     public static void main(String[] args) throws Exception{
 
