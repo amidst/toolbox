@@ -46,8 +46,7 @@ public class BayesianVMPTest extends TestCase {
         distB.getMultinomial(1).setProbabilities(new double[]{0.25, 0.75});
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        sampler.setSeed(0);
-        sampler.setParallelMode(true);
+        sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
 
         BayesianLearningEngineForBN.setDAG(bn.getDAG());
@@ -69,7 +68,6 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
         DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
         BayesianLearningEngineForBN.setDAG(asianet.getDAG());
@@ -91,8 +89,8 @@ public class BayesianVMPTest extends TestCase {
         Variable varA = oneNormalVarBN.getStaticVariables().getVariableByName("A");
         Normal dist = oneNormalVarBN.getDistribution(varA);
 
-        dist.setMean(-10);
-        dist.setSd(5);
+        dist.setMean(2);
+        dist.setVariance(1);
 
 
 
@@ -100,11 +98,7 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
         DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
-
-        System.out.println(1+data.stream().mapToDouble(d -> Math.pow(d.getValue(varA)-10,2)).sum()/2.0);
-
 
         BayesianLearningEngineForBN.setDAG(oneNormalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);
@@ -122,22 +116,22 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
 
+        normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nNormal|Normal variable network \n ");
 
         Normal dist_B = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("B"));
 
-        dist_B.setMean(1);
-        dist_B.setSd(2);
+        dist_B.setMean(2);
+        dist_B.setSd(1);
 
         Normal_NormalParents dist = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
 
         dist.setCoeffParents(new double[]{2.0});
-        dist.setSd(0.5);
-        dist.setIntercept(5);
+        dist.setSd(1);
+        dist.setIntercept(2);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-        sampler.setSeed(0);
-        sampler.setParallelMode(true);
+        sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
 
         BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
@@ -164,20 +158,42 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.bn");
 
-        normalVarBN.randomInitialization(new Random(0));
+        Normal dist_B = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("B"));
+
+        dist_B.setMean(2);
+        dist_B.setSd(1);
+
+        Normal dist_C = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("C"));
+
+        dist_C.setMean(2);
+        dist_C.setSd(1);
+
+
+        Normal_NormalParents dist_A = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
+
+        dist_A.setCoeffParents(new double[]{2.0, 2.0});
+        dist_A.setSd(1);
+        dist_A.setIntercept(2);
+
+        //normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nNormal|2Normal variable network \n ");
 
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
         DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+
+        BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+
+        System.out.println(normalVarBN.toString());
+        System.out.println(learntNormalVarBN.toString());
+        assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
 
         BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);
         BayesianLearningEngineForBN.runLearning();
 
-        BayesianNetwork learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
 
         System.out.println(normalVarBN.toString());
         System.out.println(learntNormalVarBN.toString());
@@ -185,4 +201,33 @@ public class BayesianVMPTest extends TestCase {
 
     }
 
+    public static void testWasteIncinerator() throws IOException, ClassNotFoundException{
+
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+
+        //normalVarBN.randomInitialization(new Random(0));
+        System.out.println("\nNormal|2Normal variable network \n ");
+
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
+        sampler.setSeed(0);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+
+        BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+
+        System.out.println(normalVarBN.toString());
+        System.out.println(learntNormalVarBN.toString());
+        assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+
+        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
+        BayesianLearningEngineForBN.setDataStream(data);
+        BayesianLearningEngineForBN.runLearning();
+
+        learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+
+        System.out.println(normalVarBN.toString());
+        System.out.println(learntNormalVarBN.toString());
+        assertTrue(normalVarBN.equalBNs(learntNormalVarBN,0.1));
+
+    }
 }

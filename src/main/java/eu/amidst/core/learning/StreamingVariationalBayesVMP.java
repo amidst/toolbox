@@ -49,7 +49,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
     @Override
     public void runLearning() {
         if (!parallelMode) {
-            this.elbo = this.dataStream.stream().mapToDouble(this::updateModel).sum();
+            this.elbo = this.dataStream.stream().sequential().mapToDouble(this::updateModel).sum();
         }else {
             //Creeat EF_ExtendedBN which returns ParameterVariable object
             //Paremter variable car

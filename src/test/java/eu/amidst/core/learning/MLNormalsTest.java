@@ -32,7 +32,6 @@ public class MLNormalsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
         DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
 
@@ -57,7 +56,6 @@ public class MLNormalsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
         DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
 

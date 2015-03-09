@@ -26,7 +26,6 @@ public class DataStreamTest extends TestCase {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
 
         assertTrue(sampler.sampleToDataBase(100).streamOfBatches(2).count()==50);
 
@@ -51,7 +50,6 @@ public class DataStreamTest extends TestCase {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
 
 
         /*******************************************************************************/
