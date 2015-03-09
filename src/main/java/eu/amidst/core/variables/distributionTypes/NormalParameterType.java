@@ -24,7 +24,10 @@ public class NormalParameterType  extends DistributionType {
 
     @Override
     public Normal newUnivariateDistribution() {
-            return new Normal(variable);
+        Normal normal = new Normal(variable);
+        normal.setMean(0);
+        normal.setSd(100000000);
+        return normal;
     }
 
     @Override

@@ -147,7 +147,7 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         Variable varDirichlet = variables.newDirichletParameter(this.var.getName()+"_DirichletParameter_"+variables.getNumberOfVars(), this.var.getNumberOfStates());
 
         EF_BaseDistribution_MultinomialParents<EF_Dirichlet> uni =
-                new EF_BaseDistribution_MultinomialParents<>(new ArrayList<>(), Arrays.asList(new EF_Dirichlet(varDirichlet, 2.0)));
+                new EF_BaseDistribution_MultinomialParents<>(new ArrayList<>(), Arrays.asList(varDirichlet.getDistributionType().newEFUnivariateDistribution()));
 
         return Arrays.asList(new EF_Multinomial_Dirichlet(this.var, varDirichlet), uni);
     }

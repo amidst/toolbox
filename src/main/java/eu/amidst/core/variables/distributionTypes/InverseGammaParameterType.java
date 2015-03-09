@@ -30,7 +30,10 @@ public class InverseGammaParameterType extends DistributionType {
 
     @Override
     public EF_InverseGamma newEFUnivariateDistribution() {
-         return new EF_InverseGamma(this.variable);
+        EF_InverseGamma inverseGamma = new EF_InverseGamma(this.variable);
+        inverseGamma.getNaturalParameters().set(0, -2.1); //alpha = 1.1
+        inverseGamma.getNaturalParameters().set(1, -1);   //beta = 1
+        return inverseGamma;
     }
 
 
