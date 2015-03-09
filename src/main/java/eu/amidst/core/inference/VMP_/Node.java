@@ -63,7 +63,7 @@ public class Node {
     }
 
     public void resetQDist(){
-        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution();//.randomInitialization(new Random(this.seed));
+        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution().randomInitialization(new Random(this.seed));
     }
 
     public void setPDist(EF_ConditionalDistribution PDist) {

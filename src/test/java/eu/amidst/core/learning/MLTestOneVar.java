@@ -35,7 +35,6 @@ public class MLTestOneVar {
         Stopwatch watch = Stopwatch.createStarted();
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(net);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
         System.out.println(watch.stop());
 
         DataStream<DataInstance> data = sampler.sampleToDataBase(10);

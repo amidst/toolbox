@@ -27,8 +27,6 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     private List<Variable> causalOrder;
 
-    private boolean parallelMode = true;
-
     private int seed = 0;
 
     private Stream<Assignment> sampleStream;
@@ -43,8 +41,10 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     private Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-        sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
-        return (parallelMode)? sampleStream.parallel() : sampleStream;
+        //sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
+        //return (parallelMode)? sampleStream.parallel() : sampleStream;
+
+        return IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
     }
 
     private List<Assignment> getSampleList(int nSamples){
@@ -64,9 +64,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         this.seed = seed;
     }
 
-    public void setParallelMode(boolean parallelMode) {
-        this.parallelMode = parallelMode;
-    }
+
 
     public DataStream<DataInstance> sampleToDataBase(int nSamples){
         class TemporalDataStream implements DataStream<DataInstance> {
@@ -151,7 +149,6 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     public String listOptions(){
         return  classNameID() +",\\"+
-                "-parallelMode, 10, Total number of variables\\" +
                 "-seed, 0, seed for random number generator\\";
     }
 
@@ -162,7 +159,6 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
     }
 
     public void loadOptions(){
-        parallelMode = getBooleanOption("-parallelMode");
         seed = getIntOption("-seed");
     }
 
@@ -179,7 +175,6 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
 
         DataStream<DataInstance> dataStream = sampler.sampleToDataBase(10);
 
