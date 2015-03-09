@@ -1079,7 +1079,7 @@ X \\
 X^2 \\
 \end{pmatrix}\\ 
 &-& 
-\left(\ln{\sigma} + \frac{\beta_0\beb}{\sigma^2} \Y + \frac{\beb\beb^T}{2\sigma^2}\Y\Y^T +\frac{\beta_0^2}{2\sigma^2}\right) - \tfrac{1}{2}\ln{(2\pi)} 
+\left(0.5\ln{\sigma^2} + \frac{\beta_0\beb}{\sigma^2} \Y + \frac{\beb\beb^T}{2\sigma^2}\Y\Y^T +\frac{\beta_0^2}{2\sigma^2}\right) - \tfrac{1}{2}\ln{(2\pi)} 
 \end{eqnarray*}
 
 \item \textbf{Third form (messages from $X$ to $\beta_0$)}:
@@ -1148,7 +1148,7 @@ Y_i\\
 &+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'\Y\Y^T + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
 &-& \left( \frac{\theta_{\beta_0}^2}{4\theta_{\mbox{-}1}} \right) - \tfrac{1}{2}\ln{(2\pi)}
 \end{eqnarray*}
-where $\beb_i' = \beb$ where $\beta_i = 0$,\\
+where $\beb_i' = \beb \setminus \beta_i$ \\
 
 \end{itemize}
 

@@ -4,7 +4,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.distribution.Normal;
@@ -101,10 +100,11 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
         sampler.setSeed(0);
-        sampler.setParallelMode(false);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10);
+        sampler.setParallelMode(true);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
-        ARFFDataWriter.writeToARFFFile(data, "./data/tmp.arff");
+        System.out.println(1+data.stream().mapToDouble(d -> Math.pow(d.getValue(varA)-10,2)).sum()/2.0);
+
 
         BayesianLearningEngineForBN.setDAG(oneNormalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);
@@ -112,11 +112,9 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork learntOneNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
 
-        System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
-
         System.out.println(oneNormalVarBN.toString());
         System.out.println(learntOneNormalVarBN.toString());
-        assertTrue(oneNormalVarBN.equalBNs(learntOneNormalVarBN, 0.1));
+        assertTrue(oneNormalVarBN.equalBNs(learntOneNormalVarBN,0.1));
 
     }
 
@@ -131,7 +129,6 @@ public class BayesianVMPTest extends TestCase {
         dist_B.setMean(1);
         dist_B.setSd(2);
 
-
         Normal_NormalParents dist = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
 
         dist.setCoeffParents(new double[]{2.0});
@@ -140,8 +137,8 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setSeed(0);
-        sampler.setParallelMode(false);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        sampler.setParallelMode(true);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
 
         BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 
@@ -158,14 +155,14 @@ public class BayesianVMPTest extends TestCase {
 
         System.out.println(normalVarBN.toString());
         System.out.println(learntNormalVarBN.toString());
-        assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+        assertTrue(normalVarBN.equalBNs(learntNormalVarBN,0.1));
 
 
     }
 
     public static void testGaussian_2Gaussian() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.bn");
 
         normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nNormal|2Normal variable network \n ");
@@ -174,7 +171,7 @@ public class BayesianVMPTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setSeed(0);
         sampler.setParallelMode(true);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
         BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);
