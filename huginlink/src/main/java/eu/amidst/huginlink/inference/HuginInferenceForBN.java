@@ -14,6 +14,7 @@ import eu.amidst.huginlink.io.BNWriterToHugin;
 /**
  * This class provides an interface to perform Bayesian network inference using the Hugin inference engine.
  *
+ * TODO: Implment method getLogProbabilityOfEvidence
  * @author Antonio Fernández
  * @version 1.0
  * @since 9/2/15
@@ -150,6 +151,17 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
             exceptionHugin.printStackTrace();
         }
         return null;
+    }
+
+
+    @Override
+    public double getLogProbabilityOfEvidence() {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public void setSeed(int seed) {
+
     }
 
     public static void main(String args[]) throws ExceptionHugin {
