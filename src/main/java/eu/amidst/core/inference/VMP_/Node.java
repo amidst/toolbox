@@ -41,7 +41,7 @@ public class Node {
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
         this.mainVar = this.PDist.getVariable();
-        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution().randomInitialization(new Random(this.seed));
+        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution();//.randomInitialization(new Random(this.seed));
         this.parents = new ArrayList<>();
         this.children = new ArrayList<>();
     }
@@ -63,7 +63,7 @@ public class Node {
     }
 
     public void resetQDist(){
-        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution().randomInitialization(new Random(this.seed));
+        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution();//.randomInitialization(new Random(this.seed));
     }
 
     public void setPDist(EF_ConditionalDistribution PDist) {
