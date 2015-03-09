@@ -305,19 +305,19 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
         List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
 
-        Variable varInvGamma = variables.newInverseGammaParameter(this.var.getName() + "_InverseGamma_Parameter");
+        Variable varInvGamma = variables.newInverseGammaParameter(this.var.getName() + "_InverseGamma_Parameter_"+variables.getNumberOfVars());
 
         conditionalDistributions.add(
                 new EF_BaseDistribution_MultinomialParents<EF_InverseGamma>(new ArrayList<>(), Arrays.asList(varInvGamma.getDistributionType().newEFUnivariateDistribution())));
 
-        Variable normalBeta0 = variables.newGaussianParameter(this.var.getName() + "_Beta0_Parameter");
+        Variable normalBeta0 = variables.newGaussianParameter(this.var.getName() + "_Beta0_Parameter_"+variables.getNumberOfVars());
 
         conditionalDistributions.add(
                 new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalBeta0.getDistributionType().newEFUnivariateDistribution())));
 
         List<Variable> betas = new ArrayList<>();
         for (Variable variableParent: this.parents){
-            Variable normalBetai = variables.newGaussianParameter(this.var.getName() + "_Beta_" + variableParent.getName() + "_Parameter");
+            Variable normalBetai = variables.newGaussianParameter(this.var.getName() + "_Beta_" + variableParent.getName() + "_Parameter_"+variables.getNumberOfVars());
             betas.add(normalBetai);
             conditionalDistributions.add(
                     new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalBetai.getDistributionType().newEFUnivariateDistribution())));
