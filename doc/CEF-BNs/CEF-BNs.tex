@@ -1079,7 +1079,7 @@ X \\
 X^2 \\
 \end{pmatrix}\\ 
 &-& 
-\left(-0.5\ln{(\frac{1}{\sigma^2})} + \frac{\beta_0\beb}{\sigma^2} \Y + \frac{\beb\beb^T}{2\sigma^2}\Y\Y^T +\frac{\beta_0}{2\sigma^2}\right) - \tfrac{1}{2}\ln{(2\pi)} 
+\left(\ln{\sigma} + \frac{\beta_0\beb}{\sigma^2} \Y + \frac{\beb\beb^T}{2\sigma^2}\Y\Y^T +\frac{\beta_0^2}{2\sigma^2}\right) - \tfrac{1}{2}\ln{(2\pi)} 
 \end{eqnarray*}
 
 \item \textbf{Third form (messages from $X$ to $\beta_0$)}:
@@ -1098,7 +1098,7 @@ X\sigma^{-2} - \beb^T \Y \sigma^{-2} \\
 \end{eqnarray*}
 
 
-\item \textbf{Third form (messages from $X$ to $\beb$)}:
+\item \textbf{Third form (messages from $X$ to $\beta_i$)}:
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beta_0,\beb',\gamma)^T s(\beta_i) - A \big(\theta(X,\Y,\beta_0,\beb',\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
 &=&
@@ -1107,7 +1107,7 @@ X\sigma^{-2} - \beb^T \Y \sigma^{-2} \\
 -0.5Y_iY_i \sigma^{-2}
 \end{pmatrix}^T
 \begin{pmatrix}
-\beta^i\\
+\beta_i\\
 {\beta_i}^2\\
 \end{pmatrix}\\
 &+& \thb_{\beta_0\beb}'Y + 2\thb_{\beb}'XY  + \thb_{\beb\beb}'\Y\Y^T + \theta_{\beta_0}X + \theta_{\mbox{-}1}XX \\
