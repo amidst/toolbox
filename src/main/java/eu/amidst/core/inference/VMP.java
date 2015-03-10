@@ -96,7 +96,7 @@ public class VMP implements InferenceAlgorithmForBN {
 
             //Compute lower-bound
             double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
-            if (Math.abs(newelbo - elbo) < 0.001) {
+            if (Math.abs(newelbo - elbo) < 0.0001) {
                 convergence = true;
             }
             if ((!convergence && newelbo< elbo) || Double.isNaN(elbo)){
