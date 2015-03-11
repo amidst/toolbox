@@ -52,10 +52,6 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         this.vmpTimeT.setParallelMode(parallelMode);
     }
 
-    public int getSeed() {
-        return this.vmpTime0.getSeed();
-    }
-
     public void setSeed(int seed) {
         this.vmpTime0.setSeed(seed);
         this.vmpTimeT.setSeed(seed);
@@ -70,7 +66,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
         nodesTimeT = this.ef_model.getBayesianNetworkTimeT().getDistributionList()
                 .stream()
-                .map(dist -> {Node node = new Node(dist); node.setSeed(this.getSeed()); return node;})
+                .map(dist ->  new Node(dist))
                 .collect(Collectors.toList());
 
         nodesClone = this.ef_model.getBayesianNetworkTime0().getDistributionList()
@@ -83,7 +79,6 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
                             Arrays.asList(uni));
 
                     Node node = new Node(pDist);
-                    node.setSeed(this.getSeed());
                     node.setActive(false);
                     return node;
                 })
@@ -93,6 +88,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         allNodes.addAll(nodesTimeT);
         allNodes.addAll(nodesClone);
         this.vmpTimeT.setNodes(allNodes);
+        this.vmpTimeT.updateChildrenAndParents();
 
     }
 
@@ -102,11 +98,11 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     }
 
     @Override
-    public void reset(){
-        this.timeID=-1;
-        this.sequenceID=-1;
-        this.vmpTime0.getNodes().stream().forEach(Node::resetQDist);
-        this.vmpTimeT.getNodes().stream().forEach(Node::resetQDist);
+    public void reset() {
+        this.timeID = -1;
+        this.sequenceID = -1;
+        this.vmpTime0.resetQs();
+        this.vmpTimeT.resetQs();
     }
 
     @Override
@@ -143,8 +139,8 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             });
             this.moveWindow(nTimesAhead-1);
             E resultQ = this.getFilteredPosterior(var);
-            this.vmpTime0.getNodes().stream().forEach(Node::resetQDist);
-            this.vmpTimeT.getNodes().stream().forEach(Node::resetQDist);
+            this.vmpTime0.resetQs();
+            this.vmpTimeT.resetQs();
 
             return resultQ;
         }else {

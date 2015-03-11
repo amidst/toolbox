@@ -41,9 +41,11 @@ public class Node {
     public Node(EF_ConditionalDistribution PDist) {
         this.PDist = PDist;
         this.mainVar = this.PDist.getVariable();
-        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution();//.randomInitialization(new Random(this.seed));
+        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution();
         this.parents = new ArrayList<>();
         this.children = new ArrayList<>();
+        this.observed=false;
+        sufficientStatistics=null;
     }
 
     public boolean isParallelActivated() {
@@ -54,16 +56,8 @@ public class Node {
         this.parallelActivated = parallelActivated;
     }
 
-    public int getSeed() {
-        return seed;
-    }
-
-    public void setSeed(int seed) {
-        this.seed = seed;
-    }
-
-    public void resetQDist(){
-        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution().randomInitialization(new Random(this.seed));
+    public void resetQDist(Random random){
+        this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution().randomInitialization(random);
     }
 
     public void setPDist(EF_ConditionalDistribution PDist) {
@@ -158,7 +152,7 @@ public class Node {
     }
 
     public Message<NaturalParameters> newMessageToParent(Node parent, Map<Variable, MomentParameters> momentChildCoParents){
-        Message<NaturalParameters> message = new Message<>(parent.getMainVariable());
+        Message<NaturalParameters> message = new Message<>(parent);
         message.setVector(this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentChildCoParents));
         message.setDone(this.messageDoneToParent(parent.getMainVariable()));
 
@@ -166,7 +160,7 @@ public class Node {
     }
 
     public Message<NaturalParameters> newSelfMessage(Map<Variable, MomentParameters> momentParents) {
-        Message<NaturalParameters> message = new Message(this.getMainVariable());
+        Message<NaturalParameters> message = new Message(this);
         message.setVector(this.PDist.getExpectedNaturalFromParents(momentParents));
         message.setDone(this.messageDoneFromParents());
 

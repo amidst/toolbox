@@ -10,9 +10,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -29,9 +27,13 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     private int seed = 0;
 
+    private Random random = new Random(seed);
+
     private Stream<Assignment> sampleStream;
 
+    private Map<Variable, Boolean> hiddenVars = new HashMap();
 
+    private Map<Variable, Double> marNoise = new HashMap();
     public BayesianNetworkSampler(){}
 
     public BayesianNetworkSampler(BayesianNetwork network1){
@@ -41,10 +43,25 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     private Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-        //sampleStream =  IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
-        //return (parallelMode)? sampleStream.parallel() : sampleStream;
+        return IntStream.range(0, nSamples)
+                .mapToObj(i -> sample(network, causalOrder, randomGenerator.current()))
+                .map(this::filter);
+    }
 
-        return IntStream.range(0, nSamples).mapToObj(i -> sample(network, causalOrder, randomGenerator.current()));
+    public void setHiddenVar(Variable var) {
+        this.hiddenVars.put(var,true);
+    }
+
+    public void setMARVar(Variable var, double noiseProb){ this.marNoise.put(var,noiseProb);}
+
+    private Assignment filter(Assignment assignment){
+        hiddenVars.keySet().stream().forEach(var -> assignment.setValue(var,Utils.missingValue()));
+        marNoise.entrySet().forEach(e -> {
+            if (random.nextDouble()<e.getValue())
+                assignment.setValue(e.getKey(),Utils.missingValue());
+        });
+
+        return assignment;
     }
 
     private List<Assignment> getSampleList(int nSamples){
@@ -62,6 +79,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     public void setSeed(int seed) {
         this.seed = seed;
+        random = new Random(seed);
     }
 
 
@@ -106,12 +124,12 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
                     @Override
                     public double getValue(Attribute att) {
-                        return this.assignment.getValue(sampler.network.getStaticVariables().getVariableById(att.getIndex()));
+                        return this.assignment.getValue(sampler.network.getStaticVariables().getVariableByName(att.getName()));
                     }
 
                     @Override
                     public void setValue(Attribute att, double value) {
-                        this.assignment.setValue(sampler.network.getStaticVariables().getVariableById(att.getIndex()), value);
+                        this.assignment.setValue(sampler.network.getStaticVariables().getVariableByName(att.getName()), value);
                     }
                 }
                 return this.sampler.getSampleStream(this.nSamples).map(a -> new TemporalDataInstance(a));

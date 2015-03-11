@@ -68,6 +68,10 @@ public interface Variable {
         return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.INV_GAMMA_PARAMETER)==0);
     }
 
+    default boolean isGammaParameter(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.GAMMA_PARAMETER)==0);
+    }
+
     default  boolean isDirichletParameter(){
         return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.DIRICHLET_PARAMETER)==0);
     }

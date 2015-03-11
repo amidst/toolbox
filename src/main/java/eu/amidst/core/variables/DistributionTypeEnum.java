@@ -8,7 +8,7 @@ import eu.amidst.core.variables.distributionTypes.*;
  */
 
 public enum DistributionTypeEnum {
-    MULTINOMIAL, NORMAL, MULTINOMIAL_LOGISTIC, NORMAL_PARAMETER, INV_GAMMA_PARAMETER, DIRICHLET_PARAMETER;// INDICATOR;
+    MULTINOMIAL, NORMAL, MULTINOMIAL_LOGISTIC, NORMAL_PARAMETER, INV_GAMMA_PARAMETER, GAMMA_PARAMETER, DIRICHLET_PARAMETER;// INDICATOR;
 
     public <E extends DistributionType> E newDistributionType(Variable var) {
         switch (this) {
@@ -22,6 +22,8 @@ public enum DistributionTypeEnum {
                 return (E) new NormalParameterType(var);
             case INV_GAMMA_PARAMETER:
                 return (E) new InverseGammaParameterType(var);
+            case GAMMA_PARAMETER:
+                return (E) new GammaParameterType(var);
             case DIRICHLET_PARAMETER:
                 return (E) new DirichletParameterType(var);
             default:
