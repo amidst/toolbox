@@ -8,12 +8,12 @@ import eu.amidst.core.variables.Variable;
  * Created by andresmasegosa on 03/02/15.
  */
 public class Message<E extends Vector> {
-    Variable variable;
+    Node node;
     E vector;
     boolean done=false;
 
-    public Message(Variable variable_) {
-        this.variable = variable_;
+    public Message(Node node_) {
+        this.node = node_;
     }
 
     public boolean isDone() {
@@ -24,8 +24,8 @@ public class Message<E extends Vector> {
         this.done = done;
     }
 
-    public Variable getVariable() {
-        return variable;
+    public Node getNode() {
+        return node;
     }
 
     public void setVector(E vector) {
@@ -37,7 +37,7 @@ public class Message<E extends Vector> {
     }
 
     public static <E extends Vector> Message<E> combine(Message<E> m1, Message<E> m2){
-        if (m1.getVariable()!=m2.getVariable()) {
+        if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
             throw new IllegalArgumentException();
         }
 

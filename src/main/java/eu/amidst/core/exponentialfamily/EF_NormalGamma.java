@@ -2,7 +2,6 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
@@ -16,18 +15,18 @@ import java.util.Map;
 /**
  * Created by ana@cs.aau.dk on 27/02/15.
  */
-public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
+public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
 
     Variable meanParameterVariable;
-    Variable invGammaParameterVariable;
+    Variable gammaParameterVariable;
 
-    public EF_NormalInverseGamma(Variable var_, Variable mean, Variable invGamma){
+    public EF_NormalGamma(Variable var_, Variable mean, Variable gamma){
         this.var = var_;
         this.meanParameterVariable = mean;
-        this.invGammaParameterVariable = invGamma;
+        this.gammaParameterVariable = gamma;
         this.parents = new ArrayList<>();
         this.parents.add(mean);
-        this.parents.add(invGamma);
+        this.parents.add(gamma);
 
         if (!var.isNormal())
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian child variable.");
@@ -37,13 +36,13 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-gaussian parent variable.");
         }
 
-        if(!invGammaParameterVariable.isInverseGammaParameter()){
+        if(!gammaParameterVariable.isGammaParameter()){
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-inverse-gamma parent variable.");
         }
 
         this.parametersParentVariables = new ArrayList();
         this.parametersParentVariables.add(meanParameterVariable);
-        this.parametersParentVariables.add(invGammaParameterVariable);
+        this.parametersParentVariables.add(gammaParameterVariable);
     }
 
 
@@ -56,10 +55,10 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
         double mean = momentParents.get(meanParameterVariable).get(0);
-        double invVariance = momentParents.get(invGammaParameterVariable).get(1);
-        double logVar = momentParents.get(invGammaParameterVariable).get(0);
+        double invVariance = momentParents.get(gammaParameterVariable).get(1);
+        double logVar = momentParents.get(gammaParameterVariable).get(0);
 
-        return 0.5*mean*mean*invVariance + 0.5*logVar;
+        return 0.5*mean*mean*invVariance - 0.5*logVar;
     }
 
     /**
@@ -73,7 +72,7 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
         NaturalParameters naturalParameters = new ArrayVector(2);
 
         double mean = momentParents.get(meanParameterVariable).get(0);
-        double invVariance = momentParents.get(invGammaParameterVariable).get(1);
+        double invVariance = momentParents.get(gammaParameterVariable).get(1);
 
         naturalParameters.set(0,mean*invVariance);
         naturalParameters.set(1,-0.5*invVariance);
@@ -99,15 +98,15 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
 
         // Message to the mean (gaussian) variable
         if(meanParameterVariable == parent){
-            double invVariance = momentChildCoParents.get(invGammaParameterVariable).get(1);
+            double invVariance = momentChildCoParents.get(gammaParameterVariable).get(1);
 
             naturalParameters.set(0, X*invVariance);
             naturalParameters.set(1, -0.5*invVariance);
-        // Message to the inv-Gamma variable
+        // Message to the gamma variable
         }else{
             double mean = momentChildCoParents.get(meanParameterVariable).get(0);
 
-            naturalParameters.set(0,-0.5);
+            naturalParameters.set(0,0.5);
             naturalParameters.set(1,-0.5*Math.pow(X-mean,2));
         }
 
@@ -160,7 +159,7 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
         Normal normal = new Normal(this.var);
 
         normal.setMean(expectedParameters.get(this.meanParameterVariable).get(0));
-        normal.setVariance(expectedParameters.get(this.invGammaParameterVariable).get(0));
+        normal.setVariance(1.0/expectedParameters.get(this.gammaParameterVariable).get(0));
 
         return new BaseDistribution_MultinomialParents<Normal>(new ArrayList(), Arrays.asList(normal));
     }

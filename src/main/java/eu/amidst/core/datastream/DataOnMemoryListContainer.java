@@ -35,6 +35,11 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
     }
 
     @Override
+    public List<E> getList() {
+        return this.instanceList;
+    }
+
+    @Override
     public Attributes getAttributes() {
         return this.attributes;
     }
