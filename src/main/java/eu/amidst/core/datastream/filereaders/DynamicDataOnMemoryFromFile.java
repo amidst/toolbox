@@ -113,6 +113,11 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInst
     }
 
     @Override
+    public List<DynamicDataInstance> getList() {
+        return Arrays.asList(this.dataInstances);
+    }
+
+    @Override
     public Attributes getAttributes() {
         return reader.getAttributes();
     }

@@ -1,22 +1,18 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.inference.PlateuVMP;
 import eu.amidst.core.inference.VMP;
-import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -28,17 +24,32 @@ import java.util.stream.Collectors;
  */
 public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmForBN {
 
-    EF_BayesianNetwork ef_extendedBN;
-    VMP vmp = new VMP();
+    EF_LearningBayesianNetwork ef_extendedBN;
+    PlateuVMP plateuVMP = new PlateuVMP();
     DAG dag;
     ParameterVariables parametersVariables;
     DataStream<DataInstance> dataStream;
     double elbo;
     boolean parallelMode=false;
+    int windowsSize=100;
+    int seed = 0;
+
+    public StreamingVariationalBayesVMP(){
+        plateuVMP = new PlateuVMP();
+        plateuVMP.setNRepetitions(windowsSize);
+    }
+
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
 
     @Override
     public double updateModel(DataInstance dataInstance){
-        return updateModel(this.vmp,dataInstance);
+        return 0;//updateModel(this.plateuVMP,dataInstance);
     }
 
     @Override
@@ -46,14 +57,21 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         return elbo;
     }
 
+    public void setWindowsSize(int windowsSize) {
+        this.windowsSize = windowsSize;
+        this.plateuVMP.setNRepetitions(windowsSize);
+    }
+
     @Override
     public void runLearning() {
+        this.initLearning();
         if (!parallelMode) {
-            this.elbo = this.dataStream.stream().sequential().mapToDouble(this::updateModel).sum();
+            //this.elbo = this.dataStream.stream().sequential().mapToDouble(this::updateModel).sum();
+            this.elbo = this.dataStream.streamOfBatches(this.windowsSize).sequential().mapToDouble(this::updateModelOnBatch).sum();
         }else {
             //Creeat EF_ExtendedBN which returns ParameterVariable object
             //Paremter variable car
-            BatchOutput finalout = this.dataStream.streamOfBatches(100).map(this::updateModelOnBatch).reduce(BatchOutput::sum).get();
+            BatchOutput finalout = this.dataStream.streamOfBatches(100).map(this::updateModelOnBatchParallel).reduce(BatchOutput::sum).get();
         }
     }
 
@@ -72,10 +90,28 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         this.parallelMode = parallelMode;
     }
 
-    private BatchOutput updateModelOnBatch(DataStream<DataInstance> batch) {
+    private double updateModelOnBatch(DataOnMemory<DataInstance> batch) {
+        //System.out.println("\n Batch:");
+        this.plateuVMP.setEvidence(batch.getList());
+        this.plateuVMP.runInference();
+        for (EF_ConditionalDistribution dist: plateuVMP.getEFLearningBN().getDistributionList()){
+            if (dist.getVariable().isParameterVariable()){
+                ((EF_BaseDistribution_MultinomialParents)dist).setBaseEFDistribution(0, plateuVMP.getEFPosterior(dist.getVariable()).deepCopy());
+
+                //if (dist.getVariable().isNormalParameter())
+                //    System.out.println(plateuVMP.getEFPosterior(dist.getVariable()).toUnivariateDistribution().toString()+ ", "+ plateuVMP.getEFPosterior(dist.getVariable()).getNaturalParameters().get(0)+ ", "+plateuVMP.getEFPosterior(dist.getVariable()).getNaturalParameters().get(1)*(-2));
+                //else
+                //    System.out.println(dist.getVariable().getName()+": "+(plateuVMP.getEFPosterior(dist.getVariable()).getMomentParameters().get(1)) + ", " + (plateuVMP.getEFPosterior(dist.getVariable()).getNaturalParameters().get(0))*2);
+            }
+        }
+        //this.plateuVMP.resetQs();
+        return this.plateuVMP.getLogProbabilityOfEvidence();
+    }
+
+    private BatchOutput updateModelOnBatchParallel(DataStream<DataInstance> batch) {
 
         VMP localvmp = new VMP();
-        localvmp.setEFModel(this.ef_extendedBN);
+        localvmp.setEFModel(this.ef_extendedBN.toEFBayesianNetwork());
 
         List<Vector> naturalParameters = parametersVariables.getListOfVariables().stream()
                 .map(var -> {
@@ -103,19 +139,14 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     @Override
     public void setDAG(DAG dag) {
-
         this.dag = dag;
-        parametersVariables = new ParameterVariables(dag.getStaticVariables());
+    }
 
-        List<EF_ConditionalDistribution> ef_condDistList = dag.getStaticVariables().getListOfVariables().stream().
-                map(var -> var.getDistributionType().newEFConditionalDistribution(dag.getParentSet(var).getParents()).
-                        toExtendedLearningDistribution(parametersVariables))
-                .flatMap(listOfDist -> listOfDist.stream())
-                .sorted((a,b) -> a.getVariable().getVarID() - b.getVariable().getVarID()).collect(Collectors.toList());
-
-        this.ef_extendedBN = new EF_BayesianNetwork();
-        ef_extendedBN.setDistributionList(ef_condDistList);
-        vmp.setEFModel(ef_extendedBN);
+    public void initLearning(){
+        this.ef_extendedBN = new EF_LearningBayesianNetwork(dag);
+        this.plateuVMP.setSeed(seed);
+        plateuVMP.setPlateuModel(ef_extendedBN);
+        this.plateuVMP.resetQs();
     }
 
     @Override
@@ -129,26 +160,9 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
-        List<ConditionalDistribution> condDistList = new ArrayList<>();
 
-        for (EF_ConditionalDistribution dist: this.ef_extendedBN.getDistributionList()) {
-            if (dist.getVariable().isParameterVariable())
-                continue;
+        return this.ef_extendedBN.toBayesianNetwork(this.dag);
 
-            EF_ConditionalLearningDistribution distLearning = (EF_ConditionalLearningDistribution)dist;
-            Map<Variable, Vector> expectedParameters = new HashMap<>();
-            for(Variable var: distLearning.getParameterParentVariables()){
-                EF_UnivariateDistribution uni =  ((EF_BaseDistribution_MultinomialParents)this.ef_extendedBN.getDistribution(var)).getBaseEFUnivariateDistribution(0);
-                expectedParameters.put(var, uni.getExpectedParameters());
-            }
-            condDistList.add(distLearning.toConditionalDistribution(expectedParameters));
-        }
-
-
-        condDistList = condDistList.stream().sorted((a, b) -> a.getVariable().getVarID() - b.getVariable().getVarID()).collect(Collectors.toList());
-
-
-        return BayesianNetwork.newBayesianNetwork(dag,condDistList);
     }
 
     static class BatchOutput{

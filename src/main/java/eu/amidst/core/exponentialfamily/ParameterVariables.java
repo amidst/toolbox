@@ -59,6 +59,10 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
         return this.newVariable(name, DistributionTypeEnum.INV_GAMMA_PARAMETER, new RealStateSpace());
     }
 
+    public Variable newGammaParameter(String name){
+        return this.newVariable(name, DistributionTypeEnum.GAMMA_PARAMETER, new RealStateSpace());
+    }
+
     public Variable newDirichletParameter(String name, int nOfStates) {
         return this.newVariable(name, DistributionTypeEnum.DIRICHLET_PARAMETER, new FiniteStateSpace(nOfStates));
     }

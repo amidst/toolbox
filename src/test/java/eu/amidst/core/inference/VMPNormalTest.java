@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Created by ana@cs.aau.dk on 10/02/15.
