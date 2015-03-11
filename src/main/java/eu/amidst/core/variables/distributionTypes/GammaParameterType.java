@@ -2,7 +2,7 @@ package eu.amidst.core.variables.distributionTypes;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.exponentialfamily.EF_Dirichlet;
+import eu.amidst.core.exponentialfamily.EF_Gamma;
 import eu.amidst.core.exponentialfamily.EF_InverseGamma;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
@@ -12,9 +12,9 @@ import java.util.List;
 /**
  * Created by andresmasegosa on 04/03/15.
  */
-public class InverseGammaParameterType extends DistributionType {
+public class GammaParameterType extends DistributionType {
 
-    public InverseGammaParameterType(Variable var_) {
+    public GammaParameterType(Variable var_) {
         super(var_);
     }
 
@@ -25,16 +25,18 @@ public class InverseGammaParameterType extends DistributionType {
 
     @Override
     public Normal newUnivariateDistribution() {
-        throw new UnsupportedOperationException("Inverse Gamma Parameter Type does not allow standard distributions");
+        throw new UnsupportedOperationException("Gamma Parameter Type does not allow standard distributions");
     }
 
     @Override
-    public EF_InverseGamma newEFUnivariateDistribution() {
-        EF_InverseGamma inverseGamma = new EF_InverseGamma(this.variable);
-        inverseGamma.getNaturalParameters().set(0, -1 - 1); //alpha = 0.1
-        inverseGamma.getNaturalParameters().set(1, -1);   //beta = 1
-        inverseGamma.updateMomentFromNaturalParameters();
-        return inverseGamma;
+    public EF_Gamma newEFUnivariateDistribution() {
+        EF_Gamma gamma = new EF_Gamma(this.variable);
+        double alpha = 1;
+        double beta = 1;
+        gamma.getNaturalParameters().set(0, alpha - 1);
+        gamma.getNaturalParameters().set(1, -beta);
+        gamma.updateMomentFromNaturalParameters();
+        return gamma;
     }
 
 

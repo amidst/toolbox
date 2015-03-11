@@ -3,6 +3,8 @@ package eu.amidst.core.variables.distributionTypes;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_InverseGamma;
+import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
 
@@ -25,9 +27,16 @@ public class NormalParameterType  extends DistributionType {
     @Override
     public Normal newUnivariateDistribution() {
         Normal normal = new Normal(variable);
-        normal.setMean(2);
-        normal.setVariance(1);
+        normal.setMean(0);
+        normal.setVariance(1e10);
         return normal;
+    }
+
+    @Override
+    public EF_Normal newEFUnivariateDistribution() {
+        Normal normal = this.newUnivariateDistribution();
+        EF_Normal ef_normal = normal.toEFUnivariateDistribution();
+        return ef_normal;
     }
 
     @Override

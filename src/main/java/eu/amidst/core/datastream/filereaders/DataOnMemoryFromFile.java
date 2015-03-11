@@ -51,6 +51,11 @@ public class DataOnMemoryFromFile implements DataOnMemory<DataInstance> {
         return dataInstances[i];
     }
 
+    @Override
+    public List<DataInstance> getList() {
+        return Arrays.asList(this.dataInstances);
+    }
+
 
     @Override
     public Attributes getAttributes() {

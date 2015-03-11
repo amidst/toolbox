@@ -126,7 +126,7 @@ public class Normal extends UnivariateDistribution {
     @Override
     public void randomInitialization(Random random) {
         this.setMean(random.nextGaussian()*10);
-        this.setSd(random.nextDouble()+0.1);
+        this.setVariance(random.nextDouble()*10+0.1);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class Normal extends UnivariateDistribution {
 
     @Override
     public String toString() {
-        return "Normal [ mu = " + this.getMean() + ", sd = "+ this.getSd() +" ]";
+        return "Normal ("+this.getVariable().getName()+") [ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
     }
 
     public boolean equalDist(Normal dist, double threshold){

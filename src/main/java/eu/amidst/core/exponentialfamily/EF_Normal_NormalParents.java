@@ -300,7 +300,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return new CompoundVector(nOfParents);
     }
 
-
+/*
     @Override
     public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
         List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
@@ -323,7 +323,40 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
                     new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalBetai.getDistributionType().newEFUnivariateDistribution())));
         }
 
+
         EF_Normal_Normal_InverseGamma condDist = new EF_Normal_Normal_InverseGamma(this.var,this.parents,normalBeta0, betas, varInvGamma);
+
+        conditionalDistributions.add(condDist);
+
+        return conditionalDistributions;
+    }
+*/
+
+    @Override
+    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
+        List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
+
+        Variable normalBeta0 = variables.newGaussianParameter(this.var.getName() + "_Beta0_Parameter_"+variables.getNumberOfVars());
+
+        conditionalDistributions.add(
+                new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalBeta0.getDistributionType().newEFUnivariateDistribution())));
+
+        Variable varGamma = variables.newGammaParameter(this.var.getName() + "_Gamma_Parameter_"+variables.getNumberOfVars());
+
+        conditionalDistributions.add(
+                new EF_BaseDistribution_MultinomialParents<EF_Gamma>(new ArrayList<>(), Arrays.asList(varGamma.getDistributionType().newEFUnivariateDistribution())));
+
+
+        List<Variable> betas = new ArrayList<>();
+        for (Variable variableParent: this.parents){
+            Variable normalBetai = variables.newGaussianParameter(this.var.getName() + "_Beta_" + variableParent.getName() + "_Parameter_"+variables.getNumberOfVars());
+            betas.add(normalBetai);
+            conditionalDistributions.add(
+                    new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalBetai.getDistributionType().newEFUnivariateDistribution())));
+        }
+
+
+        EF_Normal_Normal_Gamma condDist = new EF_Normal_Normal_Gamma(this.var,this.parents,normalBeta0, betas, varGamma);
 
         conditionalDistributions.add(condDist);
 
