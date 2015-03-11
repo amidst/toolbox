@@ -29,9 +29,14 @@ public class VMP implements InferenceAlgorithmForBN {
     List<Node> nodes;
     Map<Variable,Node> variablesToNode;
     boolean parallelMode = false;
-    int seed = 0;
     double probOfEvidence = Double.NaN;
+    Random random = new Random(0);
+    int seed=0;
 
+    public void resetQs(){
+        //this.nodes.stream().filter(node -> !node.getMainVariable().isParameterVariable()).forEach(node -> {node.resetQDist(random);});
+        this.nodes.stream().forEach(node -> {node.resetQDist(random);});
+    }
 
     public boolean isParallelMode() {
         return parallelMode;
@@ -41,14 +46,13 @@ public class VMP implements InferenceAlgorithmForBN {
         this.parallelMode = parallelMode;
     }
 
-    public int getSeed() {
-        return seed;
-    }
 
     @Override
     public void setSeed(int seed) {
-        this.seed = seed;
+        this.seed=seed;
+        random = new Random(seed);
     }
+
 
     @Override
     public void runInference() {
@@ -59,12 +63,10 @@ public class VMP implements InferenceAlgorithmForBN {
     }
 
     public void compileModelSerial() {
-        nodes.stream().forEach(node -> node.setAssignment(assignment));
-
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
         int niter = 0;
-        while (!convergence && (niter++)<100) {
+        while (!convergence && (niter++)<1000) {
 
             boolean done = true;
             for (Node node : nodes) {
@@ -83,8 +85,9 @@ public class VMP implements InferenceAlgorithmForBN {
                     Map<Variable, MomentParameters> momentChildCoParents = new HashMap<>();
                     children.getParents().stream().forEach(p -> momentChildCoParents.put(p.getMainVariable(), p.getQMomentParameters()));
                     momentChildCoParents.put(children.getMainVariable(), children.getQMomentParameters());
-                    selfMessage = Message.combine(children.newMessageToParent(node,momentChildCoParents), selfMessage);
+                    selfMessage = Message.combine(children.newMessageToParent(node, momentChildCoParents), selfMessage);
                 }
+
                 node.updateCombinedMessage(selfMessage);
 
                 done &= node.isDone();
@@ -96,11 +99,11 @@ public class VMP implements InferenceAlgorithmForBN {
 
             //Compute lower-bound
             double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
-            if (Math.abs(newelbo - elbo) < 0.001) {
+            if (Math.abs(newelbo - elbo) < 0.0001) {
                 convergence = true;
             }
-            if ((!convergence && newelbo< elbo) || Double.isNaN(elbo)){
-                throw new UnsupportedOperationException("The elbo is not monotonically increasing: " + elbo + ", "+ newelbo);
+            if ((!convergence && newelbo/nodes.size() < (elbo/nodes.size() - 0.1)) || Double.isNaN(elbo)){
+                throw new UnsupportedOperationException("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
             }
             elbo = newelbo;
             //System.out.println(elbo);
@@ -111,35 +114,33 @@ public class VMP implements InferenceAlgorithmForBN {
     }
 
     public void compileModelParallel() {
-        nodes.stream().forEach(node -> node.setAssignment(assignment));
 
         nodes.stream().filter(Node::isActive).forEach( node -> node.setParallelActivated(false));
 
-        Random rand = new Random(this.getSeed());
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
         int niter = 0;
-        while (!convergence && (niter++)<100) {
+        while (!convergence && (niter++)<1000) {
             AtomicDouble newelbo = new AtomicDouble(0);
             int numberOfNotDones = 0;
 
             //nodesTimeT.stream().forEach( node -> node.setActive(node.getMainVariable().getVarID()%2==0));
-            nodes.stream().filter(Node::isActive).forEach(node -> node.setParallelActivated(rand.nextBoolean()));
+            nodes.stream().filter(Node::isActive).forEach(node -> node.setParallelActivated(random.nextBoolean()));
             //nodes.stream().forEach( node -> node.setActive(rand.nextInt()%100==0));
 
             //Send and combine messages
-            Map<Variable, Optional<Message<NaturalParameters>>> group = nodes.parallelStream()
+            Map<Node, Optional<Message<NaturalParameters>>> group = nodes.parallelStream()
                     //.peek(node -> newelbo.addAndGet(node.computeELBO()))
                     .flatMap(node -> node.computeMessagesParallelVMP())
                     .collect(
-                            Collectors.groupingBy(Message::getVariable,ConcurrentHashMap::new,
+                            Collectors.groupingBy(Message::getNode,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
                     );
 
             //Set Messages
             numberOfNotDones += group.entrySet().parallelStream()
                     .mapToInt(e -> {
-                        Node node = this.getNodeOfVar(e.getKey());
+                        Node node = e.getKey();
                         node.updateCombinedMessage(e.getValue().get());
                         return (node.isDone()) ? 0 : 1;
                     })
@@ -152,14 +153,14 @@ public class VMP implements InferenceAlgorithmForBN {
                     .peek(node -> newelbo.addAndGet(node.computeELBO()))
                     .flatMap(node -> node.computeMessagesParallelVMP())
                     .collect(
-                            Collectors.groupingBy(Message::getVariable,ConcurrentHashMap::new,
+                            Collectors.groupingBy(Message::getNode,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
                     );
 
             //Set Messages
             numberOfNotDones += group.entrySet().parallelStream()
                     .mapToInt(e -> {
-                        Node node = this.getNodeOfVar(e.getKey());
+                        Node node = e.getKey();
                         node.updateCombinedMessage(e.getValue().get());
                         return (node.isDone()) ? 0 : 1;
                     })
@@ -176,8 +177,8 @@ public class VMP implements InferenceAlgorithmForBN {
             if (Math.abs(newelbo.get() - elbo) < 0.0001) {
                 convergence = true;
             }
-            if ((!convergence && newelbo.get()< elbo) || Double.isNaN(elbo)){
-                //throw new UnsupportedOperationException("The elbo is NaN or is not monotonically increasing: " + elbo + ", "+ newelbo.get());
+            if ((!convergence && newelbo.doubleValue()/nodes.size() < (elbo/nodes.size() - 0.1)) || Double.isNaN(elbo)){
+//                throw new UnsupportedOperationException("The elbo is NaN or is not monotonically increasing: " + elbo + ", "+ newelbo.doubleValue());
             }
             elbo = newelbo.get();
             //System.out.println(elbo);
@@ -200,7 +201,6 @@ public class VMP implements InferenceAlgorithmForBN {
                 .stream()
                 .map(dist -> {
                     Node node = new Node(dist);
-                    node.setSeed(this.getSeed());
                     variablesToNode.put(dist.getVariable(), node);
                     return node;
                 })
@@ -219,30 +219,33 @@ public class VMP implements InferenceAlgorithmForBN {
     public Node getNodeOfVar(Variable variable){
         return this.variablesToNode.get(variable);
     }
+
     public List<Node> getNodes() {
         return nodes;
     }
 
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
-        variablesToNode = new ConcurrentHashMap<>();
-
+        variablesToNode = new ConcurrentHashMap();
         nodes.stream().forEach( node -> variablesToNode.put(node.getMainVariable(),node));
+    }
+
+    public void updateChildrenAndParents(){
+
 
         for (Node node : nodes){
             node.setParents(
                     node.getPDist()
-                    .getConditioningVariables()
-                    .stream()
-                    .map(this::getNodeOfVar)
-                    .collect(Collectors.toList())
+                            .getConditioningVariables()
+                            .stream()
+                            .map(this::getNodeOfVar)
+                            .collect(Collectors.toList())
             );
 
             node.getPDist().getConditioningVariables().stream()
                     .forEach(var -> this.getNodeOfVar(var).getChildren().add(node));
         }
     }
-
     @Override
     public BayesianNetwork getOriginalModel() {
         return this.model;
@@ -252,6 +255,7 @@ public class VMP implements InferenceAlgorithmForBN {
     @Override
     public void setEvidence(Assignment assignment_) {
         this.assignment = assignment_;
+        nodes.stream().forEach(node -> node.setAssignment(assignment));
     }
 
     @Override
