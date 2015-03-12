@@ -2,6 +2,7 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
@@ -30,6 +31,15 @@ public class EF_Normal extends EF_UnivariateDistribution {
         this.momentParameters.set(EXPECTED_MEAN,0);
         this.momentParameters.set(EXPECTED_SQUARE,1);
         this.setMomentParameters(momentParameters);
+    }
+
+    @Override
+    public void fixNumericalInstability() {
+        if (this.naturalParameters.get(1)<(-0.5*10000)){ //To avoid numerical problems!
+            double x = -0.5*this.naturalParameters.get(0)/this.getNaturalParameters().get(1);
+            this.naturalParameters.set(0,x*10000);
+            this.naturalParameters.set(1,-0.5*10000);
+        }
     }
 
     @Override
@@ -79,11 +89,6 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         double mean = random.nextGaussian()*10;
         double var = random.nextDouble()*10+ 0.1;
-
-        if (this.var.isParameterVariable()) {
-            mean = 0;
-            var = 1e10;
-        }
 
         this.getNaturalParameters().set(0,mean/(var));
         this.getNaturalParameters().set(1,-1/(2*var));
@@ -152,8 +157,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
         List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
 
-        Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+variables.getNumberOfVars());
         Variable varGamma = variables.newGammaParameter(this.var.getName()+"_Gamma_Parameter_"+variables.getNumberOfVars());
+        Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+variables.getNumberOfVars());
 
         conditionalDistributions.add(
                 new EF_BaseDistribution_MultinomialParents<EF_Gamma>(new ArrayList<>(), Arrays.asList(varGamma.getDistributionType().newEFUnivariateDistribution())));

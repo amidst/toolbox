@@ -122,4 +122,9 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         vec.set(0, -this.naturalParameters.get(1)/(-this.naturalParameters.get(0)-1));
         return vec;
     }
+
+    @Override
+    public void fixNumericalInstability() {
+
+    }
 }
