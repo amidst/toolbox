@@ -29,10 +29,16 @@ public class VMPNormalTest extends TestCase {
 
             //bn.randomInitialization(new Random(i));
             //System.out.println(bn.toString());
+            VMP vmp = new VMP();
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(100);
+            vmp.setThreshold(0.0001);
+            InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
 
             InferenceEngineForBN.setModel(bn);
 
             Stopwatch watch = Stopwatch.createStarted();
+
             InferenceEngineForBN.runInference();
             System.out.println(watch.stop());
 
@@ -71,6 +77,9 @@ public class VMPNormalTest extends TestCase {
         double sdPB =  distB.getSd();
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -161,6 +170,9 @@ public class VMPNormalTest extends TestCase {
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -266,6 +278,9 @@ public class VMPNormalTest extends TestCase {
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -363,6 +378,9 @@ public class VMPNormalTest extends TestCase {
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -465,6 +483,9 @@ public class VMPNormalTest extends TestCase {
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -553,9 +574,10 @@ public class VMPNormalTest extends TestCase {
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
-
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-
         InferenceEngineForBN.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
@@ -659,9 +681,10 @@ public class VMPNormalTest extends TestCase {
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
-
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-
         InferenceEngineForBN.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());

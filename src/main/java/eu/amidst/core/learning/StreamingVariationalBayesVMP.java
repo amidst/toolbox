@@ -39,6 +39,11 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         plateuVMP.setNRepetitions(windowsSize);
     }
 
+
+    public PlateuVMP getPlateuVMP() {
+        return plateuVMP;
+    }
+
     public int getSeed() {
         return seed;
     }
@@ -95,16 +100,11 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         this.plateuVMP.setEvidence(batch.getList());
         this.plateuVMP.runInference();
         for (EF_ConditionalDistribution dist: plateuVMP.getEFLearningBN().getDistributionList()){
-            if (dist.getVariable().isParameterVariable()){
-                ((EF_BaseDistribution_MultinomialParents)dist).setBaseEFDistribution(0, plateuVMP.getEFPosterior(dist.getVariable()).deepCopy());
-
-                //if (dist.getVariable().isNormalParameter())
-                //    System.out.println(plateuVMP.getEFPosterior(dist.getVariable()).toUnivariateDistribution().toString()+ ", "+ plateuVMP.getEFPosterior(dist.getVariable()).getNaturalParameters().get(0)+ ", "+plateuVMP.getEFPosterior(dist.getVariable()).getNaturalParameters().get(1)*(-2));
-                //else
-                //    System.out.println(dist.getVariable().getName()+": "+(plateuVMP.getEFPosterior(dist.getVariable()).getMomentParameters().get(1)) + ", " + (plateuVMP.getEFPosterior(dist.getVariable()).getNaturalParameters().get(0))*2);
+            if (dist.getVariable().isParameterVariable()) {
+                ((EF_BaseDistribution_MultinomialParents) dist).setBaseEFDistribution(0, plateuVMP.getEFPosterior(dist.getVariable()).deepCopy());
             }
         }
-        //this.plateuVMP.resetQs();
+        this.plateuVMP.resetQs();
         return this.plateuVMP.getLogProbabilityOfEvidence();
     }
 
