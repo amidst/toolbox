@@ -219,6 +219,16 @@ public class Node {
             elbo += this.PDist.computeLogBaseMeasure(this.assignment);
         }
 
+        if (elbo>0 && !this.isObserved() && Math.abs(expectedNatural.sum())<0.01) {
+            elbo=0;
+        }
+
+        if (elbo>0.01 && !this.isObserved()) {
+            throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + elbo + ", " + this.getMainVariable().getName() + ", " + expectedNatural.sum());
+        }
+
+
+
         return  elbo;
     }
 
