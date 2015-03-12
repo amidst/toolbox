@@ -4,6 +4,7 @@ import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_Distribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -62,9 +63,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
 
 
         //Make them unmodifiable
-        this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
-        this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
-        this.parents = Collections.unmodifiableList(this.parents);
+        this.multinomialParents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.multinomialParents));
+        this.nonMultinomialParents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.nonMultinomialParents));
+        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
     }
 
     public BaseDistribution_MultinomialParents(Variable var_, List<Variable> parents_) {
@@ -100,9 +101,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
 
 
         //Make them unmodifiable
-        this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
-        this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
-        this.parents = Collections.unmodifiableList(this.parents);
+        this.multinomialParents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.multinomialParents));
+        this.nonMultinomialParents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.nonMultinomialParents));
+        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
     }
 
     public List<Variable> getMultinomialParents() {

@@ -3,6 +3,7 @@ package eu.amidst.core.variables.distributionTypes;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.DistributionTypeEnum;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
@@ -36,29 +37,30 @@ public class NormalType extends DistributionType{
     }
 
     @Override
+
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
         if (!this.areParentsCompatible(parents))
             throw new IllegalArgumentException("Parents are not compatible");
 
         boolean multinomialParents = false;
-        boolean normalParents = false;
+        boolean realParents = false;
         for (Variable v : parents) {
             //TODO MultinomialLogist as parent
             if (v.isMultinomial() || (v.isMultinomialLogistic())) {
                 multinomialParents = true;
-            } else if (v.isNormal()) {
-                normalParents = true;
+            } else if (v.getStateSpaceTypeEnum().compareTo(StateSpaceTypeEnum.REAL)==0) {
+                realParents = true;
             }
         }
 
-        if (!multinomialParents && !normalParents){
+        if (!multinomialParents && !realParents){
             return (E) new BaseDistribution_MultinomialParents<Normal>(this.variable, parents);
-        } else if (multinomialParents && !normalParents) {
+        } else if (multinomialParents && !realParents) {
             return (E)new BaseDistribution_MultinomialParents<Normal>(this.variable, parents);
-        } else if (!multinomialParents && normalParents) {
-            return (E)new Normal_NormalParents(this.variable, parents);
-        } else if (multinomialParents && normalParents) {
-            return (E)new BaseDistribution_MultinomialParents<Normal_NormalParents>(this.variable, parents);
+        } else if (!multinomialParents && realParents) {
+            return (E)new ConditionalLinearGaussian(this.variable, parents);
+        } else if (multinomialParents && realParents) {
+            return (E)new BaseDistribution_MultinomialParents<ConditionalLinearGaussian>(this.variable, parents);
         } else{
             return null;
         }
