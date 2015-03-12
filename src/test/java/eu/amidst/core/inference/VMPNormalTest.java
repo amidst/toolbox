@@ -53,12 +53,12 @@ public class VMPNormalTest extends TestCase {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
         Normal distA = bn.getDistribution(varA);
-        Normal_NormalParents distB = bn.getDistribution(varB);
+        ConditionalLinearGaussian distB = bn.getDistribution(varB);
 
         distA.setMean(1);
         distA.setSd(0.5);
-        distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        distB.setBeta0(1);
+        distB.setBetaForParent(varA, 1);
         distB.setSd(0.5);
 
         System.out.println(bn.toString());
@@ -66,8 +66,8 @@ public class VMPNormalTest extends TestCase {
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
 
-        double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        double b0PB =  distB.getBeta0();
+        double b1PB = distB.getBetaForParent(varA);
         double sdPB =  distB.getSd();
 
         VMP vmp = new VMP();
@@ -134,7 +134,7 @@ public class VMPNormalTest extends TestCase {
 
         Normal distA = bn.getDistribution(varA);
         Normal distB = bn.getDistribution(varB);
-        Normal_NormalParents distC = bn.getDistribution(varC);
+        ConditionalLinearGaussian distC = bn.getDistribution(varC);
 
         distA.setMean(1);
         distA.setSd(0.5);
@@ -142,8 +142,9 @@ public class VMPNormalTest extends TestCase {
         distB.setMean(1.2);
         distB.setSd(0.8);
 
-        distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1, 1});
+        distC.setBeta0(1);
+        distC.setBetaForParent(varA, 1);
+        distC.setBetaForParent(varB, 1);
         distC.setSd(0.5);
 
         System.out.println(bn.toString());
@@ -154,9 +155,9 @@ public class VMPNormalTest extends TestCase {
         double meanPB =  distB.getMean();
         double sdPB =  distB.getSd();
 
-        double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
-        double b2PC = distC.getCoeffParents()[1];
+        double b0PC =  distC.getBeta0();
+        double b1PC = distC.getBetaForParent(varA);
+        double b2PC = distC.getBetaForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
@@ -238,7 +239,7 @@ public class VMPNormalTest extends TestCase {
 
         Normal distA = bn.getDistribution(varA);
         Normal distB = bn.getDistribution(varB);
-        Normal_NormalParents distC = bn.getDistribution(varC);
+        ConditionalLinearGaussian distC = bn.getDistribution(varC);
 
         distA.setMean(1);
         distA.setSd(0.5);
@@ -246,8 +247,9 @@ public class VMPNormalTest extends TestCase {
         distB.setMean(1.2);
         distB.setSd(0.8);
 
-        distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1, 1});
+        distC.setBeta0(1);
+        distC.setBetaForParent(varA, 1);
+        distC.setBetaForParent(varB, 1);
         distC.setSd(0.5);
 
         System.out.println(bn.toString());
@@ -258,9 +260,9 @@ public class VMPNormalTest extends TestCase {
         double meanPB =  distB.getMean();
         double sdPB =  distB.getSd();
 
-        double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
-        double b2PC = distC.getCoeffParents()[1];
+        double b0PC =  distC.getBeta0();
+        double b1PC = distC.getBetaForParent(varA);
+        double b2PC = distC.getBetaForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
@@ -332,16 +334,16 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Normal_NormalParents distA = bn.getDistribution(varA);
-        Normal_NormalParents distB = bn.getDistribution(varB);
+        ConditionalLinearGaussian distA = bn.getDistribution(varA);
+        ConditionalLinearGaussian distB = bn.getDistribution(varB);
         Normal distC = bn.getDistribution(varC);
 
-        distA.setIntercept(1);
-        distA.setCoeffParents(new double[]{1});
+        distA.setBeta0(1);
+        distA.setBetaForParent(varC, 1);
         distA.setSd(0.5);
 
-        distB.setIntercept(1.5);
-        distB.setCoeffParents(new double[]{1});
+        distB.setBeta0(1.5);
+        distB.setBetaForParent(varC, 1);
         distB.setSd(0.8);
 
         distC.setMean(1);
@@ -349,12 +351,12 @@ public class VMPNormalTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        double b0PA =  distA.getIntercept();
-        double b1PA = distA.getCoeffParents()[0];
+        double b0PA =  distA.getBeta0();
+        double b1PA = distA.getBetaForParent(varC);
         double sdPA =  distA.getSd();
 
-        double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        double b0PB =  distB.getBeta0();
+        double b1PB = distB.getBetaForParent(varC);
         double sdPB =  distB.getSd();
 
         double meanPC =  distC.getMean();
@@ -434,16 +436,16 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Normal_NormalParents distA = bn.getDistribution(varA);
-        Normal_NormalParents distB = bn.getDistribution(varB);
+        ConditionalLinearGaussian distA = bn.getDistribution(varA);
+        ConditionalLinearGaussian distB = bn.getDistribution(varB);
         Normal distC = bn.getDistribution(varC);
 
-        distA.setIntercept(1);
-        distA.setCoeffParents(new double[]{1});
+        distA.setBeta0(1);
+        distA.setBetaForParent(varC,1);
         distA.setSd(0.5);
 
-        distB.setIntercept(1.5);
-        distB.setCoeffParents(new double[]{1});
+        distB.setBeta0(1.5);
+        distB.setBetaForParent(varC, 1);
         distB.setSd(0.8);
 
         distC.setMean(1);
@@ -451,12 +453,12 @@ public class VMPNormalTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        double b0PA =  distA.getIntercept();
-        double b1PA = distA.getCoeffParents()[0];
+        double b0PA =  distA.getBeta0();
+        double b1PA = distA.getBetaForParent(varC);
         double sdPA =  distA.getSd();
 
-        double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        double b0PB =  distB.getBeta0();
+        double b1PB = distB.getBetaForParent(varC);
         double sdPB =  distB.getSd();
 
         double meanPC =  distC.getMean();
@@ -522,18 +524,18 @@ public class VMPNormalTest extends TestCase {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
         Normal distA = bn.getDistribution(varA);
-        Normal_NormalParents distB = bn.getDistribution(varB);
-        Normal_NormalParents distC = bn.getDistribution(varC);
+        ConditionalLinearGaussian distB = bn.getDistribution(varB);
+        ConditionalLinearGaussian distC = bn.getDistribution(varC);
 
         distA.setMean(1);
         distA.setSd(0.5);
 
-        distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        distB.setBeta0(1);
+        distB.setBetaForParent(varA, 1);
         distB.setSd(0.2);
 
-        distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1});
+        distC.setBeta0(1);
+        distC.setBetaForParent(varB, 1);
         distC.setSd(0.5);
 
 
@@ -542,12 +544,12 @@ public class VMPNormalTest extends TestCase {
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
 
-        double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        double b0PB =  distB.getBeta0();
+        double b1PB = distB.getBetaForParent(varA);
         double sdPB =  distB.getSd();
 
-        double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
+        double b0PC =  distC.getBeta0();
+        double b1PC = distC.getBetaForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
@@ -628,18 +630,18 @@ public class VMPNormalTest extends TestCase {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
         Normal distA = bn.getDistribution(varA);
-        Normal_NormalParents distB = bn.getDistribution(varB);
-        Normal_NormalParents distC = bn.getDistribution(varC);
+        ConditionalLinearGaussian distB = bn.getDistribution(varB);
+        ConditionalLinearGaussian distC = bn.getDistribution(varC);
 
         distA.setMean(1);
         distA.setSd(0.5);
 
-        distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        distB.setBeta0(1);
+        distB.setBetaForParent(varA, 1);
         distB.setSd(0.2);
 
-        distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1});
+        distC.setBeta0(1);
+        distC.setBetaForParent(varB, 1);
         distC.setSd(0.5);
 
 
@@ -648,12 +650,12 @@ public class VMPNormalTest extends TestCase {
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
 
-        double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        double b0PB =  distB.getBeta0();
+        double b1PB = distB.getBetaForParent(varA);
         double sdPB =  distB.getSd();
 
-        double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
+        double b0PC =  distC.getBeta0();
+        double b1PC = distC.getBetaForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
