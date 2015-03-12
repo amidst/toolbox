@@ -2,12 +2,10 @@ package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.distribution.Normal_NormalParents;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -326,11 +324,12 @@ public class BayesianVMPTest extends TestCase {
             dist_B.setMean(2);
             dist_B.setSd(1);
 
-            Normal_NormalParents dist = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
+            ConditionalLinearGaussian dist_A = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
 
-            dist.setCoeffParents(new double[]{-1.0});
-            dist.setSd(1);
-            dist.setIntercept(2);
+            dist_A.setBetaForParent(normalVarBN.getStaticVariables().getVariableByName("B"), -1.0);
+            dist_A.setVariance(1);
+            dist_A.setBeta0(2);
+
 
             normalVarBN.randomInitialization(new Random(i));
 
@@ -379,12 +378,12 @@ public class BayesianVMPTest extends TestCase {
             dist_C.setMean(2);
             dist_C.setSd(1);
 
+            ConditionalLinearGaussian dist_A = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
 
-            Normal_NormalParents dist_A = normalVarBN.getDistribution(normalVarBN.getStaticVariables().getVariableByName("A"));
-
-            dist_A.setCoeffParents(new double[]{2.0, 2.0});
-            dist_A.setSd(1);
-            dist_A.setIntercept(2);
+            dist_A.setBetaForParent(normalVarBN.getStaticVariables().getVariableByName("B"), 2.0);
+            dist_A.setBetaForParent(normalVarBN.getStaticVariables().getVariableByName("C"), 2.0);
+            dist_A.setVariance(1);
+            dist_A.setBeta0(2);
 
             normalVarBN.randomInitialization(new Random(i));
             System.out.println("\nNormal|2Normal variable network \n ");
