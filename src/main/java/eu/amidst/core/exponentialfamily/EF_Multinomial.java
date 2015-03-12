@@ -86,10 +86,8 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     }
 
     @Override
-    public void setNaturalParameters(NaturalParameters parameters) {
-        this.naturalParameters=parameters;//.copy(parameters);
-        this.naturalParameters = Utils.logNormalize(this.naturalParameters);
-        this.updateMomentFromNaturalParameters();
+    public void fixNumericalInstability() {
+        this.naturalParameters = Utils.logNormalize(this.naturalParameters); //To avoid numerical problems!
     }
 
     @Override
