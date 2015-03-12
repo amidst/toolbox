@@ -28,6 +28,10 @@ public class PlateuVMP {
     List<Map<Variable, Node>> variablesToNode;
 
 
+    public VMP getVMP() {
+        return vmp;
+    }
+
     public void resetQs() {
         this.vmp.resetQs();
     }
