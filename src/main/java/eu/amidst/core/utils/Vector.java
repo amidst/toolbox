@@ -14,6 +14,14 @@ public interface Vector {
 
     public int size();
 
+    public default double sum() {
+        double sum=0;
+        for (int i = 0; i < size(); i++) {
+            sum+=this.get(i);
+        }
+        return sum;
+    }
+
     public default void sum(Vector vector){
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors do not have same size.");
@@ -83,4 +91,6 @@ public interface Vector {
         vec2.sum(vec1);
         return vec2;
     }
+
+
 }

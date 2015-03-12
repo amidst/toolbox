@@ -54,6 +54,10 @@ public class VMPTest extends TestCase {
         assignment.setValue(varB, 1.0);
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
+
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -135,7 +139,12 @@ public class VMPTest extends TestCase {
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varB, 0.0);
 
-        InferenceEngineForBN.setInferenceAlgorithmForBN(new VMP());
+        VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
+
+        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
         InferenceEngineForBN.setEvidence(assignment);
@@ -184,6 +193,9 @@ public class VMPTest extends TestCase {
         assignment.setValue(varC, 0.0);
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -284,6 +296,9 @@ public class VMPTest extends TestCase {
 
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -371,6 +386,9 @@ public class VMPTest extends TestCase {
         assignment.setValue(varC, 0.0);
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -443,6 +461,9 @@ public class VMPTest extends TestCase {
         assignment.setValue(varC, 0.0);
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -517,6 +538,9 @@ public class VMPTest extends TestCase {
         assignment.setValue(varC, 0.0);
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -587,6 +611,9 @@ public class VMPTest extends TestCase {
 
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -651,6 +678,9 @@ public class VMPTest extends TestCase {
 
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -725,6 +755,9 @@ public class VMPTest extends TestCase {
 
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -767,6 +800,9 @@ public class VMPTest extends TestCase {
         assignment.setValue(varC, 0.0);
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -862,6 +898,9 @@ public class VMPTest extends TestCase {
         assignment.setValue(varB, 1.0);
 
         VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
@@ -940,6 +979,11 @@ public class VMPTest extends TestCase {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
 
+        VMP vmp = new VMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.0001);
+        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
         InferenceEngineForBN.runInference();
 

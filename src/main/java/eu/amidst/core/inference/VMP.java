@@ -32,9 +32,23 @@ public class VMP implements InferenceAlgorithmForBN {
     double probOfEvidence = Double.NaN;
     Random random = new Random(0);
     int seed=0;
+    boolean testELBO=true;
+    int maxIter = 1000;
+    double threshold = 0.0001;
+
+    public void setThreshold(double threshold) {
+        this.threshold = threshold;
+    }
+
+    public void setMaxIter(int maxIter) {
+        this.maxIter = maxIter;
+    }
+
+    public void setTestELBO(boolean testELBO) {
+        this.testELBO = testELBO;
+    }
 
     public void resetQs(){
-        //this.nodes.stream().filter(node -> !node.getMainVariable().isParameterVariable()).forEach(node -> {node.resetQDist(random);});
         this.nodes.stream().forEach(node -> {node.resetQDist(random);});
     }
 
@@ -66,7 +80,7 @@ public class VMP implements InferenceAlgorithmForBN {
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
         int niter = 0;
-        while (!convergence && (niter++)<1000) {
+        while (!convergence && (niter++)<maxIter) {
 
             boolean done = true;
             for (Node node : nodes) {
@@ -91,23 +105,26 @@ public class VMP implements InferenceAlgorithmForBN {
                 node.updateCombinedMessage(selfMessage);
 
                 done &= node.isDone();
+
             }
 
             if (done) {
                 convergence = true;
             }
 
+
             //Compute lower-bound
             double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
-            if (Math.abs(newelbo - elbo) < 0.0001) {
+            if (Math.abs(newelbo - elbo) < threshold) {
                 convergence = true;
             }
-            if ((!convergence && newelbo/nodes.size() < (elbo/nodes.size() - 0.1)) || Double.isNaN(elbo)){
-                throw new UnsupportedOperationException("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
+            if (testELBO && (!convergence && newelbo/nodes.size() < (elbo/nodes.size() - 0.01) && niter>3) || Double.isNaN(elbo)){
+                throw new IllegalStateException("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
+                //System.out.println("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
             }
             elbo = newelbo;
-            //System.out.println(elbo);
 
+            //System.out.println(elbo);
         }
         probOfEvidence = elbo;
         System.out.println("N Iter: "+niter +", elbo:"+elbo);
@@ -120,7 +137,7 @@ public class VMP implements InferenceAlgorithmForBN {
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
         int niter = 0;
-        while (!convergence && (niter++)<1000) {
+        while (!convergence && (niter++)<maxIter) {
             AtomicDouble newelbo = new AtomicDouble(0);
             int numberOfNotDones = 0;
 
@@ -174,12 +191,12 @@ public class VMP implements InferenceAlgorithmForBN {
 
             //Compute lower-bound
             //newelbo.set(this.nodes.parallelStream().mapToDouble(Node::computeELBO).sum());
-            if (Math.abs(newelbo.get() - elbo) < 0.0001) {
+            if (Math.abs(newelbo.get() - elbo) < threshold) {
                 convergence = true;
             }
-            if ((!convergence && newelbo.doubleValue()/nodes.size() < (elbo/nodes.size() - 0.1)) || Double.isNaN(elbo)){
-//                throw new UnsupportedOperationException("The elbo is NaN or is not monotonically increasing: " + elbo + ", "+ newelbo.doubleValue());
-            }
+            //if (testELBO && (!convergence && newelbo.doubleValue()/nodes.size() < (elbo/nodes.size() - 0.1)) || Double.isNaN(elbo)){
+            //                throw new UnsupportedOperationException("The elbo is NaN or is not monotonically increasing: " + elbo + ", "+ newelbo.doubleValue());
+            //}
             elbo = newelbo.get();
             //System.out.println(elbo);
         }

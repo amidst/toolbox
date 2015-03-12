@@ -79,6 +79,11 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     }
 
     @Override
+    public void fixNumericalInstability() {
+
+    }
+
+    @Override
     public EF_UnivariateDistribution deepCopy() {
         EF_Dirichlet copy = new EF_Dirichlet(this.getVariable());
         copy.getNaturalParameters().copy(this.getNaturalParameters());
