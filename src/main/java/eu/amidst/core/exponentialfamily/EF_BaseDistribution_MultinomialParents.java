@@ -22,6 +22,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -92,7 +93,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         }
 
         //Make them unmodifiable
-        this.parents = Collections.unmodifiableList(this.parents);
+        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
 
 
         //Update Parameters Variables
@@ -108,6 +109,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             }
         }
 
+        this.parametersParentVariables = CheckVariablesOrder.orderListOfVariables(this.parametersParentVariables);
 
     }
 
