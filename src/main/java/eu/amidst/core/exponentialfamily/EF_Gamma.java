@@ -60,7 +60,7 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         double randomVar = random.nextDouble()*10 + 0.01;
 
         double alpha = 1;
-        double beta = 1;//randomVar ;
+        double beta = randomVar ;
 
         this.getNaturalParameters().set(0, alpha - 1);
         this.getNaturalParameters().set(1, -beta);
@@ -107,5 +107,10 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         Vector vec = new ArrayVector(1);
         vec.set(0, -(this.naturalParameters.get(0)+1)/this.naturalParameters.get(1));
         return vec;
+    }
+
+    @Override
+    public void fixNumericalInstability() {
+
     }
 }

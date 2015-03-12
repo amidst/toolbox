@@ -26,6 +26,15 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
     }
 
     @Override
+    public void setNaturalParameters(NaturalParameters parameters) {
+        this.naturalParameters = parameters;//.copy(parameters);
+        this.fixNumericalInstability();
+        this.updateMomentFromNaturalParameters();
+    }
+
+    public abstract void fixNumericalInstability();
+
+    @Override
     public SufficientStatistics getSufficientStatistics(Assignment data){
         return this.getSufficientStatistics(data.getValue(this.getVariable()));
     }
