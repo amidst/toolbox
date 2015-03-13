@@ -10,6 +10,7 @@ package eu.amidst.core.variables;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
@@ -210,7 +211,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
     }
 
     public void block(){
-        this.allVariables = Collections.unmodifiableList(this.allVariables);
+        this.allVariables = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.allVariables));
     }
 
     public List<Variable> getListOfVariables(){
