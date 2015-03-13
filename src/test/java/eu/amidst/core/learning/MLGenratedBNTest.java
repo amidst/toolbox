@@ -47,11 +47,11 @@ public class MLGenratedBNTest {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ naiveBayes.getDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
-            assertTrue(bnet.getDistribution(var).equalDist(naiveBayes.getDistribution(var), 0.02));
+            assertTrue(bnet.getDistribution(var).equalDist(naiveBayes.getDistribution(var), 0.05));
         }
 
         //Or check directly if the true and learned networks are equals
-        assertTrue(bnet.equalBNs(naiveBayes,0.02));
+        assertTrue(bnet.equalBNs(naiveBayes,0.05));
     }
 
 }
