@@ -1,9 +1,8 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -76,9 +75,6 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
         this.parametersParentVariables.addAll(betasVariables);
         this.parametersParentVariables.add(beta0Variable);
         this.parametersParentVariables.add(invGammaVariable);
-
-        this.parents = CheckVariablesOrder.orderListOfVariables(this.parents);
-        this.parametersParentVariables = CheckVariablesOrder.orderListOfVariables(this.parametersParentVariables);
     }
 
     /**
@@ -295,17 +291,18 @@ public class EF_Normal_Normal_InverseGamma extends EF_ConditionalLearningDistrib
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
 
-        ConditionalLinearGaussian dist = new ConditionalLinearGaussian(this.var, this.realYVariables);
+        Normal_NormalParents dist = new Normal_NormalParents(this.var, this.realYVariables);
 
-        int parentIndex = 0;
-        for(Variable parent: this.realYVariables){
-            dist.setBetaForParent(parent, expectedParameters.get(this.betasVariables.get(parentIndex)).get(0));
-            parentIndex++;
+        double[] coeffParameters = new double[this.realYVariables.size()];
+        for (int i = 0; i < this.realYVariables.size(); i++) {
+            coeffParameters[i]=expectedParameters.get(this.betasVariables.get(i)).get(0);
         }
 
-        dist.setBeta0(expectedParameters.get(this.beta0Variable).get(0));
+        dist.setCoeffParents(coeffParameters);
 
-        dist.setVariance(expectedParameters.get(this.invGammaVariable).get(0));
+        dist.setIntercept(expectedParameters.get(this.beta0Variable).get(0));
+
+        dist.setSd(Math.sqrt(expectedParameters.get(this.invGammaVariable).get(0)));
 
         return dist;
     }
