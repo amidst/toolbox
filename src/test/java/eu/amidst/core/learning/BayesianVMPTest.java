@@ -311,6 +311,8 @@ public class BayesianVMPTest extends TestCase {
         BayesianLearningEngineForBN.setDataStream(data);
         BayesianLearningEngineForBN.runLearning();
 
+        System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
+
         BayesianNetwork learnAsianet = BayesianLearningEngineForBN.getLearntBayesianNetwork();
 
         System.out.println(asianet.toString());
@@ -394,11 +396,14 @@ public class BayesianVMPTest extends TestCase {
         BayesianLearningEngineForBN.setDataStream(data);
         BayesianLearningEngineForBN.runLearning();
 
+        System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
+
         learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
 
         System.out.println(normalVarBN.toString());
         System.out.println(learntNormalVarBN.toString());
         assertTrue(normalVarBN.equalBNs(learntNormalVarBN,0.2));
+
 
     }
 
@@ -747,7 +752,7 @@ public class BayesianVMPTest extends TestCase {
             VMP vmp = svb.getPlateuVMP().getVMP();
             vmp.setTestELBO(true); //Set to true and an exception is raised. Numerical instability.
             vmp.setMaxIter(1000);
-            vmp.setThreshold(0.0001);
+            vmp.setThreshold(0.001);
             BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
             BayesianLearningEngineForBN.setDAG(bn.getDAG());
