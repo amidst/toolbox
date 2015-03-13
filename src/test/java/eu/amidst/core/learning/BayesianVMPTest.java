@@ -340,12 +340,12 @@ public class BayesianVMPTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
             sampler.setSeed(0);
 
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
 
             System.out.println(LearningEngineForBN.learnParameters(oneNormalVarBN.getDAG(), data).toString());
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-            svb.setWindowsSize(1000);
+            svb.setWindowsSize(100);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuVMP().getVMP();
             vmp.setTestELBO(true);
@@ -356,6 +356,8 @@ public class BayesianVMPTest extends TestCase {
             BayesianLearningEngineForBN.setDAG(oneNormalVarBN.getDAG());
             BayesianLearningEngineForBN.setDataStream(data);
             BayesianLearningEngineForBN.runLearning();
+
+            System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
 
             BayesianNetwork learntOneNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
 
