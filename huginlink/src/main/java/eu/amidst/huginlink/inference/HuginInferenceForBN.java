@@ -38,9 +38,9 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
      * @param value the evidenced value.
      * @throws ExceptionHugin
      */
-    private void setVarEvidence(Variable n, long value) throws ExceptionHugin {
+    private void setVarEvidence(Variable n, double value) throws ExceptionHugin {
         if (n.isMultinomial()){
-            ((DiscreteNode)huginBN.getNodeByName(n.getName())).selectState(value);
+            ((DiscreteNode)huginBN.getNodeByName(n.getName())).selectState((long)value);
         }
         else if (n.isNormal()) {
             ((ContinuousChanceNode)huginBN.getNodeByName(n.getName())).enterValue(value);
@@ -118,7 +118,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
         ((HashMapAssignment)assignment).entrySet().stream()
                 .forEach(entry -> {
                     try {
-                        this.setVarEvidence(entry.getKey(), entry.getValue().longValue());
+                        this.setVarEvidence(entry.getKey(), entry.getValue().doubleValue());
                     } catch (ExceptionHugin exceptionHugin) {
                         exceptionHugin.printStackTrace();
                     }
@@ -141,6 +141,13 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
             else if (var.isNormal()) {
                 Normal dist = new Normal(var);
                 dist.setMean(((ContinuousChanceNode)huginNode).getMean());
+
+                System.out.println(((ContinuousChanceNode)huginNode).getAlpha(0));
+                System.out.println(((ContinuousChanceNode)huginNode).getMean());
+
+
+                //System.out.println(((ContinuousChanceNode)huginNode).getDistribution()
+
                 dist.setSd(Math.sqrt(((ContinuousChanceNode) huginNode).getVariance()));
                 return (E)dist;
             }

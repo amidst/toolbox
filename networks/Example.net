@@ -1,0 +1,132 @@
+net
+{
+    node_size = (80 40);
+    HR_realname_A = "A";
+    HR_realname_B = "B";
+    HR_realname_C = "C";
+    HR_realname_D = "D";
+    HR_realname_E = "E";
+    HR_DBN_Num_Slices = "5";
+    HR_Desc = "";
+    HR_OOBN_CheckConsistency = "1";
+    HR_OOBN_FitExpand = "1";
+    HR_Zoom_ZoomFactor = "100";
+    HR_Groups_GroupColors = "";
+    HR_Groups_GroupNames = "";
+    HR_Groups_UserGroupsNo = "0";
+    HR_Color_Interface = "21";
+    HR_Color_Instance = "0";
+    HR_Color_DiscreteFunction = "5";
+    HR_Color_Function = "4";
+    HR_Color_Utility = "36";
+    HR_Color_Decision = "17";
+    HR_Color_ContinuousChance = "48";
+    HR_Color_DiscreteChance = "16";
+    HR_Monitor_InitSD = "2";
+    HR_Monitor_Utility_Arrange = "0";
+    HR_Monitor_Mean_Variance = "1";
+    HR_Monitor_Chance_Utility = "1";
+    HR_Monitor_InitStates = "5";
+    HR_Monitor_OpenGraph = "0";
+    HR_Monitor_GraphPrecision = "100";
+    HR_Monitor_AutoUpdGraph = "0";
+    HR_Compile_MaxMinimalSeparators = "100000";
+    HR_Compile_ApproxEpsilon = "1.0E-5";
+    HR_Compile_Approximate = "0";
+    HR_Compile_SaveToMemory = "0";
+    HR_Compile_Compress = "0";
+    HR_Compile_TriangMethod = "0";
+    HR_Propagate_AutoNormal = "1";
+    HR_Propagate_AutoSum = "1";
+    HR_Propagate_Auto = "1";
+    HR_Font_Italic = "0";
+    HR_Font_Weight = "400";
+    HR_Font_Size = "-12";
+    HR_Font_Name = "com.apple.laf.AquaFonts$DerivedUIResourceFont[family=Lucida Grande,name=Lucida Grande,style=plain,size=13]";
+    HR_Grid_GridShow = "0";
+    HR_Grid_GridSnap = "0";
+    HR_Grid_Y = "40";
+    HR_Grid_X = "40";
+}
+
+continuous node E
+{
+    label = "";
+    position = (500 83);
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_LinkGroup = "[C6:0]";
+    HR_LinkMode = "[C6:0]";
+}
+
+continuous node D
+{
+    label = "";
+    position = (285 74);
+    HR_Group = "0";
+    HR_Desc = "";
+}
+
+continuous node C
+{
+    label = "";
+    position = (385 189);
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_LinkMode = "[C4:0][C5:0][E:0][D:0]";
+}
+
+node B
+{
+    label = "";
+    position = (152 189);
+    states = ("State 1" "State 2");
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[C4:0][D:0]";
+}
+
+node A
+{
+    label = "";
+    position = (266 295);
+    states = ("State 1" "State 2");
+    HR_Group = "0";
+    HR_Desc = "";
+    HR_State_1 = "";
+    HR_State_0 = "";
+    HR_LinkMode = "[C2:0][C3:0][B:0][C:0]";
+}
+
+potential (E | C)
+{
+    data = normal ( 2.5 + 4.2 * C, 1.4 );
+}
+
+potential (D | B C)
+{
+    data
+     = ( normal ( 2 + 2 * C, 1 )	%  B=State 1
+	 normal ( 0.5 + 1.5 * C, 2 ) );	%  B=State 2
+}
+
+potential (C | A)
+{
+    data
+     = ( normal ( 3, 0.75 )	%  A=State 1
+	 normal ( 2, 0.9 ) );	%  A=State 2
+}
+
+potential (B | A)
+{
+    data
+     = (( 0.1 0.9 )	%  A=State 1
+	( 0.8 0.2 ));	%  A=State 2
+}
+
+potential (A)
+{
+    data = ( 0.1 0.9 );
+}
