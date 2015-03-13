@@ -1,8 +1,7 @@
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -43,8 +42,6 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         this.var=var_;
         this.momentParameters = this.createEmtpyCompoundVector();
         this.naturalParameters = this.createEmtpyCompoundVector();
-
-        this.parents = CheckVariablesOrder.orderListOfVariables(this.parents);
     }
 
     @Override
@@ -270,18 +267,14 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
 
     @Override
-    public ConditionalLinearGaussian toConditionalDistribution() {
-        ConditionalLinearGaussian normal_normal = new ConditionalLinearGaussian(this.getVariable(), this.getConditioningVariables());
+    public Normal_NormalParents toConditionalDistribution() {
+        Normal_NormalParents normal_normal = new Normal_NormalParents(this.getVariable(), this.getConditioningVariables());
 
         double[] allBeta = this.getAllBetaValues();
 
-        normal_normal.setBeta0(allBeta[0]);
-        int parentIndex = 1;
-        for(Variable parent: this.parents){
-            normal_normal.setBetaForParent(parent, allBeta[parentIndex]);
-            parentIndex++;
-        }
-        normal_normal.setVariance(this.getVariance());
+        normal_normal.setIntercept(allBeta[0]);
+        normal_normal.setCoeffParents(Arrays.copyOfRange(allBeta, 1, allBeta.length));
+        normal_normal.setSd(Math.sqrt(this.getVariance()));
 
         return normal_normal;
     }
