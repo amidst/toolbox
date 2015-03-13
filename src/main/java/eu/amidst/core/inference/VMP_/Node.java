@@ -223,8 +223,8 @@ public class Node {
             elbo=0;
         }
 
-        if (elbo>0.01 && !this.isObserved()) {
-            throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + elbo + ", " + this.getMainVariable().getName() + ", " + expectedNatural.sum());
+        if (elbo>1 && !this.isObserved()) {
+            throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + this.getMainVariable().getName() + ", " +  elbo + ", " + expectedNatural.sum());
         }
 
 

@@ -118,7 +118,7 @@ public class VMP implements InferenceAlgorithmForBN {
             if (Math.abs(newelbo - elbo) < threshold) {
                 convergence = true;
             }
-            if (testELBO && (!convergence && newelbo/nodes.size() < (elbo/nodes.size() - 0.01) && niter>3) || Double.isNaN(elbo)){
+            if (testELBO && (!convergence && newelbo/nodes.size() < (elbo/nodes.size() - 0.1) && niter>3) || Double.isNaN(elbo)){
                 throw new IllegalStateException("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
                 //System.out.println("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
             }
