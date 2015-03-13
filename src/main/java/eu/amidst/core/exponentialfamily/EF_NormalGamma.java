@@ -55,10 +55,12 @@ public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
         double mean = momentParents.get(meanParameterVariable).get(0);
+        double meansquare = momentParents.get(meanParameterVariable).get(1);
+
         double invVariance = momentParents.get(gammaParameterVariable).get(1);
         double logVar = momentParents.get(gammaParameterVariable).get(0);
 
-        return 0.5*mean*mean*invVariance - 0.5*logVar;
+        return 0.5*meansquare*invVariance - 0.5*logVar;
     }
 
     /**
@@ -104,10 +106,13 @@ public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
             naturalParameters.set(1, -0.5*invVariance);
         // Message to the gamma variable
         }else{
+            double XSquare = momentChildCoParents.get(var).get(1);
+
             double mean = momentChildCoParents.get(meanParameterVariable).get(0);
+            double meanSquare = momentChildCoParents.get(meanParameterVariable).get(1);
 
             naturalParameters.set(0,0.5);
-            naturalParameters.set(1,-0.5*Math.pow(X-mean,2));
+            naturalParameters.set(1,-0.5*(XSquare - 2*X*mean + meanSquare));
         }
 
         return naturalParameters;
