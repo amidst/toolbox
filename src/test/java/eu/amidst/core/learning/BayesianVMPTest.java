@@ -672,7 +672,7 @@ public class BayesianVMPTest extends TestCase {
 
             System.out.println(bn.toString());
             System.out.println(learnBN.toString());
-            assertTrue(bn.equalBNs(learnBN, 0.3));
+            assertTrue(bn.equalBNs(learnBN, 0.2));
         }
     }
 
@@ -693,7 +693,7 @@ public class BayesianVMPTest extends TestCase {
             bn.randomInitialization(new Random(0));
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-            sampler.setSeed(i+299);
+            sampler.setSeed(i);
             sampler.setHiddenVar(varB);
             DataStream<DataInstance> data = sampler.sampleToDataBase(10);
 
@@ -749,10 +749,10 @@ public class BayesianVMPTest extends TestCase {
 
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-            svb.setWindowsSize(1000);
+            svb.setWindowsSize(10);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuVMP().getVMP();
-            vmp.setTestELBO(true); //Set to true and an exception is raised. Numerical instability.
+            vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.001);
             BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
