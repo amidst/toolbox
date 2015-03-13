@@ -5,6 +5,7 @@ import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -44,6 +45,9 @@ public class EF_NormalInverseGamma extends EF_ConditionalLearningDistribution{
         this.parametersParentVariables = new ArrayList();
         this.parametersParentVariables.add(meanParameterVariable);
         this.parametersParentVariables.add(invGammaParameterVariable);
+
+        this.parents = CheckVariablesOrder.orderListOfVariables(this.parents);
+        this.parametersParentVariables = CheckVariablesOrder.orderListOfVariables(this.parametersParentVariables);
     }
 
 
