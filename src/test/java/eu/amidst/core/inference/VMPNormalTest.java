@@ -31,7 +31,7 @@ public class VMPNormalTest extends TestCase {
             //System.out.println(bn.toString());
             VMP vmp = new VMP();
             vmp.setTestELBO(true);
-            vmp.setMaxIter(100);
+            vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
             InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
 

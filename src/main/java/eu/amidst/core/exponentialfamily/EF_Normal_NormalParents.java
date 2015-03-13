@@ -186,8 +186,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         double logNorm = -0.5*Math.log(-2*globalNaturalParameters.getTheta_Minus1());
 
         double[] Yarray = new double[nOfParents];
+        double[] YYarray = new double[nOfParents];
+
         for (int i = 0; i < nOfParents; i++) {
             Yarray[i] = momentParents.get(this.getConditioningVariables().get(i)).get(0);
+            YYarray[i] = momentParents.get(this.getConditioningVariables().get(i)).get(1);
         }
         RealVector Y = new ArrayRealVector(Yarray);
 
@@ -195,6 +198,10 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
                 dotProduct(new ArrayRealVector(Y));
 
         RealMatrix YY = Y.outerProduct(Y);
+        for (int i = 0; i < nOfParents; i++) {
+            YY.setEntry(i,i,YYarray[i]);
+        }
+
         logNorm -= IntStream.range(0,nOfParents).mapToDouble(p ->
         {
                 return globalNaturalParameters.getTheta_BetaBetaRM().getRowVector(p).dotProduct(YY.getRowVector(p));
