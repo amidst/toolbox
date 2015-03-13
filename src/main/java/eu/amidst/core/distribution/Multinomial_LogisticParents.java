@@ -1,6 +1,5 @@
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -8,10 +7,6 @@ import eu.amidst.core.variables.Variable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-/**
- * TODO: Change coeffParents to be an array of Hashmaps
- */
 
 public class Multinomial_LogisticParents extends ConditionalDistribution {
 
@@ -44,7 +39,7 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
             }
         }
         //Make them unmodifiable
-        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
+        this.parents = Collections.unmodifiableList(this.parents);
     }
     //TODO: I'm not sure about the free parameters in this distribution.
     @Override

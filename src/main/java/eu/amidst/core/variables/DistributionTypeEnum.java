@@ -44,8 +44,8 @@ public enum DistributionTypeEnum {
                 return (E) ((BaseDistribution_MultinomialParents<Normal>)base).getBaseDistribution(0);
             }else  if (base.getBaseDistribution(0) instanceof Normal && base.getConditioningVariables().size()>0){
                 return (E)new Normal_MultinomialParents((BaseDistribution_MultinomialParents<Normal>)base);
-            }else  if (base.getBaseDistribution(0) instanceof ConditionalLinearGaussian) {
-                return (E)new Normal_MultinomialNormalParents((BaseDistribution_MultinomialParents<ConditionalLinearGaussian>)base);
+            }else  if (base.getBaseDistribution(0) instanceof Normal_NormalParents) {
+                return (E)new Normal_MultinomialNormalParents((BaseDistribution_MultinomialParents<Normal_NormalParents>)base);
             }else{
                 return (E) base;
             }

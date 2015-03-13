@@ -4,7 +4,6 @@ import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -41,9 +40,6 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
 
         this.parametersParentVariables = new ArrayList();
         this.parametersParentVariables.add(dirichletVariable);
-
-        this.parents = CheckVariablesOrder.orderListOfVariables(this.parents);
-        this.parametersParentVariables = CheckVariablesOrder.orderListOfVariables(this.parametersParentVariables);
 
     }
 

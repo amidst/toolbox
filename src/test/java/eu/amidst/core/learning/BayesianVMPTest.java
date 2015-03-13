@@ -5,8 +5,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.distribution.Normal;
-
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -767,8 +766,8 @@ public class BayesianVMPTest extends TestCase {
 
             System.out.println(bn.toString());
             System.out.println(learnBN.toString());
-            ConditionalLinearGaussian distCP = bn.getDistribution(varC);
-            ConditionalLinearGaussian distCQ = learnBN.getDistribution(varC);
+            Normal_NormalParents distCP = bn.getDistribution(varC);
+            Normal_NormalParents distCQ = learnBN.getDistribution(varC);
 
             assertEquals(distCP.getSd(), distCQ.getSd(), 0.05);
         }

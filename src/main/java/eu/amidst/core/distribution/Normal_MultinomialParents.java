@@ -4,7 +4,6 @@ import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -33,7 +32,7 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         this.base=base_;
         this.var=this.base.getVariable();
         this.parents=this.base.getConditioningVariables();
-        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
+        this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**

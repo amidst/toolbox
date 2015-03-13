@@ -1,6 +1,5 @@
 package eu.amidst.core.models;
 
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
@@ -28,7 +27,7 @@ public class DAG implements Serializable {
         for (Variable var : variables) {
             parents.add(var.getVarID(), new ParentSetImpl(var));
         }
-        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfParentSets(this.parents));
+        this.parents = Collections.unmodifiableList(parents);
         this.variables.block();
     }
 
@@ -185,8 +184,7 @@ public class DAG implements Serializable {
          * Is an ArrayList pointer to an ArrayList unmodifiable object still unmodifiable? I guess so right?
          */
         public void blockParents() {
-
-            vars = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(vars));
+            vars = Collections.unmodifiableList(vars);
         }
 
         public boolean contains(Variable var) {
