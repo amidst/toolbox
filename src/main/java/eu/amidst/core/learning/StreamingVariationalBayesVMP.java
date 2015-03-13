@@ -104,7 +104,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
                 ((EF_BaseDistribution_MultinomialParents) dist).setBaseEFDistribution(0, plateuVMP.getEFPosterior(dist.getVariable()).deepCopy());
             }
         }
-        this.plateuVMP.resetQs();
+        //this.plateuVMP.resetQs();
         return this.plateuVMP.getLogProbabilityOfEvidence();
     }
 
