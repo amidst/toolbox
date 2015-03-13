@@ -141,7 +141,7 @@ public class BNConverterToHugin {
      *          variable has no multinomial parents.
      * @throws ExceptionHugin
      */
-    private void setNormal_NormalParents(ConditionalLinearGaussian dist, int i) throws ExceptionHugin {
+    private void setNormal_NormalParents(Normal_NormalParents dist, int i) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
         List<Variable> normalParents = dist.getConditioningVariables();
@@ -149,18 +149,18 @@ public class BNConverterToHugin {
 
         Node huginVar = this.huginBN.getNodeByName(amidstVar.getName());
 
-        double variance = dist.getVariance();
+        double variance = Math.pow(dist.getSd(), 2);
         ((ContinuousChanceNode)huginVar).setGamma(variance,i);
 
-        double beta0 = dist.getBeta0();
-        ((ContinuousChanceNode) huginVar).setAlpha(beta0, i);
+        double intercept = dist.getIntercept();
+        ((ContinuousChanceNode) huginVar).setAlpha(intercept, i);
 
-        double[] betas = dist.getArrayOfBetas();
+        double[] coefficientsParents = dist.getCoeffParents();
 
         for(int j=0;j<numNormalParents;j++) {
             ContinuousChanceNode huginParent =
                     (ContinuousChanceNode)this.huginBN.getNodeByName(normalParents.get(j).getName());
-            ((ContinuousChanceNode)huginVar).setBeta(betas[j],huginParent,i);
+            ((ContinuousChanceNode)huginVar).setBeta(coefficientsParents[j],huginParent,i);
         }
     }
 
@@ -228,7 +228,7 @@ public class BNConverterToHugin {
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
 
         for(int i=0;i<numParentAssignments;i++) {
-            this.setNormal_NormalParents(dist.getConditionalLinearGaussianDistribution(i),i);
+            this.setNormal_NormalParents(dist.getNormal_NormalParentsDistribution(i),i);
         }
     }
 

@@ -13,11 +13,14 @@
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.utils.MultinomialIndex;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -36,17 +39,17 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
 
     /**
-     * An array of <code>ConditionalLinearGaussian</code> objects, one for each configuration of the multinomial parents. These objects are
+     * An array of <code>Normal_NormalParents</code> objects, one for each configuration of the multinomial parents. These objects are
      * ordered according to the criteria implemented in class utils.MultinomialIndex
      */
-    private BaseDistribution_MultinomialParents<ConditionalLinearGaussian> base;
+    private BaseDistribution_MultinomialParents<Normal_NormalParents> base;
 
 
-    public Normal_MultinomialNormalParents(BaseDistribution_MultinomialParents<ConditionalLinearGaussian> base_) {
+    public Normal_MultinomialNormalParents(BaseDistribution_MultinomialParents<Normal_NormalParents> base_) {
         this.base=base_;
         this.var=this.base.getVariable();
         this.parents=this.base.getConditioningVariables();
-        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
+        this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**
@@ -61,45 +64,45 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
         this.base = new BaseDistribution_MultinomialParents<>(var1,parents1);
 
-        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
+        this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**
-     * Gets a <code>ConditionalLinearGaussian</code> distribution conditioned to an assignment over a set of
+     * Gets a <code>Normal_NormalParentsDistribution</code> distribution conditioned to an assignment over a set of
      * Multinomial parents. Let X and Y two sets of Normal variables, and Z a set of Multinomial. Then this method
      * computes f(X|Y,Z=z).
      * @param assignment An assignment over a set of parents. For generality reasons, apart from the Multinomial
      *                   parents, the assignment contains values for the Normal parents as well (although they are
      *                   not used in this case).
-     * @return a <code>ConditionalLinearGaussian</code> distribution conditioned to the assignment given as
+     * @return a <code>Normal_NormalParentsDistribution</code> distribution conditioned to the assignment given as
      * argument.
      */
-    public ConditionalLinearGaussian getConditionalLinearGaussianDistribution(Assignment assignment) {
+    public Normal_NormalParents getNormal_NormalParentsDistribution(Assignment assignment) {
         return this.base.getBaseDistribution(assignment);
 
     }
-    public ConditionalLinearGaussian getConditionalLinearGaussianDistribution(int i) {
+    public Normal_NormalParents getNormal_NormalParentsDistribution(int i) {
         return this.base.getBaseDistribution(i);
 
     }
 
     /**
-     * Sets a <code>ConditionalLinearGaussian</code> distribution to a given position in the array of distributions.
+     * Sets a <code>Normal_NormalParents</code> distribution to a given position in the array of distributions.
      * @param position The position in which the distribution is set.
-     * @param distribution A <code>ConditionalLinearGaussian</code> distribution.
+     * @param distribution A <code>Normal_NormalParents</code> distribution.
      */
-    public void setConditionalLinearGaussianDistribution(int position, ConditionalLinearGaussian distribution) {
+    public void setNormal_NormalParentsDistribution(int position, Normal_NormalParents distribution) {
         this.base.setBaseDistribution(position,distribution);
     }
 
     /**
-     * Sets a <code>ConditionalLinearGaussian</code> distribution to the array of distributions in a position determined by
+     * Sets a <code>Normal_NormalParents</code> distribution to the array of distributions in a position determined by
      * an given <code>Assignment</code>. Note that this assignment contains values for the Normal parents as well
      * (although they are not used in this case).
      * @param assignment An <code>Assignment</code> for the parents variables.
-     * @param distribution A <code>ConditionalLinearGaussian</code> distribution.
+     * @param distribution A <code>Normal_NormalParents</code> distribution.
      */
-    public void setConditionalLinearGaussianDistribution(Assignment assignment, ConditionalLinearGaussian distribution) {
+    public void setNormal_NormalParentsDistribution(Assignment assignment, Normal_NormalParents distribution) {
         this.base.setBaseDistribution(assignment, distribution);
     }
 
@@ -107,7 +110,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     @Override
     public int getNumberOfFreeParameters() {
         int n=0;
-        for(ConditionalLinearGaussian dist:this.getDistribution()){
+        for(Normal_NormalParents dist:this.getDistribution()){
             n+= dist.getNumberOfFreeParameters();
         }
         return n;
@@ -120,12 +123,12 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
      * @return A <code>double</code> with the logarithm of the corresponding density value.
      */
     public double getLogConditionalProbability(Assignment assignment) {
-        return getConditionalLinearGaussianDistribution(assignment).getLogConditionalProbability(assignment);
+        return getNormal_NormalParentsDistribution(assignment).getLogConditionalProbability(assignment);
     }
 
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
-        return this.getConditionalLinearGaussianDistribution(assignment).getNormal(assignment);
+        return this.getNormal_NormalParentsDistribution(assignment).getNormal(assignment);
     }
 
     public List<Variable> getMultinomialParents() {
@@ -137,7 +140,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         return base.getNonMultinomialParents();
     }
 
-    public List<ConditionalLinearGaussian> getDistribution() {
+    public List<Normal_NormalParents> getDistribution() {
         return base.getBaseDistributions();
     }
 
@@ -162,7 +165,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         StringBuilder str = new StringBuilder();
         str.append("");
         for (int i = 0; i < getNumberOfParentAssignments(); i++) {
-            str.append(this.getConditionalLinearGaussianDistribution(i).toString()+"\n");
+            str.append(this.getNormal_NormalParentsDistribution(i).toString()+"\n");
         }
 
         return str.toString();
@@ -178,7 +181,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     public boolean equalDist(Normal_MultinomialNormalParents dist, double threshold) {
         boolean equals = true;
         for (int i = 0; i < this.getDistribution().size(); i++) {
-            equals = equals && this.getConditionalLinearGaussianDistribution(i).equalDist(dist.getConditionalLinearGaussianDistribution(i), threshold);
+            equals = equals && this.getNormal_NormalParentsDistribution(i).equalDist(dist.getNormal_NormalParentsDistribution(i), threshold);
         }
         return equals;
     }

@@ -169,10 +169,10 @@ public class BNConverterToAMIDST {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
         Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
-        ConditionalLinearGaussian dist = this.amidstBN.getDistribution(amidstVar);
+        Normal_NormalParents dist = this.amidstBN.getDistribution(amidstVar);
 
         double huginIntercept = ((ContinuousChanceNode)huginVar).getAlpha(0);
-        dist.setBeta0(huginIntercept);
+        dist.setIntercept(huginIntercept);
 
         NodeList huginParents = huginVar.getParents();
         int numParents = huginParents.size();
@@ -180,12 +180,12 @@ public class BNConverterToAMIDST {
 
         for(int i=0;i<numParents;i++){
             ContinuousChanceNode huginParent = (ContinuousChanceNode)huginParents.get(i);
-            Variable parent = this.amidstBN.getDAG().getParentSet(amidstVar).getParents().get(i);
-            dist.setBetaForParent(parent, ((ContinuousChanceNode) huginVar).getBeta(huginParent, 0));
+            coefficients[i]= ((ContinuousChanceNode)huginVar).getBeta(huginParent,0);
         }
+        dist.setCoeffParents(coefficients);
 
         double huginVariance = ((ContinuousChanceNode)huginVar).getGamma(0);
-        dist.setVariance(huginVariance);
+        dist.setSd(Math.sqrt(huginVariance));
     }
 
     /**
@@ -261,10 +261,10 @@ public class BNConverterToAMIDST {
 
         for(int i=0;i<numParentAssignments;i++) {
 
-            ConditionalLinearGaussian normalNormal = dist.getConditionalLinearGaussianDistribution(i);
+            Normal_NormalParents normalNormal = dist.getNormal_NormalParentsDistribution(i);
 
             double huginIntercept = ((ContinuousChanceNode)huginVar).getAlpha(i);
-            normalNormal.setBeta0(huginIntercept);
+            normalNormal.setIntercept(huginIntercept);
 
             List<Variable> normalParents = dist.getNormalParents();
             int numParents = normalParents.size();
@@ -273,12 +273,12 @@ public class BNConverterToAMIDST {
             for(int j=0;j<numParents;j++){
                 String nameAmidstNormalParent = normalParents.get(j).getName();
                 ContinuousChanceNode huginParent =  (ContinuousChanceNode)this.huginBN.getNodeByName(nameAmidstNormalParent);
-                Variable parent = normalParents.get(j);
-                normalNormal.setBetaForParent(parent, ((ContinuousChanceNode)huginVar).getBeta(huginParent,i));
+                coefficients[j]= ((ContinuousChanceNode)huginVar).getBeta(huginParent,i);
             }
+            normalNormal.setCoeffParents(coefficients);
 
             double huginVariance = ((ContinuousChanceNode)huginVar).getGamma(i);
-            normalNormal.setVariance(huginVariance);
+            normalNormal.setSd(Math.sqrt(huginVariance));
         }
     }
 

@@ -16,7 +16,6 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
-import eu.amidst.core.utils.CheckVariablesOrder;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
@@ -44,7 +43,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         this.base=base_;
         this.var=this.base.getVariable();
         this.parents=this.base.getConditioningVariables();
-        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
+        this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**
@@ -59,7 +58,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         this.var = var1;
         this.parents = parents1;
         //Make them unmodifiable
-        this.parents = Collections.unmodifiableList(CheckVariablesOrder.orderListOfVariables(this.parents));
+        this.parents = Collections.unmodifiableList(this.parents);
     }
 
     public List<Multinomial> getMultinomialDistributions() {
