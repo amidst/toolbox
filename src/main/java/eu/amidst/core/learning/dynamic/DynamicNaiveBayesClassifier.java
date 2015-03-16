@@ -1,4 +1,4 @@
-package eu.amidst.core.learning;
+package eu.amidst.core.learning.dynamic;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;

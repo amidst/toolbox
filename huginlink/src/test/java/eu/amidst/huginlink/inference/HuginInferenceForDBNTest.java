@@ -9,7 +9,7 @@ import eu.amidst.core.inference.InferenceEngineForDBN;
 import eu.amidst.core.io.DynamicBayesianNetworkLoader;
 import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.io.DynamicDataStreamLoader;
-import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
+import eu.amidst.core.learning.dynamic.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
@@ -40,14 +40,14 @@ public class HuginInferenceForDBNTest {
         // LEARN A DYNAMIC BAYESIAN NETWORK
         //**************************************************************************************************************
 
-        /*String file = "./datasets/bank_data_train.arff";
+        String file = "./datasets/bank_data_train.arff";
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
         model.setParallelMode(true);
         model.learn(data);
         amidstDBN = model.getDynamicBNModel();
-        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.dbn");*/
+        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.dbn");
 
         amidstDBN = DynamicBayesianNetworkLoader.loadFromFile("networks/CajamarDBN.dbn");
         defaultVar = amidstDBN.getDynamicVariables().getVariableByName("DEFAULT");

@@ -1,19 +1,15 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Normal_NormalParents;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-import org.apache.commons.math.linear.ArrayRealVector;
-import org.apache.commons.math.linear.RealMatrix;
-import org.apache.commons.math.linear.RealVector;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 25/02/15.
@@ -284,7 +280,7 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalLearningDistribution{
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
 
-        Normal_NormalParents dist = new Normal_NormalParents(this.var, this.realYVariables);
+        ConditionalLinearGaussian dist = new ConditionalLinearGaussian(this.var, this.realYVariables);
 
         double[] coeffParameters = new double[this.realYVariables.size()];
         for (int i = 0; i < this.realYVariables.size(); i++) {
@@ -295,7 +291,7 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalLearningDistribution{
 
         dist.setIntercept(expectedParameters.get(this.beta0Variable).get(0));
 
-        dist.setSd(Math.sqrt(1.0/expectedParameters.get(this.gammaVariable).get(0)));
+        dist.setVariance(1.0 / expectedParameters.get(this.gammaVariable).get(0));
 
         return dist;
     }
