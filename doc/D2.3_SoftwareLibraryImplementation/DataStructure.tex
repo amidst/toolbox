@@ -1,8 +1,8 @@
 %------------------------------------------------------------------------------------------------------------
-\section{Data structures} \label{sec:DataStructures}
+\section{Data structures and fonctionality} \label{sec:DataStructures}
 %------------------------------------------------------------------------------------------------------------
 
-An overview of the data structures implemented in the AMIDST toolbox is illustrated in Figure \ref{Figure:ToolboxDataStructures}. These data structures basically define the main components that will be used afterwards for implementing the AMIDST learning and inference algorithms. As we previously mentioned, in the AMIDST toolbox, we focus on two specific instantiations of PGMs, namely, a static Bayesian network (\comp{BN} component) and a two time-slice dynamic Bayesian network (\comp{2T-DBN} component). 
+An overview of the data structures implemented in the AMIDST toolbox is illustrated in Figure \ref{Figure:ToolboxDataStructures}. These data structures basically define the main components that will be used for implementing the AMIDST learning and inference algorithms. As we previously mentioned, in the AMIDST toolbox, we focus on two specific instantiations of PGMs, namely, a static Bayesian network (\comp{BN} component) and a two time-slice dynamic Bayesian network (\comp{2T-DBN} component). This is also directly reflected in the component structure.
 
 \vspace{-0.1in}
 
@@ -15,25 +15,19 @@ An overview of the data structures implemented in the AMIDST toolbox is illustra
 \end{center}
 \end{figure}
 
-In what follows, we briefly define each component and how it can be used in AMIDST toolbox through providing some code excerpts.  
+In what follows, we briefly define each component and show how they can be used in the AMIDST toolbox through code excerpts. We describe first the components related to the static BN, i.e., \comp{Static variables}, \comp{DAG}, and \comp{BN}, then those related to the two time-slice dynamic BN, i.e., \comp{Dynamic variables}, \comp{Dynamic DAG}, and \comp{2T-DBN}. Finally, we present the \comp{Distributions} component that includes implementations of conditional probability distributions relying on two different representations, namely, \comp{Conditional Linear Gaussian} and \comp{Exponential Family} distributions. 
 
 %------------------------------------------------------------------------------------------------------------
 \subsection{Static variables}
 %------------------------------------------------------------------------------------------------------------
 
-Static variables consist of a list of objects of type Variable that are used later to build a static BN. Each static variable is characterized by its name, ID, the state space type, the distribution type (i.e., multinomial or normal), as well as if it is observed or not. 
+Static variables consist of a list of objects of type Variable that are used later to build a static BN. Each static variable is characterized by its name, an ID, a state space type, and a distribution type (i.e., multinomial or normal). 
 
-Note that observed static variables are initialised using the list of attributes (that are already parsed from the dataset or specified by the user), then hidden static variables could be afterwards specified by the user.
-
-The following source code example shows how to define a set of four static observable variables and a single hidden variable:
+Note that static variables can be either initialised using the list of attributes that are parsed from a given data set or specified by the user. The following source code example shows how to define a set of five static variables:
 
 \vspace{-0.1in}
 \begin{table}[H]
 \begin{tabular}{l} \\ \hline
-
-        \texttt{DataStream<DataInstance> data = }\\
-        
-        \texttt{~~~~~~~~~~DataStreamLoader.loadFromFile("datasets/staticData.arff");}\\
 
         \texttt{StaticVariables variables = new StaticVariables(data.getAttributes());}\\
 
@@ -42,7 +36,7 @@ The following source code example shows how to define a set of four static obser
         \texttt{Variable C = variables.getVariableByName("C");}\\
         \texttt{Variable D = variables.getVariableByName("D");}\\
 
-        \texttt{Variable H = variables.newMultionomialVariable("HiddenVar",}\\ \texttt{~~~~~~~~~~~~~~~~~~~~~~~~~Arrays.asList("TRUE", "FALSE"));}\\ \hline 
+        \texttt{Variable H = variables.newMultionomialVariable("Hidden",}\\ \texttt{~~~~~~~~~~~~~~~~~~~~~~~~~Arrays.asList("TRUE", "FALSE"));}\\ \hline 
 
 \end{tabular}
 \end{table}
@@ -54,7 +48,7 @@ The following source code example shows how to define a set of four static obser
 
 A directed acyclic graph (\comp{DAG}) defines the BN graphical structure over a list of \comp{static variables}, such that the dependence relationships between the variables are established through the definition of the parent set for each variable. 
 
-The following source code example shows how to build a \comp{DAG} over the previously defined set of static variables, such that the hidden variable is set as a parent of all the remaining variables:
+The following source code example shows how to build a \comp{DAG} over the previously defined set of static variables. The hidden variable is set as a parent of all the remaining variables:
 
 \vspace{-0.1in}
 \begin{table}[H]
@@ -78,11 +72,11 @@ The last line converts the resulting \texttt{dag} into a String object, then pri
 \begin{table}[H]
 \small{\begin{tabular}{l} \\
 \texttt{DAG}\\
-\texttt{A parent sets: \{HiddenVar\}}\\
-\texttt{B parent sets: \{HiddenVar\}}\\
-\texttt{C parent sets: \{HiddenVar\}}\\
-\texttt{D parent sets: \{HiddenVar\}}\\
-\texttt{HiddenVar parent sets: \{\}}\\
+\texttt{A parent sets: \{Hidden\}}\\
+\texttt{B parent sets: \{Hidden\}}\\
+\texttt{C parent sets: \{Hidden\}}\\
+\texttt{D parent sets: \{Hidden\}}\\
+\texttt{Hidden parent sets: \{\}}\\
 \end{tabular}}
 \end{table}
 
@@ -90,11 +84,11 @@ The last line converts the resulting \texttt{dag} into a String object, then pri
 \subsection{Bayesian network (\comp{BN})}
 %------------------------------------------------------------------------------------------------------------
 
-As mentioned before, a static BN consists of two components: a graphical structure (defined by the \comp{DAG} component) and conditional probability distributions of each variable given the set of its parents (defined by the \comp{Distributions} component). Thus, given a DAG, the BN is defined through initialising the distribution of each variable according to its type and the type of its parent set. After this step, the set of parents of each variable becomes unmodifiable.
+As mentioned before, a static BN consists of two components: a graphical structure (defined by the \comp{DAG} component) and a conditional probability distribution for each variable given its parent set (defined by the \comp{Distributions} component). Thus, given a DAG, the BN is defined by initialising the distribution of each variable according to its type and the type of its parent set.
 
 The following brief code fragment shows how to define a BN using a previously build \texttt{dag}. It automatically checks the distribution type of each variable and its corresponding parents to uniformly initialise the \comp{Distributions} objects such as multinomial, normal, CLG, etc. (see Section \ref{subsec:Distributions}).
 
-\vspace{-0.1in}
+
 \begin{table}[H]
 \begin{tabular}{l} \hline  
         \texttt{BayesianNetwork bnet = BayesianNetwork.newBayesianNetwork(dag);}\\ 
@@ -102,26 +96,44 @@ The following brief code fragment shows how to define a BN using a previously bu
 \end{tabular}
 \end{table}      
 
-Similarly to \comp{DAG}, the resulting \texttt{bnet} can be converted into a String object then printed to the standard console. We have:
+Similarly to \comp{DAG} objects, the resulting \texttt{bnet} can be converted into a String object and printed to the standard console:
 
-\vspace{-0.1in}
 \begin{table}[H]
 \small{\begin{tabular}{l} \\
 \texttt{Bayesian Network:}\\
-\texttt{P(A [MULTINOMIAL] : HiddenVar [MULTINOMIAL], ) follows a Multinomial|Multinomial}\\
+\texttt{P(A|Hidden) follows a Multinomial|Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
-\texttt{P(B [MULTINOMIAL] : HiddenVar [MULTINOMIAL], ) follows a Multinomial|Multinomial}\\
+\texttt{P(B|Hidden) follows a Multinomial|Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
-\texttt{P(C [NORMAL] : HiddenVar [MULTINOMIAL], ) follows a Normal|Multinomial}\\
+\texttt{P(C|Hidden) follows a Normal|Multinomial}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
-\texttt{P(D [NORMAL] : HiddenVar [MULTINOMIAL], ) follows a Normal|Multinomial}\\
+\texttt{P(D|Hidden) follows a Normal|Multinomial}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
-\texttt{P(HiddenVar [MULTINOMIAL]) follows a Multinomial}\\
+\texttt{P(Hidden) follows a Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
+
+\end{tabular}}
+\end{table}
+
+\begin{table}[H]
+\small{\begin{tabular}{l} \\
+
+\texttt{\% The probabilities can be then modified as follows:}\\\\
+
+\texttt{Multinomial\_MultinomialParents distA = bnet.getDistribution(A);}\\
+\texttt{distA.getMultinomial(0).setProbabilities(new double[]\{0.7, 0.3\});}\\
+\texttt{distA.getMultinomial(1).setProbabilities(new double[]\{0.2, 0.8\});}\\\\
+
+\texttt{Normal\_MultinomialParents distC = bnet.getDistribution(C);}\\
+\texttt{distC.getNormal(0).setMean(0.15);}\\
+\texttt{distC.getNormal(0).setSd(0.5);}\\
+\texttt{distC.getNormal(1).setMean(0.24);}\\
+\texttt{distC.getNormal(1).setSd(1);}\\
+
 \end{tabular}}
 \end{table}
 
@@ -129,21 +141,15 @@ Similarly to \comp{DAG}, the resulting \texttt{bnet} can be converted into a Str
 \subsection{Dynamic variables}
 %------------------------------------------------------------------------------------------------------------
 
-Dynamic variables consist of a list of objects named allVariables and temporalClones of type \texttt{Variable}, that are used to build dynamic Bayesian networks. Each dynamic variable is characterized by its name, ID, the state space type, the distribution type (i.e., multinomial or normal), and if it is observed or not. 
+The dynamic variables in a \comp{2T-DBN} are represented by a list of objects named allVariables and temporalClones of type \texttt{Variable}. Each dynamic variable is characterized by its name, ID, a state space type, and a distribution type (i.e., multinomial or normal). 
 
 In order to represent the variables in a previous time step (needed when defining the dynamic DAG), we use the concept of \textit{temporal clone} variables, which are copies of the real main variables but refer to the previous time step. For instance, $X^{t-1}$ is codified as the \textit{temporal clone} of variable $X^t$. Hence, in our data structures, the time index $t$ is not explicitly represented for a dynamic variable, but implicitly considered with the use of \textit{temporal clones}.
 
-The list of observable dynamic variables is initialised using the list of Attributes (that are already parsed from the dataset or specified by the user), then hidden variables can be also added by the user. Next, temporal clones are automatically created through invoking the \texttt{getTemporalClone()} method.
-
-The following source code example shows how to define a set of four dynamic observable variables and two hidden dynamic variables:
+The list of dynamic variables is initialised using the list of Attributes that are parsed from a given data set or specified by the user. Next, temporal clones are created through invoking the \texttt{getTemporalClone()} method. The following source code example shows how to define a set of six dynamic variables and a single temporal clone:
 
 \vspace{-0.1in}
 \begin{table}[H]
 \begin{tabular}{l} \\ \hline
-
-        \texttt{DataStream<DynamicDataInstance> data = }\\
-        
-        \texttt{~~~~~~~DynamicDataStreamLoader.loadFromFile("datasets/dynamicData.arff");}\\
 
         \texttt{DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());}\\
 
@@ -163,14 +169,22 @@ The following source code example shows how to define a set of four dynamic obse
 \subsection{Dynamic directed acyclic graph (\comp{Dynamic DAG})}
 %------------------------------------------------------------------------------------------------------------
 
-A dynamic directed acyclic graph (\comp{Dynamic DAG}) defined over a list of \comp{dynamic variables}. This component specifies the graph structure of a \comp{2T-DBN} by specifying the parent set for each dynamic variable at time $t > 0$ (note that the parent sets at time 0 are automatically specified).
+A dynamic directed acyclic graph (\comp{Dynamic DAG}) is defined over a list of \comp{dynamic variables}. This component specifies the graph structure of a \comp{2T-DBN} by specifying the parent set for each dynamic variable at time $0$ and time $T > 0$.
 
-The following source code example shows how to build a \comp{dynamic DAG} over the previously defined set of dynamic variables:
+The following source code example shows how to build a \comp{dynamic DAG} over the previously defined set of dynamic variables. 
+
 \vspace{-0.1in}
 \begin{table}[H]
 \begin{tabular}{l} \\ \hline
 
         \texttt{DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);}\\\\
+
+        \texttt{dynamicDAG.getParentSetTime0(B).addParent(H1);}\\
+        \texttt{dynamicDAG.getParentSetTime0(C).addParent(H1);}\\
+        \texttt{dynamicDAG.getParentSetTime0(D).addParent(H1);}\\
+        \texttt{dynamicDAG.getParentSetTime0(B).addParent(H2);}\\
+        \texttt{dynamicDAG.getParentSetTime0(C).addParent(H2);}\\
+        \texttt{dynamicDAG.getParentSetTime0(D).addParent(H2);}\\\\
 
         \texttt{dynamicDAG.getParentSetTimeT(A).addParent(ATempClone);}\\
         \texttt{dynamicDAG.getParentSetTimeT(B).addParent(H1);}\\
@@ -186,7 +200,7 @@ The following source code example shows how to build a \comp{dynamic DAG} over t
 \end{tabular}
 \end{table}
 
-The last line converts the resulting \texttt{dynamicDAG} into a String object, then prints it to the standard console. We obtain:
+The last line converts the resulting \texttt{dynamicDAG} into a String object, then prints it to the standard console:
 
 \vspace{-0.1in}
 \begin{table}[H]
@@ -211,18 +225,17 @@ The last line converts the resulting \texttt{dynamicDAG} into a String object, t
 \end{tabular}}
 \end{table}
 
-
 %------------------------------------------------------------------------------------------------------------
 \subsection{Two time-slice dynamic Bayesian network (\comp{2T-DBN})}
 %------------------------------------------------------------------------------------------------------------
 
-Similarly to a static BN, a 2T-DBN (see Deliverable D2.1, Section 3.4 \cite{Deliverable2.1}) is defined using two main components: a graphical structure (defined by the \comp{Dynamic DAG} component) and conditional probability distributions of each dynamic variable given the set of its parents (defined by the \comp{Distributions} component). Thus, given a \comp{Dynamic DAG}, the BN is defined through initialising the distributions of each dynamic variable at both time $0$ and time $T$ according to its type and the type of its parent set. After this step, the set of parents of each dynamic variable becomes unmodifiable.
+Similarly to a static BN, a \comp{2T-DBN} (see Deliverable D2.1, Section 3.4 \cite{Deliverable2.1}) is defined using two main components: a graphical structure (defined by the \comp{Dynamic DAG} component) and a conditional probability distribution for each dynamic variable given its parent set (defined by the \comp{Distributions} component). Thus, given a \comp{Dynamic DAG}, the BN is defined by initialising the distributions of each dynamic variable at both time $0$ and time $T$ according to its type and the type of its parent set. 
 
 This is brief code fragment showing the definition of a dynamic Bayesian network using the previously created \texttt{dynamicDAG}. It automatically looks at the distribution type of each variable and their parents to initialise the Distributions objects that are stored inside (i.e., Multinomial, Normal, CLG, etc). The parameters defining these distributions are correspondingly initialised.
 
-The following brief code fragment shows how to define a \comp{2T-DBN} using a previously build \texttt{dynamicDAG}. It automatically checks the distribution type of each variable and its corresponding parents to uniformly initialise the \comp{Distributions} objects such as multinomial, normal, CLG, etc. (see Section \ref{subsec:Distributions}).
+The following brief code fragment shows how to define a \comp{2T-DBN} using a previously build \texttt{dynamicDAG}. It automatically checks the distribution type of each variable and its corresponding parents to uniformly initialise the \comp{Distribution} objects as multinomial, normal, CLG, etc. (see Section \ref{subsec:Distributions}).
 
-\vspace{-0.1in}
+
 \begin{table}[H]
 \begin{tabular}{l} \hline  
         \texttt{DynamicBayesianNetwork dynamicbnet =}\\ \texttt{~~~~~~DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);}\\ 
@@ -231,69 +244,63 @@ The following brief code fragment shows how to define a \comp{2T-DBN} using a pr
 \end{table}      
 
 
-Similarly to \comp{dynamic DAG}, the resulting \texttt{dynamicbnet} can be converted into a String object then printed to the standard console. We have:
+Similarly to \comp{dynamicDAG} objects, the resulting \texttt{dynamicbnet} can be converted into a String object and printed to the standard console:
 
 \vspace{-0.1in}
 \begin{table}[H]
 \small{\begin{tabular}{l} \\
 
 \texttt{Dynamic Bayesian Network Time 0:}\\
-\texttt{P(A[MULTINOMIAL]) follows a Multinomial}\\
+\texttt{P(A) follows a Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
-\texttt{P(B[MULTINOMIAL]: Hidden1[MULTINOMIAL], Hidden2[MULTINOMIAL]) follows a Multinomial|Multinomial}\\
-\texttt{[ 0.5, 0.5 ]}\\
-\texttt{[ 0.5, 0.5 ]}\\
+\texttt{P(B|Hidden1, Hidden2) follows a Multinomial|Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
-\texttt{P(C[NORMAL]: Hidden1[MULTINOMIAL], Hidden2[MULTINOMIAL]) follows a Normal|Multinomial}\\
+\texttt{[ 0.5, 0.5 ]}\\
+\texttt{[ 0.5, 0.5 ]}\\
+\texttt{P(C|Hidden1, Hidden2) follows a Normal|Multinomial}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 
-\texttt{P(D[NORMAL]: Hidden1[MULTINOMIAL], Hidden2[MULTINOMIAL]) follows a Normal|Multinomial}\\
+\texttt{P(D|Hidden1, Hidden2) follows a Normal|Multinomial}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 
-\texttt{P(Hidden1[MULTINOMIAL]) follows a Multinomial}\\
+\texttt{P(Hidden1) follows a Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 
-\texttt{P(Hidden2[MULTINOMIAL]) follows a Multinomial}\\
-\texttt{[ 0.5, 0.5 ]}\\
+\texttt{P(Hidden2) follows a Multinomial}\\
+\texttt{[ 0.5, 0.5 ]}\\\\
 
-\end{tabular}}
-\end{table}
-
-\vspace{-0.1in}
-\begin{table}[H]
-\small{\begin{tabular}{l} \\
 \texttt{Dynamic Bayesian Network Time T:}\\
-\texttt{P(A[MULTINOMIAL]: ATempClone [MULTINOMIAL]) follows a Multinomial|Multinomial}\\
+\texttt{P(A|ATempClone) follows a Multinomial|Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
-\texttt{P(B[MULTINOMIAL]: Hidden1[MULTINOMIAL], Hidden2[MULTINOMIAL]) follows a Multinomial|Multinomial}\\
+\texttt{P(B|Hidden1, Hidden2) follows a Multinomial|Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
-\texttt{P(C [NORMAL]: Hidden1[MULTINOMIAL], Hidden2 [MULTINOMIAL]) follows a Normal|Multinomial}\\
+\texttt{P(C|Hidden1, Hidden2) follows a Normal|Multinomial}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 
-\texttt{P(D[NORMAL]: Hidden1[MULTINOMIAL], Hidden2[MULTINOMIAL]) follows a Normal|Multinomial}\\
+\texttt{P(D|Hidden1, Hidden2) follows a Normal|Multinomial}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 \texttt{Normal [ mu = 0.0, sd = 1.0 ]}\\
 
-\texttt{P(Hidden1[MULTINOMIAL]: ATempClone[MULTINOMIAL]) follows a Multinomial|Multinomial}\\
+\texttt{P(Hidden1|ATempClone) follows a Multinomial|Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
-\texttt{P(Hidden2[MULTINOMIAL]: ATempClone[MULTINOMIAL]) follows a Multinomial|Multinomial}\\
+\texttt{P(Hidden2|ATempClone) follows a Multinomial|Multinomial}\\
 \texttt{[ 0.5, 0.5 ]}\\
 \texttt{[ 0.5, 0.5 ]}\\
 
@@ -305,9 +312,9 @@ Similarly to \comp{dynamic DAG}, the resulting \texttt{dynamicbnet} can be conve
 \subsection{Distributions} \label{subsec:Distributions}
 %------------------------------------------------------------------------------------------------------------
 
-The \comp{Distributions} component consists of the set of conditional probability distributions considered in the AMIDST toolbox. It currently includes both multinomial and normal distributions, and could be easily extended in the future to cover additional distribution types.
+The \comp{Distributions} component consists of the set of conditional probability distributions considered in the AMIDST toolbox. It currently includes multinomial, normal, Dirichlet, and gamma distributions, and can easily be extended in the future to cover additional distribution types.
 
-Note here that, in spite of the distinction between \comp{BN} and \comp{2T-BN}, the distributions over both models could be defined in the same way, and thereby the parameter learning and inference algorithms could be also applied equally for both models. In particular, the \comp{Distributions} component includes the set of conditional probability distributions considered in the AMIDST toolbox (the so-called \comp{Conditional Linear Gaussian} distributions, as detailed in Deliverable 2.1 \cite{Deliverable2.1}). More precisely, both variables with multinomial and normal distributions are modeled, and the distribution of each variable, in either a \comp{BN} or \comp{2T-BN}, is initialized and specified according to its distribution type and the distribution types of its potential parents. This consequently gives rise to the following different implemented probability distributions:
+Note here that, in spite of the distinction between \comp{BN} and \comp{2T-BN}, the distributions over both models can be defined in the same way. In particular, the \comp{Distributions} component includes the set of conditional probability distributions considered in the AMIDST toolbox (the so-called \comp{Conditional Linear Gaussian} distributions, as detailed in Deliverable 2.1 \cite{Deliverable2.1}). More precisely, both variables with multinomial and normal distributions are modeled, and the distribution of each variable, in either a \comp{BN} or \comp{2T-BN}, is initialized and specified according to its distribution type and the distribution types of its potential parents. This consequently gives rise to the following different implemented probability distributions:
 
 \begin{itemize}
   \item \comp{Multinomial}: a multinomial variable with no parents.
@@ -320,21 +327,23 @@ Note here that, in spite of the distinction between \comp{BN} and \comp{2T-BN}, 
 
 The case of a multinomial variable having normal parents is not considered yet in this initial prototype. It is planned to be included in future versions, although strongly restricted in inference and learning algorithms due to the methodological and computational issues previously commented in Deliverable D2.1 \cite{Deliverable2.1}. 
 
-We also provide an implementation of all the above distributions in the so-called \comp{Exponential Family} form, which ensures an alternative representation of the standard distributions based on vectors of natural and moment parameters.
+We also provide an implementation of all the above distributions in the so-called \comp{Exponential Family} form, which ensures an alternative representation of the standard distributions based on vectors of natural and moment parameters. The implementation supports as well the Dirichlet and Gamma distributions for the \comp{Conjugate Priors} that will be used afterwards for learning.
 
-The following brief code fragment shows the definition of the distribution for the multinomial variable \texttt{A} given its multinomial parent, and the normal variable \texttt{C} given also its multinomial parent.
-
+The following brief code fragment shows the definition of the distribution for the discrete dynamic variable \texttt{A} at time $0$, and the continuous dynamic variable \texttt{C} given its two discrete parents at time $0$ too.
 
 \begin{table}[H]
 \begin{tabular}{l} \hline         
-        \texttt{Multinomial\_MultinomialParents distA = bnet.getDistribution(A);}\\
-        \texttt{distA.getMultinomial(0).setProbabilities(new double[]\{0.7, 0.3\});}\\
-        \texttt{distA.getMultinomial(1).setProbabilities(new double[]\{0.2, 0.8\});}\\\\
+        \texttt{Multinomial distA = dynamicbnet.getDistributionTime0(A);}\\
+        \texttt{distA.setProbabilities(new double[]\{0.1, 0.9\});}\\\\
 
-        \texttt{Normal\_MultinomialParents distC = bnet.getDistribution(C);}\\
-        \texttt{distC.getNormal(0).setMean(0.15);}\\
-        \texttt{distC.getNormal(0).setSd(0.5);}\\
-        \texttt{distC.getNormal(1).setMean(0.24);}\\
-       \texttt{distC.getNormal(1).setSd(1);}\\\hline 
+        \texttt{Normal\_MultinomialParents distC = dynamicbnet.getDistributionTime0(C);}\\
+        \texttt{distC.getNormal(0).setMean(0.7);}\\
+        \texttt{distC.getNormal(0).setSd(0.2);}\\
+        \texttt{distC.getNormal(1).setMean(0.4);}\\
+        \texttt{distC.getNormal(1).setSd(1);}\\
+        \texttt{distC.getNormal(2).setMean(0.75);}\\
+        \texttt{distC.getNormal(2).setSd(0.05);}\\
+        \texttt{distC.getNormal(3).setMean(0.66);}\\
+        \texttt{distC.getNormal(3).setSd(0.04);}\\ \hline
 \end{tabular}
 \end{table}
