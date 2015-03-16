@@ -62,7 +62,7 @@ public class Examples {
 
         Normal_MultinomialParents distC = bnet.getDistribution(C);
         distC.getNormal(0).setMean(0.15);
-        distC.getNormal(0).setSd(0.5);
+        distC.getNormal(0).setVariance(0.25);
         distC.getNormal(1).setMean(0.24);
         distC.getNormal(1).setMean(1);
 
