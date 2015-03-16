@@ -107,7 +107,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
         double sigma = this.getMomentParameters().get(EF_Normal.EXPECTED_SQUARE) - mean * mean;
 
         normal.setMean(mean);
-        normal.setSd(Math.sqrt(sigma));
+        normal.setVariance(sigma);
 
         return normal;
     }
