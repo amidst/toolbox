@@ -3,8 +3,6 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Normal_NormalParents;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.models.BayesianNetwork;
@@ -12,7 +10,6 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.distributionTypes.NormalType;
 
 import java.util.List;
 import java.util.stream.Collectors;
