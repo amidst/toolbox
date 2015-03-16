@@ -141,7 +141,7 @@ public class BNConverterToHugin {
      *          variable has no multinomial parents.
      * @throws ExceptionHugin
      */
-    private void setNormal_NormalParents(Normal_NormalParents dist, int i) throws ExceptionHugin {
+    private void setNormal_NormalParents(ConditionalLinearGaussian dist, int i) throws ExceptionHugin {
 
         Variable amidstVar = dist.getVariable();
         List<Variable> normalParents = dist.getConditioningVariables();

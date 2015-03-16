@@ -141,7 +141,7 @@ public class HuginInferenceForBN implements InferenceAlgorithmForBN {
             else if (var.isNormal()) {
                 Normal dist = new Normal(var);
                 dist.setMean(((ContinuousChanceNode)huginNode).getMean());
-                dist.setSd(Math.sqrt(((ContinuousChanceNode) huginNode).getVariance()));
+                dist.setVariance(((ContinuousChanceNode) huginNode).getVariance());
                 return (E)dist;
             }
             else {

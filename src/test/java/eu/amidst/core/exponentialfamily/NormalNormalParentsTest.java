@@ -2,7 +2,7 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.distribution.Normal_NormalParents;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -25,7 +25,7 @@ public class NormalNormalParentsTest {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
 
-        Normal_NormalParents dist = (Normal_NormalParents) testnet.getConditionalDistributions().get(1);
+        ConditionalLinearGaussian dist = (ConditionalLinearGaussian) testnet.getConditionalDistributions().get(1);
 
         //dist.getCoeffParents()[0]=0;
         //dist.setIntercept(0.1);
