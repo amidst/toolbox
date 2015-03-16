@@ -169,7 +169,7 @@ public class BNConverterToAMIDST {
 
         int indexNode = this.huginBN.getNodes().indexOf(huginVar);
         Variable amidstVar = this.amidstBN.getStaticVariables().getVariableById(indexNode);
-        Normal_NormalParents dist = this.amidstBN.getDistribution(amidstVar);
+        ConditionalLinearGaussian dist = this.amidstBN.getDistribution(amidstVar);
 
         double huginIntercept = ((ContinuousChanceNode)huginVar).getAlpha(0);
         dist.setIntercept(huginIntercept);
@@ -185,7 +185,7 @@ public class BNConverterToAMIDST {
         dist.setCoeffParents(coefficients);
 
         double huginVariance = ((ContinuousChanceNode)huginVar).getGamma(0);
-        dist.setSd(Math.sqrt(huginVariance));
+        dist.setVariance(huginVariance);
     }
 
     /**
@@ -204,7 +204,7 @@ public class BNConverterToAMIDST {
         double huginMean  = ((ContinuousChanceNode)huginVar).getAlpha(i);
         double huginVariance  = ((ContinuousChanceNode)huginVar).getGamma(i);
         normal.setMean(huginMean);
-        normal.setSd(Math.sqrt(huginVariance));
+        normal.setVariance(huginVariance);
     }
 
     /**
@@ -261,7 +261,7 @@ public class BNConverterToAMIDST {
 
         for(int i=0;i<numParentAssignments;i++) {
 
-            Normal_NormalParents normalNormal = dist.getNormal_NormalParentsDistribution(i);
+            ConditionalLinearGaussian normalNormal = dist.getNormal_NormalParentsDistribution(i);
 
             double huginIntercept = ((ContinuousChanceNode)huginVar).getAlpha(i);
             normalNormal.setIntercept(huginIntercept);
@@ -278,7 +278,7 @@ public class BNConverterToAMIDST {
             normalNormal.setCoeffParents(coefficients);
 
             double huginVariance = ((ContinuousChanceNode)huginVar).getGamma(i);
-            normalNormal.setSd(Math.sqrt(huginVariance));
+            normalNormal.setVariance(huginVariance);
         }
     }
 
