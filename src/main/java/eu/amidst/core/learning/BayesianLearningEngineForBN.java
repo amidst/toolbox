@@ -1,6 +1,7 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -16,8 +17,8 @@ public final class BayesianLearningEngineForBN {
         BayesianLearningEngineForBN.bayesianLearningAlgorithmForBN = bayesianLearningAlgorithmForBN;
     }
 
-    public static double updateModel(DataInstance dataInstance){
-        return bayesianLearningAlgorithmForBN.updateModel(dataInstance);
+    public static double updateModel(DataOnMemory<DataInstance> batch){
+        return bayesianLearningAlgorithmForBN.updateModel(batch);
     }
 
     public static void runLearning() {
@@ -36,6 +37,7 @@ public final class BayesianLearningEngineForBN {
     public void setParallelMode(boolean parallelMode) {
         bayesianLearningAlgorithmForBN.setParallelMode(parallelMode);
     }
+
     public static void setDAG(DAG dag){
         bayesianLearningAlgorithmForBN.setDAG(dag);
     }

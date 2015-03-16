@@ -418,10 +418,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return this.isTemporalClone()==var.isTemporalClone() && this.getVarID()==var.getVarID();
         }
 
+        /*
         @Override
         public int hashCode(){
             return this.name.hashCode();
         }
+        */
 
         @Override
         public boolean isParameterVariable() {

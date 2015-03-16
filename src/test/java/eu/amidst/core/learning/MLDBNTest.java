@@ -4,6 +4,8 @@ package eu.amidst.core.learning;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.learning.dynamic.MaximumLikelihoodForBN;
+import eu.amidst.core.learning.dynamic.MaximumLikelihoodForDBN;
 import eu.amidst.core.models.*;
 import eu.amidst.core.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.core.utils.DynamicBayesianNetworkSampler;
@@ -40,7 +42,6 @@ public class MLDBNTest {
         //Sampling from the generated Dynamic NB
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicNB);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
 
         //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
 
