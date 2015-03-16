@@ -1,4 +1,4 @@
-package eu.amidst.core.learning;
+package eu.amidst.core.learning.dynamic;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;

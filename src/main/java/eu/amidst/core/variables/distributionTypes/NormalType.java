@@ -30,7 +30,7 @@ public class NormalType extends DistributionType{
     public Normal newUnivariateDistribution() {
         Normal normal = new Normal(variable);
         normal.setMean(0);
-        normal.setSd(1);
+        normal.setVariance(1);
 
         return normal;
     }
@@ -56,9 +56,9 @@ public class NormalType extends DistributionType{
         } else if (multinomialParents && !normalParents) {
             return (E)new BaseDistribution_MultinomialParents<Normal>(this.variable, parents);
         } else if (!multinomialParents && normalParents) {
-            return (E)new Normal_NormalParents(this.variable, parents);
+            return (E)new ConditionalLinearGaussian(this.variable, parents);
         } else if (multinomialParents && normalParents) {
-            return (E)new BaseDistribution_MultinomialParents<Normal_NormalParents>(this.variable, parents);
+            return (E)new BaseDistribution_MultinomialParents<ConditionalLinearGaussian>(this.variable, parents);
         } else{
             return null;
         }
