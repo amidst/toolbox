@@ -3,6 +3,7 @@ package eu.amidst.examples;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.distribution.Normal_MultinomialParents;
 import eu.amidst.core.io.DataStreamLoader;
@@ -91,6 +92,14 @@ public class Examples {
 
         // Time 0: Parents at time 0 are automatically created when adding parents at time t !!!
         // Time t
+
+        //dynamicDAG.getParentSetTime0(B).addParent(H1);
+        //dynamicDAG.getParentSetTime0(C).addParent(H1);
+        //dynamicDAG.getParentSetTime0(D).addParent(H1);
+        //dynamicDAG.getParentSetTime0(B).addParent(H2);
+        //dynamicDAG.getParentSetTime0(C).addParent(H2);
+        //dynamicDAG.getParentSetTime0(D).addParent(H2);
+
         dynamicDAG.getParentSetTimeT(B).addParent(H1);
         dynamicDAG.getParentSetTimeT(C).addParent(H1);
         dynamicDAG.getParentSetTimeT(D).addParent(H1);
@@ -107,6 +116,25 @@ public class Examples {
 
         System.out.println(dynamicbnet.toString());
 
+
+        Multinomial distA = dynamicbnet.getDistributionTime0(A);
+        distA.setProbabilities(new double[]{0.1, 0.9});
+
+        Normal_MultinomialParents distC = dynamicbnet.getDistributionTime0(C);
+        distC.getNormal(0).setMean(0.7);
+        distC.getNormal(0).setSd(0.2);
+
+        distC.getNormal(1).setMean(0.4);
+        distC.getNormal(1).setSd(1);
+
+        distC.getNormal(2).setMean(0.75);
+        distC.getNormal(2).setSd(0.05);
+
+        distC.getNormal(3).setMean(0.66);
+        distC.getNormal(3).setSd(0.04);
+
+        System.out.println(dynamicbnet.toString());
+
         //DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicbnet);
         //sampler.setSeed(0);
         //sampler.setParallelMode(true);
@@ -116,7 +144,7 @@ public class Examples {
 
 
     public static void main(String[] args) throws Exception {
-        Examples.BNExample();
-        //MyExamples.DBNExample();
+        //Examples.BNExample();
+        Examples.DBNExample();
     }
 }
