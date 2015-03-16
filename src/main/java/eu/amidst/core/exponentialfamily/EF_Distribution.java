@@ -32,18 +32,18 @@ public abstract class EF_Distribution {
      *
      * @return A <code>Variable</code> object.
      */
-    public final Variable getVariable() {
+    public Variable getVariable() {
 
         return this.var;
     }
 
-    public final NaturalParameters getNaturalParameters() {
+    public NaturalParameters getNaturalParameters() {
 
         return this.naturalParameters;
     }
 
 
-    public final MomentParameters getMomentParameters() {
+    public MomentParameters getMomentParameters() {
 
         return this.momentParameters;
     }

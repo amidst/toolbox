@@ -1,9 +1,10 @@
-package eu.amidst.core.inference;
+package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.inference.VMP;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.variables.Variable;
 
@@ -76,8 +77,7 @@ public class PlateuVMP {
         for (int i = 0; i < nRepetitions; i++) {
 
             Map<Variable, Node> map = new ConcurrentHashMap<>();
-            List<Node> tmpNodes = ef_learningmodel.getDistributionList()
-                    .stream()
+            List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
                     .filter(dist -> !dist.getVariable().isParameterVariable())
                     .map(dist -> {
                         Node node = new Node(dist);
@@ -130,10 +130,10 @@ public class PlateuVMP {
             return this.variablesToNode.get(slice).get(variable);
     }
 
-    public <E extends EF_UnivariateDistribution> E getEFPosterior(Variable var) {
+    public <E extends EF_UnivariateDistribution> E getEFParameterPosterior(Variable var) {
         if (!var.isParameterVariable())
             throw new IllegalArgumentException("Only parameter variables can be queried");
 
-        return this.vmp.<E>getEFPosterior(var);
+        return (E)this.parametersToNode.get(var).getQDist();
     }
 }
