@@ -13,7 +13,6 @@
 
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -32,7 +31,7 @@ import java.util.Random;
  * @version 1.0
  * @since 2014-11-4
  */
-public class Normal_NormalParents extends ConditionalDistribution {
+public class ConditionalLinearGaussian extends ConditionalDistribution {
 
 
     /**
@@ -48,14 +47,14 @@ public class Normal_NormalParents extends ConditionalDistribution {
     /**
      * The standard deviation of the variable (it does not depends on the parents)
      */
-    private double sd;
+    private double variance;
 
     /**
      * The class constructor.
      * @param var1 The variable of the distribution.
      * @param parents1 The set of parents of the variable.
      */
-    public Normal_NormalParents(Variable var1, List<Variable> parents1) {
+    public ConditionalLinearGaussian(Variable var1, List<Variable> parents1) {
 
         this.var = var1;
         this.parents = parents1;
@@ -64,7 +63,7 @@ public class Normal_NormalParents extends ConditionalDistribution {
         for (int i = 0; i < parents.size(); i++) {
             coeffParents[i] = 1;
         }
-        this.sd = 1;
+        this.variance = 1;
 
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
@@ -110,15 +109,23 @@ public class Normal_NormalParents extends ConditionalDistribution {
      * @return A <code>double</code> value with the standard deviation.
      */
     public double getSd() {
-        return sd;
+        return Math.sqrt(this.variance);
     }
 
     /**
-     * Sets the standard deviation of the variable.
-     * @param sd1 A <code>double</code> value with the standard deviation.
+     * Gets the variance of the variable.
+     * @return A <code>double</code> value with the variance.
      */
-    public void setSd(double sd1) {
-        this.sd = sd1;
+    public double getVariance() {
+        return this.variance;
+    }
+
+    /**
+     * Sets the variance of the variable.
+     * @param variance_ A <code>double</code> value with the variance.
+     */
+    public void setVariance(double variance_) {
+        this.variance = variance_;
     }
 
     /**
@@ -137,7 +144,7 @@ public class Normal_NormalParents extends ConditionalDistribution {
             i++;
         }
 
-        univariateNormal.setSd(sd);
+        univariateNormal.setVariance(this.variance);
         univariateNormal.setMean(mean);
 
         return (univariateNormal);
@@ -178,7 +185,8 @@ public class Normal_NormalParents extends ConditionalDistribution {
         for (int j = 0; j < this.coeffParents.length; j++) {
             this.coeffParents[j]=random.nextGaussian();
         }
-        this.sd = random.nextDouble()+0.1;
+        //this.sd = random.nextDouble()+0.1;
+        this.variance = Math.pow(random.nextDouble()+0.1,2);
     }
 
     @Override
@@ -196,12 +204,12 @@ public class Normal_NormalParents extends ConditionalDistribution {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("eu.amidst.core.distribution.Normal_NormalParents"))
-            return this.equalDist((Normal_NormalParents)dist,threshold);
+        if (dist.getClass().getName().equals("eu.amidst.core.distribution.ConditionalLinearGaussian"))
+            return this.equalDist((ConditionalLinearGaussian)dist,threshold);
         return false;
     }
 
-    public boolean equalDist(Normal_NormalParents dist, double threshold) {
+    public boolean equalDist(ConditionalLinearGaussian dist, double threshold) {
         boolean equals = false;
         if (Math.abs(this.getIntercept() - dist.getIntercept()) <= threshold && Math.abs(this.getSd() - dist.getSd()) <= threshold) {
             equals = true;
