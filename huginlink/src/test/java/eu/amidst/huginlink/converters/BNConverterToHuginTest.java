@@ -99,12 +99,12 @@ public class BNConverterToHuginTest {
         // Variable C
         Normal distC = bn.getDistribution(C);
         distC.setMean(0.8);
-        distC.setSd(1.5);
+        distC.setVariance(2.25);
 
         // Variable D
         Normal distD = bn.getDistribution(D);
         distD.setMean(1.3);
-        distD.setSd(0.9);
+        distD.setVariance(0.81);
 
         // Variable E
         Multinomial_MultinomialParents distE=bn.getDistribution(E);
@@ -118,49 +118,49 @@ public class BNConverterToHuginTest {
         // Variable H
         Normal_MultinomialParents distH = bn.getDistribution(H);
         distH.getNormal(0).setMean(2);
-        distH.getNormal(0).setSd(1.5);
+        distH.getNormal(0).setVariance(2.25);
         distH.getNormal(1).setMean(-1);
-        distH.getNormal(1).setSd(0.5);
+        distH.getNormal(1).setVariance(0.25);
         distH.getNormal(2).setMean(3);
-        distH.getNormal(2).setSd(0.8);
+        distH.getNormal(2).setVariance(0.64);
         distH.getNormal(3).setMean(2);
-        distH.getNormal(3).setSd(1);
+        distH.getNormal(3).setVariance(1);
         distH.getNormal(4).setMean(5);
-        distH.getNormal(4).setSd(0.8);
+        distH.getNormal(4).setVariance(0.64);
         distH.getNormal(5).setMean(1.5);
-        distH.getNormal(5).setSd(0.7);
+        distH.getNormal(5).setVariance(0.49);
 
         //Variable I
         Normal_MultinomialNormalParents distI = bn.getDistribution(I);
         distI.getNormal_NormalParentsDistribution(0).setIntercept(0.5);
         distI.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.25,0.4});
-        distI.getNormal_NormalParentsDistribution(0).setSd(0.9);
+        distI.getNormal_NormalParentsDistribution(0).setVariance(0.81);
 
         distI.getNormal_NormalParentsDistribution(1).setIntercept(-0.1);
         distI.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-0.5,0.2});
-        distI.getNormal_NormalParentsDistribution(1).setSd(0.6);
+        distI.getNormal_NormalParentsDistribution(1).setVariance(0.36);
 
         distI.getNormal_NormalParentsDistribution(2).setIntercept(2.1);
         distI.getNormal_NormalParentsDistribution(2).setCoeffParents(new double[]{1.2,-0.3});
-        distI.getNormal_NormalParentsDistribution(2).setSd(1.1);
+        distI.getNormal_NormalParentsDistribution(2).setVariance(1.21);
 
         distI.getNormal_NormalParentsDistribution(3).setIntercept(2.1);
         distI.getNormal_NormalParentsDistribution(3).setCoeffParents(new double[]{1.25,0.9});
-        distI.getNormal_NormalParentsDistribution(3).setSd(0.95);
+        distI.getNormal_NormalParentsDistribution(3).setVariance(0.9025);
 
         distI.getNormal_NormalParentsDistribution(4).setIntercept(1.5);
         distI.getNormal_NormalParentsDistribution(4).setCoeffParents(new double[]{-0.41,0.5});
-        distI.getNormal_NormalParentsDistribution(4).setSd(1.5);
+        distI.getNormal_NormalParentsDistribution(4).setVariance(2.25);
 
         distI.getNormal_NormalParentsDistribution(5).setIntercept(0);
         distI.getNormal_NormalParentsDistribution(5).setCoeffParents(new double[]{0.0,0.3});
-        distI.getNormal_NormalParentsDistribution(5).setSd(0.25);
+        distI.getNormal_NormalParentsDistribution(5).setVariance(0.0625);
 
         //Variable G
-        Normal_NormalParents distG  = bn.getDistribution(G);
+        ConditionalLinearGaussian distG  = bn.getDistribution(G);
         distG.setIntercept(0.7);
         distG.setCoeffParents(new double[]{0.3,-0.8});
-        distG.setSd(0.9);
+        distG.setVariance(0.81);
 
 
         return bn;
@@ -292,7 +292,7 @@ public class BNConverterToHuginTest {
                 this.testMultinomial_MultinomialParents(huginVar, amidstVar);
                 break;
             case 1:
-                Normal_NormalParents dist1 = amidstBN.getDistribution(amidstVar);
+                ConditionalLinearGaussian dist1 = amidstBN.getDistribution(amidstVar);
                 this.testNormal_NormalParents(huginVar, dist1, 0);
                 break;
             case 2:
@@ -344,7 +344,7 @@ public class BNConverterToHuginTest {
         }
     }
 
-    private void testNormal_NormalParents(Node huginVar, Normal_NormalParents dist1, int assign_j) throws ExceptionHugin {
+    private void testNormal_NormalParents(Node huginVar, ConditionalLinearGaussian dist1, int assign_j) throws ExceptionHugin {
 
 
         // Intercept
@@ -410,7 +410,7 @@ public class BNConverterToHuginTest {
         int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(multinomialParents);
 
         for(int j=0;j <numParentAssignments;j++) {
-            Normal_NormalParents dist1 = dist.getNormal_NormalParentsDistribution(j);
+            ConditionalLinearGaussian dist1 = dist.getNormal_NormalParentsDistribution(j);
             this.testNormal_NormalParents(huginVar, dist1 ,j);
         }
     }

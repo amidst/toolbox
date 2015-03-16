@@ -33,7 +33,7 @@ public class Normal extends UnivariateDistribution {
     /**
      * The standard deviation of the Normal distribution.
      */
-    private double sd;
+    private double variance;
 
     /**
      * The class constructor.
@@ -42,7 +42,7 @@ public class Normal extends UnivariateDistribution {
     public Normal(Variable var1) {
         this.var = var1;
         this.mean = 0;
-        this.sd = 1;
+        this.variance = 1;
     }
 
     /**
@@ -66,24 +66,16 @@ public class Normal extends UnivariateDistribution {
      * @return A <code>double</code> value with the standar deviation.
      */
     public double getSd() {
-        return sd;
-    }
-
-    /**
-     * Sets the standard deviation of the distribution.
-     * @param sd1 A value for the standard deviation.
-     */
-    public void setSd(double sd1) {
-        this.sd = sd1;
+        return Math.sqrt(variance);
     }
 
 
     public void setVariance(double var){
-        this.sd=Math.sqrt(var);
+        this.variance=var;
     }
 
     public double getVariance(){
-        return this.sd*this.sd;
+        return this.variance;
     }
 
 
@@ -101,7 +93,7 @@ public class Normal extends UnivariateDistribution {
 
     @Override
     public double getProbability(double value) {
-        return (1 / (sd * Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * Math.pow(((value - mean) / sd), 2)));
+        return Math.exp(getLogProbability(value));
     }
 
     /**
@@ -111,7 +103,7 @@ public class Normal extends UnivariateDistribution {
      */
     @Override
     public double getLogProbability(double value) {
-        return (-Math.log(sd) - 0.5 * Math.log(2 * Math.PI) - 0.5 * Math.pow(((value - mean) / sd), 2));
+        return (-0.5*Math.log(variance) - 0.5 * Math.log(2 * Math.PI) - 0.5 * Math.pow(value - mean, 2)/variance);
     }
 
     @Override
