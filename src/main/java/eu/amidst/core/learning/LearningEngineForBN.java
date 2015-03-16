@@ -3,6 +3,7 @@ package eu.amidst.core.learning;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.learning.dynamic.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StaticVariables;

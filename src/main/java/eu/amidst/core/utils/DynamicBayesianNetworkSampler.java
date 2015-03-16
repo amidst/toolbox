@@ -23,7 +23,6 @@ public class DynamicBayesianNetworkSampler {
     private DynamicBayesianNetwork network;
     private List<Variable> causalOrderTime0;
     private List<Variable> causalOrderTimeT;
-    private boolean parallelMode = true;
     private int seed = 0;
     private Stream<Assignment> sampleStream;
 
@@ -37,10 +36,7 @@ public class DynamicBayesianNetworkSampler {
 
     public Stream<DynamicAssignment> getSampleStream(int nSequences, int sequenceLength) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-
-        IntStream stream = (parallelMode)? IntStream.range(0,nSequences): IntStream.range(0,nSequences).parallel();
-
-        return stream.mapToObj(Integer::new).flatMap(i-> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength));
+        return IntStream.range(0,nSequences).mapToObj(Integer::new).flatMap(i-> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength));
     }
 
     public List<DynamicAssignment> getSampleList(int nSequences, int sequenceLength){
@@ -59,11 +55,6 @@ public class DynamicBayesianNetworkSampler {
     public void setSeed(int seed) {
         this.seed = seed;
     }
-
-    public void setParallelMode(boolean parallelMode) {
-        this.parallelMode = parallelMode;
-    }
-
 
     public DataStream<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){
         return new TemporalDataStream(this,nSequences,sequenceLength);
@@ -255,7 +246,6 @@ public class DynamicBayesianNetworkSampler {
 
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
         sampler.setSeed(0);
-        sampler.setParallelMode(true);
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(3,2);
         ARFFDataWriter.writeToARFFFile(dataStream, "./data/dnb-samples.arff");
 

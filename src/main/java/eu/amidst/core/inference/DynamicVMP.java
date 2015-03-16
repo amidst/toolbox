@@ -6,7 +6,7 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP_.Node;
 import eu.amidst.core.io.DynamicDataStreamLoader;
-import eu.amidst.core.learning.DynamicNaiveBayesClassifier;
+import eu.amidst.core.learning.dynamic.DynamicNaiveBayesClassifier;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.DynamicAssignment;

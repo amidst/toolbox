@@ -24,8 +24,8 @@ public class VMPNormalTest extends TestCase {
 
     public static void test1() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
-        for (int i = 0; i < 1; i++) {
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
+        for (int i = 0; i < 10; i++) {
 
             //bn.randomInitialization(new Random(i));
             //System.out.println(bn.toString());
@@ -42,7 +42,7 @@ public class VMPNormalTest extends TestCase {
             InferenceEngineForBN.runInference();
             System.out.println(watch.stop());
 
-            bn.getStaticVariables().getListOfVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableByName(var.getName())).toString()));
+            //bn.getStaticVariables().getListOfVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableByName(var.getName())).toString()));
         }
     }
 

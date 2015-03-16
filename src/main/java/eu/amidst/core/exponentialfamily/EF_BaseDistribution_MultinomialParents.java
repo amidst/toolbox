@@ -356,7 +356,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 double[] assignment = MultinomialIndex.getVariableArrayAssignmentFromIndex(this.multinomialParents, i);
                 double momentValue = 1;
                 for (int j = 0; j < assignment.length; j++) {
-                    momentValue *= momentChildCoParents.get(this.multinomialParents.get(j)).get((int)assignment[j]);
+                        momentValue *= momentChildCoParents.get(this.multinomialParents.get(j)).get((int)assignment[j]);
                 }
                 NaturalParameters paritalExpectedNatural = null;
 
