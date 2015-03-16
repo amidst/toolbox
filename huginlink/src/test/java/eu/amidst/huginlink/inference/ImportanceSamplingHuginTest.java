@@ -109,25 +109,25 @@ public class ImportanceSamplingHuginTest {
         // Variable C
         Normal_MultinomialParents distC = samplingBN.getDistribution(C);
         distC.getNormal(0).setMean(3.1);
-        distC.getNormal(0).setSd(0.9660254037);
+        distC.getNormal(0).setVariance(0.93320508059375);
         distC.getNormal(1).setMean(2.1);
-        distC.getNormal(1).setSd(0.848683);
+        distC.getNormal(1).setVariance(0.720262834489);
 
         //Variable D
         Normal_MultinomialNormalParents distD = samplingBN.getDistribution(D);
         distD.getNormal_NormalParentsDistribution(0).setIntercept(2.1);
         distD.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{2.1});
-        distD.getNormal_NormalParentsDistribution(0).setSd(1.1);
+        distD.getNormal_NormalParentsDistribution(0).setVariance(1.21);
 
         distD.getNormal_NormalParentsDistribution(1).setIntercept(0.6);
         distD.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.6});
-        distD.getNormal_NormalParentsDistribution(1).setSd(1.5142);
+        distD.getNormal_NormalParentsDistribution(1).setVariance(2.29280164);
 
         //Variable E
-        Normal_NormalParents distE  = samplingBN.getDistribution(E);
+        ConditionalLinearGaussian distE  = samplingBN.getDistribution(E);
         distE.setIntercept(2.4);
         distE.setCoeffParents(new double[]{4.1});
-        distE.setSd(1.2832);
+        distE.setVariance(1.64660224);
 
         return(samplingBN);
     }
