@@ -35,10 +35,11 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
     @Override
     public void fixNumericalInstability() {
-        if (this.naturalParameters.get(1)<(-0.5*10000)){ //To avoid numerical problems!
+
+        if (this.naturalParameters.get(1)<(-0.5*1000000)){ //To avoid numerical problems!
             double x = -0.5*this.naturalParameters.get(0)/this.getNaturalParameters().get(1);
-            this.naturalParameters.set(0,x*10000);
-            this.naturalParameters.set(1,-0.5*10000);
+            this.naturalParameters.set(0,x*1000000);
+            this.naturalParameters.set(1,-0.5*1000000);
         }
     }
 

@@ -291,13 +291,13 @@ public class VMP implements InferenceAlgorithmForBN {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin4.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
         System.out.println(bn.getNumberOfVars());
         System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfFreeParameters()).max().getAsInt());
 
         VMP vmp = new VMP();
         //vmp.setSeed(10);
-        vmp.setParallelMode(true);
+        vmp.setParallelMode(false);
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
 
         double avg  = 0;

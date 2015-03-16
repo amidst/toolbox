@@ -7,6 +7,8 @@ import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.DynamicVariables;
+import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.*;
@@ -18,12 +20,10 @@ import java.util.stream.Collectors;
 public class EF_LearningBayesianNetwork extends EF_Distribution {
 
     List<EF_ConditionalLearningDistribution> distributionList;
-    DAG dag;
     ParameterVariables parametersVariables;
 
     public EF_LearningBayesianNetwork(DAG dag){
 
-        this.dag = dag;
         parametersVariables = new ParameterVariables(dag.getStaticVariables());
 
         distributionList =
@@ -39,25 +39,49 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
         this.momentParameters = null;
     }
 
-    public void setDistributionList(List<EF_ConditionalLearningDistribution> distributionList_) {
-        distributionList = distributionList_;
+    public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions, StaticVariables staticVariables){
+
+        parametersVariables = new ParameterVariables(staticVariables);
+
+        distributionList =
+                distributions
+                        .stream()
+                        .map(dist -> dist.toExtendedLearningDistribution(parametersVariables))
+                        .flatMap(listOfDist -> listOfDist.stream())
+                        .sorted((a,b) -> a.getVariable().getVarID() - b.getVariable().getVarID())
+                        .collect(Collectors.toList());
+
+        this.naturalParameters = null;
+        this.momentParameters = null;
     }
 
-    public BayesianNetwork toBayesianNetwork(DAG dag){
-        return BayesianNetwork.newBayesianNetwork(dag, toConditionalDistribution(this.distributionList));
+    public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions, DynamicVariables dynamicVariables){
+
+        parametersVariables = new ParameterVariables(dynamicVariables);
+
+        distributionList =
+                        distributions
+                        .stream()
+                        .map(dist -> dist.toExtendedLearningDistribution(parametersVariables))
+                        .flatMap(listOfDist -> listOfDist.stream())
+                        .sorted((a,b) -> a.getVariable().getVarID() - b.getVariable().getVarID())
+                        .collect(Collectors.toList());
+
+        this.naturalParameters = null;
+        this.momentParameters = null;
     }
 
-    public static List<ConditionalDistribution> toConditionalDistribution(List<EF_ConditionalLearningDistribution> ef_dists){
+    public List<ConditionalDistribution> toConditionalDistribution(){
         List<ConditionalDistribution> condDistList = new ArrayList<>();
 
-        for (EF_ConditionalDistribution dist: ef_dists) {
+        for (EF_ConditionalDistribution dist: distributionList) {
             if (dist.getVariable().isParameterVariable())
                 continue;
 
             EF_ConditionalLearningDistribution distLearning = (EF_ConditionalLearningDistribution)dist;
             Map<Variable, Vector> expectedParameters = new HashMap<>();
             for(Variable var: distLearning.getParameterParentVariables()){
-                EF_UnivariateDistribution uni =  ((EF_BaseDistribution_MultinomialParents)ef_dists.get(var.getVarID())).getBaseEFUnivariateDistribution(0);
+                EF_UnivariateDistribution uni =  ((EF_BaseDistribution_MultinomialParents)distributionList.get(var.getVarID())).getBaseEFUnivariateDistribution(0);
                 expectedParameters.put(var, uni.getExpectedParameters());
             }
             condDistList.add(distLearning.toConditionalDistribution(expectedParameters));
