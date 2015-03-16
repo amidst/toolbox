@@ -2,15 +2,17 @@
 \section{HUGIN AMIDST API} \label{sec:HuginLink}
 %------------------------------------------------------------------------------------------------------------
 
-The \comp{Hugin link} component consists of the functionalities implemented to link the AMIDST toolbox with the HUGIN software. This connection is primarily ensured by converting HUGIN models into AMIDST models, and vice versa. 
+In addition to the functionalities developed in the AMIDST software, it is important to define and set up interfaces between the AMIDST software and other existing softwares such as R, Weka, HUGIN, MOA (Massive Online Analysis), etc. This allows to efficiently exploit existing systems and guarantee a broader and better usability of the AMIDST software.
 
-This component is extremely useful as it allows us to test and assess some of the implemented AMIDST functionalities within a well-established platform as HUGIN. For instance, a new inference algorithm implemented in AMIDST could be compared with some state-of-the-art algorithms included in HUGIN. In addition, the connection with HUGIN efficiently extends AMIDST toolbox by providing some extra functionalities, such as the use of parallel TAN for BN structural learning. 
+In this section, we present, as an example, the \comp{Hugin AMIDST API} interface which consists of the functionalities implemented to link the AMIDST toolbox with the HUGIN software. Recall that AMIDST toolbox is an open source, entirely new software developed from scratch within this project, while the HUGIN AMIDST API is an extension of the COTS HUGIN software. 
+
+The \comp{Hugin AMIDST API} component is extremely useful. In fact, the connection with HUGIN extends AMIDST toolbox by providing some extra functionalities, such as the use of parallel TAN or parallel PC for BN structural learning (see Section 5, Deliverable 4.1 \cite{Deliverable 4.1}), as well as the use of previously developed BN learning and inference algorithms. In what follows, we introduce two basic functionalities of Hugin AMIDST API that allow converting HUGIN models into AMIDST models, and vice versa. 
 
 %------------------------------------------------------------------------------------------------------------
 \subsection{Converters from AMIDST to HUGIN format} \label{ConverterFromAmidstToHugin}
 %------------------------------------------------------------------------------------------------------------
 
-This functionality addresses the conversion of a \comp{BN} or a \comp{DBN} from AMIDST to HUGIN. This conversion is done at ``object-level'', which is far more efficient that if it would be done by converting the models to data files and, then, parsing them. 
+This functionality addresses the conversion of a \comp{BN} or a \comp{DBN} from AMIDST to HUGIN. 
 
 The following brief code fragment shows how to convert a \comp{BN} and a \comp{DBN} from AMIDST to HUGIN format, then store them in files. The files could be then accessed and opened using HUGIN software to visually check the created networks with the AMIDST toolbox. 
 
@@ -36,9 +38,9 @@ The following brief code fragment shows how to convert a \comp{BN} and a \comp{D
 \subsection{Converters from HUGIN to AMIDST format} \label{ConverterFromHuginToAmidst}
 %------------------------------------------------------------------------------------------------------------
 
-This functionality addresses the conversion of a \comp{BN} or a \comp{DBN} from HUGIN to AMIDST. As before, this conversion is also done at ``object-level''.
+This functionality addresses the conversion of a \comp{BN} or a \comp{DBN} from HUGIN to AMIDST. 
 
-The following brief code fragment shows how to convert a \comp{BN} and a \comp{DBN} from HUGIN to AMIDST format, then store them in files. The files could be then accessed and used in AMIDST toolbox. 
+The following brief code fragment shows how to convert a \comp{BN} and a \comp{DBN} from HUGIN to AMIDST format, then store them in files. The files could be then accessed and used in the AMIDST toolbox. 
 
 
 \begin{table}[H]
@@ -60,8 +62,9 @@ The following brief code fragment shows how to convert a \comp{BN} and a \comp{D
         \texttt{String fileName = aux[aux.length-1];}\\
         \texttt{String modelName = fileName.substring(0,fileName.length()-5);}\\
         \texttt{Class HuginDBN = cc.getClassByName(modelName);}\\
-        \texttt{DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(HuginDBN);}\\
-        \texttt{DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.bn");}\\ \hline
+        \texttt{DynamicBayesianNetwork amidstDBN = }\\
+        \texttt{~~~~~~~~~~~~~~~~~~~~~~~~DBNConverterToAmidst.convertToAmidst(HuginDBN);}\\
+        \texttt{DynamicBayesianNetworkWriter.saveToFile(amidstDBN,"networks/CajamarDBN.bn");}\\ \hline
         
 \end{tabular}
 \end{table} 
