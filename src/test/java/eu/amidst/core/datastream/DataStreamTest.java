@@ -1,7 +1,13 @@
 package eu.amidst.core.datastream;
 
+import eu.amidst.core.datastream.filereaders.DataOnMemoryFromFile;
+import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.core.datastream.filereaders.DynamicDataOnMemoryFromFile;
+import eu.amidst.core.datastream.filereaders.DynamicDataStreamFromFile;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -115,5 +121,36 @@ public class DataStreamTest extends TestCase {
 
     }
 
+    public static void example(DataStream<DataInstance> datastream){
+        long nRows=0;
+        for (DataInstance instance: datastream){
+            nRows++;
+        }
+
+        System.out.println("Number of Rows: " + nRows);
+
+        if (datastream.isRestartable()){
+            datastream.restart();
+
+            nRows = datastream.stream().count();
+
+            System.out.println("Number of Rows: " + nRows);
+        }
+    }
+
+    public void test3()  {
+
+        ARFFDataReader reader = new ARFFDataReader();
+
+        reader.loadFromFile("data/dataWeka/labor.arff");
+
+        DataStream<DataInstance> data = new DataOnMemoryFromFile(reader);
+
+        DataStream<DynamicDataInstance> dynamicdata = new DynamicDataOnMemoryFromFile(reader);
+
+        DataStream<DataInstance> datastream = new DataStreamFromFile(reader);
+
+        DataStream<DynamicDataInstance> dynamicdatastream = new DynamicDataStreamFromFile(reader);
+    }
 
 }

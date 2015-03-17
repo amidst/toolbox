@@ -9,6 +9,7 @@ import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.examples.DBNExample;
 import eu.amidst.huginlink.converters.DBNConverterToAmidst;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
+import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ public class DBNConverterToAmidstTest {
     @Before
     public void setUp() throws ExceptionHugin, IOException {
 
-        DynamicBayesianNetwork amidstDBN = DBNExample.getAmidst_DBN_Example();
+        /*DynamicBayesianNetwork amidstDBN = DBNExample.getAmidst_DBN_Example();
         System.out.println("\nConverting the AMIDST Dynamic BN into Hugin format ...");
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
         //The name of the DBN must be the same as the name of the .net file !!!
@@ -43,7 +44,11 @@ public class DBNConverterToAmidstTest {
         huginDBN.setName(nameModel);
         outFile = new String("networks/"+nameModel+".oobn");
         huginDBN.saveAsNet(outFile);
-        System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
+        System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");*/
+
+        Class huginDBN = DBNLoaderFromHugin.loadFromFile("networks/CajamarDBN.oobn");
+        DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
+        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.bn");
 
     }
 

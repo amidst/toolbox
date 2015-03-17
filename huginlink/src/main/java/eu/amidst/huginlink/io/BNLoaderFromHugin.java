@@ -22,11 +22,11 @@ public class BNLoaderFromHugin {
      * @return a <code>BayesianNetwork</code> in AMIDST format.
      * @throws ExceptionHugin
      */
-    public static BayesianNetwork loadFromFile(String file) throws ExceptionHugin {
+    public static Domain loadFromFile(String file) throws ExceptionHugin {
         ParseListener parseListener = new DefaultClassParseListener();
         Domain huginBN = new Domain (file, parseListener);
-        BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
-        return amidstBN;
+        //BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
+        return huginBN;
     }
 }
 

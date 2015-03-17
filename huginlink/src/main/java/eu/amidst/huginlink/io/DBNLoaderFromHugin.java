@@ -22,7 +22,7 @@ public class DBNLoaderFromHugin {
      * @return a <code>DynamicBayesianNetwork</code> in AMIDST format.
      * @throws ExceptionHugin
      */
-    public static DynamicBayesianNetwork loadFromFile(String file) throws ExceptionHugin {
+    public static Class loadFromFile(String file) throws ExceptionHugin {
 
         DefaultClassParseListener parseListener = new DefaultClassParseListener();
         ClassCollection cc = new ClassCollection();
@@ -34,7 +34,7 @@ public class DBNLoaderFromHugin {
         String modelName = fileName.substring(0,fileName.length()-5);
 
         Class huginDBN = cc.getClassByName(modelName);
-        DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
-        return amidstDBN;
+        //DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
+        return huginDBN;
     }
 }
