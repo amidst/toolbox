@@ -103,6 +103,7 @@ public class DataSequenceStreamTest extends TestCase {
         DynamicBayesianNetwork bn1 = efDynamicBayesianNetwork.toDynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
         /*******************************************************************************/
+        /*
 
         efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
@@ -144,7 +145,7 @@ public class DataSequenceStreamTest extends TestCase {
         /*******************************************************************************/
 
 
-        efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
+        /*efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
         sumSS = DataSequenceStream.streamOfDataSequences(sampler.sampleToDataBase(nsquences, sizesequences))
                 .map( sequence -> {
@@ -159,11 +160,11 @@ public class DataSequenceStreamTest extends TestCase {
         efDynamicBayesianNetwork.setMomentParameters(sumSS);
         DynamicBayesianNetwork bn4 = efDynamicBayesianNetwork.toDynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
-        assertTrue(bn1.equalDBNs(bn4, 0.01));
+        assertTrue(bn1.equalDBNs(bn4, 0.01));*/
         /*******************************************************************************/
 
 
-        efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
+        /*efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
         sumSS = DataSequenceStream.parallelStreamOfDataSequences(sampler.sampleToDataBase(nsquences, sizesequences))
                 .map( sequence -> {
@@ -178,7 +179,7 @@ public class DataSequenceStreamTest extends TestCase {
         efDynamicBayesianNetwork.setMomentParameters(sumSS);
         DynamicBayesianNetwork bn5 = efDynamicBayesianNetwork.toDynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
-        assertTrue(bn1.equalDBNs(bn5, 0.01));
+        assertTrue(bn1.equalDBNs(bn5, 0.01));*/
 
         /*******************************************************************************/
 

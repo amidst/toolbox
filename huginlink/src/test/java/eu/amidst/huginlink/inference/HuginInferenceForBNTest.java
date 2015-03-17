@@ -1,5 +1,6 @@
 package eu.amidst.huginlink.inference;
 
+import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
@@ -9,6 +10,7 @@ import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
+import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import org.junit.Test;
 import java.io.IOException;
@@ -24,7 +26,8 @@ public class HuginInferenceForBNTest {
     @Test
     public void test() throws IOException, ClassNotFoundException, ExceptionHugin {
 
-        BayesianNetwork bn = BNLoaderFromHugin.loadFromFile("./networks/Example.net");
+        Domain huginBN = BNLoaderFromHugin.loadFromFile("./networks/Example.net");
+        BayesianNetwork bn = BNConverterToAMIDST.convertToAmidst(huginBN);
         System.out.println(bn.toString());
 
         StaticVariables variables = bn.getDAG().getStaticVariables();
