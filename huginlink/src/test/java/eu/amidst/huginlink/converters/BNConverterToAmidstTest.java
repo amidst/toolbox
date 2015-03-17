@@ -7,6 +7,7 @@ import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.ParseListener;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.*;
+import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class BNConverterToAmidstTest {
     @Before
     public void setUp() throws ExceptionHugin, IOException {
 
-        ParseListener parseListener = new DefaultClassParseListener();
+        /*ParseListener parseListener = new DefaultClassParseListener();
         Domain huginBN = new Domain ("networks/huginNetworkFromAMIDST.net", parseListener);
         System.out.println("\n\nConverting the Hugin network into AMIDST format ...");
         BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
@@ -33,11 +34,12 @@ public class BNConverterToAmidstTest {
 
         BNWriterToHugin.saveToHuginFile(amidstBN2, "networks/asia.bn");
 
-
-
         parseListener = new DefaultClassParseListener();
-        huginBN = new Domain ("networks/IS.net", parseListener);
-        BayesianNetworkWriter.saveToFile(BNConverterToAMIDST.convertToAmidst(huginBN), "networks/IS.bn");
+        huginBN = new Domain ("networks/IS.net", parseListener);*/
+
+        Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/asia.net");
+        BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
+        BayesianNetworkWriter.saveToFile(amidstBN, "networks/asia.bn");
 
     }
 
