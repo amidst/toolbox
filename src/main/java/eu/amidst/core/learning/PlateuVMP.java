@@ -111,7 +111,7 @@ public class PlateuVMP {
 
     public void setEvidence(List<DataInstance> data) {
         if (data.size()>nRepetitions)
-            throw new IllegalArgumentException("The size of the data is bigger that the number of repetitions");
+            throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
 
         for (int i = 0; i < nRepetitions && i<data.size(); i++) {
             final int slice = i;
