@@ -1,5 +1,7 @@
 package eu.amidst.huginlink.converters;
 
+import COM.hugin.HAPI.*;
+import COM.hugin.HAPI.Class;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DynamicBayesianNetworkLoader;
 import eu.amidst.core.models.*;
@@ -50,7 +52,8 @@ public class FileConverterFromHuginToAmidst {
 
                     System.out.println("Converting " + fileName + " to " + amidstFileName);
 
-                    BayesianNetwork amidstBN = BNLoaderFromHugin.loadFromFile(fullFileName);
+                    Domain huginBN = BNLoaderFromHugin.loadFromFile(fullFileName);
+                    BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
                     BayesianNetworkWriter.saveToFile(amidstBN, fullAmidstFileName);
 
                     //***************************************** TEST PART **********************************************
@@ -67,7 +70,9 @@ public class FileConverterFromHuginToAmidst {
 
                     System.out.println("Converting " + fileName + " to " + amidstFileName);
 
-                    DynamicBayesianNetwork amidstDBN = DBNLoaderFromHugin.loadFromFile(fullFileName);
+
+                    Class huginDBN = DBNLoaderFromHugin.loadFromFile(fullFileName);
+                    DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
                     DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullAmidstFileName);
 
                     //***************************************** TEST PART **********************************************
