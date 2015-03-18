@@ -50,8 +50,8 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     }
 
     @Override
-    public EF_UnivariateDistribution deepCopy() {
-        EF_InverseGamma copy = new EF_InverseGamma(this.getVariable());
+    public EF_UnivariateDistribution deepCopy(Variable var) {
+        EF_InverseGamma copy = new EF_InverseGamma(var);
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
 

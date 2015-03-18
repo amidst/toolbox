@@ -33,7 +33,7 @@ public class MLNormalsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
 
         //Parameter Learning
@@ -57,7 +57,7 @@ public class MLNormalsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
 
         //Parameter Learning

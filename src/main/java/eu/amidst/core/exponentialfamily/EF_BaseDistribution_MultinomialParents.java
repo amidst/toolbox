@@ -287,7 +287,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         int indexOfMultinomialParent = this.multinomialParents.indexOf(parent);
 
         if (indexOfMultinomialParent==-1 && parent.isMultinomial())
-            throw new IllegalArgumentException("Parent Variable is multinomial and not included in the list of multinomial parents");
+            throw new IllegalArgumentException("Parent Variable is multinomial and not included in the list of multinomial parents: "+parent.getName());
 
 
         if (indexOfMultinomialParent!=-1) {

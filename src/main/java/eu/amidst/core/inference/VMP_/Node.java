@@ -6,6 +6,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,7 +39,17 @@ public class Node {
 
     boolean parallelActivated = true;
 
+    Map<Variable, Node> variableToParentsNodeMap;
+
+    Map<Node, Variable> nodeParentsToVariableMap;
+
+    String name;
+
     public Node(EF_ConditionalDistribution PDist) {
+         this(PDist, PDist.getVariable().getName());
+    }
+
+    public Node(EF_ConditionalDistribution PDist, String name_) {
         this.PDist = PDist;
         this.mainVar = this.PDist.getVariable();
         this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution();
@@ -46,6 +57,11 @@ public class Node {
         this.children = new ArrayList<>();
         this.observed=false;
         sufficientStatistics=null;
+        this.name = name_;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isParallelActivated() {
@@ -86,6 +102,14 @@ public class Node {
 
     public void setParents(List<Node> parents) {
         this.parents = parents;
+        variableToParentsNodeMap = new ConcurrentHashMap();
+        nodeParentsToVariableMap = new ConcurrentHashMap();
+
+        for( Node node: parents){
+            variableToParentsNodeMap.put(node.getMainVariable(), node);
+            nodeParentsToVariableMap.put(node, node.getMainVariable());
+        }
+
     }
 
     public Assignment getAssignment() {
@@ -131,11 +155,7 @@ public class Node {
     public Stream<Message<NaturalParameters>> computeMessagesParallelVMP(){
 
 
-        Map<Variable, MomentParameters> momentParents = new HashMap<>();
-
-        this.parents.stream().forEach(p -> momentParents.put(p.getMainVariable(), p.getQMomentParameters()));
-
-        momentParents.put(this.getMainVariable(), this.getQMomentParameters());
+        Map<Variable, MomentParameters> momentParents = this.getMomentParents();
 
         List<Message<NaturalParameters>> messages = this.parents.stream()
                                                                 .filter(parent -> parent.isActive())
@@ -152,7 +172,7 @@ public class Node {
     }
 
     public Message<NaturalParameters> newMessageToParent(Node parent, Map<Variable, MomentParameters> momentChildCoParents){
-        Message<NaturalParameters> message = new Message<>(parent);
+        Message<NaturalParameters> message = new Message(parent);
         message.setVector(this.PDist.getExpectedNaturalToParent(parent.getMainVariable(), momentChildCoParents));
         message.setDone(this.messageDoneToParent(parent.getMainVariable()));
 
@@ -165,6 +185,54 @@ public class Node {
         message.setDone(this.messageDoneFromParents());
 
         return message;
+    }
+
+
+    public Message<NaturalParameters> newMessageToParent(Node parent){
+
+        Map<Variable, MomentParameters> momentChildCoParents = this.getMomentParents();
+
+        Message<NaturalParameters> message = new Message<>(parent);
+        message.setVector(this.PDist.getExpectedNaturalToParent(this.nodeParentToVariable(parent), momentChildCoParents));
+        message.setDone(this.messageDoneToParent(parent.getMainVariable()));
+
+        return message;
+    }
+
+    public Message<NaturalParameters> newSelfMessage() {
+
+        Map<Variable, MomentParameters> momentParents = this.getMomentParents();
+
+        Message<NaturalParameters> message = new Message(this);
+        message.setVector(this.PDist.getExpectedNaturalFromParents(momentParents));
+        message.setDone(this.messageDoneFromParents());
+
+        return message;
+    }
+
+    Map<Variable, MomentParameters> getMomentParents(){
+        Map<Variable, MomentParameters> momentParents = new ConcurrentHashMap<>();
+
+        //this.getParents().stream().forEach(parent -> momentParents.put(parent.getMainVariable(), parent.getQMomentParameters()));
+
+        this.getPDist().getConditioningVariables().stream().forEach(var -> momentParents.put(var,this.variableToNodeParent(var).getQMomentParameters()));
+
+        momentParents.put(this.getMainVariable(), this.getQMomentParameters());
+
+        return momentParents;
+    }
+
+    public Variable nodeParentToVariable(Node parent){
+        return this.nodeParentsToVariableMap.get(parent);
+    }
+
+    public Node variableToNodeParent(Variable var){
+        return this.variableToParentsNodeMap.get(var);
+    }
+
+    public void setVariableToNodeParent(Variable var, Node parent){
+        this.variableToParentsNodeMap.put(var, parent);
+        this.nodeParentsToVariableMap.put(parent, var);
     }
 
     private boolean messageDoneToParent(Variable parent){
@@ -198,12 +266,9 @@ public class Node {
     public boolean isDone(){
         return isDone || this.observed;
     }
+
     public double computeELBO(){
-        Map<Variable, MomentParameters> momentParents = new HashMap<>();
-
-        this.parents.stream().forEach(p -> momentParents.put(p.getMainVariable(), p.getQMomentParameters()));
-
-        momentParents.put(this.getMainVariable(), this.getQMomentParameters());
+        Map<Variable, MomentParameters> momentParents = this.getMomentParents();
 
         double elbo=0;
         NaturalParameters expectedNatural = this.PDist.getExpectedNaturalFromParents(momentParents);
