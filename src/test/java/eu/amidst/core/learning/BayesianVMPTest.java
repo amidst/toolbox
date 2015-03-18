@@ -822,10 +822,6 @@ public class BayesianVMPTest extends TestCase {
         }
     }
 
-<<<<<<< HEAD
-
-    public static void testGaussianSpecial() throws IOException, ClassNotFoundException{
-=======
     public static void testCompareBatchSizes() throws IOException, ClassNotFoundException {
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
 
@@ -848,7 +844,7 @@ public class BayesianVMPTest extends TestCase {
 
             BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
             String beta0fromML = Double.toString(((ConditionalLinearGaussian)learntNormalVarBN.
-                                   getConditionalDistribution(varA)).getIntercept());
+                    getConditionalDistribution(varA)).getIntercept());
             String beta1fromML = Double.toString(((ConditionalLinearGaussian)learntNormalVarBN.
                     getConditionalDistribution(varA)).getCoeffParents()[0]);
 
@@ -947,8 +943,8 @@ public class BayesianVMPTest extends TestCase {
 
     }
 
+
     public static void testGaussian1_play() throws IOException, ClassNotFoundException{
->>>>>>> 8f4741a9e5a655fd2da91512c34cd5dbde26d20c
 
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
 
@@ -957,31 +953,10 @@ public class BayesianVMPTest extends TestCase {
             System.out.println("\nNormal|Normal variable network \n ");
 
             normalVarBN.randomInitialization(new Random(i));
-<<<<<<< HEAD
-
-            BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-            sampler.setSeed(0);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
-            sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("B"));
-
-            //BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
-
-            //System.out.println(normalVarBN.toString());
-            //System.out.println(learntNormalVarBN.toString());
-            //assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
-
-            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-            svb.setParallelMode(false);
-            svb.setWindowsSize(10);
-            svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
-            vmp.setOutput(true);
-=======
-            //Variable varA = normalVarBN.getStaticVariables().getVariableByName("A");
-            //((ConditionalLinearGaussian)normalVarBN.getDistribution(varA)).setVariance(5);
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(2);
+            sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("B"));
             DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
             BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
@@ -994,7 +969,7 @@ public class BayesianVMPTest extends TestCase {
             svb.setWindowsSize(1);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuVMP().getVMP();
->>>>>>> 8f4741a9e5a655fd2da91512c34cd5dbde26d20c
+
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -1004,7 +979,6 @@ public class BayesianVMPTest extends TestCase {
             BayesianLearningEngineForBN.setDataStream(data);
             BayesianLearningEngineForBN.runLearning();
 
-<<<<<<< HEAD
 
 
             System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
@@ -1013,22 +987,14 @@ public class BayesianVMPTest extends TestCase {
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBNVMP.toString());
             //assertTrue(normalVarBN.equalBNs(learntNormalVarBNVMP, 0.1));
-=======
+
             System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
             learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
             assertFalse(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
->>>>>>> 8f4741a9e5a655fd2da91512c34cd5dbde26d20c
         }
 
     }
-
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 8f4741a9e5a655fd2da91512c34cd5dbde26d20c
 }

@@ -58,6 +58,7 @@ public class CompoundVector implements SufficientStatistics, MomentParameters, N
         for (int j = 0; j < this.baseVectors.size(); j++) {
             if (i < (total + this.baseVectors.get(j).getVector().size())) {
                 this.baseVectors.get(j).getVector().set(i - total, val);
+                return;
             } else {
                 total += this.baseVectors.get(j).getVector().size();
             }
