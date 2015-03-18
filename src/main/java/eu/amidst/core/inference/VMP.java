@@ -35,6 +35,11 @@ public class VMP implements InferenceAlgorithmForBN {
     boolean testELBO=true;
     int maxIter = 1000;
     double threshold = 0.0001;
+    boolean output = false;
+
+    public void setOutput(boolean output) {
+        this.output = output;
+    }
 
     public void setThreshold(double threshold) {
         this.threshold = threshold;
@@ -76,6 +81,7 @@ public class VMP implements InferenceAlgorithmForBN {
             this.compileModelSerial();
     }
 
+
     public void compileModelSerial() {
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
@@ -87,25 +93,18 @@ public class VMP implements InferenceAlgorithmForBN {
                 if (!node.isActive() || node.isObserved())
                     continue;
 
-                Map<Variable, MomentParameters> momentParents = new HashMap<>();
+                Message<NaturalParameters> selfMessage = node.newSelfMessage();
 
-                node.getParents().stream().forEach(p -> momentParents.put(p.getMainVariable(), p.getQMomentParameters()));
-
-                momentParents.put(node.getMainVariable(), node.getQMomentParameters());
-
-                Message<NaturalParameters> selfMessage = node.newSelfMessage(momentParents);
+                //Optional<Message<NaturalParameters>> childrenMessage = node.getChildren().parallelStream().map(children -> children.newMessageToParent(node)).reduce(Message::combine);
+                //if (childrenMessage.isPresent())
+                //    selfMessage = Message.combine(childrenMessage.get(), selfMessage);
 
                 for (Node children: node.getChildren()){
-                    Map<Variable, MomentParameters> momentChildCoParents = new HashMap<>();
-                    children.getParents().stream().forEach(p -> momentChildCoParents.put(p.getMainVariable(), p.getQMomentParameters()));
-                    momentChildCoParents.put(children.getMainVariable(), children.getQMomentParameters());
-                    selfMessage = Message.combine(children.newMessageToParent(node, momentChildCoParents), selfMessage);
+                    selfMessage = Message.combine(children.newMessageToParent(node), selfMessage);
                 }
 
                 node.updateCombinedMessage(selfMessage);
-
                 done &= node.isDone();
-
             }
 
             if (done) {
@@ -127,7 +126,7 @@ public class VMP implements InferenceAlgorithmForBN {
             //System.out.println(elbo);
         }
         probOfEvidence = elbo;
-        System.out.println("N Iter: "+niter +", elbo:"+elbo);
+        if (output) System.out.println("N Iter: "+niter +", elbo:"+elbo);
     }
 
     public void compileModelParallel() {
@@ -201,7 +200,7 @@ public class VMP implements InferenceAlgorithmForBN {
             //System.out.println(elbo);
         }
         probOfEvidence = elbo;
-        System.out.println("N Iter: "+niter +", elbo:"+elbo);
+        if (output) System.out.println("N Iter: "+niter +", elbo:"+elbo);
     }
 
     @Override

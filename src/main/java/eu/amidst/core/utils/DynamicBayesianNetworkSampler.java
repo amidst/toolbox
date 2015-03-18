@@ -7,10 +7,7 @@ import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.*;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -25,7 +22,10 @@ public class DynamicBayesianNetworkSampler {
     private List<Variable> causalOrderTimeT;
     private int seed = 0;
     private Stream<Assignment> sampleStream;
+    private Map<Variable, Boolean> hiddenVars = new HashMap();
+    private Random random = new Random(seed);
 
+    private Map<Variable, Double> marNoise = new HashMap();
 
     public DynamicBayesianNetworkSampler(DynamicBayesianNetwork network1){
         network=network1;
@@ -34,9 +34,34 @@ public class DynamicBayesianNetworkSampler {
     }
 
 
+    public void setHiddenVar(Variable var) {
+        if (var.isTemporalClone())
+            throw new IllegalArgumentException();
+        this.hiddenVars.put(var,true);
+    }
+
+    public void setMARVar(Variable var, double noiseProb){
+        if (var.isTemporalClone())
+            throw new IllegalArgumentException();
+
+        this.marNoise.put(var,noiseProb);
+    }
+
+    private DynamicDataInstance filter(DynamicDataInstance assignment){
+        hiddenVars.keySet().stream().forEach(var -> assignment.setValue(var,Utils.missingValue()));
+        marNoise.entrySet().forEach(e -> {
+            if (random.nextDouble()<e.getValue())
+                assignment.setValue(e.getKey(),Utils.missingValue());
+        });
+
+        return assignment;
+    }
+
     public Stream<DynamicAssignment> getSampleStream(int nSequences, int sequenceLength) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-        return IntStream.range(0,nSequences).mapToObj(Integer::new).flatMap(i-> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength));
+        return IntStream.range(0,nSequences).mapToObj(Integer::new)
+                .flatMap(i -> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength))
+                .map(this::filter);
     }
 
     public List<DynamicAssignment> getSampleList(int nSequences, int sequenceLength){
@@ -54,6 +79,7 @@ public class DynamicBayesianNetworkSampler {
 
     public void setSeed(int seed) {
         this.seed = seed;
+        random = new Random(seed);
     }
 
     public DataStream<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){

@@ -345,14 +345,16 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         Variable varGamma = variables.newGammaParameter(this.var.getName() + "_Gamma_Parameter_"+variables.getNumberOfVars());
 
+        conditionalDistributions.add(
+                new EF_BaseDistribution_MultinomialParents<EF_Gamma>(new ArrayList<>(), Arrays.asList(varGamma.getDistributionType().newEFUnivariateDistribution())));
+
+
         Variable normalBeta0 = variables.newGaussianParameter(this.var.getName() + "_Beta0_Parameter_"+variables.getNumberOfVars());
+
 
         conditionalDistributions.add(
                 new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalBeta0.getDistributionType().newEFUnivariateDistribution())));
 
-
-        conditionalDistributions.add(
-                new EF_BaseDistribution_MultinomialParents<EF_Gamma>(new ArrayList<>(), Arrays.asList(varGamma.getDistributionType().newEFUnivariateDistribution())));
 
 
         List<Variable> betas = new ArrayList<>();
