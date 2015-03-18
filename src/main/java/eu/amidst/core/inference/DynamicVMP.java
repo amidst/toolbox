@@ -122,7 +122,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     }
 
     private static void moveNodeQDist(Node toTemporalCloneNode, Node fromNode){
-            EF_UnivariateDistribution uni = fromNode.getQDist().deepCopy();
+            EF_UnivariateDistribution uni = fromNode.getQDist().deepCopy(toTemporalCloneNode.getMainVariable());
             ((EF_BaseDistribution_MultinomialParents)toTemporalCloneNode.getPDist()).setBaseEFDistribution(0,uni);
             toTemporalCloneNode.setQDist(uni);
     }

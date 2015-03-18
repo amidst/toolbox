@@ -105,9 +105,9 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
 
     @Override
-    public EF_UnivariateDistribution deepCopy() {
+    public EF_UnivariateDistribution deepCopy(Variable var) {
 
-        EF_Multinomial copy = new EF_Multinomial(this.getVariable());
+        EF_Multinomial copy = new EF_Multinomial(var);
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
         return copy;

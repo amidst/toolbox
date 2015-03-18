@@ -318,12 +318,12 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
             return this.numberOfStates;
         }
 
-        /*
+
         //TODO Does the best way to implement hashcode?
         @Override
         public int hashCode(){
             return this.name.hashCode();
         }
-        */
+
     }
 }

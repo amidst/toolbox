@@ -39,6 +39,7 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
         this.momentParameters = null;
     }
 
+
     public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions, StaticVariables staticVariables){
 
         parametersVariables = new ParameterVariables(staticVariables);
@@ -69,6 +70,10 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
 
         this.naturalParameters = null;
         this.momentParameters = null;
+    }
+
+    public ParameterVariables getParametersVariables() {
+        return parametersVariables;
     }
 
     public List<ConditionalDistribution> toConditionalDistribution(){
