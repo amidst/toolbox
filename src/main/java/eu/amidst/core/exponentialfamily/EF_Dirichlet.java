@@ -84,8 +84,8 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     }
 
     @Override
-    public EF_UnivariateDistribution deepCopy() {
-        EF_Dirichlet copy = new EF_Dirichlet(this.getVariable());
+    public EF_UnivariateDistribution deepCopy(Variable var) {
+        EF_Dirichlet copy = new EF_Dirichlet(var);
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
         return copy;

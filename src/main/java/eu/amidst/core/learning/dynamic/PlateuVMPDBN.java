@@ -1,16 +1,10 @@
 package eu.amidst.core.learning.dynamic;
 
-import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DynamicDataInstance;
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.inference.VMP_.Node;
-import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
-import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -97,7 +91,7 @@ public class PlateuVMPDBN {
     }
 
     private static void moveNodeQDist(Node toTemporalCloneNode, Node fromNode){
-        EF_UnivariateDistribution uni = fromNode.getQDist().deepCopy();
+        EF_UnivariateDistribution uni = fromNode.getQDist().deepCopy(toTemporalCloneNode.getMainVariable());
         ((EF_BaseDistribution_MultinomialParents)toTemporalCloneNode.getPDist()).setBaseEFDistribution(0,uni);
         toTemporalCloneNode.setQDist(uni);
     }
@@ -189,13 +183,12 @@ public class PlateuVMPDBN {
                 .collect(Collectors.toList());
 
         for (int i = 0; i < nRepetitions; i++) {
-
+            final int slice = i;
             Map<Variable, Node> map = new ConcurrentHashMap<>();
             List<Node> tmpNodes = ef_learningmodelTimeT.getDistributionList().stream()
                     .filter(dist -> !dist.getVariable().isParameterVariable())
                     .map(dist -> {
-                        ModifiedConditionalDistribution newDist = new ModifiedConditionalDistribution(dist, this.dbnModel.getDynamicVariables());
-                        Node node = new Node(newDist);
+                        Node node = new Node(dist, dist.getVariable().getName()+"_Slice_"+slice);
                         map.put(dist.getVariable(), node);
                         return node;
                     })
@@ -209,6 +202,9 @@ public class PlateuVMPDBN {
             for (Node node : plateuNodesTimeT.get(i)) {
                 final int slice = i;
                 node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVarTimeT(var, slice)).collect(Collectors.toList()));
+
+                node.getPDist().getConditioningVariables().stream().filter(var -> var.isTemporalClone()).forEach(var -> node.setVariableToNodeParent(var, this.getNodeOfVarTimeT(var, slice)));
+
                 node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVarTimeT(var, slice).getChildren().add(node));
             }
         }
@@ -281,129 +277,140 @@ public class PlateuVMPDBN {
     }
 
 
-    private static class ModifiedConditionalDistribution extends EF_ConditionalLearningDistribution{
+    public String toStringTime0(){
+        StringBuilder builder = new StringBuilder("Nodes Time 0:\n");
 
-        EF_ConditionalLearningDistribution dist;
+        for (Node node : this.nodesTime0){
+            builder.append("Node  "+node.getName()+":");
+
+            builder.append(" parents{");
+            for (Node parent: node.getParents()){
+                builder.append(parent.getName()+", ");
+            }
+            builder.append("}, children{");
+            for (Node children : node.getChildren()){
+                builder.append(children.getName()+", ");
+            }
+            builder.append("}, map{");
+
+            for (Variable var: node.getPDist().getConditioningVariables()) {
+                builder.append("("+var.getName()+" : "+node.variableToNodeParent(var).getName()+"), ");
+            }
+
+            builder.append("}\n");
+        }
 
 
-        public ModifiedConditionalDistribution(EF_ConditionalLearningDistribution dist_, DynamicVariables dynamicVariables){
+        return builder.toString();
+    }
 
-            this.dist=dist_;
+    public String toStringParemetersTime0(){
+        StringBuilder builder = new StringBuilder("Nodes Time 0:\n");
 
-            parents = new ArrayList<>();
+        for (Node node : this.parametersNodeTime0){
+            builder.append("Node  "+node.getName()+":");
 
-            for (Variable var: dist_.getConditioningVariables()){
-                if (!var.isTemporalClone()) {
-                    parents.add(var);
-                }else{
-                    parents.add(dynamicVariables.getVariableFromTemporalClone(var));
+            builder.append(" parents{");
+            for (Node parent: node.getParents()){
+                builder.append(parent.getName()+", ");
+            }
+            builder.append("}, children{");
+            for (Node children : node.getChildren()){
+                builder.append(children.getName()+", ");
+            }
+            builder.append("}, map{");
+
+            for (Variable var: node.getPDist().getConditioningVariables()) {
+                builder.append("("+var.getName()+" : "+node.variableToNodeParent(var).getName()+"), ");
+            }
+
+            builder.append("}\n");
+        }
+
+
+        return builder.toString();
+    }
+
+    public String toStringParemetersTimeT(){
+        StringBuilder builder = new StringBuilder("Parameter Nodes Time T:\n");
+
+        for (Node node : this.parametersNodeTimeT){
+            builder.append("Node  "+node.getName()+":");
+
+            builder.append(" parents{");
+            for (Node parent: node.getParents()){
+                builder.append(parent.getName()+", ");
+            }
+            builder.append("}, children{");
+            for (Node children : node.getChildren()){
+                builder.append(children.getName()+", ");
+            }
+            builder.append("}, map{");
+
+            for (Variable var: node.getPDist().getConditioningVariables()) {
+                builder.append("("+var.getName()+" : "+node.variableToNodeParent(var).getName()+"), ");
+            }
+
+            builder.append("}\n");
+        }
+
+
+        return builder.toString();
+    }
+
+    public String toStringTemporalClones(){
+        StringBuilder builder = new StringBuilder("Temporal Clone Nodes:\n");
+
+        for (Node node : this.cloneNodesTimeT){
+            builder.append("Node  "+node.getName()+":");
+
+            builder.append(" parents{");
+            for (Node parent: node.getParents()){
+                builder.append(parent.getName()+", ");
+            }
+            builder.append("}, children{");
+            for (Node children : node.getChildren()){
+                builder.append(children.getName()+", ");
+            }
+            builder.append("}, map{");
+
+            for (Variable var: node.getPDist().getConditioningVariables()) {
+                builder.append("("+var.getName()+" : "+node.variableToNodeParent(var).getName()+"), ");
+            }
+
+            builder.append("}\n");
+        }
+
+
+        return builder.toString();
+    }
+
+    public String toStringTimeT(){
+        StringBuilder builder = new StringBuilder("Nodes Time T:\n");
+
+        for (int i = 0; i < this.nRepetitions; i++) {
+            builder.append("Slide "+i+":\n");
+            for (Node node : this.plateuNodesTimeT.get(i)){
+                builder.append("Node  "+node.getName()+":");
+
+                builder.append(" parents{");
+                for (Node parent: node.getParents()){
+                    builder.append(parent.getName()+", ");
                 }
+                builder.append("}, children{");
+                for (Node children : node.getChildren()){
+                    builder.append(children.getName()+", ");
+                }
+                builder.append("}, map{");
+
+                for (Variable var: node.getPDist().getConditioningVariables()) {
+                    builder.append("("+var.getName()+" : "+node.variableToNodeParent(var).getName()+"), ");
+                }
+
+                builder.append("}\n");
             }
         }
 
-        @Override
-        public List<Variable> getParameterParentVariables() {
-            return dist.getParameterParentVariables();
-        }
-
-
-        @Override
-        public Variable getVariable() {
-            return dist.getVariable();
-        }
-
-        @Override
-        public NaturalParameters getNaturalParameters() {
-            return dist.getNaturalParameters();
-        }
-
-
-        @Override
-        public MomentParameters getMomentParameters() {
-            return dist.getMomentParameters();
-        }
-
-        @Override
-        public void setNaturalParameters(NaturalParameters parameters) {
-            dist.setNaturalParameters(parameters);
-        }
-
-
-        @Override
-        public void setMomentParameters(SufficientStatistics parameters) {
-            dist.setMomentParameters(parameters);
-        }
-
-        @Override
-        public void setMomentParameters(MomentParameters parameters) {
-            dist.setMomentParameters(parameters);
-        }
-
-        @Override
-        public List<Variable> getConditioningVariables() {
-            return this.parents;
-        }
-
-
-        @Override
-        public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
-            return dist.toConditionalDistribution(expectedParameters);
-        }
-
-        @Override
-        public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-            return dist.getExpectedLogNormalizer(parent,momentChildCoParents);
-        }
-
-        @Override
-        public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
-            return dist.getExpectedLogNormalizer(momentParents);
-        }
-
-        @Override
-        public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
-            return dist.getExpectedNaturalFromParents(momentParents);
-        }
-
-        @Override
-        public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
-            return dist.getExpectedNaturalToParent(parent, momentChildCoParents);
-        }
-
-        @Override
-        public void updateNaturalFromMomentParameters() {
-            dist.updateNaturalFromMomentParameters();
-        }
-
-        @Override
-        public void updateMomentFromNaturalParameters() {
-            dist.updateMomentFromNaturalParameters();
-        }
-
-        @Override
-        public SufficientStatistics getSufficientStatistics(Assignment data) {
-            return dist.getSufficientStatistics(data);
-        }
-
-        @Override
-        public int sizeOfSufficientStatistics() {
-            return dist.sizeOfSufficientStatistics();
-        }
-
-        @Override
-        public double computeLogBaseMeasure(Assignment dataInstance) {
-            return dist.computeLogBaseMeasure(dataInstance);
-        }
-
-        @Override
-        public double computeLogNormalizer() {
-            return dist.computeLogNormalizer();
-        }
-
-        @Override
-        public Vector createZeroedVector() {
-            return dist.createZeroedVector();
-        }
+        return builder.toString();
     }
-
 }
