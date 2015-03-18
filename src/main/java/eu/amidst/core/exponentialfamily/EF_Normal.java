@@ -76,9 +76,9 @@ public class EF_Normal extends EF_UnivariateDistribution {
     }
 
     @Override
-    public EF_UnivariateDistribution deepCopy() {
+    public EF_UnivariateDistribution deepCopy(Variable var) {
 
-        EF_Normal copy = new EF_Normal(this.getVariable());
+        EF_Normal copy = new EF_Normal(var);
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
 
