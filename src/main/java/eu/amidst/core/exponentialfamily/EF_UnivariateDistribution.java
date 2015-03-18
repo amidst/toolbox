@@ -3,6 +3,7 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.Variable;
 
 import java.util.Random;
 
@@ -44,7 +45,11 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
         return this.computeLogBaseMeasure(dataInstance.getValue(this.getVariable()));
     }
 
-    public abstract EF_UnivariateDistribution deepCopy();
+    public abstract EF_UnivariateDistribution deepCopy(Variable variable);
+
+    public EF_UnivariateDistribution deepCopy(){
+        return this.deepCopy(this.getVariable());
+    }
 
     public abstract EF_UnivariateDistribution randomInitialization(Random rand);
 
