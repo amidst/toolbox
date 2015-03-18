@@ -2,31 +2,51 @@
 \section{Database management} \label{sec:DataBases}
 %------------------------------------------------------------------------------------------------------------
 
-This section covers the description of databases that will be used later by AMIDST learning and inference algorithms implemented in the toolbox.  Figure~\ref{fig:DataBase} shows a high-level overview of the key components of the AMIDST toolbox. It illustrates mainly the different database functionalities and how they are connected to the core component \comp{PGM} through both the \comp{Learning Engine} and \comp{Inference Engine} components. In what follows, we describe each of the database functionalities, along with a code excerpt containing a brief example, then we introduce briefly the \comp{Learning Engine} and \comp{Inference Engine} that will be presented in more details in Deliverable 3.2.
+This section covers the description of the databases that will be used later by the AMIDST learning and inference algorithms implemented in the toolbox.  Figure~\ref{fig:DataBase} shows a high-level overview of the key components of the AMIDST toolbox. It illustrates mainly the different database functionalities and how they are connected to the core component \comp{PGM} through the \comp{Learning Engine} and \comp{Inference Engine} components. 
 
-\vspace{-0.4in}
+Note that the employed design is intended to support future users and developers of the AMIDST toolbox in the potential design and implementation of other database specifications; the only restriction being that new database components should implement the interface defined by the \comp{DataStream} component. 
+
   \begin{figure}[ht!]
     \centering
     \includegraphics[width=\linewidth]{./figures/DataBase}
-    \vspace{-0.8in}
+    \vspace{-0.5in}
     \caption{Illustration of the main database management functionalities and their connection with PGM, learning engine, and inference engine components. }
     \label{fig:DataBase}
   \end{figure}
+  
+In what follows, we describe each of the database functionalities. Afterwards, we introduce briefly the \comp{Learning Engine} and \comp{Inference Engine} that will be presented in more detail in Deliverable 3.2.
+ 
+ 
+ %------------------------------------------------------------------------------------------------------------
+\subsection{DataOnMemory}
+%------------------------------------------------------------------------------------------------------------   
+
+The \comp{DataOnMemory} component provides database functionality for data sets that can be loaded into main memory.
+
+%------------------------------------------------------------------------------------------------------------
+\subsection{DataOnDisk}
+%------------------------------------------------------------------------------------------------------------   
+
+The \comp{DataOnDisk} component provides functionality for handling data sets too large to be loaded into main memory.
+
+%------------------------------------------------------------------------------------------------------------
+\subsection{DistributedData}
+%------------------------------------------------------------------------------------------------------------   
+
+The \comp{DistributedData} component is designed to provide a distributed database functionality based on Hadoop or Spark architectures. 
+ 
  
 %------------------------------------------------------------------------------------------------------------
 \subsection{DataStream}
 %------------------------------------------------------------------------------------------------------------   
 
-In the AMIDST framework, we consider a \comp{DataStream} as a data source, i.e., a streaming data where records arrive at high frequency with no storage of historical data in memory. \comp{DataStream} is connected to either \comp{DataInstance} and \comp{DynamicDataInstance} components. 
-
-The employed design is intended to support future users and developers of the AMIDST toolbox in the potential design and implementation of other database specifications; the only restriction being that new database components should implement the interface defined by the \comp{DataStream} component. 
+A \comp{DataStream} correspond to a database where records arrive at high frequency with no storage of historical data in memory. \comp{DataStream} is connected to either \comp{DataInstance} and \comp{DynamicDataInstance} components. 
 
 %------------------------------------------------------------------------------------------------------------
 \subsection{DataInstance}
 %------------------------------------------------------------------------------------------------------------  
   
-The \comp{DataInstance} component consists of a single class that represents a particular evidence configuration, such as the observed values of a collection of variables in a particular data row. 
-
+The \comp{DataInstance} component consists of a single class that represents a particular evidence configuration, i.e., the observed values of a set of variables. 
 
 \vspace{-0.1in}
 \begin{table}[H]
