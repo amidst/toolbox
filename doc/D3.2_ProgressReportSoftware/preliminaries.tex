@@ -1,16 +1,13 @@
 %--------------------------------------------------------------------------------------------------
-\section{Preliminaries} \label{Preliminaries} 
+\section{Preliminaries} \label{sec:Preliminaries} 
 %--------------------------------------------------------------------------------------------------
 
-Deliverable 3.1 State of the art of inference in hybrid and dynamic models \cite{Deliverable 3.1}.
+Deliverable 3.1 introduced a thorough and up-to-date description of the state-of-the art of inference in hybrid and dynamic Bayesian networks \cite{Deliverable 3.1}.
 
-Variational inference  \cite{Jordan1999,Attias2000}
+Intorduction to Variational Inference \cite{Jordan1999,Attias2000}, conjugate-exponential families \cite{Attias2000,Beal2003,Bishop2005}
 
-conjugate-exponential families \cite{Attias2000,Beal2003,Bishop2005}
+An overview of the data structures implemented in the AMIDST toolbox is illustrated in Figure \ref{Figure:ToolboxDataStructures}. These data structures, described in Deliverable 2.3 \cite{Deliverable2.3}, define the core components used by the AMIDST inference algorithms. 
 
-An overview of the data structures implemented in the AMIDST toolbox is illustrated in Figure \ref{Figure:ToolboxDataStructures}. These data structures basically define the main components that will be used for implementing the AMIDST learning and inference algorithms. As we previously mentioned, in the AMIDST toolbox, we focus on two specific instantiations of PGMs, namely, a static Bayesian network (\comp{BN} component) and a two time-slice dynamic Bayesian network (\comp{2T-DBN} component). This is also directly reflected in the component structure.
-
-\vspace{-0.1in}
 
 \begin{figure}[ht!]
 \begin{center}

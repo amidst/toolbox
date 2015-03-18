@@ -122,16 +122,16 @@ public class Examples {
 
         Normal_MultinomialParents distC = dynamicbnet.getDistributionTime0(C);
         distC.getNormal(0).setMean(0.7);
-        //distC.getNormal(0).setSd(0.2);
+        distC.getNormal(0).setVariance(0.04);
 
         distC.getNormal(1).setMean(0.4);
-        //distC.getNormal(1).setSd(1);
+        distC.getNormal(1).setVariance(1);
 
         distC.getNormal(2).setMean(0.75);
-        //distC.getNormal(2).setSd(0.05);
+        distC.getNormal(2).setVariance(0.0025);
 
         distC.getNormal(3).setMean(0.66);
-        //distC.getNormal(3).setSd(0.04);
+        distC.getNormal(3).setVariance(0.0016);
 
         System.out.println(dynamicbnet.toString());
 
