@@ -3,6 +3,9 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.models.BayesianNetwork;
@@ -127,6 +130,97 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
                 EF_UnivariateDistribution uni = plateuVMP.getEFParameterPosterior(var).deepCopy();
                 uni.setNaturalParameters((NaturalParameters)total.getVectorByPosition(i));
                 dist.setBaseEFDistribution(0,uni);
+            }
+        }
+    }
+
+    public void runLearningOnParallelForDifferentBatchWindows(int[] windowsSizes, String beta0fromML, String beta1fromML,
+                                                              String sampleMeanB){
+
+        String varA_Beta0output = "Variable A beta0 (CLG)\n"+beta0fromML+ "\n",
+                varA_Beta1output = "Variable A beta1 (CLG)\n"+beta1fromML+ "\n",
+                varBoutput = "Variable B mean (univ. normal)\n"+sampleMeanB + "\n";
+
+        Variable varA = dag.getStaticVariables().getVariableByName("A");
+        Variable varB = dag.getStaticVariables().getVariableByName("B");
+
+        for (int j = 0; j < windowsSizes.length; j++) {
+            this.setWindowsSize(windowsSizes[j]);
+            this.initLearning();
+            List<Vector> naturalParametersPriors = this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
+                    .map(var -> {
+                        NaturalParameters parameter = ((EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var)).getBaseEFUnivariateDistribution(0).getNaturalParameters();
+                        NaturalParameters copy = new ArrayVector(parameter.size());
+                        copy.copy(parameter);
+                        return copy;
+                    }).collect(Collectors.toList());
+
+            CompoundVector compoundVectorPrior = new CompoundVector(naturalParametersPriors);
+
+            //BatchOutput finalout = this.dataStream.streamOfBatches(this.windowsSize).map(batch -> this.updateModelOnBatchParallel(batch, compoundVectorPrior)).reduce(BatchOutput::sum).get();
+
+            List<Vector> naturalParametersPriors2 = this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
+                    .map(var -> {
+                        NaturalParameters parameter = ((EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var)).getBaseEFUnivariateDistribution(0).getNaturalParameters();
+                        NaturalParameters copy = new ArrayVector(parameter.size());
+                        copy.copy(parameter);
+                        return copy;
+                    }).collect(Collectors.toList());
+
+            BatchOutput finalout = new BatchOutput(new CompoundVector(naturalParametersPriors2), 0);
+
+            String svbBeta0A = "", svbBeta1A = "",svbMeanB = "";
+            Iterator<DataOnMemory<DataInstance>> it = this.dataStream.streamOfBatches(this.windowsSize).iterator();
+
+            while (it.hasNext()) {
+                DataOnMemory<DataInstance> batch = it.next();
+
+                BatchOutput out = this.updateModelOnBatchParallel(batch, compoundVectorPrior);
+
+                BatchOutput.sum(out, finalout);
+
+                for (int i = 0; i < this.ef_extendedBN.getParametersVariables().getListOfVariables().size(); i++) {
+                    Variable var = this.ef_extendedBN.getParametersVariables().getListOfVariables().get(i);
+                    CompoundVector vector = (CompoundVector) finalout.getVector();
+                    NaturalParameters orig = (NaturalParameters) vector.getVectorByPosition(i);
+                    NaturalParameters copy = new ArrayVector(orig.size());
+                    copy.copy(orig);
+                    this.plateuVMP.getEFParameterPosterior(var).setNaturalParameters(copy);
+                }
+                BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+                ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
+                double beta0A = distA.getIntercept();
+                double beta1A = distA.getCoeffParents()[0];
+                svbBeta0A += beta0A+", ";
+                svbBeta1A += beta1A+", ";
+                Normal distB = (Normal)((BaseDistribution_MultinomialParents)bn.getConditionalDistribution(varB)).
+                        getBaseDistribution(0);
+                svbMeanB += distB.getMean()+", ";
+            }
+
+            varA_Beta0output += svbBeta0A +"\n";
+            varA_Beta1output += svbBeta1A +"\n";
+            varBoutput += svbMeanB +"\n";
+
+            System.out.println(varA_Beta0output);
+            System.out.println(varA_Beta1output);
+            System.out.println(varBoutput);
+
+            this.elbo = finalout.getElbo();
+
+            CompoundVector total = (CompoundVector) finalout.getVector();
+
+            //total.sum(compoundVectorPrior);
+
+
+            List<Variable> parameters = this.ef_extendedBN.getParametersVariables().getListOfVariables();
+
+            for (int i = 0; i < parameters.size(); i++) {
+                Variable var = parameters.get(i);
+                EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var);
+                EF_UnivariateDistribution uni = plateuVMP.getEFParameterPosterior(var).deepCopy();
+                uni.setNaturalParameters((NaturalParameters) total.getVectorByPosition(i));
+                dist.setBaseEFDistribution(0, uni);
             }
         }
     }
