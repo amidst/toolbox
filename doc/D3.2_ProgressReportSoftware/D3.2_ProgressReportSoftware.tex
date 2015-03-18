@@ -1,4 +1,5 @@
 \documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage{hl_short}
 \usepackage{geometry}                		% See geom\dagetry.pdf to learn the layout options. There are lots.
 \geometry{a4paper}                   		% ... or a4paper or a5paper or ... 
 %\geometry{landscape}                		% Activate for for rotated page geometry
@@ -18,6 +19,8 @@
 \usepackage{hyperref}
 \usepackage{url}
 
+\newcommand{\comp}[1]{{\sf #1}}
+
 \parskip 6pt % 1pt = 0.351 mm
 \parindent 0pt
 
@@ -29,7 +32,6 @@
 \cfoot{}
 
 \newcommand{\drop}[1]{}
-\newcommand{\bm}{\mathbf}
 
 \numberwithin{figure}{section}
 \numberwithin{equation}{section}
@@ -54,7 +56,7 @@
   \begin{tabularx}{\linewidth}{|p{13mm}| p{18mm}| X | X |} \hline
     {\bf Version} & {\bf Date} & {\bf Author (Unit)} & {\bf Description} \\ \hline
     v0.3 & 10/03/2015~ & All consortium members & The software library implementation for the AMIDST modelling framework discussed and established \\ \hline
-    v0.6 & 20/03/2015~ & Hanen Borchani, Antonio Fern\'andez, Helge Langseth, Anders L. Madsen, Ana M. Mart\'inez, Andr\'es Masegosa, Thomas D. Nielsen, Antonio Salmer\'on & Initial version of document finished and reviewed  \\ \hline
+    v0.6 & 20/03/2015~ & Hanen Borchani, Antonio Fern\'andez, Ana M. Mart\'inez, Andr\'es Masegosa & Initial version of document finished and reviewed  \\ \hline
     v1.0 & 31/03/2015~ & Hanen Borchani, Antonio Fern\'andez, Helge Langseth, Anders L. Madsen, Ana M. Mart\'inez, Andr\'es Masegosa, Thomas D. Nielsen, Antonio Salmer\'on & Final version of document  \\ \hline
   \end{tabularx}
 \end{table}
