@@ -121,6 +121,7 @@ public class Examples {
         distA.setProbabilities(new double[]{0.1, 0.9});
 
         Normal_MultinomialParents distC = dynamicbnet.getDistributionTime0(C);
+
         distC.getNormal(0).setMean(0.7);
         distC.getNormal(0).setVariance(0.04);
 
