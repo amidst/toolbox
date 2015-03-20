@@ -36,6 +36,8 @@ public class VMP implements InferenceAlgorithmForBN {
     int maxIter = 1000;
     double threshold = 0.0001;
     boolean output = false;
+    int nIter = 0;
+    int numbOfBatches = 0;
 
     public void setOutput(boolean output) {
         this.output = output;
@@ -83,6 +85,8 @@ public class VMP implements InferenceAlgorithmForBN {
 
 
     public void compileModelSerial() {
+        nIter = 0;
+        numbOfBatches = 0;
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
         int niter = 0;
@@ -126,11 +130,18 @@ public class VMP implements InferenceAlgorithmForBN {
             //System.out.println(elbo);
         }
         probOfEvidence = elbo;
-        if (output) System.out.println("N Iter: "+niter +", elbo:"+elbo);
+        if (output){
+            System.out.println("N Iter: "+niter +", elbo:"+elbo);
+        }
+        nIter+=niter;
+        numbOfBatches++;
     }
 
     public void compileModelParallel() {
 
+
+        nIter = 0;
+        numbOfBatches = 0;
         nodes.stream().filter(Node::isActive).forEach( node -> node.setParallelActivated(false));
 
         boolean convergence = false;
@@ -200,9 +211,16 @@ public class VMP implements InferenceAlgorithmForBN {
             //System.out.println(elbo);
         }
         probOfEvidence = elbo;
-        if (output) System.out.println("N Iter: "+niter +", elbo:"+elbo);
+        if (output) {
+            System.out.println("N Iter: " + niter + ", elbo:" + elbo);
+        }
+        nIter+=niter;
+        numbOfBatches++;
     }
 
+    public double getAverageIterations(){
+        return ((double)nIter)/numbOfBatches;
+    }
     @Override
     public void setModel(BayesianNetwork model_) {
         model = model_;
