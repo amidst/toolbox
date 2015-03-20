@@ -39,6 +39,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
     boolean randomRestart=false;
     int windowsSize=100;
     int seed = 0;
+    double fading = 1;
 
     public StreamingVariationalBayesVMP(){
         plateuVMP = new PlateuVMP();
@@ -69,6 +70,10 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
     public void setWindowsSize(int windowsSize) {
         this.windowsSize = windowsSize;
         this.plateuVMP.setNRepetitions(windowsSize);
+    }
+
+    public void setFading(double fading) {
+        this.fading = fading;
     }
 
     @Override
@@ -167,7 +172,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
             EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var);
             EF_UnivariateDistribution prior  =plateuVMP.getEFParameterPosterior(var).deepCopy();
             NaturalParameters naturalParameters = prior.getNaturalParameters();
-            naturalParameters.multiplyBy(0.999);
+            naturalParameters.multiplyBy(fading);
             prior.setNaturalParameters(naturalParameters);
             dist.setBaseEFDistribution(0, prior);
         });
