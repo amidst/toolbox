@@ -151,6 +151,8 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
             }
         }
 
+        random = new Random(seed);
+
         return new TemporalDataStream(this,nSamples);
 
     }

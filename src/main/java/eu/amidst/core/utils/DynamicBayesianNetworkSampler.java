@@ -83,6 +83,7 @@ public class DynamicBayesianNetworkSampler {
     }
 
     public DataStream<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){
+        random = new Random(seed);
         return new TemporalDataStream(this,nSequences,sequenceLength);
     }
 

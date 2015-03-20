@@ -5,9 +5,12 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -921,7 +924,7 @@ public class BayesianVMPTest extends TestCase {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(i);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
             Attribute attVarA = data.getAttributes().getAttributeByName("A");
             Attribute attVarB = data.getAttributes().getAttributeByName("B");
@@ -1001,11 +1004,11 @@ public class BayesianVMPTest extends TestCase {
                 iterSerial[j] = Double.toString(vmp.getAverageIterations());
             }
 
-            vmp.setOutput(true);
+            vmp.setOutput(false);
             svb.setParallelMode(true);
             svb.setRandomRestart(false);
             for (int j = 0; j < windowsSizes.length; j++) {
-                System.out.println("Window: "+windowsSizes[j]);
+                //System.out.println("Window: "+windowsSizes[j]);
                 svb.setWindowsSize(windowsSizes[j]);
                 svb.initLearning();
                 svb.runLearning();
@@ -1023,7 +1026,7 @@ public class BayesianVMPTest extends TestCase {
             svb.setParallelMode(true);
             svb.setRandomRestart(true);
             for (int j = 0; j < windowsSizes.length; j++) {
-                System.out.println("Window: "+windowsSizes[j]);
+                //System.out.println("Window: "+windowsSizes[j]);
                 svb.setWindowsSize(windowsSizes[j]);
                 svb.initLearning();
                 svb.runLearning();
@@ -1057,6 +1060,174 @@ public class BayesianVMPTest extends TestCase {
             }
 
             System.out.println("WindowSize \t Serial \t ParallelSeqQ \t ParallelRandQ");
+            for (int j = 0; j < windowsSizes.length; j++) {
+                System.out.println(windowsSizes[j]+ "\t" + iterSerial[j] + "\t" + iterParallelSeqQ[j] + "\t" + iterParallelRandQ[j]);
+            }
+
+            //svb.runLearningOnParallelForDifferentBatchWindows(windowsSizes, beta0fromML, beta1fromML, sampleMeanB);
+        }
+
+    }
+
+    public static void testCompareBatchSizesFading() throws IOException, ClassNotFoundException {
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+
+        for (int i = 0; i < 1; i++) {
+
+            System.out.println("\nNormal|Normal variable network \n ");
+
+            normalVarBN.randomInitialization(new Random(i));
+
+
+            Variable varA = normalVarBN.getStaticVariables().getVariableByName("A");
+            Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
+
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
+            sampler.setSeed(5);
+            //sampler.setMARVar(varB,0.5);
+            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+
+            ARFFDataWriter.writeToARFFFile(data, "./data/tmp.arff");
+
+            data = DataStreamLoader.loadFromFile("./data/tmp.arff");
+
+            Attribute attVarA = data.getAttributes().getAttributeByName("A");
+            Attribute attVarB = data.getAttributes().getAttributeByName("B");
+
+
+
+
+            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+
+            //System.out.println(learntNormalVarBN.toString());
+
+
+            String meanfromML = Double.toString(((Normal) ((BaseDistribution_MultinomialParents) learntNormalVarBN.
+                    getConditionalDistribution(varB)).getBaseDistribution(0)).getMean());
+            String beta0fromML = Double.toString(((ConditionalLinearGaussian)learntNormalVarBN.
+                    getConditionalDistribution(varA)).getIntercept());
+            String beta1fromML = Double.toString(((ConditionalLinearGaussian)learntNormalVarBN.
+                    getConditionalDistribution(varA)).getCoeffParents()[0]);
+
+
+            /**
+             * Incremental sample mean
+             */
+            String sampleMeanB = "";
+            double incrementalMeanB = 0;
+            double index = 1;
+            for(DataInstance dataInstance: data){
+                incrementalMeanB = incrementalMeanB + (dataInstance.getValue(attVarB) - incrementalMeanB)/index;
+                sampleMeanB += incrementalMeanB+", ";
+                index++;
+            }
+
+            /**
+             * Streaming Variational Bayes for batches of different sizes
+             */
+            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+            svb.setParallelMode(false);
+            svb.setSeed(i);
+            VMP vmp = svb.getPlateuVMP().getVMP();
+            vmp.setOutput(false);
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(1000);
+            vmp.setThreshold(0.0001);
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
+
+
+            String[] meanBSerial = new String[4];
+            String[] beta0Serial = new String[4];
+            String[] beta1Serial = new String[4];
+            String[] meanBParallelSeqQ = new String[4];
+            String[] beta0ParallelSeqQ = new String[4];
+            String[] beta1ParallelSeqQ = new String[4];
+            String[] meanBParallelRandQ = new String[4];
+            String[] beta0ParallelRandQ = new String[4];
+            String[] beta1ParallelRandQ = new String[4];
+            String[] iterSerial = new String[4];
+            String[] iterParallelSeqQ = new String[4];
+            String[] iterParallelRandQ = new String[4];
+            int[] windowsSizes = {1,10,50,100};
+
+            svb.setParallelMode(false);
+            svb.setFading(0.99);
+
+            for (int j = 0; j < windowsSizes.length; j++) {
+                //System.out.println("Window: "+windowsSizes[j]);
+                svb.setWindowsSize(windowsSizes[j]);
+                svb.initLearning();
+                svb.runLearning();
+                BayesianNetwork svbSerial = svb.getLearntBayesianNetwork();
+
+                meanBSerial[j] = Double.toString(((Normal) ((BaseDistribution_MultinomialParents) svbSerial.
+                        getConditionalDistribution(varB)).getBaseDistribution(0)).getMean());
+                beta0Serial[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
+                        getConditionalDistribution(varA)).getIntercept());
+                beta1Serial[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
+                        getConditionalDistribution(varA)).getCoeffParents()[0]);
+                iterSerial[j] = Double.toString(vmp.getAverageIterations());
+            }
+
+            vmp.setOutput(false);
+            svb.setParallelMode(false);
+            svb.setFading(0.9);
+            for (int j = 0; j < windowsSizes.length; j++) {
+                //System.out.println("Window: "+windowsSizes[j]);
+                svb.setWindowsSize(windowsSizes[j]);
+                svb.initLearning();
+                svb.runLearning();
+                BayesianNetwork svbSerial = svb.getLearntBayesianNetwork();
+
+                //svb.getPlateuVMP().getEFParameterPosterior()
+
+                meanBParallelSeqQ[j] = Double.toString(((Normal) ((BaseDistribution_MultinomialParents)svbSerial.
+                        getConditionalDistribution(varB)).getBaseDistribution(0)).getMean());
+                beta0ParallelSeqQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
+                        getConditionalDistribution(varA)).getIntercept());
+                beta1ParallelSeqQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
+                        getConditionalDistribution(varA)).getCoeffParents()[0]);
+                iterParallelSeqQ[j] = Double.toString(vmp.getAverageIterations());
+            }
+
+            svb.setParallelMode(false);
+            svb.setFading(0.2);
+            for (int j = 0; j < windowsSizes.length; j++) {
+                //System.out.println("Window: "+windowsSizes[j]);
+                svb.setWindowsSize(windowsSizes[j]);
+                svb.initLearning();
+                svb.runLearning();
+                BayesianNetwork svbSerial = svb.getLearntBayesianNetwork();
+
+                meanBParallelRandQ[j] = Double.toString(((Normal) ((BaseDistribution_MultinomialParents)svbSerial.
+                        getConditionalDistribution(varB)).getBaseDistribution(0)).getMean());
+                beta0ParallelRandQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
+                        getConditionalDistribution(varA)).getIntercept());
+                beta1ParallelRandQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
+                        getConditionalDistribution(varA)).getCoeffParents()[0]);
+                iterParallelRandQ[j] = Double.toString(vmp.getAverageIterations());
+            }
+
+            System.out.println("Mean of B");
+            System.out.println("WindowSize \t ML \t Fading_1 \t Fading_2 \t Fading_3");
+            for (int j = 0; j < windowsSizes.length; j++) {
+                System.out.println(windowsSizes[j]+ "\t" + meanfromML + "\t" + meanBSerial[j] + "\t" + meanBParallelSeqQ[j]+ "\t" + meanBParallelRandQ[j]);
+            }
+
+            System.out.println("Beta0 of A");
+            System.out.println("WindowSize\t ML \t Fading_1 \t Fading_2 \t Fading_3");
+            for (int j = 0; j < windowsSizes.length; j++) {
+                System.out.println(windowsSizes[j]+ "\t" + beta0fromML + "\t" + beta0Serial[j] + "\t" + beta0ParallelSeqQ[j]+ "\t" + beta0ParallelRandQ[j]);
+            }
+
+            System.out.println("Beta1 of A");
+            System.out.println("WindowSize\t ML \t Fading_1 \t Fading_2 \t Fading_3");
+            for (int j = 0; j < windowsSizes.length; j++) {
+                System.out.println(windowsSizes[j]+ "\t" + beta1fromML + "\t" + beta1Serial[j] + "\t" + beta1ParallelSeqQ[j] + "\t" + beta1ParallelRandQ[j]);
+            }
+
+            System.out.println("WindowSize \t Fading_1 \t Fading_2 \t Fading_3");
             for (int j = 0; j < windowsSizes.length; j++) {
                 System.out.println(windowsSizes[j]+ "\t" + iterSerial[j] + "\t" + iterParallelSeqQ[j] + "\t" + iterParallelRandQ[j]);
             }
