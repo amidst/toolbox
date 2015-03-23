@@ -17,6 +17,7 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
+import org.apache.commons.math.stat.descriptive.rank.Max;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -1070,7 +1071,7 @@ public class BayesianVMPTest extends TestCase {
 
     }
 
-    public static void testCompareBatchSizesFading() throws IOException, ClassNotFoundException {
+    public static void testCompareBatchSizesFadingVMP() throws IOException, ClassNotFoundException {
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
 
         for (int i = 0; i < 1; i++) {
@@ -1084,7 +1085,7 @@ public class BayesianVMPTest extends TestCase {
             Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-            sampler.setSeed(5);
+            sampler.setSeed(0);
             //sampler.setMARVar(varB,0.5);
             DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
@@ -1130,7 +1131,7 @@ public class BayesianVMPTest extends TestCase {
             svb.setParallelMode(false);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuVMP().getVMP();
-            vmp.setOutput(true);
+            vmp.setOutput(false);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -1156,7 +1157,7 @@ public class BayesianVMPTest extends TestCase {
             svb.setFading(0.99);
 
             for (int j = 0; j < windowsSizes.length; j++) {
-                System.out.println("Window: "+windowsSizes[j]);
+                //System.out.println("Window: "+windowsSizes[j]);
                 svb.setWindowsSize(windowsSizes[j]);
                 svb.initLearning();
                 svb.runLearning();
@@ -1234,6 +1235,78 @@ public class BayesianVMPTest extends TestCase {
             }
 
             //svb.runLearningOnParallelForDifferentBatchWindows(windowsSizes, beta0fromML, beta1fromML, sampleMeanB);
+        }
+
+    }
+
+    public static void testCompareBatchSizesFadingML() throws IOException, ClassNotFoundException {
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+
+        for (int i = 0; i < 1; i++) {
+
+            System.out.println("\nNormal|Normal variable network \n ");
+
+            normalVarBN.randomInitialization(new Random(i));
+
+
+            Variable varA = normalVarBN.getStaticVariables().getVariableByName("A");
+            Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
+
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
+            sampler.setSeed(0);
+            //sampler.setMARVar(varB,0.5);
+            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+
+            ARFFDataWriter.writeToARFFFile(data, "./data/tmp.arff");
+
+            data = DataStreamLoader.loadFromFile("./data/tmp.arff");
+
+
+            int[] windowsSizes = {1, 2, 10, 100, 1000};
+            double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+            //[mean, beta0, beta1][windowSizes.length]
+            String[][] outputPerWindowSize = new String[3][windowsSizes.length];
+
+            for (int j = 0; j < windowsSizes.length; j++) {
+                outputPerWindowSize[0][j]=windowsSizes[j]+ "\t";
+                outputPerWindowSize[1][j]=windowsSizes[j]+ "\t";
+                outputPerWindowSize[2][j]=windowsSizes[j]+ "\t";
+                for (int f = 0; f < fadingFactor.length; f++) {
+                    BayesianNetwork MLlearntBN = MaximumLikelihoodForBN.
+                            learnParametersStaticModelFading(normalVarBN.getDAG(), data, fadingFactor[f], windowsSizes[j]);
+                    outputPerWindowSize[0][j] += Double.toString(((Normal) ((BaseDistribution_MultinomialParents) MLlearntBN.
+                            getConditionalDistribution(varB)).getBaseDistribution(0)).getMean()) + "\t";
+                    outputPerWindowSize[1][j] += Double.toString(((ConditionalLinearGaussian) MLlearntBN.
+                            getConditionalDistribution(varA)).getIntercept()) + "\t";
+                    outputPerWindowSize[2][j] += Double.toString(((ConditionalLinearGaussian) MLlearntBN.
+                            getConditionalDistribution(varA)).getCoeffParents()[0]) + "\t";
+                }
+
+            }
+
+            String fadingOutput = "";
+            for (int j = 0; j < fadingFactor.length; j++) {
+                fadingOutput+=fadingFactor[j]+"\t";
+            }
+
+            System.out.println("Mean of B");
+            System.out.println("WindowSize \t"+fadingOutput);
+            for (int j = 0; j < windowsSizes.length; j++) {
+                System.out.println(outputPerWindowSize[0][j]);
+            }
+
+            System.out.println("Beta0 of A");
+            System.out.println("WindowSize \t"+fadingOutput);
+            for (int j = 0; j < windowsSizes.length; j++) {
+                System.out.println(outputPerWindowSize[1][j]);
+            }
+
+            System.out.println("Beta1 of A");
+            System.out.println("WindowSize \t"+fadingOutput);
+            for (int j = 0; j < windowsSizes.length; j++) {
+                System.out.println(outputPerWindowSize[2][j]);
+            }
+
         }
 
     }
@@ -1449,8 +1522,6 @@ public class BayesianVMPTest extends TestCase {
             System.out.println(windowsSizes[i] + "\t" + logProbOfEv_Batch1 + "\t" + watch.stop());
         }
     }
-
-
 
     public static void testGaussian1_play() throws IOException, ClassNotFoundException{
 
