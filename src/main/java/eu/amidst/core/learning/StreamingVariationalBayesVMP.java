@@ -39,6 +39,8 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
     boolean randomRestart=false;
     int windowsSize=100;
     int seed = 0;
+    int nBatches = 0;
+    int nIterTotal = 0;
     double fading = 1;
 
     public StreamingVariationalBayesVMP(){
@@ -161,9 +163,11 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
+        nBatches++;
         //System.out.println("\n Batch:");
         this.plateuVMP.setEvidence(batch.getList());
         this.plateuVMP.runInference();
+        nIterTotal+=this.plateuVMP.getVMP().getNumberOfIterations();
 
         this.ef_extendedBN.getParametersVariables().getListOfVariables().stream().forEach(var -> {
             EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var);
@@ -189,8 +193,10 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     private BatchOutput updateModelOnBatchParallel(DataOnMemory<DataInstance> batch,  CompoundVector compoundVectorPrior) {
 
+        nBatches++;
         this.plateuVMP.setEvidence(batch.getList());
         this.plateuVMP.runInference();
+        nIterTotal+=this.plateuVMP.getVMP().getNumberOfIterations();
 
         List<Vector> naturalParametersPosterior =  this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
                 .map(var -> plateuVMP.getEFParameterPosterior(var).deepCopy().getNaturalParameters()).collect(Collectors.toList());
@@ -203,6 +209,14 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         return new BatchOutput(compoundVectorEnd, this.plateuVMP.getLogProbabilityOfEvidence());
     }
 
+    public int getNumberOfBatches() {
+        return nBatches;
+    }
+
+    public double getAverageNumOfIterations(){
+        return ((double)nIterTotal)/nBatches;
+    }
+
     @Override
     public void setDAG(DAG dag) {
         this.dag = dag;
@@ -210,6 +224,8 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     public void initLearning(){
 
+        this.nBatches = 0;
+        this.nIterTotal = 0;
         List<EF_ConditionalDistribution> dists = this.dag.getParentSets().stream()
                 .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
                 .collect(Collectors.toList());
