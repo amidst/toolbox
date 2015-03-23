@@ -83,7 +83,9 @@ public class Examples {
         Variable C = dynamicVariables.getVariable("C");
         Variable D = dynamicVariables.getVariable("D");
 
-        Variable ATempClone = dynamicVariables.getTemporalClone(A);
+        Variable ATempClone = dynamicVariables.createTemporalClone(A);
+
+
 
         Variable H1 = dynamicVariables.newMultinomialDynamicVariable("HiddenVar1",Arrays.asList("TRUE", "FALSE"));
         Variable H2 = dynamicVariables.newMultinomialDynamicVariable("HiddenVar2", Arrays.asList("TRUE", "FALSE"));
