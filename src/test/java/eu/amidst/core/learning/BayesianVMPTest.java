@@ -1311,13 +1311,11 @@ public class BayesianVMPTest extends TestCase {
     public static void testLogProbOfEvidenceForDiffBatches_WasteIncinerator() throws IOException, ClassNotFoundException {
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
 
-        //normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nWaste Incinerator - \n ");
 
         for (int j = 0; j < 1; j++) {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-            //sampler.setHiddenVar(null);
             sampler.setSeed(j);
             DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
@@ -1335,8 +1333,10 @@ public class BayesianVMPTest extends TestCase {
 
             String fadingOutput = "\t";
             String header = "Window Size";
-            int[] windowsSizes = {1, 2, 50, 100, 1000, 5000, 10000};
+            //int[] windowsSizes = {1, 2, 50, 100, 1000, 5000, 10000};
+            int[] windowsSizes = {10, 50, 100, 1000, 5000, 10000};
             double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+            //double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6};
             for (int i = 0; i < fadingFactor.length; i++) {
                 header += " \t logProg(D) \t Time \t nIter";
                 fadingOutput+=fadingFactor[i]+"\t\t\t";
@@ -1362,13 +1362,12 @@ public class BayesianVMPTest extends TestCase {
     public static void testLogProbOfEvidenceForDiffBatches_WasteIncineratorWithLatentVars() throws IOException, ClassNotFoundException {
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
 
-        //normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nWaste Incinerator + latent vars - \n ");
 
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("Mout"));
-        sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("D"));
+        //sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("D"));
         sampler.setSeed(0);
         DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
@@ -1384,15 +1383,31 @@ public class BayesianVMPTest extends TestCase {
         BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
         BayesianLearningEngineForBN.setDataStream(data);
 
-        System.out.println("Window Size \t logProg(D) \t Time");
-        int[] windowsSizes = {1, 50, 100, 1000, 5000, 10000};
+        String fadingOutput = "\t";
+        String header = "Window Size";
+        int[] windowsSizes = {1, 2};
+        //int[] windowsSizes = {1,2, 10, 50, 100, 1000, 5000, 10000};
+        //double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+        double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7};
+        for (int i = 0; i < fadingFactor.length; i++) {
+            header += " \t logProg(D) \t Time \t nIter";
+            fadingOutput+=fadingFactor[i]+"\t\t\t";
+        }
+        System.out.println(fadingOutput+"\n"+header);
         for (int i = 0; i < windowsSizes.length; i++) {
+            System.out.println("window: " + windowsSizes[i]);
             svb.setWindowsSize(windowsSizes[i]);
-            svb.initLearning();
-            Stopwatch watch = Stopwatch.createStarted();
-            double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
-            System.out.println(windowsSizes[i] + "\t" + logProbOfEv_Batch1 + "\t" + watch.stop());
+            String output = windowsSizes[i] + "\t";
+            for (int f = 0; f < fadingFactor.length; f++) {
+                System.out.println("  fading: "+fadingFactor[f]);
+                svb.initLearning();
+                svb.setFading(fadingFactor[f]);
+                Stopwatch watch = Stopwatch.createStarted();
+                double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
+                output+= logProbOfEv_Batch1 + "\t" + watch.stop() + "\t" + svb.getAverageNumOfIterations()+"\t";
             }
+            System.out.println(output);
+        }
     }
 
     public static void testLogProbOfEvidenceForDiffBatches_Normal1Normal() throws IOException, ClassNotFoundException {
