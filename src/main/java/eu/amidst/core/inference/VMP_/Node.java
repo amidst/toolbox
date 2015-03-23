@@ -288,7 +288,8 @@ public class Node {
             elbo=0;
         }
 
-        if (elbo>0.1 && !this.isObserved()) {
+        if ((elbo>0.5 && !this.isObserved()) || Double.isNaN(elbo)) {
+            this.PDist.getExpectedLogNormalizer(momentParents);
             throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + this.getMainVariable().getName() + ", " +  elbo + ", " + expectedNatural.sum());
         }
 
