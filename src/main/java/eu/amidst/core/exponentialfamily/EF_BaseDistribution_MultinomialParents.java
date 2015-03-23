@@ -232,6 +232,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             for (int j = 0; j < assignment.length; j++) {
                 momentValue*=momentParents.get(this.multinomialParents.get(j)).get((int)assignment[j]);
             }
+            if (momentValue==0)
+                continue;
 
             double partialLogNormalizer = 0;
 
@@ -430,7 +432,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
 
-        List<Distribution> distributionList = new ArrayList<>();
+        List<Distribution> distributionList = new ArrayList();
         for (EF_Distribution dist: this.distributions){
             EF_ConditionalLearningDistribution learningDistribution = (EF_ConditionalLearningDistribution)dist;
             ConditionalDistribution conditionalDistribution = learningDistribution.toConditionalDistribution(expectedParameters);
