@@ -207,7 +207,6 @@ public class BayesianVMPTest extends TestCase {
 
     }
 
-
     public static void testMultinomials5() throws IOException, ClassNotFoundException {
         StaticVariables variables = new StaticVariables();
         Variable varA = variables.newMultionomialVariable("A", 5);
@@ -635,8 +634,6 @@ public class BayesianVMPTest extends TestCase {
         System.out.println(contB);
 
     }
-
-
 
     public static void testGaussian5() throws IOException, ClassNotFoundException {
         StaticVariables variables = new StaticVariables();
@@ -1317,7 +1314,7 @@ public class BayesianVMPTest extends TestCase {
         //normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nWaste Incinerator - \n ");
 
-        for (int j = 0; j < 10; j++) {
+        for (int j = 0; j < 1; j++) {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             //sampler.setHiddenVar(null);
@@ -1336,14 +1333,28 @@ public class BayesianVMPTest extends TestCase {
             BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
             BayesianLearningEngineForBN.setDataStream(data);
 
-            System.out.println("Window Size \t logProg(D) \t Time");
-            int[] windowsSizes = {1, 50, 100, 1000, 5000, 10000};
+            String fadingOutput = "\t";
+            String header = "Window Size";
+            int[] windowsSizes = {1, 2, 50, 100, 1000, 5000, 10000};
+            double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+            for (int i = 0; i < fadingFactor.length; i++) {
+                header += " \t logProg(D) \t Time \t nIter";
+                fadingOutput+=fadingFactor[i]+"\t\t\t";
+            }
+            System.out.println(fadingOutput+"\n"+header);
             for (int i = 0; i < windowsSizes.length; i++) {
+                System.out.println("window: "+windowsSizes[i]);
                 svb.setWindowsSize(windowsSizes[i]);
-                svb.initLearning();
-                Stopwatch watch = Stopwatch.createStarted();
-                double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
-                System.out.println(windowsSizes[i] + "\t" + logProbOfEv_Batch1 + "\t" + watch.stop());
+                String output = windowsSizes[i] + "\t";
+                for (int f = 0; f < fadingFactor.length; f++) {
+                    System.out.println("  fading: "+fadingFactor[f]);
+                    svb.initLearning();
+                    svb.setFading(fadingFactor[f]);
+                    Stopwatch watch = Stopwatch.createStarted();
+                    double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
+                    output+= logProbOfEv_Batch1 + "\t" + watch.stop() + "\t" + svb.getAverageNumOfIterations()+"\t";
+                }
+                System.out.println(output);
             }
         }
     }
@@ -1521,60 +1532,6 @@ public class BayesianVMPTest extends TestCase {
             double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
             System.out.println(windowsSizes[i] + "\t" + logProbOfEv_Batch1 + "\t" + watch.stop());
         }
-    }
-
-    public static void testGaussian1_play() throws IOException, ClassNotFoundException{
-
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
-
-        for (int i = 0; i < 1; i++) {
-
-            System.out.println("\nNormal|Normal variable network \n ");
-
-            normalVarBN.randomInitialization(new Random(i));
-
-            BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-            sampler.setSeed(2);
-            //sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("B"));
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
-
-            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
-
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
-
-            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-            svb.setWindowsSize(1);
-            svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
-
-            vmp.setTestELBO(true);
-            vmp.setMaxIter(1000);
-            vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
-
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
-
-
-
-            System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
-            BayesianNetwork learntNormalVarBNVMP = BayesianLearningEngineForBN.getLearntBayesianNetwork();
-
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBNVMP.toString());
-            //assertTrue(normalVarBN.equalBNs(learntNormalVarBNVMP, 0.1));
-
-            System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
-            learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
-
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
-            assertFalse(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
-        }
-
     }
 
 
