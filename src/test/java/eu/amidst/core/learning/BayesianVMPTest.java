@@ -989,7 +989,7 @@ public class BayesianVMPTest extends TestCase {
 
             svb.setParallelMode(false);
             for (int j = 0; j < windowsSizes.length; j++) {
-                //System.out.println("Window: "+windowsSizes[j]);
+                System.out.println("Window: "+windowsSizes[j]);
                 svb.setWindowsSize(windowsSizes[j]);
                 svb.initLearning();
                 svb.runLearning();
@@ -1001,14 +1001,14 @@ public class BayesianVMPTest extends TestCase {
                         getConditionalDistribution(varA)).getIntercept());
                 beta1Serial[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
                         getConditionalDistribution(varA)).getCoeffParents()[0]);
-                iterSerial[j] = Double.toString(vmp.getAverageIterations());
+                iterSerial[j] = Double.toString(svb.getAverageNumOfIterations());
             }
 
             vmp.setOutput(false);
             svb.setParallelMode(true);
             svb.setRandomRestart(false);
             for (int j = 0; j < windowsSizes.length; j++) {
-                //System.out.println("Window: "+windowsSizes[j]);
+                System.out.println("Window: "+windowsSizes[j]);
                 svb.setWindowsSize(windowsSizes[j]);
                 svb.initLearning();
                 svb.runLearning();
@@ -1020,13 +1020,14 @@ public class BayesianVMPTest extends TestCase {
                         getConditionalDistribution(varA)).getIntercept());
                 beta1ParallelSeqQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
                         getConditionalDistribution(varA)).getCoeffParents()[0]);
-                iterParallelSeqQ[j] = Double.toString(vmp.getAverageIterations());
+                iterParallelSeqQ[j] = Double.toString(svb.getAverageNumOfIterations());
             }
 
+            vmp.setOutput(true);
             svb.setParallelMode(true);
             svb.setRandomRestart(true);
             for (int j = 0; j < windowsSizes.length; j++) {
-                //System.out.println("Window: "+windowsSizes[j]);
+                System.out.println("Window: "+windowsSizes[j]);
                 svb.setWindowsSize(windowsSizes[j]);
                 svb.initLearning();
                 svb.runLearning();
@@ -1038,7 +1039,7 @@ public class BayesianVMPTest extends TestCase {
                         getConditionalDistribution(varA)).getIntercept());
                 beta1ParallelRandQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
                         getConditionalDistribution(varA)).getCoeffParents()[0]);
-                iterParallelRandQ[j] = Double.toString(vmp.getAverageIterations());
+                iterParallelRandQ[j] = Double.toString((svb.getAverageNumOfIterations()));
             }
 
             System.out.println("Mean of B");
@@ -1129,7 +1130,7 @@ public class BayesianVMPTest extends TestCase {
             svb.setParallelMode(false);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuVMP().getVMP();
-            vmp.setOutput(false);
+            vmp.setOutput(true);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -1155,7 +1156,7 @@ public class BayesianVMPTest extends TestCase {
             svb.setFading(0.99);
 
             for (int j = 0; j < windowsSizes.length; j++) {
-                //System.out.println("Window: "+windowsSizes[j]);
+                System.out.println("Window: "+windowsSizes[j]);
                 svb.setWindowsSize(windowsSizes[j]);
                 svb.initLearning();
                 svb.runLearning();
@@ -1167,7 +1168,7 @@ public class BayesianVMPTest extends TestCase {
                         getConditionalDistribution(varA)).getIntercept());
                 beta1Serial[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
                         getConditionalDistribution(varA)).getCoeffParents()[0]);
-                iterSerial[j] = Double.toString(vmp.getAverageIterations());
+                iterSerial[j] = Double.toString(svb.getAverageNumOfIterations());
             }
 
             vmp.setOutput(false);
@@ -1188,7 +1189,7 @@ public class BayesianVMPTest extends TestCase {
                         getConditionalDistribution(varA)).getIntercept());
                 beta1ParallelSeqQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
                         getConditionalDistribution(varA)).getCoeffParents()[0]);
-                iterParallelSeqQ[j] = Double.toString(vmp.getAverageIterations());
+                iterParallelSeqQ[j] = Double.toString(svb.getAverageNumOfIterations());
             }
 
             svb.setParallelMode(false);
@@ -1206,7 +1207,7 @@ public class BayesianVMPTest extends TestCase {
                         getConditionalDistribution(varA)).getIntercept());
                 beta1ParallelRandQ[j] = Double.toString(((ConditionalLinearGaussian)svbSerial.
                         getConditionalDistribution(varA)).getCoeffParents()[0]);
-                iterParallelRandQ[j] = Double.toString(vmp.getAverageIterations());
+                iterParallelRandQ[j] = Double.toString(svb.getAverageNumOfIterations());
             }
 
             System.out.println("Mean of B");
