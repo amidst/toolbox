@@ -8,7 +8,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.learning.LearningEngineForBN;
-import eu.amidst.core.learning.dynamic.MaximumLikelihoodForBN;
+import eu.amidst.core.learning.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.*;
