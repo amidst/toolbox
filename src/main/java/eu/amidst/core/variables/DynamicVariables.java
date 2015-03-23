@@ -94,6 +94,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
     }
 
+    public Variable createTemporalClone(Variable var){
+        VariableImplementation temporalClone = new VariableImplementation(var);
+        temporalClones.add(var.getVarID(), temporalClone);
+        return temporalClone;
+    }
+
     public Variable getTemporalClone(Variable var){
         return temporalClones.get(var.getVarID());
     }
