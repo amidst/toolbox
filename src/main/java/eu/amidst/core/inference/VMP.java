@@ -84,7 +84,9 @@ public class VMP implements InferenceAlgorithmForBN {
 
 
     public void compileModelSerial() {
+
         nIter = 0;
+
         boolean convergence = false;
         double elbo = Double.NEGATIVE_INFINITY;
         int niter = 0;
@@ -131,13 +133,13 @@ public class VMP implements InferenceAlgorithmForBN {
         if (output){
             System.out.println("N Iter: "+niter +", elbo:"+elbo);
         }
-        nIter+=niter;
+        nIter=niter;
     }
 
     public void compileModelParallel() {
 
-
         nIter = 0;
+
         nodes.stream().filter(Node::isActive).forEach( node -> node.setParallelActivated(false));
 
         boolean convergence = false;
@@ -210,10 +212,10 @@ public class VMP implements InferenceAlgorithmForBN {
         if (output) {
             System.out.println("N Iter: " + niter + ", elbo:" + elbo);
         }
-        nIter+=niter;
+        nIter=niter;
     }
 
-    public int getAverageIterations(){
+    public int getNumberOfIterations(){
         return nIter;
     }
     @Override
