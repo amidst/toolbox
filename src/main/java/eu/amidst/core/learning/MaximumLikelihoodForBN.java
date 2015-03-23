@@ -1,7 +1,8 @@
-package eu.amidst.core.learning.dynamic;
+package eu.amidst.core.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
@@ -65,6 +66,32 @@ public final class MaximumLikelihoodForBN {
         sumSS.divideBy(dataInstanceCount.get());
 
         efBayesianNetwork.setMomentParameters(sumSS);
+        return efBayesianNetwork.toBayesianNetwork(dag);
+
+    }
+
+    public static BayesianNetwork learnParametersStaticModelFading(DAG dag, DataStream<DataInstance> dataStream, double fadingFactor, int windowSize) {
+
+        EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
+
+        double nInstances=0;
+        SufficientStatistics total = efBayesianNetwork.createZeroedSufficientStatistics();
+        for (DataOnMemory<DataInstance> batch : dataStream.iterableOverBatches(windowSize)){
+            SufficientStatistics batchSS = batch.stream()
+                    .map(efBayesianNetwork::getSufficientStatistics)
+                    .reduce(SufficientStatistics::sumVector).get();
+
+            total.multiplyBy(fadingFactor);
+            total.sum(batchSS);
+
+            nInstances = nInstances*fadingFactor + batchSize;
+
+        }
+
+        //Normalize the sufficient statistics
+        total.divideBy(nInstances);
+
+        efBayesianNetwork.setMomentParameters(total);
         return efBayesianNetwork.toBayesianNetwork(dag);
 
     }

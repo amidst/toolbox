@@ -1,6 +1,7 @@
 package eu.amidst.core.datastream;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -30,6 +31,10 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
 
     public static <T extends DataInstance> Stream<DataOnMemory<T>> toFixedBatchStream(DataStream<T> dataStream_, int batchSize) {
         return stream(new BatchesSpliterator<>(dataStream_, batchSize), true);
+    }
+
+    public static <T extends DataInstance> Iterable<DataOnMemory<T>> toFixedBatchIterable(DataStream<T> dataStream_, int batchSize) {
+        return new BatchIterator<T>(toFixedBatchStream(dataStream_, batchSize));
     }
 
     @Override public Spliterator<DataOnMemory<T>> trySplit() {
@@ -79,5 +84,19 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
     static final class HoldingConsumer<T> implements Consumer<T> {
         T value;
         @Override public void accept(T value) { this.value = value; }
+    }
+
+    static class BatchIterator <T extends DataInstance> implements Iterable<DataOnMemory<T>>{
+
+        Stream<DataOnMemory<T>> stream;
+
+        BatchIterator(Stream<DataOnMemory<T>> stream_){
+            stream=stream_;
+        }
+
+        @Override
+        public Iterator<DataOnMemory<T>> iterator() {
+            return this.stream.iterator();
+        }
     }
 }

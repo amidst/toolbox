@@ -106,10 +106,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
             BatchOutput finalout = new BatchOutput(new CompoundVector(naturalParametersPriors2), 0);
 
-            Iterator<DataOnMemory<DataInstance>> it = this.dataStream.streamOfBatches(this.windowsSize).iterator();
-
-            while (it.hasNext()){
-                DataOnMemory<DataInstance> batch = it.next();
+            for (DataOnMemory<DataInstance> batch : this.dataStream.iterableOverBatches(this.windowsSize)){
 
                 BatchOutput out = this.updateModelOnBatchParallel(batch, compoundVectorPrior);
 

@@ -32,6 +32,10 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
         return this.stream().iterator();
     }
 
+    default Iterable<DataOnMemory<E>> iterableOverBatches(int batchSize) {
+        return BatchesSpliterator.toFixedBatchIterable(this,batchSize);
+    }
+
     default Stream<DataOnMemory<E>> streamOfBatches(int batchSize){
         return BatchesSpliterator.toFixedBatchStream(this,batchSize).sequential();
     }
