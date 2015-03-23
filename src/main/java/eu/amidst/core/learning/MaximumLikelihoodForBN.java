@@ -84,7 +84,7 @@ public final class MaximumLikelihoodForBN {
             total.multiplyBy(fadingFactor);
             total.sum(batchSS);
 
-            nInstances = nInstances*fadingFactor + batchSize;
+            nInstances = nInstances*fadingFactor + windowSize;
 
         }
 
