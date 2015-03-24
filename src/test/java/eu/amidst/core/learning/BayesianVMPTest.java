@@ -371,7 +371,7 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal.bn");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
 
             Variable varA = oneNormalVarBN.getStaticVariables().getVariableByName("A");
             Normal dist = oneNormalVarBN.getDistribution(varA);
@@ -391,10 +391,11 @@ public class BayesianVMPTest extends TestCase {
             System.out.println(LearningEngineForBN.learnParameters(oneNormalVarBN.getDAG(), data).toString());
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-            svb.setWindowsSize(100);
+            svb.setFading(0.99);
+            svb.setWindowsSize(1);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuVMP().getVMP();
-            vmp.setOutput(true);
+            vmp.setOutput(false);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
