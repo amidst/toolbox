@@ -178,9 +178,9 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
             dist.setBaseEFDistribution(0, prior);
         });
 
-        BaseDistribution_MultinomialParents<Normal> dist = this.getLearntBayesianNetwork().getConditionalDistribution(this.dag.getStaticVariables().getVariableById(0));
-        Normal normal = dist.getBaseDistribution(0);
-        System.out.println(normal.getVariance());
+        //BaseDistribution_MultinomialParents<Normal> dist = this.getLearntBayesianNetwork().getConditionalDistribution(this.dag.getStaticVariables().getVariableById(0));
+        //Normal normal = dist.getBaseDistribution(0);
+        //System.out.println(normal.getVariance());
 
 
         /*this.getPlateuVMP().getEFLearningBN().getParametersVariables().forEach(var -> {

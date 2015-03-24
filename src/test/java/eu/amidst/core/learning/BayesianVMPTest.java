@@ -391,7 +391,7 @@ public class BayesianVMPTest extends TestCase {
             System.out.println(LearningEngineForBN.learnParameters(oneNormalVarBN.getDAG(), data).toString());
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-            svb.setFading(0.99);
+            svb.setFading(0.9);
             svb.setWindowsSize(1);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuVMP().getVMP();
@@ -1261,8 +1261,7 @@ public class BayesianVMPTest extends TestCase {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(j);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
-
+            DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setSeed(j);
@@ -1277,10 +1276,10 @@ public class BayesianVMPTest extends TestCase {
 
             String fadingOutput = "\t";
             String header = "Window Size";
-            //int[] windowsSizes = {1, 2, 50, 100, 1000, 5000, 10000};
-            int[] windowsSizes = {10, 50, 100, 1000, 5000, 10000};
-            double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
-            //double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6};
+            int[] windowsSizes = {1, 2, 10, 50, 100, 1000, 5000, 10000};
+            //int[] windowsSizes = {10, 50, 100, 1000, 5000, 10000};
+            //double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+            double[] fadingFactor = {0.99, 0.9, 0.8};
             for (int i = 0; i < fadingFactor.length; i++) {
                 header += " \t logProg(D) \t Time \t nIter";
                 fadingOutput+=fadingFactor[i]+"\t\t\t";
@@ -1506,6 +1505,65 @@ public class BayesianVMPTest extends TestCase {
             Stopwatch watch = Stopwatch.createStarted();
             double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
             System.out.println(windowsSizes[i] + "\t" + logProbOfEv_Batch1 + "\t" + watch.stop());
+        }
+    }
+
+    public static void testParametersForDiffBatchesAndFading_WasteIncinerator() throws IOException, ClassNotFoundException {
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+
+        System.out.println("\nWaste Incinerator - \n ");
+
+        for (int j = 0; j < 1; j++) {
+
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
+            sampler.setSeed(j);
+            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+
+            Variable varMout = normalVarBN.getStaticVariables().getVariableByName("Mout");
+
+            //BayesianNetwork MLlearntBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+
+
+            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+            svb.setSeed(j);
+            VMP vmp = svb.getPlateuVMP().getVMP();
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(1000);
+            vmp.setThreshold(0.0001);
+            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
+
+            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
+            BayesianLearningEngineForBN.setDataStream(data);
+
+            String fadingOutput = "\t";
+            String header = "Window Size";
+            int[] windowsSizes = {1, 2, 10, 50, 100, 1000, 5000, 10000};
+            //int[] windowsSizes = {10, 50, 100, 1000, 5000, 10000};
+            //double[] fadingFactor = {1.0, 0.9999, 0.999, 0.99, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2};
+            double[] fadingFactor = {0.99, 0.9, 0.8};
+            for (int i = 0; i < fadingFactor.length; i++) {
+                header += " \t beta0(Mout) \t beta1(Mout) \t variance(Mout)";
+                fadingOutput+=fadingFactor[i]+"\t\t\t";
+            }
+            System.out.println(fadingOutput+"\n"+header);
+            for (int i = 0; i < windowsSizes.length; i++) {
+                //System.out.println("window: "+windowsSizes[i]);
+                svb.setWindowsSize(windowsSizes[i]);
+                String output = windowsSizes[i] + "\t";
+                for (int f = 0; f < fadingFactor.length; f++) {
+                    //System.out.println("  fading: "+fadingFactor[f]);
+                    svb.initLearning();
+                    svb.setFading(fadingFactor[f]);
+                    BayesianNetwork bn = MaximumLikelihoodForBN.
+                            learnParametersStaticModelFading(normalVarBN.getDAG(), data, fadingFactor[f], windowsSizes[i]);
+                    //double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
+                    //BayesianNetwork bn = svb.getLearntBayesianNetwork();
+                    ConditionalLinearGaussian distMout = ((ConditionalLinearGaussian) bn.
+                            getConditionalDistribution(varMout));
+                    output+=  distMout.getIntercept()+ "\t" + distMout.getCoeffParents()[1] + "\t" + distMout.getVariance()+"\t";
+                }
+                System.out.println(output);
+            }
         }
     }
 
