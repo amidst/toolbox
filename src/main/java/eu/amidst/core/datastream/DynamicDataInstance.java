@@ -28,7 +28,7 @@ public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
 
     @Override
     default double getValue(Variable var) {
-        if (var.isTemporalClone()) {
+        if (var.isInterfaceVariable()) {
             return this.getValue(var.getAttribute(),false);
         } else {
             return this.getValue(var.getAttribute(),true);
@@ -37,7 +37,7 @@ public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
 
     @Override
     default void setValue(Variable var, double val) {
-        if (var.isTemporalClone()) {
+        if (var.isInterfaceVariable()) {
             this.setValue(var.getAttribute(), val, false);
         } else {
             this.setValue(var.getAttribute(), val, true);

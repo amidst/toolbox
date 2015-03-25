@@ -156,8 +156,8 @@ public final class DynamicBayesianNetwork implements Serializable {
         return this.getListOfDynamicVariables().getTemporalCloneById(varID);
     }
 
-    public Variable getTemporalClone(Variable variable) {
-        return this.getListOfDynamicVariables().getTemporalClone(variable);
+    public Variable getInterfaceVariable(Variable variable) {
+        return this.getListOfDynamicVariables().getInterfaceVariable(variable);
     }
     */
 
@@ -175,16 +175,16 @@ public final class DynamicBayesianNetwork implements Serializable {
         for (Variable var: this.getDynamicVariables()){
 
             if (this.getDynamicDAG().getParentSetTime0(var).getNumberOfParents()==0){
-                str.append("P(" + var.getName()+" [" +var.getDistributionTypeEnum().toString()+ "]) follows a ");
+                str.append("P(" + var.getName()+") follows a ");
                 str.append(this.getDistributionTime0(var).label()+"\n");
             }else {
-                str.append("P(" + var.getName() + " [" + var.getDistributionTypeEnum().toString() + "]" + " : ");
+                str.append("P(" + var.getName() + " | ");
 
                 for (Variable parent : this.getDynamicDAG().getParentSetTime0(var)) {
-                    str.append(parent.getName() + " [" + parent.getDistributionTypeEnum().toString() + "], ");
+                    str.append(parent.getName() + " , ");
                 }
                 if (this.getDynamicDAG().getParentSetTime0(var).getNumberOfParents() > 0){
-                    str.substring(0, str.length() - 2);
+                    str.delete(str.length() - 3, str.length());
                 }
                 str.append(") follows a ");
                 str.append(this.getDistributionTime0(var).label() + "\n");
@@ -198,16 +198,16 @@ public final class DynamicBayesianNetwork implements Serializable {
         for (Variable var: this.getDynamicVariables()){
 
             if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents()==0){
-                str.append("P(" + var.getName()+" [" +var.getDistributionTypeEnum().toString()+ "]) follows a ");
+                str.append("P(" + var.getName()+") follows a ");
                 str.append(this.getDistributionTimeT(var).label()+"\n");
             }else {
-                str.append("P(" + var.getName() + " [" + var.getDistributionTypeEnum().toString() + "]" + " : ");
+                str.append("P(" + var.getName() + " | ");
 
                 for (Variable parent : this.getDynamicDAG().getParentSetTimeT(var)) {
-                    str.append(parent.getName() + " [" + parent.getDistributionTypeEnum().toString() + "], ");
+                    str.append(parent.getName() + " , ");
                 }
                 if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents() > 0){
-                    str.substring(0, str.length() - 2);
+                    str.delete(str.length() - 3, str.length());
                 }
                 str.append(") follows a ");
                 str.append(this.getDistributionTimeT(var).label() + "\n");

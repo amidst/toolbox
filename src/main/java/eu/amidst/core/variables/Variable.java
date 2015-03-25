@@ -30,11 +30,15 @@ public interface Variable {
 
     DistributionTypeEnum getDistributionTypeEnum();
 
-    boolean isTemporalClone();
+    boolean isInterfaceVariable();
 
     boolean isDynamicVariable();
 
     boolean isParameterVariable();
+
+    default Variable getInterfaceVariable(){
+        throw new UnsupportedOperationException("This type of variable cannot have an interface variable");
+    }
 
     Attribute getAttribute();
 

@@ -27,7 +27,7 @@ public final class LearningEngineForDBN {
                         .getVarID()!=classVar.getVarID())
                 .forEach(w -> {
                     w.addParent(classVar);
-                    w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
+                    w.addParent(modelHeader.getInterfaceVariable(w.getMainVar()));
                 });
 
         return dag;

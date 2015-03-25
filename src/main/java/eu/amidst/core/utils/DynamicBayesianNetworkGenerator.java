@@ -3,8 +3,6 @@ package eu.amidst.core.utils;
 import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.IOException;
 import java.util.Random;
@@ -59,12 +57,12 @@ public class DynamicBayesianNetworkGenerator {
                 .forEach(w -> {
                             w.addParent(classVar);
                             if (connectChildrenTemporally) {
-                                w.addParent(dynamicVariables.getTemporalClone(w.getMainVar()));
+                                w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
                             }
                         }
                 );
 
-        dag.getParentSetTimeT(classVar).addParent(dynamicVariables.getTemporalClone(classVar));
+        dag.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
         DynamicBayesianNetwork network = DynamicBayesianNetwork.newDynamicBayesianNetwork(dag);
 

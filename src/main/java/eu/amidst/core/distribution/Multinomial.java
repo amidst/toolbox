@@ -138,6 +138,7 @@ public class Multinomial extends UnivariateDistribution  {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
+        //str.append("Multinomial ("+this.getVariable().getName()+") [ ");
         str.append("[ ");
         int size = this.getProbabilities().length;
         for(int i=0;i<size;i++){
