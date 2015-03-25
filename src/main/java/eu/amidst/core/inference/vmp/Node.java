@@ -1,4 +1,4 @@
-package eu.amidst.core.inference.VMP_;
+package eu.amidst.core.inference.vmp;
 
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.utils.Utils;
