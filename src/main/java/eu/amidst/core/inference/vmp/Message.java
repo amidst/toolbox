@@ -1,8 +1,6 @@
-package eu.amidst.core.inference.VMP_;
+package eu.amidst.core.inference.vmp;
 
-import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 03/02/15.
