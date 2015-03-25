@@ -1,11 +1,10 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.inference.VMP;
-import eu.amidst.core.inference.VMP_.Node;
+import eu.amidst.core.inference.vmp.Node;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
