@@ -3,7 +3,7 @@ package eu.amidst.core.learning.dynamic;
 import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP;
-import eu.amidst.core.inference.VMP_.Node;
+import eu.amidst.core.inference.vmp.Node;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.Variable;
 
