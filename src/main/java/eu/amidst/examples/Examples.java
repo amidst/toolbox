@@ -95,13 +95,6 @@ public class Examples {
         // Time 0: Parents at time 0 are automatically created when adding parents at time t !!!
         // Time t
 
-        //dynamicDAG.getParentSetTime0(B).addParent(H1);
-        //dynamicDAG.getParentSetTime0(C).addParent(H1);
-        //dynamicDAG.getParentSetTime0(D).addParent(H1);
-        //dynamicDAG.getParentSetTime0(B).addParent(H2);
-        //dynamicDAG.getParentSetTime0(C).addParent(H2);
-        //dynamicDAG.getParentSetTime0(D).addParent(H2);
-
         dynamicDAG.getParentSetTimeT(B).addParent(H1);
         dynamicDAG.getParentSetTimeT(C).addParent(H1);
         dynamicDAG.getParentSetTimeT(D).addParent(H1);
