@@ -8,8 +8,6 @@ import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.*;
 import eu.amidst.core.variables.*;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +47,7 @@ public final class VerdandeModels {
          * Here dynamic variable has the same type than static variables. However, there are two main differences
          *      - If we called to the method "isDynamic" of Variable class, it will return true.
          *      - They have a temporal clone (similarly to Hugin). This temporal clone is another variable object. It is
-         *      automatically created for each dynamic variable. It can be queried by the method "getTemporalClone" of the
+         *      automatically created for each dynamic variable. It can be queried by the method "getInterfaceVariable" of the
          *      DynamicVariable class.
          *
          * 2. DynamicVariables is the class for doing that. It takes a list of Attributes and internally creates
@@ -116,14 +114,14 @@ public final class VerdandeModels {
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(realTRQ);
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(hidden);
 
-        dynamicDAG.getParentSetTimeT(realTRQ).addParent(dynamicVariables.getTemporalClone(realTRQ));
+        dynamicDAG.getParentSetTimeT(realTRQ).addParent(dynamicVariables.getInterfaceVariable(realTRQ));
         dynamicDAG.getParentSetTimeT(realTRQ).addParent(normalAbnormal);
 
         dynamicDAG.getParentSetTimeT(hidden).addParent(normalAbnormal);
-        dynamicDAG.getParentSetTimeT(hidden).addParent(dynamicVariables.getTemporalClone(hidden));
+        dynamicDAG.getParentSetTimeT(hidden).addParent(dynamicVariables.getInterfaceVariable(hidden));
 
 
-        dynamicDAG.getParentSetTimeT(normalAbnormal).addParent(dynamicVariables.getTemporalClone(normalAbnormal));
+        dynamicDAG.getParentSetTimeT(normalAbnormal).addParent(dynamicVariables.getInterfaceVariable(normalAbnormal));
         dynamicDAG.getParentSetTimeT(normalAbnormal).addParent(observedROP);
 
 
@@ -173,7 +171,7 @@ public final class VerdandeModels {
          * Here dynamic variable has the same type than static variables. However, there are two main differences
          *      - If we called to the method "isDynamic" of Variable class, it will return true.
          *      - They have a temporal clone (similarly to Hugin). This temporal clone is another variable object. It is
-         *      automatically created for each dynamic variable. It can be queried by the method "getTemporalClone" of the
+         *      automatically created for each dynamic variable. It can be queried by the method "getInterfaceVariable" of the
          *      DynamicVariable class.
          *
          * 2. DynamicVariables is the class for doing that. It takes a list of Attributes and internally creates
@@ -267,22 +265,22 @@ public final class VerdandeModels {
         dynamicDAG.getParentSetTimeT(observedPRESSURE).addParent(mixture);
 
 
-        dynamicDAG.getParentSetTimeT(realTRQ).addParent(dynamicVariables.getTemporalClone(realTRQ));
+        dynamicDAG.getParentSetTimeT(realTRQ).addParent(dynamicVariables.getInterfaceVariable(realTRQ));
         dynamicDAG.getParentSetTimeT(realTRQ).addParent(observedWOB);
         dynamicDAG.getParentSetTimeT(realTRQ).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(realTRQ).addParent(observedMFI);
 
-        dynamicDAG.getParentSetTimeT(realROP).addParent(dynamicVariables.getTemporalClone(realROP));
+        dynamicDAG.getParentSetTimeT(realROP).addParent(dynamicVariables.getInterfaceVariable(realROP));
         dynamicDAG.getParentSetTimeT(realROP).addParent(observedWOB);
         dynamicDAG.getParentSetTimeT(realROP).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(realROP).addParent(observedMFI);
 
-        dynamicDAG.getParentSetTimeT(realPRESSURE).addParent(dynamicVariables.getTemporalClone(realTRQ));
+        dynamicDAG.getParentSetTimeT(realPRESSURE).addParent(dynamicVariables.getInterfaceVariable(realTRQ));
         dynamicDAG.getParentSetTimeT(realPRESSURE).addParent(observedWOB);
         dynamicDAG.getParentSetTimeT(realPRESSURE).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(realPRESSURE).addParent(observedMFI);
 
-        dynamicDAG.getParentSetTimeT(hidden).addParent(dynamicVariables.getTemporalClone(hidden));
+        dynamicDAG.getParentSetTimeT(hidden).addParent(dynamicVariables.getInterfaceVariable(hidden));
         dynamicDAG.getParentSetTimeT(hidden).addParent(observedWOB);
         dynamicDAG.getParentSetTimeT(hidden).addParent(observedRPMB);
         dynamicDAG.getParentSetTimeT(hidden).addParent(observedMFI);
@@ -345,12 +343,12 @@ public final class VerdandeModels {
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
         dynamicDAG.getParentSetTimeT(formationNo).addParent(observedDepth);
-        dynamicDAG.getParentSetTimeT(formationNo).addParent(dynamicVariables.getTemporalClone(formationNo));
+        dynamicDAG.getParentSetTimeT(formationNo).addParent(dynamicVariables.getInterfaceVariable(formationNo));
 
         //TODO Error trying to add a duplicate parent. A -> B <- Aclone. We are considering A and AClone the same variables? Is that right?
         dynamicDAG.getParentSetTimeT(shift).addParent(formationNo);
-        //dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(formationNo));
-        dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getTemporalClone(shift));
+        //dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getInterfaceVariable(formationNo));
+        dynamicDAG.getParentSetTimeT(shift).addParent(dynamicVariables.getInterfaceVariable(shift));
 
         dynamicDAG.getParentSetTimeT(observedGammaDiff).addParent(shift);
 

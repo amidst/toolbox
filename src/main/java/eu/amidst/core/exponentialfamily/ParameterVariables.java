@@ -186,7 +186,7 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
         }
 
         @Override
-        public boolean isTemporalClone() {
+        public boolean isInterfaceVariable() {
             return false;
             //throw new UnsupportedOperationException("A parameter variable cannot be temporal.");
         }

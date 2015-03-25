@@ -2,10 +2,8 @@ package eu.amidst.core.utils;
 
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +196,7 @@ public final class Utils {
                 if (!bDone[var2.getVarID()]) {
                     allParentsDone = true;
                     for (Variable parent: dag.getParentSetTimeT(var2)) {
-                        if (parent.isTemporalClone())
+                        if (parent.isInterfaceVariable())
                             continue;
                         allParentsDone = allParentsDone && bDone[parent.getVarID()];
                     }

@@ -8,13 +8,11 @@
 
 package eu.amidst.core.models;
 
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,7 +61,7 @@ public class DynamicDAG implements Serializable {
 
     /* Methods accessing structure at time T*/
     public ParentSet getParentSetTimeT(Variable var) {
-        if (var.isTemporalClone()) {
+        if (var.isInterfaceVariable()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
         }
@@ -71,7 +69,7 @@ public class DynamicDAG implements Serializable {
     }
 
     public ParentSet getParentSetTime0(Variable var) {
-        if (var.isTemporalClone()) {
+        if (var.isInterfaceVariable()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
                     "of its dynamic counterpart.");
         }
@@ -171,7 +169,7 @@ public class DynamicDAG implements Serializable {
 
             vars.add(var);
 
-            if (!var.isTemporalClone()) {
+            if (!var.isInterfaceVariable() && !parentSetTime0.get(mainVar.getVarID()).contains(var)) {
                 ((ParentSetImpl) parentSetTime0.get(mainVar.getVarID())).vars.add(var);
             }
         }
