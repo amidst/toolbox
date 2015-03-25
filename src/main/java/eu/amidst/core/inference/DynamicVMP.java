@@ -72,7 +72,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         nodesClone = this.ef_model.getBayesianNetworkTime0().getDistributionList()
                 .stream()
                 .map(dist -> {
-                    Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(dist.getVariable());
+                    Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(dist.getVariable());
                     EF_UnivariateDistribution uni = temporalClone.getDistributionType().newUnivariateDistribution().toEFUnivariateDistribution();
 
                     EF_ConditionalDistribution pDist = new EF_BaseDistribution_MultinomialParents(new ArrayList<Variable>(),
@@ -134,7 +134,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             this.vmpTime0.setEvidence(null);
             this.vmpTime0.runInference();
             this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> {
-                Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
                 moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
             });
             this.moveWindow(nTimesAhead-1);
@@ -178,7 +178,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             this.vmpTime0.runInference();
             this.timeID=0;
             this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> {
-                Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
                 moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
             });
         }
@@ -190,7 +190,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             this.timeID=0;
 
             this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> {
-                Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
                 moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
             });
 
@@ -203,10 +203,10 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             this.vmpTimeT.setEvidence(this.assignment);
             this.vmpTimeT.runInference();
             this.vmpTimeT.getNodes().stream()
-                    .filter(node -> !node.getMainVariable().isTemporalClone())
+                    .filter(node -> !node.getMainVariable().isInterfaceVariable())
                     .filter(node -> !node.isObserved())
                     .forEach(node -> {
-                        Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                        Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
                         moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
                     });
         }
@@ -220,7 +220,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         if (this.assignment!=null) {
             newassignment=new HashMapAssignment(this.model.getNumberOfDynamicVars());
             for (Variable var : this.model.getDynamicVariables()) {
-                newassignment.setValue(this.model.getDynamicVariables().getTemporalClone(var), this.assignment.getValue(var));
+                newassignment.setValue(this.model.getDynamicVariables().getInterfaceVariable(var), this.assignment.getValue(var));
                 newassignment.setValue(var, Utils.missingValue());
             }
         }
@@ -229,10 +229,10 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             this.vmpTimeT.setEvidence(newassignment);
             this.vmpTimeT.runInference();
             this.vmpTimeT.getNodes().stream()
-                    .filter(node -> !node.getMainVariable().isTemporalClone())
+                    .filter(node -> !node.getMainVariable().isInterfaceVariable())
                     .filter(node -> !node.isObserved())
                     .forEach(node -> {
-                        Variable temporalClone = this.model.getDynamicVariables().getTemporalClone(node.getMainVariable());
+                        Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
                         moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
                     });
             newassignment=null;

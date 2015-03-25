@@ -112,7 +112,7 @@ public class DBNConverterToAmidst {
                         dynamicDAG.getParentSetTimeT(amidstChild).addParent(amidstParent);
                     }
                     else {
-                        Variable amidstClone = dynamicVariables.getTemporalClone(amidstChild);
+                        Variable amidstClone = dynamicVariables.getInterfaceVariable(amidstChild);
                         dynamicDAG.getParentSetTimeT(amidstChild).addParent(amidstClone);
                     }
                 }

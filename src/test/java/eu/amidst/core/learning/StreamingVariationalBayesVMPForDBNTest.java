@@ -263,9 +263,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
-            //dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getTemporalClone(varC));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
+            //dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getInterfaceVariable(varC));
 
 
             //The number of states for the class variable is equal to 2
@@ -384,9 +384,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
-            dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getTemporalClone(varC));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
+            dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getInterfaceVariable(varC));
 
 
             //The number of states for the class variable is equal to 2
@@ -510,9 +510,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
-            //dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getTemporalClone(varC));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
+            //dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getInterfaceVariable(varC));
 
 
             //The number of states for the class variable is equal to 2
@@ -620,9 +620,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
-            //dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getTemporalClone(varC));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
+            //dynamicDAG.getParentSetTimeT(varC).addParent(dynamicVariables.getInterfaceVariable(varC));
 
 
             //The number of states for the class variable is equal to 2
@@ -736,8 +736,8 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
 
 
             //The number of states for the class variable is equal to 2
@@ -843,8 +843,8 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
 
 
             //The number of states for the class variable is equal to 2
@@ -950,8 +950,8 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
 
 
             //The number of states for the class variable is equal to 2
@@ -1044,8 +1044,8 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
 
 
             //The number of states for the class variable is equal to 2

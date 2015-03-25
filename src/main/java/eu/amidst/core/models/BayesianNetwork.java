@@ -124,11 +124,12 @@ public final class BayesianNetwork implements Serializable {
                 str.append("P(" + var.getName() + ") follows a ");
                 str.append(this.getDistribution(var).label() + "\n");
             } else {
-                str.append("P(" + var.getName() + " : ");
+                str.append("P(" + var.getName() + " | ");
 
                 for (Variable parent : this.getDAG().getParentSet(var)) {
                     str.append(parent.getName() + ", ");
                 }
+                str.delete(str.length()-2,str.length());
                 if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) {
                     str.substring(0, str.length() - 2);
                     str.append(") follows a ");

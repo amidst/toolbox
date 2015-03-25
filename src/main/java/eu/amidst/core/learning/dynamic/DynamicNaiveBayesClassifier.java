@@ -58,11 +58,11 @@ public class DynamicNaiveBayesClassifier {
                 .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
                 .forEach(w -> {
                     w.addParent(classVar);
-                    //w.addParent(modelHeader.getTemporalClone(w.getMainVar()));
+                    //w.addParent(modelHeader.getInterfaceVariable(w.getMainVar()));
                 });
 
 
-        dag.getParentSetTimeT(classVar).addParent(modelHeader.getTemporalClone(classVar));
+        dag.getParentSetTimeT(classVar).addParent(modelHeader.getInterfaceVariable(classVar));
 
         return dag;
     }

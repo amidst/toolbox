@@ -44,7 +44,7 @@ public final class CajaMarModels {
          * in our data. Here dynamic variable has the same type than static variables. However, there are two main differences
          *      - If we called to the method "isDynamic" of Variable class, it will return true.
          *      - They have a temporal clone (similarly to Hugin). This temporal clone is another variable object. It is
-         *      automatically created for each dynamic variable. It can be queried by the method "getTemporalClone" of the
+         *      automatically created for each dynamic variable. It can be queried by the method "getInterfaceVariable" of the
          *      DynamicVariable class.
          *
          * 2. DynamicVariables is the class for doing that. It takes a list of Attributes and internally creates
@@ -89,29 +89,29 @@ public final class CajaMarModels {
          */
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
-        dynamicDAG.getParentSetTimeT(defaulter).addParent(dynamicVariables.getTemporalClone(defaulter));
+        dynamicDAG.getParentSetTimeT(defaulter).addParent(dynamicVariables.getInterfaceVariable(defaulter));
 
         dynamicDAG.getParentSetTimeT(sex).addParent(defaulter);
 
         dynamicDAG.getParentSetTimeT(creditCard).addParent(defaulter);
-        dynamicDAG.getParentSetTimeT(creditCard).addParent(dynamicVariables.getTemporalClone(creditCard));
+        dynamicDAG.getParentSetTimeT(creditCard).addParent(dynamicVariables.getInterfaceVariable(creditCard));
 
 
         dynamicDAG.getParentSetTimeT(balance).addParent(defaulter);
-        dynamicDAG.getParentSetTimeT(balance).addParent(dynamicVariables.getTemporalClone(balance));
+        dynamicDAG.getParentSetTimeT(balance).addParent(dynamicVariables.getInterfaceVariable(balance));
 
         dynamicDAG.getParentSetTimeT(withDraw).addParent(defaulter);
-        dynamicDAG.getParentSetTimeT(withDraw).addParent(dynamicVariables.getTemporalClone(withDraw));
+        dynamicDAG.getParentSetTimeT(withDraw).addParent(dynamicVariables.getInterfaceVariable(withDraw));
 
         dynamicDAG.getParentSetTimeT(salary).addParent(defaulter);
-        dynamicDAG.getParentSetTimeT(salary).addParent(dynamicVariables.getTemporalClone(salary));
+        dynamicDAG.getParentSetTimeT(salary).addParent(dynamicVariables.getInterfaceVariable(salary));
         //dynamicDAG.getParentSetTimeT(salary).addParent(indicatorSalary);
 
 
 
         dynamicDAG.getParentSetTimeT(monthlyBalance).addParent(defaulter);
-        dynamicDAG.getParentSetTimeT(monthlyBalance).addParent(dynamicVariables.getTemporalClone(balance));
-        dynamicDAG.getParentSetTimeT(monthlyBalance).addParent(dynamicVariables.getTemporalClone(monthlyBalance));
+        dynamicDAG.getParentSetTimeT(monthlyBalance).addParent(dynamicVariables.getInterfaceVariable(balance));
+        dynamicDAG.getParentSetTimeT(monthlyBalance).addParent(dynamicVariables.getInterfaceVariable(monthlyBalance));
 
 
         dynamicDAG.getParentSetTimeT(movements).addParent(defaulter);

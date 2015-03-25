@@ -9,8 +9,6 @@ import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.*;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,7 +48,7 @@ public final class DaimlerModels {
          * Here dynamic variable has the same type than static variables. However, there are two main differences
          *      - If we called to the method "isDynamic" of Variable class, it will return true.
          *      - They have a temporal clone (similarly to Hugin). This temporal clone is another variable object. It is
-         *      automatically created for each dynamic variable. It can be queried by the method "getTemporalClone" of the
+         *      automatically created for each dynamic variable. It can be queried by the method "getInterfaceVariable" of the
          *      DynamicVariable class.
          *
          * 2. DynamicVariables is the class for doing that. It takes a list of Attributes and internally creates
@@ -126,13 +124,13 @@ public final class DaimlerModels {
         dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatSIGMA);
         dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatREAL);
 
-        dynamicDAG.getParentSetTimeT(aLAT).addParent(dynamicVariables.getTemporalClone(aLAT));
+        dynamicDAG.getParentSetTimeT(aLAT).addParent(dynamicVariables.getInterfaceVariable(aLAT));
 
         dynamicDAG.getParentSetTimeT(vlatREAL).addParent(aLAT);
-        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(dynamicVariables.getTemporalClone(vlatREAL));
+        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(dynamicVariables.getInterfaceVariable(vlatREAL));
 
-        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getTemporalClone(olatREAL));
-        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getTemporalClone(vlatREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getInterfaceVariable(olatREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getInterfaceVariable(vlatREAL));
 
         dynamicDAG.getParentSetTimeT(latEv).addParent(vlatREAL);
         dynamicDAG.getParentSetTimeT(latEv).addParent(olatREAL);

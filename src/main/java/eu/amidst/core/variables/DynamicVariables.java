@@ -4,7 +4,7 @@
  * 1. Rename to DynamicVariables
  * 2. We can/should remove all setters from VariableImplementation right?
  * 3. Is there any need for the field atts? It is only used in the constructor.
- * 4. If the fields in VariableImplementation are all objects then the TemporalClone only contains
+ * 4. If the fields in VariableImplementation are all objects then the Interface variable only contains
  *    pointers, which would ensure consistency, although we are not planing to modify these values.
  *
  * 5. Remove method getVariableByVarID();
@@ -33,20 +33,20 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     private static final long serialVersionUID = -4959625141445606681L;
 
     private List<Variable> allVariables;
-    private List<Variable> temporalClones;
+    private List<Variable> interfaceVariables;
 
     private Map<String, Integer> mapping;
 
     public DynamicVariables() {
         this.allVariables = new ArrayList();
-        this.temporalClones = new ArrayList();
+        this.interfaceVariables = new ArrayList();
         this.mapping = new ConcurrentHashMap<>();
     }
 
     public DynamicVariables(Attributes atts) {
 
         this.allVariables = new ArrayList<>();
-        this.temporalClones = new ArrayList<>();
+        this.interfaceVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
@@ -59,8 +59,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             allVariables.add(var.getVarID(), var);
 
 
-            VariableImplementation temporalClone = new VariableImplementation(var);
-            temporalClones.add(var.getVarID(), temporalClone);
+            VariableImplementation interfaceVariable = new VariableImplementation(var);
+            var.setInterfaceVariable(interfaceVariable);
+            interfaceVariables.add(var.getVarID(), interfaceVariable);
         }
     }
 
@@ -71,7 +72,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     public DynamicVariables(Attributes atts, Map<Attribute, DistributionTypeEnum> typeDists) {
 
         this.allVariables = new ArrayList<>();
-        this.temporalClones = new ArrayList<>();
+        this.interfaceVariables = new ArrayList<>();
 
         for (Attribute att : atts.getListExceptTimeAndSeq()) {
             VariableBuilder builder;
@@ -88,23 +89,19 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             this.mapping.put(var.getName(), var.getVarID());
             allVariables.add(var.getVarID(), var);
 
-            VariableImplementation temporalClone = new VariableImplementation(var);
-            temporalClones.add(var.getVarID(), temporalClone);
+            VariableImplementation interfaceVariable = new VariableImplementation(var);
+            var.setInterfaceVariable(interfaceVariable);
+            interfaceVariables.add(var.getVarID(), interfaceVariable);
 
         }
     }
 
-    public Variable createTemporalClone(Variable var){
-        VariableImplementation temporalClone = new VariableImplementation(var);
-        temporalClones.add(var.getVarID(), temporalClone);
-        return temporalClone;
+
+    public Variable getInterfaceVariable(Variable var){
+        return interfaceVariables.get(var.getVarID());
     }
 
-    public Variable getTemporalClone(Variable var){
-        return temporalClones.get(var.getVarID());
-    }
-
-    public Variable getVariableFromTemporalClone(Variable var){
+    public Variable getVariableFromInterface(Variable var){
         return allVariables.get(var.getVarID());
     }
 
@@ -129,8 +126,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(varNew.getName(), varNew.getVarID());
         allVariables.add(varNew);
 
-        VariableImplementation temporalClone = new VariableImplementation(varNew);
-        temporalClones.add(varNew.getVarID(),temporalClone);
+        VariableImplementation interfaceVariable = new VariableImplementation(varNew);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(varNew.getVarID(),interfaceVariable);
 
         return varNew;
 
@@ -179,8 +177,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
-        VariableImplementation temporalClone = new VariableImplementation(var);
-        temporalClones.add(var.getVarID(),temporalClone);
+        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
 
         return var;
     }
@@ -198,8 +197,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
-        VariableImplementation temporalClone = new VariableImplementation(var);
-        temporalClones.add(var.getVarID(),temporalClone);
+        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
 
         return var;
     }
@@ -214,8 +214,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
-        VariableImplementation temporalClone = new VariableImplementation(var);
-        temporalClones.add(var.getVarID(),temporalClone);
+        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
 
         return var;
     }
@@ -229,8 +230,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(var.getName(), var.getVarID());
         allVariables.add(var);
 
-        VariableImplementation temporalClone = new VariableImplementation(var);
-        temporalClones.add(var.getVarID(),temporalClone);
+        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
 
         return var;
     }
@@ -254,8 +255,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.mapping.put(varNew.getName(), varNew.getVarID());
         allVariables.add(varNew);
 
-        VariableImplementation temporalClone = new VariableImplementation(varNew);
-        temporalClones.add(varNew.getVarID(),temporalClone);
+        VariableImplementation interfaceVariable = new VariableImplementation(varNew);
+        varNew.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(varNew.getVarID(), interfaceVariable);
 
         return varNew;
     }
@@ -264,8 +266,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return this.allVariables;
     }
 
-    //public List<Variable> getListOfTemporalClones() {
-    //    return this.temporalClones;
+    //public List<Variable> getListOfInterfaceVariables() {
+    //    return this.interfaceVariables;
     //}
 
     public Variable getVariableById(int varID) {
@@ -273,8 +275,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
 
-    //public Variable getTemporalCloneById(int varID) {
-    //    return this.temporalClones.get(varID);
+    //public Variable getInterfaceVariablesById(int varID) {
+    //    return this.interfaceVariables.get(varID);
     //}
 
     public Variable getVariableByName(String name) {
@@ -287,8 +289,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
     }
 
-    public Variable getTemporalCloneByName(String name) {
-        return this.getTemporalClone(this.getVariableByName(name));
+    public Variable getInterfaceVariableByName(String name) {
+        return this.getInterfaceVariable(this.getVariableByName(name));
     }
 
     public int getNumberOfVars() {
@@ -327,11 +329,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         private DistributionTypeEnum distributionTypeEnum;
         private DistributionType distributionType;
         private Attribute attribute;
-        private final boolean isTemporalClone;
+        private final boolean isInterfaceVariable;
+        private Variable interfaceVariable;
         private int numberOfStates = -1;
 
         /*
-         * Constructor for a Variable (not a temporal clone)
+         * Constructor for a Variable (not a interface Variable)
          */
         public VariableImplementation(VariableBuilder builder, int varID) {
             this.name = builder.getName();
@@ -340,7 +343,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             this.stateSpaceType = builder.getStateSpaceType();
             this.distributionTypeEnum = builder.getDistributionType();
             this.attribute = builder.getAttribute();
-            this.isTemporalClone = false;
+            this.isInterfaceVariable = false;
 
             if (this.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
                 this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
@@ -350,16 +353,16 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
 
         /*
-         * Constructor for a Temporal clone (based on a variable)
+         * Constructor for an Interface (based on a variable)
          */
         public VariableImplementation(Variable variable) {
-            this.name = variable.getName()+"_TClone";
+            this.name = variable.getName()+"_Interface";
             this.varID = variable.getVarID();
             this.observable = variable.isObservable();
             this.stateSpaceType = variable.getStateSpaceType();
             this.distributionTypeEnum = variable.getDistributionTypeEnum();
             this.attribute = variable.getAttribute();
-            this.isTemporalClone = true;
+            this.isInterfaceVariable = true;
 
             if (this.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
                 this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
@@ -400,8 +403,18 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return (E)this.distributionType;
         }
 
-        public boolean isTemporalClone(){
-            return isTemporalClone;
+        @Override
+        public boolean isInterfaceVariable(){
+            return isInterfaceVariable;
+        }
+
+        @Override
+        public Variable getInterfaceVariable(){
+            return this.interfaceVariable;
+        }
+
+        private void setInterfaceVariable(Variable interfaceVariable_){
+            this.interfaceVariable = interfaceVariable_;
         }
 
         public Attribute getAttribute(){return attribute;}
@@ -421,7 +434,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
             Variable var = (Variable) o;
 
-            return this.isTemporalClone()==var.isTemporalClone() && this.getVarID()==var.getVarID();
+            return this.isInterfaceVariable()==var.isInterfaceVariable() && this.getVarID()==var.getVarID();
         }
 
 

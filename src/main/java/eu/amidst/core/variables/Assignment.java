@@ -15,8 +15,8 @@ public interface Assignment {
     default String toString(List<Variable> vars){
         StringBuilder builder = new StringBuilder(vars.size()*2);
         builder.append("{");
-        vars.stream().limit(vars.size()-1).forEach(var -> builder.append(var.getName()+ " = "+this.getValue(var)+", "));
-        builder.append(vars.get(vars.size()-1).getName()+ " = "+ this.getValue(vars.get(vars.size()-1)));
+        vars.stream().limit(vars.size()-1).forEach(var -> builder.append(var.getName()+ " = "+(int)this.getValue(var)+", "));
+        builder.append(vars.get(vars.size()-1).getName()+ " = "+ (int)this.getValue(vars.get(vars.size()-1)));
         builder.append("}");
         return builder.toString();
     }
