@@ -35,13 +35,13 @@ public class DynamicBayesianNetworkSampler {
 
 
     public void setHiddenVar(Variable var) {
-        if (var.isTemporalClone())
+        if (var.isInterfaceVariable())
             throw new IllegalArgumentException();
         this.hiddenVars.put(var,true);
     }
 
     public void setMARVar(Variable var, double noiseProb){
-        if (var.isTemporalClone())
+        if (var.isInterfaceVariable())
             throw new IllegalArgumentException();
 
         this.marNoise.put(var,noiseProb);
@@ -108,7 +108,7 @@ public class DynamicBayesianNetworkSampler {
 
                 HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
                 for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
-                    dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+                    dataPast.setValue(network.getDynamicVariables().getInterfaceVariable(var), dataPresent.getValue(var));
                 }
                 data[0] = dataPast;
                 data[1] = dataPresent;
@@ -126,7 +126,7 @@ public class DynamicBayesianNetworkSampler {
 
                 HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
                 for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
-                    dataPast.setValue(network.getDynamicVariables().getTemporalClone(var), dataPresent.getValue(var));
+                    dataPast.setValue(network.getDynamicVariables().getInterfaceVariable(var), dataPresent.getValue(var));
                 }
                 data[0] = dataPast;
                 data[1] = dataPresent;
@@ -219,7 +219,7 @@ public class DynamicBayesianNetworkSampler {
 
         @Override
         public double getValue(Variable var) {
-            if (var.isTemporalClone()) {
+            if (var.isInterfaceVariable()) {
                 return dataPast.getValue(var);
             } else {
                 return dataPresent.getValue(var);
@@ -228,7 +228,7 @@ public class DynamicBayesianNetworkSampler {
 
         @Override
         public void setValue(Variable var, double val) {
-            if (var.isTemporalClone()) {
+            if (var.isInterfaceVariable()) {
                 dataPast.setValue(var, val);
             } else {
                 dataPresent.setValue(var, val);

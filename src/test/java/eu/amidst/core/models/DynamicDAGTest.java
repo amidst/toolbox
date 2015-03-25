@@ -5,8 +5,6 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.variables.*;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -58,11 +56,11 @@ public class DynamicDAGTest {
         dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatREAL);
         dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatSIGMA);
         dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatREAL);
-        dynamicDAG.getParentSetTimeT(aLAT).addParent(dynamicVariables.getTemporalClone(aLAT));
+        dynamicDAG.getParentSetTimeT(aLAT).addParent(dynamicVariables.getInterfaceVariable(aLAT));
         dynamicDAG.getParentSetTimeT(vlatREAL).addParent(aLAT);
-        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(dynamicVariables.getTemporalClone(vlatREAL));
-        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getTemporalClone(olatREAL));
-        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getTemporalClone(vlatREAL));
+        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(dynamicVariables.getInterfaceVariable(vlatREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getInterfaceVariable(olatREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getInterfaceVariable(vlatREAL));
         dynamicDAG.getParentSetTimeT(latEv).addParent(vlatREAL);
         dynamicDAG.getParentSetTimeT(latEv).addParent(olatREAL);
 

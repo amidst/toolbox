@@ -250,10 +250,10 @@ public class MLDBNTest {
             //dynamicDAG.getParentSetTimeT(varB).addParent(varC);
 
 
-            //dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
+            //dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            //dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
 
-            dynamicDAG.getParentSetTimeT(classVar).addParent(dynamicVariables.getTemporalClone(classVar));
+            dynamicDAG.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
             //The number of states for the class variable is equal to 2
             DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
@@ -323,8 +323,8 @@ public class MLDBNTest {
 
 
 
-            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getTemporalClone(varA));
-            dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getTemporalClone(varB));
+            dynamicDAG.getParentSetTimeT(varA).addParent(dynamicVariables.getInterfaceVariable(varA));
+            dynamicDAG.getParentSetTimeT(varB).addParent(dynamicVariables.getInterfaceVariable(varB));
 
 
             //The number of states for the class variable is equal to 2

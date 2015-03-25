@@ -16,6 +16,7 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
+import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
@@ -155,8 +156,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         str.append("");
         for (int i = 0; i < getNumberOfParentAssignments(); i++) {
             str.append(this.getMultinomial(i).toString());
-            if (getNumberOfParentAssignments() > 1 && i < getNumberOfParentAssignments() - 1) {
-                str.append("\n");
+            if (getNumberOfParentAssignments() > 1) {
+                Assignment parentAssignment = MultinomialIndex.getVariableAssignmentFromIndex(this.getConditioningVariables(), i);
+                str.append(" | "+parentAssignment.toString(this.getConditioningVariables()));
+                if(i < getNumberOfParentAssignments() - 1) str.append("\n");
             }
         }
         return str.toString();

@@ -77,7 +77,7 @@ public class PlateuVMPDBN {
     public void runInferenceTimeT() {
         this.vmpTimeT.runInference();
         this.plateuNodesTimeT.get(this.nRepetitions-1).stream().filter(node -> !node.isObserved() && !node.getMainVariable().isParameterVariable()).forEach(node -> {
-            Variable temporalClone = this.dbnModel.getDynamicVariables().getTemporalClone(node.getMainVariable());
+            Variable temporalClone = this.dbnModel.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
             moveNodeQDist(this.getNodeOfVarTimeT(temporalClone,0), node);
         });
     }
@@ -85,7 +85,7 @@ public class PlateuVMPDBN {
     public void runInferenceTime0() {
         this.vmpTime0.runInference();
         this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved() && !node.getMainVariable().isParameterVariable()).forEach(node -> {
-            Variable temporalClone = this.dbnModel.getDynamicVariables().getTemporalClone(node.getMainVariable());
+            Variable temporalClone = this.dbnModel.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
             moveNodeQDist(this.getNodeOfVarTimeT(temporalClone,0), node);
         });
     }
@@ -169,7 +169,7 @@ public class PlateuVMPDBN {
                 .stream()
                 .filter(dist -> !dist.getVariable().isParameterVariable())
                 .map(dist -> {
-                    Variable temporalClone = this.dbnModel.getDynamicVariables().getTemporalClone(dist.getVariable());
+                    Variable temporalClone = this.dbnModel.getDynamicVariables().getInterfaceVariable(dist.getVariable());
                     EF_UnivariateDistribution uni = temporalClone.getDistributionType().newUnivariateDistribution().toEFUnivariateDistribution();
 
                     EF_ConditionalDistribution pDist = new EF_BaseDistribution_MultinomialParents(new ArrayList<Variable>(),
@@ -203,7 +203,7 @@ public class PlateuVMPDBN {
                 final int slice = i;
                 node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVarTimeT(var, slice)).collect(Collectors.toList()));
 
-                node.getPDist().getConditioningVariables().stream().filter(var -> var.isTemporalClone()).forEach(var -> node.setVariableToNodeParent(var, this.getNodeOfVarTimeT(var, slice)));
+                node.getPDist().getConditioningVariables().stream().filter(var -> var.isInterfaceVariable()).forEach(var -> node.setVariableToNodeParent(var, this.getNodeOfVarTimeT(var, slice)));
 
                 node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVarTimeT(var, slice).getChildren().add(node));
             }
@@ -251,11 +251,11 @@ public class PlateuVMPDBN {
     public Node getNodeOfVarTimeT(Variable variable, int slice) {
         if (variable.isParameterVariable()) {
             return this.parametersToNodeTimeT.get(variable);
-        } else if (!variable.isTemporalClone()){
+        } else if (!variable.isInterfaceVariable()){
             return this.variablesToNodeTimeT.get(slice).get(variable);
-        }else if (variable.isTemporalClone() && slice>0){
-            return this.variablesToNodeTimeT.get(slice - 1).get(this.dbnModel.getDynamicVariables().getVariableFromTemporalClone(variable));
-        }else if (variable.isTemporalClone() && slice==0){
+        }else if (variable.isInterfaceVariable() && slice>0){
+            return this.variablesToNodeTimeT.get(slice - 1).get(this.dbnModel.getDynamicVariables().getVariableFromInterface(variable));
+        }else if (variable.isInterfaceVariable() && slice==0){
             return this.cloneVariablesToNode.get(variable);
         }else{
             throw new IllegalArgumentException();

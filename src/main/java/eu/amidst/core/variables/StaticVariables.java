@@ -280,7 +280,7 @@ public class StaticVariables implements Iterable<Variable>, Serializable {
         }
 
         @Override
-        public boolean isTemporalClone() {
+        public boolean isInterfaceVariable() {
             throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
         }
 

@@ -29,13 +29,13 @@ public class DBNExample {
         Variable E = dynamicVariables.getVariable("E");
         Variable G = dynamicVariables.getVariable("G");
 
-        Variable A_TClone = dynamicVariables.getTemporalClone(A);
-        Variable B_TClone = dynamicVariables.getTemporalClone(B);
+        Variable A_TClone = dynamicVariables.getInterfaceVariable(A);
+        Variable B_TClone = dynamicVariables.getInterfaceVariable(B);
 
         //Note that C_TClone and D_TClone are created although they are not used (do not have temporal dependencies)
 
-        Variable E_TClone = dynamicVariables.getTemporalClone(E);
-        Variable G_TClone = dynamicVariables.getTemporalClone(G);
+        Variable E_TClone = dynamicVariables.getInterfaceVariable(E);
+        Variable G_TClone = dynamicVariables.getInterfaceVariable(G);
 
         // EXAMPLE OF A DAG STRUCTURE
 
@@ -180,7 +180,7 @@ public class DBNExample {
         Variable E = dynamicVariables.getVariable("E");
         Variable G = dynamicVariables.getVariable("G");
 
-        Variable A_TClone = dynamicVariables.getTemporalClone(A);
+        Variable A_TClone = dynamicVariables.getInterfaceVariable(A);
 
 
         // Time 0: Parents at time 0 are automatically created when adding parents at time t !!!

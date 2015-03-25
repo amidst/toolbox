@@ -87,7 +87,7 @@ public class DBNConverterToHugin {
             List<Variable> amidstParents = dynamicDAG.getParentSetTimeT(amidstChild).getParents();
             Node huginChild = this.huginDBN.getNodeByName(amidstChild.getName());
             for(Variable amidstParent: amidstParents) {
-                if(amidstParent.isTemporalClone()) {
+                if(amidstParent.isInterfaceVariable()) {
                    huginChild.addParent(huginChild.getTemporalClone());
                 }
                 else { //Variable
