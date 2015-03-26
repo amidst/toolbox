@@ -86,31 +86,24 @@ public class Examples {
         Variable C = dynamicVariables.getVariable("C");
         Variable D = dynamicVariables.getVariable("D");
 
-
-
-        Variable H1 = dynamicVariables.newMultinomialDynamicVariable("H1",Arrays.asList("TRUE", "FALSE"));
-        Variable H2 = dynamicVariables.newMultinomialDynamicVariable("H2", Arrays.asList("TRUE", "FALSE"));
-
-
+        Variable H = dynamicVariables.newMultinomialDynamicVariable("H",Arrays.asList("TRUE", "FALSE"));
+        //Variable H2 = dynamicVariables.newMultinomialDynamicVariable("H2", Arrays.asList("TRUE", "FALSE"));
 
         // Time 0: Parents at time 0 are automatically created when adding parents at time t !!!
         // Time t
 
-
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
-        dynamicDAG.getParentSetTimeT(B).addParent(H1);
-        dynamicDAG.getParentSetTimeT(C).addParent(H1);
-        dynamicDAG.getParentSetTimeT(D).addParent(H1);
-        dynamicDAG.getParentSetTimeT(B).addParent(H2);
-        dynamicDAG.getParentSetTimeT(C).addParent(H2);
-        dynamicDAG.getParentSetTimeT(D).addParent(H2);
+        dynamicDAG.getParentSetTimeT(B).addParent(H);
+        dynamicDAG.getParentSetTimeT(C).addParent(H);
+        dynamicDAG.getParentSetTimeT(D).addParent(H);
+        dynamicDAG.getParentSetTimeT(H).addParent(A);
         dynamicDAG.getParentSetTimeT(A).addParent(A.getInterfaceVariable());
-        dynamicDAG.getParentSetTimeT(H1).addParent(H1.getInterfaceVariable());
-        dynamicDAG.getParentSetTimeT(H2).addParent(H2.getInterfaceVariable());
+        dynamicDAG.getParentSetTimeT(H).addParent(H.getInterfaceVariable());
 
         dynamicDAG.getParentSetTime0(B).addParent(A);
-        dynamicDAG.getParentSetTime0(B).removeParent(H1);
+        dynamicDAG.getParentSetTime0(C).addParent(A);
+        dynamicDAG.getParentSetTime0(B).removeParent(H);
 
         System.out.println(dynamicDAG.toString());
 
@@ -124,25 +117,29 @@ public class Examples {
 
         Normal_MultinomialParents distC = dynamicbnet.getDistributionTime0(C);
 
-        Assignment parentConf = new HashMapAssignment(H1.getNumberOfStates()*H2.getNumberOfStates());
+        Assignment parentConf = new HashMapAssignment(H.getNumberOfStates()*A.getNumberOfStates());
 
-        parentConf.setValue(H1, 0);
-        parentConf.setValue(H2, 0);
+
+        parentConf.setValue(H, 0);
+        parentConf.setValue(A, 0);
         distC.getNormal(parentConf).setMean(0.7);
         distC.getNormal(parentConf).setVariance(0.04);
 
-        parentConf.setValue(H1, 0);
-        parentConf.setValue(H2, 1);
+
+        parentConf.setValue(H, 1);
+        parentConf.setValue(A, 0);
         distC.getNormal(parentConf).setMean(0.4);
         distC.getNormal(parentConf).setVariance(1);
 
-        parentConf.setValue(H1, 1);
-        parentConf.setValue(H2, 0);
+
+        parentConf.setValue(H, 0);
+        parentConf.setValue(A, 1);
         distC.getNormal(parentConf).setMean(0.75);
         distC.getNormal(parentConf).setVariance(0.0025);
 
-        parentConf.setValue(H1, 1);
-        parentConf.setValue(H2, 1);
+
+        parentConf.setValue(H, 1);
+        parentConf.setValue(A, 1);
         distC.getNormal(parentConf).setMean(0.66);
         distC.getNormal(parentConf).setVariance(0.0016);
 
