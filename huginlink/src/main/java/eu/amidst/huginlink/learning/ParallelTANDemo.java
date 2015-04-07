@@ -7,6 +7,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -97,7 +98,7 @@ public class ParallelTANDemo {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
-        ARFFDataWriter.writeToARFFFile(dataStream, dataFile);
+        DataStreamWriter.writeDataToFile(dataStream, dataFile);
 
         data = DataStreamLoader.loadFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
@@ -151,7 +152,7 @@ public class ParallelTANDemo {
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
-        ARFFDataWriter.writeToARFFFile(dataStream, dataFile);
+        DataStreamWriter.writeDataToFile(dataStream, dataFile);
 
         data = DataStreamLoader.loadFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
