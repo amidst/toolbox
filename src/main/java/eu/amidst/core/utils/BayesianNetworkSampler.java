@@ -4,6 +4,7 @@ package eu.amidst.core.utils;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.variables.Assignment;
@@ -197,8 +198,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         sampler.setSeed(0);
 
         DataStream<DataInstance> dataStream = sampler.sampleToDataBase(10);
-
-        ARFFDataWriter.writeToARFFFile(dataStream,"data/asisa-samples.arff");
+        DataStreamWriter.writeDataToFile(dataStream,"data/asisa-samples.arff");
 
         System.out.println(watch.stop());
 
