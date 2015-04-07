@@ -3,6 +3,7 @@ package eu.amidst.core.utils;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.*;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
@@ -274,7 +275,7 @@ public class DynamicBayesianNetworkSampler {
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
         sampler.setSeed(0);
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(3,2);
-        ARFFDataWriter.writeToARFFFile(dataStream, "./data/dnb-samples.arff");
+        DataStreamWriter.writeDataToFile(dataStream, "./data/dnb-samples.arff");
 
         System.out.println(watch.stop());
 

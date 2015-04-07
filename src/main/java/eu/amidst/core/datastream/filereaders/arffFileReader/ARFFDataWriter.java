@@ -5,6 +5,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.filereaders.DataFileWriter;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.*;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
@@ -71,7 +72,9 @@ public class ARFFDataWriter implements DataFileWriter {
 
         //MEJORAR PONER CUANDO REAL
         for(int i=0; i<atts.getNumberOfAttributes()-1;i++) {
-            if (atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
+            if (Utils.isMissingValue(assignment.getValue(atts.getList().get(i)))){
+                builder.append("?,");
+            }else if (atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
                 FiniteStateSpace stateSpace = atts.getList().get(i).getStateSpaceType();
                 String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getList().get(i)));
                 builder.append(nameState + ",");
@@ -82,7 +85,9 @@ public class ARFFDataWriter implements DataFileWriter {
             }
         }
 
-        if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.FINITE_SET) {
+        if (Utils.isMissingValue(assignment.getValue(atts.getList().get(atts.getNumberOfAttributes()-1)))) {
+            builder.append("?,");
+        }else if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.FINITE_SET) {
             FiniteStateSpace stateSpace = atts.getList().get(atts.getNumberOfAttributes() - 1).getStateSpaceType();
             String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getList().get(atts.getNumberOfAttributes() - 1)));
             builder.append(nameState);

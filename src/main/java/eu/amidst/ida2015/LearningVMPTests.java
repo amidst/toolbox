@@ -13,6 +13,7 @@ import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.BayesianLearningEngineForBN;
 import eu.amidst.core.learning.LearningEngineForBN;
 import eu.amidst.core.learning.MaximumLikelihoodForBN;
@@ -50,16 +51,25 @@ public class LearningVMPTests {
 
         bn.randomInitialization(new Random(0));
 
+        Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
+
+        distA.getNormal_NormalParentsDistribution(0).setIntercept(1.0);
+        distA.getNormal_NormalParentsDistribution(1).setIntercept(2.0);
+
+
+
         System.out.println(bn.toString());
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        sampler.setHiddenVar(varC);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        //sampler.setHiddenVar(varC);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStreamWriter.writeDataToFile(data, "./data/tmp.arff");
 
-        int windowSize = 10;
+        int windowSize = 1;
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
+        //svb.setFading(0.9);
         VMP vmp = svb.getPlateuVMP().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
@@ -69,14 +79,16 @@ public class LearningVMPTests {
         svb.setDAG(bn.getDAG());
         svb.initLearning();
 
+        int count=0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
             Normal_MultinomialNormalParents dist = learntBN.getDistribution(varA);
 
-            System.out.println(dist.getNormal_NormalParentsDistribution(0).getIntercept() + ", "+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
+            System.out.println(count +"\t"+ dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
 
+            count+=windowSize;
         }
 
     }
@@ -331,7 +343,7 @@ public class LearningVMPTests {
             //sampler.setMARVar(varB,0.5);
             DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
-            ARFFDataWriter.writeToARFFFile(data, "./data/tmp.arff");
+            DataStreamWriter.writeDataToFile(data, "./data/tmp.arff");
 
             data = DataStreamLoader.loadFromFile("./data/tmp.arff");
 
@@ -437,7 +449,7 @@ public class LearningVMPTests {
             //sampler.setMARVar(varB,0.5);
             DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
-            ARFFDataWriter.writeToARFFFile(data, "./data/tmp.arff");
+            DataStreamWriter.writeDataToFile(data, "./data/tmp.arff");
 
             data = DataStreamLoader.loadFromFile("./data/tmp.arff");
 
