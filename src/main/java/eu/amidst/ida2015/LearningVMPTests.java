@@ -6,10 +6,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
-import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
@@ -61,15 +58,79 @@ public class LearningVMPTests {
         System.out.println(bn.toString());
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        //sampler.setHiddenVar(varC);
+        //sampler.setSeed(1);
+        sampler.setHiddenVar(varC);
         DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+
         DataStreamWriter.writeDataToFile(data, "./data/tmp.arff");
 
-        int windowSize = 1;
+        int windowSize = 10;
+
+        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        //svb.setSeed(1);
+        //svb.setFading(0.9);
+        VMP vmp = svb.getPlateuVMP().getVMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(1000);
+        vmp.setThreshold(0.0001);
+
+        svb.setWindowsSize(windowSize);
+        svb.setDAG(bn.getDAG());
+        svb.initLearning();
+
+        int count=0;
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+            svb.updateModel(batch);
+            BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+            Normal_MultinomialNormalParents dist = learntBN.getDistribution(varA);
+
+            //System.out.println(count +"\t"+ dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
+            System.out.println(dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
+
+            count+=windowSize;
+        }
+
+    }
+
+
+
+    public static void testMixtureOfCLGConceptDrift() throws IOException, ClassNotFoundException {
+
+
+        StaticVariables variables = new StaticVariables();
+
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newMultionomialVariable("C", 2);
+
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(varA).addParent(varB);
+        dag.getParentSet(varA).addParent(varC);
+
+        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+
+        bn.randomInitialization(new Random(0));
+
+        Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
+
+        distA.getNormal_NormalParentsDistribution(0).setIntercept(1.0);
+        distA.getNormal_NormalParentsDistribution(1).setIntercept(2.0);
+
+
+
+        System.out.println(bn.toString());
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.setHiddenVar(varC);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+
+        int windowSize = 100;
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        //svb.setFading(0.9);
+        svb.setFading(0.5);
         VMP vmp = svb.getPlateuVMP().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
@@ -91,8 +152,250 @@ public class LearningVMPTests {
             count+=windowSize;
         }
 
+        /*************************************************/
+        /********** CONCEPT DRIFT ***********************/
+        /*************************************************/
+
+
+        distA.getNormal_NormalParentsDistribution(0).setIntercept(-1.0);
+        distA.getNormal_NormalParentsDistribution(1).setIntercept(-2.0);
+
+
+        sampler = new BayesianNetworkSampler(bn);
+        sampler.setHiddenVar(varC);
+        data = sampler.sampleToDataBase(1000);
+
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+            svb.updateModel(batch);
+            BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+            Normal_MultinomialNormalParents dist = learntBN.getDistribution(varA);
+
+            System.out.println(count +"\t"+ dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
+
+            count+=windowSize;
+        }
+
     }
 
+
+    public static void testCLGConceptDrift() throws IOException, ClassNotFoundException {
+
+
+        StaticVariables variables = new StaticVariables();
+
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
+
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(varA).addParent(varB);
+        dag.getParentSet(varA).addParent(varC);
+
+        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+
+        bn.randomInitialization(new Random(0));
+
+        Normal distB = bn.getDistribution(varB);
+        distB.setMean(1.0);
+
+        ConditionalLinearGaussian distA = bn.getDistribution(varA);
+
+        distA.setIntercept(0);
+        distA.setCoeffParents(new double[]{1.0,0.0});
+
+
+        System.out.println(bn.toString());
+        int windowSize = 10;
+        int sampleSize = 1000;
+
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.setSeed(1);
+        sampler.setHiddenVar(varC);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+
+
+        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        svb.setSeed(0);
+        svb.setFading(0.95);
+        VMP vmp = svb.getPlateuVMP().getVMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(1000);
+        vmp.setThreshold(0.0001);
+
+        svb.setWindowsSize(windowSize);
+        svb.setDAG(bn.getDAG());
+        svb.initLearning();
+
+        int count=0;
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+            svb.updateModel(batch);
+            BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+            Normal distC = learntBN.getDistribution(varC);
+
+            distB = learntBN.getDistribution(varB);
+
+            distA = learntBN.getDistribution(varA);
+
+            double meanA = distA.getIntercept() + distB.getMean()*distA.getCoeffParents()[0] + distC.getMean()*distA.getCoeffParents()[1];
+
+            System.out.println(count +"\t"+ meanA);
+
+            count+=windowSize;
+        }
+
+        /*************************************************/
+        /********** CONCEPT DRIFT ***********************/
+        /*************************************************/
+
+
+
+        distA = bn.getDistribution(varA);
+        distA.setIntercept(0);
+        distA.setCoeffParents(new double[]{2.0, 0.0});
+
+
+        sampler = new BayesianNetworkSampler(bn);
+        sampler.setSeed(1);
+        sampler.setHiddenVar(varC);
+        data = sampler.sampleToDataBase(sampleSize);
+
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+            svb.updateModel(batch);
+            BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+            Normal distC = learntBN.getDistribution(varC);
+
+            distB = learntBN.getDistribution(varB);
+
+            distA = learntBN.getDistribution(varA);
+
+            double meanA = distA.getIntercept() + distB.getMean()*distA.getCoeffParents()[0] + distC.getMean()*distA.getCoeffParents()[1];
+
+            System.out.println(count +"\t"+ meanA);
+
+            count+=windowSize;
+        }
+
+    }
+
+    public static void testCLGConceptDriftHiddenMultinomial() throws IOException, ClassNotFoundException {
+
+
+        StaticVariables variables = new StaticVariables();
+
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newMultionomialVariable("C",2);
+
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(varA).addParent(varB);
+        dag.getParentSet(varA).addParent(varC);
+
+        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+
+        bn.randomInitialization(new Random(0));
+
+        Normal distB = bn.getDistribution(varB);
+        distB.setMean(1.0);
+
+        Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
+
+        distA.getNormal_NormalParentsDistribution(0).setIntercept(0);
+        distA.getNormal_NormalParentsDistribution(1).setIntercept(0);
+
+        distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+        distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+
+
+        System.out.println(bn.toString());
+        int windowSize = 10;
+        int sampleSize = 1000;
+
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        sampler.setSeed(1);
+        sampler.setHiddenVar(varC);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+
+
+        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        svb.setSeed(0);
+        svb.setFading(0.95);
+        VMP vmp = svb.getPlateuVMP().getVMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(1000);
+        vmp.setThreshold(0.0001);
+
+        svb.setWindowsSize(windowSize);
+        svb.setDAG(bn.getDAG());
+        svb.initLearning();
+
+        int count=0;
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+            svb.updateModel(batch);
+            BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+            Multinomial distC = learntBN.getDistribution(varC);
+
+            distB = learntBN.getDistribution(varB);
+
+            distA = learntBN.getDistribution(varA);
+
+            double meanA = (distA.getNormal_NormalParentsDistribution(0).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0])*distC.getProbabilityOfState(0);
+            meanA += (distA.getNormal_NormalParentsDistribution(1).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(1).getCoeffParents()[0])*distC.getProbabilityOfState(1);
+
+
+            System.out.println(count +"\t"+ meanA);
+
+            count+=windowSize;
+        }
+
+        /*************************************************/
+        /********** CONCEPT DRIFT ***********************/
+        /*************************************************/
+
+
+
+        distA = bn.getDistribution(varA);
+        distA.getNormal_NormalParentsDistribution(0).setIntercept(0);
+        distA.getNormal_NormalParentsDistribution(1).setIntercept(0);
+
+        distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{2.0});
+        distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{2.0});
+
+
+        sampler = new BayesianNetworkSampler(bn);
+        sampler.setSeed(1);
+        sampler.setHiddenVar(varC);
+        data = sampler.sampleToDataBase(sampleSize);
+
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+            svb.updateModel(batch);
+            BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+            Multinomial distC = learntBN.getDistribution(varC);
+
+            distB = learntBN.getDistribution(varB);
+
+            distA = learntBN.getDistribution(varA);
+
+            double meanA = (distA.getNormal_NormalParentsDistribution(0).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0])*distC.getProbabilityOfState(0);
+            meanA += (distA.getNormal_NormalParentsDistribution(1).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(1).getCoeffParents()[0])*distC.getProbabilityOfState(1);
+
+            System.out.println(count +"\t"+ meanA);
+
+            count+=windowSize;
+        }
+
+    }
 
     public static void testCompareBatchSizes() throws IOException, ClassNotFoundException {
         BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
@@ -837,7 +1140,7 @@ public class LearningVMPTests {
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        LearningVMPTests.testMixtureOfCLG();
+        LearningVMPTests.testCLGConceptDriftHiddenMultinomial();
 
     }
 }
