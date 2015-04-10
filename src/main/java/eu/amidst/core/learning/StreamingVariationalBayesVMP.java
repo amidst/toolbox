@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmForBN {
 
     EF_LearningBayesianNetwork ef_extendedBN;
-    PlateuVMP plateuVMP = new PlateuVMP();
+    PlateuVMP plateuVMP;// = new PlateuVMP();
     DAG dag;
     DataStream<DataInstance> dataStream;
     double elbo;

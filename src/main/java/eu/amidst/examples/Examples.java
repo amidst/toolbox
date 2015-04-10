@@ -44,16 +44,8 @@ public class Examples {
         System.out.println(dag.toString());
 
         BayesianNetwork bnet = BayesianNetwork.newBayesianNetwork(dag);
+        System.out.println("-- CPDs are automatically created --");
         System.out.println(bnet.toString());
-
-        //BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
-        //sampler.setSeed(0);
-        //sampler.setParallelMode(true);
-
-        //DataStream<DataInstance> dataStream = sampler.sampleToDataBase(10000);
-
-        //ARFFDataWriter.writeToARFFFile(dataStream, "datasets/staticData2.arff");
-
 
         Multinomial_MultinomialParents distA = bnet.getDistribution(A);
         Assignment parentConf = new HashMapAssignment(H.getNumberOfStates());
@@ -70,6 +62,7 @@ public class Examples {
         distC.getNormal(1).setMean(0.24);
         distC.getNormal(1).setMean(1);
 
+        System.out.println("-- After modifying CPDs manually --");
         System.out.println(bnet.toString());
 
     }
@@ -87,9 +80,9 @@ public class Examples {
         Variable D = dynamicVariables.getVariable("D");
 
         Variable H = dynamicVariables.newMultinomialDynamicVariable("H",Arrays.asList("TRUE", "FALSE"));
-        //Variable H2 = dynamicVariables.newMultinomialDynamicVariable("H2", Arrays.asList("TRUE", "FALSE"));
 
-        // Time 0: Parents at time 0 are automatically created when adding parents at time t !!!
+        // Time 0: Parents at time 0 are automatically created when adding parents at time t, the structure can be
+        //         modified in any case.
         // Time t
 
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
@@ -109,6 +102,7 @@ public class Examples {
 
         DynamicBayesianNetwork dynamicbnet = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
 
+        System.out.println("-- CPDs are automatically created --");
         System.out.println(dynamicbnet.toString());
 
 
@@ -143,18 +137,22 @@ public class Examples {
         distC.getNormal(parentConf).setMean(0.66);
         distC.getNormal(parentConf).setVariance(0.0016);
 
+        System.out.println("-- After modifying CPDs manually --");
         System.out.println(dynamicbnet.toString());
 
-        //DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicbnet);
-        //sampler.setSeed(0);
-        //sampler.setParallelMode(true);
-        //DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(1000,10);
-        //ARFFDataWriter.writeToARFFFile(dataStream, "./datasets/dynamicData.arff");
     }
 
 
     public static void main(String[] args) throws Exception {
-       // Examples.BNExample();
+
+        System.out.println("-------------------------------");
+        System.out.println("-----Example for STATIC BN-----");
+        System.out.println("-------------------------------");
+        Examples.BNExample();
+
+        System.out.println("--------------------------------");
+        System.out.println("-----Example for DYNAMIC BN-----");
+        System.out.println("--------------------------------");
         Examples.DBNExample();
     }
 }

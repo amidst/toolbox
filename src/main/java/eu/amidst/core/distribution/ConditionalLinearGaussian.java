@@ -197,7 +197,7 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         for (int i=0;i<this.getCoeffParents().length;i++){
             str.append("beta"+(i+1)+" = "+ this.getCoeffParents()[i] + ", ");
         }
-        str.append("sd = " + this.getSd() + " ]");
+        str.append("var = " + this.getVariance() + " ]");
 
         return str.toString();
     }
