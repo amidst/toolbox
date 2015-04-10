@@ -63,8 +63,7 @@ public class PlateuVMP {
 
         variablesToNode = new ArrayList<>();
         parametersToNode = new ConcurrentHashMap<>();
-        parametersNode = ef_learningmodel.getDistributionList()
-                .stream()
+        parametersNode = ef_learningmodel.getDistributionList().stream()
                 .filter(dist -> dist.getVariable().isParameterVariable())
                 .map(dist -> {
                     Node node = new Node(dist);
