@@ -89,7 +89,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public EF_UnivariateDistribution randomInitialization(Random random) {
 
         double mean = random.nextGaussian()*10;
-        double var = random.nextDouble()*10+ 0.1;
+        double var = random.nextDouble()*10+1;
 
         this.getNaturalParameters().set(0,mean/(var));
         this.getNaturalParameters().set(1,-1/(2*var));
