@@ -209,7 +209,7 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
             str.append(this.getBaseDistribution(i).toString());
             if (getNumberOfBaseDistributions() > 1) {
                 Assignment parentAssignment = MultinomialIndex.getVariableAssignmentFromIndex(this.getMultinomialParents(),i);
-                str.append(" // "+parentAssignment.toString(this.getConditioningVariables()));
+                str.append(" | "+parentAssignment.toString(this.getConditioningVariables()));
                 if(i < getNumberOfBaseDistributions() - 1) str.append("\n");
             }
         }
