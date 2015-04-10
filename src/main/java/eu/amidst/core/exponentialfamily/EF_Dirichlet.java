@@ -95,7 +95,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     public EF_UnivariateDistribution randomInitialization(Random random) {
 
         for (int i = 0; i < this.nOfStates; i++) {
-            this.getNaturalParameters().set(i, random.nextDouble() + 1e-5);
+            this.getNaturalParameters().set(i, 5*random.nextDouble() + 1 + 1e-5);
         }
         this.updateMomentFromNaturalParameters();
 
