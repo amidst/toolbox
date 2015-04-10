@@ -57,10 +57,10 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     @Override
     public EF_UnivariateDistribution randomInitialization(Random random) {
 
-        double randomVar = random.nextDouble()*10 + 0.01;
+        double randomVar = random.nextDouble()*2 + 1 + 0.01;
 
-        double alpha = 1;
-        double beta = randomVar ;
+        double alpha = 10;
+        double beta = randomVar*alpha ;
 
         this.getNaturalParameters().set(0, alpha - 1);
         this.getNaturalParameters().set(1, -beta);
