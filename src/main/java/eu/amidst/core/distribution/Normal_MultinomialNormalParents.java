@@ -14,6 +14,7 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
+import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
@@ -161,7 +162,9 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         StringBuilder str = new StringBuilder();
         str.append("");
         for (int i = 0; i < getNumberOfParentAssignments(); i++) {
-            str.append(this.getNormal_NormalParentsDistribution(i).toString()+"\n");
+            str.append(this.getNormal_NormalParentsDistribution(i).toString());
+            Assignment parentAssignment = MultinomialIndex.getVariableAssignmentFromIndex(this.getMultinomialParents(), i);
+            str.append(" | "+parentAssignment.toString(this.getMultinomialParents())+"\n");
         }
 
         return str.toString();
