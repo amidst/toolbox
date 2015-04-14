@@ -5,16 +5,12 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
-import eu.amidst.core.learning.BayesianLearningEngineForBN;
-import eu.amidst.core.learning.LearningEngineForBN;
-import eu.amidst.core.learning.MaximumLikelihoodForBN;
-import eu.amidst.core.learning.StreamingVariationalBayesVMP;
+import eu.amidst.core.learning.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -69,7 +65,7 @@ public class LearningVMPTests {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         //svb.setSeed(1);
         //svb.setFading(0.9);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -130,8 +126,8 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        svb.setFading(0.9);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        svb.setTransitionMethod(new Fading(0.9));
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -231,8 +227,8 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(3);
-        svb.setFading(0.1);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        svb.setTransitionMethod(new Fading(0.1));
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -353,8 +349,8 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        svb.setFading(0.95);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        svb.setTransitionMethod(new Fading(0.95));
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -460,8 +456,8 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        svb.setFading(0.95);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        svb.setTransitionMethod(new Fading(0.95));
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -573,7 +569,7 @@ public class LearningVMPTests {
              */
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -672,7 +668,7 @@ public class LearningVMPTests {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setParallelMode(false);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setOutput(false);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
@@ -786,7 +782,7 @@ public class LearningVMPTests {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setParallelMode(false);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setOutput(false);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
@@ -810,7 +806,7 @@ public class LearningVMPTests {
                     //System.out.println("Window: "+windowsSizes[j]);
                     svb.setParallelMode(false);
                     svb.setWindowsSize(windowsSizes[j]);
-                    svb.setFading(fadingFactor[f]);
+                    svb.setTransitionMethod(new Fading(fadingFactor[f]));
                     svb.initLearning();
                     svb.runLearning();
                     BayesianNetwork VMPlearnBN = svb.getLearntBayesianNetwork();
@@ -970,7 +966,7 @@ public class LearningVMPTests {
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setSeed(j);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -997,7 +993,7 @@ public class LearningVMPTests {
                 for (int f = 0; f < fadingFactor.length; f++) {
                     System.out.println("  fading: " + fadingFactor[f]);
                     svb.initLearning();
-                    svb.setFading(fadingFactor[f]);
+                    svb.setTransitionMethod(new Fading(fadingFactor[f]));
                     Stopwatch watch = Stopwatch.createStarted();
                     double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
                     output += logProbOfEv_Batch1 + "\t" + watch.stop() + "\t" + svb.getAverageNumOfIterations() + "\t";
@@ -1022,7 +1018,7 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -1049,7 +1045,7 @@ public class LearningVMPTests {
             for (int f = 0; f < fadingFactor.length; f++) {
                 System.out.println("  fading: " + fadingFactor[f]);
                 svb.initLearning();
-                svb.setFading(fadingFactor[f]);
+                svb.setTransitionMethod(new Fading(fadingFactor[f]));
                 Stopwatch watch = Stopwatch.createStarted();
                 double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
                 output += logProbOfEv_Batch1 + "\t" + watch.stop() + "\t" + svb.getAverageNumOfIterations() + "\t";
@@ -1072,7 +1068,7 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -1099,7 +1095,7 @@ public class LearningVMPTests {
             for (int f = 0; f < fadingFactor.length; f++) {
                 //System.out.println("  fading: "+fadingFactor[f]);
                 svb.initLearning();
-                svb.setFading(fadingFactor[f]);
+                svb.setTransitionMethod(new Fading(fadingFactor[f]));
                 Stopwatch watch = Stopwatch.createStarted();
                 double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
                 output += logProbOfEv_Batch1 + "\t" + watch.stop() + "\t" + svb.getAverageNumOfIterations() + "\t";
@@ -1123,7 +1119,7 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -1157,7 +1153,7 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -1193,7 +1189,7 @@ public class LearningVMPTests {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -1231,7 +1227,7 @@ public class LearningVMPTests {
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setSeed(j);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -1258,7 +1254,7 @@ public class LearningVMPTests {
                 for (int f = 0; f < fadingFactor.length; f++) {
                     //System.out.println("  fading: "+fadingFactor[f]);
                     svb.initLearning();
-                    svb.setFading(fadingFactor[f]);
+                    svb.setTransitionMethod(new Fading(fadingFactor[f]));
                     BayesianNetwork bn = MaximumLikelihoodForBN.
                             learnParametersStaticModelFading(normalVarBN.getDAG(), data, fadingFactor[f], windowsSizes[i]);
                     //double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
