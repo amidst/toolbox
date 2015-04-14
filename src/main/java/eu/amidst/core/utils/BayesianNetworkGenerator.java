@@ -48,6 +48,35 @@ public final class BayesianNetworkGenerator{
         BayesianNetworkGenerator.numberOfStates = numberOfStates;
     }
 
+    public static BayesianNetwork generateNaiveBayesWithGlobalHiddenVar(int nClassLabels, String nameGlobalHiddenVar){
+
+        StaticVariables staticVariables  = new StaticVariables();
+
+
+        IntStream.range(0,numberOfDiscreteVars-1)
+                .forEach(i -> staticVariables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+
+        IntStream.range(0,numberOfContinuousVars)
+                .forEach(i -> staticVariables.newGaussianVariable("GaussianVar" + i));
+
+        Variable globalHiddenVar =  staticVariables.newGaussianVariable(nameGlobalHiddenVar);
+
+        Variable classVar = staticVariables.newMultionomialVariable("ClassVar", nClassLabels);
+
+        DAG dag = new DAG(staticVariables);
+
+        dag.getParentSets().stream()
+                .filter(parentSet -> !parentSet.getMainVar().equals(classVar) && !parentSet.getMainVar().equals(globalHiddenVar))
+                .forEach(w -> {w.addParent(classVar); w.addParent(globalHiddenVar);});
+
+        BayesianNetwork network = BayesianNetwork.newBayesianNetwork(dag);
+
+        network.randomInitialization(new Random(seed));
+
+        return network;
+    }
+
+
     public static BayesianNetwork generateNaiveBayes(int nClassLabels){
 
         StaticVariables staticVariables  = new StaticVariables();
@@ -64,7 +93,7 @@ public final class BayesianNetworkGenerator{
         DAG dag = new DAG(staticVariables);
 
         dag.getParentSets().stream()
-                .filter(var -> var.getMainVar().getVarID()!=classVar.getVarID())
+                .filter(parentSet -> parentSet.getMainVar().getVarID()!=classVar.getVarID())
                 .forEach(w -> w.addParent(classVar));
 
         BayesianNetwork network = BayesianNetwork.newBayesianNetwork(dag);
