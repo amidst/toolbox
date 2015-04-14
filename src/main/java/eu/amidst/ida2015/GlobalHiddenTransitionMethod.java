@@ -12,10 +12,12 @@ import eu.amidst.core.variables.Variable;
 public class GlobalHiddenTransitionMethod implements TransitionMethod{
 
     Variable globalHiddenVar;
+    double meanStart;
     double noise;
 
-    public GlobalHiddenTransitionMethod(Variable globalHiddenVar_, double noise_){
+    public GlobalHiddenTransitionMethod(Variable globalHiddenVar_, double meanStart_, double noise_){
         this.globalHiddenVar=globalHiddenVar_;
+        this.meanStart = meanStart_;
         this.noise = noise_;
     }
 
@@ -38,7 +40,7 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
         Variable meanVar = normal.getMeanParameterVariable();
         EF_Normal meanDist = ((EF_BaseDistribution_MultinomialParents<EF_Normal>)bayesianNetwork.getDistribution(meanVar)).getBaseEFDistribution(0);
 
-        double mean = 0.1 ;
+        double mean = meanStart ;
         double var = 0.01;
 
         meanDist.getNaturalParameters().set(0,mean/(var));
