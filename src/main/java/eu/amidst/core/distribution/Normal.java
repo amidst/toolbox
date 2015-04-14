@@ -118,7 +118,7 @@ public class Normal extends UnivariateDistribution {
     @Override
     public void randomInitialization(Random random) {
         this.setMean(random.nextGaussian()*10);
-        this.setVariance(random.nextDouble()*10+0.1);
+        this.setVariance(random.nextDouble()*10+0.5);
     }
 
     @Override
