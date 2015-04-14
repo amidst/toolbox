@@ -176,18 +176,18 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftWithHiddenVariable(String[] args) {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(1);
+        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayesWithGlobalHiddenVar(2, "Global");
 
-        naiveBayes.randomInitialization(new Random(0));
+        naiveBayes.randomInitialization(new Random(1));
 
         Variable globalHidden = naiveBayes.getStaticVariables().getVariableByName("Global");
         Variable classVariable = naiveBayes.getStaticVariables().getVariableByName("ClassVar");
         Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
 
 
-        naiveBayes.getDistribution(globalHidden).randomInitialization(new Random(0));
+        naiveBayes.getDistribution(globalHidden).randomInitialization(new Random(1));
 
         System.out.println(naiveBayes.toString());
 
@@ -200,24 +200,31 @@ public class GlobalHiddenConceptDrift {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setPlateuStructure(new PlateuGlobalHiddenConceptDrift(globalHidden));
-        svb.setTransitionMethod(new GlobalHiddenTransitionMethod(globalHidden, 0.1, 1));
+        svb.setTransitionMethod(new GlobalHiddenTransitionMethod(globalHidden, 1, 1));
         svb.setWindowsSize(windowSize);
         svb.setDAG(naiveBayes.getDAG());
         svb.initLearning();
 
 
+        double acumLL = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
-            svb.updateModel(batch);
+            //BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+            Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
+            //System.out.println("H_prior:"+ normal.getMean() + "\t" + normal.getVariance());
+
+            acumLL += svb.updateModel(batch);
+            //System.out.println(count + "\t" +  acumLL/count);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
             //System.out.println("****************");
             //System.out.println(learntBN.toString());
-            Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
+            normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
             //System.out.println("****************");
 
-            System.out.println(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
+            //System.out.println(count + "\t" + normal.getMean() + "\t" + normal.getVariance() +  "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
+            System.out.println(count + "\t" + normal.getMean() +  "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
 
             count += windowSize;
         }
@@ -225,7 +232,7 @@ public class GlobalHiddenConceptDrift {
 
         for (int K = 1; K < 10; K++) {
             //System.out.println("******************************** CONCEPT DRIFT ********************************");
-            naiveBayes.getDistribution(globalHidden).randomInitialization(new Random(K + 1));
+            naiveBayes.getDistribution(globalHidden).randomInitialization(new Random(K + 2));
 
             //System.out.println(naiveBayes.toString());
 
@@ -235,7 +242,8 @@ public class GlobalHiddenConceptDrift {
 
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
-                svb.updateModel(batch);
+                acumLL += svb.updateModel(batch);
+                //System.out.println(count + "\t" +  acumLL/count);
                 BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
                 //System.out.println("****************");
@@ -244,7 +252,8 @@ public class GlobalHiddenConceptDrift {
                 //System.out.println("Global Hidden: " + normal.getMean() + ", " + normal.getVariance());
                 //System.out.println("****************");
 
-                System.out.println(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
+                //System.out.println(count + "\t" + normal.getMean() + "\t" + normal.getVariance() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
+                System.out.println(count + "\t" + normal.getMean()  + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
 
                 count += windowSize;
             }
