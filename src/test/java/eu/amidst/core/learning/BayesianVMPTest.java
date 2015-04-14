@@ -1,29 +1,19 @@
 package eu.amidst.core.learning;
 
-import com.google.common.base.Stopwatch;
-import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
-import org.apache.commons.math.stat.descriptive.rank.Max;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -59,7 +49,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -104,7 +94,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -146,7 +136,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -189,7 +179,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -233,7 +223,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -276,7 +266,7 @@ public class BayesianVMPTest extends TestCase {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(1000);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -307,7 +297,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -347,7 +337,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(100);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -386,15 +376,14 @@ public class BayesianVMPTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
             sampler.setSeed(0);
 
-            DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
             System.out.println(LearningEngineForBN.learnParameters(oneNormalVarBN.getDAG(), data).toString());
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-            svb.setFading(0.9);
             svb.setWindowsSize(1);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setOutput(false);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
@@ -436,7 +425,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
         svb.setSeed(5);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
@@ -481,7 +470,7 @@ public class BayesianVMPTest extends TestCase {
             svb.setParallelMode(false);
             svb.setWindowsSize(1000);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setOutput(false);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
@@ -529,7 +518,7 @@ public class BayesianVMPTest extends TestCase {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(1000);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -570,7 +559,7 @@ public class BayesianVMPTest extends TestCase {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(1000);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -614,7 +603,7 @@ public class BayesianVMPTest extends TestCase {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(1000);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -661,7 +650,7 @@ public class BayesianVMPTest extends TestCase {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(5); //Set to 2 and an exception is raised. Numerical instability.
         svb.setSeed(1);
-        VMP vmp = svb.getPlateuVMP().getVMP();
+        VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.001);
@@ -706,7 +695,7 @@ public class BayesianVMPTest extends TestCase {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(1000);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -751,7 +740,7 @@ public class BayesianVMPTest extends TestCase {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(10); //Set to 2 and an exception is raised. Numerical instability.
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
@@ -801,7 +790,7 @@ public class BayesianVMPTest extends TestCase {
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(10);
             svb.setSeed(i);
-            VMP vmp = svb.getPlateuVMP().getVMP();
+            VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.001);

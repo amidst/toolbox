@@ -3,10 +3,6 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
-import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.models.BayesianNetwork;
@@ -15,9 +11,7 @@ import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
-import spire.math.Natural;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +24,9 @@ import java.util.stream.Collectors;
  */
 public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmForBN {
 
+    TransitionMethod transitionMethod = null;
     EF_LearningBayesianNetwork ef_extendedBN;
-    PlateuVMP plateuVMP;// = new PlateuVMP();
+    PlateuStructure plateuStructure;
     DAG dag;
     DataStream<DataInstance> dataStream;
     double elbo;
@@ -41,19 +36,23 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
     int seed = 0;
     int nBatches = 0;
     int nIterTotal = 0;
-    double fading = 1;
 
     public StreamingVariationalBayesVMP(){
-        plateuVMP = new PlateuVMP();
-        plateuVMP.setNRepetitions(windowsSize);
+        plateuStructure = new PlateuIIDReplication();
+        plateuStructure.setNRepetitions(windowsSize);
     }
+
 
     public void setRandomRestart(boolean randomRestart) {
         this.randomRestart = randomRestart;
     }
 
-    public PlateuVMP getPlateuVMP() {
-        return plateuVMP;
+    public PlateuStructure getPlateuStructure() {
+        return plateuStructure;
+    }
+
+    public void setPlateuStructure(PlateuStructure plateuStructure) {
+        this.plateuStructure = plateuStructure;
     }
 
     public int getSeed() {
@@ -71,11 +70,11 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     public void setWindowsSize(int windowsSize) {
         this.windowsSize = windowsSize;
-        this.plateuVMP.setNRepetitions(windowsSize);
+        this.plateuStructure.setNRepetitions(windowsSize);
     }
 
-    public void setFading(double fading) {
-        this.fading = fading;
+    public void setTransitionMethod(TransitionMethod transitionMethod) {
+        this.transitionMethod = transitionMethod;
     }
 
     @Override
@@ -121,7 +120,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
                         NaturalParameters orig = (NaturalParameters) vector.getVectorByPosition(i);
                         NaturalParameters copy = new ArrayVector(orig.size());
                         copy.copy(orig);
-                        this.plateuVMP.getEFParameterPosterior(var).setNaturalParameters(copy);
+                        this.plateuStructure.getEFParameterPosterior(var).setNaturalParameters(copy);
                     }
                 }
             }
@@ -139,7 +138,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
             for (int i = 0; i <parameters.size(); i++) {
                 Variable var = parameters.get(i);
                 EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var);
-                EF_UnivariateDistribution uni = plateuVMP.getEFParameterPosterior(var).deepCopy();
+                EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
                 uni.setNaturalParameters((NaturalParameters)total.getVectorByPosition(i));
                 dist.setBaseEFDistribution(0,uni);
             }
@@ -165,53 +164,38 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
     public double updateModel(DataOnMemory<DataInstance> batch) {
         nBatches++;
         //System.out.println("\n Batch:");
-        this.plateuVMP.setEvidence(batch.getList());
-        this.plateuVMP.runInference();
-        nIterTotal+=this.plateuVMP.getVMP().getNumberOfIterations();
+        this.plateuStructure.setEvidence(batch.getList());
+        this.plateuStructure.runInference();
+        nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
-        this.ef_extendedBN.getParametersVariables().getListOfVariables().stream().forEach(var -> {
-            EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var);
-            EF_UnivariateDistribution prior  =plateuVMP.getEFParameterPosterior(var).deepCopy();
-            NaturalParameters naturalParameters = prior.getNaturalParameters();
-            naturalParameters.multiplyBy(fading);
-            prior.setNaturalParameters(naturalParameters);
-            dist.setBaseEFDistribution(0, prior);
+        ef_extendedBN.getParametersVariables().getListOfVariables().stream().forEach(var -> {
+            EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
+            dist.setBaseEFDistribution(0, plateuStructure.getEFParameterPosterior(var).deepCopy());
         });
 
-        //BaseDistribution_MultinomialParents<Normal> dist = this.getLearntBayesianNetwork().getConditionalDistribution(this.dag.getStaticVariables().getVariableById(0));
-        //Normal normal = dist.getBaseDistribution(0);
-        //System.out.println(normal.getVariance());
-
-
-        /*this.getPlateuVMP().getEFLearningBN().getParametersVariables().forEach(var -> {
-            if (!var.isGammaParameter())
-                System.out.println(this.getPlateuVMP().getEFParameterPosterior(var).toUnivariateDistribution().toString());
-            else
-                System.out.println(this.getPlateuVMP().getEFParameterPosterior(var).getNaturalParameters().get(0)+ ", "+ 1/this.getPlateuVMP().getEFParameterPosterior(var).getMomentParameters().get(1));
-
-        });*/
-
+        if (transitionMethod!=null)
+            this.ef_extendedBN=this.transitionMethod.transitionModel(this.ef_extendedBN);
 
         //this.plateuVMP.resetQs();
-        return this.plateuVMP.getLogProbabilityOfEvidence();
+        return this.plateuStructure.getLogProbabilityOfEvidence();
     }
 
     private BatchOutput updateModelOnBatchParallel(DataOnMemory<DataInstance> batch,  CompoundVector compoundVectorPrior) {
 
         nBatches++;
-        this.plateuVMP.setEvidence(batch.getList());
-        this.plateuVMP.runInference();
-        nIterTotal+=this.plateuVMP.getVMP().getNumberOfIterations();
+        this.plateuStructure.setEvidence(batch.getList());
+        this.plateuStructure.runInference();
+        nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
         List<Vector> naturalParametersPosterior =  this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
-                .map(var -> plateuVMP.getEFParameterPosterior(var).deepCopy().getNaturalParameters()).collect(Collectors.toList());
+                .map(var -> plateuStructure.getEFParameterPosterior(var).deepCopy().getNaturalParameters()).collect(Collectors.toList());
 
 
         CompoundVector compoundVectorEnd = new CompoundVector(naturalParametersPosterior);
 
         compoundVectorEnd.substract(compoundVectorPrior);
 
-        return new BatchOutput(compoundVectorEnd, this.plateuVMP.getLogProbabilityOfEvidence());
+        return new BatchOutput(compoundVectorEnd, this.plateuStructure.getLogProbabilityOfEvidence());
     }
 
     public int getNumberOfBatches() {
@@ -236,9 +220,12 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
                 .collect(Collectors.toList());
 
         this.ef_extendedBN = new EF_LearningBayesianNetwork(dists, dag.getStaticVariables());
-        this.plateuVMP.setSeed(seed);
-        plateuVMP.setPlateuModel(ef_extendedBN);
-        this.plateuVMP.resetQs();
+        this.plateuStructure.setSeed(seed);
+        plateuStructure.setEFBayesianNetwork(ef_extendedBN);
+        plateuStructure.replicateModel();
+        this.plateuStructure.resetQs();
+        if (transitionMethod!=null)
+           this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN);
     }
 
     @Override

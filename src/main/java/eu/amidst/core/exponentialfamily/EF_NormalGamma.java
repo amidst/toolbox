@@ -45,6 +45,13 @@ public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
         this.parametersParentVariables.add(gammaParameterVariable);
     }
 
+    public Variable getMeanParameterVariable() {
+        return meanParameterVariable;
+    }
+
+    public Variable getGammaParameterVariable() {
+        return gammaParameterVariable;
+    }
 
     /**
      * Of the second form (message from all parents to X variable). Needed to calculate the lower bound.
