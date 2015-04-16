@@ -18,9 +18,10 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
 
     Variable globalHiddenVariable;
     Node globalHiddenNode;
-
-    public PlateuGlobalHiddenConceptDrift(Variable globalHiddenVariable_){
+    boolean dynamic;
+    public PlateuGlobalHiddenConceptDrift(Variable globalHiddenVariable_, boolean dynamic_){
         this.globalHiddenVariable = globalHiddenVariable_;
+        this.dynamic = dynamic_;
     }
     public Variable getGlobalHiddenVariable() {
         return globalHiddenVariable;
@@ -75,8 +76,10 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
             }
         }
         globalHiddenNode.setParents(globalHiddenNode.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, 0)).collect(Collectors.toList()));
+        globalHiddenNode.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, 0).getChildren().add(globalHiddenNode));
 
-        //globalHiddenNode.getParents().stream().forEach( node -> node.setActive(false));
+        if (dynamic)
+            globalHiddenNode.getParents().stream().forEach(node -> node.setActive(false));
 
         List<Node> allNodes = new ArrayList();
 

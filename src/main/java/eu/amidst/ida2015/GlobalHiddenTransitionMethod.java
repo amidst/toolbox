@@ -30,8 +30,8 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
 
         EF_Gamma gamma = ((EF_BaseDistribution_MultinomialParents<EF_Gamma>)bayesianNetwork.getDistribution(gammaVar)).getBaseEFDistribution(0);
 
-        double alpha = 1000;
-        double beta = alpha*0.01;
+        double alpha = 100000;
+        double beta = alpha*1000;
 
         gamma.getNaturalParameters().set(0, alpha - 1);
         gamma.getNaturalParameters().set(1, -beta);
@@ -47,13 +47,33 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
         meanDist.getNaturalParameters().set(1,-1/(2*var));
         meanDist.updateMomentFromNaturalParameters();
 
+
+        for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfVariables()){
+
+            if (!paramVariable.isNormalParameter())
+                continue;
+
+
+            EF_Normal prior = ((EF_BaseDistribution_MultinomialParents<EF_Normal>)bayesianNetwork.getDistribution(paramVariable)).getBaseEFDistribution(0);
+
+            double precisionPrior = 1/0.1;
+            double meanPrior = 1;
+
+            prior.getNaturalParameters().set(0, precisionPrior*meanPrior);
+            prior.getNaturalParameters().set(1, -0.5*precisionPrior);
+            prior.updateMomentFromNaturalParameters();
+
+        }
+
+
         return bayesianNetwork;
 
     }
 
     @Override
-    public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork bayesianNetwork) {
+    public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
 
+        Normal normalGlobalHiddenPreviousTimeStep = plateuStructure.getEFVariablePosterior(globalHiddenVar, 0).toUnivariateDistribution();
 
         EF_NormalGamma normal = (EF_NormalGamma)bayesianNetwork.getDistribution(this.globalHiddenVar);
 
@@ -61,12 +81,10 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
 
         EF_Gamma gamma = ((EF_BaseDistribution_MultinomialParents<EF_Gamma>)bayesianNetwork.getDistribution(gammaVar)).getBaseEFDistribution(0);
 
-        double precision = gamma.getExpectedParameters().get(0);
-
-        double var= 1.0/precision + this.noise;
+        double variance = normalGlobalHiddenPreviousTimeStep.getVariance() + this.noise;
 
         double alpha = 1000;
-        double beta = alpha*var;
+        double beta = alpha*variance;
 
         gamma.getNaturalParameters().set(0, alpha - 1);
         gamma.getNaturalParameters().set(1, -beta);
@@ -75,11 +93,30 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
         Variable meanVar = normal.getMeanParameterVariable();
         EF_Normal meanDist = ((EF_BaseDistribution_MultinomialParents<EF_Normal>)bayesianNetwork.getDistribution(meanVar)).getBaseEFDistribution(0);
 
-        double mean = meanDist.getExpectedParameters().get(0);
+        double mean =  normalGlobalHiddenPreviousTimeStep.getMean();
 
-        meanDist.getNaturalParameters().set(0,mean/(var));
-        meanDist.getNaturalParameters().set(1,-1/(2*var));
+        meanDist.getNaturalParameters().set(0,mean/(variance));
+        meanDist.getNaturalParameters().set(1,-1/(2*variance));
         meanDist.updateMomentFromNaturalParameters();
+
+
+        /***** FADING ****/
+     /*   double fading = 0.5;
+
+        bayesianNetwork.getParametersVariables().getListOfVariables().stream().forEach(var -> {
+            EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) bayesianNetwork.getDistribution(var);
+            EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
+            NaturalParameters naturalParameters = prior.getNaturalParameters();
+            naturalParameters.multiplyBy(fading);
+            prior.setNaturalParameters(naturalParameters);
+            dist.setBaseEFDistribution(0, prior);
+        });*/
+
+
+
+
+
+
 
         return bayesianNetwork;
     }

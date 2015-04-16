@@ -186,7 +186,7 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
             this.coeffParents[j]=random.nextGaussian();
         }
         //this.sd = random.nextDouble()+0.1;
-        this.variance = Math.pow(random.nextDouble()+0.1,2);
+        this.variance = random.nextDouble()+0.5;
     }
 
     @Override
