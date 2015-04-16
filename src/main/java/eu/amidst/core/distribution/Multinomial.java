@@ -123,7 +123,7 @@ public class Multinomial extends UnivariateDistribution  {
     @Override
     public void randomInitialization(Random random) {
         for (int i = 0; i < probabilities.length; i++) {
-            probabilities[i] = random.nextDouble();
+            probabilities[i] = random.nextDouble()+0.2;
         }
         probabilities = Utils.normalize(probabilities);
     }

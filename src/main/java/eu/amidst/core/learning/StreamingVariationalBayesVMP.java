@@ -174,7 +174,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         });
 
         if (transitionMethod!=null)
-            this.ef_extendedBN=this.transitionMethod.transitionModel(this.ef_extendedBN);
+            this.ef_extendedBN=this.transitionMethod.transitionModel(this.ef_extendedBN, this.plateuStructure);
 
         //this.plateuVMP.resetQs();
         return this.plateuStructure.getLogProbabilityOfEvidence();
