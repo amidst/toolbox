@@ -12,5 +12,5 @@ public interface TransitionMethod {
         return bayesianNetwork;
     }
 
-    public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork bayesianNetwork);
+    public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure);
 }
