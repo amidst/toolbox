@@ -1,5 +1,6 @@
 package eu.amidst.core.utils;
 
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.BayesianNetworkWriter;
