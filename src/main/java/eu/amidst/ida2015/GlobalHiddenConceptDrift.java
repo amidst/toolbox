@@ -4,6 +4,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.Fading;
 import eu.amidst.core.learning.PlateuIIDReplication;
@@ -12,6 +13,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -194,7 +196,7 @@ public class GlobalHiddenConceptDrift {
         }
     }
 
-    public static void conceptDriftWithHiddenVariable(String[] args) {
+    public static void conceptDriftSmoothChanges(String[] args) {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(10);
         BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
@@ -311,7 +313,7 @@ public class GlobalHiddenConceptDrift {
 
         System.out.println(dag.toString());
 
-        int windowSize = 1000;
+        int windowSize = 10;
         int count = windowSize;
 
 
@@ -326,11 +328,15 @@ public class GlobalHiddenConceptDrift {
         //System.out.println(svb.getLearntBayesianNetwork().toString());
 
         double acumLL = 0;
+        double avACC = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+
+            double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch, classVariable);
 
             acumLL += svb.updateModel(batch);
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
             //System.out.println(learntBN.toString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
@@ -345,15 +351,39 @@ public class GlobalHiddenConceptDrift {
             System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getIntercept());
             System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getIntercept());
             System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getIntercept());
+            System.out.print("\t" + accuracy);
             System.out.println();
 
             count += windowSize;
+            avACC+= accuracy;
+
         }
+
+        System.out.println(avACC/(count/windowSize));
 
     }
 
+    public static double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data, Variable classVariable){
 
-    public static void conceptDriftHyperplane1(String[] args) {
+        double predictions = 0;
+        InferenceEngineForBN.setModel(bn);
+        for (DataInstance instance : data) {
+            double realValue = instance.getValue(classVariable);
+            instance.setValue(classVariable, Utils.missingValue());
+            InferenceEngineForBN.setEvidence(instance);
+            InferenceEngineForBN.runInference();
+            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+            if (Utils.maxIndex(posterior.getProbabilities())==realValue)
+                predictions++;
+
+            instance.setValue(classVariable, realValue);
+        }
+
+        return predictions/data.getNumberOfDataInstances();
+    }
+
+
+    public static void conceptDriftHyperplane(String[] args) {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane1.arff");
 
@@ -379,7 +409,7 @@ public class GlobalHiddenConceptDrift {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuGlobalHiddenConceptDrift(globalHidden, true));
-        svb.setTransitionMethod(new GlobalHiddenTransitionMethod(globalHidden, 1, 1));
+        svb.setTransitionMethod(new GlobalHiddenTransitionMethod(globalHidden, 1, 5));
         svb.setWindowsSize(windowSize);
         svb.setDAG(dag);
         svb.initLearning();
@@ -389,6 +419,8 @@ public class GlobalHiddenConceptDrift {
         double acumLL = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
+            double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch, classVariable);
+
             acumLL += svb.updateModel(batch);
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
@@ -396,7 +428,7 @@ public class GlobalHiddenConceptDrift {
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
 
-            System.out.println(count + "\t" + normal.getMean());
+            System.out.println(count + "\t" + normal.getMean() +"\t" + accuracy);
 
             count += windowSize;
         }
@@ -437,7 +469,10 @@ public class GlobalHiddenConceptDrift {
         //System.out.println(svb.getLearntBayesianNetwork().toString());
 
         double acumLL = 0;
+        double avACC = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+
+            double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch, classVariable);
 
             acumLL += svb.updateModel(batch);
 
@@ -453,11 +488,15 @@ public class GlobalHiddenConceptDrift {
             System.out.print("\t" + dist2.getNormal(1).getMean());
             System.out.print("\t" + dist3.getNormal(0).getMean());
             System.out.print("\t" + dist3.getNormal(1).getMean());
+            System.out.print("\t" + accuracy);
             System.out.println();
 
             count += windowSize;
+            avACC+= accuracy;
         }
 
+        System.out.println(svb.getLearntBayesianNetwork().toString());
+        System.out.println(avACC/(count/windowSize));
     }
 
     public static void main(String[] args) {
