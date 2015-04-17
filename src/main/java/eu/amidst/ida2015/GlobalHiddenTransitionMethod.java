@@ -101,7 +101,8 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
 
 
         /***** FADING ****/
-     /*   double fading = 0.5;
+        /*
+        double fading = 0.9;
 
         bayesianNetwork.getParametersVariables().getListOfVariables().stream().forEach(var -> {
             EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) bayesianNetwork.getDistribution(var);
@@ -110,9 +111,9 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
             naturalParameters.multiplyBy(fading);
             prior.setNaturalParameters(naturalParameters);
             dist.setBaseEFDistribution(0, prior);
-        });*/
+        });
 
-
+        */
 
 
 
