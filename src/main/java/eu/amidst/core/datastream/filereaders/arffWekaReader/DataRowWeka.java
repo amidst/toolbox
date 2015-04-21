@@ -21,6 +21,6 @@ public class DataRowWeka implements DataRow{
 
     @Override
     public void setValue(Attribute att, double value) {
-
+        dataRow.setValue(att.getIndex(), value);
     }
 }
