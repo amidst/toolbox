@@ -6,7 +6,7 @@ import eu.amidst.core.datastream.DataInstance;
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-class DataInstanceImpl implements DataInstance {
+public class DataInstanceImpl implements DataInstance {
 
     private DataRow dataRow;
 
