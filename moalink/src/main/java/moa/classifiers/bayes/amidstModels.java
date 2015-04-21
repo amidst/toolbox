@@ -5,20 +5,20 @@ import eu.amidst.core.datastream.filereaders.arffWekaReader.DataRowWeka;
 import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.learning.StreamingVariationalBayesVMP;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceType;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
-import eu.amidst.ida2015.GlobalHiddenTransitionMethod;
-import eu.amidst.ida2015.PlateuGlobalHiddenConceptDrift;
+import eu.amidst.ida2015.NaiveBayesConceptDrift;
 import moa.classifiers.AbstractClassifier;
 import moa.core.InstancesHeader;
 import moa.core.Measurement;
+import moa.options.FloatOption;
+import moa.options.IntOption;
+import moa.options.MultiChoiceOption;
 import weka.core.Instance;
 
 import java.util.ArrayList;
@@ -32,45 +32,77 @@ public class amidstModels extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
-    public enum Model{
-        GLOBAL_, LOCAL, GLOBAL_LOCAL
-    }
-
 
     /**
      * Parameters of the amidst model
      */
-    public Model modelType_ = Model.GLOBAL_;
 
-    public int windowSize_ = 100;
+    String[] driftModes = new String[]{
+        "GLOBAL",
+                "LOCAL",
+                "GLOBAL_LOCAL"};
 
-    public int count_;
+    public MultiChoiceOption driftDetectorOption = new MultiChoiceOption(
+            "driftDetector", 'd', "Drift detector type.", new String[]{
+            "GLOBAL", "LOCAL", "GLOBAL_LOCAL"}, new String[]{
+            "GLOBAL",
+            "LOCAL",
+            "GLOBAL_LOCAL"}, 0);
+    protected int driftDetectorInt_ = 0;
 
-    public double meanStart_ = 0;
+    public IntOption windowSizeOption = new IntOption("windowSize",
+            'w', "Size of the window in which to apply variational Bayes",
+            100);
+    protected  int windowSize_ = 100;
 
-    public double noise_ = 0.1;
+    public FloatOption transitionVarianceOption = new FloatOption("transitionVariance",
+            'v', "Transition variance for the global hidden variable.",
+            0.1);
+    protected double transitionVariance_ = 0.1;
 
-    public boolean globalDynamic_ = true;
 
     /**
      * Private fields
      */
-    private StreamingVariationalBayesVMP svb_ = null;
+    //private StreamingVariationalBayesVMP svb_ = null;
 
-    private DAG dag_ = null;
+    NaiveBayesConceptDrift nb_ = null;
 
     private Variable classVar_ = null;
 
-    private Variable globalHiddenVar_ = null;
-
     private Attributes attributes_ = null;
 
-    //private BayesianNetwork network_ = null;
 
     private BayesianNetwork learntBN_ = null;
 
 
     DataOnMemoryListContainer<DataInstance> batch_ = null;
+
+    private int count_ = 0;
+
+    public int getDriftDetectorInt_() {
+        return driftDetectorInt_;
+    }
+
+    public void setDriftDetectorInt_(int driftDetectorInt_) {
+        this.driftDetectorInt_ = driftDetectorInt_;
+    }
+
+    public int getWindowSize_() {
+        return windowSize_;
+    }
+
+    public void setWindowSize_(int windowSize_) {
+        this.windowSize_ = windowSize_;
+    }
+
+    public double getTransitionVariance_() {
+        return transitionVariance_;
+    }
+
+    public void setTransitionVariance_(double transitionVariance_) {
+        this.transitionVariance_ = transitionVariance_;
+    }
 
     @Override
     public String getPurposeString() {
@@ -86,38 +118,23 @@ public class amidstModels extends AbstractClassifier {
     public void setModelContext(InstancesHeader ih) {
         super.setModelContext(ih);
 
-        createDAG();
+        nb_ = new NaiveBayesConceptDrift();
 
-        switch (modelType_){
-            case GLOBAL_:
-                initializeGLOBALmodel();
-                break;
-            case LOCAL:
-                initializeLOCALmodel();
-                break;
-            case GLOBAL_LOCAL:
-                initializeGLOBAL_LOCALmodel();
-                break;
-            default:
-                System.out.println("The options for modelType are GLOBAL_, LOCAL and GLOBAL_LOCAL");
-                break;
-        }
+        convertAttributes();
+        batch_ = new DataOnMemoryListContainer(attributes_);
 
-        //learntBN_= BayesianNetwork.newBayesianNetwork(dag_);
-        //learntBN_.randomInitialization(classifierRandom);
+        nb_.setData(batch_);
+        nb_.setSeed(randomSeed);//Note that the default value is 1
+        nb_.setClassIndex(-1);
+        nb_.setWindowsSize(windowSize_);
+        nb_.setTransitionVariance(transitionVariance_);
+        nb_.setConceptDriftDetector(NaiveBayesConceptDrift.DriftDetector.valueOf(this.driftModes[driftDetectorInt_]));
 
-        System.out.println(dag_.toString());
+        nb_.learnDAG();
 
-        count_ = windowSize_;
-        batch_ = new DataOnMemoryListContainer<>(attributes_);
-
-        svb_.setSeed(randomSeed);  //Note that the default value is 1
-        svb_.setWindowsSize(windowSize_);
-        svb_.setDAG(dag_);
-        svb_.initLearning();
     }
 
-    private void createDAG(){
+    private void convertAttributes(){
         weka.core.Attribute attrWeka;
         Enumeration attributesWeka = modelContext.enumerateAttributes();
         List<Attribute> attrList = new ArrayList<>();
@@ -132,10 +149,7 @@ public class amidstModels extends AbstractClassifier {
         StaticVariables variables = new StaticVariables(attributes_);
         String className = modelContext.classAttribute().name();
         classVar_ = variables.getVariableByName(className);
-        globalHiddenVar_ =  variables.newGaussianVariable("Global");
 
-        /* Create NB structure */
-        dag_ = new DAG(variables);
     }
 
     private void convertAttribute(weka.core.Attribute attrWeka, List<Attribute> attrs){
@@ -153,24 +167,6 @@ public class amidstModels extends AbstractClassifier {
         attrs.add(att);
     }
 
-    private void initializeGLOBALmodel(){
-        dag_.getParentSets().stream()
-                .filter(parentSet -> !parentSet.getMainVar().equals(classVar_) && !parentSet.getMainVar().equals(globalHiddenVar_))
-                .forEach(w -> {
-                    w.addParent(classVar_);
-                    w.addParent(globalHiddenVar_);
-                });
-
-        svb_ = new StreamingVariationalBayesVMP();
-        svb_.setPlateuStructure(new PlateuGlobalHiddenConceptDrift(globalHiddenVar_, globalDynamic_));
-        svb_.setTransitionMethod(new GlobalHiddenTransitionMethod(globalHiddenVar_, meanStart_, noise_));
-    }
-
-    private void initializeLOCALmodel(){return;}
-
-    private void initializeGLOBAL_LOCALmodel(){return;}
-
-
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
@@ -181,9 +177,9 @@ public class amidstModels extends AbstractClassifier {
             count_++;
         }else{
             count_ = 0;
-            svb_.updateModel(batch_);
+            nb_.updateModel(batch_);
             batch_ = new DataOnMemoryListContainer(attributes_);
-            learntBN_ = svb_.getLearntBayesianNetwork();
+            learntBN_ = nb_.getLearntBayesianNetwork();
         }
     }
 
