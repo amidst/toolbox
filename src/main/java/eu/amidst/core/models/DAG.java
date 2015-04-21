@@ -1,10 +1,8 @@
 package eu.amidst.core.models;
 
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -138,8 +136,8 @@ public class DAG implements Serializable {
 
         public void addParent(Variable var) {
             if (!mainVar.getDistributionType().isParentCompatible(var)){
-                throw new IllegalArgumentException("Adding a parent of type "+var.getDistributionTypeEnum().toString()+"which is not compatible" +
-                        "with children variable of type "+this.mainVar.getDistributionTypeEnum().toString());
+                throw new IllegalArgumentException("Adding a parent var" +var.getName()+ "of type "+var.getDistributionTypeEnum().toString()+" which is not compatible" +
+                        "with children variable "+this.getMainVar().getName()+"of type "+this.mainVar.getDistributionTypeEnum().toString());
             }
 
             if (this.contains(var)) {

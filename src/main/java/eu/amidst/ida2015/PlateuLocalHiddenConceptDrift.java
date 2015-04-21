@@ -13,21 +13,15 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 10/03/15.
  */
-public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
+public class PlateuLocalHiddenConceptDrift extends PlateuStructure{
 
-    Variable globalHiddenVariable;
-    Node globalHiddenNode;
+    List<Variable> localHiddenVars;
+    List<Node> localHiddenNodes;
+    Map<Variable,Node> hiddenToNode;
     boolean dynamic;
-    public PlateuGlobalHiddenConceptDrift(Variable globalHiddenVariable_, boolean dynamic_){
-        this.globalHiddenVariable = globalHiddenVariable_;
+    public PlateuLocalHiddenConceptDrift(List<Variable> localHiddenVars_, boolean dynamic_){
+        this.localHiddenVars = localHiddenVars_;
         this.dynamic = dynamic_;
-    }
-    public Variable getGlobalHiddenVariable() {
-        return globalHiddenVariable;
-    }
-
-    public void setGlobalHiddenVariable(Variable globalHiddenVariable) {
-        this.globalHiddenVariable = globalHiddenVariable;
     }
 
     public void replicateModel(){
@@ -45,22 +39,26 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
                 })
                 .collect(Collectors.toList());
 
-        globalHiddenNode = new Node(ef_learningmodel.getDistribution(globalHiddenVariable));
+        localHiddenNodes = new ArrayList();
+        hiddenToNode = new ConcurrentHashMap();
+        for (Variable localVar : this.localHiddenVars) {
+            Node node  = new Node(ef_learningmodel.getDistribution(localVar));
+            hiddenToNode.put(localVar, node);
+            localHiddenNodes.add(node);
+        }
 
         for (int i = 0; i < nRepetitions; i++) {
 
             Map<Variable, Node> map = new ConcurrentHashMap();
             List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
                     .filter(dist -> !dist.getVariable().isParameterVariable())
-                    .filter(dist -> !dist.getVariable().equals(globalHiddenVariable))
+                    .filter(dist -> !hiddenToNode.containsKey(dist.getVariable()))
                     .map(dist -> {
                         Node node = new Node(dist);
                         map.put(dist.getVariable(), node);
                         return node;
                     })
                     .collect(Collectors.toList());
-
-            map.put(globalHiddenVariable, globalHiddenNode);
 
             this.variablesToNode.add(map);
             plateuNodes.add(tmpNodes);
@@ -74,23 +72,37 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
                 node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, slice).getChildren().add(node));
             }
         }
-        globalHiddenNode.setParents(globalHiddenNode.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, 0)).collect(Collectors.toList()));
-        globalHiddenNode.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, 0).getChildren().add(globalHiddenNode));
 
-        if (dynamic)
-            globalHiddenNode.getParents().stream().forEach(node -> node.setActive(false));
+        for (Variable localVar : this.localHiddenVars) {
+            Node localNode = this.hiddenToNode.get(localVar);
+            localNode.setParents(localNode.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, 0)).collect(Collectors.toList()));
+            localNode.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, 0).getChildren().add(localNode));
+            if (dynamic)
+                localNode.getParents().stream().forEach(node -> node.setActive(false));
+        }
+
+
 
         List<Node> allNodes = new ArrayList();
 
         allNodes.addAll(this.parametersNode);
 
-        allNodes.add(globalHiddenNode);
+        allNodes.addAll(localHiddenNodes);
 
         for (int i = 0; i < nRepetitions; i++) {
             allNodes.addAll(this.plateuNodes.get(i));
         }
 
         this.vmp.setNodes(allNodes);
+    }
+
+    public Node getNodeOfVar(Variable variable, int slice) {
+        if (variable.isParameterVariable())
+            return this.parametersToNode.get(variable);
+        else if (this.hiddenToNode.containsKey(variable))
+            return this.hiddenToNode.get(variable);
+        else
+            return this.variablesToNode.get(slice).get(variable);
     }
 
 }
