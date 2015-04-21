@@ -23,6 +23,27 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
 
     @Override
     public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork) {
+
+
+        for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfVariables()){
+
+            if (!paramVariable.isNormalParameter())
+                continue;
+
+
+            EF_Normal prior = ((EF_BaseDistribution_MultinomialParents<EF_Normal>)bayesianNetwork.getDistribution(paramVariable)).getBaseEFDistribution(0);
+
+            double varPrior = 1;
+            double precisionPrior = 1/varPrior;
+            double meanPrior = 0;
+
+            prior.getNaturalParameters().set(0, precisionPrior*meanPrior);
+            prior.getNaturalParameters().set(1, -0.5*precisionPrior);
+            prior.updateMomentFromNaturalParameters();
+
+        }
+
+
         EF_NormalGamma normal = (EF_NormalGamma)bayesianNetwork.getDistribution(this.globalHiddenVar);
 
 
@@ -48,22 +69,7 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
         meanDist.updateMomentFromNaturalParameters();
 
 
-        for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfVariables()){
 
-            if (!paramVariable.isNormalParameter())
-                continue;
-
-
-            EF_Normal prior = ((EF_BaseDistribution_MultinomialParents<EF_Normal>)bayesianNetwork.getDistribution(paramVariable)).getBaseEFDistribution(0);
-
-            double precisionPrior = 1/0.1;
-            double meanPrior = 1;
-
-            prior.getNaturalParameters().set(0, precisionPrior*meanPrior);
-            prior.getNaturalParameters().set(1, -0.5*precisionPrior);
-            prior.updateMomentFromNaturalParameters();
-
-        }
 
 
         return bayesianNetwork;
