@@ -1,9 +1,6 @@
 package eu.amidst.ida2015;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
@@ -23,7 +20,7 @@ import java.util.List;
  */
 public class NaiveBayesConceptDrift {
 
-    enum DriftDetector {GLOBAL, LOCAL, GLOBAL_LOCAL};
+    public enum DriftDetector {GLOBAL, LOCAL, GLOBAL_LOCAL};
 
     DataStream<DataInstance> data;
     int windowsSize;
@@ -169,6 +166,35 @@ public class NaiveBayesConceptDrift {
         svb.initLearning();
     }
 
+    public void learnDAG() {
+        if (classIndex == -1)
+            classIndex = data.getAttributes().getNumberOfAttributes()-1;
+
+
+        switch (this.conceptDriftDetector){
+            case GLOBAL:
+                this.buildGlobalDAG();
+                break;
+            case LOCAL:
+                this.buildLocalDAG();
+                break;
+            case GLOBAL_LOCAL:
+                this.buildGlobalLocalDAG();
+                break;
+        }
+
+
+        System.out.print("Sample");
+        for (Variable hiddenVar : this.hiddenVars) {
+            System.out.print("\t" + hiddenVar.getName());
+        }
+        System.out.println();
+    }
+
+    public void updateModel(DataOnMemory<DataInstance> batch){
+        svb.updateModel(batch);
+    }
+
     void learnModel() {
         if (classIndex == -1)
             classIndex = data.getAttributes().getNumberOfAttributes()-1;
@@ -216,6 +242,10 @@ public class NaiveBayesConceptDrift {
 
         System.out.println("Average Accuracy: " + avACC/(count/windowsSize));
 
+    }
+
+    public BayesianNetwork getLearntBayesianNetwork(){
+        return svb.getLearntBayesianNetwork();
     }
 
     private double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data){
