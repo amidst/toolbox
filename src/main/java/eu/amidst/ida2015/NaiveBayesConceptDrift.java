@@ -56,6 +56,9 @@ public class NaiveBayesConceptDrift {
         this.seed = seed;
     }
 
+    public StreamingVariationalBayesVMP getSvb() {
+        return svb;
+    }
 
     private void buildGlobalDAG(){
         StaticVariables variables = new StaticVariables(data.getAttributes());
