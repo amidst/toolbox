@@ -38,9 +38,9 @@ public class amidstModels extends AbstractClassifier {
      */
 
     String[] driftModes = new String[]{
-        "GLOBAL",
-                "LOCAL",
-                "GLOBAL_LOCAL"};
+            "GLOBAL",
+            "LOCAL",
+            "GLOBAL_LOCAL"};
 
     public MultiChoiceOption driftDetectorOption = new MultiChoiceOption(
             "driftDetector", 'd', "Drift detector type.", new String[]{
@@ -48,7 +48,6 @@ public class amidstModels extends AbstractClassifier {
             "GLOBAL",
             "LOCAL",
             "GLOBAL_LOCAL"}, 0);
-    protected int driftDetectorInt_ = 0;
 
     public IntOption windowSizeOption = new IntOption("windowSize",
             'w', "Size of the window in which to apply variational Bayes",
@@ -79,14 +78,6 @@ public class amidstModels extends AbstractClassifier {
     DataOnMemoryListContainer<DataInstance> batch_ = null;
 
     private int count_ = 0;
-
-    public int getDriftDetectorInt_() {
-        return driftDetectorInt_;
-    }
-
-    public void setDriftDetectorInt_(int driftDetectorInt_) {
-        this.driftDetectorInt_ = driftDetectorInt_;
-    }
 
     public int getWindowSize_() {
         return windowSize_;
@@ -128,9 +119,11 @@ public class amidstModels extends AbstractClassifier {
         nb_.setClassIndex(-1);
         nb_.setWindowsSize(windowSize_);
         nb_.setTransitionVariance(transitionVariance_);
-        nb_.setConceptDriftDetector(NaiveBayesConceptDrift.DriftDetector.valueOf(this.driftModes[driftDetectorInt_]));
+        nb_.setConceptDriftDetector(NaiveBayesConceptDrift.DriftDetector.valueOf(this.driftModes[driftDetectorOption.getChosenIndex()]));
 
         nb_.learnDAG();
+
+        System.out.println(nb_.getLearntBayesianNetwork().getDAG().toString());
 
     }
 
@@ -180,6 +173,7 @@ public class amidstModels extends AbstractClassifier {
             nb_.updateModel(batch_);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
+            System.out.println(learntBN_.toString());
         }
     }
 
@@ -224,5 +218,7 @@ public class amidstModels extends AbstractClassifier {
         return true;
     }
 
+    public static void main(String[] args){
+    }
 
 }
