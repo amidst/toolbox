@@ -5,6 +5,7 @@ import eu.amidst.core.datastream.filereaders.arffWekaReader.DataRowWeka;
 import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceEngineForBN;
+import eu.amidst.core.learning.TransitionMethod;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceType;
@@ -13,6 +14,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.ida2015.NaiveBayesConceptDrift;
+import javafx.animation.Transition;
 import moa.classifiers.AbstractClassifier;
 import moa.core.InstancesHeader;
 import moa.core.Measurement;
@@ -71,6 +73,9 @@ public class amidstModels extends AbstractClassifier {
 
     private Attributes attributes_ = null;
 
+    private Attribute TIME_ID = null;
+
+    private Attribute SEQUENCE_ID = null;
 
     private BayesianNetwork learntBN_ = null;
 
@@ -78,6 +83,14 @@ public class amidstModels extends AbstractClassifier {
     DataOnMemoryListContainer<DataInstance> batch_ = null;
 
     private int count_ = 0;
+
+    private int currentTimeID = 0;
+
+    private DataInstance firstInstanceForBatch = null;
+
+    /**
+     * SETTERS AND GETTERS
+     */
 
     public int getWindowSize_() {
         return windowSize_;
@@ -117,13 +130,20 @@ public class amidstModels extends AbstractClassifier {
         nb_.setData(batch_);
         nb_.setSeed(randomSeed);//Note that the default value is 1
         nb_.setClassIndex(-1);
+        setWindowSize_(windowSizeOption.getValue());
         nb_.setWindowsSize(windowSize_);
+        setTransitionVariance_(transitionVarianceOption.getValue());
         nb_.setTransitionVariance(transitionVariance_);
         nb_.setConceptDriftDetector(NaiveBayesConceptDrift.DriftDetector.valueOf(this.driftModes[driftDetectorOption.getChosenIndex()]));
 
         nb_.learnDAG();
 
-        System.out.println(nb_.getLearntBayesianNetwork().getDAG().toString());
+        List<Attribute> attributesExtendedList = new ArrayList<>(attributes_.getList());
+        attributesExtendedList.add(TIME_ID);
+        attributesExtendedList.add(SEQUENCE_ID);
+        attributes_ = new Attributes(attributesExtendedList);
+        batch_ = new DataOnMemoryListContainer(attributes_);
+        //System.out.println(nb_.getLearntBayesianNetwork().getDAG().toString());
 
     }
 
@@ -145,7 +165,7 @@ public class amidstModels extends AbstractClassifier {
 
     }
 
-    private void convertAttribute(weka.core.Attribute attrWeka, List<Attribute> attrs){
+    private void convertAttribute(weka.core.Attribute attrWeka, List<Attribute> attrList){
         StateSpaceType stateSpaceTypeAtt;
         if(attrWeka.isNominal()){
             String[] vals = new String[attrWeka.numValues()];
@@ -157,23 +177,40 @@ public class amidstModels extends AbstractClassifier {
             stateSpaceTypeAtt = new RealStateSpace();
         }
         Attribute att = new Attribute(attrWeka.index(),attrWeka.name(), stateSpaceTypeAtt);
-        attrs.add(att);
+        if(att.getName().equalsIgnoreCase("TIME_ID"))
+            TIME_ID = att;
+        else if(att.getName().equalsIgnoreCase("SEQUENCE_ID"))
+            SEQUENCE_ID = att;
+        else
+            attrList.add(att);
     }
 
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
 
+        if(firstInstanceForBatch != null) {
+            batch_.add(firstInstanceForBatch);
+            count_++;
+            firstInstanceForBatch = null;
+        }
+
         DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
-        if(count_ < windowSize_) {
+        if(count_ < windowSize_ && (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
             batch_.add(dataInstance);
             count_++;
         }else{
             count_ = 0;
+            TransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
+            if((int)dataInstance.getValue(TIME_ID) == currentTimeID)
+                nb_.getSvb().setTransitionMethod(null);
+            firstInstanceForBatch = dataInstance;
+            currentTimeID = (int)dataInstance.getValue(TIME_ID);
             nb_.updateModel(batch_);
+            nb_.getSvb().setTransitionMethod(transitionMethod);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
-            System.out.println(learntBN_.toString());
+            //System.out.println(learntBN_.toString());
         }
     }
 
