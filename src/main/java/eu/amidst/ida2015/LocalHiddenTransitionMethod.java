@@ -16,6 +16,11 @@ public class LocalHiddenTransitionMethod implements TransitionMethod{
     List<Variable> localHiddenVars;
     double meanStart;
     double noise;
+    double fading = 0.9;
+
+    public void setFading(double fading) {
+        this.fading = fading;
+    }
 
     public LocalHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double noise_){
         this.localHiddenVars=localHiddenVars_;
@@ -112,8 +117,7 @@ public class LocalHiddenTransitionMethod implements TransitionMethod{
         }
 
         /***** FADING ****/
-        /*
-        double fading = 0.9;
+
 
         bayesianNetwork.getParametersVariables().getListOfVariables().stream().forEach(var -> {
             EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) bayesianNetwork.getDistribution(var);
@@ -124,7 +128,7 @@ public class LocalHiddenTransitionMethod implements TransitionMethod{
             dist.setBaseEFDistribution(0, prior);
         });
 
-        */
+
 
 
 
