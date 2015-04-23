@@ -30,7 +30,17 @@ public class NaiveBayesConceptDrift {
     int seed = 0;
     StreamingVariationalBayesVMP svb;
     List<Variable> hiddenVars;
+    double fading = 0.9;
 
+    boolean globalHidden = true;
+
+    public void setGlobalHidden(boolean globalHidden) {
+        this.globalHidden = globalHidden;
+    }
+
+    public void setFading(double fading) {
+        this.fading = fading;
+    }
 
     public void setClassIndex(int classIndex) {
         this.classIndex = classIndex;
@@ -78,7 +88,7 @@ public class NaiveBayesConceptDrift {
 
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
-            dag.getParentSet(variable).addParent(globalHidden);
+            if (this.globalHidden) dag.getParentSet(variable).addParent(globalHidden);
         }
 
         System.out.println(dag.toString());
@@ -86,7 +96,9 @@ public class NaiveBayesConceptDrift {
         svb = new StreamingVariationalBayesVMP();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new PlateuLocalHiddenConceptDrift(hiddenVars, true));
-        svb.setTransitionMethod(new LocalHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance));
+        LocalHiddenTransitionMethod localHiddenTransitionMethod = new LocalHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
+        localHiddenTransitionMethod.setFading(fading);
+        svb.setTransitionMethod(localHiddenTransitionMethod);
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);
         svb.initLearning();
@@ -114,7 +126,7 @@ public class NaiveBayesConceptDrift {
 
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
-            dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
+            if (this.globalHidden) dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
         }
 
         System.out.println(dag.toString());
@@ -154,7 +166,7 @@ public class NaiveBayesConceptDrift {
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
             dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
-            dag.getParentSet(variable).addParent(globalHidden);
+            if (this.globalHidden) dag.getParentSet(variable).addParent(globalHidden);
 
         }
 
@@ -243,15 +255,19 @@ public class NaiveBayesConceptDrift {
             avACC+= accuracy;
         }
 
-        System.out.println("Average Accuracy: " + avACC/(count/windowsSize));
+        System.out.println("Average Accuracy: " + avACC / (count / windowsSize));
 
+    }
+
+    public List<Variable> getHiddenVars() {
+        return hiddenVars;
     }
 
     public BayesianNetwork getLearntBayesianNetwork(){
         return svb.getLearntBayesianNetwork();
     }
 
-    private double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data){
+    public double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data){
 
         Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
         double predictions = 0;
@@ -275,7 +291,7 @@ public class NaiveBayesConceptDrift {
 
     public static void main(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("/Users/ana/Dropbox/amidst/datasets/DriftSets/SEA/sea.arff");
         NaiveBayesConceptDrift nb = new NaiveBayesConceptDrift();
         nb.setClassIndex(-1);
         nb.setData(data);
