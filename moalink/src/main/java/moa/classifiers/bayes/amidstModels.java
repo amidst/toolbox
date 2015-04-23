@@ -4,6 +4,7 @@ import eu.amidst.core.datastream.*;
 import eu.amidst.core.datastream.filereaders.arffWekaReader.DataRowWeka;
 import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.learning.TransitionMethod;
 import eu.amidst.core.models.BayesianNetwork;
@@ -14,7 +15,6 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.ida2015.NaiveBayesConceptDrift;
-import javafx.animation.Transition;
 import moa.classifiers.AbstractClassifier;
 import moa.core.InstancesHeader;
 import moa.core.Measurement;
@@ -34,6 +34,8 @@ public class amidstModels extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
+    double acc=0;
+    int nbatch=0;
 
     /**
      * Parameters of the amidst model
@@ -60,6 +62,16 @@ public class amidstModels extends AbstractClassifier {
             'v', "Transition variance for the global hidden variable.",
             0.1);
     protected double transitionVariance_ = 0.1;
+
+    public FloatOption fadingOption = new FloatOption("fading",
+            'f', "Fading.",
+            0.9);
+    protected double fading_ = 0.9;
+
+    public IntOption asNBOption = new IntOption("asNB",
+            'n', "If 1 then build plain NB (without hidden)",
+            1);
+    protected  int asNB_ = 1;
 
 
     /**
@@ -108,6 +120,22 @@ public class amidstModels extends AbstractClassifier {
         this.transitionVariance_ = transitionVariance_;
     }
 
+    public double getFading_() {
+        return fading_;
+    }
+
+    public void setFading_(double fading_) {
+        this.fading_ = fading_;
+    }
+
+    public int getAsNB_() {
+        return asNB_;
+    }
+
+    public void setAsNB_(int asNB_) {
+        this.asNB_ = asNB_;
+    }
+
     @Override
     public String getPurposeString() {
         return "Amidst concept-drift classifier: performs concept-drift detection with a BN model plus one or several hidden variables.";
@@ -135,12 +163,18 @@ public class amidstModels extends AbstractClassifier {
         setTransitionVariance_(transitionVarianceOption.getValue());
         nb_.setTransitionVariance(transitionVariance_);
         nb_.setConceptDriftDetector(NaiveBayesConceptDrift.DriftDetector.valueOf(this.driftModes[driftDetectorOption.getChosenIndex()]));
-
+        setFading_(fadingOption.getValue());
+        nb_.setFading(fading_);
+        setAsNB_(asNBOption.getValue());
+        if(asNB_ == 1) nb_.setGlobalHidden(false);
+        else nb_.setGlobalHidden(true);
         nb_.learnDAG();
 
         List<Attribute> attributesExtendedList = new ArrayList<>(attributes_.getList());
-        attributesExtendedList.add(TIME_ID);
-        attributesExtendedList.add(SEQUENCE_ID);
+        if(TIME_ID != null && SEQUENCE_ID != null) {
+            attributesExtendedList.add(TIME_ID);
+            attributesExtendedList.add(SEQUENCE_ID);
+        }
         attributes_ = new Attributes(attributesExtendedList);
         batch_ = new DataOnMemoryListContainer(attributes_);
         //System.out.println(nb_.getLearntBayesianNetwork().getDAG().toString());
@@ -196,21 +230,37 @@ public class amidstModels extends AbstractClassifier {
         }
 
         DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
-        if(count_ < windowSize_ && (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
-            batch_.add(dataInstance);
-            count_++;
+        if(count_ < windowSize_){
+            if(TIME_ID==null || (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
+                batch_.add(dataInstance);
+                count_++;
+            }
         }else{
             count_ = 0;
             TransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
-            if((int)dataInstance.getValue(TIME_ID) == currentTimeID)
+            if(TIME_ID!=null && (int)dataInstance.getValue(TIME_ID) == currentTimeID)
                 nb_.getSvb().setTransitionMethod(null);
             firstInstanceForBatch = dataInstance;
-            currentTimeID = (int)dataInstance.getValue(TIME_ID);
+            if(TIME_ID!=null)
+                currentTimeID = (int)dataInstance.getValue(TIME_ID);
+
+            //acc+=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
+            nbatch+=windowSize_;
+            //System.out.println(acc/nbatch);
+
             nb_.updateModel(batch_);
             nb_.getSvb().setTransitionMethod(transitionMethod);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
             //System.out.println(learntBN_.toString());
+
+            System.out.print(nbatch);
+
+            for (Variable hiddenVar : nb_.getHiddenVars()) {
+                Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                System.out.print("\t" + normal.getMean());
+            }
+            System.out.println();
         }
     }
 
