@@ -20,20 +20,11 @@
  */
 package moa.tasks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
-import moa.evaluation.ClassificationPerformanceEvaluator;
-import moa.evaluation.WindowClassificationPerformanceEvaluator;
-import moa.evaluation.EWMAClassificationPerformanceEvaluator;
-import moa.evaluation.FadingFactorClassificationPerformanceEvaluator;
-import moa.evaluation.LearningCurve;
-import moa.evaluation.LearningEvaluation;
+import moa.evaluation.*;
 import moa.options.ClassOption;
 import moa.options.FileOption;
 import moa.options.FloatOption;
@@ -41,6 +32,10 @@ import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import weka.core.Instance;
 import weka.core.Utils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
  * Task for evaluating a classifier on a stream by testing then training with each example in sequence.
@@ -144,7 +139,9 @@ public class EvaluatePrequential extends MainTask {
         long instancesProcessed = 0;
         int maxSeconds = this.timeLimitOption.getValue();
         int secondsElapsed = 0;
-        monitor.setCurrentActivity("Evaluating learner...", -1.0);
+        //monitor.setCurrentActivity("Evaluating learner...", -1.0);
+        monitor.setCurrentActivity("", -1.0);
+
 
         File dumpFile = this.dumpFileOption.getFile();
         PrintStream immediateResultStream = null;
@@ -246,9 +243,9 @@ public class EvaluatePrequential extends MainTask {
                         estimatedRemainingInstances = maxRemaining;
                     }
                 }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                //monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
+                //        : (double) instancesProcessed
+                //        / (double) (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }
