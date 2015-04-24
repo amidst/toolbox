@@ -164,8 +164,8 @@ public class DoTask {
                             progressLine.setCharAt(
                                     MAX_STATUS_STRING_LENGTH - 1, '~');
                         }
-                        System.err.print(progressLine.toString());
-                        System.err.print('\r');
+                        //System.err.print(progressLine.toString());
+                        //System.err.print('\r');
                         if (++progressAnimIndex >= progressAnimSequence.length) {
                             progressAnimIndex = 0;
                         }
