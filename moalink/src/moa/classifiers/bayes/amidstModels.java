@@ -16,6 +16,7 @@ import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.ida2015.NaiveBayesConceptDrift;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.SemiSupervisedLearner;
 import moa.core.InstancesHeader;
 import moa.core.Measurement;
 import moa.options.FloatOption;
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * Created by ana@cs.aau.dk on 20/04/15.
  */
-public class amidstModels extends AbstractClassifier {
+public class amidstModels extends AbstractClassifier implements SemiSupervisedLearner{
 
     private static final long serialVersionUID = 1L;
 
@@ -73,10 +74,17 @@ public class amidstModels extends AbstractClassifier {
             0);
     protected  int asNB_ = 0;
 
-    public FloatOption MARclassOption = new FloatOption("MARclass",
+/*    public FloatOption MARclassOption = new FloatOption("MARclass",
             'm', "MARclass.",
             1);
-    protected double MARclass_ = 1;
+    protected double MARclass_ = 1;*/
+
+/*    public MultiChoiceOption semiSupervisedLearnerOption = new MultiChoiceOption(
+            "semiSupervisedLearning", 'd', "Perform semi-supervised learning.", new String[]{
+            "TRUE", "FALSE"}, new String[]{
+            "TRUE",
+            "FALSE", 0);*/
+
 
 
     /**
@@ -141,13 +149,13 @@ public class amidstModels extends AbstractClassifier {
         this.asNB_ = asNB_;
     }
 
-    public double getMARclass_() {
+/*    public double getMARclass_() {
         return MARclass_;
     }
 
     public void setMARclass_(double MARclass_) {
         this.MARclass_ = MARclass_;
-    }
+    }*/
 
     @Override
     public String getPurposeString() {
@@ -233,6 +241,18 @@ public class amidstModels extends AbstractClassifier {
             attrList.add(att);
     }
 
+    @Override
+    public void trainOnInstance(Instance inst) {
+        boolean isTraining = (inst.weight() > 0.0);
+        if (this instanceof SemiSupervisedLearner == false &&
+                inst.classIsMissing() == true){
+            isTraining = false;
+        }
+        if (isTraining) {
+            this.trainingWeightSeenByModel += inst.weight();
+            trainOnInstanceImpl(inst);
+        }
+    }
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
