@@ -1,12 +1,14 @@
 package moa.classifiers.bayes;
 
-import eu.amidst.core.datastream.*;
 import arffWekaReader.DataRowWeka;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.learning.TransitionMethod;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceType;
@@ -14,6 +16,7 @@ import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.ida2015.GaussianHiddenTransitionMethod;
 import eu.amidst.ida2015.NaiveBayesGaussianHiddenConceptDrift;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.SemiSupervisedLearner;
@@ -283,7 +286,6 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
 
             double batchAccuracy=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
             nbatch+=windowSize_;
-            //System.out.println(acc/nbatch);
             nb_.updateModel(batch_);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
@@ -315,10 +317,12 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         }else{
             boolean isNewSeq = false;
             count_ = 0;
-            TransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
-            if((int)dataInstance.getValue(TIME_ID) == currentTimeID)
+            GaussianHiddenTransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
+            if((int)dataInstance.getValue(TIME_ID) == currentTimeID) {
+                transitionMethod.setTransitionVariance(0.0);
                 nb_.getSvb().setTransitionMethod(null);
-            else{
+            }else{
+                transitionMethod.setTransitionVariance(this.getTransitionVariance_());
                 isNewSeq = true;
                 accPerSeq = 0.0;
                 sizePerSeq = 0;
@@ -334,7 +338,6 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             //System.out.println(acc/nbatch);
 
             nb_.updateModel(batch_);
-            nb_.getSvb().setTransitionMethod(transitionMethod);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
             //System.out.println(learntBN_.toString());
