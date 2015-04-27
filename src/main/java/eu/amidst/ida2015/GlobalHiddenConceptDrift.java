@@ -92,6 +92,114 @@ public class GlobalHiddenConceptDrift {
         return mean;
     }
 
+    public static void conceptDriftWithRandomChangesMissingLabels(String[] args) {
+
+        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
+        BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayesWithGlobalHiddenVar(2, "Global");
+
+        naiveBayes.randomInitialization(new Random(0));
+
+        Variable globalHidden = naiveBayes.getStaticVariables().getVariableByName("Global");
+        Variable classVariable = naiveBayes.getStaticVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
+
+        for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
+            if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
+                continue;
+            Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+            newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+        }
+
+        System.out.println(naiveBayes.toString());
+
+        int windowSize =500;
+        int sampleSize = 5000;
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
+        sampler.setHiddenVar(globalHidden);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+        int count = windowSize;
+
+        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden),true));
+        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.1));
+        svb.setWindowsSize(windowSize);
+        svb.setDAG(naiveBayes.getDAG());
+        svb.initLearning();
+
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+
+            svb.updateModel(batch);
+            BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+            //System.out.println("****************");
+            //System.out.println(learntBN.toString());
+            Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
+            //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
+            //System.out.println("****************");
+
+            Normal_MultinomialNormalParents distA = learntBN.getDistribution(gaussianVar0);
+
+            Normal_MultinomialNormalParents distATrue = naiveBayes.getDistribution(gaussianVar0);
+
+
+            System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean())+"\t" + getRealMeanRandomConceptDrift(naiveBayes));
+            //System.out.print("\t" + distA.getNormal_NormalParentsDistribution(0).getIntercept() +"\t" + distA.getNormal_NormalParentsDistribution(1).getIntercept());
+            //System.out.print("\t" + distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0] + "\t" + distA.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+            //System.out.print("\t" + distATrue.getNormal_NormalParentsDistribution(0).getIntercept() + "\t" + distATrue.getNormal_NormalParentsDistribution(1).getIntercept());
+            System.out.println();
+
+            count += windowSize;
+        }
+
+
+        for (int K = 1; K < 10; K++) {
+            //System.out.println("******************************** CONCEPT DRIFT ********************************");
+            naiveBayes.randomInitialization(new Random(K+1));
+
+            for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
+                if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
+                    continue;
+                Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+                newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+                newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            }
+
+            //System.out.println(naiveBayes.toString());
+
+            sampler = new BayesianNetworkSampler(naiveBayes);
+            sampler.setHiddenVar(globalHidden);
+            data = sampler.sampleToDataBase(sampleSize);
+
+            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+
+                svb.updateModel(batch);
+                BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
+
+                //System.out.println("****************");
+                //System.out.println(learntBN.toString());
+                Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
+                //System.out.println("Global Hidden: " + normal.getMean() + ", " + normal.getVariance());
+                //System.out.println("****************");
+
+
+                Normal_MultinomialNormalParents distA = learntBN.getDistribution(gaussianVar0);
+                Normal_MultinomialNormalParents distATrue = naiveBayes.getDistribution(gaussianVar0);
+
+
+                System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanRandomConceptDrift(naiveBayes));
+                //System.out.print("\t" + distA.getNormal_NormalParentsDistribution(0).getIntercept() +"\t" + distA.getNormal_NormalParentsDistribution(1).getIntercept());
+                //System.out.print("\t" + distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0] + "\t" + distA.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+                //System.out.print("\t" + distATrue.getNormal_NormalParentsDistribution(0).getIntercept() + "\t" + distATrue.getNormal_NormalParentsDistribution(1).getIntercept());
+                System.out.println();
+
+                count += windowSize;
+            }
+        }
+    }
+
     public static void conceptDriftWithRandomChanges(String[] args) {
 
         BayesianNetworkGenerator.setNumberOfContinuousVars(10);
@@ -199,6 +307,7 @@ public class GlobalHiddenConceptDrift {
             }
         }
     }
+
 
     public static void conceptDriftSmoothChanges(String[] args) {
 
@@ -753,7 +862,11 @@ public class GlobalHiddenConceptDrift {
         System.out.println(avACC/(count/windowSize));
     }
 
+
+
+
+
     public static void main(String[] args) {
-        GlobalHiddenConceptDrift.conceptDriftSeaLevel(args);
+        GlobalHiddenConceptDrift.conceptDriftWithRandomChangesMissingLabels(args);
     }
 }
