@@ -113,6 +113,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
 
     private DataInstance firstInstanceForBatch = null;
 
+    private boolean dynamicFlag = false;
     /**
      * SETTERS AND GETTERS
      */
@@ -196,6 +197,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         if(TIME_ID != null && SEQUENCE_ID != null) {
             attributesExtendedList.add(TIME_ID);
             attributesExtendedList.add(SEQUENCE_ID);
+            dynamicFlag = true;
         }
         attributes_ = new Attributes(attributesExtendedList);
         batch_ = new DataOnMemoryListContainer(attributes_);
@@ -256,6 +258,13 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
+        if (dynamicFlag)
+            trainOnInstanceImplDynamic(inst);
+        else
+            trainOnInstanceImplStatic(inst);
+    }
+
+    public void trainOnInstanceImplStatic(Instance inst) {
 
         if(firstInstanceForBatch != null) {
             batch_.add(firstInstanceForBatch);
@@ -278,7 +287,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             if(TIME_ID!=null)
                 currentTimeID = (int)dataInstance.getValue(TIME_ID);
 
-            //acc+=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
+            double batchAccuracy=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
             nbatch+=windowSize_;
             //System.out.println(acc/nbatch);
 
@@ -294,6 +303,51 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
                 Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
                 System.out.print("\t" + normal.getMean());
             }
+            System.out.print("\t" + batchAccuracy);
+            System.out.println();
+        }
+    }
+
+    public void trainOnInstanceImplDynamic(Instance inst) {
+
+        if(firstInstanceForBatch != null) {
+            batch_.add(firstInstanceForBatch);
+            count_++;
+            firstInstanceForBatch = null;
+        }
+
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
+        if(count_ < windowSize_){
+            if(TIME_ID==null || (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
+                batch_.add(dataInstance);
+                count_++;
+            }
+        }else{
+            count_ = 0;
+            TransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
+            if(TIME_ID!=null && (int)dataInstance.getValue(TIME_ID) == currentTimeID)
+                nb_.getSvb().setTransitionMethod(null);
+            firstInstanceForBatch = dataInstance;
+            if(TIME_ID!=null)
+                currentTimeID = (int)dataInstance.getValue(TIME_ID);
+
+            double batchAccuracy=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
+            nbatch+=windowSize_;
+            //System.out.println(acc/nbatch);
+
+            nb_.updateModel(batch_);
+            nb_.getSvb().setTransitionMethod(transitionMethod);
+            batch_ = new DataOnMemoryListContainer(attributes_);
+            learntBN_ = nb_.getLearntBayesianNetwork();
+            //System.out.println(learntBN_.toString());
+
+            System.out.print(nbatch);
+
+            for (Variable hiddenVar : nb_.getHiddenVars()) {
+                Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                System.out.print("\t" + normal.getMean());
+            }
+            System.out.print("\t" + batchAccuracy);
             System.out.println();
         }
     }
