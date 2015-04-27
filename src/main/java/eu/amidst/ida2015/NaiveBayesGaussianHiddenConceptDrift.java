@@ -30,7 +30,17 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     int seed = 0;
     StreamingVariationalBayesVMP svb;
     List<Variable> hiddenVars;
+    double fading = 0.9;
 
+    boolean globalHidden = true;
+
+    public void setGlobalHidden(boolean globalHidden) {
+        this.globalHidden = globalHidden;
+    }
+
+    public void setFading(double fading) {
+        this.fading = fading;
+    }
 
     public void setClassIndex(int classIndex) {
         this.classIndex = classIndex;
@@ -56,6 +66,9 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         this.seed = seed;
     }
 
+    public StreamingVariationalBayesVMP getSvb() {
+        return svb;
+    }
 
     private void buildGlobalDAG(){
         StaticVariables variables = new StaticVariables(data.getAttributes());
@@ -75,7 +88,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
-            dag.getParentSet(variable).addParent(globalHidden);
+            if (this.globalHidden) dag.getParentSet(variable).addParent(globalHidden);
         }
 
         System.out.println(dag.toString());
@@ -83,7 +96,9 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         svb = new StreamingVariationalBayesVMP();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(hiddenVars, true));
-        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance));
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
+        gaussianHiddenTransitionMethod.setFading(fading);
+        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);
         svb.initLearning();
@@ -111,7 +126,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
-            dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
+            if (this.globalHidden) dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
         }
 
         System.out.println(dag.toString());
@@ -151,7 +166,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
             dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
-            dag.getParentSet(variable).addParent(globalHidden);
+            if (this.globalHidden) dag.getParentSet(variable).addParent(globalHidden);
 
         }
 
@@ -240,15 +255,19 @@ public class NaiveBayesGaussianHiddenConceptDrift {
             avACC+= accuracy;
         }
 
-        System.out.println("Average Accuracy: " + avACC/(count/windowsSize));
+        System.out.println("Average Accuracy: " + avACC / (count / windowsSize));
 
+    }
+
+    public List<Variable> getHiddenVars() {
+        return hiddenVars;
     }
 
     public BayesianNetwork getLearntBayesianNetwork(){
         return svb.getLearntBayesianNetwork();
     }
 
-    private double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data){
+    public double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data){
 
         Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
         double predictions = 0;
