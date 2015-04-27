@@ -7,11 +7,8 @@ import eu.amidst.core.inference.VMP;
 import eu.amidst.core.inference.vmp.Node;
 import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Created by andresmasegosa on 10/03/15.
@@ -20,12 +17,16 @@ public abstract class PlateuStructure {
     protected List<Node> parametersNode;
     protected List<List<Node>> plateuNodes;
     protected EF_LearningBayesianNetwork ef_learningmodel;
-    protected int nRepetitions = 100;
+    protected int nReplications = 100;
     protected VMP vmp = new VMP();
 
     protected Map<Variable, Node> parametersToNode;
 
     protected List<Map<Variable, Node>> variablesToNode;
+
+    public int getNumberOfReplications() {
+        return nReplications;
+    }
 
     public VMP getVMP() {
         return vmp;
@@ -44,7 +45,7 @@ public abstract class PlateuStructure {
     }
 
     public void setNRepetitions(int nRepetitions_) {
-        this.nRepetitions = nRepetitions_;
+        this.nReplications = nRepetitions_;
     }
 
     public void runInference() {
@@ -83,15 +84,15 @@ public abstract class PlateuStructure {
     public abstract void replicateModel();
 
     public void setEvidence(List<DataInstance> data) {
-        if (data.size()>nRepetitions)
+        if (data.size()> nReplications)
             throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
 
-        for (int i = 0; i < nRepetitions && i<data.size(); i++) {
+        for (int i = 0; i < nReplications && i<data.size(); i++) {
             final int slice = i;
             this.plateuNodes.get(i).forEach(node -> node.setAssignment(data.get(slice)));
         }
 
-        for (int i = data.size(); i < nRepetitions; i++) {
+        for (int i = data.size(); i < nReplications; i++) {
             this.plateuNodes.get(i).forEach(node -> node.setAssignment(null));
         }
     }
