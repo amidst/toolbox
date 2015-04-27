@@ -35,8 +35,9 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
 
     private static final long serialVersionUID = 1L;
 
-    double acc=0;
-    int nbatch=0;
+    double accPerSeq = 0;
+    int nbatch = 0;
+    int sizePerSeq = 0;
 
     /**
      * Parameters of the amidst model
@@ -274,25 +275,16 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
 
         DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
         if(count_ < windowSize_){
-            if(TIME_ID==null || (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
                 batch_.add(dataInstance);
                 count_++;
-            }
         }else{
             count_ = 0;
-            TransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
-            if(TIME_ID!=null && (int)dataInstance.getValue(TIME_ID) == currentTimeID)
-                nb_.getSvb().setTransitionMethod(null);
             firstInstanceForBatch = dataInstance;
-            if(TIME_ID!=null)
-                currentTimeID = (int)dataInstance.getValue(TIME_ID);
 
             double batchAccuracy=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
             nbatch+=windowSize_;
             //System.out.println(acc/nbatch);
-
             nb_.updateModel(batch_);
-            nb_.getSvb().setTransitionMethod(transitionMethod);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
             //System.out.println(learntBN_.toString());
@@ -317,22 +309,28 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         }
 
         DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
-        if(count_ < windowSize_){
-            if(TIME_ID==null || (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
+        if(count_ < windowSize_ && (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
                 batch_.add(dataInstance);
                 count_++;
-            }
         }else{
+            boolean isNewSeq = false;
             count_ = 0;
             TransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
-            if(TIME_ID!=null && (int)dataInstance.getValue(TIME_ID) == currentTimeID)
+            if((int)dataInstance.getValue(TIME_ID) == currentTimeID)
                 nb_.getSvb().setTransitionMethod(null);
+            else{
+                isNewSeq = true;
+                accPerSeq = 0.0;
+                sizePerSeq = 0;
+            }
             firstInstanceForBatch = dataInstance;
-            if(TIME_ID!=null)
-                currentTimeID = (int)dataInstance.getValue(TIME_ID);
+            currentTimeID = (int)dataInstance.getValue(TIME_ID);
 
             double batchAccuracy=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
+            accPerSeq += batchAccuracy*batch_.getNumberOfDataInstances();
             nbatch+=windowSize_;
+            sizePerSeq += batch_.getNumberOfDataInstances();
+
             //System.out.println(acc/nbatch);
 
             nb_.updateModel(batch_);
@@ -341,14 +339,16 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             learntBN_ = nb_.getLearntBayesianNetwork();
             //System.out.println(learntBN_.toString());
 
-            System.out.print(nbatch);
+            if(isNewSeq) {
+                System.out.print(sizePerSeq);
 
-            for (Variable hiddenVar : nb_.getHiddenVars()) {
-                Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
-                System.out.print("\t" + normal.getMean());
+                for (Variable hiddenVar : nb_.getHiddenVars()) {
+                    Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                    System.out.print("\t" + normal.getMean());
+                }
+                System.out.print("\t" + accPerSeq/sizePerSeq);
+                System.out.println();
             }
-            System.out.print("\t" + batchAccuracy);
-            System.out.println();
         }
     }
 
