@@ -77,8 +77,8 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         this.transitionMethod = transitionMethod;
     }
 
-    public TransitionMethod getTransitionMethod() {
-        return this.transitionMethod;
+    public <E extends TransitionMethod> E getTransitionMethod() {
+        return (E)this.transitionMethod;
     }
 
     @Override

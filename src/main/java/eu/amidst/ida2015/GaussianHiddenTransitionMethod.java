@@ -15,17 +15,21 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
     List<Variable> localHiddenVars;
     double meanStart;
-    double noise;
+    double transtionVariance;
     double fading = 0.9;
+
+    public void setTransitionVariance(double noise) {
+        this.transtionVariance = noise;
+    }
 
     public void setFading(double fading) {
         this.fading = fading;
     }
 
-    public GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double noise_){
+    public GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double transtionVariance_){
         this.localHiddenVars=localHiddenVars_;
         this.meanStart = meanStart_;
-        this.noise = noise_;
+        this.transtionVariance = transtionVariance_;
     }
 
     @Override
@@ -97,7 +101,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             EF_Gamma gamma = ((EF_BaseDistribution_MultinomialParents<EF_Gamma>) bayesianNetwork.getDistribution(gammaVar)).getBaseEFDistribution(0);
 
-            double variance = normalGlobalHiddenPreviousTimeStep.getVariance() + this.noise;
+            double variance = normalGlobalHiddenPreviousTimeStep.getVariance() + this.transtionVariance;
 
             double alpha = 1000;
             double beta = alpha * variance;
