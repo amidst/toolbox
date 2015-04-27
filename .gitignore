@@ -35,6 +35,8 @@ target/maven-archiver*
 target/surefire-reports*
 target/*
 huginlink/target/*
+moalink/target/*
+classes/*
 
 # latex noise
 *.synctex.gz

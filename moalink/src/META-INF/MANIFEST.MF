@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: sizeofag.jar weka-dev-3.7.12.jar java-cup-0.11a.jar pentah
+ o-package-manager-1.0.8.jar commons-math3-3.5.jar
+

@@ -43,6 +43,10 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
 
     }
 
+    public Variable getDirichletVariable() {
+        return dirichletVariable;
+    }
+
     /**
      * Of the second form (message from all parents to X variable). Needed to calculate the lower bound.
      *
