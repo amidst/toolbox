@@ -32,7 +32,7 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
 
     public void replicateModel(){
         parametersNode = new ArrayList();
-        plateuNodes = new ArrayList<>(nRepetitions);
+        plateuNodes = new ArrayList<>(nReplications);
 
         variablesToNode = new ArrayList<>();
         parametersToNode = new ConcurrentHashMap<>();
@@ -47,7 +47,7 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
 
         globalHiddenNode = new Node(ef_learningmodel.getDistribution(globalHiddenVariable));
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
 
             Map<Variable, Node> map = new ConcurrentHashMap();
             List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
@@ -67,7 +67,7 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
         }
 
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
             for (Node node : plateuNodes.get(i)) {
                 final int slice = i;
                 node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, slice)).collect(Collectors.toList()));
@@ -86,7 +86,7 @@ public class PlateuGlobalHiddenConceptDrift extends PlateuStructure{
 
         allNodes.add(globalHiddenNode);
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
             allNodes.addAll(this.plateuNodes.get(i));
         }
 

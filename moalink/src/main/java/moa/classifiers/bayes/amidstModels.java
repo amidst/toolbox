@@ -12,7 +12,7 @@ import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
-import eu.amidst.ida2015.NaiveBayesConceptDrift;
+import eu.amidst.ida2015.NaiveBayesGaussianHiddenConceptDrift;
 import moa.classifiers.AbstractClassifier;
 import moa.core.InstancesHeader;
 import moa.core.Measurement;
@@ -65,7 +65,7 @@ public class amidstModels extends AbstractClassifier {
      */
     //private StreamingVariationalBayesVMP svb_ = null;
 
-    NaiveBayesConceptDrift nb_ = null;
+    NaiveBayesGaussianHiddenConceptDrift nb_ = null;
 
     private Variable classVar_ = null;
 
@@ -109,7 +109,7 @@ public class amidstModels extends AbstractClassifier {
     public void setModelContext(InstancesHeader ih) {
         super.setModelContext(ih);
 
-        nb_ = new NaiveBayesConceptDrift();
+        nb_ = new NaiveBayesGaussianHiddenConceptDrift();
 
         convertAttributes();
         batch_ = new DataOnMemoryListContainer(attributes_);
@@ -119,7 +119,7 @@ public class amidstModels extends AbstractClassifier {
         nb_.setClassIndex(-1);
         nb_.setWindowsSize(windowSize_);
         nb_.setTransitionVariance(transitionVariance_);
-        nb_.setConceptDriftDetector(NaiveBayesConceptDrift.DriftDetector.valueOf(this.driftModes[driftDetectorOption.getChosenIndex()]));
+        nb_.setConceptDriftDetector(NaiveBayesGaussianHiddenConceptDrift.DriftDetector.valueOf(this.driftModes[driftDetectorOption.getChosenIndex()]));
 
         nb_.learnDAG();
 
