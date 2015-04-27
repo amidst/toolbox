@@ -1,6 +1,5 @@
 package eu.amidst.core.learning;
 
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 
 /**
@@ -8,7 +7,7 @@ import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
  */
 public interface TransitionMethod {
 
-    public default EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork){
+    public default EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure){
         return bayesianNetwork;
     }
 

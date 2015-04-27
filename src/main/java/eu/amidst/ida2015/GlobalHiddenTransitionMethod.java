@@ -22,7 +22,7 @@ public class GlobalHiddenTransitionMethod implements TransitionMethod{
     }
 
     @Override
-    public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork) {
+    public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
 
 
         for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfVariables()){
