@@ -225,7 +225,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         plateuStructure.replicateModel();
         this.plateuStructure.resetQs();
         if (transitionMethod!=null)
-           this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN);
+           this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN, plateuStructure);
     }
 
     @Override

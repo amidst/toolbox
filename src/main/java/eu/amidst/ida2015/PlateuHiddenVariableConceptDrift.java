@@ -13,20 +13,20 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 10/03/15.
  */
-public class PlateuLocalHiddenConceptDrift extends PlateuStructure{
+public class PlateuHiddenVariableConceptDrift extends PlateuStructure{
 
     List<Variable> localHiddenVars;
     List<Node> localHiddenNodes;
     Map<Variable,Node> hiddenToNode;
     boolean dynamic;
-    public PlateuLocalHiddenConceptDrift(List<Variable> localHiddenVars_, boolean dynamic_){
+    public PlateuHiddenVariableConceptDrift(List<Variable> localHiddenVars_, boolean dynamic_){
         this.localHiddenVars = localHiddenVars_;
         this.dynamic = dynamic_;
     }
 
     public void replicateModel(){
         parametersNode = new ArrayList();
-        plateuNodes = new ArrayList<>(nRepetitions);
+        plateuNodes = new ArrayList<>(nReplications);
 
         variablesToNode = new ArrayList<>();
         parametersToNode = new ConcurrentHashMap<>();
@@ -47,7 +47,7 @@ public class PlateuLocalHiddenConceptDrift extends PlateuStructure{
             localHiddenNodes.add(node);
         }
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
 
             Map<Variable, Node> map = new ConcurrentHashMap();
             List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
@@ -65,7 +65,7 @@ public class PlateuLocalHiddenConceptDrift extends PlateuStructure{
         }
 
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
             for (Node node : plateuNodes.get(i)) {
                 final int slice = i;
                 node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, slice)).collect(Collectors.toList()));
@@ -89,7 +89,7 @@ public class PlateuLocalHiddenConceptDrift extends PlateuStructure{
 
         allNodes.addAll(localHiddenNodes);
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
             allNodes.addAll(this.plateuNodes.get(i));
         }
 

@@ -336,9 +336,14 @@ public class GlobalHiddenConceptDrift {
 
             double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch, classVariable);
 
+            double innerCount = 0;
             for (DataInstance instance : batch){
-                if (random.nextDouble()<0.0)
+                //if (random.nextDouble()<0.9)
+                //    instance.setValue(classVariable, Utils.missingValue());
+                if (count>5*windowSize && innerCount%10!=0)
                     instance.setValue(classVariable, Utils.missingValue());
+
+                innerCount++;
             }
 
             acumLL += svb.updateModel(batch);
@@ -417,8 +422,8 @@ public class GlobalHiddenConceptDrift {
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
-        svb.setPlateuStructure(new PlateuLocalHiddenConceptDrift(localHidden, true));
-        svb.setTransitionMethod(new LocalHiddenTransitionMethod(localHidden, 0, 10));
+        svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(localHidden, true));
+        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(localHidden, 0, 10));
         svb.setWindowsSize(windowSize);
         svb.setDAG(dag);
         svb.initLearning();
@@ -748,6 +753,6 @@ public class GlobalHiddenConceptDrift {
     }
 
     public static void main(String[] args) {
-        GlobalHiddenConceptDrift.conceptDriftHyperplane(args);
+        GlobalHiddenConceptDrift.conceptDriftSeaLevel(args);
     }
 }
