@@ -8,7 +8,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>huginlink</module>
-        <module>moa</module>
+        <module>moalink</module>
     </modules>
     <name>Amidst :: Core</name>
     <packaging>pom</packaging>
