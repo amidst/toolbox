@@ -139,7 +139,6 @@
     <orderEntry type="library" name="Maven: org.spire-math:spire-macros_2.10:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: com.typesafe:scalalogging-slf4j_2.10:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
-    <orderEntry type="library" name="nz.ac.waikato.cms.moa:moa:2014.04" level="project" />
   </component>
 </module>
 
