@@ -77,6 +77,10 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         this.transitionMethod = transitionMethod;
     }
 
+    public <E extends TransitionMethod> E getTransitionMethod() {
+        return (E)this.transitionMethod;
+    }
+
     @Override
     public void runLearning() {
         this.initLearning();
@@ -225,7 +229,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         plateuStructure.replicateModel();
         this.plateuStructure.resetQs();
         if (transitionMethod!=null)
-           this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN);
+           this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN, plateuStructure);
     }
 
     @Override

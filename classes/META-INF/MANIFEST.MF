@@ -1,0 +1,47 @@
+Manifest-Version: 1.0
+Class-Path: jetty-xml-8.1.14.v20131031.jar tachyon-0.5.0.jar hadoop-co
+ re-1.2.1.jar spire_2.10-0.7.1.jar commons-net-2.2.jar logback-core-1.
+ 1.1.jar javax.activation-1.1.0.v201105071233.jar colt-1.2.0.jar spire
+ -macros_2.10-0.7.1.jar protobuf-java-2.4.1-shaded.jar sizeofag-1.0.0.
+ jar jcl-over-slf4j-1.7.5.jar activation-1.1.jar compress-lzf-1.0.0.ja
+ r commons-beanutils-core-1.8.0.jar scala-reflect-2.10.3.jar akka-slf4
+ j_2.10-2.2.3-shaded-protobuf.jar jersey-core-1.8.jar tachyon-client-0
+ .5.0.jar pentaho-package-manager-1.0.8.jar breeze-macros_2.10-0.3.jar
+  commons-digester-1.8.jar commons-httpclient-3.1.jar javax.servlet-3.
+ 0.0.v201112011016.jar spark-mllib_2.10-1.0.0.jar minlog-1.2.jar commo
+ ns-lang-2.4.jar metrics-json-3.0.0.jar reflectasm-1.07-shaded.jar jac
+ kson-core-2.3.1.jar concurrent-1.3.4.jar jetty-webapp-8.1.14.v2013103
+ 1.jar chill_2.10-0.3.6.jar metrics-graphite-3.0.0.jar jackson-mapper-
+ asl-1.8.8.jar hadoop-client-1.2.1.jar logback-classic-1.1.1.jar commo
+ ns-lang3-3.3.2.jar jackson-jaxrs-1.7.1.jar jetty-security-8.1.14.v201
+ 31031.jar jaxb-api-2.2.2.jar opencsv-2.3.jar commons-configuration-1.
+ 6.jar curator-recipes-2.4.0.jar paranamer-2.2.jar slf4j-log4j12-1.7.5
+ .jar uncommons-maths-1.2.2a.jar scalap-2.10.0.jar jetty-servlet-8.1.1
+ 4.v20131031.jar curator-client-2.4.0.jar moa-2014.04.jar commons-logg
+ ing-1.1.1.jar commons-codec-1.4.jar jackson-databind-2.3.1.jar jackso
+ n-core-asl-1.7.1.jar asm-3.1.jar stream-2.7.0.jar jackson-annotations
+ -2.3.0.jar commons-beanutils-1.7.0.jar json4s-ast_2.10-3.2.10.jar sta
+ x-api-1.0-2.jar netty-3.6.6.Final.jar javax.transaction-1.1.1.v201105
+ 210645.jar jblas-1.2.3.jar scala-library-2.10.4.jar oro-2.0.8.jar jtr
+ ansforms-2.4.0.jar snappy-java-1.0.5.3.jar jersey-json-1.8.jar jets3t
+ -0.7.1.jar jettison-1.1.jar commons-collections-3.2.1.jar slf4j-api-1
+ .7.6.jar arpack_combined_all-0.1.jar config-1.0.2.jar pyrolite-2.0.1.
+ jar zookeeper-3.4.5.jar kryo-2.21.jar commons-el-1.0.jar commons-cli-
+ 1.2.jar jetty-jndi-8.1.14.v20131031.jar jetty-util-8.1.14.v20131031.j
+ ar jetty-continuation-8.1.14.v20131031.jar weka-dev-3.7.12.jar netty-
+ all-4.0.23.Final.jar chill-java-0.3.6.jar lz4-1.2.0.jar scalalogging-
+ slf4j_2.10-1.0.1.jar breeze_2.10-0.7.jar objenesis-1.2.jar log4j-1.2.
+ 17.jar scala-compiler-2.10.0.jar jetty-io-8.1.14.v20131031.jar jetty-
+ http-8.1.14.v20131031.jar metrics-jvm-3.0.0.jar akka-remote_2.10-2.2.
+ 3-shaded-protobuf.jar jaxb-impl-2.2.3-1.jar jline-0.9.94.jar javax.ma
+ il.glassfish-1.4.1.v201005082020.jar jul-to-slf4j-1.7.5.jar metrics-c
+ ore-3.0.0.jar stax-api-1.0.1.jar core-1.1.2.jar xmlenc-0.52.jar py4j-
+ 0.8.2.1.jar guava-18.0.jar json4s-core_2.10-3.2.10.jar curator-framew
+ ork-2.4.0.jar jsr305-1.3.9.jar commons-math-2.1.jar mesos-0.18.1-shad
+ ed-protobuf.jar java-cup-0.11a.jar jackson-xc-1.7.1.jar jersey-server
+ -1.8.jar commons-io-2.1.jar akka-actor_2.10-2.2.3-shaded-protobuf.jar
+  json4s-jackson_2.10-3.2.10.jar jetty-server-8.1.14.v20131031.jar hsq
+ ldb-1.8.0.10.jar spark-core_2.10-1.1.1.jar commons-math3-3.2.jar jett
+ y-plus-8.1.14.v20131031.jar
+Main-Class: 
+

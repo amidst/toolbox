@@ -1,9 +1,5 @@
 package eu.amidst.core.learning;
 
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.inference.VMP;
 import eu.amidst.core.inference.vmp.Node;
 import eu.amidst.core.variables.Variable;
 
@@ -20,7 +16,7 @@ public class PlateuIIDReplication extends PlateuStructure{
 
     public void replicateModel(){
         parametersNode = new ArrayList();
-        plateuNodes = new ArrayList<>(nRepetitions);
+        plateuNodes = new ArrayList<>(nReplications);
 
         variablesToNode = new ArrayList<>();
         parametersToNode = new ConcurrentHashMap<>();
@@ -33,7 +29,7 @@ public class PlateuIIDReplication extends PlateuStructure{
                 })
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
 
             Map<Variable, Node> map = new ConcurrentHashMap<>();
             List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
@@ -49,7 +45,7 @@ public class PlateuIIDReplication extends PlateuStructure{
         }
 
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
             for (Node node : plateuNodes.get(i)) {
                 final int slice = i;
                 node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, slice)).collect(Collectors.toList()));
@@ -61,7 +57,7 @@ public class PlateuIIDReplication extends PlateuStructure{
 
         allNodes.addAll(this.parametersNode);
 
-        for (int i = 0; i < nRepetitions; i++) {
+        for (int i = 0; i < nReplications; i++) {
             allNodes.addAll(this.plateuNodes.get(i));
         }
 
