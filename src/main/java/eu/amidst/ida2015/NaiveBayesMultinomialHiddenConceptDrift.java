@@ -1,8 +1,10 @@
 package eu.amidst.ida2015;
 
-import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.StreamingVariationalBayesVMP;
@@ -18,19 +20,23 @@ import java.util.List;
 /**
  * Created by andresmasegosa on 21/4/15.
  */
-public class NaiveBayesConceptDrift {
+public class NaiveBayesMultinomialHiddenConceptDrift {
 
     public enum DriftDetector {GLOBAL, LOCAL, GLOBAL_LOCAL};
 
     DataStream<DataInstance> data;
     int windowsSize;
-    double transitionVariance;
+    double transitionProbability;
     int classIndex = -1;
     DriftDetector conceptDriftDetector;
     int seed = 0;
     StreamingVariationalBayesVMP svb;
     List<Variable> hiddenVars;
+    int numberOfStatesHiddenVar =  5;
 
+    public void setNumberOfStatesHiddenVar(int numberOfStatesHiddenVar) {
+        this.numberOfStatesHiddenVar = numberOfStatesHiddenVar;
+    }
 
     public void setClassIndex(int classIndex) {
         this.classIndex = classIndex;
@@ -44,8 +50,8 @@ public class NaiveBayesConceptDrift {
         this.windowsSize = windowsSize;
     }
 
-    public void setTransitionVariance(double transitionVariance) {
-        this.transitionVariance = transitionVariance;
+    public void setTransitionProbability(double transitionProbability) {
+        this.transitionProbability = transitionProbability;
     }
 
     public void setConceptDriftDetector(DriftDetector conceptDriftDetector) {
@@ -62,7 +68,7 @@ public class NaiveBayesConceptDrift {
         String className = data.getAttributes().getList().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
-        Variable globalHidden  = variables.newGaussianVariable("GlobalHidden");
+        Variable globalHidden  = variables.newMultionomialVariable("GlobalHidden", this.numberOfStatesHiddenVar);
         hiddenVars.add(globalHidden);
 
         Variable classVariable = variables.getVariableByName(className);
@@ -74,7 +80,7 @@ public class NaiveBayesConceptDrift {
                 continue;
 
             Variable variable = variables.getVariableByName(att.getName());
-            dag.getParentSet(variable).addParent(classVariable);
+            //dag.getParentSet(variable).addParent(classVariable);
             dag.getParentSet(variable).addParent(globalHidden);
         }
 
@@ -82,85 +88,8 @@ public class NaiveBayesConceptDrift {
 
         svb = new StreamingVariationalBayesVMP();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuLocalHiddenConceptDrift(hiddenVars, true));
-        svb.setTransitionMethod(new LocalHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance));
-        svb.setWindowsSize(this.windowsSize);
-        svb.setDAG(dag);
-        svb.initLearning();
-    }
-
-    private void buildLocalDAG(){
-
-        StaticVariables variables = new StaticVariables(data.getAttributes());
-        String className = data.getAttributes().getList().get(classIndex).getName();
-        hiddenVars = new ArrayList<Variable>();
-
-        for (Attribute att : data.getAttributes()){
-            if (att.getName().equals(className))
-                continue;
-            hiddenVars.add(variables.newGaussianVariable("Local_"+att.getName()));
-        }
-
-        Variable classVariable = variables.getVariableByName(className);
-
-        DAG dag = new DAG(variables);
-
-        for (Attribute att : data.getAttributes()) {
-            if (att.getName().equals(className))
-                continue;
-
-            Variable variable = variables.getVariableByName(att.getName());
-            dag.getParentSet(variable).addParent(classVariable);
-            dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
-        }
-
-        System.out.println(dag.toString());
-
-        svb = new StreamingVariationalBayesVMP();
-        svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuLocalHiddenConceptDrift(hiddenVars, true));
-        svb.setTransitionMethod(new LocalHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance));
-        svb.setWindowsSize(this.windowsSize);
-        svb.setDAG(dag);
-        svb.initLearning();
-    }
-
-    private void buildGlobalLocalDAG(){
-
-        StaticVariables variables = new StaticVariables(data.getAttributes());
-        String className = data.getAttributes().getList().get(classIndex).getName();
-        hiddenVars = new ArrayList<Variable>();
-
-        Variable globalHidden  = variables.newGaussianVariable("GlobalHidden");
-        hiddenVars.add(globalHidden);
-
-        for (Attribute att : data.getAttributes()){
-            if (att.getName().equals(className))
-                continue;
-            hiddenVars.add(variables.newGaussianVariable("Local_"+att.getName()));
-        }
-
-        Variable classVariable = variables.getVariableByName(className);
-
-        DAG dag = new DAG(variables);
-
-        for (Attribute att : data.getAttributes()) {
-            if (att.getName().equals(className))
-                continue;
-
-            Variable variable = variables.getVariableByName(att.getName());
-            dag.getParentSet(variable).addParent(classVariable);
-            dag.getParentSet(variable).addParent(variables.getVariableByName("Local_"+att.getName()));
-            dag.getParentSet(variable).addParent(globalHidden);
-
-        }
-
-        System.out.println(dag.toString());
-
-        svb = new StreamingVariationalBayesVMP();
-        svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuLocalHiddenConceptDrift(hiddenVars, true));
-        svb.setTransitionMethod(new LocalHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance));
+        svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(hiddenVars, true));
+        svb.setTransitionMethod(new MultinomialHiddenTransitionMethod(hiddenVars, this.transitionProbability));
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);
         svb.initLearning();
@@ -174,12 +103,6 @@ public class NaiveBayesConceptDrift {
         switch (this.conceptDriftDetector){
             case GLOBAL:
                 this.buildGlobalDAG();
-                break;
-            case LOCAL:
-                this.buildLocalDAG();
-                break;
-            case GLOBAL_LOCAL:
-                this.buildGlobalLocalDAG();
                 break;
         }
 
@@ -204,12 +127,6 @@ public class NaiveBayesConceptDrift {
             case GLOBAL:
                 this.buildGlobalDAG();
                 break;
-            case LOCAL:
-                this.buildLocalDAG();
-                break;
-            case GLOBAL_LOCAL:
-                this.buildGlobalLocalDAG();
-                break;
         }
 
 
@@ -224,14 +141,17 @@ public class NaiveBayesConceptDrift {
         double avACC = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowsSize)) {
 
+            //System.out.println(svb.getLearntBayesianNetwork());
             double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch);
             svb.updateModel(batch);
 
             System.out.print(count);
 
             for (Variable hiddenVar : this.hiddenVars) {
-                Normal normal = svb.getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
-                System.out.print("\t" + normal.getMean());
+                Multinomial multinomial = svb.getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                for (int i = 0; i < hiddenVar.getNumberOfStates(); i++) {
+                    System.out.print("\t" + multinomial.getProbabilityOfState(i));
+                }
             }
             System.out.print("\t" + accuracy);
             System.out.println();
@@ -272,13 +192,14 @@ public class NaiveBayesConceptDrift {
 
     public static void main(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
-        NaiveBayesConceptDrift nb = new NaiveBayesConceptDrift();
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
+        NaiveBayesMultinomialHiddenConceptDrift nb = new NaiveBayesMultinomialHiddenConceptDrift();
         nb.setClassIndex(-1);
         nb.setData(data);
-        nb.setWindowsSize(100);
-        nb.setTransitionVariance(0.1);
-        nb.setConceptDriftDetector(DriftDetector.GLOBAL_LOCAL);
+        nb.setWindowsSize(10);
+        nb.setTransitionProbability(0.5);
+        nb.setNumberOfStatesHiddenVar(2);
+        nb.setConceptDriftDetector(DriftDetector.GLOBAL);
 
         nb.learnModel();
 

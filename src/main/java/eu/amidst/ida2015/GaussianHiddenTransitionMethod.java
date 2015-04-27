@@ -11,20 +11,20 @@ import java.util.List;
 /**
  * Created by andresmasegosa on 13/4/15.
  */
-public class LocalHiddenTransitionMethod implements TransitionMethod{
+public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
     List<Variable> localHiddenVars;
     double meanStart;
     double noise;
 
-    public LocalHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double noise_){
+    public GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double noise_){
         this.localHiddenVars=localHiddenVars_;
         this.meanStart = meanStart_;
         this.noise = noise_;
     }
 
     @Override
-    public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork) {
+    public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
 
 
         for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfVariables()){
