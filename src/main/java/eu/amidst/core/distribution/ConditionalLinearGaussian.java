@@ -181,9 +181,9 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
 
     @Override
     public void randomInitialization(Random random) {
-        this.intercept = random.nextGaussian();
+        this.intercept = random.nextGaussian()*5+1;
         for (int j = 0; j < this.coeffParents.length; j++) {
-            this.coeffParents[j]=random.nextGaussian();
+            this.coeffParents[j]=random.nextGaussian()*5+1;
         }
         //this.sd = random.nextDouble()+0.1;
         this.variance = random.nextDouble()+0.5;

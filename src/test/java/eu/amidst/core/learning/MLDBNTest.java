@@ -4,8 +4,11 @@ package eu.amidst.core.learning;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.learning.dynamic.MaximumLikelihoodForDBN;
-import eu.amidst.core.models.*;
+import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.core.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.core.variables.DynamicVariables;
@@ -189,6 +192,22 @@ public class MLDBNTest {
 
         dynamicNB.randomInitialization(new Random(1));
 
+
+
+        ConditionalLinearGaussian distContVar1Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
+                getConditionalDistributionTimeT(dynamicNB.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar1"))).getBaseConditionalDistribution(0);
+        distContVar1Class0.setCoeffParents(new double[]{1.3});
+        ConditionalLinearGaussian distContVar1Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
+                getConditionalDistributionTimeT(dynamicNB.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar1"))).getBaseConditionalDistribution(1);
+        distContVar1Class1.setCoeffParents(new double[]{-1.3});
+
+        ConditionalLinearGaussian distContVar2Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
+                getConditionalDistributionTimeT(dynamicNB.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar2"))).getBaseConditionalDistribution(0);
+        distContVar2Class0.setCoeffParents(new double[]{2.3});
+        ConditionalLinearGaussian distContVar2Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
+                getConditionalDistributionTimeT(dynamicNB.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar2"))).getBaseConditionalDistribution(1);
+        distContVar2Class1.setCoeffParents(new double[]{-2.3});
+
         System.out.println(dynamicNB.getDynamicDAG().toString());
         System.out.println(dynamicNB.toString());
 
@@ -198,7 +217,7 @@ public class MLDBNTest {
 
         //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
 
-        DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(1000,10);
+        DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(10000,10);
 
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Dynamic Naive Bayes network structure
@@ -206,7 +225,7 @@ public class MLDBNTest {
 
         //Parameter Learning
         MaximumLikelihoodForDBN.setBatchSize(1000);
-        MaximumLikelihoodForDBN.setParallelMode(true);
+        MaximumLikelihoodForDBN.setParallelMode(false);
 
         Stopwatch watch = Stopwatch.createStarted();
 
@@ -260,6 +279,15 @@ public class MLDBNTest {
 
             dynamicNB.randomInitialization(new Random(i));
 
+/*            ConditionalLinearGaussian distVarAClass0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
+                    getConditionalDistributionTimeT(varA)).getBaseConditionalDistribution(0);
+            distVarAClass0.setIntercept(1.0);
+            distVarAClass0.setCoeffParents(new double[]{1.3, -3.1});
+            ConditionalLinearGaussian distVarAClass1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
+                    getConditionalDistributionTimeT(varA)).getBaseConditionalDistribution(1);
+            distVarAClass1.setIntercept(3.2);
+            distVarAClass1.setCoeffParents(new double[]{-2.3, 1.1});*/
+
             System.out.println(dynamicNB.getDynamicDAG().toString());
             System.out.println(dynamicNB.toString());
 
@@ -270,7 +298,7 @@ public class MLDBNTest {
 
             //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
 
-            DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(100, 10);
+            DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(1000, 10);
 
 
             //Structure learning is excluded from the test, i.e., we use directly the initial Dynamic Naive Bayes network structure
@@ -331,6 +359,11 @@ public class MLDBNTest {
             DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
+
+            ConditionalLinearGaussian distVarA = dynamicNB.getConditionalDistributionTimeT(varA);
+            distVarA.setCoeffParents(new double[]{1.3});
+            ConditionalLinearGaussian distVarB = dynamicNB.getConditionalDistributionTimeT(varB);
+            distVarB.setCoeffParents(new double[]{-2.3});
 
 
             System.out.println(dynamicNB.getDynamicDAG().toString());
