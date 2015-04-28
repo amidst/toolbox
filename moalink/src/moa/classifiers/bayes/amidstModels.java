@@ -118,6 +118,8 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
     private DataInstance firstInstanceForBatch = null;
 
     private boolean dynamicFlag = false;
+
+    private double[] meanHiddenVars;
     /**
      * SETTERS AND GETTERS
      */
@@ -202,6 +204,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             attributesExtendedList.add(TIME_ID);
             attributesExtendedList.add(SEQUENCE_ID);
             dynamicFlag = true;
+            meanHiddenVars = new double[this.nb_.getHiddenVars().size()];
         }
         attributes_ = new Attributes(attributesExtendedList);
         batch_ = new DataOnMemoryListContainer(attributes_);
@@ -320,12 +323,9 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             GaussianHiddenTransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
             if((int)dataInstance.getValue(TIME_ID) == currentTimeID) {
                 transitionMethod.setTransitionVariance(0.0);
-                nb_.getSvb().setTransitionMethod(null);
             }else{
                 transitionMethod.setTransitionVariance(this.getTransitionVariance_());
                 isNewSeq = true;
-                accPerSeq = 0.0;
-                sizePerSeq = 0;
             }
             firstInstanceForBatch = dataInstance;
             currentTimeID = (int)dataInstance.getValue(TIME_ID);
@@ -335,22 +335,28 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             nbatch+=windowSize_;
             sizePerSeq += batch_.getNumberOfDataInstances();
 
-            //System.out.println(acc/nbatch);
-
             nb_.updateModel(batch_);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
             //System.out.println(learntBN_.toString());
 
+            for (int i = 0; i < nb_.getHiddenVars().size(); i++) {
+                Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(nb_.getHiddenVars().get(i), 0).toUnivariateDistribution();
+                meanHiddenVars[i]+=normal.getMean();
+            }
+
             if(isNewSeq) {
                 System.out.print(sizePerSeq);
 
-                for (Variable hiddenVar : nb_.getHiddenVars()) {
-                    Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
-                    System.out.print("\t" + normal.getMean());
+                for (int i = 0; i < nb_.getHiddenVars().size(); i++) {
+                    System.out.print("\t" + meanHiddenVars[i]);
+                    meanHiddenVars[i]=0;
                 }
                 System.out.print("\t" + accPerSeq/sizePerSeq);
                 System.out.println();
+
+                accPerSeq = 0.0;
+                sizePerSeq = 0;
             }
         }
     }
