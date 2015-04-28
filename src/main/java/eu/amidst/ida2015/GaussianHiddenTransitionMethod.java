@@ -65,7 +65,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
             EF_Gamma gamma = ((EF_BaseDistribution_MultinomialParents<EF_Gamma>) bayesianNetwork.getDistribution(gammaVar)).getBaseEFDistribution(0);
 
             double alpha = 100000;
-            double beta = alpha * 1000;
+            double beta = alpha * 1;
 
             gamma.getNaturalParameters().set(0, alpha - 1);
             gamma.getNaturalParameters().set(1, -beta);
