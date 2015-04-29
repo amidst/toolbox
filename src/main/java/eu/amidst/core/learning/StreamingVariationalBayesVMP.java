@@ -9,7 +9,6 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.Variable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,6 +101,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     private CompoundVector computeNaturalParameterVectorPrior(){
         List<Vector> naturalParametersPriors =  this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
+                .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
                 .map(var -> {
                     NaturalParameters parameter =((EF_BaseDistribution_MultinomialParents)this.ef_extendedBN.getDistribution(var)).getBaseEFUnivariateDistribution(0).getNaturalParameters();
                     NaturalParameters copy = new ArrayVector(parameter.size());
@@ -121,7 +121,9 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
             //this.elbo = this.dataStream.stream().sequential().mapToDouble(this::updateModel).sum();
             this.elbo = this.dataStream.streamOfBatches(this.windowsSize).mapToDouble(this::updateModel).sum();
         }else {
+            this.elbo = this.dataStream.streamOfBatches(this.windowsSize).mapToDouble(this::updateModelParallel).sum();
 
+/*
             //BatchOutput finalout = this.dataStream.streamOfBatches(this.windowsSize).map(batch -> this.updateModelOnBatchParallel(batch, compoundVectorPrior)).reduce(BatchOutput::sum).get();
 
             BatchOutput finalout = new BatchOutput(this.computeNaturalParameterVectorPrior(), 0);
@@ -159,6 +161,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
                 uni.setNaturalParameters((NaturalParameters)total.getVectorByPosition(i));
                 dist.setBaseEFDistribution(0,uni);
             }
+            */
         }
     }
 
@@ -168,11 +171,19 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
+        double elboBatch = 0;
         if (!parallelMode){
-            return this.updateModelSequential(batch);
+            if (this.randomRestart) this.getPlateuStructure().resetQs();
+            elboBatch =  this.updateModelSequential(batch);
         }else{
-            return this.updateModelParallel(batch);
+            if (this.randomRestart) this.getPlateuStructure().resetQs();
+            elboBatch =  this.updateModelParallel(batch);
         }
+
+        if (transitionMethod!=null)
+            this.ef_extendedBN=this.transitionMethod.transitionModel(this.ef_extendedBN, this.plateuStructure);
+
+        return elboBatch;
     }
 
     public double updateModelSequential(DataOnMemory<DataInstance> batch) {
@@ -186,9 +197,6 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
             EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
             dist.setBaseEFDistribution(0, plateuStructure.getEFParameterPosterior(var).deepCopy());
         });
-
-        if (transitionMethod!=null)
-            this.ef_extendedBN=this.transitionMethod.transitionModel(this.ef_extendedBN, this.plateuStructure);
 
         //this.plateuVMP.resetQs();
         return this.plateuStructure.getLogProbabilityOfEvidence();
@@ -219,6 +227,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
         List<Vector> naturalParametersPosterior =  this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
+                .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
                 .map(var -> plateuStructure.getEFParameterPosterior(var).deepCopy().getNaturalParameters()).collect(Collectors.toList());
 
 
@@ -229,18 +238,6 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         BatchOutput out = new BatchOutput(compoundVectorEnd, this.plateuStructure.getLogProbabilityOfEvidence());
 
         this.naturalVectorPosterior = BatchOutput.sum(out, this.getNaturalParameterPosterior());
-
-        CompoundVector total = (CompoundVector)naturalVectorPosterior.getVector();
-
-        List<Variable> parameters = this.ef_extendedBN.getParametersVariables().getListOfVariables();
-
-        for (int i = 0; i <parameters.size(); i++) {
-            Variable var = parameters.get(i);
-            EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) this.ef_extendedBN.getDistribution(var);
-            EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
-            uni.setNaturalParameters((NaturalParameters)total.getVectorByPosition(i));
-            dist.setBaseEFDistribution(0,uni);
-        }
 
         return out.getElbo();
     }
@@ -286,7 +283,50 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
 
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
-        return BayesianNetwork.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+        if(!parallelMode)
+            return BayesianNetwork.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+        else{
+            List<EF_ConditionalDistribution> dists = this.dag.getParentSets().stream()
+                    .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
+                    .collect(Collectors.toList());
+
+            //EF_LearningBayesianNetwork extBN = new EF_LearningBayesianNetwork(dists, dag.getStaticVariables());
+
+            CompoundVector priors = this.getNaturalParameterPrior();
+            CompoundVector posterior = (CompoundVector)this.getNaturalParameterPosterior(). getVector();
+
+            final int[] count = new int[1];
+            ef_extendedBN.getParametersVariables().getListOfVariables().stream()
+                    .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
+                    .forEach( var -> {
+                        EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
+                        EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
+                        //uni.setNaturalParameters((NaturalParameters)posterior.getVectorByPosition(count[0]));
+                        uni.getNaturalParameters().copy((NaturalParameters)posterior.getVectorByPosition(count[0]));
+                        uni.updateMomentFromNaturalParameters();
+                        dist.setBaseEFDistribution(0,uni);
+                        count[0]++;
+            });
+
+            BayesianNetwork learntBN =  BayesianNetwork.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+
+
+            count[0] = 0;
+            ef_extendedBN.getParametersVariables().getListOfVariables().stream()
+                    .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
+                    .forEach( var -> {
+                        EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
+                        EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
+                        //uni.setNaturalParameters((NaturalParameters)priors.getVectorByPosition(count[0]));
+                        uni.getNaturalParameters().copy((NaturalParameters)priors.getVectorByPosition(count[0]));
+                        uni.updateMomentFromNaturalParameters();
+                        dist.setBaseEFDistribution(0,uni);
+                        count[0]++;
+                    });
+
+
+            return learntBN;
+        }
     }
 
     static class BatchOutput{
