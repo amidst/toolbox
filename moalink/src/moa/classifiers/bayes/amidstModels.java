@@ -197,7 +197,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         if(asNB_ == 1) nb_.setGlobalHidden(false);
         else nb_.setGlobalHidden(true);
 
-        nb_.learnDAG();
+        nb_.initLearning();
 
         List<Attribute> attributesExtendedList = new ArrayList<>(attributes_.getList());
         if(TIME_ID != null && SEQUENCE_ID != null) {
