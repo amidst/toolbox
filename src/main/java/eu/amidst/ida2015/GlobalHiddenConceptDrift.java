@@ -416,6 +416,89 @@ public class GlobalHiddenConceptDrift {
             }
         }
     }
+    public static void conceptDriftSeaLevelMultipleGlobalHidden(String[] args) throws IOException {
+
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
+
+
+        int windowSize = 1000;
+        int count = windowSize;
+        double avACC = 0;
+
+
+
+        NaiveBayesGaussianHiddenConceptDrift nb = new NaiveBayesGaussianHiddenConceptDrift();
+        nb.setConceptDriftDetector(NaiveBayesGaussianHiddenConceptDrift.DriftDetector.GLOBAL);
+        nb.setGlobalHidden(true);
+        nb.setNumberOfGlobalVars(2);
+        nb.setTransitionVariance(0.1);
+        nb.setWindowsSize(windowSize);
+        nb.setData(data);
+
+        nb.initLearning();
+
+
+
+
+        Variable classVariable = nb.getClassVariable();
+
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+
+            BayesianNetwork initBN = nb.getLearntBayesianNetwork();
+            double accuracy = computeAccuracy(initBN, batch, classVariable);
+
+            if (true) {
+                double innerCount = 0;
+                for (DataInstance instance : batch) {
+                    //if (random.nextDouble()<0.9)
+                    //    instance.setValue(classVariable, Utils.missingValue());
+                    if (count > 1000 && innerCount % 10 != 0)
+                        instance.setValue(classVariable, Utils.missingValue());
+
+                    innerCount++;
+                }
+            }
+
+            nb.updateModel(batch);
+
+
+            for (Variable hiddenVar :  nb.getHiddenVars()) {
+                Normal normal = nb.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                System.out.print(count + "\t" + normal.getMean());
+            }
+
+//            BayesianNetwork learntBN = nb.getLearntBayesianNetwork();
+//            Normal_MultinomialNormalParents dist1 = learntBN.getDistribution(at1);
+//            Normal_MultinomialNormalParents dist2 = learntBN.getDistribution(at2);
+//            Normal_MultinomialNormalParents dist3 = learntBN.getDistribution(at3);
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getIntercept());
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+
+            System.out.print("\t" + accuracy);
+            System.out.println();
+
+            count += windowSize;
+            avACC+= accuracy;
+
+        }
+
+        System.out.println(avACC/(count/windowSize));
+
+
+    }
 
     public static void conceptDriftSeaLevel(String[] args) throws IOException {
 
@@ -889,7 +972,7 @@ public class GlobalHiddenConceptDrift {
 
     public static void main(String[] args) throws IOException {
         //GlobalHiddenConceptDrift.conceptDriftWithRandomChangesMissingLabels(args);
-        GlobalHiddenConceptDrift.conceptDriftSeaLevel(args);
+        GlobalHiddenConceptDrift.conceptDriftSeaLevelMultipleGlobalHidden(args);
         //GlobalHiddenConceptDrift.conceptDriftHyperplane(args);
     }
 }
