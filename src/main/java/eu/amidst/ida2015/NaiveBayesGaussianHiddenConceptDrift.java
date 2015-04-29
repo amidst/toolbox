@@ -31,8 +31,16 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     StreamingVariationalBayesVMP svb;
     List<Variable> hiddenVars;
     double fading = 1.0;
+    int numberOfGlobalVars = 1;
 
     boolean globalHidden = true;
+
+    public Variable getClassVariable(){
+        return this.svb.getLearntBayesianNetwork().getStaticVariables().getVariableById(this.classIndex);
+    }
+    public void setNumberOfGlobalVars(int numberOfGlobalVars) {
+        this.numberOfGlobalVars = numberOfGlobalVars;
+    }
 
     public void setGlobalHidden(boolean globalHidden) {
         this.globalHidden = globalHidden;
@@ -75,8 +83,9 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         String className = data.getAttributes().getList().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
-        Variable globalHidden  = variables.newGaussianVariable("GlobalHidden");
-        hiddenVars.add(globalHidden);
+        for (int i = 0; i < this.numberOfGlobalVars ; i++) {
+            hiddenVars.add(variables.newGaussianVariable("GlobalHidden_"+i));
+        }
 
         Variable classVariable = variables.getVariableByName(className);
 
@@ -88,7 +97,11 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
-            if (this.globalHidden) dag.getParentSet(variable).addParent(globalHidden);
+            if (this.globalHidden) {
+                for (int i = 0; i < this.numberOfGlobalVars ; i++) {
+                    dag.getParentSet(variable).addParent(hiddenVars.get(i));
+                }
+            }
         }
 
         System.out.println(dag.toString());
@@ -103,6 +116,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
     }
+
 
     private void buildLocalDAG(){
 
@@ -181,7 +195,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         svb.initLearning();
     }
 
-    public void learnDAG() {
+    public void initLearning() {
         if (classIndex == -1)
             classIndex = data.getAttributes().getNumberOfAttributes()-1;
 
