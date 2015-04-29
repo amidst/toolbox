@@ -82,6 +82,11 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             0);
     protected  int asNB_ = 0;
 
+    public IntOption numberOfGlobalVarsOption = new IntOption("numberOfGlobalVars",
+            'g', "Number of global variables",
+            1);
+    protected  int numberOfGlobalVars_ = 1;
+
 /*    public FloatOption MARclassOption = new FloatOption("MARclass",
             'm', "MARclass.",
             1);
@@ -160,7 +165,15 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         this.asNB_ = asNB_;
     }
 
-/*    public double getMARclass_() {
+    public int getNumberOfGlobalVars_() {
+        return numberOfGlobalVars_;
+    }
+
+    public void setNumberOfGlobalVars_(int numberOfGlobalVars_) {
+        this.numberOfGlobalVars_ = numberOfGlobalVars_;
+    }
+
+    /*    public double getMARclass_() {
         return MARclass_;
     }
 
@@ -200,6 +213,8 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         setAsNB_(asNBOption.getValue());
         if(asNB_ == 1) nb_.setGlobalHidden(false);
         else nb_.setGlobalHidden(true);
+        setNumberOfGlobalVars_(numberOfGlobalVarsOption.getValue());
+        nb_.setNumberOfGlobalVars(numberOfGlobalVars_);
 
         nb_.initLearning();
 
