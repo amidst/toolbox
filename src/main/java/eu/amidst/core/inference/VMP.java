@@ -32,7 +32,7 @@ public class VMP implements InferenceAlgorithmForBN {
     double probOfEvidence = Double.NaN;
     Random random = new Random(0);
     int seed=0;
-    boolean testELBO=true;
+    boolean testELBO=false;
     int maxIter = 1000;
     double threshold = 0.0001;
     boolean output = false;
