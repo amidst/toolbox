@@ -5,6 +5,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.utils.Utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,7 +18,7 @@ public final class scriptRemoveInstancesWithMissing{
         ARFFDataReader reader= new ARFFDataReader();
         reader.loadFromFile(path);
 
-        String newPath = path.replace(".arff", "INDICATORS.arff");
+        String newPath = path.replace(".arff", "_NOMissing.arff");
 
         FileWriter fw = new FileWriter(newPath);
         fw.write("@relation dataset\n\n");
@@ -33,7 +34,7 @@ public final class scriptRemoveInstancesWithMissing{
         data.stream().forEach(e -> {
             boolean missing = false;
             for (Attribute att : reader.getAttributes()) {
-                if(Double.isNaN(e.getValue(att))){
+                if(Utils.isMissingValue(e.getValue(att))){
                     missing = true;
                     break;
                 }
@@ -52,7 +53,8 @@ public final class scriptRemoveInstancesWithMissing{
     public static void main(String[] args) {
         try {
             //addIndicatorVarsToCajamar(args[0]);
-            removeInstancesWithMissing("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            //removeInstancesWithMissing("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            removeInstancesWithMissing(args[0]);
         }catch (IOException ex){}
     }
 }
