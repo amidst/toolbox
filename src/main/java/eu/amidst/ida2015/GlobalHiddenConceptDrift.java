@@ -1,6 +1,9 @@
 package eu.amidst.ida2015;
 
-import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.io.DataStreamLoader;
@@ -120,8 +123,9 @@ public class GlobalHiddenConceptDrift {
         int count = windowSize;
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        svb.setParallelMode(false);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden),true));
-        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.1));
+        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 10));
         svb.setWindowsSize(windowSize);
         svb.setDAG(naiveBayes.getDAG());
         svb.initLearning();
@@ -174,7 +178,7 @@ public class GlobalHiddenConceptDrift {
 
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
-
+                /*
                 double innerCount = 0;
                 for (DataInstance instance : batch){
                     //if (random.nextDouble()<0.9)
@@ -183,7 +187,7 @@ public class GlobalHiddenConceptDrift {
                         instance.setValue(classVariable, Utils.missingValue());
 
                     innerCount++;
-                }
+                }*/
 
 
                 svb.updateModel(batch);
@@ -417,22 +421,6 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
 
-
-
-        DataOnMemoryListContainer<DataInstance> dataNew = new DataOnMemoryListContainer(data.getAttributes());
-
-     /*   double innerCountT = 0;
-        for (DataInstance instance : data){
-            //if (random.nextDouble()<0.9)
-            //    instance.setValue(classVariable, Utils.missingValue());
-            if (innerCountT<=1000 || innerCountT%10==0){
-                dataNew.add(instance);
-            }
-            innerCountT++;
-        }
-
-        DataStreamWriter.writeDataToFile(dataNew, "./sea-reduced-1000-0.9.arff");
-*/
         StaticVariables variables = new StaticVariables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("cl");
@@ -452,12 +440,14 @@ public class GlobalHiddenConceptDrift {
 
         System.out.println(dag.toString());
 
-        int windowSize = 100;
+        int windowSize = 1000;
         int count = windowSize;
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-        svb.setSeed(0);
+        svb.setParallelMode(true);
+        svb.setRandomRestart(false);
+        svb.setSeed(1);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.1));
         svb.setWindowsSize(windowSize);
@@ -471,17 +461,19 @@ public class GlobalHiddenConceptDrift {
         double avACC = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
-            double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch, classVariable);
+            BayesianNetwork initBN = svb.getLearntBayesianNetwork();
+            double accuracy = computeAccuracy(initBN, batch, classVariable);
 
+            if (false) {
+                double innerCount = 0;
+                for (DataInstance instance : batch) {
+                    //if (random.nextDouble()<0.9)
+                    //    instance.setValue(classVariable, Utils.missingValue());
+                    if (count > 1000 && innerCount % 10 != 0)
+                        instance.setValue(classVariable, Utils.missingValue());
 
-            double innerCount = 0;
-            for (DataInstance instance : batch){
-                //if (random.nextDouble()<0.9)
-                //    instance.setValue(classVariable, Utils.missingValue());
-                if (count>1000 && innerCount%10!=0)
-                    instance.setValue(classVariable, Utils.missingValue());
-
-                innerCount++;
+                    innerCount++;
+                }
             }
 
             acumLL += svb.updateModel(batch);
@@ -490,7 +482,6 @@ public class GlobalHiddenConceptDrift {
 
             //System.out.println(learntBN.toString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
-            normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
 
             Normal_MultinomialNormalParents dist1 = learntBN.getDistribution(at1);
             Normal_MultinomialNormalParents dist2 = learntBN.getDistribution(at2);
@@ -661,14 +652,15 @@ public class GlobalHiddenConceptDrift {
 
         System.out.println(dag.toString());
 
-        int windowSize = 100;
+        int windowSize = 10;
         int count = windowSize;
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        svb.setParallelMode(true);
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
-        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 1, 5));
+        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.1));
         svb.setWindowsSize(windowSize);
         svb.setDAG(dag);
         svb.initLearning();
@@ -682,10 +674,11 @@ public class GlobalHiddenConceptDrift {
 
             double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch, classVariable);
 
+            /*
             for (DataInstance instance : batch){
                 if (random.nextDouble()<0.5)
                     instance.setValue(classVariable, Utils.missingValue());
-            }
+            }*/
 
             acumLL += svb.updateModel(batch);
 
@@ -897,5 +890,6 @@ public class GlobalHiddenConceptDrift {
     public static void main(String[] args) throws IOException {
         //GlobalHiddenConceptDrift.conceptDriftWithRandomChangesMissingLabels(args);
         GlobalHiddenConceptDrift.conceptDriftSeaLevel(args);
+        //GlobalHiddenConceptDrift.conceptDriftHyperplane(args);
     }
 }
