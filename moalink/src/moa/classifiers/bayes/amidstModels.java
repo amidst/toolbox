@@ -1,10 +1,7 @@
 package moa.classifiers.bayes;
 
 import arffWekaReader.DataRowWeka;
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
@@ -25,7 +22,11 @@ import moa.core.Measurement;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
+import weka.classifiers.evaluation.NominalPrediction;
+import weka.classifiers.evaluation.Prediction;
+import weka.classifiers.evaluation.ThresholdCurve;
 import weka.core.Instance;
+import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -39,6 +40,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
     private static final long serialVersionUID = 1L;
 
     double accPerSeq = 0;
+    double aucPerSeq = 0;
     int nbatch = 0;
     int sizePerSeq = 0;
 
@@ -330,8 +332,11 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             firstInstanceForBatch = dataInstance;
             currentTimeID = (int)dataInstance.getValue(TIME_ID);
 
-            double batchAccuracy=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
+            double[] stats = computeAccuracyAndAUC(nb_.getLearntBayesianNetwork(), batch_);
+            double batchAccuracy = stats[0];
+            double batchAUC = stats[1];
             accPerSeq += batchAccuracy*batch_.getNumberOfDataInstances();
+            aucPerSeq += batchAUC*batch_.getNumberOfDataInstances();
             nbatch+=windowSize_;
             sizePerSeq += batch_.getNumberOfDataInstances();
 
@@ -352,13 +357,45 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
                     System.out.print("\t" + meanHiddenVars[i]);
                     meanHiddenVars[i]=0;
                 }
-                System.out.print("\t" + accPerSeq/sizePerSeq);
+                System.out.print("\t" + accPerSeq/sizePerSeq +"\t" + aucPerSeq/sizePerSeq);
                 System.out.println();
 
                 accPerSeq = 0.0;
+                aucPerSeq = 0.0;
                 sizePerSeq = 0;
             }
         }
+    }
+
+    public double[] computeAccuracyAndAUC(BayesianNetwork bn, DataOnMemory<DataInstance> data){
+
+        double[] stats = new double[2];
+        ArrayList<Prediction> predictions = new ArrayList<>();
+        double correctPredictions = 0;
+        Variable classVariable = bn.getStaticVariables().getVariableById(nb_.getClassIndex());
+
+        InferenceEngineForBN.setModel(bn);
+        for (DataInstance instance : data) {
+            double realValue = instance.getValue(classVariable);
+            instance.setValue(classVariable, Utils.missingValue());
+            InferenceEngineForBN.setEvidence(instance);
+            InferenceEngineForBN.runInference();
+            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+
+            if (Utils.maxIndex(posterior.getProbabilities())==realValue)
+                correctPredictions++;
+            Prediction prediction = new NominalPrediction(realValue, posterior.getProbabilities());
+            predictions.add(prediction);
+
+            instance.setValue(classVariable, realValue);
+        }
+        ThresholdCurve thresholdCurve = new ThresholdCurve();
+        Instances tcurve = thresholdCurve.getCurve(predictions);
+
+        stats[0] = correctPredictions/data.getNumberOfDataInstances();
+        stats[1] = ThresholdCurve.getPRCArea(tcurve);
+        return stats;
+
     }
 
     @Override
