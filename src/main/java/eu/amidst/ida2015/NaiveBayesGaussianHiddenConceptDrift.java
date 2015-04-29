@@ -54,6 +54,8 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         this.classIndex = classIndex;
     }
 
+    public int getClassIndex(){return classIndex;}
+
     public void setData(DataStream<DataInstance> data) {
         this.data = data;
     }
@@ -299,6 +301,47 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         }
 
         return predictions/data.getNumberOfDataInstances();
+
+    }
+
+    public double[] computePredictions(BayesianNetwork bn, DataOnMemory<DataInstance> data){
+
+        double[] output = new double[4];
+        int TP = 0, TN = 0, FP  = 0, FN = 0;
+        Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
+        double predictions = 0;
+        InferenceEngineForBN.setModel(bn);
+        for (DataInstance instance : data) {
+            double realValue = instance.getValue(classVariable);
+            instance.setValue(classVariable, Utils.missingValue());
+            InferenceEngineForBN.setEvidence(instance);
+            InferenceEngineForBN.runInference();
+            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+            if (Utils.maxIndex(posterior.getProbabilities())==realValue) {
+                predictions++;
+                if(realValue==1){
+                    TP++;
+                }else{
+                    TN++;
+                }
+            }else{
+                if(realValue==1){
+                    FN++;
+                }else{
+                    FP++;
+                }
+            }
+
+            instance.setValue(classVariable, realValue);
+        }
+        output[0] = predictions/data.getNumberOfDataInstances();
+        output[1] = TP;
+        output[2] = TN;
+        output[3] = FP;
+        output[4] = FN;
+
+        return output;
+
     }
 
 
