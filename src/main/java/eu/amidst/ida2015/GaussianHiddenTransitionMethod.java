@@ -16,7 +16,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
     List<Variable> localHiddenVars;
     double meanStart;
     double transtionVariance;
-    double fading = 0.9;
+    double fading = 1.0;
 
     public void setTransitionVariance(double noise) {
         this.transtionVariance = noise;
@@ -64,8 +64,9 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             EF_Gamma gamma = ((EF_BaseDistribution_MultinomialParents<EF_Gamma>) bayesianNetwork.getDistribution(gammaVar)).getBaseEFDistribution(0);
 
-            double alpha = 100000;
-            double beta = alpha * 1;
+            int initVariance = 1;
+            double alpha = 1000;
+            double beta = alpha * initVariance;
 
             gamma.getNaturalParameters().set(0, alpha - 1);
             gamma.getNaturalParameters().set(1, -beta);
@@ -75,7 +76,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
             EF_Normal meanDist = ((EF_BaseDistribution_MultinomialParents<EF_Normal>) bayesianNetwork.getDistribution(meanVar)).getBaseEFDistribution(0);
 
             double mean = meanStart;
-            double var = 0.01;
+            double var = initVariance;
 
             meanDist.getNaturalParameters().set(0, mean / (var));
             meanDist.getNaturalParameters().set(1, -1 / (2 * var));
@@ -123,14 +124,16 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
         /***** FADING ****/
 
 
-        bayesianNetwork.getParametersVariables().getListOfVariables().stream().forEach(var -> {
-            EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) bayesianNetwork.getDistribution(var);
-            EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
-            NaturalParameters naturalParameters = prior.getNaturalParameters();
-            naturalParameters.multiplyBy(fading);
-            prior.setNaturalParameters(naturalParameters);
-            dist.setBaseEFDistribution(0, prior);
-        });
+        if (fading<1.0) {
+            bayesianNetwork.getParametersVariables().getListOfVariables().stream().forEach(var -> {
+                EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) bayesianNetwork.getDistribution(var);
+                EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
+                NaturalParameters naturalParameters = prior.getNaturalParameters();
+                naturalParameters.multiplyBy(fading);
+                prior.setNaturalParameters(naturalParameters);
+                dist.setBaseEFDistribution(0, prior);
+            });
+        }
 
 
 

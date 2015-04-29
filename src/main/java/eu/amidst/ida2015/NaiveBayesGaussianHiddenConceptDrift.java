@@ -30,7 +30,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     int seed = 0;
     StreamingVariationalBayesVMP svb;
     List<Variable> hiddenVars;
-    double fading = 0.9;
+    double fading = 1.0;
 
     boolean globalHidden = true;
 
