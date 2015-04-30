@@ -40,8 +40,8 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
     private static final long serialVersionUID = 1L;
 
     double accPerSeq = 0;
-    double prcPerSeq = 0;
-    double rocPerSeq = 0;
+
+    ArrayList<Prediction> predictions = new ArrayList<>();
 
     int nbatch = 0;
     int sizePerSeq = 0;
@@ -349,14 +349,11 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             firstInstanceForBatch = dataInstance;
             currentTimeID = (int)dataInstance.getValue(TIME_ID);
 
-            double[] stats = computeAccuracyAndAUC(nb_.getLearntBayesianNetwork(), batch_);
-            double batchAccuracy = stats[0];
-            double batchPRC = stats[1];
-            double batchROC = stats[2];
+
+            double batchAccuracy = computeAccuracyAndRecordPrediction(nb_.getLearntBayesianNetwork(),batch_);
 
             accPerSeq += batchAccuracy*batch_.getNumberOfDataInstances();
-            prcPerSeq += batchPRC*batch_.getNumberOfDataInstances();
-            rocPerSeq += batchROC*batch_.getNumberOfDataInstances();
+
 
             nbatch+=windowSize_;
             sizePerSeq += batch_.getNumberOfDataInstances();
@@ -374,25 +371,27 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             if(isNewSeq) {
                 System.out.print(sizePerSeq);
 
+                ThresholdCurve thresholdCurve = new ThresholdCurve();
+                Instances tcurve = thresholdCurve.getCurve(predictions);
+
                 for (int i = 0; i < nb_.getHiddenVars().size(); i++) {
                     System.out.print("\t" + meanHiddenVars[i]);
                     meanHiddenVars[i]=0;
                 }
-                System.out.print("\t" + accPerSeq/sizePerSeq +"\t" + prcPerSeq/sizePerSeq +"\t" + rocPerSeq/sizePerSeq);
+                System.out.print("\t" + accPerSeq/sizePerSeq +"\t" + ThresholdCurve.getPRCArea(tcurve) +"\t" + ThresholdCurve.getROCArea(tcurve));
                 System.out.println();
 
+                predictions = new ArrayList<>();
                 accPerSeq = 0.0;
-                prcPerSeq = 0.0;
-                rocPerSeq = 0.0;
                 sizePerSeq = 0;
             }
         }
     }
 
-    public double[] computeAccuracyAndAUC(BayesianNetwork bn, DataOnMemory<DataInstance> data){
 
-        double[] stats = new double[3];
-        ArrayList<Prediction> predictions = new ArrayList<>();
+    public double computeAccuracyAndRecordPrediction(BayesianNetwork bn, DataOnMemory<DataInstance> data){
+
+
         double correctPredictions = 0;
         Variable classVariable = bn.getStaticVariables().getVariableById(nb_.getClassIndex());
 
@@ -411,14 +410,8 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
 
             instance.setValue(classVariable, realValue);
         }
-        ThresholdCurve thresholdCurve = new ThresholdCurve();
-        Instances tcurve = thresholdCurve.getCurve(predictions);
 
-        stats[0] = correctPredictions/data.getNumberOfDataInstances();
-        stats[1] = ThresholdCurve.getPRCArea(tcurve);
-        stats[2] = ThresholdCurve.getROCArea(tcurve);
-
-        return stats;
+        return correctPredictions/data.getNumberOfDataInstances();
 
     }
 
