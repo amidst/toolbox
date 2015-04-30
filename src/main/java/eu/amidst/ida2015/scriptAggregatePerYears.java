@@ -1,24 +1,24 @@
 package eu.amidst.ida2015;
 
-
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.core.utils.Utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-public final class scriptRemoveInstancesWithMissing{
+/**
+ * Created by ana@cs.aau.dk on 30/04/15.
+ */
+public class scriptAggregatePerYears {
 
-
-    public static void removeInstancesWithMissing(String path)  throws IOException {
+    public static void aggregatePerYears(String path)  throws IOException {
         ARFFDataReader reader= new ARFFDataReader();
         reader.loadFromFile(path);
 
-        String newPath = path.replace(".arff", "_NOMissing.arff");
+        String newPath = path.replace(".arff", "_PerYEAR.arff");
 
         FileWriter fw = new FileWriter(newPath);
         fw.write("@relation dataset\n\n");
@@ -33,15 +33,11 @@ public final class scriptRemoveInstancesWithMissing{
 
         data.stream().forEach(e -> {
             boolean missing = false;
-            for (Attribute att : reader.getAttributes()) {
-                if(Utils.isMissingValue(e.getValue(att))){
-                    missing = true;
-                    break;
-                }
-            }
+            Attribute timeID = reader.getAttributes().getAttributeByName("TIME_ID");
+            e.setValue(timeID,Math.floorDiv((int)e.getValue(timeID),12));
             try {
                 if(!missing)
-                fw.write(ARFFDataWriter.dataInstanceToARFFString(reader.getAttributes(), e) + "\n");
+                    fw.write(ARFFDataWriter.dataInstanceToARFFString(reader.getAttributes(), e) + "\n");
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }
@@ -52,8 +48,8 @@ public final class scriptRemoveInstancesWithMissing{
     }
     public static void main(String[] args) {
         try {
-            //removeInstancesWithMissing("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
-            removeInstancesWithMissing(args[0]);
+            aggregatePerYears("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            //aggregatePerYears(args[0]);
         }catch (IOException ex){}
     }
 }
