@@ -30,9 +30,17 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     int seed = 0;
     StreamingVariationalBayesVMP svb;
     List<Variable> hiddenVars;
-    double fading = 0.9;
+    double fading = 1.0;
+    int numberOfGlobalVars = 1;
 
     boolean globalHidden = true;
+
+    public Variable getClassVariable(){
+        return this.svb.getLearntBayesianNetwork().getStaticVariables().getVariableById(this.classIndex);
+    }
+    public void setNumberOfGlobalVars(int numberOfGlobalVars) {
+        this.numberOfGlobalVars = numberOfGlobalVars;
+    }
 
     public void setGlobalHidden(boolean globalHidden) {
         this.globalHidden = globalHidden;
@@ -45,6 +53,8 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     public void setClassIndex(int classIndex) {
         this.classIndex = classIndex;
     }
+
+    public int getClassIndex(){return classIndex;}
 
     public void setData(DataStream<DataInstance> data) {
         this.data = data;
@@ -75,8 +85,9 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         String className = data.getAttributes().getList().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
-        Variable globalHidden  = variables.newGaussianVariable("GlobalHidden");
-        hiddenVars.add(globalHidden);
+        for (int i = 0; i < this.numberOfGlobalVars ; i++) {
+            hiddenVars.add(variables.newGaussianVariable("GlobalHidden_"+i));
+        }
 
         Variable classVariable = variables.getVariableByName(className);
 
@@ -88,7 +99,11 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
             Variable variable = variables.getVariableByName(att.getName());
             dag.getParentSet(variable).addParent(classVariable);
-            if (this.globalHidden) dag.getParentSet(variable).addParent(globalHidden);
+            if (this.globalHidden) {
+                for (int i = 0; i < this.numberOfGlobalVars ; i++) {
+                    dag.getParentSet(variable).addParent(hiddenVars.get(i));
+                }
+            }
         }
 
         System.out.println(dag.toString());
@@ -103,6 +118,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
     }
+
 
     private void buildLocalDAG(){
 
@@ -181,7 +197,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         svb.initLearning();
     }
 
-    public void learnDAG() {
+    public void initLearning() {
         if (classIndex == -1)
             classIndex = data.getAttributes().getNumberOfAttributes()-1;
 
@@ -285,6 +301,47 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         }
 
         return predictions/data.getNumberOfDataInstances();
+
+    }
+
+    public double[] computePredictions(BayesianNetwork bn, DataOnMemory<DataInstance> data){
+
+        double[] output = new double[4];
+        int TP = 0, TN = 0, FP  = 0, FN = 0;
+        Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
+        double predictions = 0;
+        InferenceEngineForBN.setModel(bn);
+        for (DataInstance instance : data) {
+            double realValue = instance.getValue(classVariable);
+            instance.setValue(classVariable, Utils.missingValue());
+            InferenceEngineForBN.setEvidence(instance);
+            InferenceEngineForBN.runInference();
+            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+            if (Utils.maxIndex(posterior.getProbabilities())==realValue) {
+                predictions++;
+                if(realValue==1){
+                    TP++;
+                }else{
+                    TN++;
+                }
+            }else{
+                if(realValue==1){
+                    FN++;
+                }else{
+                    FP++;
+                }
+            }
+
+            instance.setValue(classVariable, realValue);
+        }
+        output[0] = predictions/data.getNumberOfDataInstances();
+        output[1] = TP;
+        output[2] = TN;
+        output[3] = FP;
+        output[4] = FN;
+
+        return output;
+
     }
 
 
