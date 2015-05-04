@@ -1,18 +1,23 @@
 package eu.amidst.core.inference;
 
-import eu.amidst.core.distribution.*;
-import eu.amidst.core.exponentialfamily.*;
-import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.LocalRandomGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -130,16 +135,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
         Variable samplingVar = this.samplingModel.getStaticVariables().getVariableById(var.getVarID());
         // TODO Could we build this object in a general way for Multinomial and Normal?
-        EF_UnivariateDistribution ef_univariateDistribution;
-        if (var.isMultinomial()){
-            ef_univariateDistribution = new EF_Multinomial(samplingVar);
-        }
-        else if (var.isNormal()) {
-            ef_univariateDistribution = new EF_Normal(samplingVar);
-        }
-        else {
-            throw new IllegalArgumentException("Variable type not allowed.");
-        }
+        EF_UnivariateDistribution ef_univariateDistribution = samplingVar.newUnivariateDistribution().toEFUnivariateDistribution();
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);
         SufficientStatistics sumSS = weightedSampleStream
@@ -177,4 +173,34 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
     public void setSeed(int seed) {
         this.seed=seed;
     }
+
+
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/asia.bn");
+
+        System.out.println(bn.toString());
+
+
+        VMP vmp = new VMP();
+        vmp.setModel(bn);
+        vmp.runInference();
+
+        ImportanceSampling importanceSampling = new ImportanceSampling();
+        importanceSampling.setModel(bn);
+        importanceSampling.setSamplingModel(vmp.getSamplingModel());
+        importanceSampling.setParallelMode(true);
+        importanceSampling.setSampleSize(1000000);
+
+
+        for (Variable var: bn.getStaticVariables()){
+            importanceSampling.runInference();
+            System.out.println("Posterior of " + var.getName() + ":" + importanceSampling.getPosterior(var).toString());
+            //System.out.println("Posterior (VMP) of " + var.getName() + ":" + vmp.getPosterior(var).toString());
+        }
+
+
+    }
+
 }
