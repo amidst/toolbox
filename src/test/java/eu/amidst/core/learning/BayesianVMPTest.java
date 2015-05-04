@@ -2,7 +2,10 @@ package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
@@ -14,10 +17,6 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 import java.util.Random;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by ana@cs.aau.dk on 04/03/15.
@@ -532,7 +531,7 @@ public class BayesianVMPTest extends TestCase {
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
         }
     }
 
@@ -617,8 +616,8 @@ public class BayesianVMPTest extends TestCase {
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.3));
-            if (normalVarBN.equalBNs(learntNormalVarBN, 0.3)) contB++;
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.5));
+            if (normalVarBN.equalBNs(learntNormalVarBN, 0.5)) contB++;
         }
         System.out.println(contA);
         System.out.println(contB);
@@ -782,8 +781,8 @@ public class BayesianVMPTest extends TestCase {
 
             //System.out.println(bn.toString());
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-            sampler.setSeed(i+299);
-            sampler.setHiddenVar(varB);
+            sampler.setSeed(i);
+            sampler.setMARVar(varB,0.7);
             DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
 
 
@@ -810,7 +809,7 @@ public class BayesianVMPTest extends TestCase {
             ConditionalLinearGaussian distCP = bn.getDistribution(varC);
             ConditionalLinearGaussian distCQ = learnBN.getDistribution(varC);
 
-            assertEquals(distCP.getSd(), distCQ.getSd(), 0.05);
+            assertEquals(distCP.getSd(), distCQ.getSd(), 0.1);
         }
     }
 
