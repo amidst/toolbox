@@ -1,10 +1,7 @@
 package moa.classifiers.bayes;
 
 import arffWekaReader.DataRowWeka;
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
@@ -25,7 +22,11 @@ import moa.core.Measurement;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
+import weka.classifiers.evaluation.NominalPrediction;
+import weka.classifiers.evaluation.Prediction;
+import weka.classifiers.evaluation.ThresholdCurve;
 import weka.core.Instance;
+import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -39,6 +40,9 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
     private static final long serialVersionUID = 1L;
 
     double accPerSeq = 0;
+
+    ArrayList<Prediction> predictions = new ArrayList<>();
+
     int nbatch = 0;
     int sizePerSeq = 0;
 
@@ -77,6 +81,11 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             'n', "If 1 then build plain NB (without hidden)",
             0);
     protected  int asNB_ = 0;
+
+    public IntOption numberOfGlobalVarsOption = new IntOption("numberOfGlobalVars",
+            'g', "Number of global variables",
+            1);
+    protected  int numberOfGlobalVars_ = 1;
 
 /*    public FloatOption MARclassOption = new FloatOption("MARclass",
             'm', "MARclass.",
@@ -118,6 +127,8 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
     private DataInstance firstInstanceForBatch = null;
 
     private boolean dynamicFlag = false;
+
+    private double[] meanHiddenVars;
     /**
      * SETTERS AND GETTERS
      */
@@ -154,7 +165,15 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         this.asNB_ = asNB_;
     }
 
-/*    public double getMARclass_() {
+    public int getNumberOfGlobalVars_() {
+        return numberOfGlobalVars_;
+    }
+
+    public void setNumberOfGlobalVars_(int numberOfGlobalVars_) {
+        this.numberOfGlobalVars_ = numberOfGlobalVars_;
+    }
+
+    /*    public double getMARclass_() {
         return MARclass_;
     }
 
@@ -194,14 +213,17 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         setAsNB_(asNBOption.getValue());
         if(asNB_ == 1) nb_.setGlobalHidden(false);
         else nb_.setGlobalHidden(true);
+        setNumberOfGlobalVars_(numberOfGlobalVarsOption.getValue());
+        nb_.setNumberOfGlobalVars(numberOfGlobalVars_);
 
-        nb_.learnDAG();
+        nb_.initLearning();
 
         List<Attribute> attributesExtendedList = new ArrayList<>(attributes_.getList());
         if(TIME_ID != null && SEQUENCE_ID != null) {
             attributesExtendedList.add(TIME_ID);
             attributesExtendedList.add(SEQUENCE_ID);
             dynamicFlag = true;
+            meanHiddenVars = new double[this.nb_.getHiddenVars().size()];
         }
         attributes_ = new Attributes(attributesExtendedList);
         batch_ = new DataOnMemoryListContainer(attributes_);
@@ -320,39 +342,77 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             GaussianHiddenTransitionMethod transitionMethod = nb_.getSvb().getTransitionMethod();
             if((int)dataInstance.getValue(TIME_ID) == currentTimeID) {
                 transitionMethod.setTransitionVariance(0.0);
-                nb_.getSvb().setTransitionMethod(null);
             }else{
                 transitionMethod.setTransitionVariance(this.getTransitionVariance_());
                 isNewSeq = true;
-                accPerSeq = 0.0;
-                sizePerSeq = 0;
             }
             firstInstanceForBatch = dataInstance;
             currentTimeID = (int)dataInstance.getValue(TIME_ID);
 
-            double batchAccuracy=nb_.computeAccuracy(nb_.getLearntBayesianNetwork(), batch_);
+
+            double batchAccuracy = computeAccuracyAndRecordPrediction(nb_.getLearntBayesianNetwork(),batch_);
+
             accPerSeq += batchAccuracy*batch_.getNumberOfDataInstances();
+
+
             nbatch+=windowSize_;
             sizePerSeq += batch_.getNumberOfDataInstances();
-
-            //System.out.println(acc/nbatch);
 
             nb_.updateModel(batch_);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
             //System.out.println(learntBN_.toString());
 
+            for (int i = 0; i < nb_.getHiddenVars().size(); i++) {
+                Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(nb_.getHiddenVars().get(i), 0).toUnivariateDistribution();
+                meanHiddenVars[i]+=normal.getMean();
+            }
+
             if(isNewSeq) {
                 System.out.print(sizePerSeq);
 
-                for (Variable hiddenVar : nb_.getHiddenVars()) {
-                    Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
-                    System.out.print("\t" + normal.getMean());
+                ThresholdCurve thresholdCurve = new ThresholdCurve();
+                Instances tcurve = thresholdCurve.getCurve(predictions);
+
+                for (int i = 0; i < nb_.getHiddenVars().size(); i++) {
+                    System.out.print("\t" + meanHiddenVars[i]);
+                    meanHiddenVars[i]=0;
                 }
-                System.out.print("\t" + accPerSeq/sizePerSeq);
+                System.out.print("\t" + accPerSeq/sizePerSeq +"\t" + ThresholdCurve.getPRCArea(tcurve) +"\t" + ThresholdCurve.getROCArea(tcurve));
                 System.out.println();
+
+                predictions = new ArrayList<>();
+                accPerSeq = 0.0;
+                sizePerSeq = 0;
             }
         }
+    }
+
+
+    public double computeAccuracyAndRecordPrediction(BayesianNetwork bn, DataOnMemory<DataInstance> data){
+
+
+        double correctPredictions = 0;
+        Variable classVariable = bn.getStaticVariables().getVariableById(nb_.getClassIndex());
+
+        InferenceEngineForBN.setModel(bn);
+        for (DataInstance instance : data) {
+            double realValue = instance.getValue(classVariable);
+            instance.setValue(classVariable, Utils.missingValue());
+            InferenceEngineForBN.setEvidence(instance);
+            InferenceEngineForBN.runInference();
+            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+
+            if (Utils.maxIndex(posterior.getProbabilities())==realValue)
+                correctPredictions++;
+            Prediction prediction = new NominalPrediction(realValue, posterior.getProbabilities());
+            predictions.add(prediction);
+
+            instance.setValue(classVariable, realValue);
+        }
+
+        return correctPredictions/data.getNumberOfDataInstances();
+
     }
 
     @Override

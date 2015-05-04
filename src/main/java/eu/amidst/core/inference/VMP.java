@@ -8,6 +8,7 @@ import eu.amidst.core.inference.vmp.Message;
 import eu.amidst.core.inference.vmp.Node;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public class VMP implements InferenceAlgorithmForBN {
+public class VMP implements InferenceAlgorithmForBN, Sampler {
 
     BayesianNetwork model;
     EF_BayesianNetwork ef_model;
@@ -32,7 +33,7 @@ public class VMP implements InferenceAlgorithmForBN {
     double probOfEvidence = Double.NaN;
     Random random = new Random(0);
     int seed=0;
-    boolean testELBO=true;
+    boolean testELBO=false;
     int maxIter = 1000;
     double threshold = 0.0001;
     boolean output = false;
@@ -327,5 +328,18 @@ public class VMP implements InferenceAlgorithmForBN {
         System.out.println(avg/20);
         System.out.println(InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableById(0)).toString());
 
+    }
+
+    @Override
+    public BayesianNetwork getSamplingModel() {
+
+        DAG dag = new DAG(this.model.getStaticVariables());
+
+        List<ConditionalDistribution> distributionList =
+                this.model.getStaticVariables().getListOfVariables().stream()
+                .map(var -> new BaseDistribution_MultinomialParents<UnivariateDistribution>(new ArrayList(), Arrays.asList(this.getPosterior(var))))
+                .collect(Collectors.toList());
+
+        return BayesianNetwork.newBayesianNetwork(dag, distributionList);
     }
 }
