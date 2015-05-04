@@ -3,6 +3,7 @@ package eu.amidst.core.learning;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
@@ -21,8 +22,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Random;
-
-import static org.junit.Assert.assertTrue;
 
 public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
@@ -160,6 +159,25 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
 
+        ConditionalLinearGaussian distContVar1Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
+                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar1"))).getBaseConditionalDistribution(0);
+        distContVar1Class0.setIntercept(1.0);
+        distContVar1Class0.setCoeffParents(new double[]{0.5});
+        ConditionalLinearGaussian distContVar1Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
+                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar1"))).getBaseConditionalDistribution(1);
+        distContVar1Class1.setIntercept(-1.0);
+        distContVar1Class1.setCoeffParents(new double[]{-0.3});
+
+        ConditionalLinearGaussian distContVar2Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
+                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar2"))).getBaseConditionalDistribution(0);
+        distContVar2Class0.setIntercept(2.1);
+        distContVar2Class0.setCoeffParents(new double[]{0.3});
+        ConditionalLinearGaussian distContVar2Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
+                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar2"))).getBaseConditionalDistribution(1);
+        distContVar2Class1.setIntercept(-2.1);
+        distContVar2Class1.setCoeffParents(new double[]{-0.3});
+
+        System.out.println("--- Initial DBN ---");
         System.out.println(dbn.toString());
 
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dbn);
@@ -168,6 +186,8 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dbn.getDynamicDAG(), dataStream);
 
+
+        System.out.println("--- Learnt DBN ---");
         System.out.println(bnet.toString());
 
         //dataStream.stream().forEach(d -> System.out.println(d.getValue(dbn.getDynamicVariables().getVariable("ContinuousVar1")) + ", "+ d.getValue(dbn.getDynamicVariables().getVariable("ContinuousVar2"))));
