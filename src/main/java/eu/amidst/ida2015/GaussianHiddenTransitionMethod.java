@@ -42,6 +42,9 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
                 continue;
 
 
+            //if (paramVariable.getName().contains("_Beta0_"))
+            //    continue;
+
             EF_Normal prior = ((EF_BaseDistribution_MultinomialParents<EF_Normal>)bayesianNetwork.getDistribution(paramVariable)).getBaseEFDistribution(0);
 
             double varPrior = 1;
