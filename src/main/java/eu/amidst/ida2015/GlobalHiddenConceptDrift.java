@@ -1,9 +1,6 @@
 package eu.amidst.ida2015;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.io.DataStreamLoader;
@@ -418,10 +415,133 @@ public class GlobalHiddenConceptDrift {
     }
     public static void conceptDriftSeaLevelMultipleGlobalHidden(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
 
-        int windowSize = 1000;
+        int windowSizeModel = 100;
+        int windowSizeData = 100;
+        int count = windowSizeModel;
+        double avACC = 0;
+
+
+
+        NaiveBayesGaussianHiddenConceptDrift nb = new NaiveBayesGaussianHiddenConceptDrift();
+        nb.setConceptDriftDetector(NaiveBayesGaussianHiddenConceptDrift.DriftDetector.GLOBAL);
+        nb.setGlobalHidden(true);
+        nb.setNumberOfGlobalVars(1);
+        nb.setTransitionVariance(0.1);
+        nb.setWindowsSize(windowSizeModel);
+        nb.setData(data);
+
+        nb.initLearning();
+
+
+
+
+        Variable classVariable = nb.getClassVariable();
+
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSizeData)) {
+
+            BayesianNetwork initBN = nb.getLearntBayesianNetwork();
+            double accuracy = computeAccuracy(initBN, batch, classVariable);
+
+            if (true) {
+                double innerCount = 0;
+                for (DataInstance instance : batch) {
+                    //if (random.nextDouble()<0.9)
+                    //    instance.setValue(classVariable, Utils.missingValue());
+                    if (innerCount % 2 != 0)
+                        instance.setValue(classVariable, Utils.missingValue());
+
+                    innerCount++;
+                }
+            }
+
+            if (false) {
+                DataOnMemoryListContainer<DataInstance> newbatch = new DataOnMemoryListContainer(data.getAttributes());
+
+
+                double innerCount = 0;
+                for (DataInstance instance : batch) {
+                    //if (random.nextDouble()<0.9)
+                    //    instance.setValue(classVariable, Utils.missingValue());
+                    if (innerCount % 2 == 0)
+                        newbatch.add(instance);
+
+                    innerCount++;
+                }
+
+                batch = newbatch;
+            }
+
+            nb.updateModel(batch);
+
+
+            for (Variable hiddenVar :  nb.getHiddenVars()) {
+                Normal normal = nb.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                System.out.print(count + "\t" + normal.getMean());
+            }
+
+//            BayesianNetwork learntBN = nb.getLearntBayesianNetwork();
+//            Normal_MultinomialNormalParents dist1 = learntBN.getDistribution(at1);
+//            Normal_MultinomialNormalParents dist2 = learntBN.getDistribution(at2);
+//            Normal_MultinomialNormalParents dist3 = learntBN.getDistribution(at3);
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getIntercept());
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+
+            System.out.print("\t" + accuracy);
+            System.out.println();
+
+            count += windowSizeData;
+            avACC+= accuracy;
+
+        }
+
+        System.out.println(avACC/(count/windowSizeData));
+
+
+    }
+
+    public static void randomChangesMultipleGlobalHidden(String[] args) throws IOException {
+
+        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
+        BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayesWithGlobalHiddenVar(2, "Global");
+
+        naiveBayes.randomInitialization(new Random(0));
+
+        Variable globalHidden = naiveBayes.getStaticVariables().getVariableByName("Global");
+        Variable classVariable = naiveBayes.getStaticVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
+
+        for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
+            if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
+                continue;
+            Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+            newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+        }
+
+        System.out.println(naiveBayes.toString());
+
+        int windowSize =100;
+        int sampleSize = 5000;
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
+        sampler.setHiddenVar(globalHidden);
+        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
         int count = windowSize;
         double avACC = 0;
 
@@ -438,17 +558,12 @@ public class GlobalHiddenConceptDrift {
         nb.initLearning();
 
 
-
-
-        Variable classVariable = nb.getClassVariable();
-
-
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
             BayesianNetwork initBN = nb.getLearntBayesianNetwork();
             double accuracy = computeAccuracy(initBN, batch, classVariable);
 
-            if (true) {
+            if (false) {
                 double innerCount = 0;
                 for (DataInstance instance : batch) {
                     //if (random.nextDouble()<0.9)
@@ -460,7 +575,7 @@ public class GlobalHiddenConceptDrift {
                 }
             }
 
-            nb.updateModel(batch);
+             nb.updateModel(batch);
 
 
             for (Variable hiddenVar :  nb.getHiddenVars()) {
@@ -495,10 +610,86 @@ public class GlobalHiddenConceptDrift {
 
         }
 
+
+
+        for (int K = 1; K < 10; K++) {
+            //System.out.println("******************************** CONCEPT DRIFT ********************************");
+            naiveBayes.randomInitialization(new Random(K + 1));
+
+            for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
+                if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
+                    continue;
+                Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+                newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+                newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            }
+
+            //System.out.println(naiveBayes.toString());
+
+            sampler = new BayesianNetworkSampler(naiveBayes);
+            sampler.setHiddenVar(globalHidden);
+            data = sampler.sampleToDataBase(sampleSize);
+
+            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+
+                BayesianNetwork initBN = nb.getLearntBayesianNetwork();
+                double accuracy = computeAccuracy(initBN, batch, classVariable);
+
+                if (false) {
+                    double innerCount = 0;
+                    for (DataInstance instance : batch) {
+                        //if (random.nextDouble()<0.9)
+                        //    instance.setValue(classVariable, Utils.missingValue());
+                        if (count > 1000 && innerCount % 10 != 0)
+                            instance.setValue(classVariable, Utils.missingValue());
+
+                        innerCount++;
+                    }
+                }
+
+                nb.updateModel(batch);
+
+
+                for (Variable hiddenVar :  nb.getHiddenVars()) {
+                    Normal normal = nb.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                    System.out.print(count + "\t" + normal.getMean());
+                }
+
+//            BayesianNetwork learntBN = nb.getLearntBayesianNetwork();
+//            Normal_MultinomialNormalParents dist1 = learntBN.getDistribution(at1);
+//            Normal_MultinomialNormalParents dist2 = learntBN.getDistribution(at2);
+//            Normal_MultinomialNormalParents dist3 = learntBN.getDistribution(at3);
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getIntercept());
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+
+                System.out.print("\t" + accuracy);
+                System.out.println();
+
+                count += windowSize;
+                avACC+= accuracy;
+
+            }
+
+        }
+
+
         System.out.println(avACC/(count/windowSize));
 
 
     }
+
 
     public static void conceptDriftSeaLevel(String[] args) throws IOException {
 
@@ -523,16 +714,17 @@ public class GlobalHiddenConceptDrift {
 
         System.out.println(dag.toString());
 
-        int windowSize = 1000;
+        int windowSize = 500;
         int count = windowSize;
+        int windowSizeData = 1000;
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
-        svb.setParallelMode(true);
+        svb.setParallelMode(false);
         svb.setRandomRestart(false);
         svb.setSeed(1);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
-        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.1));
+        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.000001));
         svb.setWindowsSize(windowSize);
         svb.setDAG(dag);
         svb.initLearning();
@@ -542,7 +734,7 @@ public class GlobalHiddenConceptDrift {
         Random random  = new Random(0);
         double acumLL = 0;
         double avACC = 0;
-        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSizeData)) {
 
             BayesianNetwork initBN = svb.getLearntBayesianNetwork();
             double accuracy = computeAccuracy(initBN, batch, classVariable);
@@ -552,7 +744,7 @@ public class GlobalHiddenConceptDrift {
                 for (DataInstance instance : batch) {
                     //if (random.nextDouble()<0.9)
                     //    instance.setValue(classVariable, Utils.missingValue());
-                    if (count > 1000 && innerCount % 10 != 0)
+                    if (innerCount % 2 != 0)
                         instance.setValue(classVariable, Utils.missingValue());
 
                     innerCount++;
@@ -791,14 +983,14 @@ public class GlobalHiddenConceptDrift {
 
         DAG dag = new DAG(variables);
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 1; i < 3; i++) {
             Variable att = variables.getVariableById(i);
             dag.getParentSet(att).addParent(classVariable);
             dag.getParentSet(att).addParent(globalHidden);
             //dag.getParentSet(att).addParent(localVariable);
         }
         //dag.getParentSet(localVariable).addParent(classVariable);
-
+ 
         System.out.println(dag.toString());
 
         int windowSize = 1460;
@@ -808,17 +1000,24 @@ public class GlobalHiddenConceptDrift {
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
-        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 1, 5));
+        svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.1));
         svb.setWindowsSize(windowSize);
         svb.setDAG(dag);
         svb.initLearning();
 
         //System.out.println(svb.getLearntBayesianNetwork().toString());
 
+        int countMonth = 0;
         Random random = new Random(0);
         double acumLL = 0;
         double avAcc = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+
+            //if (countMonth<12) {
+            //    countMonth++;
+            //    continue;
+            //}
+
 
             double accuracy = computeAccuracy(svb.getLearntBayesianNetwork(), batch, classVariable);
 
@@ -840,6 +1039,7 @@ public class GlobalHiddenConceptDrift {
             avAcc += accuracy;
         }
 
+        System.out.println(svb.getLearntBayesianNetwork().toString());
         System.out.println(avAcc/(count/windowSize));
 
     }
@@ -972,7 +1172,11 @@ public class GlobalHiddenConceptDrift {
 
     public static void main(String[] args) throws IOException {
         //GlobalHiddenConceptDrift.conceptDriftWithRandomChangesMissingLabels(args);
-        GlobalHiddenConceptDrift.conceptDriftSeaLevelMultipleGlobalHidden(args);
+        //GlobalHiddenConceptDrift.randomChangesMultipleGlobalHidden(args);
+        //GlobalHiddenConceptDrift.conceptDriftSeaLevelMultipleGlobalHidden(args);
         //GlobalHiddenConceptDrift.conceptDriftHyperplane(args);
+        GlobalHiddenConceptDrift.conceptDriftElectricyt(args);
+
+
     }
 }
