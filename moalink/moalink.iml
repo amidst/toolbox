@@ -18,6 +18,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math:2.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:8.1.14.v20131031" level="project" />
+    <orderEntry type="library" name="Maven: nz.ac.waikato.cms.weka:weka-dev:3.7.12" level="project" />
   </component>
 </module>
 
