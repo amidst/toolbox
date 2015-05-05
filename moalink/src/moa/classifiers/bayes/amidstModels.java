@@ -219,7 +219,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         nb_.initLearning();
 
         List<Attribute> attributesExtendedList = new ArrayList<>(attributes_.getList());
-        if(TIME_ID != null && SEQUENCE_ID != null) {
+        if(TIME_ID != null) {
             attributesExtendedList.add(TIME_ID);
             attributesExtendedList.add(SEQUENCE_ID);
             dynamicFlag = true;
