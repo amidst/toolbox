@@ -3,7 +3,6 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -40,9 +39,14 @@ public class IndicatorDistribution extends ConditionalDistribution {
         return indicatorVar;
     }
 
+    @Override
+    public double[] getParameters() {
+        return new double[this.getNumberOfParameters()];
+    }
+
     //TODO: I'm not sure about how to compute this
     @Override
-    public int getNumberOfFreeParameters() {
+    public int getNumberOfParameters() {
         return 0;
     }
 

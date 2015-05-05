@@ -14,7 +14,6 @@
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
@@ -120,10 +119,15 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
 
     @Override
-    public int getNumberOfFreeParameters() {
+    public double[] getParameters() {
+        return this.base.getParameters();
+    }
+
+    @Override
+    public int getNumberOfParameters() {
         int n = 0;
         for (Multinomial dist : this.getMultinomialDistributions()) {
-            n += dist.getNumberOfFreeParameters();
+            n += dist.getNumberOfParameters();
         }
         return n;
     }

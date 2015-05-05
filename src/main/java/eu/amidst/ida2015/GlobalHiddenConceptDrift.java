@@ -990,7 +990,7 @@ public class GlobalHiddenConceptDrift {
             //dag.getParentSet(att).addParent(localVariable);
         }
         //dag.getParentSet(localVariable).addParent(classVariable);
- 
+
         System.out.println(dag.toString());
 
         int windowSize = 1460;
@@ -1169,14 +1169,116 @@ public class GlobalHiddenConceptDrift {
 
 
 
+    public static void conceptDriftIDA2015(String[] args) throws IOException {
+
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+
+
+        int windowSizeModel = 100;
+        int windowSizeData = 100;
+        int count = windowSizeModel;
+        double avACC = 0;
+
+
+
+        NaiveBayesGaussianHiddenConceptDrift nb = new NaiveBayesGaussianHiddenConceptDrift();
+        nb.setConceptDriftDetector(NaiveBayesGaussianHiddenConceptDrift.DriftDetector.GLOBAL);
+        nb.setGlobalHidden(true);
+        nb.setNumberOfGlobalVars(1);
+        nb.setTransitionVariance(0.1);
+        nb.setWindowsSize(windowSizeModel);
+        nb.setData(data);
+
+        nb.initLearning();
+
+
+
+
+        Variable classVariable = nb.getClassVariable();
+
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSizeData)) {
+
+            BayesianNetwork initBN = nb.getLearntBayesianNetwork();
+            double accuracy = computeAccuracy(initBN, batch, classVariable);
+
+            if (false) {
+                double innerCount = 0;
+                for (DataInstance instance : batch) {
+                    //if (random.nextDouble()<0.9)
+                    //    instance.setValue(classVariable, Utils.missingValue());
+                    if (innerCount % 2 != 0)
+                        instance.setValue(classVariable, Utils.missingValue());
+
+                    innerCount++;
+                }
+            }
+
+            if (false) {
+                DataOnMemoryListContainer<DataInstance> newbatch = new DataOnMemoryListContainer(data.getAttributes());
+
+
+                double innerCount = 0;
+                for (DataInstance instance : batch) {
+                    //if (random.nextDouble()<0.9)
+                    //    instance.setValue(classVariable, Utils.missingValue());
+                    if (innerCount % 2 == 0)
+                        newbatch.add(instance);
+
+                    innerCount++;
+                }
+
+                batch = newbatch;
+            }
+
+            nb.updateModel(batch);
+
+
+            for (Variable hiddenVar :  nb.getHiddenVars()) {
+                Normal normal = nb.getSvb().getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+                System.out.print(count + "\t" + normal.getMean());
+            }
+
+//            BayesianNetwork learntBN = nb.getLearntBayesianNetwork();
+//            Normal_MultinomialNormalParents dist1 = learntBN.getDistribution(at1);
+//            Normal_MultinomialNormalParents dist2 = learntBN.getDistribution(at2);
+//            Normal_MultinomialNormalParents dist3 = learntBN.getDistribution(at3);
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getIntercept());
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getIntercept());
+//
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
+//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
+
+            System.out.print("\t" + accuracy);
+            System.out.println();
+
+            count += windowSizeData;
+            avACC+= accuracy;
+
+        }
+
+        System.out.println(avACC/(count/windowSizeData));
+
+
+    }
+
 
     public static void main(String[] args) throws IOException {
         //GlobalHiddenConceptDrift.conceptDriftWithRandomChangesMissingLabels(args);
         //GlobalHiddenConceptDrift.randomChangesMultipleGlobalHidden(args);
         //GlobalHiddenConceptDrift.conceptDriftSeaLevelMultipleGlobalHidden(args);
         //GlobalHiddenConceptDrift.conceptDriftHyperplane(args);
-        GlobalHiddenConceptDrift.conceptDriftElectricyt(args);
-
+        //GlobalHiddenConceptDrift.conceptDriftElectricyt(args);
+        GlobalHiddenConceptDrift.conceptDriftIDA2015(args);
 
     }
 }

@@ -197,7 +197,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         for (Variable var: bn.getStaticVariables()){
             importanceSampling.runInference();
             System.out.println("Posterior of " + var.getName() + ":" + importanceSampling.getPosterior(var).toString());
-            //System.out.println("Posterior (VMP) of " + var.getName() + ":" + vmp.getPosterior(var).toString());
+            System.out.println("Posterior (VMP) of " + var.getName() + ":" + vmp.getPosterior(var).toString());
         }
 
 

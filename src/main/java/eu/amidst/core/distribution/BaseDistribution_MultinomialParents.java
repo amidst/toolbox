@@ -164,8 +164,22 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
     }
 
     @Override
-    public int getNumberOfFreeParameters() {
-        return this.baseDistributions.stream().mapToInt(dist -> dist.getNumberOfFreeParameters()).sum();
+    public double[] getParameters() {
+
+        double[] param = new double[this.getNumberOfParameters()];
+
+        int count = 0;
+        for (int i = 0; i < this.getNumberOfBaseDistributions(); i++) {
+            System.arraycopy(this.getBaseDistribution(i).getParameters(), 0, param, count, this.getBaseDistribution(i).getNumberOfParameters());
+            count+=this.getBaseDistribution(i).getNumberOfParameters();
+        }
+
+        return param;
+    }
+
+    @Override
+    public int getNumberOfParameters() {
+        return this.baseDistributions.stream().mapToInt(dist -> dist.getNumberOfParameters()).sum();
     }
 
     @Override

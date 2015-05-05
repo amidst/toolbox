@@ -25,7 +25,12 @@ public class Uniform extends UnivariateDistribution {
     }
 
     @Override
-    public int getNumberOfFreeParameters() {
+    public double[] getParameters() {
+        return new double[this.getNumberOfParameters()];
+    }
+
+    @Override
+    public int getNumberOfParameters() {
         //Discrete uniform needs 1 parameter (number of states of the variable)
         //Continuous uniform needs 2 parameters (minimum and maximum interval)
         return 0; //????
