@@ -152,8 +152,18 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
 
 
     @Override
+    public double[] getParameters() {
+        double[] param = new double[this.getNumberOfParameters()];
+
+        param[0]=this.intercept;
+        System.arraycopy(this.coeffParents,0, param,1, this.coeffParents.length);
+
+        return param;
+    }
+
+    @Override
     //Note that the intercept has not been included as a free parameter.
-    public int getNumberOfFreeParameters() {
+    public int getNumberOfParameters() {
         return(coeffParents.length + 1);
     }
 

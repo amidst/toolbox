@@ -77,6 +77,23 @@ public final class BayesianNetwork implements Serializable {
     // }
 
 
+    public double[] getParameters(){
+
+        int size = this.distributions.stream().mapToInt(dist -> dist.getNumberOfParameters()).sum();
+
+        double[] param = new double[size];
+
+        int count = 0;
+
+        for (Distribution dist : this.distributions){
+            System.arraycopy(dist.getParameters(), 0, param, count, dist.getNumberOfParameters());
+            count+=dist.getNumberOfParameters();
+        }
+
+        return param;
+    }
+
+
     private void initializeDistributions() {
 
 

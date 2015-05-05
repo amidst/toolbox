@@ -10,7 +10,6 @@
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.exponentialfamily.EF_Normal;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.variables.Variable;
 
@@ -80,7 +79,12 @@ public class Normal extends UnivariateDistribution {
 
 
     @Override
-    public int getNumberOfFreeParameters() {
+    public double[] getParameters() {
+        return new double[]{this.mean, this.getVariance()};
+    }
+
+    @Override
+    public int getNumberOfParameters() {
         return 2;
     }
 

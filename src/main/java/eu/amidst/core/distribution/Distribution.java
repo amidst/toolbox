@@ -18,7 +18,9 @@ public abstract class Distribution implements Serializable {
     protected Variable var;
 
 
-    public abstract int getNumberOfFreeParameters();
+    public abstract double[] getParameters();
+
+    public abstract int getNumberOfParameters();
 
     /**
      * Gets the variable of the distribution
