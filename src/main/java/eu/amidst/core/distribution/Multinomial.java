@@ -12,7 +12,6 @@
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
@@ -51,8 +50,15 @@ public class Multinomial extends UnivariateDistribution  {
     }
 
     @Override
-    public int getNumberOfFreeParameters() {
-        return probabilities.length-1;
+    public double[] getParameters() {
+        double[] param = new double[this.getNumberOfParameters()];
+        System.arraycopy(this.probabilities, 0, param, 0, this.probabilities.length);
+        return param;
+    }
+
+    @Override
+    public int getNumberOfParameters() {
+        return probabilities.length;
     }
 
     /**

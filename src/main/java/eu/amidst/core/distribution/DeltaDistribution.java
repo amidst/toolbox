@@ -31,7 +31,12 @@ public class DeltaDistribution extends UnivariateDistribution {
     }
 
     @Override
-    public int getNumberOfFreeParameters() {
+    public double[] getParameters() {
+        return new double[1];
+    }
+
+    @Override
+    public int getNumberOfParameters() {
         return 1;
     }
 

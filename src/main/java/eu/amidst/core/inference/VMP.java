@@ -308,7 +308,7 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
         System.out.println(bn.getNumberOfVars());
-        System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfFreeParameters()).max().getAsInt());
+        System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfParameters()).max().getAsInt());
 
         VMP vmp = new VMP();
         //vmp.setSeed(10);

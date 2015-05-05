@@ -105,10 +105,15 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
 
     @Override
-    public int getNumberOfFreeParameters() {
+    public double[] getParameters() {
+        return this.base.getParameters();
+    }
+
+    @Override
+    public int getNumberOfParameters() {
         int n=0;
         for(ConditionalLinearGaussian dist:this.getDistribution()){
-            n+= dist.getNumberOfFreeParameters();
+            n+= dist.getNumberOfParameters();
         }
         return n;
     }
