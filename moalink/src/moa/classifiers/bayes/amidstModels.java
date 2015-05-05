@@ -320,6 +320,12 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
                 System.out.print("\t" + normal.getMean());
             }
             System.out.print("\t" + batchAccuracy);
+
+            double[] param = learntBN_.getParameters();
+            for (int i = 0; i < param.length; i++) {
+                System.out.print("\t"+param[i]);
+            }
+
             System.out.println();
         }
     }
@@ -379,6 +385,12 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
                     meanHiddenVars[i]=0;
                 }
                 System.out.print("\t" + accPerSeq/sizePerSeq +"\t" + ThresholdCurve.getPRCArea(tcurve) +"\t" + ThresholdCurve.getROCArea(tcurve));
+
+                double[] param = learntBN_.getParameters();
+                for (int i = 0; i < param.length; i++) {
+                    System.out.print("\t"+param[i]);
+                }
+
                 System.out.println();
 
                 predictions = new ArrayList<>();

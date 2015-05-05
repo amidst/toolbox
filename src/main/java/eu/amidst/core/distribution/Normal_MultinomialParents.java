@@ -1,12 +1,10 @@
 package eu.amidst.core.distribution;
 
 import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_Normal;
-import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
+import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.utils.MultinomialIndex;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,13 +54,16 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     }
 
 
-
+    @Override
+    public double[] getParameters() {
+        return this.base.getParameters();
+    }
 
     @Override
-    public int getNumberOfFreeParameters() {
+    public int getNumberOfParameters() {
         int n=0;
         for(Normal dist:this.getNormalDistributions()){
-            n+=dist.getNumberOfFreeParameters();
+            n+=dist.getNumberOfParameters();
         }
         return n;
     }
