@@ -1171,19 +1171,21 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftIDA2015(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
+        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/IDA2015 Artificial Data/HYP1.arff");
 
-
-        int windowSizeModel = 100;
-        int windowSizeData = 100;
+        int windowsSize = Integer.parseInt(args[1]);
+        int windowSizeModel = windowsSize;
+        int windowSizeData = windowsSize;
         int count = windowSizeModel;
         double avACC = 0;
 
-
+        boolean isNB = Integer.parseInt(args[2])==1;
 
         NaiveBayesGaussianHiddenConceptDrift nb = new NaiveBayesGaussianHiddenConceptDrift();
         nb.setConceptDriftDetector(NaiveBayesGaussianHiddenConceptDrift.DriftDetector.GLOBAL);
-        nb.setGlobalHidden(true);
+        nb.setGlobalHidden(!isNB);
         nb.setNumberOfGlobalVars(1);
         nb.setTransitionVariance(0.1);
         nb.setWindowsSize(windowSizeModel);
@@ -1279,6 +1281,7 @@ public class GlobalHiddenConceptDrift {
         //GlobalHiddenConceptDrift.conceptDriftHyperplane(args);
         //GlobalHiddenConceptDrift.conceptDriftElectricyt(args);
         GlobalHiddenConceptDrift.conceptDriftIDA2015(args);
+        //GlobalHiddenConceptDrift.conceptDriftSeaLevelFading(args);
 
     }
 }
