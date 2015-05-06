@@ -1,0 +1,26 @@
+DAG
+attr0 has 2 parent(s): {output, GlobalHidden_0}
+attr1 has 2 parent(s): {output, GlobalHidden_0}
+attr2 has 2 parent(s): {output, GlobalHidden_0}
+attr3 has 2 parent(s): {output, GlobalHidden_0}
+attr4 has 2 parent(s): {output, GlobalHidden_0}
+attr5 has 2 parent(s): {output, GlobalHidden_0}
+attr6 has 2 parent(s): {output, GlobalHidden_0}
+attr7 has 2 parent(s): {output, GlobalHidden_0}
+attr8 has 2 parent(s): {output, GlobalHidden_0}
+attr9 has 2 parent(s): {output, GlobalHidden_0}
+output has 0 parent(s): {}
+GlobalHidden_0 has 0 parent(s): {}
+
+Sample	GlobalHidden_0	 Accuracy
+1000	4.214674183312797	0.472
+2000	4.216539125249756	0.791
+3000	4.225751138182566	0.797
+4000	4.2169540231584	0.826
+5000	4.215281720832778	0.832
+6000	4.217362476261307	0.793
+7000	4.2094258585707065	0.816
+8000	4.205117758123023	0.797
+9000	4.21091456780047	0.791
+10000	4.201169189679685	0.815
+0.7027272727272728
