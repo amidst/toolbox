@@ -1,0 +1,26 @@
+DAG
+attr0 has 1 parent(s): {output}
+attr1 has 1 parent(s): {output}
+attr2 has 1 parent(s): {output}
+attr3 has 1 parent(s): {output}
+attr4 has 1 parent(s): {output}
+attr5 has 1 parent(s): {output}
+attr6 has 1 parent(s): {output}
+attr7 has 1 parent(s): {output}
+attr8 has 1 parent(s): {output}
+attr9 has 1 parent(s): {output}
+output has 0 parent(s): {}
+GlobalHidden_0 has 0 parent(s): {}
+
+Sample	GlobalHidden_0	 Accuracy
+1000	2.4659131695413303	0.479
+2000	2.4659131695413303	0.819
+3000	2.4659131695413303	0.846
+4000	2.4659131695413303	0.91
+5000	2.4659131695413303	0.931
+6000	2.4659131695413303	0.911
+7000	2.4659131695413303	0.882
+8000	2.4659131695413303	0.867
+9000	2.4659131695413303	0.874
+10000	2.4659131695413303	0.836
+0.7595454545454546

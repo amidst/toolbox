@@ -219,6 +219,8 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         for (Variable hiddenVar : this.hiddenVars) {
             System.out.print("\t" + hiddenVar.getName());
         }
+        System.out.print("\t Accuracy");
+
         System.out.println();
     }
 
