@@ -1,0 +1,1 @@
+SEA1 with default parameters with 10% Noise			SEA2 with default parameters with No Noise						HYP1 with numDriftAtts 0 and magChange0			HYP2 with numDriftAtts 5 and magChange 1			HYP3 with numDriftAtts 10 and magChange1						Waves1 with numberAttributesDrift 0			Waves2 with numberAttributesDrift 20			Waves3 with numberAttributesDrift 30			
