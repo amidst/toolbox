@@ -1241,26 +1241,14 @@ public class GlobalHiddenConceptDrift {
                 System.out.print(count + "\t" + normal.getMean());
             }
 
-//            BayesianNetwork learntBN = nb.getLearntBayesianNetwork();
-//            Normal_MultinomialNormalParents dist1 = learntBN.getDistribution(at1);
-//            Normal_MultinomialNormalParents dist2 = learntBN.getDistribution(at2);
-//            Normal_MultinomialNormalParents dist3 = learntBN.getDistribution(at3);
-//
-//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getIntercept());
-//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getIntercept());
-//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getIntercept());
-//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getIntercept());
-//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getIntercept());
-//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getIntercept());
-//
-//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
-//            System.out.print("\t" + dist1.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
-//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
-//            System.out.print("\t" + dist2.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
-//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]);
-//            System.out.print("\t" + dist3.getNormal_NormalParentsDistribution(1).getCoeffParents()[0]);
-
             System.out.print("\t" + accuracy);
+
+            double[] param = nb.getLearntBayesianNetwork().getParameters();
+            for (int i = 0; i < param.length; i++) {
+                System.out.print("\t"+param[i]);
+            }
+
+
             System.out.println();
 
             count += windowSizeData;
