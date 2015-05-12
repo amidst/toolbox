@@ -8,7 +8,7 @@ df = read.table(path, header=F, sep=",")
 meses <- as.yearmon(seq(ISOdate(2007,04,01), by = "month", length.out = 84))
 
 postscript(paste(path,".eps",sep=""), width=12.0 ,height=6.0, horizontal = FALSE, onefile = FALSE)
-plot(df$V1, type='l', ylab='',xlab='',
+plot(df$V1, type='l', ylab=expression(H^{t} ~ "variable"),xlab='',
 main='',col='black',xaxt="n")
 axis(1, at=seq(3,84,by=3), lab=meses[seq(3,84,by=3)], las=2)  
 abline(v = seq(3,84,by=3), col = "gray", lty = 2)
@@ -46,9 +46,9 @@ meses <- as.yearmon(seq(ISOdate(2007,04,01), by = "month", length.out = 84))
 trimester <- meses[seq(3, length(meses), 3)]
 
 postscript(paste("UnemployementRatesAlmeria.eps",sep=""), width=12.0 ,height=6.0, horizontal = FALSE, onefile = FALSE)
-plot(df$V1, type='l', ylab='',xlab='',
+plot(df$V1, type='l', ylab=expression(H^{t} ~ "variable"),xlab='',
      main='',col='black',xaxt="n")
-lines(df2$V1, col='blue', lty=2)
+#lines(df2$V1, col='blue', lty=2)
 axis(1, at=seq(1,length(df$V1),by=1), lab=trimester, las=2)  
 abline(v = seq(1,length(df$V1),by=1), col = "gray", lty = 2)
 dev.off()
@@ -83,7 +83,7 @@ meses <- as.yearmon(seq(ISOdate(2007,04,01), by = "month", length.out = 84))
 postscript("correlationLine.eps", width=12.0 ,height=6.0, horizontal = FALSE, onefile = FALSE)
 #Unemployment Spain
 linReg <- lm(df2$V1~df3$V1)
-plot(df3$V1,df2$V1, type='p', ylab='',xlab='',
+plot(df3$V1,df2$V1, type='p', ylab=expression(H^{t} ~ "variable"),xlab='Unemployement rate',
      main='',col='black')
 abline(linReg)
 unemploymentSpain <- df3$V1
@@ -92,6 +92,18 @@ pearsonCC <- cor(unemploymentSpain,globalHSpain)
 spearmanCC <- cor(unemploymentSpain,globalHSpain,method="spearman")
 dev.off()
 
+
+#Unemployment in Almeria
+postscript("correlationLine.eps", width=12.0 ,height=6.0, horizontal = FALSE, onefile = FALSE)
+linReg <- lm(df2$V1~df$V1)
+plot(df$V1,df2$V1, type='p', ylab=expression(H^{t} ~ "variable"),xlab='Unemployement rate',
+     main='',col='black')
+abline(linReg)
+unemploymentAlmeria <- df$V1
+globalHSpain <- df2$V1
+pearsonCC <- cor(unemploymentAlmeria,globalHSpain)
+spearmanCC <- cor(unemploymentAlmeria,globalHSpain,method="spearman")
+dev.off()
 
 
 RM <-c(2,4,6,8,10,12,14)
