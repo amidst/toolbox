@@ -26,6 +26,7 @@ import java.util.Random;
  */
 public class BaseDistribution_MultinomialParents<E extends Distribution> extends ConditionalDistribution {
 
+    private static final long serialVersionUID = 1925974195497958093L;
     /**
      * The list of multinomial parents
      */
