@@ -293,6 +293,15 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
             dynamicNB.randomInitialization(new Random(i+10));
 
+
+            ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
+            //distA.setIntercept(0.4);
+            distA.setCoeffParents(new double[]{0.4});
+
+            ConditionalLinearGaussian distB = dynamicNB.getConditionalDistributionTimeT(varB);
+            //distB.setIntercept(0.4);
+            distB.setCoeffParents(new double[]{0.6});
+
             //ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
             //distA.setIntercept(0.0);
             //distA.setCoeffParents(new double[]{1.0});
@@ -311,7 +320,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
             //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
 
-            DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(2, 1000);
+            DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(2, 10000);
 
 
             //Structure learning is excluded from the test, i.e., we use directly the initial Dynamic Naive Bayes network structure
@@ -338,7 +347,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
                 // time T
                 System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
                 System.out.println("\nLearned distribution at time T:\n" + bnet.getDistributionTimeT(var));
-                assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.2));
+                assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.3));
             }
 
             System.out.println();
@@ -367,7 +376,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
                 // time T
                 System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
                 System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.2));
+                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.3));
             }
             System.out.println();
             System.out.println();
@@ -540,13 +549,13 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
             dynamicNB.randomInitialization(new Random(i+10));
 
-            //ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
-            //distA.setIntercept(0.0);
-            //distA.setCoeffParents(new double[]{1.0});
+            ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
+            distA.setIntercept(0.4);
+            distA.setCoeffParents(new double[]{0.7});
 
             ConditionalLinearGaussian distB = dynamicNB.getConditionalDistributionTimeT(varB);
-            distB.setIntercept(0.0);
-            distB.setCoeffParents(new double[]{1.0});
+            distB.setIntercept(0.3);
+            distB.setCoeffParents(new double[]{0.5});
             distB.setVariance(0.1);
 
             System.out.println(dynamicNB.getDynamicDAG().toString());
@@ -561,7 +570,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
             //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
 
-            DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(20, 500);
+            DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(20, 5000);
 
 
             //Structure learning is excluded from the test, i.e., we use directly the initial Dynamic Naive Bayes network structure
