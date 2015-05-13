@@ -133,33 +133,47 @@ public class BNConverterToHuginTest {
         //Variable I
         Normal_MultinomialNormalParents distI = bn.getDistribution(I);
         distI.getNormal_NormalParentsDistribution(0).setIntercept(0.5);
-        distI.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.25,0.4});
+        //distI.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.25,0.4});
+        distI.getNormal_NormalParentsDistribution(0).setCoeffForParent(C, 0.25);
+        distI.getNormal_NormalParentsDistribution(0).setCoeffForParent(D, 0.4);
         distI.getNormal_NormalParentsDistribution(0).setVariance(0.81);
 
         distI.getNormal_NormalParentsDistribution(1).setIntercept(-0.1);
-        distI.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-0.5,0.2});
+        //distI.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-0.5,0.2});
+        distI.getNormal_NormalParentsDistribution(1).setCoeffForParent(C, -0.5);
+        distI.getNormal_NormalParentsDistribution(1).setCoeffForParent(D, 0.2);
         distI.getNormal_NormalParentsDistribution(1).setVariance(0.36);
 
         distI.getNormal_NormalParentsDistribution(2).setIntercept(2.1);
-        distI.getNormal_NormalParentsDistribution(2).setCoeffParents(new double[]{1.2,-0.3});
+        //distI.getNormal_NormalParentsDistribution(2).setCoeffParents(new double[]{1.2, -0.3});
+        distI.getNormal_NormalParentsDistribution(2).setCoeffForParent(C, 1.2);
+        distI.getNormal_NormalParentsDistribution(2).setCoeffForParent(D, -0.3);
         distI.getNormal_NormalParentsDistribution(2).setVariance(1.21);
 
         distI.getNormal_NormalParentsDistribution(3).setIntercept(2.1);
-        distI.getNormal_NormalParentsDistribution(3).setCoeffParents(new double[]{1.25,0.9});
+        //distI.getNormal_NormalParentsDistribution(3).setCoeffParents(new double[]{1.25, 0.9});
+        distI.getNormal_NormalParentsDistribution(3).setCoeffForParent(C, 1.25);
+        distI.getNormal_NormalParentsDistribution(3).setCoeffForParent(D, 0.9);
         distI.getNormal_NormalParentsDistribution(3).setVariance(0.9025);
 
         distI.getNormal_NormalParentsDistribution(4).setIntercept(1.5);
-        distI.getNormal_NormalParentsDistribution(4).setCoeffParents(new double[]{-0.41,0.5});
+        //distI.getNormal_NormalParentsDistribution(4).setCoeffParents(new double[]{-0.41, 0.5});
+        distI.getNormal_NormalParentsDistribution(4).setCoeffForParent(C, -0.41);
+        distI.getNormal_NormalParentsDistribution(4).setCoeffForParent(D, 0.5);
         distI.getNormal_NormalParentsDistribution(4).setVariance(2.25);
 
         distI.getNormal_NormalParentsDistribution(5).setIntercept(0);
-        distI.getNormal_NormalParentsDistribution(5).setCoeffParents(new double[]{0.0,0.3});
+        //distI.getNormal_NormalParentsDistribution(5).setCoeffParents(new double[]{0.0,0.3});
+        distI.getNormal_NormalParentsDistribution(5).setCoeffForParent(C, 0.0);
+        distI.getNormal_NormalParentsDistribution(5).setCoeffForParent(D, 0.3);
         distI.getNormal_NormalParentsDistribution(5).setVariance(0.0625);
 
         //Variable G
         ConditionalLinearGaussian distG  = bn.getDistribution(G);
         distG.setIntercept(0.7);
-        distG.setCoeffParents(new double[]{0.3,-0.8});
+        //distG.setCoeffParents(new double[]{0.3,-0.8});
+        distG.setCoeffForParent(C, 0.3);
+        distG.setCoeffForParent(D, -0.8);
         distG.setVariance(0.81);
 
 
