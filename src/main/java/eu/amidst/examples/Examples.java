@@ -82,10 +82,10 @@ public class Examples {
 
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
 
-        Variable A = dynamicVariables.getVariable("A");
-        Variable B = dynamicVariables.getVariable("B");
-        Variable C = dynamicVariables.getVariable("C");
-        Variable D = dynamicVariables.getVariable("D");
+        Variable A = dynamicVariables.getVariableByName("A");
+        Variable B = dynamicVariables.getVariableByName("B");
+        Variable C = dynamicVariables.getVariableByName("C");
+        Variable D = dynamicVariables.getVariableByName("D");
 
         Variable H = dynamicVariables.newMultinomialDynamicVariable("H",Arrays.asList("TRUE", "FALSE"));
 

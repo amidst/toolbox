@@ -66,14 +66,14 @@ public final class CajaMarModels {
          */
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
 
-        Variable defaulter = dynamicVariables.getVariable("DEFAULTER");
-        Variable sex = dynamicVariables.getVariable("SEX");
-        Variable creditCard = dynamicVariables.getVariable("CREDITCARD");
-        Variable balance = dynamicVariables.getVariable("BALANCE");
-        Variable withDraw = dynamicVariables.getVariable("WITHDRAW");
-        Variable salary = dynamicVariables.getVariable("SALARY");
-        Variable monthlyBalance = dynamicVariables.getVariable("MONTHLYBALANCE");
-        Variable movements = dynamicVariables.getVariable("MOVEMENTS");
+        Variable defaulter = dynamicVariables.getVariableByName("DEFAULTER");
+        Variable sex = dynamicVariables.getVariableByName("SEX");
+        Variable creditCard = dynamicVariables.getVariableByName("CREDITCARD");
+        Variable balance = dynamicVariables.getVariableByName("BALANCE");
+        Variable withDraw = dynamicVariables.getVariableByName("WITHDRAW");
+        Variable salary = dynamicVariables.getVariableByName("SALARY");
+        Variable monthlyBalance = dynamicVariables.getVariableByName("MONTHLYBALANCE");
+        Variable movements = dynamicVariables.getVariableByName("MOVEMENTS");
 
 
         /**
