@@ -115,6 +115,26 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
     }
 
     /**
+     * Sets the coefficients of the distribution for a particular variable
+     * @param parentVar A parent variable.
+     * @param coeff Beta value for the parent variable.
+     */
+    public void setCoeffForParent(Variable parentVar, double coeff) {
+
+        int parentIndex = -1;
+        for(int i=0; i<parents.size(); i++){
+            Variable parent = parents.get(i);
+            if(parentVar.equals(parent)){
+                parentIndex = i;
+                break;
+            }
+        }
+        if(parentIndex == -1)
+            throw new UnsupportedOperationException("Variable "+parentVar.getName()+" is not in the list of parents");
+        this.coeffParents[parentIndex] = coeff;
+    }
+
+    /**
      * Gets the standard deviation of the variable.
      * @return A <code>double</code> value with the standard deviation.
      */
