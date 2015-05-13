@@ -63,7 +63,8 @@ public class VMPNormalTest extends TestCase {
         distA.setMean(1);
         distA.setVariance(0.25);
         distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varA, 1);
         distB.setVariance(0.25);
 
         System.out.println(bn.toString());
@@ -151,7 +152,9 @@ public class VMPNormalTest extends TestCase {
         distB.setVariance(0.64);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1, 1});
+        //distC.setCoeffParents(new double[]{1, 1});
+        distC.setCoeffForParent(varA, 1);
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
         System.out.println(bn.toString());
@@ -258,7 +261,9 @@ public class VMPNormalTest extends TestCase {
         distB.setVariance(0.64);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1, 1});
+        //distC.setCoeffParents(new double[]{1, 1});
+        distC.setCoeffForParent(varA, 1);
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
         System.out.println(bn.toString());
@@ -351,11 +356,13 @@ public class VMPNormalTest extends TestCase {
         Normal distC = bn.getDistribution(varC);
 
         distA.setIntercept(1);
-        distA.setCoeffParents(new double[]{1});
+        //distA.setCoeffParents(new double[]{1});
+        distA.setCoeffForParent(varC, 1);
         distA.setVariance(0.25);
 
         distB.setIntercept(1.5);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varC, 1);
         distB.setVariance(0.64);
 
         distC.setMean(1);
@@ -456,11 +463,13 @@ public class VMPNormalTest extends TestCase {
         Normal distC = bn.getDistribution(varC);
 
         distA.setIntercept(1);
-        distA.setCoeffParents(new double[]{1});
+        //distA.setCoeffParents(new double[]{1});
+        distA.setCoeffForParent(varC, 1);
         distA.setVariance(0.25);
 
         distB.setIntercept(1.5);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varC, 1);
         distB.setVariance(0.64);
 
         distC.setMean(1);
@@ -549,11 +558,13 @@ public class VMPNormalTest extends TestCase {
         distA.setVariance(0.25);
 
         distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varA, 1);
         distB.setVariance(0.04);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1});
+        //distC.setCoeffParents(new double[]{1});
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
 
@@ -656,11 +667,13 @@ public class VMPNormalTest extends TestCase {
         distA.setVariance(0.25);
 
         distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varA, 1);
         distB.setVariance(0.04);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1});
+        //distC.setCoeffParents(new double[]{1});
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
 
