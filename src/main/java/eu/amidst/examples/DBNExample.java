@@ -30,12 +30,12 @@ public class DBNExample {
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
-        Variable A = dynamicVariables.getVariable("A");
-        Variable B = dynamicVariables.getVariable("B");
-        Variable C = dynamicVariables.getVariable("C");
-        Variable D = dynamicVariables.getVariable("D");
-        Variable E = dynamicVariables.getVariable("E");
-        Variable G = dynamicVariables.getVariable("G");
+        Variable A = dynamicVariables.getVariableByName("A");
+        Variable B = dynamicVariables.getVariableByName("B");
+        Variable C = dynamicVariables.getVariableByName("C");
+        Variable D = dynamicVariables.getVariableByName("D");
+        Variable E = dynamicVariables.getVariableByName("E");
+        Variable G = dynamicVariables.getVariableByName("G");
 
         Variable A_TClone = dynamicVariables.getInterfaceVariable(A);
         Variable B_TClone = dynamicVariables.getInterfaceVariable(B);
@@ -181,12 +181,12 @@ public class DBNExample {
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
-        Variable A = dynamicVariables.getVariable("A");
-        Variable B = dynamicVariables.getVariable("B");
-        Variable C = dynamicVariables.getVariable("C");
-        Variable D = dynamicVariables.getVariable("D");
-        Variable E = dynamicVariables.getVariable("E");
-        Variable G = dynamicVariables.getVariable("G");
+        Variable A = dynamicVariables.getVariableByName("A");
+        Variable B = dynamicVariables.getVariableByName("B");
+        Variable C = dynamicVariables.getVariableByName("C");
+        Variable D = dynamicVariables.getVariableByName("D");
+        Variable E = dynamicVariables.getVariableByName("E");
+        Variable G = dynamicVariables.getVariableByName("G");
 
         Variable A_TClone = dynamicVariables.getInterfaceVariable(A);
 
