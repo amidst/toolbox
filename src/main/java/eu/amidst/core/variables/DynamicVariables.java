@@ -305,16 +305,6 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return this.allVariables.size();
     }
 
-
-    public Variable getVariable(String name) {
-        for(Variable var: this){
-            if(var.getName().equals(name)) {
-                return var;
-            }
-        }
-        throw new UnsupportedOperationException("Variable "+name+" is not part of the list of Variables");
-    }
-
     public void block(){
         this.allVariables = Collections.unmodifiableList(this.allVariables);
     }

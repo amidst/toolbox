@@ -370,9 +370,9 @@ public class MLDBNTest {
             dynamicNB.randomInitialization(new Random(i));
 
             ConditionalLinearGaussian distVarA = dynamicNB.getConditionalDistributionTimeT(varA);
-            distVarA.setCoeffParents(new double[]{1.3});
+            distVarA.setCoeffForParent(dynamicVariables.getInterfaceVariable(varA),1.3);
             ConditionalLinearGaussian distVarB = dynamicNB.getConditionalDistributionTimeT(varB);
-            distVarB.setCoeffParents(new double[]{-2.3});
+            distVarB.setCoeffForParent(dynamicVariables.getInterfaceVariable(varB),-2.3);
 
 
             System.out.println(dynamicNB.getDynamicDAG().toString());
