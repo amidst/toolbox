@@ -551,15 +551,15 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             //The number of states for the class variable is equal to 2
             DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
 
-            dynamicNB.randomInitialization(new Random(i+10));
+            dynamicNB.randomInitialization(new Random(i + 10));
 
             ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
             distA.setIntercept(0.4);
-            distA.setCoeffParents(new double[]{0.7});
+            distA.setCoeffForParent(dynamicVariables.getInterfaceVariable(varA), 0.7);
 
             ConditionalLinearGaussian distB = dynamicNB.getConditionalDistributionTimeT(varB);
             distB.setIntercept(0.3);
-            distB.setCoeffParents(new double[]{0.5});
+            distB.setCoeffForParent(varA, 0.5);
             distB.setVariance(0.1);
 
             System.out.println(dynamicNB.getDynamicDAG().toString());
@@ -661,17 +661,17 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             //The number of states for the class variable is equal to 2
             DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
 
-            dynamicNB.randomInitialization(new Random(i+10));
+            dynamicNB.randomInitialization(new Random(i + 10));
 
             ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
             distA.setIntercept(0.0);
-            distA.setCoeffParents(new double[]{1.0});
+            distA.setCoeffForParent(dynamicVariables.getInterfaceVariable(varA), 1);
             distA.setVariance(0.000001);
 
 
             ConditionalLinearGaussian distB = dynamicNB.getConditionalDistributionTimeT(varB);
             distB.setIntercept(0.0);
-            distB.setCoeffParents(new double[]{1.0});
+            distB.setCoeffForParent(varA, 1);
             distB.setVariance(0.000001);
 
             System.out.println(dynamicNB.getDynamicDAG().toString());
