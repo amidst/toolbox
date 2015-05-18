@@ -21,7 +21,15 @@ import eu.amidst.core.variables.Variable;
  */
 public final class InferenceEngineForBN {
 
+    private enum InfAlg {VMP, EP};
+
+    InfAlg infAlg;
+
     private static InferenceAlgorithmForBN inferenceAlgorithmForBN = new VMP();
+
+    public static void setInfAlg(InfAlg infAlg) {
+        infAlg = infAlg;
+    }
 
     public static void setInferenceAlgorithmForBN(InferenceAlgorithmForBN inferenceAlgorithmForBN) {
         InferenceEngineForBN.inferenceAlgorithmForBN = inferenceAlgorithmForBN;
@@ -69,6 +77,8 @@ public final class InferenceEngineForBN {
 
         Variable varA = bn.getStaticVariables().getVariableById(1);
 
+
+        InferenceEngineForBN.setInfAlg(InfAlg.VMP);
         InferenceEngineForBN.setModel(bn);
         InferenceEngineForBN.setEvidence(assignment);
         InferenceEngineForBN.runInference();
@@ -76,5 +86,11 @@ public final class InferenceEngineForBN {
         Normal posteriorOfA = InferenceEngineForBN.getPosterior(varA);
 
         System.out.println("P(A|B=0.7) = " + posteriorOfA.toString());
+
+        InferenceAlgorithmForBN inf = new VMP();
+        inf.setModel(bn);
+        inf.setEvidence(assignment);
+        inf.runInference();
+        inf.getPosterior(varA);
     }
 }
