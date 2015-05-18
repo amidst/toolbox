@@ -8,12 +8,13 @@
 
 package eu.amidst.core.exponentialfamily;
 
-import org.apache.commons.math3.special.Gamma;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
+import org.apache.commons.math3.special.Gamma;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -32,6 +33,8 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         this.naturalParameters = this.createZeroedNaturalParameters();
         this.momentParameters = this.createZeroedMomentParameters();
 
+        this.parents = new ArrayList();
+
         for (int i = 0; i < nOfStates; i++) {
             this.naturalParameters.set(i,1.0);
         }
@@ -48,6 +51,8 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         this.nOfStates = var.getNumberOfStates();
         this.naturalParameters = this.createZeroedNaturalParameters();
         this.momentParameters = this.createZeroedMomentParameters();
+
+        this.parents = new ArrayList();
 
         for (int i = 0; i < nOfStates; i++) {
             this.naturalParameters.set(i,scale - 1);
@@ -111,6 +116,11 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     }
 
     @Override
+    public <E extends UnivariateDistribution> E toUnivariateDistribution() {
+        throw new UnsupportedOperationException("Dirichlet is not included yet in the Distributions package.");
+    }
+
+    @Override
     public void updateNaturalFromMomentParameters() {
         throw new UnsupportedOperationException("No Implemented. EF_Dirichlet distribution should (right now) only be used for learning.");
     }
@@ -127,6 +137,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
             this.momentParameters.set(i, Gamma.digamma(this.naturalParameters.get(i)) - Gamma.digamma(sumOfU_i));
         }
     }
+
 
     @Override
     public int sizeOfSufficientStatistics() {

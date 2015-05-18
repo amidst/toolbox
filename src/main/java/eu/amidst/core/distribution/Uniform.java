@@ -8,6 +8,7 @@
 
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.Variable;
 
 import java.util.Random;
@@ -54,7 +55,7 @@ public class Uniform extends UnivariateDistribution {
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist.getClass().getName().equals("eu.amidst.core.distribution.Uniform"))
-            return this.equalDist((DeltaDistribution)dist,threshold);
+            return this.equalDist((Uniform)dist,threshold);
         return false;
     }
 
@@ -70,4 +71,8 @@ public class Uniform extends UnivariateDistribution {
         return true;
     }
 
+    @Override
+    public <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution() {
+        throw new UnsupportedOperationException("This distribution is not supported yet in exponential form");
+    }
 }

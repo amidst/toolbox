@@ -8,7 +8,6 @@
 
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.ArrayVector;
@@ -17,7 +16,6 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -25,7 +23,7 @@ import java.util.Map;
  * //TODO suff. stats for first form to be implemented (if required)
  * Created by ana@cs.aau.dk on 27/02/15.
  */
-public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution{
+public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
 
 
     Variable dirichletVariable;
@@ -45,9 +43,6 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
         this.dirichletVariable = dirichletVariable;
         this.parents = new ArrayList<>();
         this.parents.add(dirichletVariable);
-
-        this.parametersParentVariables = new ArrayList();
-        this.parametersParentVariables.add(dirichletVariable);
 
     }
 
@@ -101,6 +96,12 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
     }
 
     @Override
+    public <E extends ConditionalDistribution> E toConditionalDistribution() {
+        throw new UnsupportedOperationException("This method does not make sense. Parameter variables can not be converted. Use instead" +
+                "public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables);");
+    }
+
+    @Override
     public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         throw new UnsupportedOperationException("No Implemented. This method is no really needed");
     }
@@ -141,15 +142,18 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalLearningDistribution
     }
 
     @Override
-    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
         Multinomial multinomial = new Multinomial(this.getVariable());
 
-        Vector vector = expectedParameters.get(this.dirichletVariable);
+        Vector vector = expectedValueParameterVariables.get(this.dirichletVariable);
 
         for (int i = 0; i < this.nOfStates; i++) {
             multinomial.setProbabilityOfState(i,vector.get(i));
 
         }
-        return new BaseDistribution_MultinomialParents<Multinomial>(new ArrayList(), Arrays.asList(multinomial));
+        return multinomial;
     }
+
+
+
 }

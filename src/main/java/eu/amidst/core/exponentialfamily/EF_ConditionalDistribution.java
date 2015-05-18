@@ -9,8 +9,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
@@ -34,7 +33,10 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
 
     public abstract NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable,MomentParameters> momentChildCoParents);
 
-    public <E extends ConditionalDistribution> E toConditionalDistribution(){
-        throw new UnsupportedOperationException("This EF distribution is not convertible to standard form");
+    public abstract <E extends ConditionalDistribution> E toConditionalDistribution();
+
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables){
+        throw new UnsupportedOperationException("This transformation does not make sense for variables with any parameter variable as parent.");
     }
+
 }

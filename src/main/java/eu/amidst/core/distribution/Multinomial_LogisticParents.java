@@ -19,8 +19,6 @@ import java.util.Random;
 public class Multinomial_LogisticParents extends ConditionalDistribution {
 
 
-    private static final long serialVersionUID = 7271512193775319184L;
-
     private double[] intercept;
 
     private double[][] coeffParents;

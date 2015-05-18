@@ -111,7 +111,7 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         List<Vector> naturalParametersPriors =  this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
                 .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
                 .map(var -> {
-                    NaturalParameters parameter =((EF_BaseDistribution_MultinomialParents)this.ef_extendedBN.getDistribution(var)).getBaseEFUnivariateDistribution(0).getNaturalParameters();
+                    NaturalParameters parameter =this.ef_extendedBN.getDistribution(var).getNaturalParameters();
                     NaturalParameters copy = new ArrayVector(parameter.size());
                     copy.copy(parameter);
                     return copy;
@@ -202,8 +202,9 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
         ef_extendedBN.getParametersVariables().getListOfVariables().stream().forEach(var -> {
-            EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
-            dist.setBaseEFDistribution(0, plateuStructure.getEFParameterPosterior(var).deepCopy());
+            EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
+            ef_extendedBN.setDistribution(var, uni);
+            this.plateuStructure.getNodeOfVar(var,0).setPDist(uni);
         });
 
         //this.plateuVMP.resetQs();
@@ -294,12 +295,6 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
         if(!parallelMode)
             return BayesianNetwork.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
         else{
-            List<EF_ConditionalDistribution> dists = this.dag.getParentSets().stream()
-                    .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
-                    .collect(Collectors.toList());
-
-            //EF_LearningBayesianNetwork extBN = new EF_LearningBayesianNetwork(dists, dag.getStaticVariables());
-
             CompoundVector priors = this.getNaturalParameterPrior();
             CompoundVector posterior = (CompoundVector)this.getNaturalParameterPosterior(). getVector();
 
@@ -307,12 +302,10 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
             ef_extendedBN.getParametersVariables().getListOfVariables().stream()
                     .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
                     .forEach( var -> {
-                        EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
                         EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
-                        //uni.setNaturalParameters((NaturalParameters)posterior.getVectorByPosition(count[0]));
-                        uni.getNaturalParameters().copy((NaturalParameters)posterior.getVectorByPosition(count[0]));
+                        uni.getNaturalParameters().copy((NaturalParameters) posterior.getVectorByPosition(count[0]));
                         uni.updateMomentFromNaturalParameters();
-                        dist.setBaseEFDistribution(0,uni);
+                        ef_extendedBN.setDistribution(var, uni);
                         count[0]++;
             });
 
@@ -323,12 +316,10 @@ public class StreamingVariationalBayesVMP implements BayesianLearningAlgorithmFo
             ef_extendedBN.getParametersVariables().getListOfVariables().stream()
                     .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
                     .forEach( var -> {
-                        EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
                         EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
-                        //uni.setNaturalParameters((NaturalParameters)priors.getVectorByPosition(count[0]));
                         uni.getNaturalParameters().copy((NaturalParameters)priors.getVectorByPosition(count[0]));
                         uni.updateMomentFromNaturalParameters();
-                        dist.setBaseEFDistribution(0,uni);
+                        ef_extendedBN.setDistribution(var, uni);
                         count[0]++;
                     });
 
