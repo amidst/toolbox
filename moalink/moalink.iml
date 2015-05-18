@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+<module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -131,7 +131,6 @@
     <orderEntry type="library" name="Maven: org.spire-math:spire_2.10:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.spire-math:spire-macros_2.10:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: com.typesafe:scalalogging-slf4j_2.10:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: nz.ac.waikato.cms.moa:moa:2013.11" level="project" />
     <orderEntry type="library" name="Maven: nz.ac.waikato.cms.weka:weka-dev:3.7.12" level="project" />
     <orderEntry type="library" name="Maven: net.sf.squirrel-sql.thirdparty-non-maven:java-cup:0.11a" level="project" />
     <orderEntry type="library" name="Maven: org.pentaho.pentaho-commons:pentaho-package-manager:1.0.8" level="project" />
