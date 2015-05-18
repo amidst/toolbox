@@ -12,7 +12,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="sizeofag" level="project" />
     <orderEntry type="library" name="org.apache.commons:commons-math3:3.5" level="application" />
-    <orderEntry type="library" name="Maven: nz.ac.waikato.cms.moa:moa:2013.11" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.6" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.1" level="project" />
