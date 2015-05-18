@@ -101,6 +101,26 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         return coeffParents;
     }
 
+
+    /**
+     * Get the coefficient for the variable parentVar.
+     * @return An <code>double</code> with the coefficient for variable parentVar.
+     */
+    public double getCoeffForParent(Variable parentVar){
+
+        int parentIndex = -1;
+        for(int i=0; i<parents.size(); i++){
+            Variable parent = parents.get(i);
+            if(parentVar.equals(parent)){
+                parentIndex = i;
+                break;
+            }
+        }
+        if(parentIndex == -1)
+            throw new UnsupportedOperationException("Variable "+parentVar.getName()+" is not in the list of parents");
+        return this.coeffParents[parentIndex];
+    }
+
     /**
      * Sets the coefficients of the distribution
      * @param coeffParents1 An array of <code>double</code> with the coefficients, one for each parent.
@@ -110,6 +130,26 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
             throw new UnsupportedOperationException("The number of beta parametersParentVariables for the Normal_Normal distribution" +
                     " does not match with the number of parents");
         this.coeffParents = coeffParents1;
+    }
+
+    /**
+     * Sets the coefficients of the distribution for a particular variable
+     * @param parentVar A parent variable.
+     * @param coeff Beta value for the parent variable.
+     */
+    public void setCoeffForParent(Variable parentVar, double coeff) {
+
+        int parentIndex = -1;
+        for(int i=0; i<parents.size(); i++){
+            Variable parent = parents.get(i);
+            if(parentVar.equals(parent)){
+                parentIndex = i;
+                break;
+            }
+        }
+        if(parentIndex == -1)
+            throw new UnsupportedOperationException("Variable "+parentVar.getName()+" is not in the list of parents");
+        this.coeffParents[parentIndex] = coeff;
     }
 
     /**

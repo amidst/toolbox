@@ -8,17 +8,18 @@
 
 package eu.amidst.core.utils;
 
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.BayesianNetworkWriter;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.*;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -42,6 +43,8 @@ public final class BayesianNetworkGenerator{
     }
 
     public static void setNumberOfLinks(int numberOfLinks) {
+        if (numberOfLinks<(numberOfVars-1) || numberOfLinks>numberOfVars*(numberOfVars-1)/2)
+            throw new IllegalArgumentException("Number of links is not between " + (numberOfVars-1) + " and " + numberOfVars*(numberOfVars-1)/2);
         BayesianNetworkGenerator.numberOfLinks = numberOfLinks;
     }
 
@@ -112,6 +115,77 @@ public final class BayesianNetworkGenerator{
         return network;
     }
 
+    public static DAG generateTreeDAG(StaticVariables staticVariables) {
+        DAG dag = new DAG(staticVariables);
+
+        List<Variable> connectedVars = new ArrayList();
+
+        List<Variable> nonConnectedVars = staticVariables.getListOfVariables().stream().collect(Collectors.toList());
+
+        Random random = new Random(seed);
+
+
+        connectedVars.add(nonConnectedVars.remove(random.nextInt(nonConnectedVars.size())));
+
+        while (nonConnectedVars.size()>0){
+            Variable var1 = connectedVars.get(random.nextInt(connectedVars.size()));
+            Variable var2 = nonConnectedVars.get(random.nextInt(nonConnectedVars.size()));
+
+            if (var1.getVarID()<var2.getVarID() && dag.getParentSet(var2).getNumberOfParents()==0 && var2.getDistributionType().isParentCompatible(var1))
+                dag.getParentSet(var2).addParent(var1);
+            else if (var2.getVarID()<var1.getVarID() && dag.getParentSet(var1).getNumberOfParents()==0 && var1.getDistributionType().isParentCompatible(var2))
+                dag.getParentSet(var1).addParent(var2);
+            else
+                continue;
+
+            nonConnectedVars.remove(var2);
+            connectedVars.add(var2);
+        }
+
+        return dag;
+    }
+
+    public static BayesianNetwork generateBayesianNetwork(){
+
+        StaticVariables staticVariables  = new StaticVariables();
+
+
+        IntStream.range(0,numberOfDiscreteVars)
+                .forEach(i -> staticVariables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+
+        IntStream.range(0,numberOfContinuousVars)
+                .forEach(i -> staticVariables.newGaussianVariable("GaussianVar" + i));
+
+        DAG dag = generateTreeDAG(staticVariables);
+
+        int dagLinks = staticVariables.getNumberOfVars()-1;
+
+        Random random = new Random(seed);
+        while (dagLinks< numberOfLinks){
+            Variable var1 = staticVariables.getVariableById(random.nextInt(staticVariables.getNumberOfVars()));
+            int max = staticVariables.getNumberOfVars() - var1.getVarID() - 1;
+            if (max == 0)
+                continue;
+
+            Variable var2 = staticVariables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
+
+            if (dag.getParentSet(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1))
+                continue;
+
+            dag.getParentSet(var2).addParent(var1);
+            dagLinks++;
+        }
+
+        if (dag.containCycles())
+            throw new IllegalStateException("DAG with cycles");
+
+        BayesianNetwork network = BayesianNetwork.newBayesianNetwork(dag);
+
+        network.randomInitialization(new Random(seed));
+
+        return network;
+    }
+
     public static String listOptions(){
         return  classNameID() +", "+
                 "-numberOfVars, 10, Total number of variables\\" +
@@ -159,18 +233,19 @@ public final class BayesianNetworkGenerator{
 
         BayesianNetworkGenerator.loadOptions();
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
+        BayesianNetworkGenerator.setNumberOfContinuousVars(5);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetworkGenerator.setNumberOfLinks(15);
         BayesianNetworkGenerator.setSeed(0);
 
-        BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
+        BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
 
-        BayesianNetworkWriter.saveToFile(naiveBayes, "networks/NB-10.bn");
+        BayesianNetworkWriter.saveToFile(bayesianNetwork, "networks/Bayesian10Vars15Links.bn");
 
-        BayesianNetwork naiveBayes2 = BayesianNetworkLoader.loadFromFile("networks/NB-10.bn");
+        BayesianNetwork bayesianNetwork2 = BayesianNetworkLoader.loadFromFile("networks/Bayesian10Vars15Links.bn");
 
-        System.out.println(naiveBayes2.toString());
+        System.out.println(bayesianNetwork2.getDAG().toString());
     }
 
 }

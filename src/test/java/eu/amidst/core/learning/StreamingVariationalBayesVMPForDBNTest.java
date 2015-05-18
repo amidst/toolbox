@@ -159,23 +159,27 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
 
-        ConditionalLinearGaussian distContVar1Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar1"))).getBaseConditionalDistribution(0);
-        distContVar1Class0.setIntercept(1.0);
-        distContVar1Class0.setCoeffParents(new double[]{0.5});
-        ConditionalLinearGaussian distContVar1Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar1"))).getBaseConditionalDistribution(1);
-        distContVar1Class1.setIntercept(-1.0);
-        distContVar1Class1.setCoeffParents(new double[]{-0.3});
+        DynamicVariables dynamicVariables = dbn.getDynamicVariables();
 
+        Variable var1 = dbn.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1");
+        ConditionalLinearGaussian distContVar1Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
+                getConditionalDistributionTimeT(var1)).getBaseConditionalDistribution(0);
+        distContVar1Class0.setIntercept(1.0);
+        distContVar1Class0.setCoeffForParent(dynamicVariables.getInterfaceVariable(var1), 0.5);
+        ConditionalLinearGaussian distContVar1Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
+                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1"))).getBaseConditionalDistribution(1);
+        distContVar1Class1.setIntercept(-1.0);
+        distContVar1Class1.setCoeffForParent(dynamicVariables.getInterfaceVariable(var1), -0.3);
+
+        Variable var2 = dbn.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar2");
         ConditionalLinearGaussian distContVar2Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar2"))).getBaseConditionalDistribution(0);
+                getConditionalDistributionTimeT(var2)).getBaseConditionalDistribution(0);
         distContVar2Class0.setIntercept(2.1);
-        distContVar2Class0.setCoeffParents(new double[]{0.3});
+        distContVar2Class0.setCoeffForParent(dynamicVariables.getInterfaceVariable(var2), 0.3);
         ConditionalLinearGaussian distContVar2Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariable("ContinuousVar2"))).getBaseConditionalDistribution(1);
+                getConditionalDistributionTimeT(var2)).getBaseConditionalDistribution(1);
         distContVar2Class1.setIntercept(-2.1);
-        distContVar2Class1.setCoeffParents(new double[]{-0.3});
+        distContVar2Class1.setCoeffForParent(dynamicVariables.getInterfaceVariable(var2), -0.3);
 
         System.out.println("--- Initial DBN ---");
         System.out.println(dbn.toString());
@@ -296,11 +300,11 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
             ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
             //distA.setIntercept(0.4);
-            distA.setCoeffParents(new double[]{0.4});
+            distA.setCoeffForParent(dynamicVariables.getInterfaceVariable(varA), 0.4);
 
             ConditionalLinearGaussian distB = dynamicNB.getConditionalDistributionTimeT(varB);
             //distB.setIntercept(0.4);
-            distB.setCoeffParents(new double[]{0.6});
+            distB.setCoeffForParent(varA, 0.6);
 
             //ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
             //distA.setIntercept(0.0);
@@ -547,15 +551,15 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             //The number of states for the class variable is equal to 2
             DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
 
-            dynamicNB.randomInitialization(new Random(i+10));
+            dynamicNB.randomInitialization(new Random(i + 10));
 
             ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
             distA.setIntercept(0.4);
-            distA.setCoeffParents(new double[]{0.7});
+            distA.setCoeffForParent(dynamicVariables.getInterfaceVariable(varA), 0.7);
 
             ConditionalLinearGaussian distB = dynamicNB.getConditionalDistributionTimeT(varB);
             distB.setIntercept(0.3);
-            distB.setCoeffParents(new double[]{0.5});
+            distB.setCoeffForParent(varA, 0.5);
             distB.setVariance(0.1);
 
             System.out.println(dynamicNB.getDynamicDAG().toString());
@@ -657,17 +661,17 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             //The number of states for the class variable is equal to 2
             DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
 
-            dynamicNB.randomInitialization(new Random(i+10));
+            dynamicNB.randomInitialization(new Random(i + 10));
 
             ConditionalLinearGaussian distA = dynamicNB.getConditionalDistributionTimeT(varA);
             distA.setIntercept(0.0);
-            distA.setCoeffParents(new double[]{1.0});
+            distA.setCoeffForParent(dynamicVariables.getInterfaceVariable(varA), 1);
             distA.setVariance(0.000001);
 
 
             ConditionalLinearGaussian distB = dynamicNB.getConditionalDistributionTimeT(varB);
             distB.setIntercept(0.0);
-            distB.setCoeffParents(new double[]{1.0});
+            distB.setCoeffForParent(varA, 1);
             distB.setVariance(0.000001);
 
             System.out.println(dynamicNB.getDynamicDAG().toString());
