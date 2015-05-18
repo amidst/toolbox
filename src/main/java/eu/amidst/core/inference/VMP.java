@@ -345,8 +345,8 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
 
         List<ConditionalDistribution> distributionList =
                 this.model.getStaticVariables().getListOfVariables().stream()
-                .map(var -> new BaseDistribution_MultinomialParents<UnivariateDistribution>(new ArrayList(), Arrays.asList(this.getPosterior(var))))
-                .collect(Collectors.toList());
+                .map(var -> (ConditionalDistribution)this.getPosterior(var))
+                        .collect(Collectors.toList());
 
         return BayesianNetwork.newBayesianNetwork(dag, distributionList);
     }

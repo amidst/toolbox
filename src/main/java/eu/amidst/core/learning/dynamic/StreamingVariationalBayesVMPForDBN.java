@@ -11,9 +11,13 @@ package eu.amidst.core.learning.dynamic;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
-import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.ParameterVariables;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
+import eu.amidst.core.variables.Variable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -116,11 +120,13 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
     private double updateModelTime0(DynamicDataInstance dataInstance) {
         this.plateuVMPDBN.setEvidenceTime0(dataInstance);
         this.plateuVMPDBN.runInferenceTime0();
-        for (EF_ConditionalDistribution dist: plateuVMPDBN.getEFLearningBNTime0().getDistributionList()){
-            if (dist.getVariable().isParameterVariable()) {
-                ((EF_BaseDistribution_MultinomialParents) dist).setBaseEFDistribution(0, plateuVMPDBN.getEFParameterPosteriorTime0(dist.getVariable()).deepCopy());
-            }
+
+        for (Variable var: plateuVMPDBN.getEFLearningBNTime0().getParametersVariables()){
+            EF_UnivariateDistribution uni = plateuVMPDBN.getEFParameterPosteriorTime0(var).deepCopy();
+            plateuVMPDBN.getEFLearningBNTime0().setDistribution(var, uni);
+            this.plateuVMPDBN.getNodeOfVarTime0(var).setPDist(uni);
         }
+
         //this.plateuVMP.resetQs();
         return this.plateuVMPDBN.getLogProbabilityOfEvidenceTime0();
     }
@@ -128,11 +134,13 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
     private double updateModelTimeT(List<DynamicDataInstance> batch) {
         this.plateuVMPDBN.setEvidenceTimeT(batch);
         this.plateuVMPDBN.runInferenceTimeT();
-        for (EF_ConditionalDistribution dist: plateuVMPDBN.getEFLearningBNTimeT().getDistributionList()){
-            if (dist.getVariable().isParameterVariable()) {
-                ((EF_BaseDistribution_MultinomialParents) dist).setBaseEFDistribution(0, plateuVMPDBN.getEFParameterPosteriorTimeT(dist.getVariable()).deepCopy());
-            }
+
+        for (Variable var: plateuVMPDBN.getEFLearningBNTimeT().getParametersVariables()){
+            EF_UnivariateDistribution uni = plateuVMPDBN.getEFParameterPosteriorTimeT(var).deepCopy();
+            plateuVMPDBN.getEFLearningBNTimeT().setDistribution(var,uni);
+            this.plateuVMPDBN.getNodeOfVarTimeT(var,0).setPDist(uni);
         }
+
         //this.plateuVMPDBN.resetQs();
         return this.plateuVMPDBN.getLogProbabilityOfEvidenceTimeT();
     }

@@ -35,6 +35,8 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
             throw new UnsupportedOperationException("Creating a Multinomial EF distribution for a non-multinomial variable.");
         }
 
+        this.parents = new ArrayList<>();
+
         this.var=var;
         int nstates= var.getNumberOfStates();
         this.naturalParameters = this.createZeroedNaturalParameters();
@@ -50,7 +52,6 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
     @Override
     public double computeLogBaseMeasure(double val) {
-        //return log(1);
         return 0;
     }
 
@@ -78,6 +79,11 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     @Override
     public Vector getExpectedParameters() {
         return this.momentParameters;
+    }
+
+    @Override
+    public double computeLogProbabilityOf(double val) {
+        return this.naturalParameters.dotProduct(this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) - this.computeLogNormalizer();
     }
 
     @Override
@@ -111,10 +117,8 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
         return this.var.getNumberOfStates();
     }
 
-
     @Override
     public EF_UnivariateDistribution deepCopy(Variable var) {
-
         EF_Multinomial copy = new EF_Multinomial(var);
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
@@ -148,13 +152,13 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     }
 
     @Override
-    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables){
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables){
 
         Variable varDirichlet = variables.newDirichletParameter(this.var.getName()+"_DirichletParameter_"+variables.getNumberOfVars(), this.var.getNumberOfStates());
 
-        EF_BaseDistribution_MultinomialParents<EF_Dirichlet> uni =
-                new EF_BaseDistribution_MultinomialParents<>(new ArrayList<>(), Arrays.asList(varDirichlet.getDistributionType().newEFUnivariateDistribution()));
+        EF_Dirichlet uni = varDirichlet.getDistributionType().newEFUnivariateDistribution();
 
         return Arrays.asList(new EF_Multinomial_Dirichlet(this.var, varDirichlet), uni);
     }
+
 }

@@ -10,12 +10,11 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -31,6 +30,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
         if (!var1.isNormal() && !var1.isParameterVariable()) {
             throw new UnsupportedOperationException("Creating a Gaussian EF distribution for a non-gaussian variable.");
         }
+
+        this.parents = new ArrayList();
 
         this.var=var1;
         this.naturalParameters = this.createZeroedNaturalParameters();
@@ -53,7 +54,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
     @Override
     public double computeLogBaseMeasure(double val) {
-        return -0.5*Math.log(2*Math.PI);
+        return -0.5*Math.log(2 * Math.PI);
     }
 
     @Override
@@ -71,16 +72,21 @@ public class EF_Normal extends EF_UnivariateDistribution {
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics vec = this.createZeroedSufficientStatistics();
-        vec.set(EXPECTED_MEAN,val);
-        vec.set(EXPECTED_SQUARE,val*val);
+        vec.set(EXPECTED_MEAN, val);
+        vec.set(EXPECTED_SQUARE, val * val);
         return vec;
     }
 
     @Override
     public Vector getExpectedParameters() {
         Vector vec = new ArrayVector(1);
-        vec.set(0,this.momentParameters.get(0));
+        vec.set(0, this.momentParameters.get(0));
         return vec;
+    }
+
+    @Override
+    public double computeLogProbabilityOf(double val) {
+        return this.naturalParameters.dotProduct(this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) - this.computeLogNormalizer();
     }
 
     @Override
@@ -91,6 +97,11 @@ public class EF_Normal extends EF_UnivariateDistribution {
         copy.getMomentParameters().copy(this.getMomentParameters());
 
         return copy;
+    }
+
+    @Override
+    public EF_UnivariateDistribution deepCopy() {
+        return this.deepCopy(this.var);
     }
 
     @Override
@@ -125,8 +136,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
         double m0=this.momentParameters.get(EXPECTED_MEAN);
         double m1=this.momentParameters.get(EXPECTED_SQUARE);
         // var = E(X^2) - E(X)^2 = m1 - m0*m0
-        this.naturalParameters.set(0,m0/(m1-m0*m0));
-        this.naturalParameters.set(1,-0.5/(m1-m0*m0));
+        this.naturalParameters.set(0, m0 / (m1 - m0 * m0));
+        this.naturalParameters.set(1, -0.5 / (m1 - m0 * m0));
     }
 
     @Override
@@ -138,47 +149,35 @@ public class EF_Normal extends EF_UnivariateDistribution {
     }
 
     @Override
+    public SufficientStatistics getSufficientStatistics(Assignment data) {
+        return this.getSufficientStatistics(data.getValue(this.var));
+    }
+
+    @Override
     public int sizeOfSufficientStatistics() {
         return 2;
     }
 
-    /*
     @Override
-    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
-        List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
+    public double computeLogBaseMeasure(Assignment dataInstance) {
+        return this.computeLogBaseMeasure(dataInstance.getValue(this.var));
+    }
 
-        Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+variables.getNumberOfVars());
-        Variable varInvGamma = variables.newInverseGammaParameter(this.var.getName()+"_InverseGamma_Parameter_"+variables.getNumberOfVars());
-
-        conditionalDistributions.add(
-                new EF_BaseDistribution_MultinomialParents<EF_InverseGamma>(new ArrayList<>(), Arrays.asList(varInvGamma.getDistributionType().newEFUnivariateDistribution())));
-
-
-        conditionalDistributions.add(
-                new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalMean.getDistributionType().newEFUnivariateDistribution())));
-
-        EF_NormalInverseGamma dist = new EF_NormalInverseGamma(this.var, normalMean, varInvGamma);
-        conditionalDistributions.add(dist);
-
-        return conditionalDistributions;
-    }*/
     @Override
-    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
-        List<EF_ConditionalLearningDistribution> conditionalDistributions = new ArrayList<>();
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
+        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
         Variable varGamma = variables.newGammaParameter(this.var.getName()+"_Gamma_Parameter_"+variables.getNumberOfVars());
         Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+variables.getNumberOfVars());
 
-        conditionalDistributions.add(
-                new EF_BaseDistribution_MultinomialParents<EF_Gamma>(new ArrayList<>(), Arrays.asList(varGamma.getDistributionType().newEFUnivariateDistribution())));
+        conditionalDistributions.add(varGamma.getDistributionType().newEFUnivariateDistribution());
 
-
-        conditionalDistributions.add(
-                new EF_BaseDistribution_MultinomialParents<EF_Normal>(new ArrayList<>(), Arrays.asList(normalMean.getDistributionType().newEFUnivariateDistribution())));
+        conditionalDistributions.add(normalMean.getDistributionType().newEFUnivariateDistribution());
 
         EF_NormalGamma dist = new EF_NormalGamma(this.var, normalMean, varGamma);
         conditionalDistributions.add(dist);
 
         return conditionalDistributions;
     }
-}
+
+  }

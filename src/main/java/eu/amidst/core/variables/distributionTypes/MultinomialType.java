@@ -43,7 +43,10 @@ public class MultinomialType extends DistributionType{
         if (!this.areParentsCompatible(parents))
             throw new IllegalArgumentException("Parents are not compatible");
 
-        return (E) new BaseDistribution_MultinomialParents<Multinomial>(this.variable, parents);
+        if (parents.isEmpty())
+            return (E) new Multinomial(this.variable);
+        else
+            return (E) new BaseDistribution_MultinomialParents<Multinomial>(this.variable, parents);
 
     }
 }

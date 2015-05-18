@@ -9,14 +9,14 @@
 package eu.amidst.core.learning.dynamic;
 
 import eu.amidst.core.datastream.DynamicDataInstance;
-import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.inference.VMP;
 import eu.amidst.core.inference.vmp.Node;
 import eu.amidst.core.models.DynamicDAG;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -100,7 +100,7 @@ public class PlateuVMPDBN {
 
     private static void moveNodeQDist(Node toTemporalCloneNode, Node fromNode){
         EF_UnivariateDistribution uni = fromNode.getQDist().deepCopy(toTemporalCloneNode.getMainVariable());
-        ((EF_BaseDistribution_MultinomialParents)toTemporalCloneNode.getPDist()).setBaseEFDistribution(0,uni);
+        toTemporalCloneNode.setPDist(uni);
         toTemporalCloneNode.setQDist(uni);
     }
 
@@ -179,11 +179,7 @@ public class PlateuVMPDBN {
                 .map(dist -> {
                     Variable temporalClone = this.dbnModel.getDynamicVariables().getInterfaceVariable(dist.getVariable());
                     EF_UnivariateDistribution uni = temporalClone.getDistributionType().newUnivariateDistribution().toEFUnivariateDistribution();
-
-                    EF_ConditionalDistribution pDist = new EF_BaseDistribution_MultinomialParents(new ArrayList<Variable>(),
-                            Arrays.asList(uni));
-
-                    Node node = new Node(pDist);
+                    Node node = new Node(uni);
                     node.setActive(false);
                     cloneVariablesToNode.put(temporalClone, node);
                     return node;

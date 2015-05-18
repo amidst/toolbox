@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Created by ana@cs.aau.dk on 25/02/15.
  */
-public class EF_Normal_Normal_Gamma extends EF_ConditionalLearningDistribution{
+public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
 
     int nOfParents;
 
@@ -75,10 +75,6 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalLearningDistribution{
 
         nOfParents = parents.size();
 
-        this.parametersParentVariables = new ArrayList();
-        this.parametersParentVariables.addAll(betasVariables);
-        this.parametersParentVariables.add(beta0Variable);
-        this.parametersParentVariables.add(gammaVariable);
     }
 
     /**
@@ -286,20 +282,20 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalLearningDistribution{
     }
 
     @Override
-    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
 
         ConditionalLinearGaussian dist = new ConditionalLinearGaussian(this.var, this.realYVariables);
 
         double[] coeffParameters = new double[this.realYVariables.size()];
         for (int i = 0; i < this.realYVariables.size(); i++) {
-            coeffParameters[i]=expectedParameters.get(this.betasVariables.get(i)).get(0);
+            coeffParameters[i]= expectedValueParameterVariables.get(this.betasVariables.get(i)).get(0);
         }
 
         dist.setCoeffParents(coeffParameters);
 
-        dist.setIntercept(expectedParameters.get(this.beta0Variable).get(0));
+        dist.setIntercept(expectedValueParameterVariables.get(this.beta0Variable).get(0));
 
-        dist.setVariance(1.0 / expectedParameters.get(this.gammaVariable).get(0));
+        dist.setVariance(1.0 / expectedValueParameterVariables.get(this.gammaVariable).get(0));
 
         return dist;
     }

@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalLearningDistribution {
+public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalDistribution {
 
 
     private final List<E> distributions;
@@ -101,21 +101,6 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
-
-
-        //Update Parameters Variables
-
-        this.parametersParentVariables = new ArrayList<>();
-
-        if (distributions.get(0) instanceof EF_ConditionalLearningDistribution) {
-            for (int i = 0; i < size; i++) {
-                for (Variable v : this.getBaseEFConditionalDistribution(i).getConditioningVariables()) {
-                    if (v.isParameterVariable() && !this.parametersParentVariables.contains(v))
-                        this.parametersParentVariables.add(v);
-                }
-            }
-        }
-
 
     }
 
@@ -392,24 +377,24 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @Override
-    public List<EF_ConditionalLearningDistribution> toExtendedLearningDistribution(ParameterVariables parameters) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables parameters) {
 
         if (this.getConditioningVariables().size()==0){
             return this.getBaseEFDistribution(0).toExtendedLearningDistribution(parameters);
         }else {
-            List<EF_ConditionalLearningDistribution> totalDists = this.distributions.stream()
+            List<EF_ConditionalDistribution> totalDists = this.distributions.stream()
                     .flatMap(dist -> dist.toExtendedLearningDistribution(parameters).stream())
                     .collect(Collectors.toList());
 
-            List<EF_ConditionalLearningDistribution> dist_NoParameter = totalDists.stream()
+            List<EF_ConditionalDistribution> dist_NoParameter = totalDists.stream()
                     .filter(dist -> !dist.getVariable().isParameterVariable())
                     .collect(Collectors.toList());
 
-            List<EF_ConditionalLearningDistribution> dist_Parameter = totalDists.stream()
+            List<EF_ConditionalDistribution> dist_Parameter = totalDists.stream()
                     .filter(dist -> dist.getVariable().isParameterVariable())
                     .collect(Collectors.toList());
 
-            EF_BaseDistribution_MultinomialParents<EF_ConditionalLearningDistribution> base =
+            EF_BaseDistribution_MultinomialParents<EF_ConditionalDistribution> base =
                     new EF_BaseDistribution_MultinomialParents<>(this.multinomialParents, dist_NoParameter, false);
 
             dist_Parameter.add(base);
@@ -438,12 +423,12 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @Override
-    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
 
         List<Distribution> distributionList = new ArrayList();
         for (EF_Distribution dist: this.distributions){
-            EF_ConditionalLearningDistribution learningDistribution = (EF_ConditionalLearningDistribution)dist;
-            ConditionalDistribution conditionalDistribution = learningDistribution.toConditionalDistribution(expectedParameters);
+            EF_ConditionalDistribution learningDistribution = (EF_ConditionalDistribution)dist;
+            ConditionalDistribution conditionalDistribution = learningDistribution.toConditionalDistribution(expectedValueParameterVariables);
             if (conditionalDistribution instanceof BaseDistribution_MultinomialParents){
                 BaseDistribution_MultinomialParents base = (BaseDistribution_MultinomialParents)conditionalDistribution;
                 distributionList.add(base.getBaseDistribution(0));

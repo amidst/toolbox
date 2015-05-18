@@ -12,14 +12,11 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+import org.apache.commons.math3.special.Gamma;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
-import org.apache.commons.math3.special.Gamma;
 
 /**
  * Created by ana@cs.aau.dk on 23/02/15.
@@ -34,6 +31,8 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
 
         if (!var1.isInverseGammaParameter())
             throw new IllegalArgumentException("The variable is not Inverse Gamma parameter");
+
+        this.parents = new ArrayList();
 
         this.var = var1;
         this.naturalParameters = this.createZeroedNaturalParameters();
@@ -77,6 +76,11 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         this.updateMomentFromNaturalParameters();
 
         return this;
+    }
+
+    @Override
+    public <E extends UnivariateDistribution> E toUnivariateDistribution() {
+        throw new UnsupportedOperationException("Inverse Gamma is not included yet in the Distributions package.");
     }
 
     @Override
@@ -130,9 +134,10 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         vec.set(0, -this.naturalParameters.get(1)/(-this.naturalParameters.get(0)-1));
         return vec;
     }
-
     @Override
     public void fixNumericalInstability() {
 
     }
+
+
 }

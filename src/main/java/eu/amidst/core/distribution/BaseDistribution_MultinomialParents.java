@@ -26,7 +26,6 @@ import java.util.Random;
  */
 public class BaseDistribution_MultinomialParents<E extends Distribution> extends ConditionalDistribution {
 
-    private static final long serialVersionUID = 1925974195497958093L;
     /**
      * The list of multinomial parents
      */
@@ -54,7 +53,7 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         this.baseDistributions = distributions1;
 
 
-        if (baseDistributions.get(0) instanceof ConditionalDistribution){
+        if (!(baseDistributions.get(0) instanceof UnivariateDistribution)){
             this.isBaseConditionalDistribution=true;
             for (int i = 0; i < size; i++) {
                 for (Variable v : this.getBaseConditionalDistribution(i).getConditioningVariables()) {

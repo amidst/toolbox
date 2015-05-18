@@ -37,8 +37,6 @@ import java.util.Random;
 public class Multinomial extends UnivariateDistribution  {
 
 
-    private static final long serialVersionUID = 5262432084631715492L;
-
     /**
      * A set of probabilities, one for each state of the variable
      */
