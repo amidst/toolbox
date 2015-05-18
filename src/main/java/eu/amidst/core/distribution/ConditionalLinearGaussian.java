@@ -42,8 +42,6 @@ import java.util.Random;
 public class ConditionalLinearGaussian extends ConditionalDistribution {
 
 
-    private static final long serialVersionUID = -4699293960166614096L;
-
     /**
      * The "intercept" parameter of the distribution
      */

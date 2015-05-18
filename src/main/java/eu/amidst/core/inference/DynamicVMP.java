@@ -82,11 +82,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
                 .map(dist -> {
                     Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(dist.getVariable());
                     EF_UnivariateDistribution uni = temporalClone.getDistributionType().newUnivariateDistribution().toEFUnivariateDistribution();
-
-                    EF_ConditionalDistribution pDist = new EF_BaseDistribution_MultinomialParents(new ArrayList<Variable>(),
-                            Arrays.asList(uni));
-
-                    Node node = new Node(pDist);
+                    Node node = new Node(uni);
                     node.setActive(false);
                     return node;
                 })
@@ -131,7 +127,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     private static void moveNodeQDist(Node toTemporalCloneNode, Node fromNode){
             EF_UnivariateDistribution uni = fromNode.getQDist().deepCopy(toTemporalCloneNode.getMainVariable());
-            ((EF_BaseDistribution_MultinomialParents)toTemporalCloneNode.getPDist()).setBaseEFDistribution(0,uni);
+            toTemporalCloneNode.setPDist(uni);
             toTemporalCloneNode.setQDist(uni);
     }
 

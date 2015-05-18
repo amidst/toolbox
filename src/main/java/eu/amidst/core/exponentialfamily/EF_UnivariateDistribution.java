@@ -8,17 +8,21 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
  * Created by andresmasegosa on 12/11/14.
  */
-public abstract class EF_UnivariateDistribution extends EF_Distribution {
+public abstract class EF_UnivariateDistribution extends EF_ConditionalDistribution{
 
     public abstract double computeLogBaseMeasure(double val);
 
@@ -26,42 +30,68 @@ public abstract class EF_UnivariateDistribution extends EF_Distribution {
 
     public abstract Vector getExpectedParameters();
 
-    public double computeProbabilityOf(double val){
-        return Math.exp(this.computeLogProbabilityOf(val));
-    }
+    public abstract void fixNumericalInstability();
 
-    public double computeLogProbabilityOf(double val){
-        return this.naturalParameters.dotProduct(this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) + this.computeLogNormalizer();
+    public abstract EF_UnivariateDistribution deepCopy(Variable variable);
+
+    public abstract EF_UnivariateDistribution randomInitialization(Random rand);
+
+    public abstract <E extends UnivariateDistribution> E toUnivariateDistribution();
+
+    @Override
+    public List<Variable> getConditioningVariables() {
+        return Arrays.asList();
     }
 
     @Override
     public void setNaturalParameters(NaturalParameters parameters) {
-        this.naturalParameters = parameters;//.copy(parameters);
+        this.naturalParameters = parameters;
         this.fixNumericalInstability();
         this.updateMomentFromNaturalParameters();
     }
 
-    public abstract void fixNumericalInstability();
-
-    @Override
-    public SufficientStatistics getSufficientStatistics(Assignment data){
-        return this.getSufficientStatistics(data.getValue(this.getVariable()));
-    }
-
-    @Override
-    public double computeLogBaseMeasure(Assignment dataInstance){
-        return this.computeLogBaseMeasure(dataInstance.getValue(this.getVariable()));
-    }
-
-    public abstract EF_UnivariateDistribution deepCopy(Variable variable);
-
     public EF_UnivariateDistribution deepCopy(){
-        return this.deepCopy(this.getVariable());
+        return this.deepCopy(this.var);
     }
 
-    public abstract EF_UnivariateDistribution randomInitialization(Random rand);
+    public double computeLogProbabilityOf(double val){
+        return this.naturalParameters.dotProduct(this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) - this.computeLogNormalizer();
+    }
 
-    public <E extends UnivariateDistribution> E toUnivariateDistribution(){
-        throw new UnsupportedOperationException("This EF distribution is not convertible to standard form");
+    @Override
+    public double computeLogBaseMeasure(Assignment dataInstance) {
+        return this.computeLogBaseMeasure(dataInstance.getValue(this.var));
+    }
+
+    @Override
+    public SufficientStatistics getSufficientStatistics(Assignment data) {
+        return this.getSufficientStatistics(data.getValue(this.var));
+    }
+
+    @Override
+    public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        throw new UnsupportedOperationException("This operation does not make sense for univarite distributons with no parents");
+    }
+
+    @Override
+    public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
+        return this.computeLogNormalizer();
+    }
+
+    @Override
+    public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
+        NaturalParameters out = this.createZeroedNaturalParameters();
+        out.copy(this.getNaturalParameters());
+        return out;
+    }
+
+    @Override
+    public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
+        throw new UnsupportedOperationException("This operation does not make sense for univarite distributons with no parents");
+    }
+
+    @Override
+    public <E extends ConditionalDistribution> E toConditionalDistribution() {
+        return (E)this.toUnivariateDistribution();
     }
 }

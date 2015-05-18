@@ -8,6 +8,7 @@
 
 package eu.amidst.core.distribution;
 
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.Variable;
 
 import java.util.Random;
@@ -36,6 +37,11 @@ public class DeltaDistribution extends UnivariateDistribution {
     @Override
     public double sample(Random rand) {
         return deltaValue;
+    }
+
+    @Override
+    public <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution() {
+        throw new UnsupportedOperationException("This distribution is not supported yet in exponential form");
     }
 
     @Override

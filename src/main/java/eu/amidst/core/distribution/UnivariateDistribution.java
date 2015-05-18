@@ -11,7 +11,10 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.Variable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -21,25 +24,7 @@ import java.util.Random;
  * @version 1.0
  * @since 2014-11-3
  */
-public abstract class UnivariateDistribution extends Distribution {
-
-    public UnivariateDistribution() {
-    }
-
-    /**
-     * Evaluates the distribution in a given point.
-     *
-     * @param value The point to be evaluated.
-     * @return A <code>double</code> value with the evaluated distribution.
-     */
-    public double getProbability(double value) {
-        return Math.exp(this.getLogProbability(value));
-    }
-
-    @Override
-    public double getLogProbability(Assignment assignment) {
-        return this.getLogProbability(assignment.getValue(this.var));
-    }
+public abstract class UnivariateDistribution extends ConditionalDistribution {
 
     /**
      * Evaluates the distribution in a given point.
@@ -51,7 +36,34 @@ public abstract class UnivariateDistribution extends Distribution {
 
     public abstract double sample(Random rand);
 
-    public <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution() {
-            throw new UnsupportedOperationException("This distribution is not convertible to EF form");
+    public abstract <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution();
+
+    @Override
+    public List<Variable> getConditioningVariables() {
+        return Arrays.asList();
     }
+
+    public <E extends EF_ConditionalDistribution> E toEFConditionalDistribution(){
+        return (E)this.toEFUnivariateDistribution();
+    }
+
+    public double getProbability(double value) {
+        return Math.exp(this.getLogProbability(value));
+    }
+
+    @Override
+    public double getLogConditionalProbability(Assignment assignment) {
+        return this.getLogProbability(assignment.getValue(this.var));
+    }
+
+    @Override
+    public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
+        return this;
+    }
+
+    @Override
+    public double getLogProbability(Assignment assignment) {
+        return this.getLogProbability(assignment.getValue(this.var));
+    }
+
 }

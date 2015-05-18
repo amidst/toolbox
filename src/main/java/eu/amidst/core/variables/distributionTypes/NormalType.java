@@ -60,7 +60,7 @@ public class NormalType extends DistributionType{
         }
 
         if (!multinomialParents && !normalParents){
-            return (E) new BaseDistribution_MultinomialParents<Normal>(this.variable, parents);
+            return (E) new Normal(this.variable);
         } else if (multinomialParents && !normalParents) {
             return (E)new BaseDistribution_MultinomialParents<Normal>(this.variable, parents);
         } else if (!multinomialParents && normalParents) {

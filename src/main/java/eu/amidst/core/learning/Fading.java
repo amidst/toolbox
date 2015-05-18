@@ -32,12 +32,12 @@ public class Fading implements TransitionMethod {
     @Override
     public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork ef_extendedBN, PlateuStructure plateuStructure) {
         ef_extendedBN.getParametersVariables().getListOfVariables().stream().forEach(var -> {
-            EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) ef_extendedBN.getDistribution(var);
-            EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
+            EF_UnivariateDistribution prior = (EF_UnivariateDistribution) ef_extendedBN.getDistribution(var);
             NaturalParameters naturalParameters = prior.getNaturalParameters();
             naturalParameters.multiplyBy(fading);
             prior.setNaturalParameters(naturalParameters);
-            dist.setBaseEFDistribution(0, prior);
+            ef_extendedBN.setDistribution(var,prior);
+            plateuStructure.getNodeOfVar(var,0).setPDist(prior);
         });
 
         return ef_extendedBN;

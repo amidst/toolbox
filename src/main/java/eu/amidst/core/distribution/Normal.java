@@ -33,8 +33,6 @@ import java.util.Random;
 public class Normal extends UnivariateDistribution {
 
 
-    private static final long serialVersionUID = 2087408079694403247L;
-
     /**
      * The mean of the Normal distribution.
      */
