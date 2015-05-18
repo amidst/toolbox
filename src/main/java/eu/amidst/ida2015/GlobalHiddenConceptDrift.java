@@ -114,8 +114,10 @@ public class GlobalHiddenConceptDrift {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                 continue;
             Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
-            newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
-            newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
+            //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(1).setCoeffForParent(globalHidden, 0.0);
         }
 
         System.out.println(naiveBayes.toString());
@@ -236,8 +238,10 @@ public class GlobalHiddenConceptDrift {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                 continue;
             Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
-            newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
-            newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
+            //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(1).setCoeffForParent(globalHidden, 0.0);
         }
 
         System.out.println(naiveBayes.toString());
@@ -291,8 +295,10 @@ public class GlobalHiddenConceptDrift {
                 if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                     continue;
                 Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
-                newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
-                newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+                //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+                newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
+                //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+                newdist.getNormal_NormalParentsDistribution(1).setCoeffForParent(globalHidden, 0.0);
             }
 
             //System.out.println(naiveBayes.toString());
@@ -539,8 +545,10 @@ public class GlobalHiddenConceptDrift {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                 continue;
             Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
-            newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
-            newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
+            //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
+            newdist.getNormal_NormalParentsDistribution(1).setCoeffForParent(globalHidden, 0.0);
         }
 
         System.out.println(naiveBayes.toString());

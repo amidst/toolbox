@@ -216,8 +216,10 @@ public class LearningVMPTests {
 
         Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
 
-        distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
-        distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{2.0});
+        //distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+        distA.getNormal_NormalParentsDistribution(0).setCoeffForParent(varB, 1.0);
+        //distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{2.0});
+        distA.getNormal_NormalParentsDistribution(1).setCoeffForParent(varB, 2.0);
 
         distA.getNormal_NormalParentsDistribution(0).setIntercept(0.0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(0.0);
@@ -281,8 +283,10 @@ public class LearningVMPTests {
         distA = bn.getDistribution(varA);
         distA.getNormal_NormalParentsDistribution(0).setIntercept(0.0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(0.0);
-        distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{-1.0});
-        distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-2.0});
+        //distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{-1.0});
+        distA.getNormal_NormalParentsDistribution(0).setCoeffForParent(varB, -1.0);
+        //distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{-2.0});
+        distA.getNormal_NormalParentsDistribution(1).setCoeffForParent(varB, -2.0);
 
         System.out.println(bn.toString());
 
@@ -341,7 +345,9 @@ public class LearningVMPTests {
         ConditionalLinearGaussian distA = bn.getDistribution(varA);
 
         distA.setIntercept(0);
-        distA.setCoeffParents(new double[]{1.0,0.0});
+        //distA.setCoeffParents(new double[]{1.0,0.0});
+        distA.setCoeffForParent(varB, 1.0);
+        distA.setCoeffForParent(varC, 0.0);
 
 
         System.out.println(bn.toString());
@@ -447,8 +453,10 @@ public class LearningVMPTests {
         distA.getNormal_NormalParentsDistribution(0).setIntercept(0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(0);
 
-        distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
-        distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+        //distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+        distA.getNormal_NormalParentsDistribution(0).setCoeffForParent(varB, 1.0);
+        //distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+        distA.getNormal_NormalParentsDistribution(1).setCoeffForParent(varB, 1.0);
 
 
         System.out.println(bn.toString());
@@ -504,8 +512,10 @@ public class LearningVMPTests {
         distA.getNormal_NormalParentsDistribution(0).setIntercept(0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(0);
 
-        distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{2.0});
-        distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{2.0});
+        //distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{2.0});
+        distA.getNormal_NormalParentsDistribution(0).setCoeffForParent(varB, 2.0);
+        //distA.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{2.0});
+        distA.getNormal_NormalParentsDistribution(1).setCoeffForParent(varB, 2.0);
 
 
         sampler = new BayesianNetworkSampler(bn);
