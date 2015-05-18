@@ -63,7 +63,8 @@ public class VMPNormalTest extends TestCase {
         distA.setMean(1);
         distA.setVariance(0.25);
         distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varA, 1);
         distB.setVariance(0.25);
 
         System.out.println(bn.toString());
@@ -72,7 +73,8 @@ public class VMPNormalTest extends TestCase {
         double sdPA =  distA.getSd();
 
         double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        //double b1PB = distB.getCoeffParents()[0];
+        double b1PB = distB.getCoeffForParent(varA);
         double sdPB =  distB.getSd();
 
         VMP vmp = new VMP();
@@ -151,7 +153,9 @@ public class VMPNormalTest extends TestCase {
         distB.setVariance(0.64);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1, 1});
+        //distC.setCoeffParents(new double[]{1, 1});
+        distC.setCoeffForParent(varA, 1);
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
         System.out.println(bn.toString());
@@ -163,8 +167,10 @@ public class VMPNormalTest extends TestCase {
         double sdPB =  distB.getSd();
 
         double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
-        double b2PC = distC.getCoeffParents()[1];
+        //double b1PC = distC.getCoeffParents()[0];
+        //double b2PC = distC.getCoeffParents()[1];
+        double b1PC = distC.getCoeffForParent(varA);
+        double b2PC = distC.getCoeffForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
@@ -258,7 +264,9 @@ public class VMPNormalTest extends TestCase {
         distB.setVariance(0.64);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1, 1});
+        //distC.setCoeffParents(new double[]{1, 1});
+        distC.setCoeffForParent(varA, 1);
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
         System.out.println(bn.toString());
@@ -270,8 +278,10 @@ public class VMPNormalTest extends TestCase {
         double sdPB =  distB.getSd();
 
         double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
-        double b2PC = distC.getCoeffParents()[1];
+        //double b1PC = distC.getCoeffParents()[0];
+        //double b2PC = distC.getCoeffParents()[1];
+        double b1PC = distC.getCoeffForParent(varA);
+        double b2PC = distC.getCoeffForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
@@ -351,11 +361,13 @@ public class VMPNormalTest extends TestCase {
         Normal distC = bn.getDistribution(varC);
 
         distA.setIntercept(1);
-        distA.setCoeffParents(new double[]{1});
+        //distA.setCoeffParents(new double[]{1});
+        distA.setCoeffForParent(varC, 1);
         distA.setVariance(0.25);
 
         distB.setIntercept(1.5);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varC, 1);
         distB.setVariance(0.64);
 
         distC.setMean(1);
@@ -364,11 +376,13 @@ public class VMPNormalTest extends TestCase {
         System.out.println(bn.toString());
 
         double b0PA =  distA.getIntercept();
-        double b1PA = distA.getCoeffParents()[0];
+        //double b1PA = distA.getCoeffParents()[0];
+        double b1PA = distA.getCoeffForParent(varC);
         double sdPA =  distA.getSd();
 
         double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        //double b1PB = distB.getCoeffParents()[0];
+        double b1PB = distB.getCoeffForParent(varC);
         double sdPB =  distB.getSd();
 
         double meanPC =  distC.getMean();
@@ -456,11 +470,13 @@ public class VMPNormalTest extends TestCase {
         Normal distC = bn.getDistribution(varC);
 
         distA.setIntercept(1);
-        distA.setCoeffParents(new double[]{1});
+        //distA.setCoeffParents(new double[]{1});
+        distA.setCoeffForParent(varC, 1);
         distA.setVariance(0.25);
 
         distB.setIntercept(1.5);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varC, 1);
         distB.setVariance(0.64);
 
         distC.setMean(1);
@@ -469,11 +485,13 @@ public class VMPNormalTest extends TestCase {
         System.out.println(bn.toString());
 
         double b0PA =  distA.getIntercept();
-        double b1PA = distA.getCoeffParents()[0];
+        //double b1PA = distA.getCoeffParents()[0];
+        double b1PA = distA.getCoeffForParent(varC);
         double sdPA =  distA.getSd();
 
         double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        //double b1PB = distB.getCoeffParents()[0];
+        double b1PB = distB.getCoeffForParent(varC);
         double sdPB =  distB.getSd();
 
         double meanPC =  distC.getMean();
@@ -549,11 +567,13 @@ public class VMPNormalTest extends TestCase {
         distA.setVariance(0.25);
 
         distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varA, 1);
         distB.setVariance(0.04);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1});
+        //distC.setCoeffParents(new double[]{1});
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
 
@@ -563,11 +583,13 @@ public class VMPNormalTest extends TestCase {
         double sdPA =  distA.getSd();
 
         double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        //double b1PB = distB.getCoeffParents()[0];
+        double b1PB = distB.getCoeffForParent(varA);
         double sdPB =  distB.getSd();
 
         double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
+        //double b1PC = distC.getCoeffParents()[0];
+        double b1PC = distC.getCoeffForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
@@ -656,11 +678,13 @@ public class VMPNormalTest extends TestCase {
         distA.setVariance(0.25);
 
         distB.setIntercept(1);
-        distB.setCoeffParents(new double[]{1});
+        //distB.setCoeffParents(new double[]{1});
+        distB.setCoeffForParent(varA, 1);
         distB.setVariance(0.04);
 
         distC.setIntercept(1);
-        distC.setCoeffParents(new double[]{1});
+        //distC.setCoeffParents(new double[]{1});
+        distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
 
@@ -670,11 +694,13 @@ public class VMPNormalTest extends TestCase {
         double sdPA =  distA.getSd();
 
         double b0PB =  distB.getIntercept();
-        double b1PB = distB.getCoeffParents()[0];
+        //double b1PB = distB.getCoeffParents()[0];
+        double b1PB = distB.getCoeffForParent(varA);
         double sdPB =  distB.getSd();
 
         double b0PC =  distC.getIntercept();
-        double b1PC = distC.getCoeffParents()[0];
+        //double b1PC = distC.getCoeffParents()[0];
+        double b1PC = distC.getCoeffForParent(varB);
         double sdPC =  distC.getSd();
 
         VMP vmp = new VMP();
