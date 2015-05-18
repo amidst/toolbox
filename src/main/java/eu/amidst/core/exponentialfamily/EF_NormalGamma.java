@@ -8,7 +8,6 @@
 
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.utils.ArrayVector;
@@ -17,13 +16,12 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 /**
  * Created by ana@cs.aau.dk on 27/02/15.
  */
-public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
+public class EF_NormalGamma extends EF_ConditionalDistribution{
 
     Variable meanParameterVariable;
     Variable gammaParameterVariable;
@@ -48,9 +46,6 @@ public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
             throw new UnsupportedOperationException("Creating a Normal-Inverse-Gamma EF distribution for a non-inverse-gamma parent variable.");
         }
 
-        this.parametersParentVariables = new ArrayList();
-        this.parametersParentVariables.add(meanParameterVariable);
-        this.parametersParentVariables.add(gammaParameterVariable);
     }
 
     public Variable getMeanParameterVariable() {
@@ -134,6 +129,12 @@ public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
     }
 
     @Override
+    public <E extends ConditionalDistribution> E toConditionalDistribution() {
+        throw new UnsupportedOperationException("This method does not make sense. Parameter variables can not be converted. Use instead" +
+                "public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables);");
+    }
+
+    @Override
     public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         throw new UnsupportedOperationException("No Implemented. This method is no really needed");
     }
@@ -174,13 +175,13 @@ public class EF_NormalGamma extends EF_ConditionalLearningDistribution{
     }
 
     @Override
-    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedParameters) {
+    public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
 
         Normal normal = new Normal(this.var);
 
-        normal.setMean(expectedParameters.get(this.meanParameterVariable).get(0));
-        normal.setVariance(1.0/expectedParameters.get(this.gammaParameterVariable).get(0));
+        normal.setMean(expectedValueParameterVariables.get(this.meanParameterVariable).get(0));
+        normal.setVariance(1.0/ expectedValueParameterVariables.get(this.gammaParameterVariable).get(0));
 
-        return new BaseDistribution_MultinomialParents<Normal>(new ArrayList(), Arrays.asList(normal));
+        return normal;
     }
 }

@@ -8,12 +8,14 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import org.apache.commons.math3.special.Gamma;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -29,6 +31,8 @@ public class EF_Gamma extends EF_UnivariateDistribution {
 
         if (!var1.isGammaParameter())
             throw new IllegalArgumentException("The variable is not Gamma parameter");
+
+        this.parents = new ArrayList();
 
         this.var = var1;
         this.naturalParameters = this.createZeroedNaturalParameters();
@@ -79,6 +83,11 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     }
 
     @Override
+    public <E extends UnivariateDistribution> E toUnivariateDistribution() {
+        throw new UnsupportedOperationException("Gamma is not included yet in the Distributions package.");
+    }
+
+    @Override
     public void updateNaturalFromMomentParameters() {
         throw new UnsupportedOperationException("Not Implemented");
     }
@@ -92,9 +101,16 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     }
 
     @Override
+    public SufficientStatistics getSufficientStatistics(Assignment data) {
+        return this.getSufficientStatistics(data.getValue(this.var));
+    }
+
+    @Override
     public int sizeOfSufficientStatistics() {
         return 2;
     }
+
+
 
     @Override
     public double computeLogNormalizer() {
@@ -121,4 +137,6 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     public void fixNumericalInstability() {
 
     }
+
+
 }

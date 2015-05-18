@@ -9,17 +9,17 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.models.ParentSet;
-import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class EF_LearningBayesianNetwork extends EF_Distribution {
 
-    List<EF_ConditionalLearningDistribution> distributionList;
+    List<EF_ConditionalDistribution> distributionList;
     ParameterVariables parametersVariables;
 
     public EF_LearningBayesianNetwork(DAG dag){
@@ -91,10 +91,12 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
             if (dist.getVariable().isParameterVariable())
                 continue;
 
-            EF_ConditionalLearningDistribution distLearning = (EF_ConditionalLearningDistribution)dist;
+            EF_ConditionalDistribution distLearning = dist;
             Map<Variable, Vector> expectedParameters = new HashMap<>();
-            for(Variable var: distLearning.getParameterParentVariables()){
-                EF_UnivariateDistribution uni =  ((EF_BaseDistribution_MultinomialParents)distributionList.get(var.getVarID())).getBaseEFUnivariateDistribution(0);
+            for(Variable var: distLearning.getConditioningVariables()){
+                if (!var.isParameterVariable())
+                    continue;;
+                EF_UnivariateDistribution uni =  ((EF_UnivariateDistribution)distributionList.get(var.getVarID()));
                 expectedParameters.put(var, uni.getExpectedParameters());
             }
             condDistList.add(distLearning.toConditionalDistribution(expectedParameters));
@@ -115,13 +117,17 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
         return ef_bn;
     }
 
-    public List<EF_ConditionalLearningDistribution> getDistributionList() {
+    public List<EF_ConditionalDistribution> getDistributionList() {
         return distributionList;
     }
 
 
-    public EF_ConditionalLearningDistribution getDistribution(Variable var) {
+    public EF_ConditionalDistribution getDistribution(Variable var) {
         return distributionList.get(var.getVarID());
+    }
+
+    public void setDistribution(Variable var, EF_ConditionalDistribution dist) {
+        distributionList.set(var.getVarID(), dist);
     }
 
     @Override
