@@ -128,8 +128,9 @@ public class wrapperBN {
                 scores[V.getVarID()] = computeAccuracy (bn, testData, classVar);
 
                 //determine the max score and the index of the Variable
-                int maxScore = 0;// = max(scores);
-                int index = 0;// = maxIndex(scores);
+
+                int maxScore = max(scores);
+                int index = maxIndex(scores);
 
                 if (score < maxScore){
                     score = maxScore;
