@@ -3,7 +3,7 @@ package eu.amidst.huginlink.inference;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.inference.messagepassage.VMP;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.variables.HashMapAssignment;
