@@ -8,7 +8,7 @@
 
 package eu.amidst.core.learning;
 
-import eu.amidst.core.inference.vmp.Node;
+import eu.amidst.core.inference.messagepassage.Node;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
