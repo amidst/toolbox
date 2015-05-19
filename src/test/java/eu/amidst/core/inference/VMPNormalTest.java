@@ -4,6 +4,7 @@ package eu.amidst.core.inference;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.exponentialfamily.EF_Normal;
+import eu.amidst.core.inference.messagepassage.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.DAG;
@@ -84,8 +85,8 @@ public class VMPNormalTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
-        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
+        EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
 
         double meanQA= qADist.getMomentParameters().get(0);
         double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
@@ -180,9 +181,9 @@ public class VMPNormalTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
-        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
-        EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
+        EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
+        EF_Normal qCDist = ((EF_Normal) vmp.getNodes().get(2).getQDist());
 
         double meanQA= qADist.getMomentParameters().get(0);
         double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
@@ -291,9 +292,9 @@ public class VMPNormalTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
-        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
-        EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
+        EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
+        EF_Normal qCDist = ((EF_Normal) vmp.getNodes().get(2).getQDist());
 
         double meanQA= qADist.getMomentParameters().get(0);
         double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
@@ -395,9 +396,9 @@ public class VMPNormalTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
-        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
-        EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
+        EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
+        EF_Normal qCDist = ((EF_Normal) vmp.getNodes().get(2).getQDist());
 
         double meanQA= qADist.getMomentParameters().get(0);
         double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
@@ -504,9 +505,9 @@ public class VMPNormalTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
-        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
-        EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
+        EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
+        EF_Normal qCDist = ((EF_Normal) vmp.getNodes().get(2).getQDist());
 
         double meanQA= 0.7;
         double meanQB= 0.2;
@@ -599,9 +600,9 @@ public class VMPNormalTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
-        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
-        EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
+        EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
+        EF_Normal qCDist = ((EF_Normal) vmp.getNodes().get(2).getQDist());
 
         double meanQA= qADist.getMomentParameters().get(0);
         double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
@@ -710,9 +711,9 @@ public class VMPNormalTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Normal qADist = ((EF_Normal) vmp.nodes.get(0).getQDist());
-        EF_Normal qBDist = ((EF_Normal) vmp.nodes.get(1).getQDist());
-        EF_Normal qCDist = ((EF_Normal) vmp.nodes.get(2).getQDist());
+        EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
+        EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
+        EF_Normal qCDist = ((EF_Normal) vmp.getNodes().get(2).getQDist());
 
         double meanQA= qADist.getMomentParameters().get(0);
         double sdQA= Math.sqrt(qADist.getMomentParameters().get(1) - qADist.getMomentParameters().get(0) * qADist.getMomentParameters().get(0));
