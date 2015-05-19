@@ -1,6 +1,9 @@
 package eu.amidst.scai2015;
 
-import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.io.DataStreamLoader;
@@ -9,7 +12,12 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -17,15 +25,37 @@ import java.io.IOException;
  */
 public class wrapperBN {
 
-    static BayesianNetwork wrapperBNOneMonth(DataOnMemory<DataInstance> data) throws IOException {
+    int seed = 0;
+    Variable classVariable;
+    static int DEFAULTER_VALUE_INDEX = 1;
+
+
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
+    public Variable getClassVariable() {
+        return classVariable;
+    }
+
+    public void setClassVariable(Variable classVariable) {
+        this.classVariable = classVariable;
+    }
+
+    public BayesianNetwork wrapperBNOneMonth(DataOnMemory<DataInstance> data) throws IOException {
 
         StaticVariables Vars = new StaticVariables(data.getAttributes());
         int nbrVars = Vars.getNumberOfVars();
         Variable classVar = Vars.getVariableById(-1);
 
         //Split the whole data into training and testing
-        DataOnMemory<DataInstance> trainingData = data;
-        DataOnMemory<DataInstance> testData = data;
+        List<DataOnMemory<DataInstance>> splitData = this.splitTrainAndTest(data,66.0);
+        DataOnMemory<DataInstance> trainingData = splitData.get(0);
+        DataOnMemory<DataInstance> testData = splitData.get(1);
 
 
         StaticVariables NonSelectedVars = Vars; // All the features variables minus the C and C'
@@ -104,6 +134,35 @@ public class wrapperBN {
         return predictions/data.getNumberOfDataInstances();
     }
 
+    List<DataOnMemory<DataInstance>> splitTrainAndTest(DataOnMemory<DataInstance> data, double trainPercentage) {
+        Random random = new Random(this.seed);
+
+        DataOnMemoryListContainer<DataInstance> train = new DataOnMemoryListContainer(data.getAttributes());
+        DataOnMemoryListContainer<DataInstance> test = new DataOnMemoryListContainer(data.getAttributes());
+
+        for (DataInstance dataInstance : data) {
+            if (dataInstance.getValue(classVariable) == DEFAULTER_VALUE_INDEX)
+                continue;
+
+            if (random.nextDouble()<trainPercentage/100.0)
+                train.add(dataInstance);
+            else
+                test.add(dataInstance);
+        }
+
+        for (DataInstance dataInstance : data) {
+            if (dataInstance.getValue(classVariable) != DEFAULTER_VALUE_INDEX)
+                continue;
+
+            if (random.nextDouble()<trainPercentage/100.0)
+                train.add(dataInstance);
+        }
+
+        Collections.shuffle(train.getList(), random);
+        Collections.shuffle(test.getList(), random);
+
+        return Arrays.asList(train, test);
+    }
 
     public static void main(String[] args) throws IOException {
 
