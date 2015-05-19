@@ -1,47 +1,57 @@
+package eu.amidst.core.inference.messagepassage;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
  */
-
-package eu.amidst.core.inference;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
-import eu.amidst.core.distribution.*;
-import eu.amidst.core.exponentialfamily.*;
-import eu.amidst.core.inference.vmp.Message;
-import eu.amidst.core.inference.vmp.Node;
-import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.MomentParameters;
+import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.inference.InferenceAlgorithmForBN;
+import eu.amidst.core.inference.InferenceEngineForBN;
+import eu.amidst.core.inference.Sampler;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public class VMP implements InferenceAlgorithmForBN, Sampler {
+public class ParallelVMP implements InferenceAlgorithmForBN, Sampler {
 
     BayesianNetwork model;
     EF_BayesianNetwork ef_model;
     Assignment assignment = new HashMapAssignment(0);
     List<Node> nodes;
     Map<Variable,Node> variablesToNode;
-    boolean parallelMode = false;
     double probOfEvidence = Double.NaN;
     Random random = new Random(0);
     int seed=0;
-    boolean testELBO=false;
     int maxIter = 1000;
     double threshold = 0.0001;
     boolean output = false;
@@ -59,22 +69,9 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
         this.maxIter = maxIter;
     }
 
-    public void setTestELBO(boolean testELBO) {
-        this.testELBO = testELBO;
-    }
-
     public void resetQs(){
         this.nodes.stream().forEach(node -> {node.resetQDist(random);});
     }
-
-    public boolean isParallelMode() {
-        return parallelMode;
-    }
-
-    public void setParallelMode(boolean parallelMode) {
-        this.parallelMode = parallelMode;
-    }
-
 
     @Override
     public void setSeed(int seed) {
@@ -85,67 +82,6 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
 
     @Override
     public void runInference() {
-        if (parallelMode)
-            this.compileModelParallel();
-        else
-            this.compileModelSerial();
-    }
-
-
-    public void compileModelSerial() {
-
-        nIter = 0;
-
-        boolean convergence = false;
-        double elbo = Double.NEGATIVE_INFINITY;
-        int niter = 0;
-        while (!convergence && (niter++)<maxIter) {
-
-            boolean done = true;
-            for (Node node : nodes) {
-                if (!node.isActive() || node.isObserved())
-                    continue;
-
-                Message<NaturalParameters> selfMessage = node.newSelfMessage();
-
-                //Optional<Message<NaturalParameters>> childrenMessage = node.getChildren().parallelStream().map(children -> children.newMessageToParent(node)).reduce(Message::combine);
-                //if (childrenMessage.isPresent())
-                //    selfMessage = Message.combine(childrenMessage.get(), selfMessage);
-
-                for (Node children: node.getChildren()){
-                    selfMessage = Message.combine(children.newMessageToParent(node), selfMessage);
-                }
-
-                node.updateCombinedMessage(selfMessage);
-                done &= node.isDone();
-            }
-
-            if (done) {
-                convergence = true;
-            }
-
-
-            //Compute lower-bound
-            double newelbo = this.nodes.stream().mapToDouble(Node::computeELBO).sum();
-            if (Math.abs(newelbo - elbo) < threshold) {
-                convergence = true;
-            }
-            if (testELBO && (!convergence && newelbo/nodes.size() < (elbo/nodes.size() - 0.01) && niter>-1) || Double.isNaN(elbo)){
-                throw new IllegalStateException("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
-                //System.out.println("The elbo is not monotonically increasing at iter "+niter+": " + elbo + ", "+ newelbo);
-            }
-            elbo = newelbo;
-
-            //System.out.println(elbo);
-        }
-        probOfEvidence = elbo;
-        if (output){
-            System.out.println("N Iter: "+niter +", elbo:"+elbo);
-        }
-        nIter=niter;
-    }
-
-    public void compileModelParallel() {
 
         nIter = 0;
 
@@ -165,7 +101,7 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
             //Send and combine messages
             Map<Node, Optional<Message<NaturalParameters>>> group = nodes.parallelStream()
                     //.peek(node -> newelbo.addAndGet(node.computeELBO()))
-                    .flatMap(node -> node.computeMessagesParallelVMP())
+                    .flatMap(node -> computeMessagesParallelVMP(node))
                     .collect(
                             Collectors.groupingBy(Message::getNode,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
@@ -175,7 +111,7 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
             numberOfNotDones += group.entrySet().parallelStream()
                     .mapToInt(e -> {
                         Node node = e.getKey();
-                        node.updateCombinedMessage(e.getValue().get());
+                        updateCombinedMessage(node, e.getValue().get());
                         return (node.isDone()) ? 0 : 1;
                     })
                     .sum();
@@ -184,8 +120,8 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
 
             //Send and combine messages
             group = nodes.parallelStream()
-                    .peek(node -> newelbo.addAndGet(node.computeELBO()))
-                    .flatMap(node -> node.computeMessagesParallelVMP())
+                    .peek(node -> newelbo.addAndGet(computeELBO(node)))
+                    .flatMap(node -> computeMessagesParallelVMP(node))
                     .collect(
                             Collectors.groupingBy(Message::getNode,ConcurrentHashMap::new,
                                     Collectors.reducing(Message::combine))
@@ -195,7 +131,7 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
             numberOfNotDones += group.entrySet().parallelStream()
                     .mapToInt(e -> {
                         Node node = e.getKey();
-                        node.updateCombinedMessage(e.getValue().get());
+                        updateCombinedMessage(node, e.getValue().get());
                         return (node.isDone()) ? 0 : 1;
                     })
                     .sum();
@@ -224,9 +160,81 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
         nIter=niter;
     }
 
+
+    public void updateCombinedMessage(Node node, Message<NaturalParameters> message) {
+        node.getQDist().setNaturalParameters(message.getVector());
+        node.setIsDone(message.isDone());
+    }
+
+    private double computeELBO(Node node){
+
+        Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+
+        double elbo=0;
+        NaturalParameters expectedNatural = node.getPDist().getExpectedNaturalFromParents(momentParents);
+
+        if (!node.isObserved()) {
+            expectedNatural.substract(node.getQDist().getNaturalParameters());
+            elbo += expectedNatural.dotProduct(node.getQDist().getMomentParameters());
+            elbo -= node.getPDist().getExpectedLogNormalizer(momentParents);
+            elbo += node.getQDist().computeLogNormalizer();
+        }else {
+            elbo += expectedNatural.dotProduct(node.getSufficientStatistics());
+            elbo -= node.getPDist().getExpectedLogNormalizer(momentParents);
+            elbo += node.getPDist().computeLogBaseMeasure(this.assignment);
+        }
+
+        if (elbo>0 && !node.isObserved() && Math.abs(expectedNatural.sum())<0.01) {
+            elbo=0;
+        }
+
+        if ((elbo>2 && !node.isObserved()) || Double.isNaN(elbo)) {
+            node.getPDist().getExpectedLogNormalizer(momentParents);
+            throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + node.getMainVariable().getName() + ", " +  elbo + ", " + expectedNatural.sum());
+        }
+
+        return  elbo;
+    }
+
+    public Stream<Message<NaturalParameters>> computeMessagesParallelVMP(Node node){
+
+
+        Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+
+        List<Message<NaturalParameters>> messages = node.getParents().stream()
+                .filter(parent -> parent.isActive())
+                .filter(parent -> !parent.isObserved())
+                .filter(parent -> parent.isParallelActivated())
+                .map(parent -> newMessageToParent(node, parent, momentParents))
+                .collect(Collectors.toList());
+
+        if (node.isActive() && node.isParallelActivated() && !node.isObserved()) {
+            messages.add(newSelfMessage(node, momentParents));
+        }
+
+        return messages.stream();
+    }
+
+    public Message<NaturalParameters> newSelfMessage(Node node, Map<Variable, MomentParameters> momentParents) {
+        Message<NaturalParameters> message = new Message(node);
+        message.setVector(node.getPDist().getExpectedNaturalFromParents(momentParents));
+        message.setDone(node.messageDoneFromParents());
+
+        return message;
+    }
+
+    public Message<NaturalParameters> newMessageToParent(Node children, Node parent, Map<Variable, MomentParameters> momentChildCoParents){
+        Message<NaturalParameters> message = new Message(parent);
+        message.setVector(children.getPDist().getExpectedNaturalToParent(parent.getMainVariable(), momentChildCoParents));
+        message.setDone(children.messageDoneToParent(parent.getMainVariable()));
+
+        return message;
+    }
+
     public int getNumberOfIterations(){
         return nIter;
     }
+
     @Override
     public void setModel(BayesianNetwork model_) {
         model = model_;
@@ -286,6 +294,7 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
                     .forEach(var -> this.getNodeOfVar(var).getChildren().add(node));
         }
     }
+
     @Override
     public BayesianNetwork getOriginalModel() {
         return this.model;
@@ -312,15 +321,28 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
         return (E)this.getNodeOfVar(var).getQDist();
     }
 
+    @Override
+    public BayesianNetwork getSamplingModel() {
+
+        DAG dag = new DAG(this.model.getStaticVariables());
+
+        List<ConditionalDistribution> distributionList =
+                this.model.getStaticVariables().getListOfVariables().stream()
+                        .map(var -> (ConditionalDistribution)this.getPosterior(var))
+                        .collect(Collectors.toList());
+
+        return BayesianNetwork.newBayesianNetwork(dag, distributionList);
+    }
+
+
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
         System.out.println(bn.getNumberOfVars());
         System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfParameters()).max().getAsInt());
 
-        VMP vmp = new VMP();
-        //vmp.setSeed(10);
-        vmp.setParallelMode(false);
+        ParallelVMP vmp = new ParallelVMP();
+
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
 
         double avg  = 0;
@@ -338,16 +360,5 @@ public class VMP implements InferenceAlgorithmForBN, Sampler {
 
     }
 
-    @Override
-    public BayesianNetwork getSamplingModel() {
 
-        DAG dag = new DAG(this.model.getStaticVariables());
-
-        List<ConditionalDistribution> distributionList =
-                this.model.getStaticVariables().getListOfVariables().stream()
-                .map(var -> (ConditionalDistribution)this.getPosterior(var))
-                        .collect(Collectors.toList());
-
-        return BayesianNetwork.newBayesianNetwork(dag, distributionList);
-    }
 }
