@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public abstract class MessagePassageAlgorithm<E extends Vector> implements InferenceAlgorithmForBN {
+public abstract class MessagePassingAlgorithm<E extends Vector> implements InferenceAlgorithmForBN {
 
     protected BayesianNetwork model;
     protected EF_BayesianNetwork ef_model;

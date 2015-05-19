@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public class VMP extends MessagePassageAlgorithm<NaturalParameters> implements InferenceAlgorithmForBN, Sampler {
+public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithmForBN, Sampler {
 
     boolean testELBO=true;
 
