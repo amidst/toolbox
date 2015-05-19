@@ -4,7 +4,7 @@ package eu.amidst.core.inference;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.exponentialfamily.EF_Normal;
-import eu.amidst.core.inference.messagepassage.VMP;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.DAG;
