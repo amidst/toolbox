@@ -14,6 +14,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.inference.messagepassage.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.LocalRandomGenerator;
