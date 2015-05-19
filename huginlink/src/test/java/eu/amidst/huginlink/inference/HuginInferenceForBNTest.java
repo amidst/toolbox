@@ -4,7 +4,7 @@ import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.inference.VMP;
+import eu.amidst.core.inference.messagepassage.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StaticVariables;

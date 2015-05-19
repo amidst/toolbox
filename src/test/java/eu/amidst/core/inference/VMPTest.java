@@ -3,6 +3,7 @@ package eu.amidst.core.inference;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
+import eu.amidst.core.inference.messagepassage.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -61,8 +62,8 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        EF_Multinomial qADist = ((EF_Multinomial) vmp.nodes.get(0).getQDist());
-        EF_Multinomial qBDist = ((EF_Multinomial) vmp.nodes.get(1).getQDist());
+        EF_Multinomial qADist = ((EF_Multinomial) vmp.getNodes().get(0).getQDist());
+        EF_Multinomial qBDist = ((EF_Multinomial) vmp.getNodes().get(1).getQDist());
 
         double[] qA = new double[2];
         qA[0] = qADist.getMomentParameters().get(0);
@@ -199,9 +200,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
-        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -302,8 +303,8 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -392,9 +393,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
-        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -467,9 +468,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
-        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -544,9 +545,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
-        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -617,8 +618,8 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -684,8 +685,8 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
-        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
 
@@ -806,9 +807,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
-        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
@@ -904,9 +905,9 @@ public class VMPTest extends TestCase {
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
         InferenceEngineForBN.setModel(bn);
 
-        Multinomial qADist = vmp.nodes.get(0).getQDist().toUnivariateDistribution();
-        Multinomial qBDist = vmp.nodes.get(1).getQDist().toUnivariateDistribution();
-        Multinomial qCDist = vmp.nodes.get(2).getQDist().toUnivariateDistribution();
+        Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
+        Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
+        Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
         //InferenceEngineForBN.setEvidence(assignment);
