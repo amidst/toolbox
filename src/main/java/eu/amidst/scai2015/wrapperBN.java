@@ -1,16 +1,19 @@
 package eu.amidst.scai2015;
 
 import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.inference.InferenceAlgorithmForBN;
 import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.inference.VMP;
+import eu.amidst.core.inference.messagepassage.VMP;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
+import org.apache.hadoop.util.hash.Hash;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.evaluation.ThresholdCurve;
@@ -35,6 +38,8 @@ public class wrapperBN {
     static int NON_DEFAULTER_VALUE_INDEX = 0;
 
     static boolean usePRCArea = false; //By default ROCArea is used
+
+    HashMap<Integer, Integer> defaultingClients = new HashMap<>();
 
     public static boolean isUsePRCArea() {
         return usePRCArea;
@@ -196,6 +201,8 @@ public class wrapperBN {
 
             if (random.nextDouble()<trainPercentage/100.0)
                 train.add(dataInstance);
+            else
+                test.add(dataInstance);
         }
 
         Collections.shuffle(train.getList(), random);
@@ -208,43 +215,64 @@ public class wrapperBN {
     public double test(DataOnMemory<DataInstance> data, BayesianNetwork bn, HashMap<Integer, Multinomial> posteriors, boolean updatePosteriors){
 
 
-        VMP vmp = new VMP();
+        InferenceAlgorithmForBN vmp = new VMP();
         ArrayList<Prediction> predictions = new ArrayList<>();
+
+        int currentMonthIndex = (int)data.getDataInstance(0).getValue(TIME_ID);
 
         for (DataInstance instance : data) {
             int clientID = (int) instance.getValue(SEQUENCE_ID);
 
-            //Multinomial distClass_PM = bn.getConditionalDistribution(classVariable_PM);
-            //distClass_PM = posteriors.get(clientID);
+            double classValue = instance.getValue(classVariable);
+            Prediction prediction;
+            Multinomial posterior;
 
-            ((Multinomial)bn.getConditionalDistribution(classVariable_PM)).setProbabilities(posteriors.get(clientID).getProbabilities());
+            Integer defaultingMonth = defaultingClients.get(clientID);
+            if( (defaultingMonth != null) && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
+                prediction = new NominalPrediction(classValue, new double[]{0.0, 1.0});
+                posterior = new Multinomial(classVariable);
+                /* This is for the sake of "correctness", this will never be used*/
+                posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
+                posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
+            }else{
 
-            Multinomial_MultinomialParents distClass = bn.getConditionalDistribution(classVariable);
-            Multinomial deterministic = new Multinomial(classVariable);
-            deterministic.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
-            deterministic.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
-            distClass.setMultinomial(DEFAULTER_VALUE_INDEX, deterministic);
+                bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
 
-            vmp.setModel(bn);
+                /*
+                Multinomial_MultinomialParents distClass = bn.getConditionalDistribution(classVariable);
+                Multinomial deterministic = new Multinomial(classVariable);
+                deterministic.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
+                deterministic.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
+                distClass.setMultinomial(DEFAULTER_VALUE_INDEX, deterministic);
+                */
 
-            instance.setValue(classVariable, Utils.missingValue());
-            instance.setValue(classVariable_PM, Utils.missingValue());
-            vmp.setEvidence(instance);
-            vmp.runInference();
-            Multinomial posterior = vmp.getPosterior(classVariable);
+                vmp.setModel(bn);
 
-            double realValue = instance.getValue(classVariable);
-            Prediction prediction = new NominalPrediction(realValue, posterior.getProbabilities());
+                double classValue_PM = instance.getValue(classVariable_PM);
+                instance.setValue(classVariable, Utils.missingValue());
+                instance.setValue(classVariable_PM, Utils.missingValue());
+                vmp.setEvidence(instance);
+                vmp.runInference();
+                posterior = vmp.getPosterior(classVariable);
+
+                instance.setValue(classVariable, classValue);
+                instance.setValue(classVariable_PM, classValue_PM);
+                prediction = new NominalPrediction(classValue, posterior.getProbabilities());
+            }
 
             predictions.add(prediction);
 
-            if(realValue == DEFAULTER_VALUE_INDEX) {
-                posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
-                posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
+            if (classValue == DEFAULTER_VALUE_INDEX) {
+                defaultingClients.putIfAbsent(clientID, currentMonthIndex);
             }
 
-            if(updatePosteriors)
+            if(updatePosteriors) {
+                if (classValue == DEFAULTER_VALUE_INDEX) {
+                    posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
+                    posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
+                }
                 posteriors.put(clientID, posterior);
+            }
         }
 
         ThresholdCurve thresholdCurve = new ThresholdCurve();
