@@ -4,7 +4,7 @@ import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.inference.VMP;
+import eu.amidst.core.inference.messagepassage.VMP;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
