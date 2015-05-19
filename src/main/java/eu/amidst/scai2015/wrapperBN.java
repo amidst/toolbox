@@ -90,6 +90,7 @@ public class wrapperBN {
                 scores[V.getVarID()] = computeAccuracy (bn, testData, classVar);
 
                 //determine the max score and the index of the Variable
+
                 int maxScore = max(scores);
                 int index = maxIndex(scores);
 
