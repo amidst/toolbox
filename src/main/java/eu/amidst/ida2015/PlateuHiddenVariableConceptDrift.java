@@ -8,7 +8,7 @@
 
 package eu.amidst.ida2015;
 
-import eu.amidst.core.inference.messagepassage.Node;
+import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.learning.PlateuStructure;
 import eu.amidst.core.variables.Variable;
 
