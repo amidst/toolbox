@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.core.inference.messagepassage;
+package eu.amidst.core.inference.messagepassing;
 
 
 

@@ -4,7 +4,7 @@ import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.inference.VMP;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -128,8 +128,8 @@ public class wrapperBN {
                 scores[V.getVarID()] = computeAccuracy (bn, testData, classVar);
 
                 //determine the max score and the index of the Variable
-                int maxScore = max(scores);
-                int index = maxIndex(scores);
+                int maxScore = 0;// = max(scores);
+                int index = 0;// = maxIndex(scores);
 
                 if (score < maxScore){
                     score = maxScore;

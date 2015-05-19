@@ -11,8 +11,8 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.inference.messagepassage.VMP;
-import eu.amidst.core.inference.messagepassage.Node;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;

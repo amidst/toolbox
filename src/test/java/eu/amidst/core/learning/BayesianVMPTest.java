@@ -6,7 +6,7 @@ import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.inference.messagepassage.VMP;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;

@@ -10,7 +10,7 @@ package eu.amidst.core.inference;
 
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.inference.messagepassage.VMP;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.variables.Assignment;
