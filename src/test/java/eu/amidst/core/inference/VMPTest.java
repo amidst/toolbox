@@ -3,7 +3,7 @@ package eu.amidst.core.inference;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
-import eu.amidst.core.inference.messagepassage.VMP;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
