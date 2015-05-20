@@ -7,7 +7,7 @@ import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.inference.messagepassage.VMP;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.dynamic.BayesianLearningEngineForDBN;
 import eu.amidst.core.learning.dynamic.MaximumLikelihoodForDBN;
 import eu.amidst.core.learning.dynamic.StreamingVariationalBayesVMPForDBN;

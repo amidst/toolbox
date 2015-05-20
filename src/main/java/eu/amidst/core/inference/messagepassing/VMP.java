@@ -6,7 +6,7 @@
  *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package eu.amidst.core.inference.messagepassage;
+package eu.amidst.core.inference.messagepassing;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.distribution.ConditionalDistribution;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public class VMP extends MessagePassageAlgorithm<NaturalParameters> implements InferenceAlgorithmForBN, Sampler {
+public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithmForBN, Sampler {
 
     boolean testELBO=true;
 
