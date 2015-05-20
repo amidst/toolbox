@@ -64,6 +64,9 @@ public final class BayesianNetwork implements Serializable {
         return (E) distributions.get(var.getVarID());
     }
 
+    public void setConditionalDistribution(Variable var, ConditionalDistribution dist){
+        this.distributions.set(var.getVarID(),dist);
+    }
     public <E extends Distribution> E getDistribution(Variable var) {
         return DistributionTypeEnum.conditionalDistributionToDistribution(this.getConditionalDistribution(var));
     }
