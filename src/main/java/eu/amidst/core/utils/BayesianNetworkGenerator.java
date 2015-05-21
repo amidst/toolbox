@@ -29,10 +29,10 @@ public final class BayesianNetworkGenerator{
 
     private static int numberOfVars;
     private static int numberOfLinks;
-    private static int numberOfDiscreteVars = 10;
-    private static int numberOfContinuousVars = 10;
-    private static int numberOfStates = 2;
-    private static int seed = 0;
+    private static int numberOfDiscreteVars;
+    private static int numberOfContinuousVars;
+    private static int numberOfStates;
+    private static int seed;
 
     public static void setSeed(int seed) {
         BayesianNetworkGenerator.seed = seed;
@@ -227,6 +227,20 @@ public final class BayesianNetworkGenerator{
 
     public static int getIntOption(String optionName){
         return Integer.parseInt(getOption(optionName));
+    }
+
+    public static void generateBNtoFile(int nDiscrete, int nStates, int nContin, int nLinks, int seed_, String filename) throws IOException {
+
+
+        numberOfLinks=nLinks;
+        numberOfDiscreteVars=nDiscrete;
+        numberOfContinuousVars=nContin;
+        numberOfStates =nStates;
+        numberOfVars=nDiscrete+nContin;
+        seed = seed_;
+
+        BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
+        BayesianNetworkWriter.saveToFile(bayesianNetwork, filename);
     }
 
     public static void main(String[] agrs) throws IOException, ClassNotFoundException {
