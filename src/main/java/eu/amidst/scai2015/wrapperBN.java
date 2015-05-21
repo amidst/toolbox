@@ -118,6 +118,8 @@ public class wrapperBN {
         //Learn the initial BN with training data including only the class variable
         BayesianNetwork bNet = train(trainingData, Vars, SF);
 
+        System.out.println(bNet.toString());
+
         //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
         double score = test(testData, bNet, posteriors, false);
 
@@ -126,11 +128,14 @@ public class wrapperBN {
         while (nbrNSF > 0 && stop == false ){
 
             System.out.print(cont + ", "+score +", "+SF.size() + ", ");
-            SF.stream().forEach(v -> System.out.println(v.getName() + ", "));
+            SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
             System.out.println();
             Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
 
             for(Variable V:NSF) {
+
+                if (V.getVarID()>5)
+                    break;
                 System.out.println("Testing "+V.getName());
                 SF.add(V);
                 //train
@@ -142,7 +147,7 @@ public class wrapperBN {
                 //determine the Variable V with max score
             double maxScore = (Collections.max(scores.values()));  //returns max value in the Hashmap
 
-            if (score < maxScore){
+            if (maxScore - score > 0.001){
                 score = maxScore;
                 //Variable with best score
                 for (Map.Entry<Variable, Double> entry : scores.entrySet()) {
@@ -150,6 +155,7 @@ public class wrapperBN {
                         Variable SelectedV = entry.getKey();
                         SF.add(SelectedV);
                         NSF.remove(SelectedV);
+                        break;
                     }
                 }
                 nbrNSF = nbrNSF - 1;
@@ -162,6 +168,7 @@ public class wrapperBN {
 
         //Final training with the winning SF and the full initial data
         bNet = train(data, Vars, SF);
+        test(data, bNet, posteriors, true);
 
         return bNet;
     }
@@ -318,7 +325,7 @@ public class wrapperBN {
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(NbrClients)) {
 
             if (batch.getDataInstance(0).getValue(TIME_ID) != 0) {
-                double auc = test(batch, bNet, posteriors, true);
+                double auc = test(batch, bNet, posteriors, false);
                 System.out.println(batch.getDataInstance(0).getValue(TIME_ID) + "\t" + auc);
                 averageAUC += auc;
             }
