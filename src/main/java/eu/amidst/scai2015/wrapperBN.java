@@ -40,6 +40,14 @@ public class wrapperBN {
     static boolean nonDeterministic = false; //By default, if a client is DEFAULTER one month, then it is predicted as
                                              //defaulter until evidence shows otherwise.
 
+    public static boolean isNonDeterministic() {
+        return nonDeterministic;
+    }
+
+    public static void setNonDeterministic(boolean nonDeterministic) {
+        wrapperBN.nonDeterministic = nonDeterministic;
+    }
+
     HashMap<Integer, Integer> defaultingClients = new HashMap<>();
 
     public static boolean isUsePRCArea() {
@@ -189,7 +197,11 @@ public class wrapperBN {
 
         DAG dag = new DAG(allVars);
         dag.getParentSet(classVariable).addParent(classVariable_PM);
-        dag.getParentSets().stream().filter(parent -> SF.contains(parent.getMainVar())).filter(w -> w.getMainVar().getVarID() != classVariable.getVarID()).forEach(w -> w.addParent(classVariable));
+        /* Add classVariable to all SF*/
+        dag.getParentSets().stream()
+                .filter(parent -> SF.contains(parent.getMainVar()))
+                .filter(w -> w.getMainVar().getVarID() != classVariable.getVarID())
+                .forEach(w -> w.addParent(classVariable));
 
         StreamingVariationalBayesVMP vmp = new StreamingVariationalBayesVMP();
 
@@ -198,8 +210,7 @@ public class wrapperBN {
         vmp.setWindowsSize(100);
         vmp.runLearning();
 
-        BayesianNetwork bNet = vmp.getLearntBayesianNetwork();
-        return bNet;
+        return vmp.getLearntBayesianNetwork();
     }
 
 
@@ -217,8 +228,6 @@ public class wrapperBN {
             double classValue = instance.getValue(classVariable);
             Prediction prediction;
             Multinomial posterior;
-
-
 
             if(!nonDeterministic
                     && (defaultingClients.get(clientID) != null)
@@ -291,10 +300,10 @@ public class wrapperBN {
         double averageAUC = 0;
         BayesianNetwork bNet = null;
 
-        Multinomial uniform = new Multinomial(classVariable);
-        uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
-        uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
         for (int i = 0; i < NbrClients ; i++){
+            Multinomial uniform = new Multinomial(classVariable);
+            uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
+            uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
             posteriors.put(i,uniform);
         }
 
@@ -323,6 +332,8 @@ public class wrapperBN {
         for (int i = 1; i < args.length ; i++) {
             if(args[i].equalsIgnoreCase("PRCArea"))
                 setUsePRCArea(true);
+            if(args[i].equalsIgnoreCase("nonDeterministic"))
+                setNonDeterministic(true);
         }
 
        wrapperBN wbnet = new wrapperBN();
