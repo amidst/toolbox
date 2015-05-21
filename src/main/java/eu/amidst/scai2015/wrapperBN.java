@@ -121,12 +121,17 @@ public class wrapperBN {
         //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
         double score = test(testData, bNet, posteriors, false);
 
+        int cont=0;
         //iterate until there is no improvement in score
         while (nbrNSF > 0 && stop == false ){
 
+            System.out.print(cont + ", "+score +", "+SF.size() + ", ");
+            SF.stream().forEach(v -> System.out.println(v.getName() + ", "));
+            System.out.println();
             Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
 
             for(Variable V:NSF) {
+                System.out.println("Testing "+V.getName());
                 SF.add(V);
                 //train
                 bNet = train(trainingData, Vars, SF);
@@ -152,6 +157,7 @@ public class wrapperBN {
             else{
                 stop = true;
             }
+            cont++;
         }
 
         //Final training with the winning SF and the full initial data
@@ -196,7 +202,8 @@ public class wrapperBN {
     public BayesianNetwork train(DataOnMemory<DataInstance> data, StaticVariables allVars, List<Variable> SF){
 
         DAG dag = new DAG(allVars);
-        dag.getParentSet(classVariable).addParent(classVariable_PM);
+        if(data.getDataInstance(0).getValue(TIME_ID)!=0)
+            dag.getParentSet(classVariable).addParent(classVariable_PM);
         /* Add classVariable to all SF*/
         dag.getParentSets().stream()
                 .filter(parent -> SF.contains(parent.getMainVar()))
@@ -270,11 +277,12 @@ public class wrapperBN {
             }
 
             if(updatePosteriors) {
+                Multinomial multi_PM = posterior.toEFUnivariateDistribution().deepCopy(classVariable_PM).toUnivariateDistribution();
                 if (classValue == DEFAULTER_VALUE_INDEX) {
-                    posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
-                    posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
+                    multi_PM.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
+                    multi_PM.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
                 }
-                posteriors.put(clientID, posterior);
+                posteriors.put(clientID, multi_PM);
             }
         }
 
@@ -301,7 +309,7 @@ public class wrapperBN {
         BayesianNetwork bNet = null;
 
         for (int i = 0; i < NbrClients ; i++){
-            Multinomial uniform = new Multinomial(classVariable);
+            Multinomial uniform = new Multinomial(classVariable_PM);
             uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
             uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
             posteriors.put(i,uniform);
@@ -311,7 +319,7 @@ public class wrapperBN {
 
             if (batch.getDataInstance(0).getValue(TIME_ID) != 0) {
                 double auc = test(batch, bNet, posteriors, true);
-                System.out.print("\t" + auc);
+                System.out.println(batch.getDataInstance(0).getValue(TIME_ID) + "\t" + auc);
                 averageAUC += auc;
             }
 
