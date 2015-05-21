@@ -1,19 +1,16 @@
 package eu.amidst.scai2015;
 
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.inference.InferenceAlgorithmForBN;
-import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.learning.StreamingVariationalBayesVMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import org.apache.hadoop.util.hash.Hash;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.evaluation.ThresholdCurve;
@@ -31,13 +28,25 @@ public class wrapperBN {
     int seed = 0;
     Variable classVariable;
     Variable classVariable_PM;
-
     Attribute SEQUENCE_ID;
     Attribute TIME_ID;
     static int DEFAULTER_VALUE_INDEX = 1;
     static int NON_DEFAULTER_VALUE_INDEX = 0;
+    boolean parallelMode = true;
+    int NbrClients= 50000;
+    HashMap<Integer, Multinomial> posteriors = new HashMap<>();
 
     static boolean usePRCArea = false; //By default ROCArea is used
+    static boolean nonDeterministic = false; //By default, if a client is DEFAULTER one month, then it is predicted as
+                                             //defaulter until evidence shows otherwise.
+
+    public static boolean isNonDeterministic() {
+        return nonDeterministic;
+    }
+
+    public static void setNonDeterministic(boolean nonDeterministic) {
+        wrapperBN.nonDeterministic = nonDeterministic;
+    }
 
     HashMap<Integer, Integer> defaultingClients = new HashMap<>();
 
@@ -89,95 +98,80 @@ public class wrapperBN {
         this.classVariable = classVariable;
     }
 
-    public BayesianNetwork wrapperBNOneMonth(DataOnMemory<DataInstance> data) throws IOException {
+    public BayesianNetwork wrapperBNOneMonth(DataOnMemory<DataInstance> data){
 
         StaticVariables Vars = new StaticVariables(data.getAttributes());
-        int nbrVars = Vars.getNumberOfVars();
-        Variable classVar = Vars.getVariableById(-1);
 
         //Split the whole data into training and testing
         List<DataOnMemory<DataInstance>> splitData = this.splitTrainAndTest(data,66.0);
         DataOnMemory<DataInstance> trainingData = splitData.get(0);
         DataOnMemory<DataInstance> testData = splitData.get(1);
 
+        List<Variable> NSF = new ArrayList<>(Vars.getListOfVariables()); // NSF: non selected features
+        NSF.remove(classVariable);     //remove C
+        NSF.remove(classVariable_PM); // remove C'
+        int nbrNSF = NSF.size();
 
-        StaticVariables NonSelectedVars = Vars; // All the features variables minus the C and C'
-        int nbrNonSelected = nbrVars-2; //nbr of all features except the 2 classes C and C'?
-        StaticVariables SelectedVars = new StaticVariables();
+        List<Variable> SF = new ArrayList(); // SF:selected features
         Boolean stop = false;
 
-        DAG dag = new DAG(Vars);
-
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
-
         //Learn the initial BN with training data including only the class variable
-        // bn = trainModel(trainingData,SelectedVars)
+        BayesianNetwork bNet = train(trainingData, Vars, SF);
+
+        System.out.println(bNet.toString());
 
         //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
-        double score = computeAccuracy (bn, testData, classVar); //add HashMap
+        double score = test(testData, bNet, posteriors, false);
 
-
+        int cont=0;
         //iterate until there is no improvement in score
-        while (nbrNonSelected > 0 && stop == false ) {
+        while (nbrNSF > 0 && stop == false ){
 
-            double[] scores = new double[nbrVars]; //save the score for each potential considered variable
+            System.out.print(cont + ", "+score +", "+SF.size() + ", ");
+            SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
+            System.out.println();
+            Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
 
-            for(Variable V:NonSelectedVars){
+            for(Variable V:NSF) {
 
-                //learn a naive bayes including the class and the new selected set of variables including the variable V
-
-                //bn = trainModel(trainingData,NewSelectedVars)
-
-                //evaluate using the testing data
-                //auc = testModel(testData, bn, HashMap)
-                scores[V.getVarID()] = computeAccuracy (bn, testData, classVar);
-
-                //determine the max score and the index of the Variable
-
-                int maxScore = max(scores);
-                int index = maxIndex(scores);
-
-                if (score < maxScore){
-                    score = maxScore;
-                    //add the variable with index to the list of SelectedVars
-                    //SelectedVars = SelectedVars + V
-                    nbrNonSelected = nbrNonSelected -1;
-                }
-                else{
-
-                    stop = true;
-                }
+                if (V.getVarID()>5)
+                    break;
+                System.out.println("Testing "+V.getName());
+                SF.add(V);
+                //train
+                bNet = train(trainingData, Vars, SF);
+                //evaluate
+                scores.put(V, test(testData, bNet, posteriors, false));
+                SF.remove(V);
             }
+                //determine the Variable V with max score
+            double maxScore = (Collections.max(scores.values()));  //returns max value in the Hashmap
+
+            if (maxScore - score > 0.001){
+                score = maxScore;
+                //Variable with best score
+                for (Map.Entry<Variable, Double> entry : scores.entrySet()) {
+                    if (entry.getValue()== maxScore){
+                        Variable SelectedV = entry.getKey();
+                        SF.add(SelectedV);
+                        NSF.remove(SelectedV);
+                        break;
+                    }
+                }
+                nbrNSF = nbrNSF - 1;
+                }
+            else{
+                stop = true;
+            }
+            cont++;
         }
 
+        //Final training with the winning SF and the full initial data
+        bNet = train(data, Vars, SF);
+        test(data, bNet, posteriors, true);
 
-        //Update HashMap considering the winning subset of the selected features and all the data (i.e., training +testing data)
-        //HashMap = updateHM (data, SelectedVars)
-
-        return bn;
+        return bNet;
     }
-
-
-    public static double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data, Variable classVar){
-
-        double predictions = 0;
-
-        InferenceEngineForBN.setModel(bn);
-
-        for (DataInstance instance : data) {
-            double realValue = instance.getValue(classVar);
-            instance.setValue(classVar, Utils.missingValue());
-            InferenceEngineForBN.setEvidence(instance);
-            InferenceEngineForBN.runInference();
-            Multinomial posterior = InferenceEngineForBN.getPosterior(classVar);
-            if (Utils.maxIndex(posterior.getProbabilities())==realValue)
-                predictions++;
-            instance.setValue(classVar, realValue);
-        }
-
-        return predictions/data.getNumberOfDataInstances();
-    }
-
 
     List<DataOnMemory<DataInstance>> splitTrainAndTest(DataOnMemory<DataInstance> data, double trainPercentage) {
         Random random = new Random(this.seed);
@@ -212,6 +206,28 @@ public class wrapperBN {
     }
 
 
+    public BayesianNetwork train(DataOnMemory<DataInstance> data, StaticVariables allVars, List<Variable> SF){
+
+        DAG dag = new DAG(allVars);
+        if(data.getDataInstance(0).getValue(TIME_ID)!=0)
+            dag.getParentSet(classVariable).addParent(classVariable_PM);
+        /* Add classVariable to all SF*/
+        dag.getParentSets().stream()
+                .filter(parent -> SF.contains(parent.getMainVar()))
+                .filter(w -> w.getMainVar().getVarID() != classVariable.getVarID())
+                .forEach(w -> w.addParent(classVariable));
+
+        StreamingVariationalBayesVMP vmp = new StreamingVariationalBayesVMP();
+
+        vmp.setDAG(dag);
+        vmp.setDataStream(data);
+        vmp.setWindowsSize(100);
+        vmp.runLearning();
+
+        return vmp.getLearntBayesianNetwork();
+    }
+
+
     public double test(DataOnMemory<DataInstance> data, BayesianNetwork bn, HashMap<Integer, Multinomial> posteriors, boolean updatePosteriors){
 
 
@@ -227,15 +243,16 @@ public class wrapperBN {
             Prediction prediction;
             Multinomial posterior;
 
-            Integer defaultingMonth = defaultingClients.get(clientID);
-            if( (defaultingMonth != null) && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
+            if(!nonDeterministic
+                    && (defaultingClients.get(clientID) != null)
+                    && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
                 prediction = new NominalPrediction(classValue, new double[]{0.0, 1.0});
                 posterior = new Multinomial(classVariable);
                 /* This is for the sake of "correctness", this will never be used*/
                 posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
                 posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
             }else{
-
+                /*Propagates*/
                 bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
 
                 /*
@@ -267,11 +284,12 @@ public class wrapperBN {
             }
 
             if(updatePosteriors) {
+                Multinomial multi_PM = posterior.toEFUnivariateDistribution().deepCopy(classVariable_PM).toUnivariateDistribution();
                 if (classValue == DEFAULTER_VALUE_INDEX) {
-                    posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
-                    posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
+                    multi_PM.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
+                    multi_PM.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
                 }
-                posteriors.put(clientID, posterior);
+                posteriors.put(clientID, multi_PM);
             }
         }
 
@@ -284,19 +302,58 @@ public class wrapperBN {
             return ThresholdCurve.getROCArea(tcurve);
     }
 
+    void learnCajamarModel(DataStream<DataInstance> data) {
+
+        StaticVariables Vars = new StaticVariables(data.getAttributes());
+        classVariable = Vars.getVariableById(Vars.getNumberOfVars()-1);
+        classVariable_PM = Vars.getVariableById(Vars.getNumberOfVars()-2);
+
+        TIME_ID = data.getAttributes().getAttributeByName("TIME_ID");
+        SEQUENCE_ID = data.getAttributes().getAttributeByName("SEQUENCE_ID");
+
+        int count = NbrClients;
+        double averageAUC = 0;
+        BayesianNetwork bNet = null;
+
+        for (int i = 0; i < NbrClients ; i++){
+            Multinomial uniform = new Multinomial(classVariable_PM);
+            uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
+            uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
+            posteriors.put(i,uniform);
+        }
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(NbrClients)) {
+
+            if (batch.getDataInstance(0).getValue(TIME_ID) != 0) {
+                double auc = test(batch, bNet, posteriors, false);
+                System.out.println(batch.getDataInstance(0).getValue(TIME_ID) + "\t" + auc);
+                averageAUC += auc;
+            }
+
+            //train BN with the current batch
+            bNet = wrapperBNOneMonth(batch);
+
+            count += NbrClients;
+        }
+
+        System.out.println("Average Accuracy: " + averageAUC / (count / NbrClients));
+    }
 
     public static void main(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/randomdata.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("/Users/ana/Dropbox/amidst/datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
 
-        String arg;
-        for (int i = 0; i < args.length ; i++) {
-            arg = args[i];
+        for (int i = 1; i < args.length ; i++) {
             if(args[i].equalsIgnoreCase("PRCArea"))
                 setUsePRCArea(true);
+            if(args[i].equalsIgnoreCase("nonDeterministic"))
+                setNonDeterministic(true);
         }
-        //BayesianNetwork bn = wrapperBN.wrapperBNOneMonth(data);
 
+       wrapperBN wbnet = new wrapperBN();
+
+       wbnet.learnCajamarModel(data);
 
     }
 
