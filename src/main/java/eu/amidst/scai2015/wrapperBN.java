@@ -1,21 +1,16 @@
 package eu.amidst.scai2015;
 
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.inference.InferenceAlgorithmForBN;
-import eu.amidst.core.inference.InferenceEngineForBN;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.LearningEngineForBN;
 import eu.amidst.core.learning.StreamingVariationalBayesVMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
-import org.apache.hadoop.util.hash.Hash;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.evaluation.ThresholdCurve;
@@ -291,6 +286,7 @@ public class wrapperBN {
         Multinomial uniform = new Multinomial(classVariable);
         uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
         uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
+
         for (int i = 0; i < NbrClients ; i++){
             posteriors.put(i,uniform);
         }
