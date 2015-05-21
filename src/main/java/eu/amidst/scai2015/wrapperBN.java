@@ -28,8 +28,6 @@ public class wrapperBN {
     int seed = 0;
     Variable classVariable;
     Variable classVariable_PM;
-    DataStream<DataInstance> data;
-    int windowsSize;
     Attribute SEQUENCE_ID;
     Attribute TIME_ID;
     static int DEFAULTER_VALUE_INDEX = 1;
@@ -39,6 +37,16 @@ public class wrapperBN {
     HashMap<Integer, Multinomial> posteriors = new HashMap<>();
 
     static boolean usePRCArea = false; //By default ROCArea is used
+    static boolean nonDeterministic = false; //By default, if a client is DEFAULTER one month, then it is predicted as
+                                             //defaulter until evidence shows otherwise.
+
+    public static boolean isNonDeterministic() {
+        return nonDeterministic;
+    }
+
+    public static void setNonDeterministic(boolean nonDeterministic) {
+        wrapperBN.nonDeterministic = nonDeterministic;
+    }
 
     HashMap<Integer, Integer> defaultingClients = new HashMap<>();
 
@@ -93,15 +101,13 @@ public class wrapperBN {
     public BayesianNetwork wrapperBNOneMonth(DataOnMemory<DataInstance> data){
 
         StaticVariables Vars = new StaticVariables(data.getAttributes());
-        classVariable = Vars.getVariableById(-1);
-        classVariable_PM = Vars.getVariableById(-2);
 
         //Split the whole data into training and testing
         List<DataOnMemory<DataInstance>> splitData = this.splitTrainAndTest(data,66.0);
         DataOnMemory<DataInstance> trainingData = splitData.get(0);
         DataOnMemory<DataInstance> testData = splitData.get(1);
 
-        List<Variable> NSF = Vars.getListOfVariables(); // NSF: non selected features
+        List<Variable> NSF = new ArrayList<>(Vars.getListOfVariables()); // NSF: non selected features
         NSF.remove(classVariable);     //remove C
         NSF.remove(classVariable_PM); // remove C'
         int nbrNSF = NSF.size();
@@ -191,7 +197,11 @@ public class wrapperBN {
 
         DAG dag = new DAG(allVars);
         dag.getParentSet(classVariable).addParent(classVariable_PM);
-        dag.getParentSets().stream().filter(parent -> SF.contains(parent.getMainVar())).filter(w -> w.getMainVar().getVarID() != classVariable.getVarID()).forEach(w -> w.addParent(classVariable));
+        /* Add classVariable to all SF*/
+        dag.getParentSets().stream()
+                .filter(parent -> SF.contains(parent.getMainVar()))
+                .filter(w -> w.getMainVar().getVarID() != classVariable.getVarID())
+                .forEach(w -> w.addParent(classVariable));
 
         StreamingVariationalBayesVMP vmp = new StreamingVariationalBayesVMP();
 
@@ -200,8 +210,7 @@ public class wrapperBN {
         vmp.setWindowsSize(100);
         vmp.runLearning();
 
-        BayesianNetwork bNet = vmp.getLearntBayesianNetwork();
-        return bNet;
+        return vmp.getLearntBayesianNetwork();
     }
 
 
@@ -220,15 +229,16 @@ public class wrapperBN {
             Prediction prediction;
             Multinomial posterior;
 
-            Integer defaultingMonth = defaultingClients.get(clientID);
-            if( (defaultingMonth != null) && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
+            if(!nonDeterministic
+                    && (defaultingClients.get(clientID) != null)
+                    && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
                 prediction = new NominalPrediction(classValue, new double[]{0.0, 1.0});
                 posterior = new Multinomial(classVariable);
                 /* This is for the sake of "correctness", this will never be used*/
                 posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
                 posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
             }else{
-
+                /*Propagates*/
                 bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
 
                 /*
@@ -277,21 +287,27 @@ public class wrapperBN {
             return ThresholdCurve.getROCArea(tcurve);
     }
 
-    void learnModel() {
+    void learnCajamarModel(DataStream<DataInstance> data) {
 
-        int count = windowsSize;
+        StaticVariables Vars = new StaticVariables(data.getAttributes());
+        classVariable = Vars.getVariableById(Vars.getNumberOfVars()-1);
+        classVariable_PM = Vars.getVariableById(Vars.getNumberOfVars()-2);
+
+        TIME_ID = data.getAttributes().getAttributeByName("TIME_ID");
+        SEQUENCE_ID = data.getAttributes().getAttributeByName("SEQUENCE_ID");
+
+        int count = NbrClients;
         double averageAUC = 0;
         BayesianNetwork bNet = null;
 
-        Multinomial uniform = new Multinomial(classVariable);
-        uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
-        uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
-
         for (int i = 0; i < NbrClients ; i++){
+            Multinomial uniform = new Multinomial(classVariable);
+            uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
+            uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
             posteriors.put(i,uniform);
         }
 
-        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowsSize)) {
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(NbrClients)) {
 
             if (batch.getDataInstance(0).getValue(TIME_ID) != 0) {
                 double auc = test(batch, bNet, posteriors, true);
@@ -302,26 +318,27 @@ public class wrapperBN {
             //train BN with the current batch
             bNet = wrapperBNOneMonth(batch);
 
-            count += windowsSize;
+            count += NbrClients;
         }
 
-        System.out.println("Average Accuracy: " + averageAUC / (count / windowsSize));
+        System.out.println("Average Accuracy: " + averageAUC / (count / NbrClients));
     }
 
     public static void main(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/BankArtificialDataSCAI2015.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("/Users/ana/Dropbox/amidst/datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
 
-        String arg;
-        for (int i = 0; i < args.length ; i++) {
-            arg = args[i];
+        for (int i = 1; i < args.length ; i++) {
             if(args[i].equalsIgnoreCase("PRCArea"))
                 setUsePRCArea(true);
+            if(args[i].equalsIgnoreCase("nonDeterministic"))
+                setNonDeterministic(true);
         }
 
        wrapperBN wbnet = new wrapperBN();
 
-       wbnet.learnModel();
+       wbnet.learnCajamarModel(data);
 
     }
 
