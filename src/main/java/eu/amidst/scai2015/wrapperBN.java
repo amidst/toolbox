@@ -302,6 +302,75 @@ public class wrapperBN {
             return ThresholdCurve.getROCArea(tcurve);
     }
 
+    public double propagateAndTest(Queue<DataOnMemory<DataInstance>> data, BayesianNetwork bn){
+
+        HashMap<Integer, Multinomial> posteriors = new HashMap<>();
+        InferenceAlgorithmForBN vmp = new VMP();
+        ArrayList<Prediction> predictions = new ArrayList<>();
+
+        while(!data.isEmpty()){
+
+            Prediction prediction = null;
+            Multinomial posterior = null;
+            DataOnMemory<DataInstance> batch = data.poll();
+            int currentMonthIndex = (int)batch.getDataInstance(0).getValue(TIME_ID);
+            for (DataInstance instance : batch) {
+
+                int clientID = (int) instance.getValue(SEQUENCE_ID);
+                double classValue = instance.getValue(classVariable);
+
+                if(!nonDeterministic
+                        && (defaultingClients.get(clientID) != null)
+                        && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
+                    prediction = new NominalPrediction(classValue, new double[]{0.0, 1.0});
+                    posterior = new Multinomial(classVariable);
+                    /* This is for the sake of "correctness", this will never be used*/
+                    posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
+                    posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
+                }else{
+                    /*Propagates*/
+                    bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
+                    vmp.setModel(bn);
+                    double classValue_PM = instance.getValue(classVariable_PM);
+                    instance.setValue(classVariable, Utils.missingValue());
+                    instance.setValue(classVariable_PM, Utils.missingValue());
+                    vmp.setEvidence(instance);
+                    vmp.runInference();
+                    posterior = vmp.getPosterior(classVariable);
+
+                    instance.setValue(classVariable, classValue);
+                    instance.setValue(classVariable_PM, classValue_PM);
+                    if(data.isEmpty()) { //Last month or present
+                        prediction = new NominalPrediction(classValue, posterior.getProbabilities());
+                        predictions.add(prediction);
+                    }
+                }
+
+                if (classValue == DEFAULTER_VALUE_INDEX) {
+                    defaultingClients.putIfAbsent(clientID, currentMonthIndex);
+                }
+
+                if(data.isEmpty()) {//Last month or present
+                    ThresholdCurve thresholdCurve = new ThresholdCurve();
+                    Instances tcurve = thresholdCurve.getCurve(predictions);
+
+                    if(usePRCArea)
+                        return ThresholdCurve.getPRCArea(tcurve);
+                    else
+                        return ThresholdCurve.getROCArea(tcurve);
+                }
+
+                Multinomial multi_PM = posterior.toEFUnivariateDistribution().deepCopy(classVariable_PM).toUnivariateDistribution();
+                if (classValue == DEFAULTER_VALUE_INDEX) {
+                    multi_PM.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
+                    multi_PM.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
+                }
+                posteriors.put(clientID, multi_PM);
+            }
+        }
+        throw new UnsupportedOperationException("Something went wrong: The method should have stopped at some point in the loop.");
+    }
+
     void learnCajamarModel(DataStream<DataInstance> data) {
 
         StaticVariables Vars = new StaticVariables(data.getAttributes());
@@ -319,22 +388,33 @@ public class wrapperBN {
             Multinomial uniform = new Multinomial(classVariable_PM);
             uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
             uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
-            posteriors.put(i,uniform);
+            posteriors.put(i, uniform);
         }
 
-        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(NbrClients)) {
 
-            if (batch.getDataInstance(0).getValue(TIME_ID) != 0) {
-                double auc = test(batch, bNet, posteriors, false);
-                System.out.println(batch.getDataInstance(0).getValue(TIME_ID) + "\t" + auc);
-                averageAUC += auc;
-            }
+        Iterable<DataOnMemory<DataInstance>> iteratable = data.iterableOverBatches(NbrClients);
+        Iterator<DataOnMemory<DataInstance>> iterator =  iteratable.iterator();
+        Queue<DataOnMemory<DataInstance>> monthsMinus12to0 = new LinkedList<>();
 
-            //train BN with the current batch
-            bNet = wrapperBNOneMonth(batch);
+        //Take 13 batches at a time - 1 for training and 12 for testing
+        for (int i = 0; i < 11; i++) {
+            monthsMinus12to0.add(iterator.next());
+        }
+
+        BayesianNetwork bn = wrapperBNOneMonth(monthsMinus12to0.peek());
+
+        while(iterator.hasNext()){
+
+            DataOnMemory<DataInstance> currentMonth = iterator.next();
+            monthsMinus12to0.add(currentMonth);
+            double auc = propagateAndTest(monthsMinus12to0, bn);
+            System.out.println(monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID) + "\t" + auc);
+            averageAUC += auc;
 
             count += NbrClients;
+            monthsMinus12to0.remove();
         }
+
 
         System.out.println("Average Accuracy: " + averageAUC / (count / NbrClients));
     }
