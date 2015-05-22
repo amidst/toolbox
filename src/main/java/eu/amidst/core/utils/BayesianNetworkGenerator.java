@@ -169,7 +169,7 @@ public final class BayesianNetworkGenerator{
 
             Variable var2 = staticVariables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
 
-            if (dag.getParentSet(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1))
+            if (dag.getParentSet(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSet(var2).getNumberOfParents()>=3)
                 continue;
 
             dag.getParentSet(var2).addParent(var1);
