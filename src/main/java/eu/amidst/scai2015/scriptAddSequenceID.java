@@ -129,7 +129,8 @@ public class scriptAddSequenceID {
 
     public static void main(String[] args) {
         try {
-            scriptAddSequenceID("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            //scriptAddSequenceID("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            scriptAddSequenceID(args[0]);
             //removeInstancesWithMissing(args[0]);
         }catch (IOException ex){}
     }
