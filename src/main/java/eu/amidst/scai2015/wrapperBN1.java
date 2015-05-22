@@ -23,7 +23,9 @@ import java.util.*;
 /**
  * Created by Hanen on 18/05/15.
  */
-public class wrapperBN {
+public class wrapperBN1 {
+
+    //Train with one month and evaluate with the next
 
     int seed = 0;
     Variable classVariable;
@@ -45,7 +47,7 @@ public class wrapperBN {
     }
 
     public static void setNonDeterministic(boolean nonDeterministic) {
-        wrapperBN.nonDeterministic = nonDeterministic;
+        wrapperBN1.nonDeterministic = nonDeterministic;
     }
 
     HashMap<Integer, Integer> defaultingClients = new HashMap<>();
@@ -55,7 +57,7 @@ public class wrapperBN {
     }
 
     public static void setUsePRCArea(boolean usePRCArea) {
-        wrapperBN.usePRCArea = usePRCArea;
+        wrapperBN1.usePRCArea = usePRCArea;
     }
 
     public Attribute getSEQUENCE_ID() {
@@ -431,7 +433,7 @@ public class wrapperBN {
                 setNonDeterministic(true);
         }
 
-       wrapperBN wbnet = new wrapperBN();
+       wrapperBN1 wbnet = new wrapperBN1();
 
        wbnet.learnCajamarModel(data);
 
