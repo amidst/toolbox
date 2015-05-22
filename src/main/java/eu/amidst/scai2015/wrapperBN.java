@@ -136,7 +136,7 @@ public class wrapperBN {
         //iterate until there is no improvement in score
         while (nbrNSF > 0 && stop == false ){
 
-            System.out.print(cont + ", "+score +", "+SF.size() + ", ");
+            System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
             SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
             System.out.println();
             Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
@@ -212,7 +212,7 @@ public class wrapperBN {
         //iterate until there is no improvement in score
         while (nbrNSF > 0 && stop == false ){
 
-            System.out.print(cont + ", "+score +", "+SF.size() + ", ");
+            System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
             SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
             System.out.println();
             Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
@@ -221,7 +221,7 @@ public class wrapperBN {
 
                 //if (V.getVarID()>5)
                 //    break;
-                System.out.println("Testing "+V.getName());
+                System.out.println("Testing variable: "+V.getName());
                 SF.add(V);
                 //train
                 bNet = train(trainingData, Vars, SF);
