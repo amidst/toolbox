@@ -449,7 +449,7 @@ public class wrapperBN {
 
     public static void main(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("/Users/ana/Dropbox/amidst/datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
         //DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
 
         for (int i = 1; i < args.length ; i++) {
