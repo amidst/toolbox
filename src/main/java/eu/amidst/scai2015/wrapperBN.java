@@ -552,7 +552,7 @@ public class wrapperBN {
             if(isNB()){
                 DataOnMemory<DataInstance> batch = monthsMinus12to0.poll();
                 StaticVariables vars = new StaticVariables(batch.getAttributes());
-                train(batch, vars, vars.getListOfVariables());
+                bn = train(batch, vars, vars.getListOfVariables());
             }
             else
                 bn = wrapperBNOneMonthNB(monthsMinus12to0.poll());
