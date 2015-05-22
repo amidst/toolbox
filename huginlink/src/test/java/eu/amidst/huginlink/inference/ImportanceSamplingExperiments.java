@@ -141,8 +141,11 @@ public class ImportanceSamplingExperiments {
         BayesianNetwork bn;
         VMP vmp = new VMP();
         ImportanceSampling importanceSampling = new ImportanceSampling();
-        HuginInferenceForBN huginInferenceForBN = new HuginInferenceForBN();
+        //HuginInferenceForBN huginInferenceForBN = new HuginInferenceForBN();
 
+        System.out.println("Number of variables: " + nDiscrete + " discrete and " + nContin + " continuous");
+        System.out.println("Sample size: " + N);
+        System.out.println();
 
         int seed = 1823716125;
         Random random = new Random(seed);
@@ -152,13 +155,13 @@ public class ImportanceSamplingExperiments {
         double [] timeIS = new double[REP];
         double [] timeISVMP = new double[REP];
         double [] timeISexact = new double[REP];
-        double [] timeHUGIN = new double[REP];
+        //double [] timeHUGIN = new double[REP];
 
         double [] probabilitiesVMP = new double[REP];
         double [] probabilitiesIS = new double[REP];
         double [] probabilitiesISVMP = new double[REP];
         double [] probabilitiesISexact = new double[REP];
-        double [] probabilitiesHUGIN = new double[REP];
+        //double [] probabilitiesHUGIN = new double[REP];
 
         // DO THE "REP" REPETITIONS OF THE EXPERIMENT
         for(int k=0; k<REP; k++) {
@@ -210,7 +213,7 @@ public class ImportanceSamplingExperiments {
             //*****************************************************************
             // VMP INFERENCE
             //*****************************************************************
-
+            System.out.println("VMP");
             long timeStartVMP = System.nanoTime();
             vmp.setModel(bn);
             vmp.setEvidence(evidence);
@@ -232,7 +235,7 @@ public class ImportanceSamplingExperiments {
             //*****************************************************************
             // IMPORTANCE SAMPLING INFERENCE
             //*****************************************************************
-
+            System.out.println("IS-VMP");
             importanceSampling.setModel(bn);
             //importanceSampling.setSamplingModel(vmp.getSamplingModel());
             importanceSampling.setParallelMode(true);
@@ -256,6 +259,7 @@ public class ImportanceSamplingExperiments {
 
 
             // IS WITH CONDITIONALS
+            System.out.println("IS");
             long timeStartIS = System.nanoTime();
 
             //importanceSampling.setSamplingModel(bn);
@@ -268,6 +272,7 @@ public class ImportanceSamplingExperiments {
 
 
             // IS WITH CONDITIONALS AND HUGE SAMPLE
+            System.out.println("IS exact");
             int Nexact = 100000;
             importanceSampling.setSampleSize(Nexact);
 
@@ -286,7 +291,7 @@ public class ImportanceSamplingExperiments {
             // HUGIN INFERENCE
             //*****************************************************************
 
-            long timeStartHugin = System.nanoTime();
+            /*long timeStartHugin = System.nanoTime();
 
 
             huginInferenceForBN.setModel(bn);
@@ -304,7 +309,7 @@ public class ImportanceSamplingExperiments {
 
 
             long timeStopHugin = System.nanoTime();
-            double execTimeHugin = (double) (timeStopHugin - timeStartHugin) / 1000000000.0;
+            double execTimeHugin = (double) (timeStopHugin - timeStartHugin) / 1000000000.0;*/
 
 
             //*****************************************************************
@@ -323,7 +328,7 @@ public class ImportanceSamplingExperiments {
             timeISVMP[k]=execTimeISVMP;
             timeIS[k]=execTimeIS;
             timeISexact[k]=execTimeISexact;
-            timeHUGIN[k]=execTimeHugin;
+            //timeHUGIN[k]=execTimeHugin;
 
 
             //*****************************************************************
@@ -353,32 +358,30 @@ public class ImportanceSamplingExperiments {
             probabilitiesISVMP[k]=probISVMP;
             probabilitiesIS[k]=probIS;
             probabilitiesISexact[k]=probISexact;
-            probabilitiesHUGIN[k]=probHUGIN;
+            //probabilitiesHUGIN[k]=probHUGIN;
         }
 
-        System.out.println("Number of variables" + nDiscrete+nContin);
-        System.out.println("Sample size:" + N);
-        System.out.println();
-        System.out.println("Execution Times: (VMP,IS-VMP,IS,IS-EXACT,HUGIN)");
+
+        System.out.println("Execution Times: (VMP,IS-VMP,IS,IS-EXACT)");
         System.out.println(Arrays.toString(timeVMP));
         System.out.println(Arrays.toString(timeISVMP));
         System.out.println(Arrays.toString(timeIS));
         System.out.println(Arrays.toString(timeISexact));
-        System.out.println(Arrays.toString(timeHUGIN));
+        //System.out.println(Arrays.toString(timeHUGIN));
         System.out.println();
-        System.out.println("Probabilities: (VMP,IS-VMP,IS,IS-EXACT,HUGIN)");
+        System.out.println("Probabilities: (VMP,IS-VMP,IS,IS-EXACT)");
         System.out.println(Arrays.toString(probabilitiesVMP));
         System.out.println(Arrays.toString(probabilitiesISVMP));
         System.out.println(Arrays.toString(probabilitiesIS));
         System.out.println(Arrays.toString(probabilitiesISexact));
-        System.out.println(Arrays.toString(probabilitiesHUGIN));
+        //System.out.println(Arrays.toString(probabilitiesHUGIN));
         System.out.println();
 
         double meanTimeVMP = Arrays.stream(timeVMP).average().getAsDouble();
         double meanTimeISVMP = Arrays.stream(timeISVMP).average().getAsDouble();
         double meanTimeIS = Arrays.stream(timeIS).average().getAsDouble();
         double meanTimeISexact = Arrays.stream(timeISexact).average().getAsDouble();
-        double meanTimeHUGIN = Arrays.stream(timeHUGIN).average().getAsDouble();
+        //double meanTimeHUGIN = Arrays.stream(timeHUGIN).average().getAsDouble();
 
         /*
         double  [] chi2errorVMP = new double[REP];
@@ -398,19 +401,19 @@ public class ImportanceSamplingExperiments {
         double meanErrorVMP = IntStream.range(0, REP).mapToDouble(k-> Math.pow(probabilitiesVMP[k]-probabilitiesISexact[k],2)/probabilitiesISexact[k]).average().getAsDouble();
         double meanErrorISVMP = IntStream.range(0, REP).mapToDouble(k-> Math.pow(probabilitiesISVMP[k]-probabilitiesISexact[k],2)/probabilitiesISexact[k]).average().getAsDouble();
         double meanErrorIS = IntStream.range(0, REP).mapToDouble(k-> Math.pow(probabilitiesIS[k]-probabilitiesISexact[k],2)/probabilitiesISexact[k]).average().getAsDouble();
-        double meanErrorHUGIN = IntStream.range(0, REP).mapToDouble(k-> Math.pow(probabilitiesHUGIN[k]-probabilitiesISexact[k],2)/probabilitiesISexact[k]).average().getAsDouble();
+        //double meanErrorHUGIN = IntStream.range(0, REP).mapToDouble(k-> Math.pow(probabilitiesHUGIN[k]-probabilitiesISexact[k],2)/probabilitiesISexact[k]).average().getAsDouble();
 
-        System.out.println("Mean time: (VMP,IS-VMP,IS,IS-exact,HUGIN)");
+        System.out.println("Mean time: (VMP,IS-VMP,IS,IS-exact)");
         System.out.println(meanTimeVMP);
         System.out.println(meanTimeISVMP);
         System.out.println(meanTimeIS);
         System.out.println(meanTimeISexact);
-        System.out.println(meanTimeHUGIN);
+        //System.out.println(meanTimeHUGIN);
         System.out.println();
-        System.out.println("Mean chi2 error: (VMP,IS-VMP,IS,HUGIN), w.r.t. IS-exact");
+        System.out.println("Mean chi2 error: (VMP,IS-VMP,IS), w.r.t. IS-exact");
         System.out.println(meanErrorVMP);
         System.out.println(meanErrorISVMP);
         System.out.println(meanErrorIS);
-        System.out.println(meanErrorHUGIN);
+        //System.out.println(meanErrorHUGIN);
     }
 }
