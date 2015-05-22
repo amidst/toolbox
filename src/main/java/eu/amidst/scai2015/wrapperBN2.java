@@ -24,6 +24,7 @@ import java.util.*;
  */
 public class wrapperBN2 {
 
+    //Train with month number 1 and evaluate with month number 12?
 
     int seed = 0;
     Variable classVariable;
