@@ -84,5 +84,4 @@ public class BayesianNetworkTest {
 
         System.out.println(logProb);
     }
-
 }

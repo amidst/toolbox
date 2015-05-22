@@ -98,7 +98,7 @@ public class ImportanceSamplingExperiments {
         int nLinks = 0;
 
         // FOR A CONTINUOUS VARIABLE OF INTEREST
-        if (args.length==6) {
+        if (args.length==4) {
 
             String a1 = args[0]; // Number of discrete variables
             String a2 = args[1]; // Number of discrete variables
@@ -356,6 +356,9 @@ public class ImportanceSamplingExperiments {
             probabilitiesHUGIN[k]=probHUGIN;
         }
 
+        System.out.println("Number of variables" + nDiscrete+nContin);
+        System.out.println("Sample size:" + N);
+        System.out.println();
         System.out.println("Execution Times: (VMP,IS-VMP,IS,IS-EXACT,HUGIN)");
         System.out.println(Arrays.toString(timeVMP));
         System.out.println(Arrays.toString(timeISVMP));
