@@ -248,7 +248,7 @@ public class ImportanceSamplingExperiments {
             //importanceSampling.setSamplingModel(vmp.getSamplingModel());
 
             importanceSampling.runInference(vmp);
-            UnivariateDistribution posteriorISVMP = importanceSampling.getPosterior(varInterest);
+            //UnivariateDistribution posteriorISVMP = importanceSampling.getPosterior(varInterest);
             double probISVMP = importanceSampling.runQuery(varInterest, a, b);
 
             long timeStopISVMP = System.nanoTime();
@@ -260,7 +260,7 @@ public class ImportanceSamplingExperiments {
 
             //importanceSampling.setSamplingModel(bn);
             importanceSampling.runInference();
-            UnivariateDistribution posteriorIS = importanceSampling.getPosterior(varInterest);
+            //UnivariateDistribution posteriorIS = importanceSampling.getPosterior(varInterest);
             double probIS = importanceSampling.runQuery(varInterest, a, b);
 
             long timeStopIS = System.nanoTime();
@@ -275,7 +275,7 @@ public class ImportanceSamplingExperiments {
 
             importanceSampling.setSamplingModel(bn);
             importanceSampling.runInference();
-            UnivariateDistribution posteriorISexact = importanceSampling.getPosterior(varInterest);
+            //UnivariateDistribution posteriorISexact = importanceSampling.getPosterior(varInterest);
             double probISexact = importanceSampling.runQuery(varInterest, a, b);
 
             long timeStopISexact = System.nanoTime();
