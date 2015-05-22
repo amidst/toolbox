@@ -34,11 +34,20 @@ public class wrapperBN {
     static int NON_DEFAULTER_VALUE_INDEX = 0;
     boolean parallelMode = true;
     int NbrClients= 50000;
-    HashMap<Integer, Multinomial> posteriors = new HashMap<>();
+    HashMap<Integer, Multinomial> posteriorsGlobal = new HashMap<>();
 
     static boolean usePRCArea = false; //By default ROCArea is used
     static boolean nonDeterministic = false; //By default, if a client is DEFAULTER one month, then it is predicted as
                                              //defaulter until evidence shows otherwise.
+    static boolean NB = false;
+
+    public static boolean isNB() {
+        return NB;
+    }
+
+    public static void setNB(boolean NB) {
+        wrapperBN.NB = NB;
+    }
 
     public static boolean isNonDeterministic() {
         return nonDeterministic;
@@ -98,7 +107,7 @@ public class wrapperBN {
         this.classVariable = classVariable;
     }
 
-    public BayesianNetwork wrapperBNOneMonth(DataOnMemory<DataInstance> data){
+    public BayesianNetwork wrapperBNOneMonthNB(DataOnMemory<DataInstance> data){
 
         StaticVariables Vars = new StaticVariables(data.getAttributes());
 
@@ -134,14 +143,14 @@ public class wrapperBN {
 
             for(Variable V:NSF) {
 
-                if (V.getVarID()>5)
-                    break;
+                //if (V.getVarID()>5)
+                //    break;
                 System.out.println("Testing "+V.getName());
                 SF.add(V);
                 //train
                 bNet = train(trainingData, Vars, SF, false);
                 //evaluate
-                scores.put(V, test(testData, bNet, posteriors, false));
+                scores.put(V, testFS(testData, bNet));
                 SF.remove(V);
             }
                 //determine the Variable V with max score
@@ -169,8 +178,86 @@ public class wrapperBN {
         //Final training with the winning SF and the full initial data
         bNet = train(data, Vars, SF, true);
 
+        System.out.println(bNet.getDAG().toString());
+
         return bNet;
     }
+
+    public BayesianNetwork wrapperBNOneMonth(DataOnMemory<DataInstance> data){
+
+        StaticVariables Vars = new StaticVariables(data.getAttributes());
+
+        //Split the whole data into training and testing
+        List<DataOnMemory<DataInstance>> splitData = this.splitTrainAndTest(data,66.0);
+        DataOnMemory<DataInstance> trainingData = splitData.get(0);
+        DataOnMemory<DataInstance> testData = splitData.get(1);
+
+        List<Variable> NSF = new ArrayList<>(Vars.getListOfVariables()); // NSF: non selected features
+        NSF.remove(classVariable);     //remove C
+        NSF.remove(classVariable_PM); // remove C'
+        int nbrNSF = NSF.size();
+
+        List<Variable> SF = new ArrayList(); // SF:selected features
+        Boolean stop = false;
+
+        //Learn the initial BN with training data including only the class variable
+        BayesianNetwork bNet = train(trainingData, Vars, SF);
+
+        System.out.println(bNet.toString());
+
+        //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
+        double score = test(testData, bNet, posteriorsGlobal, false);
+
+        int cont=0;
+        //iterate until there is no improvement in score
+        while (nbrNSF > 0 && stop == false ){
+
+            System.out.print(cont + ", "+score +", "+SF.size() + ", ");
+            SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
+            System.out.println();
+            Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
+
+            for(Variable V:NSF) {
+
+                //if (V.getVarID()>5)
+                //    break;
+                System.out.println("Testing "+V.getName());
+                SF.add(V);
+                //train
+                bNet = train(trainingData, Vars, SF);
+                //evaluate
+                scores.put(V, test(testData, bNet, posteriorsGlobal, false));
+                SF.remove(V);
+            }
+            //determine the Variable V with max score
+            double maxScore = (Collections.max(scores.values()));  //returns max value in the Hashmap
+
+            if (maxScore - score > 0.001){
+                score = maxScore;
+                //Variable with best score
+                for (Map.Entry<Variable, Double> entry : scores.entrySet()) {
+                    if (entry.getValue()== maxScore){
+                        Variable SelectedV = entry.getKey();
+                        SF.add(SelectedV);
+                        NSF.remove(SelectedV);
+                        break;
+                    }
+                }
+                nbrNSF = nbrNSF - 1;
+            }
+            else{
+                stop = true;
+            }
+            cont++;
+        }
+
+        //Final training with the winning SF and the full initial data
+        bNet = train(data, Vars, SF);
+        test(data, bNet, posteriorsGlobal, true);
+
+        return bNet;
+    }
+
 
     List<DataOnMemory<DataInstance>> splitTrainAndTest(DataOnMemory<DataInstance> data, double trainPercentage) {
         Random random = new Random(this.seed);
@@ -209,6 +296,27 @@ public class wrapperBN {
 
         DAG dag = new DAG(allVars);
         if(data.getDataInstance(0).getValue(TIME_ID)!=0 && includeClassVariablePM)
+            dag.getParentSet(classVariable).addParent(classVariable_PM);
+        /* Add classVariable to all SF*/
+        dag.getParentSets().stream()
+                .filter(parent -> SF.contains(parent.getMainVar()))
+                .filter(w -> w.getMainVar().getVarID() != classVariable.getVarID())
+                .forEach(w -> w.addParent(classVariable));
+
+        StreamingVariationalBayesVMP vmp = new StreamingVariationalBayesVMP();
+
+        vmp.setDAG(dag);
+        vmp.setDataStream(data);
+        vmp.setWindowsSize(100);
+        vmp.runLearning();
+
+        return vmp.getLearntBayesianNetwork();
+    }
+
+    public BayesianNetwork train(DataOnMemory<DataInstance> data, StaticVariables allVars, List<Variable> SF){
+
+        DAG dag = new DAG(allVars);
+        if(data.getDataInstance(0).getValue(TIME_ID)!=0)
             dag.getParentSet(classVariable).addParent(classVariable_PM);
         /* Add classVariable to all SF*/
         dag.getParentSets().stream()
@@ -336,12 +444,25 @@ public class wrapperBN {
         InferenceAlgorithmForBN vmp = new VMP();
         ArrayList<Prediction> predictions = new ArrayList<>();
 
-        while(!data.isEmpty()){
+        /*
+        for (int i = 0; i < NbrClients ; i++){
+            Multinomial uniform = new Multinomial(classVariable_PM);
+            uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
+            uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
+            posteriors.put(i, uniform);
+        }
+        */
+
+        boolean firstMonth = true;
+
+        Iterator<DataOnMemory<DataInstance>> iterator = data.iterator();
+        while(iterator.hasNext()){
 
             Prediction prediction = null;
             Multinomial posterior = null;
-            DataOnMemory<DataInstance> batch = data.poll();
+            DataOnMemory<DataInstance> batch = iterator.next();
             int currentMonthIndex = (int)batch.getDataInstance(0).getValue(TIME_ID);
+
             for (DataInstance instance : batch) {
 
                 int clientID = (int) instance.getValue(SEQUENCE_ID);
@@ -357,18 +478,23 @@ public class wrapperBN {
                     posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
                 }else{
                     /*Propagates*/
-                    bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
+                    double classValue_PM = -1;
+                    if(!firstMonth){
+                        bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
+                        classValue_PM = instance.getValue(classVariable_PM);
+                        instance.setValue(classVariable_PM, Utils.missingValue());
+                    }
                     vmp.setModel(bn);
-                    double classValue_PM = instance.getValue(classVariable_PM);
                     instance.setValue(classVariable, Utils.missingValue());
-                    instance.setValue(classVariable_PM, Utils.missingValue());
                     vmp.setEvidence(instance);
                     vmp.runInference();
                     posterior = vmp.getPosterior(classVariable);
 
                     instance.setValue(classVariable, classValue);
-                    instance.setValue(classVariable_PM, classValue_PM);
-                    if(data.isEmpty()) { //Last month or present
+                    if(!firstMonth) {
+                        instance.setValue(classVariable_PM, classValue_PM);
+                    }
+                    if(!iterator.hasNext()) { //Last month or present
                         prediction = new NominalPrediction(classValue, posterior.getProbabilities());
                         predictions.add(prediction);
                     }
@@ -378,16 +504,6 @@ public class wrapperBN {
                     defaultingClients.putIfAbsent(clientID, currentMonthIndex);
                 }
 
-                if(data.isEmpty()) {//Last month or present
-                    ThresholdCurve thresholdCurve = new ThresholdCurve();
-                    Instances tcurve = thresholdCurve.getCurve(predictions);
-
-                    if(usePRCArea)
-                        return ThresholdCurve.getPRCArea(tcurve);
-                    else
-                        return ThresholdCurve.getROCArea(tcurve);
-                }
-
                 Multinomial multi_PM = posterior.toEFUnivariateDistribution().deepCopy(classVariable_PM).toUnivariateDistribution();
                 if (classValue == DEFAULTER_VALUE_INDEX) {
                     multi_PM.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
@@ -395,6 +511,22 @@ public class wrapperBN {
                 }
                 posteriors.put(clientID, multi_PM);
             }
+
+            firstMonth = false;
+
+            if(!iterator.hasNext()) {//Last month or present
+                ThresholdCurve thresholdCurve = new ThresholdCurve();
+                Instances tcurve = thresholdCurve.getCurve(predictions);
+
+                if(usePRCArea)
+                    return ThresholdCurve.getPRCArea(tcurve);
+                else
+                    return ThresholdCurve.getROCArea(tcurve);
+            }
+
+            //First time for TIME_ID=0, inference must be done over a NB, subsequently, the classVariable_PM must be included
+            if(currentMonthIndex == 0)
+                bn.getDAG().getParentSet(classVariable).addParent(classVariable_PM);
         }
         throw new UnsupportedOperationException("Something went wrong: The method should have stopped at some point in the loop.");
     }
@@ -408,16 +540,17 @@ public class wrapperBN {
         TIME_ID = data.getAttributes().getAttributeByName("TIME_ID");
         SEQUENCE_ID = data.getAttributes().getAttributeByName("SEQUENCE_ID");
 
-        int count = NbrClients;
+        int count = 0;
         double averageAUC = 0;
-        BayesianNetwork bNet = null;
 
+        /*
         for (int i = 0; i < NbrClients ; i++){
             Multinomial uniform = new Multinomial(classVariable_PM);
             uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
             uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
-            posteriors.put(i, uniform);
+            posteriorsGlobal.put(i, uniform);
         }
+        */
 
 
         Iterable<DataOnMemory<DataInstance>> iteratable = data.iterableOverBatches(NbrClients);
@@ -425,22 +558,25 @@ public class wrapperBN {
         Queue<DataOnMemory<DataInstance>> monthsMinus12to0 = new LinkedList<>();
 
         //Take 13 batches at a time - 1 for training and 12 for testing
-        for (int i = 0; i < 11; i++) {
+        //for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 2; i++) {
             monthsMinus12to0.add(iterator.next());
         }
 
-        BayesianNetwork bn = wrapperBNOneMonth(monthsMinus12to0.peek());
-
         while(iterator.hasNext()){
 
-            DataOnMemory<DataInstance> currentMonth = iterator.next();
-            monthsMinus12to0.add(currentMonth);
+            int idMonthMinus12 = (int)monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID);
+            BayesianNetwork bn = wrapperBNOneMonthNB(monthsMinus12to0.poll());
+
             double auc = propagateAndTest(monthsMinus12to0, bn);
-            System.out.println(monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID) + "\t" + auc);
+
+            System.out.println( idMonthMinus12 + "\t" + auc);
             averageAUC += auc;
 
             count += NbrClients;
-            monthsMinus12to0.remove();
+
+            DataOnMemory<DataInstance> currentMonth = iterator.next();
+            monthsMinus12to0.add(currentMonth);
         }
 
 
@@ -457,6 +593,8 @@ public class wrapperBN {
                 setUsePRCArea(true);
             if(args[i].equalsIgnoreCase("nonDeterministic"))
                 setNonDeterministic(true);
+            if(args[i].equalsIgnoreCase("NB"))
+                setNB(true);
         }
 
        wrapperBN wbnet = new wrapperBN();
