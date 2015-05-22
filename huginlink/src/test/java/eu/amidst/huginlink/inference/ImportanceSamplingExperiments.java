@@ -141,8 +141,11 @@ public class ImportanceSamplingExperiments {
         BayesianNetwork bn;
         VMP vmp = new VMP();
         ImportanceSampling importanceSampling = new ImportanceSampling();
-        HuginInferenceForBN huginInferenceForBN = new HuginInferenceForBN();
+        //HuginInferenceForBN huginInferenceForBN = new HuginInferenceForBN();
 
+        System.out.println("Number of variables: " + nDiscrete + " discrete and " + nContin + " continuous");
+        System.out.println("Sample size: " + N);
+        System.out.println();
 
         int seed = 1823716125;
         Random random = new Random(seed);
@@ -152,13 +155,13 @@ public class ImportanceSamplingExperiments {
         double [] timeIS = new double[REP];
         double [] timeISVMP = new double[REP];
         double [] timeISexact = new double[REP];
-        double [] timeHUGIN = new double[REP];
+        //double [] timeHUGIN = new double[REP];
 
         double [] probabilitiesVMP = new double[REP];
         double [] probabilitiesIS = new double[REP];
         double [] probabilitiesISVMP = new double[REP];
         double [] probabilitiesISexact = new double[REP];
-        double [] probabilitiesHUGIN = new double[REP];
+        //double [] probabilitiesHUGIN = new double[REP];
 
         // DO THE "REP" REPETITIONS OF THE EXPERIMENT
         for(int k=0; k<REP; k++) {
@@ -358,9 +361,7 @@ public class ImportanceSamplingExperiments {
             //probabilitiesHUGIN[k]=probHUGIN;
         }
 
-        System.out.println("Number of variables" + nDiscrete+nContin);
-        System.out.println("Sample size:" + N);
-        System.out.println();
+
         System.out.println("Execution Times: (VMP,IS-VMP,IS,IS-EXACT)");
         System.out.println(Arrays.toString(timeVMP));
         System.out.println(Arrays.toString(timeISVMP));
