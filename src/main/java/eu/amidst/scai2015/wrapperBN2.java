@@ -19,11 +19,11 @@ import weka.core.Instances;
 import java.io.IOException;
 import java.util.*;
 
-
 /**
- * Created by Hanen on 18/05/15.
+ * Created by Hanen on 22/05/15.
  */
-public class wrapperBN {
+public class wrapperBN2 {
+
 
     int seed = 0;
     Variable classVariable;
@@ -38,14 +38,14 @@ public class wrapperBN {
 
     static boolean usePRCArea = false; //By default ROCArea is used
     static boolean nonDeterministic = false; //By default, if a client is DEFAULTER one month, then it is predicted as
-                                             //defaulter until evidence shows otherwise.
+    //defaulter until evidence shows otherwise.
 
     public static boolean isNonDeterministic() {
         return nonDeterministic;
     }
 
     public static void setNonDeterministic(boolean nonDeterministic) {
-        wrapperBN.nonDeterministic = nonDeterministic;
+        wrapperBN2.nonDeterministic = nonDeterministic;
     }
 
     HashMap<Integer, Integer> defaultingClients = new HashMap<>();
@@ -55,7 +55,7 @@ public class wrapperBN {
     }
 
     public static void setUsePRCArea(boolean usePRCArea) {
-        wrapperBN.usePRCArea = usePRCArea;
+        wrapperBN2.usePRCArea = usePRCArea;
     }
 
     public Attribute getSEQUENCE_ID() {
@@ -144,7 +144,7 @@ public class wrapperBN {
                 scores.put(V, test(testData, bNet, posteriors, false));
                 SF.remove(V);
             }
-                //determine the Variable V with max score
+            //determine the Variable V with max score
             double maxScore = (Collections.max(scores.values()));  //returns max value in the Hashmap
 
             if (maxScore - score > 0.001){
@@ -159,7 +159,7 @@ public class wrapperBN {
                     }
                 }
                 nbrNSF = nbrNSF - 1;
-                }
+            }
             else{
                 stop = true;
             }
@@ -351,10 +351,13 @@ public class wrapperBN {
                 setNonDeterministic(true);
         }
 
-       wrapperBN wbnet = new wrapperBN();
+        wrapperBN2 wbnet = new wrapperBN2();
 
-       wbnet.learnCajamarModel(data);
+        wbnet.learnCajamarModel(data);
 
     }
+
+
+
 
 }
