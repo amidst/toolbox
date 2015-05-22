@@ -227,42 +227,24 @@ public class wrapperBN {
     }
 
     public double testFS(DataOnMemory<DataInstance> data, BayesianNetwork bn){
-
         InferenceAlgorithmForBN vmp = new VMP();
         ArrayList<Prediction> predictions = new ArrayList<>();
-
         int currentMonthIndex = (int)data.getDataInstance(0).getValue(TIME_ID);
 
         for (DataInstance instance : data) {
             int clientID = (int) instance.getValue(SEQUENCE_ID);
-
             double classValue = instance.getValue(classVariable);
             Prediction prediction;
             Multinomial posterior;
 
-            if(!nonDeterministic
-                    && (defaultingClients.get(clientID) != null)
-                    && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
-                prediction = new NominalPrediction(classValue, new double[]{0.0, 1.0});
-                posterior = new Multinomial(classVariable);
-                /* This is for the sake of "correctness", this will never be used*/
-                posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
-                posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
-            }else{
-                vmp.setModel(bn);
-                instance.setValue(classVariable, Utils.missingValue());
-                vmp.setEvidence(instance);
-                vmp.runInference();
-                posterior = vmp.getPosterior(classVariable);
-
-                instance.setValue(classVariable, classValue);
-                prediction = new NominalPrediction(classValue, posterior.getProbabilities());
-            }
-
+            vmp.setModel(bn);
+            instance.setValue(classVariable, Utils.missingValue());
+            vmp.setEvidence(instance);
+            vmp.runInference();
+            posterior = vmp.getPosterior(classVariable);
+            instance.setValue(classVariable, classValue);
+            prediction = new NominalPrediction(classValue, posterior.getProbabilities());
             predictions.add(prediction);
-            if (classValue == DEFAULTER_VALUE_INDEX) {
-                defaultingClients.putIfAbsent(clientID, currentMonthIndex);
-            }
         }
 
         ThresholdCurve thresholdCurve = new ThresholdCurve();
@@ -273,10 +255,6 @@ public class wrapperBN {
         else
             return ThresholdCurve.getROCArea(tcurve);
     }
-
-
-
-
 
     public double test(DataOnMemory<DataInstance> data, BayesianNetwork bn, HashMap<Integer, Multinomial> posteriors, boolean updatePosteriors){
 
