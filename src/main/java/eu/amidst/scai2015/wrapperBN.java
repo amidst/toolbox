@@ -295,7 +295,7 @@ public class wrapperBN {
     public BayesianNetwork train(DataOnMemory<DataInstance> data, StaticVariables allVars, List<Variable> SF, boolean includeClassVariablePM){
 
         DAG dag = new DAG(allVars);
-        if(data.getDataInstance(0).getValue(TIME_ID)!=0 && includeClassVariablePM)
+        if(includeClassVariablePM)
             dag.getParentSet(classVariable).addParent(classVariable_PM);
         /* Add classVariable to all SF*/
         dag.getParentSets().stream()
@@ -468,47 +468,31 @@ public class wrapperBN {
                 int clientID = (int) instance.getValue(SEQUENCE_ID);
                 double classValue = instance.getValue(classVariable);
 
-                if(!nonDeterministic
-                        && (defaultingClients.get(clientID) != null)
-                        && (defaultingClients.get(clientID) - currentMonthIndex >= 12)) {
-                    prediction = new NominalPrediction(classValue, new double[]{0.0, 1.0});
-                    posterior = new Multinomial(classVariable);
-                    /* This is for the sake of "correctness", this will never be used*/
-                    posterior.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
-                    posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
-                }else{
-                    /*Propagates*/
-                    double classValue_PM = -1;
-                    if(!firstMonth){
-                        bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
-                        classValue_PM = instance.getValue(classVariable_PM);
-                        instance.setValue(classVariable_PM, Utils.missingValue());
-                    }
-                    vmp.setModel(bn);
-                    instance.setValue(classVariable, Utils.missingValue());
-                    vmp.setEvidence(instance);
-                    vmp.runInference();
-                    posterior = vmp.getPosterior(classVariable);
+                /*Propagates*/
+                double classValue_PM = -1;
+                if(!firstMonth){
+                    bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
+                    classValue_PM = instance.getValue(classVariable_PM);
+                    instance.setValue(classVariable_PM, Utils.missingValue());
+                }
+                vmp.setModel(bn);
+                instance.setValue(classVariable, Utils.missingValue());
+                vmp.setEvidence(instance);
+                vmp.runInference();
+                posterior = vmp.getPosterior(classVariable);
 
-                    instance.setValue(classVariable, classValue);
-                    if(!firstMonth) {
-                        instance.setValue(classVariable_PM, classValue_PM);
-                    }
-                    if(!iterator.hasNext()) { //Last month or present
-                        prediction = new NominalPrediction(classValue, posterior.getProbabilities());
-                        predictions.add(prediction);
-                    }
+                instance.setValue(classVariable, classValue);
+                if(!firstMonth) {
+                    instance.setValue(classVariable_PM, classValue_PM);
+                }
+                if(!iterator.hasNext()) { //Last month or present
+                    prediction = new NominalPrediction(classValue, posterior.getProbabilities());
+                    predictions.add(prediction);
                 }
 
-                if (classValue == DEFAULTER_VALUE_INDEX) {
-                    defaultingClients.putIfAbsent(clientID, currentMonthIndex);
-                }
 
                 Multinomial multi_PM = posterior.toEFUnivariateDistribution().deepCopy(classVariable_PM).toUnivariateDistribution();
-                if (classValue == DEFAULTER_VALUE_INDEX) {
-                    multi_PM.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
-                    multi_PM.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0);
-                }
+
                 posteriors.put(clientID, multi_PM);
             }
 
@@ -523,10 +507,6 @@ public class wrapperBN {
                 else
                     return ThresholdCurve.getROCArea(tcurve);
             }
-
-            //First time for TIME_ID=0, inference must be done over a NB, subsequently, the classVariable_PM must be included
-            if(currentMonthIndex == 0)
-                bn.getDAG().getParentSet(classVariable).addParent(classVariable_PM);
         }
         throw new UnsupportedOperationException("Something went wrong: The method should have stopped at some point in the loop.");
     }
@@ -557,8 +537,10 @@ public class wrapperBN {
         Iterator<DataOnMemory<DataInstance>> iterator =  iteratable.iterator();
         Queue<DataOnMemory<DataInstance>> monthsMinus12to0 = new LinkedList<>();
 
+        iterator.next(); //First month is discarded
+
         //Take 13 batches at a time - 1 for training and 12 for testing
-        //for (int i = 0; i < 12; i++) {
+        //for (int i = 0; i < 13; i++) {
         for (int i = 0; i < 2; i++) {
             monthsMinus12to0.add(iterator.next());
         }
@@ -566,7 +548,14 @@ public class wrapperBN {
         while(iterator.hasNext()){
 
             int idMonthMinus12 = (int)monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID);
-            BayesianNetwork bn = wrapperBNOneMonthNB(monthsMinus12to0.poll());
+            BayesianNetwork bn = null;
+            if(isNB()){
+                DataOnMemory<DataInstance> batch = monthsMinus12to0.poll();
+                StaticVariables vars = new StaticVariables(batch.getAttributes());
+                train(monthsMinus12to0.poll(), vars, vars.getListOfVariables());
+            }
+            else
+                bn = wrapperBNOneMonthNB(monthsMinus12to0.poll());
 
             double auc = propagateAndTest(monthsMinus12to0, bn);
 
