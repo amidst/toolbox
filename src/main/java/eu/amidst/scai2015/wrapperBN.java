@@ -449,6 +449,7 @@ public class wrapperBN {
             Multinomial posterior = null;
             DataOnMemory<DataInstance> batch = iterator.next();
             int currentMonthIndex = (int)batch.getDataInstance(0).getValue(TIME_ID);
+
             for (DataInstance instance : batch) {
 
                 int clientID = (int) instance.getValue(SEQUENCE_ID);
@@ -485,16 +486,6 @@ public class wrapperBN {
                     defaultingClients.putIfAbsent(clientID, currentMonthIndex);
                 }
 
-                if(!iterator.hasNext()) {//Last month or present
-                    ThresholdCurve thresholdCurve = new ThresholdCurve();
-                    Instances tcurve = thresholdCurve.getCurve(predictions);
-
-                    if(usePRCArea)
-                        return ThresholdCurve.getPRCArea(tcurve);
-                    else
-                        return ThresholdCurve.getROCArea(tcurve);
-                }
-
                 Multinomial multi_PM = posterior.toEFUnivariateDistribution().deepCopy(classVariable_PM).toUnivariateDistribution();
                 if (classValue == DEFAULTER_VALUE_INDEX) {
                     multi_PM.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 1.0);
@@ -502,6 +493,20 @@ public class wrapperBN {
                 }
                 posteriors.put(clientID, multi_PM);
             }
+
+            if(!iterator.hasNext()) {//Last month or present
+                ThresholdCurve thresholdCurve = new ThresholdCurve();
+                Instances tcurve = thresholdCurve.getCurve(predictions);
+
+                if(usePRCArea)
+                    return ThresholdCurve.getPRCArea(tcurve);
+                else
+                    return ThresholdCurve.getROCArea(tcurve);
+            }
+
+            //First time for TIME_ID=0, inference must be done over a NB, subsequently, the classVariable_PM must be included
+            if(currentMonthIndex == 0)
+                bn.getDAG().getParentSet(classVariable).addParent(classVariable_PM);
         }
         throw new UnsupportedOperationException("Something went wrong: The method should have stopped at some point in the loop.");
     }
@@ -533,18 +538,21 @@ public class wrapperBN {
         Queue<DataOnMemory<DataInstance>> monthsMinus12to0 = new LinkedList<>();
 
         //Take 13 batches at a time - 1 for training and 12 for testing
+        //for (int i = 0; i < 12; i++) {
         for (int i = 0; i < 2; i++) {
             monthsMinus12to0.add(iterator.next());
         }
 
         BayesianNetwork bn = wrapperBNOneMonthNB(monthsMinus12to0.peek());
 
+
         while(iterator.hasNext()){
 
             DataOnMemory<DataInstance> currentMonth = iterator.next();
             monthsMinus12to0.add(currentMonth);
+            int idMonthMinus12 = (int)monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID);
             double auc = propagateAndTest(monthsMinus12to0, bn);
-            System.out.println(monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID) + "\t" + auc);
+            System.out.println( idMonthMinus12 + "\t" + auc);
             averageAUC += auc;
 
             count += NbrClients;
