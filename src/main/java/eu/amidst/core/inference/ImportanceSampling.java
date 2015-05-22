@@ -30,6 +30,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 
 /**
@@ -42,7 +43,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
     private BayesianNetwork samplingModel;
     private int sampleSize;
     private List<Variable> causalOrder;
-    public List<WeightedAssignment> weightedSampleList;
+    public Stream<ImportanceSampling.WeightedAssignment> weightedSampleList;
     private int seed = 0;
     //TODO The sampling distributions must be restricted to the evidence
     private Assignment evidence;
@@ -160,10 +161,14 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         }
 
         if(vmp.getNumberOfIterations()==0) {
-            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
+            //weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
+            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+            //weightedSampleList =  IntStream.range(0, sampleSize).mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+
         }
         else {
-            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp)).collect(Collectors.toList());
+            //weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp)).collect(Collectors.toList());
+            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp));
         }
     }
 
@@ -189,19 +194,20 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         if (parallelMode) {
             //sumWeights = weightedSampleList.stream().parallel()
             //        .mapToDouble(ws -> ws.weight).sum();
-            sumWeightsSuccess = weightedSampleList.stream().parallel()
+            //sumWeightsSuccess = weightedSampleList.stream().parallel()
+            sumWeightsSuccess = weightedSampleList
                     .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a) && (ws.assignment.getValue(continuousVarInterest)<b))
                     .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.stream().parallel()
+            sumAllWeights = weightedSampleList.parallel()
                     .mapToDouble(ws -> ws.weight).sum();
         }
         else {
             //sumWeights = weightedSampleList.stream().sequential()
             //        .mapToDouble(ws -> ws.weight).sum();
-            sumWeightsSuccess = weightedSampleList.stream().sequential()
+            sumWeightsSuccess = weightedSampleList.sequential()
                     .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
                     .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.stream().sequential()
+            sumAllWeights = weightedSampleList.sequential()
                     .mapToDouble(ws -> ws.weight).sum();
         }
 
@@ -235,19 +241,19 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
         if (parallelMode) {
             //sumWeights = weightedSampleList.stream().parallel()
             //        .mapToDouble(ws -> ws.weight).sum();
-            sumWeightsSuccess = weightedSampleList.stream().parallel()
+            sumWeightsSuccess = weightedSampleList.parallel()
                     .filter(ws -> new Double(ws.assignment.getValue(discreteVarInterest)).compareTo((double)w)==0)
                     .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.stream().parallel()
+            sumAllWeights = weightedSampleList.parallel()
                     .mapToDouble(ws -> ws.weight).sum();
         }
         else {
             //sumWeights = weightedSampleList.stream().sequential()
             //        .mapToDouble(ws -> ws.weight).sum();
-            sumWeightsSuccess = weightedSampleList.stream().sequential()
+            sumWeightsSuccess = weightedSampleList.sequential()
                     .filter(ws -> new Double(ws.assignment.getValue(discreteVarInterest)).compareTo((double)w)==0)
                     .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.stream().sequential()
+            sumAllWeights = weightedSampleList.sequential()
                     .mapToDouble(ws -> ws.weight).sum();
         }
 
@@ -291,7 +297,7 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);
 
-        SufficientStatistics sumSS = weightedSampleList.stream()
+        SufficientStatistics sumSS = weightedSampleList
                 .peek(w -> {
                     dataInstanceCount.getAndIncrement();
                 })
