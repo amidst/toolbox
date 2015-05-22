@@ -24,6 +24,7 @@ import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -195,20 +196,38 @@ public class ImportanceSampling implements InferenceAlgorithmForBN {
             //sumWeights = weightedSampleList.stream().parallel()
             //        .mapToDouble(ws -> ws.weight).sum();
             //sumWeightsSuccess = weightedSampleList.stream().parallel()
-            sumWeightsSuccess = weightedSampleList
+            /*sumWeightsSuccess = weightedSampleList
                     .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a) && (ws.assignment.getValue(continuousVarInterest)<b))
                     .mapToDouble(ws -> ws.weight).sum();
             sumAllWeights = weightedSampleList.parallel()
-                    .mapToDouble(ws -> ws.weight).sum();
+                    .mapToDouble(ws -> ws.weight).sum();*/
+            List<Double> sum = weightedSampleList.map(ws ->
+                    { if ((ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
+                        return Arrays.asList(ws.weight, ws.weight);
+                    else
+                        return Arrays.asList(ws.weight , 0.0);
+                    }
+            ).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+            sumWeightsSuccess = sum.get(1);
+            sumAllWeights=sum.get(0);
         }
         else {
             //sumWeights = weightedSampleList.stream().sequential()
             //        .mapToDouble(ws -> ws.weight).sum();
-            sumWeightsSuccess = weightedSampleList.sequential()
+            /*sumWeightsSuccess = weightedSampleList.sequential()
                     .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
                     .mapToDouble(ws -> ws.weight).sum();
             sumAllWeights = weightedSampleList.sequential()
-                    .mapToDouble(ws -> ws.weight).sum();
+                    .mapToDouble(ws -> ws.weight).sum();*/
+            List<Double> sum = weightedSampleList.map(ws ->
+                    { if ((ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
+                        return Arrays.asList(ws.weight, ws.weight);
+                    else
+                        return Arrays.asList(ws.weight , 0.0);
+                    }
+            ).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+            sumWeightsSuccess = sum.get(1);
+            sumAllWeights=sum.get(0);
         }
 
         //System.out.println(sumWeights);
