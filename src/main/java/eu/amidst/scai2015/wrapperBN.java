@@ -23,9 +23,7 @@ import java.util.*;
 /**
  * Created by Hanen on 18/05/15.
  */
-public class wrapperBN1 {
-
-    //Train with one month and evaluate with the next
+public class wrapperBN {
 
     int seed = 0;
     Variable classVariable;
@@ -47,7 +45,7 @@ public class wrapperBN1 {
     }
 
     public static void setNonDeterministic(boolean nonDeterministic) {
-        wrapperBN1.nonDeterministic = nonDeterministic;
+        wrapperBN.nonDeterministic = nonDeterministic;
     }
 
     HashMap<Integer, Integer> defaultingClients = new HashMap<>();
@@ -57,7 +55,7 @@ public class wrapperBN1 {
     }
 
     public static void setUsePRCArea(boolean usePRCArea) {
-        wrapperBN1.usePRCArea = usePRCArea;
+        wrapperBN.usePRCArea = usePRCArea;
     }
 
     public Attribute getSEQUENCE_ID() {
@@ -118,12 +116,12 @@ public class wrapperBN1 {
         Boolean stop = false;
 
         //Learn the initial BN with training data including only the class variable
-        BayesianNetwork bNet = train(trainingData, Vars, SF);
+        BayesianNetwork bNet = train(trainingData, Vars, SF,false);
 
         System.out.println(bNet.toString());
 
         //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
-        double score = test(testData, bNet, posteriors, false);
+        double score = testFS(testData, bNet);
 
         int cont=0;
         //iterate until there is no improvement in score
@@ -141,7 +139,7 @@ public class wrapperBN1 {
                 System.out.println("Testing "+V.getName());
                 SF.add(V);
                 //train
-                bNet = train(trainingData, Vars, SF);
+                bNet = train(trainingData, Vars, SF, false);
                 //evaluate
                 scores.put(V, test(testData, bNet, posteriors, false));
                 SF.remove(V);
@@ -169,8 +167,7 @@ public class wrapperBN1 {
         }
 
         //Final training with the winning SF and the full initial data
-        bNet = train(data, Vars, SF);
-        test(data, bNet, posteriors, true);
+        bNet = train(data, Vars, SF, true);
 
         return bNet;
     }
@@ -208,10 +205,10 @@ public class wrapperBN1 {
     }
 
 
-    public BayesianNetwork train(DataOnMemory<DataInstance> data, StaticVariables allVars, List<Variable> SF){
+    public BayesianNetwork train(DataOnMemory<DataInstance> data, StaticVariables allVars, List<Variable> SF, boolean includeClassVariablePM){
 
         DAG dag = new DAG(allVars);
-        if(data.getDataInstance(0).getValue(TIME_ID)!=0)
+        if(data.getDataInstance(0).getValue(TIME_ID)!=0 && includeClassVariablePM)
             dag.getParentSet(classVariable).addParent(classVariable_PM);
         /* Add classVariable to all SF*/
         dag.getParentSets().stream()
@@ -229,6 +226,35 @@ public class wrapperBN1 {
         return vmp.getLearntBayesianNetwork();
     }
 
+    public double testFS(DataOnMemory<DataInstance> data, BayesianNetwork bn){
+        InferenceAlgorithmForBN vmp = new VMP();
+        ArrayList<Prediction> predictions = new ArrayList<>();
+        int currentMonthIndex = (int)data.getDataInstance(0).getValue(TIME_ID);
+
+        for (DataInstance instance : data) {
+            int clientID = (int) instance.getValue(SEQUENCE_ID);
+            double classValue = instance.getValue(classVariable);
+            Prediction prediction;
+            Multinomial posterior;
+
+            vmp.setModel(bn);
+            instance.setValue(classVariable, Utils.missingValue());
+            vmp.setEvidence(instance);
+            vmp.runInference();
+            posterior = vmp.getPosterior(classVariable);
+            instance.setValue(classVariable, classValue);
+            prediction = new NominalPrediction(classValue, posterior.getProbabilities());
+            predictions.add(prediction);
+        }
+
+        ThresholdCurve thresholdCurve = new ThresholdCurve();
+        Instances tcurve = thresholdCurve.getCurve(predictions);
+
+        if(usePRCArea)
+            return ThresholdCurve.getPRCArea(tcurve);
+        else
+            return ThresholdCurve.getROCArea(tcurve);
+    }
 
     public double test(DataOnMemory<DataInstance> data, BayesianNetwork bn, HashMap<Integer, Multinomial> posteriors, boolean updatePosteriors){
 
@@ -433,7 +459,7 @@ public class wrapperBN1 {
                 setNonDeterministic(true);
         }
 
-       wrapperBN1 wbnet = new wrapperBN1();
+       wrapperBN wbnet = new wrapperBN();
 
        wbnet.learnCajamarModel(data);
 
