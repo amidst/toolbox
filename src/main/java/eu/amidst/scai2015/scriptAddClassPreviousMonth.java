@@ -127,7 +127,8 @@ public class scriptAddClassPreviousMonth {
     public static void main(String[] args) {
         try {
             //addIndicatorVarsToCajamar(args[0]);
-            scriptAddClassPreviousMonth("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous_SEQ_ID.arff");
+            //scriptAddClassPreviousMonth("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous_SEQ_ID.arff");
+            scriptAddClassPreviousMonth(args[0]);
         }catch (IOException ex){}
     }
 }
