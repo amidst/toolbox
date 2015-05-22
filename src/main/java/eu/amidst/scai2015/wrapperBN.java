@@ -540,12 +540,15 @@ public class wrapperBN {
         iterator.next(); //First month is discarded
 
         //Take 13 batches at a time - 1 for training and 12 for testing
-        //for (int i = 0; i < 13; i++) {
-        for (int i = 0; i < 3; i++) {
+        //for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 2; i++) {
             monthsMinus12to0.add(iterator.next());
         }
 
         while(iterator.hasNext()){
+
+            DataOnMemory<DataInstance> currentMonth = iterator.next();
+            monthsMinus12to0.add(currentMonth);
 
             int idMonthMinus12 = (int)monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID);
             BayesianNetwork bn = null;
@@ -564,8 +567,7 @@ public class wrapperBN {
 
             count += NbrClients;
 
-            DataOnMemory<DataInstance> currentMonth = iterator.next();
-            monthsMinus12to0.add(currentMonth);
+
         }
 
 
