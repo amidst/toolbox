@@ -39,6 +39,15 @@ public class wrapperBN {
     static boolean usePRCArea = false; //By default ROCArea is used
     static boolean nonDeterministic = false; //By default, if a client is DEFAULTER one month, then it is predicted as
                                              //defaulter until evidence shows otherwise.
+    static boolean NB = false;
+
+    public static boolean isNB() {
+        return NB;
+    }
+
+    public static void setNB(boolean NB) {
+        wrapperBN.NB = NB;
+    }
 
     public static boolean isNonDeterministic() {
         return nonDeterministic;
@@ -134,8 +143,8 @@ public class wrapperBN {
 
             for(Variable V:NSF) {
 
-                if (V.getVarID()>5)
-                    break;
+                //if (V.getVarID()>5)
+                //    break;
                 System.out.println("Testing "+V.getName());
                 SF.add(V);
                 //train
@@ -210,8 +219,8 @@ public class wrapperBN {
 
             for(Variable V:NSF) {
 
-                if (V.getVarID()>5)
-                    break;
+                //if (V.getVarID()>5)
+                //    break;
                 System.out.println("Testing "+V.getName());
                 SF.add(V);
                 //train
@@ -435,12 +444,16 @@ public class wrapperBN {
         InferenceAlgorithmForBN vmp = new VMP();
         ArrayList<Prediction> predictions = new ArrayList<>();
 
+        /*
         for (int i = 0; i < NbrClients ; i++){
             Multinomial uniform = new Multinomial(classVariable_PM);
             uniform.setProbabilityOfState(DEFAULTER_VALUE_INDEX, 0.5);
             uniform.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.5);
             posteriors.put(i, uniform);
         }
+        */
+
+        boolean firstMonth = true;
 
         Iterator<DataOnMemory<DataInstance>> iterator = data.iterator();
         while(iterator.hasNext()){
@@ -465,17 +478,22 @@ public class wrapperBN {
                     posterior.setProbabilityOfState(NON_DEFAULTER_VALUE_INDEX, 0.0);
                 }else{
                     /*Propagates*/
-                    bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
+                    double classValue_PM = -1;
+                    if(!firstMonth){
+                        bn.setConditionalDistribution(classVariable_PM, posteriors.get(clientID));
+                        classValue_PM = instance.getValue(classVariable_PM);
+                        instance.setValue(classVariable_PM, Utils.missingValue());
+                    }
                     vmp.setModel(bn);
-                    double classValue_PM = instance.getValue(classVariable_PM);
                     instance.setValue(classVariable, Utils.missingValue());
-                    instance.setValue(classVariable_PM, Utils.missingValue());
                     vmp.setEvidence(instance);
                     vmp.runInference();
                     posterior = vmp.getPosterior(classVariable);
 
                     instance.setValue(classVariable, classValue);
-                    instance.setValue(classVariable_PM, classValue_PM);
+                    if(!firstMonth) {
+                        instance.setValue(classVariable_PM, classValue_PM);
+                    }
                     if(!iterator.hasNext()) { //Last month or present
                         prediction = new NominalPrediction(classValue, posterior.getProbabilities());
                         predictions.add(prediction);
@@ -493,6 +511,8 @@ public class wrapperBN {
                 }
                 posteriors.put(clientID, multi_PM);
             }
+
+            firstMonth = false;
 
             if(!iterator.hasNext()) {//Last month or present
                 ThresholdCurve thresholdCurve = new ThresholdCurve();
@@ -520,7 +540,7 @@ public class wrapperBN {
         TIME_ID = data.getAttributes().getAttributeByName("TIME_ID");
         SEQUENCE_ID = data.getAttributes().getAttributeByName("SEQUENCE_ID");
 
-        int count = NbrClients;
+        int count = 0;
         double averageAUC = 0;
 
         /*
@@ -543,20 +563,20 @@ public class wrapperBN {
             monthsMinus12to0.add(iterator.next());
         }
 
-        BayesianNetwork bn = wrapperBNOneMonthNB(monthsMinus12to0.peek());
-
-
         while(iterator.hasNext()){
 
-            DataOnMemory<DataInstance> currentMonth = iterator.next();
-            monthsMinus12to0.add(currentMonth);
             int idMonthMinus12 = (int)monthsMinus12to0.peek().getDataInstance(0).getValue(TIME_ID);
+            BayesianNetwork bn = wrapperBNOneMonthNB(monthsMinus12to0.poll());
+
             double auc = propagateAndTest(monthsMinus12to0, bn);
+
             System.out.println( idMonthMinus12 + "\t" + auc);
             averageAUC += auc;
 
             count += NbrClients;
-            monthsMinus12to0.remove();
+
+            DataOnMemory<DataInstance> currentMonth = iterator.next();
+            monthsMinus12to0.add(currentMonth);
         }
 
 
@@ -573,6 +593,8 @@ public class wrapperBN {
                 setUsePRCArea(true);
             if(args[i].equalsIgnoreCase("nonDeterministic"))
                 setNonDeterministic(true);
+            if(args[i].equalsIgnoreCase("NB"))
+                setNB(true);
         }
 
        wrapperBN wbnet = new wrapperBN();
