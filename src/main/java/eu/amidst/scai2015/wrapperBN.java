@@ -498,7 +498,7 @@ public class wrapperBN {
 
             firstMonth = false;
 
-            if(!iterator.hasNext()) {//Last month or present
+            if(!iterator.hasNext()) {//Last month or present time
                 ThresholdCurve thresholdCurve = new ThresholdCurve();
                 Instances tcurve = thresholdCurve.getCurve(predictions);
 
@@ -541,7 +541,7 @@ public class wrapperBN {
 
         //Take 13 batches at a time - 1 for training and 12 for testing
         //for (int i = 0; i < 13; i++) {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             monthsMinus12to0.add(iterator.next());
         }
 
@@ -552,7 +552,7 @@ public class wrapperBN {
             if(isNB()){
                 DataOnMemory<DataInstance> batch = monthsMinus12to0.poll();
                 StaticVariables vars = new StaticVariables(batch.getAttributes());
-                train(monthsMinus12to0.poll(), vars, vars.getListOfVariables());
+                train(batch, vars, vars.getListOfVariables());
             }
             else
                 bn = wrapperBNOneMonthNB(monthsMinus12to0.poll());
@@ -574,8 +574,8 @@ public class wrapperBN {
 
     public static void main(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
-        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
+        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
+        DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
 
         for (int i = 1; i < args.length ; i++) {
             if(args[i].equalsIgnoreCase("PRCArea"))
