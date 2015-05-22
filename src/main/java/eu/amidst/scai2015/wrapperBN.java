@@ -128,7 +128,7 @@ public class wrapperBN {
         //Learn the initial BN with training data including only the class variable
         BayesianNetwork bNet = train(trainingData, Vars, SF,false);
 
-        System.out.println(bNet.toString());
+        //System.out.println(bNet.toString());
 
         //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
         double score = testFS(testData, bNet);
@@ -137,16 +137,16 @@ public class wrapperBN {
         //iterate until there is no improvement in score
         while (nbrNSF > 0 && stop == false ){
 
-            System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
-            SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
-            System.out.println();
+            //System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
+            //SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
+            //System.out.println();
             Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
 
             for(Variable V:NSF) {
 
                 //if (V.getVarID()>5)
                 //    break;
-                System.out.println("Testing "+V.getName());
+                //System.out.println("Testing "+V.getName());
                 SF.add(V);
                 //train
                 bNet = train(trainingData, Vars, SF, false);
@@ -179,7 +179,7 @@ public class wrapperBN {
         //Final training with the winning SF and the full initial data
         bNet = train(data, Vars, SF, true);
 
-        System.out.println(bNet.getDAG().toString());
+        //System.out.println(bNet.getDAG().toString());
 
         return bNet;
     }
@@ -473,14 +473,20 @@ public class wrapperBN {
                 DataOnMemory<DataInstance> batch = monthsMinus12to0.poll();
                 StaticVariables vars = new StaticVariables(batch.getAttributes());
                 bn = train(batch, vars, vars.getListOfVariables(),this.isDynamicNB());
+                double auc = propagateAndTest(monthsMinus12to0, bn);
+
+                System.out.println( idMonthMinus12 + "\t" + auc);
+                averageAUC += auc;
             }
-            else
+            else {
                 bn = wrapperBNOneMonthNB(monthsMinus12to0.poll());
+                double auc = propagateAndTest(monthsMinus12to0, bn);
 
-            double auc = propagateAndTest(monthsMinus12to0, bn);
-
-            System.out.println( idMonthMinus12 + "\t" + auc);
-            averageAUC += auc;
+                System.out.print( idMonthMinus12 + "\t" + auc);
+                bn.getDAG().getParentSets().stream().filter(p -> p.getNumberOfParents()>0).forEach(p-> System.out.print("\t" + p.getMainVar().getName()));
+                System.out.println();
+                averageAUC += auc;
+            }
 
             count += NbrClients;
 
