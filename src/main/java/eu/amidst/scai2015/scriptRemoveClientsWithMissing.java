@@ -25,6 +25,8 @@ public class scriptRemoveClientsWithMissing {
 
     public static int numOfClients = 50000;
 
+    public static int counter = 0;
+
     public static void removeClientsWithMissing(String path)  throws IOException {
         ARFFDataReader reader= new ARFFDataReader();
         reader.loadFromFile(path);
@@ -43,19 +45,24 @@ public class scriptRemoveClientsWithMissing {
         DataStreamFromFile data = new DataStreamFromFile(reader);
 
         Attribute seqID = reader.getAttributes().getAttributeByName("SEQUENCE_ID");
+        Attribute timeID = reader.getAttributes().getAttributeByName("TIME_ID");
 
         boolean[] toRemove = new boolean[numOfClients];
 
-        /* First pass to identify clients to remove */
-        data.stream().forEach(e -> {
-            for (Attribute att : reader.getAttributes()) {
-                if (Utils.isMissingValue(e.getValue(att))){
-                    toRemove[(int)e.getValue(seqID)] = true;
-                }
-            }
-        });
+        /* First pass to identify clients to remove, skip first month */
+        data.stream()
+                .filter(e-> e.getValue(timeID)!=0)
+                .forEach(e -> {
+                    for (Attribute att : reader.getAttributes()) {
+                        if (Utils.isMissingValue(e.getValue(att))) {
+                            toRemove[(int) e.getValue(seqID)] = true;
+                            counter++;
+                        }
+                    }
+                });
 
 
+        System.out.println("Remaining clients: "+(numOfClients-counter));
 
         /* Second pass to remove these clients */
 
@@ -73,8 +80,8 @@ public class scriptRemoveClientsWithMissing {
     }
     public static void main(String[] args) {
         try {
-            removeClientsWithMissing("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous_DEFAULTING_PM.arff");
-            //removeInstancesWithMissing(args[0]);
+            //removeClientsWithMissing("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous_SEQ_ID_DEFAULTING_PM.arff");
+            removeClientsWithMissing(args[0]);
         }catch (IOException ex){}
     }
 }
