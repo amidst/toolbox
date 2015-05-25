@@ -457,8 +457,7 @@ public class wrapperBN {
         iterator.next(); //First month is discarded
 
         //Take 13 batches at a time - 1 for training and 12 for testing
-        //for (int i = 0; i < 12; i++) {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 12; i++) {
             monthsMinus12to0.add(iterator.next());
         }
 
