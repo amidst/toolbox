@@ -17,7 +17,6 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.*;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
@@ -37,26 +36,18 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
 
     private Map<String, Integer> mapping;
 
-    Attributes attributes;
-
-    StaticVariables staticVariables;
-
-    DynamicVariables dynamicVariables;
-
     int baseIndex;
 
     public ParameterVariables(StaticVariables staticVariables_) {
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
-        this.staticVariables=staticVariables_;
-        this.baseIndex=this.staticVariables.getNumberOfVars();
+        this.baseIndex=staticVariables_.getNumberOfVars();
     }
 
     public ParameterVariables(DynamicVariables dynamicVariables_) {
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
-        this.dynamicVariables=dynamicVariables_;
-        this.baseIndex=this.dynamicVariables.getNumberOfVars();
+        this.baseIndex=dynamicVariables_.getNumberOfVars();
     }
 
     public Variable newGaussianParameter(String name) {
