@@ -18,6 +18,7 @@ import weka.core.Instances;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -140,21 +141,39 @@ public class wrapperBN {
             //System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
             //SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
             //System.out.println();
-            Map<Variable, Double> scores = new HashMap<>(); //scores for each considered feature
+            Map<Variable, Double> scores = new ConcurrentHashMap<>(); //scores for each considered feature
 
-            for(Variable V:NSF) {
+            //Scores for adding
+            NSF.parallelStream().forEach(V -> {
+                List<Variable> SF_TMP = new ArrayList();
 
-                //if (V.getVarID()>5)
-                //    break;
-                //System.out.println("Testing "+V.getName());
-                SF.add(V);
+                SF_TMP.addAll(SF);
+
+                SF_TMP.add(V);
+
                 //train
-                bNet = train(trainingData, Vars, SF, false);
+                BayesianNetwork bNet_TMP = train(trainingData, Vars, SF_TMP, false);
                 //evaluate
-                scores.put(V, testFS(testData, bNet));
-                SF.remove(V);
-            }
-                //determine the Variable V with max score
+                scores.put(V, testFS(testData, bNet_TMP));
+                SF_TMP.remove(V);
+            });
+
+            //Scores for removing
+            SF.parallelStream().forEach(V ->{
+                List<Variable> SF_TMP = new ArrayList();
+
+                SF_TMP.addAll(SF);
+
+                SF_TMP.remove(V);
+
+                //train
+                BayesianNetwork bNet_TMP = train(trainingData, Vars, SF_TMP, false);
+                //evaluate
+                scores.put(V, testFS(testData, bNet_TMP));
+                SF_TMP.add(V);
+            });
+
+            //determine the Variable V with max score
             double maxScore = (Collections.max(scores.values()));  //returns max value in the Hashmap
 
             if (maxScore - score > 0.001){
