@@ -14,12 +14,12 @@ import eu.amidst.core.datastream.Attribute;
 /**
  * Created by andresmasegosa on 04/11/14.
  */
-public final class VariableBuilder {
-    private static String name;
-    private static boolean observable;
-    private static StateSpaceType stateSpaceType;
-    private static DistributionTypeEnum distributionType;
-    private static Attribute attribute;
+public class VariableBuilder {
+    private String name;
+    private boolean observable;
+    private StateSpaceType stateSpaceType;
+    private DistributionTypeEnum distributionType;
+    private Attribute attribute;
 
     public VariableBuilder() {
     }
@@ -49,41 +49,41 @@ public final class VariableBuilder {
         this.attribute = att;
     }
 
-    public static String getName() {
+    public String getName() {
         return name;
     }
 
-    public static boolean isObservable() {
+    public boolean isObservable() {
         return observable;
     }
 
-    public static StateSpaceType getStateSpaceType() {
+    public StateSpaceType getStateSpaceType() {
         return stateSpaceType;
     }
 
-    public static DistributionTypeEnum getDistributionType() {
+    public DistributionTypeEnum getDistributionType() {
         return distributionType;
     }
 
-    public static Attribute getAttribute() { return attribute; }
+    public Attribute getAttribute() { return attribute; }
 
-    public static void setName(String name) {
-        VariableBuilder.name = name;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public static void setObservable(boolean observable) {
-        VariableBuilder.observable = observable;
+    public void setObservable(boolean observable) {
+        this.observable = observable;
     }
 
-    public static void setStateSpaceType(StateSpaceType stateSpaceType) {
-        VariableBuilder.stateSpaceType = stateSpaceType;
+    public void setStateSpaceType(StateSpaceType stateSpaceType) {
+        this.stateSpaceType = stateSpaceType;
     }
 
-    public static void setDistributionType(DistributionTypeEnum distributionType) {
-        VariableBuilder.distributionType = distributionType;
+    public void setDistributionType(DistributionTypeEnum distributionType) {
+        this.distributionType = distributionType;
     }
 
-    public static void setAttribute(Attribute attribute) {
-        VariableBuilder.attribute = attribute;
+    public void setAttribute(Attribute attribute) {
+        this.attribute = attribute;
     }
 }

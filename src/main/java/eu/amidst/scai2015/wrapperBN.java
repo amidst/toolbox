@@ -9,6 +9,7 @@ import eu.amidst.core.learning.StreamingVariationalBayesVMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.MissingAssignment;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 import weka.classifiers.evaluation.NominalPrediction;
@@ -175,8 +176,13 @@ public class wrapperBN {
                 for (Map.Entry<Variable, Double> entry : scores.entrySet()) {
                     if (entry.getValue()== maxScore){
                         Variable SelectedV = entry.getKey();
-                        SF.add(SelectedV);
-                        NSF.remove(SelectedV);
+                        if (SF.contains(SelectedV)) {
+                            SF.remove(SelectedV);
+                            NSF.add(SelectedV);
+                        }else {
+                            SF.add(SelectedV);
+                            NSF.remove(SelectedV);
+                        }
                         break;
                     }
                 }
@@ -260,11 +266,13 @@ public class wrapperBN {
             Multinomial posterior;
 
             vmp.setModel(bn);
-            instance.setValue(classVariable, Utils.missingValue());
-            vmp.setEvidence(instance);
+
+            MissingAssignment assignment = new MissingAssignment(instance);
+            assignment.addMissingVariable(classVariable);
+
+            vmp.setEvidence(assignment);
             vmp.runInference();
             posterior = vmp.getPosterior(classVariable);
-            instance.setValue(classVariable, classValue);
             prediction = new NominalPrediction(classValue, posterior.getProbabilities());
             predictions.add(prediction);
         }
@@ -299,15 +307,14 @@ public class wrapperBN {
 
             vmp.setModel(bn);
 
-            double classValue_PM = instance.getValue(classVariable_PM);
-            instance.setValue(classVariable, Utils.missingValue());
-            instance.setValue(classVariable_PM, Utils.missingValue());
-            vmp.setEvidence(instance);
+            MissingAssignment assignment = new MissingAssignment(instance);
+            assignment.addMissingVariable(classVariable);
+            assignment.addMissingVariable(classVariable_PM);
+
+            vmp.setEvidence(assignment);
             vmp.runInference();
             posterior = vmp.getPosterior(classVariable);
 
-            instance.setValue(classVariable, classValue);
-            instance.setValue(classVariable_PM, classValue_PM);
             prediction = new NominalPrediction(classValue, posterior.getProbabilities());
 
 
