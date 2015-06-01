@@ -38,7 +38,7 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
 
         BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(bn.getDAG(), data);
@@ -85,7 +85,7 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
 
         System.out.println(LearningEngineForBN.learnParameters(bn.getDAG(), data).toString());
@@ -129,7 +129,7 @@ public class BayesianVMPTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
         sampler.setHiddenVar(varA);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(20000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(20000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -172,7 +172,7 @@ public class BayesianVMPTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(5);
         sampler.setHiddenVar(varB);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(50000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(50000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -216,7 +216,7 @@ public class BayesianVMPTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(5);
         sampler.setHiddenVar(varB);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -259,7 +259,7 @@ public class BayesianVMPTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i+299);
             sampler.setHiddenVar(varB);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -291,7 +291,7 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
@@ -331,7 +331,7 @@ public class BayesianVMPTest extends TestCase {
         //sampler.setMARVar(asianet.getStaticVariables().getVariableByName("L"),0.5);
 
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(100);
@@ -375,7 +375,7 @@ public class BayesianVMPTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
             sampler.setSeed(0);
 
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             System.out.println(LearningEngineForBN.learnParameters(oneNormalVarBN.getDAG(), data).toString());
 
@@ -413,7 +413,7 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setSeed(1);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
         BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 
@@ -457,7 +457,7 @@ public class BayesianVMPTest extends TestCase {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(2);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 
@@ -505,7 +505,7 @@ public class BayesianVMPTest extends TestCase {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 
@@ -547,7 +547,7 @@ public class BayesianVMPTest extends TestCase {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 
@@ -590,7 +590,7 @@ public class BayesianVMPTest extends TestCase {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 
@@ -643,7 +643,7 @@ public class BayesianVMPTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
         sampler.setHiddenVar(varA);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(50);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(50);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -688,7 +688,7 @@ public class BayesianVMPTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setMARVar(varB, 0.9);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -733,7 +733,7 @@ public class BayesianVMPTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setHiddenVar(varB);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10);
 
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -783,7 +783,7 @@ public class BayesianVMPTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setMARVar(varB,0.7);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();

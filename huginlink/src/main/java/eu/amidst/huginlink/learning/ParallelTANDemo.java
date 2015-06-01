@@ -97,7 +97,7 @@ public class ParallelTANDemo {
 
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
         DataStreamWriter.writeDataToFile(dataStream, dataFile);
 
         data = DataStreamLoader.loadFromFile(dataFile);
@@ -151,7 +151,7 @@ public class ParallelTANDemo {
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
         DataStreamWriter.writeDataToFile(dataStream, dataFile);
 
         data = DataStreamLoader.loadFromFile(dataFile);
@@ -205,7 +205,7 @@ public class ParallelTANDemo {
             BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-            DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+            DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
             ARFFDataWriter.writeToARFFFile(dataStream, dataFile);
 
             data = DataStreamLoader.loadFromFile(dataFile);

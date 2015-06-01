@@ -38,7 +38,7 @@ public class NormalNormalParentsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(100000);
 
         //Compare predictions between distributions and EF distributions.
 
@@ -77,7 +77,7 @@ public class NormalNormalParentsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(100000);
 
         //Compare predictions between distributions and EF distributions.
         EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);

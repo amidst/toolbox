@@ -33,7 +33,7 @@ public class MLMultinomialsNormalsTest {
             sampler.setSeed(0);
 
             //Load the sampled data
-            DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(100000);
 
             //try{
             //    sampler.sampleToAnARFFFile("./data/WasteIncineratorSamples.arff", 10000);

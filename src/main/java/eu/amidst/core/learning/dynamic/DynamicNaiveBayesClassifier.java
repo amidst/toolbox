@@ -11,7 +11,6 @@ package eu.amidst.core.learning.dynamic;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.io.DynamicDataStreamLoader;
 import eu.amidst.core.learning.MaximumLikelihoodForBN;
@@ -94,7 +93,7 @@ public class DynamicNaiveBayesClassifier {
         int sampleSize = 1000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         String file = "./datasets/randomdata.arff";
-        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
         DataStreamWriter.writeDataToFile(dataStream, file);
 
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
