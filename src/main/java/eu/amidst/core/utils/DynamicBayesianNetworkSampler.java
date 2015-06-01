@@ -29,7 +29,6 @@ public class DynamicBayesianNetworkSampler {
     private List<Variable> causalOrderTime0;
     private List<Variable> causalOrderTimeT;
     private int seed = 0;
-    private Stream<Assignment> sampleStream;
     private Map<Variable, Boolean> hiddenVars = new HashMap();
     private Random random = new Random(seed);
 
@@ -65,24 +64,11 @@ public class DynamicBayesianNetworkSampler {
         return assignment;
     }
 
-    public Stream<DynamicAssignment> getSampleStream(int nSequences, int sequenceLength) {
+    private Stream<DynamicAssignment> getSampleStream(int nSequences, int sequenceLength) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         return IntStream.range(0,nSequences).mapToObj(Integer::new)
                 .flatMap(i -> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength))
                 .map(this::filter);
-    }
-
-    public List<DynamicAssignment> getSampleList(int nSequences, int sequenceLength){
-        return this.getSampleStream(nSequences,sequenceLength).collect(Collectors.toList());
-    }
-
-    public Iterable<DynamicAssignment> getSampleIterator(int nSequences, int sequenceLength){
-        class I implements Iterable<DynamicAssignment>{
-            public Iterator<DynamicAssignment> iterator(){
-                return getSampleStream(nSequences,sequenceLength).iterator();
-            }
-        }
-        return new I();
     }
 
     public void setSeed(int seed) {
@@ -287,19 +273,11 @@ public class DynamicBayesianNetworkSampler {
         System.out.println(watch.stop());
 
 
-        for (DynamicAssignment dynamicdataassignment : sampler.getSampleIterator(3, 2)){
+        for (DynamicAssignment dynamicdataassignment : sampler.sampleToDataBase(3, 2)){
             System.out.println("\nSequence ID" + dynamicdataassignment.getSequenceID());
             System.out.println("\nTime ID" + dynamicdataassignment.getTimeID());
             System.out.println(dynamicdataassignment.toString(network.getDynamicVariables().getListOfDynamicVariables()));
         }
-
-        //for (DynamicDataInstance dynamicdatainstance : sampler.getSampleList(2, 10)){
-        //    System.out.println(dynamicdatainstance.toString(network.getDynamicVariables().getListOfDynamicVariables()));
-        //}
-        //System.out.println();
-
-        //sampler.getSampleStream(2, 10).forEach( e -> System.out.println(e.toString(network.getDynamicVariables().getListOfDynamicVariables())));
-
 
     }
 }

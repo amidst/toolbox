@@ -64,7 +64,7 @@ public class LearningVMPTests {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         //sampler.setSeed(1);
         sampler.setHiddenVar(varC);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
         DataStreamWriter.writeDataToFile(data, "./data/tmp.arff");
 
@@ -128,7 +128,7 @@ public class LearningVMPTests {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setHiddenVar(varC);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
         int windowSize = 10;
 
@@ -167,7 +167,7 @@ public class LearningVMPTests {
 
         sampler = new BayesianNetworkSampler(bn);
         sampler.setHiddenVar(varC);
-        data = sampler.sampleToDataBase(1000);
+        data = sampler.sampleToDataStream(1000);
 
 
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
@@ -231,7 +231,7 @@ public class LearningVMPTests {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(10);
         //sampler.setHiddenVar(varC);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
         int windowSize = 200;
 
@@ -292,7 +292,7 @@ public class LearningVMPTests {
 
         sampler = new BayesianNetworkSampler(bn);
         //sampler.setHiddenVar(varC);
-        data = sampler.sampleToDataBase(10000);
+        data = sampler.sampleToDataStream(10000);
 
 
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
@@ -358,7 +358,7 @@ public class LearningVMPTests {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(1);
         sampler.setHiddenVar(varC);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -405,7 +405,7 @@ public class LearningVMPTests {
         sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(1);
         sampler.setHiddenVar(varC);
-        data = sampler.sampleToDataBase(sampleSize);
+        data = sampler.sampleToDataStream(sampleSize);
 
 
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
@@ -467,7 +467,7 @@ public class LearningVMPTests {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(1);
         sampler.setHiddenVar(varC);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -521,7 +521,7 @@ public class LearningVMPTests {
         sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(1);
         sampler.setHiddenVar(varC);
-        data = sampler.sampleToDataBase(sampleSize);
+        data = sampler.sampleToDataStream(sampleSize);
 
 
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
@@ -555,7 +555,7 @@ public class LearningVMPTests {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(i);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             Attribute attVarA = data.getAttributes().getAttributeByName("A");
             Attribute attVarB = data.getAttributes().getAttributeByName("B");
@@ -642,7 +642,7 @@ public class LearningVMPTests {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(i);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             Attribute attVarA = data.getAttributes().getAttributeByName("A");
             Attribute attVarB = data.getAttributes().getAttributeByName("B");
@@ -791,7 +791,7 @@ public class LearningVMPTests {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
             //sampler.setMARVar(varB,0.5);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             DataStreamWriter.writeDataToFile(data, "./data/tmp.arff");
 
@@ -897,7 +897,7 @@ public class LearningVMPTests {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
             //sampler.setMARVar(varB,0.5);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             DataStreamWriter.writeDataToFile(data, "./data/tmp.arff");
 
@@ -980,7 +980,7 @@ public class LearningVMPTests {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(j);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(100000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(100000);
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setSeed(j);
@@ -1031,7 +1031,7 @@ public class LearningVMPTests {
         sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("Mout"));
         //sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("D"));
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -1081,7 +1081,7 @@ public class LearningVMPTests {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -1132,7 +1132,7 @@ public class LearningVMPTests {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("A"));
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -1166,7 +1166,7 @@ public class LearningVMPTests {
         normalVarBN.randomInitialization(new Random(0));
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -1202,7 +1202,7 @@ public class LearningVMPTests {
         //sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("D"));
         sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("E"));
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -1236,7 +1236,7 @@ public class LearningVMPTests {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(j);
-            DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             Variable varMout = normalVarBN.getStaticVariables().getVariableByName("Mout");
 

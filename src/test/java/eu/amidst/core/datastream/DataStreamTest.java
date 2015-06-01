@@ -7,16 +7,13 @@ import eu.amidst.core.datastream.filereaders.DynamicDataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
-import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import junit.framework.TestCase;
-import org.apache.hadoop.hdfs.server.protocol.BlockMetaDataInfo;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 public class DataStreamTest extends TestCase {
 
@@ -33,13 +30,13 @@ public class DataStreamTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setSeed(0);
 
-        assertTrue(sampler.sampleToDataBase(100).streamOfBatches(2).count()==50);
+        assertTrue(sampler.sampleToDataStream(100).streamOfBatches(2).count()==50);
 
-        sampler.sampleToDataBase(100).streamOfBatches(2).forEach( batch -> assertTrue(batch.getNumberOfDataInstances()==2));
+        sampler.sampleToDataStream(100).streamOfBatches(2).forEach( batch -> assertTrue(batch.getNumberOfDataInstances()==2));
 
-        assertTrue(sampler.sampleToDataBase(100).parallelStreamOfBatches(2).count()==50);
+        assertTrue(sampler.sampleToDataStream(100).parallelStreamOfBatches(2).count()==50);
 
-        sampler.sampleToDataBase(100).parallelStreamOfBatches(2).forEach( batch -> assertTrue(batch.getNumberOfDataInstances()==2));
+        sampler.sampleToDataStream(100).parallelStreamOfBatches(2).forEach( batch -> assertTrue(batch.getNumberOfDataInstances()==2));
 
     }
 
@@ -64,7 +61,7 @@ public class DataStreamTest extends TestCase {
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);
 
-        SufficientStatistics sumSS = sampler.sampleToDataBase(1000).stream()
+        SufficientStatistics sumSS = sampler.sampleToDataStream(1000).stream()
                 .peek(w -> {
                     dataInstanceCount.getAndIncrement();
                 })
@@ -82,7 +79,7 @@ public class DataStreamTest extends TestCase {
         efBayesianNetwork = new EF_BayesianNetwork(naiveBayes.getDAG());
 
 
-        sumSS = sampler.sampleToDataBase(1000).streamOfBatches(10)
+        sumSS = sampler.sampleToDataStream(1000).streamOfBatches(10)
                 .map( batch -> {
                     EF_BayesianNetwork efBayesianNetworkLocal = new EF_BayesianNetwork(naiveBayes.getDAG());
                     return batch.stream().map(efBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
@@ -101,7 +98,7 @@ public class DataStreamTest extends TestCase {
         efBayesianNetwork = new EF_BayesianNetwork(naiveBayes.getDAG());
 
 
-        sumSS = sampler.sampleToDataBase(1000).parallelStreamOfBatches(10)
+        sumSS = sampler.sampleToDataStream(1000).parallelStreamOfBatches(10)
                 .map( batch -> {
                     EF_BayesianNetwork efBayesianNetworkLocal = new EF_BayesianNetwork(naiveBayes.getDAG());
                     return batch.stream().map(efBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();

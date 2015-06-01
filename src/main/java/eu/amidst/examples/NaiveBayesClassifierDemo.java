@@ -32,7 +32,7 @@ public class NaiveBayesClassifierDemo {
 
         int sampleSize = 10000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        DataStream<DataInstance> data =  sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data =  sampler.sampleToDataStream(sampleSize);
 
         NaiveBayesClassifier model = new NaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);

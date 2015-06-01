@@ -11,7 +11,6 @@ package eu.amidst.core.utils;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -38,12 +37,9 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
     private Random random = new Random(seed);
 
-    private Stream<Assignment> sampleStream;
-
     private Map<Variable, Boolean> hiddenVars = new HashMap();
 
     private Map<Variable, Double> marNoise = new HashMap();
-    public BayesianNetworkSampler(){}
 
     public BayesianNetworkSampler(BayesianNetwork network1){
         network=network1;
@@ -91,9 +87,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         random = new Random(seed);
     }
 
-
-
-    public DataStream<DataInstance> sampleToDataBase(int nSamples){
+    public DataStream<DataInstance> sampleToDataStream(int nSamples){
         class TemporalDataStream implements DataStream<DataInstance> {
             Attributes atts;
             BayesianNetworkSampler sampler;
@@ -205,7 +199,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(0);
 
-        DataStream<DataInstance> dataStream = sampler.sampleToDataBase(10);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(10);
         DataStreamWriter.writeDataToFile(dataStream,"data/asisa-samples.arff");
 
         System.out.println(watch.stop());
@@ -221,9 +215,6 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         System.out.println();
 
         sampler.getSampleStream(2).forEach( e -> System.out.println(e.toString(network.getStaticVariables().getListOfVariables())));
-
-
-        //VariableList is expensive to compute!!
     }
 
 }
