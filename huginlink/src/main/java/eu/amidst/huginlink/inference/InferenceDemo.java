@@ -72,7 +72,7 @@ public class InferenceDemo {
 
         //We randomly initialize the parensets Time 0 because parameters are wrongly learnt due
         //Random rand = new Random(0);
-        //amidstDBN.getDistributionsTime0().forEach(w -> w.randomInitialization(rand));
+        //amidstDBN.getConditionalDistributionTime0().forEach(w -> w.randomInitialization(rand));
         System.out.println();
         System.out.println();
         System.out.println(amidstDBN.toString());

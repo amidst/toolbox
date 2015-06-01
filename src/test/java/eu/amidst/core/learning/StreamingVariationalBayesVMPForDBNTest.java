@@ -67,7 +67,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
-        for (ConditionalDistribution dist : learnDBN.getDistributionsTimeT()) {
+        for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTimeT()) {
             System.out.println("Real one:");
             System.out.println(dbn.getConditionalDistributionTimeT(dist.getVariable()).toString());
             System.out.println("Learnt one:");
@@ -104,7 +104,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork learnDBN = BayesianLearningEngineForDBN.getLearntDBN();
 
-        for (ConditionalDistribution dist : learnDBN.getDistributionsTimeT()) {
+        for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTimeT()) {
             System.out.println("Real one:");
             System.out.println(dbn.getConditionalDistributionTimeT(dist.getVariable()).toString());
             System.out.println("Learnt one:");
@@ -141,7 +141,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork learnDBN = BayesianLearningEngineForDBN.getLearntDBN();
 
-        for (ConditionalDistribution dist : learnDBN.getDistributionsTime0()) {
+        for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTime0()) {
             System.out.println("Real one:");
             System.out.println(dbn.getConditionalDistributionTime0(dist.getVariable()).toString());
             System.out.println("Learnt one:");
@@ -212,7 +212,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork learnDBN = BayesianLearningEngineForDBN.getLearntDBN();
 
-        for (ConditionalDistribution dist : learnDBN.getDistributionsTimeT()) {
+        for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTimeT()) {
             System.out.println("Real one:");
             System.out.println(dbn.getConditionalDistributionTimeT(dist.getVariable()).toString());
             System.out.println("Learnt one:");
@@ -249,7 +249,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
         DynamicBayesianNetwork learnDBN = BayesianLearningEngineForDBN.getLearntDBN();
 
-        for (ConditionalDistribution dist : learnDBN.getDistributionsTime0()) {
+        for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTime0()) {
             System.out.println("Real one:");
             System.out.println(dbn.getConditionalDistributionTime0(dist.getVariable()).toString());
             System.out.println("Learnt one:");
@@ -349,9 +349,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + bnet.getDistributionTimeT(var));
-                assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.3));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + bnet.getConditionalDistributionTimeT(var));
+                assertTrue(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.3));
             }
 
             System.out.println();
@@ -378,9 +378,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.3));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.3));
             }
             System.out.println();
             System.out.println();
@@ -469,9 +469,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + bnet.getDistributionTimeT(var));
-                if (!(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.2))) {
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + bnet.getConditionalDistributionTimeT(var));
+                if (!(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.2))) {
                     skip=true;
                     break;
                 }
@@ -504,9 +504,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.2));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.2));
             }
             System.out.println();
             System.out.println();
@@ -615,9 +615,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.2));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.2));
             }
             System.out.println();
             System.out.println();
@@ -729,9 +729,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                //assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.2));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                //assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.2));
             }
             System.out.println();
             System.out.println();
@@ -812,9 +812,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + bnet.getDistributionTimeT(var));
-                assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.05));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + bnet.getConditionalDistributionTimeT(var));
+                assertTrue(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.05));
             }
 
 
@@ -839,9 +839,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.05));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.05));
             }
 
         }
@@ -919,9 +919,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + bnet.getDistributionTimeT(var));
-                assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.05));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + bnet.getConditionalDistributionTimeT(var));
+                assertTrue(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.05));
             }
 
 
@@ -946,9 +946,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.05));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.05));
             }
 
         }
@@ -1040,9 +1040,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.06));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.06));
             }
 
         }
@@ -1086,7 +1086,7 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
 
             dynamicNB.randomInitialization(new Random(i));
 
-            Multinomial_MultinomialParents distB = dynamicNB.getDistributionTimeT(varB);
+            Multinomial_MultinomialParents distB = dynamicNB.getConditionalDistributionTimeT(varB);
             distB.getMultinomial(0).setProbabilities(new double[]{0.99, 0.01});
             distB.getMultinomial(1).setProbabilities(new double[]{0.01, 0.99});
 
@@ -1138,9 +1138,9 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getDistributionTimeT(var));
-                assertTrue(dynamicNB.getDistributionTimeT(var).equalDist(learnDBN.getDistributionTimeT(var), 0.05));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.05));
             }
 
         }

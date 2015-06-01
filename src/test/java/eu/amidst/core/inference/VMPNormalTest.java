@@ -58,8 +58,8 @@ public class VMPNormalTest extends TestCase {
         dag.getParentSet(varB).addParent(varA);
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Normal distA = bn.getDistribution(varA);
-        ConditionalLinearGaussian distB = bn.getDistribution(varB);
+        Normal distA = bn.getConditionalDistribution(varA);
+        ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
 
         distA.setMean(1);
         distA.setVariance(0.25);
@@ -143,9 +143,9 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Normal distA = bn.getDistribution(varA);
-        Normal distB = bn.getDistribution(varB);
-        ConditionalLinearGaussian distC = bn.getDistribution(varC);
+        Normal distA = bn.getConditionalDistribution(varA);
+        Normal distB = bn.getConditionalDistribution(varB);
+        ConditionalLinearGaussian distC = bn.getConditionalDistribution(varC);
 
         distA.setMean(1);
         distA.setVariance(0.25);
@@ -254,9 +254,9 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Normal distA = bn.getDistribution(varA);
-        Normal distB = bn.getDistribution(varB);
-        ConditionalLinearGaussian distC = bn.getDistribution(varC);
+        Normal distA = bn.getConditionalDistribution(varA);
+        Normal distB = bn.getConditionalDistribution(varB);
+        ConditionalLinearGaussian distC = bn.getConditionalDistribution(varC);
 
         distA.setMean(1);
         distA.setVariance(0.25);
@@ -357,9 +357,9 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        ConditionalLinearGaussian distA = bn.getDistribution(varA);
-        ConditionalLinearGaussian distB = bn.getDistribution(varB);
-        Normal distC = bn.getDistribution(varC);
+        ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
+        ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
+        Normal distC = bn.getConditionalDistribution(varC);
 
         distA.setIntercept(1);
         //distA.setCoeffParents(new double[]{1});
@@ -466,9 +466,9 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        ConditionalLinearGaussian distA = bn.getDistribution(varA);
-        ConditionalLinearGaussian distB = bn.getDistribution(varB);
-        Normal distC = bn.getDistribution(varC);
+        ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
+        ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
+        Normal distC = bn.getConditionalDistribution(varC);
 
         distA.setIntercept(1);
         //distA.setCoeffParents(new double[]{1});
@@ -560,9 +560,9 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Normal distA = bn.getDistribution(varA);
-        ConditionalLinearGaussian distB = bn.getDistribution(varB);
-        ConditionalLinearGaussian distC = bn.getDistribution(varC);
+        Normal distA = bn.getConditionalDistribution(varA);
+        ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
+        ConditionalLinearGaussian distC = bn.getConditionalDistribution(varC);
 
         distA.setMean(1);
         distA.setVariance(0.25);
@@ -671,9 +671,9 @@ public class VMPNormalTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Normal distA = bn.getDistribution(varA);
-        ConditionalLinearGaussian distB = bn.getDistribution(varB);
-        ConditionalLinearGaussian distC = bn.getDistribution(varC);
+        Normal distA = bn.getConditionalDistribution(varA);
+        ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
+        ConditionalLinearGaussian distC = bn.getConditionalDistribution(varC);
 
         distA.setMean(1);
         distA.setVariance(0.25);

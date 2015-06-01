@@ -55,14 +55,14 @@ public class Examples {
         System.out.println("-- CPDs are automatically created --");
         System.out.println(bnet.toString());
 
-        Multinomial_MultinomialParents distA = bnet.getDistribution(A);
+        Multinomial_MultinomialParents distA = bnet.getConditionalDistribution(A);
         Assignment parentConf = new HashMapAssignment(H.getNumberOfStates());
         parentConf.setValue(H, 0);
         distA.getMultinomial(parentConf).setProbabilities(new double[]{0.7, 0.3});
         parentConf.setValue(H, 1);
         distA.getMultinomial(parentConf).setProbabilities(new double[]{0.2, 0.8});
 
-        Normal_MultinomialParents distC = bnet.getDistribution(C);
+        Normal_MultinomialParents distC = bnet.getConditionalDistribution(C);
         parentConf.setValue(H, 0);
         distC.getNormal(0).setMean(0.15);
         distC.getNormal(0).setVariance(0.25);
@@ -114,10 +114,10 @@ public class Examples {
         System.out.println(dynamicbnet.toString());
 
 
-        Multinomial distA = dynamicbnet.getDistributionTime0(A);
+        Multinomial distA = dynamicbnet.getConditionalDistributionTime0(A);
         distA.setProbabilities(new double[]{0.1, 0.9});
 
-        Normal_MultinomialParents distC = dynamicbnet.getDistributionTime0(C);
+        Normal_MultinomialParents distC = dynamicbnet.getConditionalDistributionTime0(C);
 
         Assignment parentConf = new HashMapAssignment(H.getNumberOfStates()*A.getNumberOfStates());
 

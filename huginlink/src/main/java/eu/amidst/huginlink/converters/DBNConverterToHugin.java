@@ -120,11 +120,11 @@ public class DBNConverterToHugin {
             //Master nodes. TIME T from AMIDST
             if (huginNode.getTemporalMaster() == null) {
                 Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getName());
-                if (amidstDBN.getDistributionTimeT(amidstVar) instanceof Multinomial){
+                if (amidstDBN.getConditionalDistributionTimeT(amidstVar) instanceof Multinomial){
                     dist = new Multinomial_MultinomialParents(amidstVar,new ArrayList());
-                    dist.setMultinomial(0,amidstDBN.getDistributionTimeT(amidstVar));
+                    dist.setMultinomial(0,amidstDBN.getConditionalDistributionTimeT(amidstVar));
                 }else {
-                    dist = amidstDBN.getDistributionTimeT(amidstVar);
+                    dist = amidstDBN.getConditionalDistributionTimeT(amidstVar);
                 }
                 nStates = amidstVar.getNumberOfStates();
             }
@@ -132,11 +132,11 @@ public class DBNConverterToHugin {
             //Temporal clones. TIME 0 from AMIDST
             if(huginNode.getTemporalClone()==null){
                 Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getTemporalMaster().getName());
-                if (amidstDBN.getDistributionTime0(amidstVar) instanceof Multinomial){
+                if (amidstDBN.getConditionalDistributionTime0(amidstVar) instanceof Multinomial){
                     dist = new Multinomial_MultinomialParents(amidstVar,new ArrayList());
-                    dist.setMultinomial(0,amidstDBN.getDistributionTime0(amidstVar));
+                    dist.setMultinomial(0,amidstDBN.getConditionalDistributionTime0(amidstVar));
                 }else {
-                    dist = amidstDBN.getDistributionTime0(amidstVar);
+                    dist = amidstDBN.getConditionalDistributionTime0(amidstVar);
                 }
                 nStates = amidstVar.getNumberOfStates();
             }
