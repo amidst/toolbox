@@ -52,7 +52,7 @@ public class LearningVMPTests {
 
         bn.randomInitialization(new Random(0));
 
-        Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
+        Normal_MultinomialNormalParents distA = bn.getConditionalDistribution(varA);
 
         distA.getNormal_NormalParentsDistribution(0).setIntercept(1.0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(2.0);
@@ -87,7 +87,7 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Normal_MultinomialNormalParents dist = learntBN.getDistribution(varA);
+            Normal_MultinomialNormalParents dist = learntBN.getConditionalDistribution(varA);
 
             //System.out.println(count +"\t"+ dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
             System.out.println(dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
@@ -117,7 +117,7 @@ public class LearningVMPTests {
 
         bn.randomInitialization(new Random(0));
 
-        Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
+        Normal_MultinomialNormalParents distA = bn.getConditionalDistribution(varA);
 
         distA.getNormal_NormalParentsDistribution(0).setIntercept(1.0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(2.0);
@@ -149,7 +149,7 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Normal_MultinomialNormalParents dist = learntBN.getDistribution(varA);
+            Normal_MultinomialNormalParents dist = learntBN.getConditionalDistribution(varA);
 
             System.out.println(count +"\t"+ dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
 
@@ -174,7 +174,7 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Normal_MultinomialNormalParents dist = learntBN.getDistribution(varA);
+            Normal_MultinomialNormalParents dist = learntBN.getConditionalDistribution(varA);
 
             System.out.println(count +"\t"+ dist.getNormal_NormalParentsDistribution(0).getIntercept() + "\t"+ dist.getNormal_NormalParentsDistribution(1).getIntercept());
 
@@ -204,17 +204,17 @@ public class LearningVMPTests {
 
         bn.randomInitialization(new Random(0));
 
-        Multinomial distC = bn.getDistribution(varC);
+        Multinomial distC = bn.getConditionalDistribution(varC);
         distC.setProbabilityOfState(0,0.5);
         distC.setProbabilityOfState(1,0.5);
 
-        Normal_MultinomialParents distB = bn.getDistribution(varB);
+        Normal_MultinomialParents distB = bn.getConditionalDistribution(varB);
         distB.getNormal(0).setMean(-3.0);
         distB.getNormal(1).setMean(3.0);
         distB.getNormal(0).setVariance(1.0);
         distB.getNormal(1).setVariance(1.0);
 
-        Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
+        Normal_MultinomialNormalParents distA = bn.getConditionalDistribution(varA);
 
         //distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
         distA.getNormal_NormalParentsDistribution(0).setCoeffForParent(varB, 1.0);
@@ -252,11 +252,11 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            distB = learntBN.getDistribution(varB);
+            distB = learntBN.getConditionalDistribution(varB);
             double meanB0 =  distB.getNormal(0).getMean();
             double meanB1 =  distB.getNormal(1).getMean();
 
-            distA = learntBN.getDistribution(varA);
+            distA = learntBN.getConditionalDistribution(varA);
 
             double meanA0  = distA.getNormal_NormalParentsDistribution(0).getIntercept()
                     + distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]*meanB0;
@@ -275,12 +275,12 @@ public class LearningVMPTests {
         /********** CONCEPT DRIFT ***********************/
         /*************************************************/
 
-        distB = bn.getDistribution(varB);
+        distB = bn.getConditionalDistribution(varB);
         distB.getNormal(0).setMean(-5.0);
         distB.getNormal(1).setMean(5.0);
 
 
-        distA = bn.getDistribution(varA);
+        distA = bn.getConditionalDistribution(varA);
         distA.getNormal_NormalParentsDistribution(0).setIntercept(0.0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(0.0);
         //distA.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{-1.0});
@@ -299,11 +299,11 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            distB = learntBN.getDistribution(varB);
+            distB = learntBN.getConditionalDistribution(varB);
             double meanB0 =  distB.getNormal(0).getMean();
             double meanB1 =  distB.getNormal(1).getMean();
 
-            distA = learntBN.getDistribution(varA);
+            distA = learntBN.getConditionalDistribution(varA);
 
             double meanA0  = distA.getNormal_NormalParentsDistribution(0).getIntercept()
                     + distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0]*meanB0;
@@ -339,10 +339,10 @@ public class LearningVMPTests {
 
         bn.randomInitialization(new Random(0));
 
-        Normal distB = bn.getDistribution(varB);
+        Normal distB = bn.getConditionalDistribution(varB);
         distB.setMean(1.0);
 
-        ConditionalLinearGaussian distA = bn.getDistribution(varA);
+        ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
 
         distA.setIntercept(0);
         //distA.setCoeffParents(new double[]{1.0,0.0});
@@ -378,11 +378,11 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Normal distC = learntBN.getDistribution(varC);
+            Normal distC = learntBN.getConditionalDistribution(varC);
 
-            distB = learntBN.getDistribution(varB);
+            distB = learntBN.getConditionalDistribution(varB);
 
-            distA = learntBN.getDistribution(varA);
+            distA = learntBN.getConditionalDistribution(varA);
 
             double meanA = distA.getIntercept() + distB.getMean()*distA.getCoeffParents()[0] + distC.getMean()*distA.getCoeffParents()[1];
 
@@ -397,7 +397,7 @@ public class LearningVMPTests {
 
 
 
-        distA = bn.getDistribution(varA);
+        distA = bn.getConditionalDistribution(varA);
         distA.setIntercept(0);
         distA.setCoeffParents(new double[]{2.0, 0.0});
 
@@ -412,11 +412,11 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Normal distC = learntBN.getDistribution(varC);
+            Normal distC = learntBN.getConditionalDistribution(varC);
 
-            distB = learntBN.getDistribution(varB);
+            distB = learntBN.getConditionalDistribution(varB);
 
-            distA = learntBN.getDistribution(varA);
+            distA = learntBN.getConditionalDistribution(varA);
 
             double meanA = distA.getIntercept() + distB.getMean()*distA.getCoeffParents()[0] + distC.getMean()*distA.getCoeffParents()[1];
 
@@ -445,10 +445,10 @@ public class LearningVMPTests {
 
         bn.randomInitialization(new Random(0));
 
-        Normal distB = bn.getDistribution(varB);
+        Normal distB = bn.getConditionalDistribution(varB);
         distB.setMean(1.0);
 
-        Normal_MultinomialNormalParents distA = bn.getDistribution(varA);
+        Normal_MultinomialNormalParents distA = bn.getConditionalDistribution(varA);
 
         distA.getNormal_NormalParentsDistribution(0).setIntercept(0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(0);
@@ -487,11 +487,11 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Multinomial distC = learntBN.getDistribution(varC);
+            Multinomial distC = learntBN.getConditionalDistribution(varC);
 
-            distB = learntBN.getDistribution(varB);
+            distB = learntBN.getConditionalDistribution(varB);
 
-            distA = learntBN.getDistribution(varA);
+            distA = learntBN.getConditionalDistribution(varA);
 
             double meanA = (distA.getNormal_NormalParentsDistribution(0).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0])*distC.getProbabilityOfState(0);
             meanA += (distA.getNormal_NormalParentsDistribution(1).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(1).getCoeffParents()[0])*distC.getProbabilityOfState(1);
@@ -508,7 +508,7 @@ public class LearningVMPTests {
 
 
 
-        distA = bn.getDistribution(varA);
+        distA = bn.getConditionalDistribution(varA);
         distA.getNormal_NormalParentsDistribution(0).setIntercept(0);
         distA.getNormal_NormalParentsDistribution(1).setIntercept(0);
 
@@ -528,11 +528,11 @@ public class LearningVMPTests {
             svb.updateModel(batch);
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Multinomial distC = learntBN.getDistribution(varC);
+            Multinomial distC = learntBN.getConditionalDistribution(varC);
 
-            distB = learntBN.getDistribution(varB);
+            distB = learntBN.getConditionalDistribution(varB);
 
-            distA = learntBN.getDistribution(varA);
+            distA = learntBN.getConditionalDistribution(varA);
 
             double meanA = (distA.getNormal_NormalParentsDistribution(0).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(0).getCoeffParents()[0])*distC.getProbabilityOfState(0);
             meanA += (distA.getNormal_NormalParentsDistribution(1).getIntercept() + distB.getMean()*distA.getNormal_NormalParentsDistribution(1).getCoeffParents()[0])*distC.getProbabilityOfState(1);

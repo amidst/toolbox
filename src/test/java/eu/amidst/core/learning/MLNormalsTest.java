@@ -3,15 +3,14 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.variables.Variable;
-
 import org.junit.Test;
+
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -67,9 +66,9 @@ public class MLNormalsTest {
         //Check the probability distributions of each node
         for (Variable var : testnet.getStaticVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ testnet.getDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
-            assertTrue(bnet.getDistribution(var).equalDist(testnet.getDistribution(var), 0.05));
+            System.out.println("\nTrue distribution:\n"+ testnet.getConditionalDistribution(var));
+            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            assertTrue(bnet.getConditionalDistribution(var).equalDist(testnet.getConditionalDistribution(var), 0.05));
         }
 
         //Or check directly if the true and learned networks are equals
