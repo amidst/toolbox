@@ -32,7 +32,7 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial distA = bn.getDistribution(varA);
+        Multinomial distA = bn.getConditionalDistribution(varA);
 
         distA.setProbabilities(new double[]{0.6, 0.4});
 
@@ -76,8 +76,8 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
+        Multinomial distA = bn.getConditionalDistribution(varA);
+        Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
 
         distA.setProbabilities(new double[]{0.6, 0.4});
         distB.getMultinomial(0).setProbabilities(new double[]{0.75, 0.25});
@@ -363,7 +363,7 @@ public class BayesianVMPTest extends TestCase {
         for (int i = 0; i < 1; i++) {
 
             Variable varA = oneNormalVarBN.getStaticVariables().getVariableByName("A");
-            Normal dist = oneNormalVarBN.getDistribution(varA);
+            Normal dist = oneNormalVarBN.getConditionalDistribution(varA);
 
             dist.setMean(2000);
             dist.setVariance(30);
@@ -806,8 +806,8 @@ public class BayesianVMPTest extends TestCase {
 
             System.out.println(bn.toString());
             System.out.println(learnBN.toString());
-            ConditionalLinearGaussian distCP = bn.getDistribution(varC);
-            ConditionalLinearGaussian distCQ = learnBN.getDistribution(varC);
+            ConditionalLinearGaussian distCP = bn.getConditionalDistribution(varC);
+            ConditionalLinearGaussian distCQ = learnBN.getConditionalDistribution(varC);
 
             assertEquals(distCP.getSd(), distCQ.getSd(), 0.1);
         }

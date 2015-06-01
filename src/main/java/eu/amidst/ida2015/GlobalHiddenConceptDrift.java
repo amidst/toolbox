@@ -39,8 +39,8 @@ public class GlobalHiddenConceptDrift {
         Variable classVariable = bn.getStaticVariables().getVariableByName("ClassVar");
         Variable gaussianVar0 = bn.getStaticVariables().getVariableByName("GaussianVar0");
 
-        Multinomial distClass = bn.getDistribution(classVariable);
-        Normal_MultinomialNormalParents distGV0 = bn.getDistribution(gaussianVar0);
+        Multinomial distClass = bn.getConditionalDistribution(classVariable);
+        Normal_MultinomialNormalParents distGV0 = bn.getConditionalDistribution(gaussianVar0);
 
         double inter0 = distGV0.getNormal_NormalParentsDistribution(0).getIntercept();
         double inter1 = distGV0.getNormal_NormalParentsDistribution(1).getIntercept();
@@ -58,9 +58,9 @@ public class GlobalHiddenConceptDrift {
         Variable gaussianVar0 = bn.getStaticVariables().getVariableByName("GaussianVar0");
         Variable globalHidden = bn.getStaticVariables().getVariableByName("Global");
 
-        Multinomial distClass = bn.getDistribution(classVariable);
-        Normal_MultinomialNormalParents distGV0 = bn.getDistribution(gaussianVar0);
-        Normal distGlobal = bn.getDistribution(globalHidden);
+        Multinomial distClass = bn.getConditionalDistribution(classVariable);
+        Normal_MultinomialNormalParents distGV0 = bn.getConditionalDistribution(gaussianVar0);
+        Normal distGlobal = bn.getConditionalDistribution(globalHidden);
 
         double inter0 = distGV0.getNormal_NormalParentsDistribution(0).getIntercept();
         double inter1 = distGV0.getNormal_NormalParentsDistribution(1).getIntercept();
@@ -82,9 +82,9 @@ public class GlobalHiddenConceptDrift {
         Variable gaussianVar0 = bn.getStaticVariables().getVariableByName("GaussianVar0");
 
 
-        Normal distGlobal = bn.getDistribution(globalHidden);
-        Multinomial distClass = bn.getDistribution(classVariable);
-        Normal_MultinomialNormalParents distGV0 = bn.getDistribution(gaussianVar0);
+        Normal distGlobal = bn.getConditionalDistribution(globalHidden);
+        Multinomial distClass = bn.getConditionalDistribution(classVariable);
+        Normal_MultinomialNormalParents distGV0 = bn.getConditionalDistribution(gaussianVar0);
 
         double inter0 = distGV0.getNormal_NormalParentsDistribution(0).getIntercept();
         double inter1 = distGV0.getNormal_NormalParentsDistribution(1).getIntercept();
@@ -113,7 +113,7 @@ public class GlobalHiddenConceptDrift {
         for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                 continue;
-            Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+            Normal_MultinomialNormalParents newdist = naiveBayes.getConditionalDistribution(dist.getVariable());
             //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
             newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
             //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
@@ -149,9 +149,9 @@ public class GlobalHiddenConceptDrift {
             //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
             //System.out.println("****************");
 
-            Normal_MultinomialNormalParents distA = learntBN.getDistribution(gaussianVar0);
+            Normal_MultinomialNormalParents distA = learntBN.getConditionalDistribution(gaussianVar0);
 
-            Normal_MultinomialNormalParents distATrue = naiveBayes.getDistribution(gaussianVar0);
+            Normal_MultinomialNormalParents distATrue = naiveBayes.getConditionalDistribution(gaussianVar0);
 
 
             System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean())+"\t" + getRealMeanRandomConceptDrift(naiveBayes));
@@ -171,7 +171,7 @@ public class GlobalHiddenConceptDrift {
             for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
                 if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                     continue;
-                Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+                Normal_MultinomialNormalParents newdist = naiveBayes.getConditionalDistribution(dist.getVariable());
                 newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
                 newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
             }
@@ -207,8 +207,8 @@ public class GlobalHiddenConceptDrift {
                 //System.out.println("****************");
 
 
-                Normal_MultinomialNormalParents distA = learntBN.getDistribution(gaussianVar0);
-                Normal_MultinomialNormalParents distATrue = naiveBayes.getDistribution(gaussianVar0);
+                Normal_MultinomialNormalParents distA = learntBN.getConditionalDistribution(gaussianVar0);
+                Normal_MultinomialNormalParents distATrue = naiveBayes.getConditionalDistribution(gaussianVar0);
 
 
                 System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanRandomConceptDrift(naiveBayes));
@@ -237,7 +237,7 @@ public class GlobalHiddenConceptDrift {
         for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                 continue;
-            Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+            Normal_MultinomialNormalParents newdist = naiveBayes.getConditionalDistribution(dist.getVariable());
             //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
             newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
             //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
@@ -272,9 +272,9 @@ public class GlobalHiddenConceptDrift {
             //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
             //System.out.println("****************");
 
-            Normal_MultinomialNormalParents distA = learntBN.getDistribution(gaussianVar0);
+            Normal_MultinomialNormalParents distA = learntBN.getConditionalDistribution(gaussianVar0);
 
-            Normal_MultinomialNormalParents distATrue = naiveBayes.getDistribution(gaussianVar0);
+            Normal_MultinomialNormalParents distATrue = naiveBayes.getConditionalDistribution(gaussianVar0);
 
 
             System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean())+"\t" + getRealMeanRandomConceptDrift(naiveBayes));
@@ -294,7 +294,7 @@ public class GlobalHiddenConceptDrift {
             for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
                 if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                     continue;
-                Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+                Normal_MultinomialNormalParents newdist = naiveBayes.getConditionalDistribution(dist.getVariable());
                 //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
                 newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
                 //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
@@ -319,8 +319,8 @@ public class GlobalHiddenConceptDrift {
                 //System.out.println("****************");
 
 
-                Normal_MultinomialNormalParents distA = learntBN.getDistribution(gaussianVar0);
-                Normal_MultinomialNormalParents distATrue = naiveBayes.getDistribution(gaussianVar0);
+                Normal_MultinomialNormalParents distA = learntBN.getConditionalDistribution(gaussianVar0);
+                Normal_MultinomialNormalParents distATrue = naiveBayes.getConditionalDistribution(gaussianVar0);
 
 
                 System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanRandomConceptDrift(naiveBayes));
@@ -348,7 +348,7 @@ public class GlobalHiddenConceptDrift {
         Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
 
 
-        naiveBayes.getDistribution(globalHidden).randomInitialization(new Random(1));
+        naiveBayes.getConditionalDistribution(globalHidden).randomInitialization(new Random(1));
 
         System.out.println(naiveBayes.toString());
 
@@ -385,7 +385,7 @@ public class GlobalHiddenConceptDrift {
             //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
             //System.out.println("****************");
 
-            Normal distGH = naiveBayes.getDistribution(globalHidden);
+            Normal distGH = naiveBayes.getConditionalDistribution(globalHidden);
             //System.out.println(count + "\t" + normal.getMean() + "\t" + normal.getVariance() +  "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
             System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
             //System.out.print("\t" + distGH.getMean());
@@ -397,7 +397,7 @@ public class GlobalHiddenConceptDrift {
 
         for (int K = 1; K < 10; K++) {
             //System.out.println("******************************** CONCEPT DRIFT ********************************");
-            naiveBayes.getDistribution(globalHidden).randomInitialization(new Random(K + 2));
+            naiveBayes.getConditionalDistribution(globalHidden).randomInitialization(new Random(K + 2));
             //((Normal)naiveBayes.getDistribution(globalHidden)).setVariance(0.1);
 
             //System.out.println(((Normal)naiveBayes.getDistribution(globalHidden)).getMean() +"\t" + ((Normal)naiveBayes.getDistribution(globalHidden)).getVariance());
@@ -418,7 +418,7 @@ public class GlobalHiddenConceptDrift {
                 //System.out.println("Global Hidden: " + normal.getMean() + ", " + normal.getVariance());
                 //System.out.println("****************");
 
-                Normal distGH = naiveBayes.getDistribution(globalHidden);
+                Normal distGH = naiveBayes.getConditionalDistribution(globalHidden);
                 //System.out.println(count + "\t" + normal.getMean() + "\t" + normal.getVariance() +  "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
                 System.out.print(count + "\t" + normal.getMean() + "\t" + getLearntMean(learntBN, normal.getMean()) + "\t" + getRealMeanSmoothConceptDrift(naiveBayes));
                 //System.out.print("\t" + distGH.getMean());
@@ -544,7 +544,7 @@ public class GlobalHiddenConceptDrift {
         for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                 continue;
-            Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+            Normal_MultinomialNormalParents newdist = naiveBayes.getConditionalDistribution(dist.getVariable());
             //newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
             newdist.getNormal_NormalParentsDistribution(0).setCoeffForParent(globalHidden, 0.0);
             //newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
@@ -635,7 +635,7 @@ public class GlobalHiddenConceptDrift {
             for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
                 if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
                     continue;
-                Normal_MultinomialNormalParents newdist = naiveBayes.getDistribution(dist.getVariable());
+                Normal_MultinomialNormalParents newdist = naiveBayes.getConditionalDistribution(dist.getVariable());
                 newdist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{0.0});
                 newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
             }
@@ -774,9 +774,9 @@ public class GlobalHiddenConceptDrift {
             //System.out.println(learntBN.toString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
 
-            Normal_MultinomialNormalParents dist1 = learntBN.getDistribution(at1);
-            Normal_MultinomialNormalParents dist2 = learntBN.getDistribution(at2);
-            Normal_MultinomialNormalParents dist3 = learntBN.getDistribution(at3);
+            Normal_MultinomialNormalParents dist1 = learntBN.getConditionalDistribution(at1);
+            Normal_MultinomialNormalParents dist2 = learntBN.getConditionalDistribution(at2);
+            Normal_MultinomialNormalParents dist3 = learntBN.getConditionalDistribution(at3);
 
             System.out.print(count + "\t" + normal.getMean());
 
@@ -1161,9 +1161,9 @@ public class GlobalHiddenConceptDrift {
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            Normal_MultinomialParents dist1 = learntBN.getDistribution(at1);
-            Normal_MultinomialParents dist2 = learntBN.getDistribution(at2);
-            Normal_MultinomialParents dist3 = learntBN.getDistribution(at3);
+            Normal_MultinomialParents dist1 = learntBN.getConditionalDistribution(at1);
+            Normal_MultinomialParents dist2 = learntBN.getConditionalDistribution(at2);
+            Normal_MultinomialParents dist3 = learntBN.getConditionalDistribution(at3);
             System.out.print(count);
             System.out.print("\t" + dist1.getNormal(0).getMean());
             System.out.print("\t" + dist1.getNormal(1).getMean());

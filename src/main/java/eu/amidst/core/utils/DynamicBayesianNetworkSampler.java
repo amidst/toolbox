@@ -10,7 +10,6 @@ package eu.amidst.core.utils;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.*;
@@ -109,7 +108,7 @@ public class DynamicBayesianNetworkSampler {
                 HashMapAssignment dataPresent = new HashMapAssignment(network.getNumberOfVars());
 
                 for (Variable var : causalOrderTime0) {
-                    double sampledValue = network.getDistributionsTime0().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
+                    double sampledValue = network.getConditionalDistributionsTime0().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
                     dataPresent.setValue(var, sampledValue);
                 }
 
@@ -129,7 +128,7 @@ public class DynamicBayesianNetworkSampler {
                 DynamicDataInstance d = new DynamicDataInstanceImpl(network, data[0], dataPresent, sequenceID, k);
 
                 for (Variable var : causalOrderTimeT) {
-                    double sampledValue = network.getDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(d).sample(random);
+                    double sampledValue = network.getConditionalDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(d).sample(random);
                     dataPresent.setValue(var, sampledValue);
                 }
 
