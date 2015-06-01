@@ -11,8 +11,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="sizeofag" level="project" />
     <orderEntry type="library" name="nz.ac.waikato.cms.weka:weka-dev:3.7.12" level="project" />
-    <orderEntry type="library" name="org.apache.commons:commons-math3:3.5" level="application" />
-    <orderEntry type="library" name="org.apache.commons:commons-math3:3.5" level="project" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="library" name="Maven: nz.ac.waikato.cms.weka:weka-dev:3.7.12" level="project" />
     <orderEntry type="library" name="Maven: net.sf.squirrel-sql.thirdparty-non-maven:java-cup:0.11a" level="project" />
