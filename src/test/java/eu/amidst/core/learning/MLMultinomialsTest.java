@@ -32,7 +32,7 @@ public class MLMultinomialsTest {
         sampler.setSeed(0);
 
         //Load the sampled data
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
 

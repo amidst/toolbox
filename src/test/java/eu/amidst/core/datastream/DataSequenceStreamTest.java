@@ -107,7 +107,7 @@ public class DataSequenceStreamTest extends TestCase {
 
         efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
-        sumSS = sampler.sampleToDataBase(nsquences, sizesequences).streamOfBatches(10)
+        sumSS = sampler.sampleToDataStream(nsquences, sizesequences).streamOfBatches(10)
                 .map( batch -> {
                     EF_DynamicBayesianNetwork efDynamicBayesianNetworkLocal = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
                     return batch.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
@@ -147,7 +147,7 @@ public class DataSequenceStreamTest extends TestCase {
 
         /*efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
-        sumSS = DataSequenceStream.streamOfDataSequences(sampler.sampleToDataBase(nsquences, sizesequences))
+        sumSS = DataSequenceStream.streamOfDataSequences(sampler.sampleToDataStream(nsquences, sizesequences))
                 .map( sequence -> {
                     EF_DynamicBayesianNetwork efDynamicBayesianNetworkLocal = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
                     return sequence.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
@@ -166,7 +166,7 @@ public class DataSequenceStreamTest extends TestCase {
 
         /*efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
 
-        sumSS = DataSequenceStream.parallelStreamOfDataSequences(sampler.sampleToDataBase(nsquences, sizesequences))
+        sumSS = DataSequenceStream.parallelStreamOfDataSequences(sampler.sampleToDataStream(nsquences, sizesequences))
                 .map( sequence -> {
                     EF_DynamicBayesianNetwork efDynamicBayesianNetworkLocal = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
                     return sequence.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();

@@ -79,7 +79,7 @@ public class NaiveBayesClassifier {
 
         int sampleSize = 100;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        DataStream<DataInstance> data =  sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data =  sampler.sampleToDataStream(sampleSize);
 
         for (int i = 1; i <= 10; i++) {
             NaiveBayesClassifier model = new NaiveBayesClassifier();
