@@ -1,17 +1,16 @@
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Hanen on 06/02/15.
@@ -27,7 +26,7 @@ public class BaseDistributionMultinomialParentsTest {
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
 
         //Here we had to modify the CPT of the variable E because no smoothing is considered yet
-        Multinomial_MultinomialParents distE = testnet.getDistribution(testnet.getStaticVariables().getVariableByName("E"));
+        Multinomial_MultinomialParents distE = testnet.getConditionalDistribution(testnet.getStaticVariables().getVariableByName("E"));
         //distE.getMultinomial(0).setProbabilities(new double[]{0.9, 0.1});
         //distE.getMultinomial(1).setProbabilities(new double[]{0.9, 0.1});
         //distE.getMultinomial(2).setProbabilities(new double[]{0.9, 0.1});

@@ -140,7 +140,7 @@ public class DBNConverterToAmidst {
             double[] huginProbabilitiesTimeT = huginVar.getTable().getData();
             List<Variable> parentsTimeT = amidstDBN.getDynamicDAG().getParentSetTimeT(amidstVar).getParents();
             if (parentsTimeT.size()==0){
-                Multinomial dist_TimeT = amidstDBN.getDistributionTimeT(amidstVar);
+                Multinomial dist_TimeT = amidstDBN.getConditionalDistributionTimeT(amidstVar);
                 int numStates = amidstVar.getNumberOfStates();
                 double[] amidstProbabilities = new double[numStates];
                 for (int k = 0; k < numStates; k++) {
@@ -148,7 +148,7 @@ public class DBNConverterToAmidst {
                 }
                 dist_TimeT.setProbabilities(amidstProbabilities);
             }else {
-                Multinomial_MultinomialParents dist_TimeT = amidstDBN.getDistributionTimeT(amidstVar);
+                Multinomial_MultinomialParents dist_TimeT = amidstDBN.getConditionalDistributionTimeT(amidstVar);
                 int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(parentsTimeT);
                 int numStates = amidstVar.getNumberOfStates();
                 for (int i = 0; i < numParentAssignments; i++) {
@@ -163,7 +163,7 @@ public class DBNConverterToAmidst {
             double[] huginProbabilitiesTime0 = huginTemporalClone.getTable().getData();
             List<Variable> parentsTime0 = amidstDBN.getDynamicDAG().getParentSetTime0(amidstVar).getParents();
             if (parentsTime0.size()==0) {
-                Multinomial dist_Time0 = amidstDBN.getDistributionTime0(amidstVar);
+                Multinomial dist_Time0 = amidstDBN.getConditionalDistributionTime0(amidstVar);
                 int numStates = amidstVar.getNumberOfStates();
                 double[] amidstProbabilities = new double[numStates];
                     for (int k = 0; k < numStates; k++) {
@@ -171,7 +171,7 @@ public class DBNConverterToAmidst {
                     }
                     dist_Time0.setProbabilities(amidstProbabilities);
             } else {
-                Multinomial_MultinomialParents dist_Time0 = amidstDBN.getDistributionTime0(amidstVar);
+                Multinomial_MultinomialParents dist_Time0 = amidstDBN.getConditionalDistributionTime0(amidstVar);
                 int numParentAssignmentsTime0 = MultinomialIndex.getNumberOfPossibleAssignments(parentsTime0);
                 int numStates = amidstVar.getNumberOfStates();
                 for (int i = 0; i < numParentAssignmentsTime0; i++) {
