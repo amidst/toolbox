@@ -98,23 +98,23 @@ public class ImportanceSamplingHuginTest {
         Variable E = variables.getVariableByName("E");
 
         // Variable A
-        Multinomial distA = samplingBN.getDistribution(A);
+        Multinomial distA = samplingBN.getConditionalDistribution(A);
         distA.setProbabilities(new double[]{0.15, 0.85});
 
         // Variable B
-        Multinomial_MultinomialParents distB = samplingBN.getDistribution(B);
+        Multinomial_MultinomialParents distB = samplingBN.getConditionalDistribution(B);
         distB.getMultinomial(0).setProbabilities(new double[]{0.15,0.85});
         distB.getMultinomial(1).setProbabilities(new double[]{0.75,0.25});
 
         // Variable C
-        Normal_MultinomialParents distC = samplingBN.getDistribution(C);
+        Normal_MultinomialParents distC = samplingBN.getConditionalDistribution(C);
         distC.getNormal(0).setMean(3.1);
         distC.getNormal(0).setVariance(0.93320508059375);
         distC.getNormal(1).setMean(2.1);
         distC.getNormal(1).setVariance(0.720262834489);
 
         //Variable D
-        Normal_MultinomialNormalParents distD = samplingBN.getDistribution(D);
+        Normal_MultinomialNormalParents distD = samplingBN.getConditionalDistribution(D);
         distD.getNormal_NormalParentsDistribution(0).setIntercept(2.1);
         //distD.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{2.1});
         distD.getNormal_NormalParentsDistribution(0).setCoeffForParent(C, 2.1);
@@ -126,7 +126,7 @@ public class ImportanceSamplingHuginTest {
         distD.getNormal_NormalParentsDistribution(1).setVariance(2.29280164);
 
         //Variable E
-        ConditionalLinearGaussian distE  = samplingBN.getDistribution(E);
+        ConditionalLinearGaussian distE  = samplingBN.getConditionalDistribution(E);
         distE.setIntercept(2.4);
         //distE.setCoeffParents(new double[]{4.1});
         distE.setCoeffForParent(C, 4.1);

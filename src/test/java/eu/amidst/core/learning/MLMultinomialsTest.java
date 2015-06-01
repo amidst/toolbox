@@ -44,9 +44,9 @@ public class MLMultinomialsTest {
         //Check if the probability distributions of each node
         for (Variable var : asianet.getStaticVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
-            assertTrue(bnet.getDistribution(var).equalDist(asianet.getDistribution(var), 0.05));
+            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
         }
 
         //Or check directly if the true and learned networks are equals

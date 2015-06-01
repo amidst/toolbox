@@ -34,8 +34,8 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
+        Multinomial distA = bn.getConditionalDistribution(varA);
+        Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
 
         distA.setProbabilities(new double[]{0.9, 0.1});
         distB.getMultinomial(0).setProbabilities(new double[]{0.75, 0.25});
@@ -125,8 +125,8 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
+        Multinomial distA = bn.getConditionalDistribution(varA);
+        Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
 
         distA.setProbabilities(new double[]{0.5, 0.5});
         distB.getMultinomial(0).setProbabilities(new double[]{0.75, 0.25});
@@ -173,9 +173,9 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial distA = bn.getDistribution(varA);
-        Multinomial distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
+        Multinomial distA = bn.getConditionalDistribution(varA);
+        Multinomial distB = bn.getConditionalDistribution(varB);
+        Multinomial_MultinomialParents distC = bn.getConditionalDistribution(varC);
 
         distA.setProbabilities(new double[]{0.5, 0.5});
         distB.setProbabilities(new double[]{0.5, 0.5});
@@ -279,9 +279,9 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial distA = bn.getDistribution(varA);
-        Multinomial distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
+        Multinomial distA = bn.getConditionalDistribution(varA);
+        Multinomial distB = bn.getConditionalDistribution(varB);
+        Multinomial_MultinomialParents distC = bn.getConditionalDistribution(varC);
 
         distA.setProbabilities(new double[]{0.5, 0.5});
         distB.setProbabilities(new double[]{0.5, 0.5});
@@ -740,9 +740,9 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial_MultinomialParents distA = bn.getDistribution(varA);
-        Multinomial_MultinomialParents distB = bn.getDistribution(varB);
-        Multinomial distC = bn.getDistribution(varC);
+        Multinomial_MultinomialParents distA = bn.getConditionalDistribution(varA);
+        Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
+        Multinomial distC = bn.getConditionalDistribution(varC);
 
         distC.setProbabilities(new double[]{0.5, 0.5});
 
@@ -867,9 +867,9 @@ public class VMPTest extends TestCase {
 
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
-        Multinomial distA = bn.getDistribution(varA);
-        Multinomial distB = bn.getDistribution(varB);
-        Multinomial_MultinomialParents distC = bn.getDistribution(varC);
+        Multinomial distA = bn.getConditionalDistribution(varA);
+        Multinomial distB = bn.getConditionalDistribution(varB);
+        Multinomial_MultinomialParents distC = bn.getConditionalDistribution(varC);
 
 
         distA.setProbabilities(new double[]{0.5, 0.5});

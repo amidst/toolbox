@@ -5,15 +5,13 @@ import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Distribution;
-import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
 import java.io.IOException;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Hanen on 12/01/15.
@@ -55,10 +53,10 @@ public class MLTestOneVar {
         //Check if the probability distributions of the true and learned networks are equals
         for (Variable var : net.getStaticVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
-            Distribution trueCD = net.getDistribution(var);
+            Distribution trueCD = net.getConditionalDistribution(var);
             System.out.println("\nThe true distribution:\n"+ trueCD);
 
-            Distribution learnedCD = bn.getDistribution(var);
+            Distribution learnedCD = bn.getConditionalDistribution(var);
             System.out.println("\nThe learned distribution:\n"+ learnedCD);
 
         }
