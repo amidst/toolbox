@@ -34,8 +34,8 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
         this.bayesianNetworkTime0 = new EF_BayesianNetwork();
         this.bayesianNetworkTimeT = new EF_BayesianNetwork();
 
-        this.bayesianNetworkTime0.setDistributionList(dbn.getDistributionsTime0().stream().map(dist -> dist.<EF_ConditionalDistribution>toEFConditionalDistribution()).collect(Collectors.toList()));
-        this.bayesianNetworkTimeT.setDistributionList(dbn.getDistributionsTimeT().stream().map(dist -> dist.<EF_ConditionalDistribution>toEFConditionalDistribution()).collect(Collectors.toList()));
+        this.bayesianNetworkTime0.setDistributionList(dbn.getConditionalDistributionsTime0().stream().map(dist -> dist.<EF_ConditionalDistribution>toEFConditionalDistribution()).collect(Collectors.toList()));
+        this.bayesianNetworkTimeT.setDistributionList(dbn.getConditionalDistributionsTimeT().stream().map(dist -> dist.<EF_ConditionalDistribution>toEFConditionalDistribution()).collect(Collectors.toList()));
 
 
     }

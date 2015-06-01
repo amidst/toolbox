@@ -245,22 +245,22 @@ public class BNConverterToHugin {
 
             switch (Utils.getConditionalDistributionType(amidstVar, amidstBN)) {
                 case 0:
-                    this.setMultinomial_MultinomialParents(amidstBN.getDistribution(amidstVar));
+                    this.setMultinomial_MultinomialParents(amidstBN.getConditionalDistribution(amidstVar));
                     break;
                 case 1:
-                    this.setNormal_NormalParents(amidstBN.getDistribution(amidstVar), 0);
+                    this.setNormal_NormalParents(amidstBN.getConditionalDistribution(amidstVar), 0);
                     break;
                 case 2:
-                    this.setNormal_MultinomialParents(amidstBN.getDistribution(amidstVar));
+                    this.setNormal_MultinomialParents(amidstBN.getConditionalDistribution(amidstVar));
                     break;
                 case 3:
-                    this.setNormal_MultinomialNormalParents(amidstBN.getDistribution(amidstVar));
+                    this.setNormal_MultinomialNormalParents(amidstBN.getConditionalDistribution(amidstVar));
                     break;
                 case 4:
-                    this.setMultinomial(amidstBN.getDistribution(amidstVar));
+                    this.setMultinomial(amidstBN.getConditionalDistribution(amidstVar));
                     break;
                 case 5:
-                    this.setNormal(amidstBN.getDistribution(amidstVar));
+                    this.setNormal(amidstBN.getConditionalDistribution(amidstVar));
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized DistributionType. ");

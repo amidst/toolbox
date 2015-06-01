@@ -69,9 +69,9 @@ public class MLDBNTest {
         for (Variable var : dynamicNB.getDynamicVariables()) {
             System.out.println("\n---------- Variable " + var.getName() + " -----------");
             // time 0
-            System.out.println("\nTrue distribution at time 0:\n" + dynamicNB.getDistributionTime0(var));
-            System.out.println("\nLearned distribution at time 0:\n"+ bnet.getDistributionTime0(var));
-            assertTrue(bnet.getDistributionTime0(var).equalDist(dynamicNB.getDistributionTime0(var), 0.05));
+            System.out.println("\nTrue distribution at time 0:\n" + dynamicNB.getConditionalDistributionTime0(var));
+            System.out.println("\nLearned distribution at time 0:\n"+ bnet.getConditionalDistributionTime0(var));
+            assertTrue(bnet.getConditionalDistributionTime0(var).equalDist(dynamicNB.getConditionalDistributionTime0(var), 0.05));
         }
     }
 
@@ -120,9 +120,9 @@ public class MLDBNTest {
         for (Variable var : dynamicNB.getDynamicVariables()) {
             System.out.println("\n---------- Variable " + var.getName() + " -----------");
             // time T
-            System.out.println("\nTrue distribution at time T:\n"+ dynamicNB.getDistributionTimeT(var));
-            System.out.println("\nLearned distribution at time T:\n"+ bnet.getDistributionTimeT(var));
-            assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.05));
+            System.out.println("\nTrue distribution at time T:\n"+ dynamicNB.getConditionalDistributionTimeT(var));
+            System.out.println("\nLearned distribution at time T:\n"+ bnet.getConditionalDistributionTimeT(var));
+            assertTrue(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.05));
         }
     }
 
@@ -171,9 +171,9 @@ public class MLDBNTest {
         for (Variable var : dynamicNB.getDynamicVariables()) {
             System.out.println("\n---------- Variable " + var.getName() + " -----------");
             // time 0
-            System.out.println("\nTrue distribution at time 0:\n" + dynamicNB.getDistributionTime0(var));
-            System.out.println("\nLearned distribution at time 0:\n"+ bnet.getDistributionTime0(var));
-            assertTrue(bnet.getDistributionTime0(var).equalDist(dynamicNB.getDistributionTime0(var), 0.5));
+            System.out.println("\nTrue distribution at time 0:\n" + dynamicNB.getConditionalDistributionTime0(var));
+            System.out.println("\nLearned distribution at time 0:\n"+ bnet.getConditionalDistributionTime0(var));
+            assertTrue(bnet.getConditionalDistributionTime0(var).equalDist(dynamicNB.getConditionalDistributionTime0(var), 0.5));
         }
     }
     @Test
@@ -247,9 +247,9 @@ public class MLDBNTest {
         for (Variable var : dynamicNB.getDynamicVariables()) {
             System.out.println("\n---------- Variable " + var.getName() + " -----------");
             // time T
-            System.out.println("\nTrue distribution at time T:\n"+ dynamicNB.getDistributionTimeT(var));
-            System.out.println("\nLearned distribution at time T:\n"+ bnet.getDistributionTimeT(var));
-            assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.5));
+            System.out.println("\nTrue distribution at time T:\n"+ dynamicNB.getConditionalDistributionTimeT(var));
+            System.out.println("\nLearned distribution at time T:\n"+ bnet.getConditionalDistributionTimeT(var));
+            assertTrue(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.5));
         }
     }
 
@@ -328,9 +328,9 @@ public class MLDBNTest {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + bnet.getDistributionTimeT(var));
-                assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.5));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + bnet.getConditionalDistributionTimeT(var));
+                assertTrue(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.5));
             }
         }
     }
@@ -409,9 +409,9 @@ public class MLDBNTest {
             for (Variable var : dynamicNB.getDynamicVariables()) {
                 System.out.println("\n---------- Variable " + var.getName() + " -----------");
                 // time T
-                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getDistributionTimeT(var));
-                System.out.println("\nLearned distribution at time T:\n" + bnet.getDistributionTimeT(var));
-                assertTrue(bnet.getDistributionTimeT(var).equalDist(dynamicNB.getDistributionTimeT(var), 0.5));
+                System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
+                System.out.println("\nLearned distribution at time T:\n" + bnet.getConditionalDistributionTimeT(var));
+                assertTrue(bnet.getConditionalDistributionTimeT(var).equalDist(dynamicNB.getConditionalDistributionTimeT(var), 0.5));
             }
         }
     }
