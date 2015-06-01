@@ -17,10 +17,9 @@
 package eu.amidst.core.models;
 
 
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -112,14 +111,6 @@ public final class DynamicBayesianNetwork implements Serializable {
         return (E) this.distributionsTime0.get(var.getVarID());
     }
 
-    public <E extends Distribution> E getDistributionTimeT(Variable var) {
-        return DistributionTypeEnum.conditionalDistributionToDistribution(this.getConditionalDistributionTimeT(var));
-    }
-
-    public <E extends Distribution> E getDistributionTime0(Variable var) {
-        return DistributionTypeEnum.conditionalDistributionToDistribution(this.getConditionalDistributionTime0(var));
-    }
-
     public DynamicDAG getDynamicDAG (){
         return this.dynamicDAG;
     }
@@ -169,11 +160,11 @@ public final class DynamicBayesianNetwork implements Serializable {
     }
     */
 
-    public List<ConditionalDistribution> getDistributionsTimeT(){
+    public List<ConditionalDistribution> getConditionalDistributionsTimeT(){
         return this.distributionsTimeT;
     }
 
-    public List<ConditionalDistribution> getDistributionsTime0(){
+    public List<ConditionalDistribution> getConditionalDistributionsTime0(){
         return this.distributionsTime0;
     }
 
@@ -184,7 +175,7 @@ public final class DynamicBayesianNetwork implements Serializable {
 
             if (this.getDynamicDAG().getParentSetTime0(var).getNumberOfParents()==0){
                 str.append("P(" + var.getName()+") follows a ");
-                str.append(this.getDistributionTime0(var).label()+"\n");
+                str.append(this.getConditionalDistributionTime0(var).label()+"\n");
             }else {
                 str.append("P(" + var.getName() + " | ");
 
@@ -195,10 +186,10 @@ public final class DynamicBayesianNetwork implements Serializable {
                     str.delete(str.length() - 3, str.length());
                 }
                 str.append(") follows a ");
-                str.append(this.getDistributionTime0(var).label() + "\n");
+                str.append(this.getConditionalDistributionTime0(var).label() + "\n");
             }
             //Variable distribution
-            str.append(this.getDistributionTime0(var).toString() + "\n");
+            str.append(this.getConditionalDistributionTime0(var).toString() + "\n");
         }
 
         str.append("\nDynamic Bayesian Network Time T:\n");
@@ -207,7 +198,7 @@ public final class DynamicBayesianNetwork implements Serializable {
 
             if (this.getDynamicDAG().getParentSetTimeT(var).getNumberOfParents()==0){
                 str.append("P(" + var.getName()+") follows a ");
-                str.append(this.getDistributionTimeT(var).label()+"\n");
+                str.append(this.getConditionalDistributionTimeT(var).label()+"\n");
             }else {
                 str.append("P(" + var.getName() + " | ");
 
@@ -218,10 +209,10 @@ public final class DynamicBayesianNetwork implements Serializable {
                     str.delete(str.length() - 3, str.length());
                 }
                 str.append(") follows a ");
-                str.append(this.getDistributionTimeT(var).label() + "\n");
+                str.append(this.getConditionalDistributionTimeT(var).label() + "\n");
             }
             //Variable distribution
-            str.append(this.getDistributionTimeT(var).toString() + "\n");
+            str.append(this.getConditionalDistributionTimeT(var).toString() + "\n");
         }
         return str.toString();
     }
@@ -235,7 +226,7 @@ public final class DynamicBayesianNetwork implements Serializable {
         boolean equals = true;
         if (this.getDynamicDAG().equals(bnet.getDynamicDAG())){
             for (Variable var : this.getDynamicVariables()) {
-                equals = equals && this.getDistributionTime0(var).equalDist(bnet.getDistributionTime0(var), threshold) && this.getDistributionTimeT(var).equalDist(bnet.getDistributionTimeT(var), threshold);
+                equals = equals && this.getConditionalDistributionTime0(var).equalDist(bnet.getConditionalDistributionTime0(var), threshold) && this.getConditionalDistributionTimeT(var).equalDist(bnet.getConditionalDistributionTimeT(var), threshold);
             }
         }
         return equals;

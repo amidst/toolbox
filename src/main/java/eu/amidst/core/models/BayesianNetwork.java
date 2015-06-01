@@ -16,10 +16,10 @@
 
 package eu.amidst.core.models;
 
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.StaticVariables;
 import eu.amidst.core.variables.Variable;
 
@@ -66,9 +66,6 @@ public final class BayesianNetwork implements Serializable {
 
     public void setConditionalDistribution(Variable var, ConditionalDistribution dist){
         this.distributions.set(var.getVarID(),dist);
-    }
-    public <E extends Distribution> E getDistribution(Variable var) {
-        return DistributionTypeEnum.conditionalDistributionToDistribution(this.getConditionalDistribution(var));
     }
 
     public int getNumberOfVars() {
@@ -150,7 +147,7 @@ public final class BayesianNetwork implements Serializable {
 
             if (this.getDAG().getParentSet(var).getNumberOfParents() == 0) {
                 str.append("P(" + var.getName() + ") follows a ");
-                str.append(this.getDistribution(var).label() + "\n");
+                str.append(this.getConditionalDistribution(var).label() + "\n");
             } else {
                 str.append("P(" + var.getName() + " | ");
 
@@ -161,11 +158,11 @@ public final class BayesianNetwork implements Serializable {
                 if (this.getDAG().getParentSet(var).getNumberOfParents() > 0) {
                     str.substring(0, str.length() - 2);
                     str.append(") follows a ");
-                    str.append(this.getDistribution(var).label() + "\n");
+                    str.append(this.getConditionalDistribution(var).label() + "\n");
                 }
             }
             //Variable distribution
-            str.append(this.getDistribution(var).toString() + "\n");
+            str.append(this.getConditionalDistribution(var).toString() + "\n");
         }
         return str.toString();
     }
@@ -178,7 +175,7 @@ public final class BayesianNetwork implements Serializable {
         boolean equals = true;
         if (this.getDAG().equals(bnet.getDAG())){
             for (Variable var : this.getStaticVariables()) {
-                equals = equals && this.getDistribution(var).equalDist(bnet.getDistribution(var), threshold);
+                equals = equals && this.getConditionalDistribution(var).equalDist(bnet.getConditionalDistribution(var), threshold);
             }
         }
         return equals;
