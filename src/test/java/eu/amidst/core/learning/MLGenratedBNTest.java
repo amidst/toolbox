@@ -44,9 +44,9 @@ public class MLGenratedBNTest {
         //Check the probability distributions of each node
         for (Variable var : naiveBayes.getStaticVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ naiveBayes.getDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getDistribution(var));
-            assertTrue(bnet.getDistribution(var).equalDist(naiveBayes.getDistribution(var), 0.05));
+            System.out.println("\nTrue distribution:\n"+ naiveBayes.getConditionalDistribution(var));
+            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            assertTrue(bnet.getConditionalDistribution(var).equalDist(naiveBayes.getConditionalDistribution(var), 0.05));
         }
 
         //Or check directly if the true and learned networks are equals
