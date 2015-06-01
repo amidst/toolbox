@@ -20,7 +20,6 @@ import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 public final class DataStreamLoader {
     private static DataFileReader dataFileReader = new ARFFDataReader();
 
-
     public static void setDataFileReader(DataFileReader dataFileReader) {
         dataFileReader = dataFileReader;
     }

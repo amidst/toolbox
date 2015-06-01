@@ -33,7 +33,7 @@ public class MLGenratedBNTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setSeed(0);
 
-        DataStream<DataInstance> data = sampler.sampleToDataBase(1000000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(1000000);
 
 
         //Parameter Learning

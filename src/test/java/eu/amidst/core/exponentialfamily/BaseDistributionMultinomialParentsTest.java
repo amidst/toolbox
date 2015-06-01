@@ -39,7 +39,7 @@ public class BaseDistributionMultinomialParentsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
         //Compare predictions between distributions and EF distributions.
 
@@ -71,7 +71,7 @@ public class BaseDistributionMultinomialParentsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         //Compare predictions between distributions and EF distributions.
@@ -102,7 +102,7 @@ public class BaseDistributionMultinomialParentsTest {
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
         sampler.setSeed(0);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
         //Compare predictions between distributions and EF distributions.

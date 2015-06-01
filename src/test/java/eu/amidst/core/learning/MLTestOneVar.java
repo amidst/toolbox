@@ -34,11 +34,11 @@ public class MLTestOneVar {
         sampler.setSeed(0);
         System.out.println(watch.stop());
 
-        DataStream<DataInstance> data = sampler.sampleToDataBase(10);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10);
         data.stream().forEach( e -> System.out.println(e.toString(net.getStaticVariables().getListOfVariables())));
 
         //Load the sampled data
-        data = sampler.sampleToDataBase(10);
+        data = sampler.sampleToDataStream(10);
         //Structure learning is excluded from the test, i.e., so we use here the same initial network structure net.getDAG()
 
         //Parameter Learning

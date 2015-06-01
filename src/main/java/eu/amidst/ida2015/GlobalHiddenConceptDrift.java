@@ -126,7 +126,7 @@ public class GlobalHiddenConceptDrift {
         int sampleSize = 5000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setHiddenVar(globalHidden);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
         int count = windowSize;
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -180,7 +180,7 @@ public class GlobalHiddenConceptDrift {
 
             sampler = new BayesianNetworkSampler(naiveBayes);
             sampler.setHiddenVar(globalHidden);
-            data = sampler.sampleToDataBase(sampleSize);
+            data = sampler.sampleToDataStream(sampleSize);
             Random random = new Random(0);
 
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
@@ -250,7 +250,7 @@ public class GlobalHiddenConceptDrift {
         int sampleSize = 5000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setHiddenVar(globalHidden);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
         int count = windowSize;
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -305,7 +305,7 @@ public class GlobalHiddenConceptDrift {
 
             sampler = new BayesianNetworkSampler(naiveBayes);
             sampler.setHiddenVar(globalHidden);
-            data = sampler.sampleToDataBase(sampleSize);
+            data = sampler.sampleToDataStream(sampleSize);
 
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
@@ -356,7 +356,7 @@ public class GlobalHiddenConceptDrift {
         int sampleSize = 5000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setHiddenVar(globalHidden);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
         int count = windowSize;
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
@@ -404,7 +404,7 @@ public class GlobalHiddenConceptDrift {
 
             sampler = new BayesianNetworkSampler(naiveBayes);
             sampler.setHiddenVar(globalHidden);
-            data = sampler.sampleToDataBase(sampleSize);
+            data = sampler.sampleToDataStream(sampleSize);
 
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 
@@ -557,7 +557,7 @@ public class GlobalHiddenConceptDrift {
         int sampleSize = 5000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
         sampler.setHiddenVar(globalHidden);
-        DataStream<DataInstance> data = sampler.sampleToDataBase(sampleSize);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
         int count = windowSize;
         double avACC = 0;
 
@@ -644,7 +644,7 @@ public class GlobalHiddenConceptDrift {
 
             sampler = new BayesianNetworkSampler(naiveBayes);
             sampler.setHiddenVar(globalHidden);
-            data = sampler.sampleToDataBase(sampleSize);
+            data = sampler.sampleToDataStream(sampleSize);
 
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
 

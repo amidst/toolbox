@@ -67,7 +67,7 @@ public class DataGeneration {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
-            DataStream<DataInstance> data = sampler.sampleToDataBase(50000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(50000);
 
             DataOnMemoryListContainer<DataInstance> dataM = new DataOnMemoryListContainer<>(data.getAttributes());
 
