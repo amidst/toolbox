@@ -3,20 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>core</artifactId>
+        <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>moalink</groupId>
-    <artifactId>1</artifactId>
+    <artifactId>moalink</artifactId>
 
 
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>core-static</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
@@ -24,6 +23,12 @@
             <groupId>nz.ac.waikato.cms.weka</groupId>
             <artifactId>weka-dev</artifactId>
             <version>3.7.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>nz.ac.waikato.cms.moa</groupId>
+            <artifactId>moa</artifactId>
+            <version>2013.11</version>
         </dependency>
 
     </dependencies>
@@ -40,7 +45,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>moa.classifiers.bayes.amidstModels</mainClass>
+                            <mainClass>amidstModels</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

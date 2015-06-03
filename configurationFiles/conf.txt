@@ -1,2 +1,2 @@
-eu.amidst.huginlink.learning.ParallelTAN, -numCores 1, -batchSize= 500
-eu.amidst.core.utils.BayesianNetworkSampler -parallelMode T, -seed=1
+ParallelTAN, -numCores 1, -batchSize= 500
+BayesianNetworkSampler -parallelMode T, -seed=1
