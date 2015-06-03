@@ -36,6 +36,12 @@ target/surefire-reports*
 target/*
 huginlink/target/*
 moalink/target/*
+core-static/target/*
+sparklink/target/*
+core-dynamic/target/*
+examplesIDA2015/target/*
+SCAI2015/target/*
+caepia2015/target/*
 classes/*
 
 # latex noise

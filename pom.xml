@@ -15,6 +15,7 @@
         <module>examples</module>
         <module>IDA2015</module>
         <module>SCAI2015</module>
+        <module>caepia2015</module>
     </modules>
     <name>Amidst :: Core</name>
     <packaging>pom</packaging>
