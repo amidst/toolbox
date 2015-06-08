@@ -8,16 +8,16 @@
 
 package eu.amidst.examples;
 
-import eu.amidst.examples.core.datastream.DataInstance;
-import eu.amidst.examples.core.datastream.DataStream;
-import eu.amidst.examples.core.datastream.DynamicDataInstance;
-import eu.amidst.examples.core.io.DataStreamWriter;
-import eu.amidst.examples.core.io.DynamicDataStreamLoader;
-import eu.amidst.examples.core.learning.dynamic.DynamicNaiveBayesClassifier;
-import eu.amidst.examples.core.models.BayesianNetwork;
-import eu.amidst.examples.core.models.DynamicBayesianNetwork;
-import eu.amidst.examples.core.utils.BayesianNetworkGenerator;
-import eu.amidst.examples.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.io.DataStreamWriter;
+import eu.amidst.core.io.DynamicDataStreamLoader;
+import eu.amidst.core.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 
 import java.io.IOException;
 
