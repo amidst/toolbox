@@ -66,7 +66,7 @@ public class DeltaDistribution extends UnivariateDistribution {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("DeltaDistribution"))
+        if (dist instanceof DeltaDistribution)
             return this.equalDist((DeltaDistribution)dist,threshold);
         return false;
     }

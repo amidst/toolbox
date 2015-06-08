@@ -136,7 +136,7 @@ public class Normal extends UnivariateDistribution {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("Normal"))
+        if (dist instanceof Normal)
             return this.equalDist((Normal)dist,threshold);
         return false;
     }
