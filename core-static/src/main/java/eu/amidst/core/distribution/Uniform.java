@@ -54,7 +54,7 @@ public class Uniform extends UnivariateDistribution {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("Uniform"))
+        if (dist instanceof Uniform)
             return this.equalDist((Uniform)dist,threshold);
         return false;
     }

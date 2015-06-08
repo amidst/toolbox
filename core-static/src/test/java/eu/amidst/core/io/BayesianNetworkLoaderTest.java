@@ -34,6 +34,8 @@ public class BayesianNetworkLoaderTest {
 
                 if (fileName.endsWith(".bn")) { //Static BN
 
+                    System.out.println("Reading file: "+fileName);
+
                     BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromFile(fullFileName);
                     BayesianNetworkWriter.saveToFile(amidstBN, fullFileName);
 

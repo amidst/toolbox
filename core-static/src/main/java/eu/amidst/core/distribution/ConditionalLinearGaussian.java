@@ -264,7 +264,7 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("ConditionalLinearGaussian"))
+        if (dist instanceof ConditionalLinearGaussian)
             return this.equalDist((ConditionalLinearGaussian)dist,threshold);
         return false;
     }

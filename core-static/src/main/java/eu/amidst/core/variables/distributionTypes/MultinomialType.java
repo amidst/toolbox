@@ -8,12 +8,12 @@
 
 package eu.amidst.core.variables.distributionTypes;
 
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Multinomial;
 
 import java.util.List;
 
@@ -48,7 +48,6 @@ public class MultinomialType extends DistributionType{
         if (parents.isEmpty())
             return (E) new Multinomial(this.variable);
         else
-            return (E) new BaseDistribution_MultinomialParents<Multinomial>(this.variable, parents);
-
+            return (E) new Multinomial_MultinomialParents(this.variable, parents);
     }
 }
