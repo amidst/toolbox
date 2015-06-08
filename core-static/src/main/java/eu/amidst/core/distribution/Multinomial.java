@@ -144,7 +144,7 @@ public class Multinomial extends UnivariateDistribution  {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("Multinomial"))
+        if (dist instanceof Multinomial)
             return this.equalDist((Multinomial)dist,threshold);
         return false;
     }

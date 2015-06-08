@@ -4,8 +4,8 @@ package eu.amidst.core.learning;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
 import eu.amidst.core.learning.dynamic.MaximumLikelihoodForDBN;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
@@ -196,23 +196,21 @@ public class MLDBNTest {
 
         Variable var1 = dynamicNB.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1");
         Variable var1_interface = dynamicNB.getDynamicDAG().getDynamicVariables().getInterfaceVariableByName("ContinuousVar1");
-        ConditionalLinearGaussian distContVar1Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
-                getConditionalDistributionTimeT(var1)).getBaseConditionalDistribution(0);
-        //distContVar1Class0.setCoeffParents(new double[]{1.3});
+        ConditionalLinearGaussian distContVar1Class0 = ((Normal_MultinomialNormalParents)dynamicNB.getConditionalDistributionTimeT(var1)).getNormal_NormalParentsDistribution(0);
         distContVar1Class0.setCoeffForParent(var1_interface, 1.3);
-        ConditionalLinearGaussian distContVar1Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
-                getConditionalDistributionTimeT(dynamicNB.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1"))).getBaseConditionalDistribution(1);
+        ConditionalLinearGaussian distContVar1Class1 = ((Normal_MultinomialNormalParents)dynamicNB.
+                getConditionalDistributionTimeT(dynamicNB.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1"))).getNormal_NormalParentsDistribution(1);
         //distContVar1Class1.setCoeffParents(new double[]{-1.3});
         distContVar1Class1.setCoeffForParent(var1_interface, -1.3);
 
         Variable var2 = dynamicNB.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar2");
         Variable var2_interface = dynamicNB.getDynamicDAG().getDynamicVariables().getInterfaceVariableByName("ContinuousVar2");
-        ConditionalLinearGaussian distContVar2Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
-                getConditionalDistributionTimeT(var2)).getBaseConditionalDistribution(0);
+        ConditionalLinearGaussian distContVar2Class0 = ((Normal_MultinomialNormalParents)dynamicNB.
+                getConditionalDistributionTimeT(var2)).getNormal_NormalParentsDistribution(0);
         //distContVar2Class0.setCoeffParents(new double[]{2.3});
         distContVar2Class0.setCoeffForParent(var2_interface, 2.3);
-        ConditionalLinearGaussian distContVar2Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dynamicNB.
-                getConditionalDistributionTimeT(var2)).getBaseConditionalDistribution(1);
+        ConditionalLinearGaussian distContVar2Class1 = ((Normal_MultinomialNormalParents)dynamicNB.
+                getConditionalDistributionTimeT(var2)).getNormal_NormalParentsDistribution(1);
         //distContVar2Class1.setCoeffParents(new double[]{-2.3});
         distContVar2Class1.setCoeffForParent(var2_interface,-2.3);
 

@@ -87,7 +87,7 @@ public class IndicatorDistribution extends ConditionalDistribution {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("IndicatorDistribution"))
+        if (dist instanceof IndicatorDistribution)
             return this.equalDist((IndicatorDistribution)dist,threshold);
         return false;
     }

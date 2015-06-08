@@ -8,13 +8,10 @@
 
 package eu.amidst.core.variables.distributionTypes;
 
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Normal;
 
 import java.util.List;
 
@@ -65,11 +62,11 @@ public class NormalType extends DistributionType{
         if (!multinomialParents && !normalParents){
             return (E) new Normal(this.variable);
         } else if (multinomialParents && !normalParents) {
-            return (E)new BaseDistribution_MultinomialParents<Normal>(this.variable, parents);
+            return (E)new Normal_MultinomialParents(this.variable, parents);
         } else if (!multinomialParents && normalParents) {
             return (E)new ConditionalLinearGaussian(this.variable, parents);
         } else if (multinomialParents && normalParents) {
-            return (E)new BaseDistribution_MultinomialParents<ConditionalLinearGaussian>(this.variable, parents);
+            return (E)new Normal_MultinomialNormalParents(this.variable, parents);
         } else{
             return null;
         }

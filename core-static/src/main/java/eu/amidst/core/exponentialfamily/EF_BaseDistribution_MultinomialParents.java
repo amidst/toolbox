@@ -27,11 +27,10 @@ package eu.amidst.core.exponentialfamily;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
-import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.MultinomialIndex;
 
@@ -403,7 +402,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     @Override
-    public BaseDistribution_MultinomialParents<Distribution> toConditionalDistribution() {
+    public <E extends ConditionalDistribution> E toConditionalDistribution() {
         BaseDistribution_MultinomialParents<Distribution> base = new BaseDistribution_MultinomialParents(this.var,this.getConditioningVariables());
         if (this.isBaseConditionalDistribution()) {
             for (int i = 0; i < this.numberOfConfigurations(); i++) {
@@ -415,7 +414,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             }
         }
 
-        return base;
+        return (E)DistributionTypeEnum.FromBaseDistributionToConditionalDistribution(base);
     }
 
     private CompoundVector createCompoundVector() {
@@ -436,7 +435,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 distributionList.add(conditionalDistribution);
             }
         }
-        return new BaseDistribution_MultinomialParents(this.multinomialParents,distributionList);
+
+        return DistributionTypeEnum.FromBaseDistributionToConditionalDistribution(new BaseDistribution_MultinomialParents(this.multinomialParents,distributionList));
     }
 
     //TODO: Replace this CompoundVector by the compoundvector of indicator

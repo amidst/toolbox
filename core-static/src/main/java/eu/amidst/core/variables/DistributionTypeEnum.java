@@ -8,6 +8,7 @@
 
 package eu.amidst.core.variables;
 
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.distributionTypes.*;
 
 /**
@@ -36,6 +37,21 @@ public enum DistributionTypeEnum {
             default:
                 throw new IllegalArgumentException("Unknown Distribution Type");
         }
+    }
+
+
+    public static <E extends ConditionalDistribution> E FromBaseDistributionToConditionalDistribution(BaseDistribution_MultinomialParents base) {
+
+            if (base.getBaseDistribution(0) instanceof Multinomial) {
+                return (E)new Multinomial_MultinomialParents((BaseDistribution_MultinomialParents<Multinomial>)base);
+            }else if (base.getBaseDistribution(0) instanceof Normal && base.getConditioningVariables().size()>0){
+                return (E)new Normal_MultinomialParents((BaseDistribution_MultinomialParents<Normal>)base);
+            }else  if (base.getBaseDistribution(0) instanceof ConditionalLinearGaussian) {
+                return (E)new Normal_MultinomialNormalParents((BaseDistribution_MultinomialParents<ConditionalLinearGaussian>)base);
+            }else{
+                return (E) base;
+            }
+
     }
 
 }
