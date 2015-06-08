@@ -158,7 +158,7 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
 
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
-        if (dist.getClass().getName().equals("Multinomial_LogisticParents"))
+        if (dist instanceof Multinomial_LogisticParents)
             return this.equalDist((Multinomial_LogisticParents)dist,threshold);
         return false;
     }
