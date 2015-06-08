@@ -8,14 +8,14 @@
 
 package eu.amidst.examples;
 
-import eu.amidst.examples.core.datastream.DataInstance;
-import eu.amidst.examples.core.io.DataStreamLoader;
-import eu.amidst.examples.core.models.BayesianNetwork;
-import eu.amidst.examples.core.io.BayesianNetworkWriter;
-import eu.amidst.examples.core.models.DAG;
-import eu.amidst.examples.core.datastream.DataStream;
-import eu.amidst.examples.core.variables.StaticVariables;
-import eu.amidst.examples.core.variables.Variable;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.io.BayesianNetworkWriter;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.variables.StaticVariables;
+import eu.amidst.core.variables.Variable;
 
 import java.util.Arrays;
 
