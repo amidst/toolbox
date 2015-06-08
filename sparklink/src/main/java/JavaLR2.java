@@ -51,7 +51,7 @@ public class JavaLR2 {
     }
 
     public static void main(String[] args2) {
-        String[] args = {"data/dataSpark/lr-data/random.data", "1", "4"};
+        String[] args = {"datasets/dataSpark/lr-data/random.data", "1", "4"};
         if (args.length != 3) {
             System.err.println("Usage: JavaLR2 <input_dir> <step_size> <niters>");
             System.exit(1);

@@ -9,15 +9,15 @@
 package eu.amidst.examples;
 
 
-import eu.amidst.examples.core.datastream.Attribute;
-import eu.amidst.examples.core.datastream.DataStream;
-import eu.amidst.examples.core.datastream.DynamicDataInstance;
-import eu.amidst.examples.core.io.DynamicBayesianNetworkWriter;
-import eu.amidst.examples.core.io.DynamicDataStreamLoader;
-import eu.amidst.examples.core.models.DynamicBayesianNetwork;
-import eu.amidst.examples.core.models.DynamicDAG;
-import eu.amidst.examples.core.variables.DynamicVariables;
-import eu.amidst.examples.core.variables.Variable;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DynamicDataInstance;
+import eu.amidst.core.io.DynamicBayesianNetworkWriter;
+import eu.amidst.core.io.DynamicDataStreamLoader;
+import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.core.models.DynamicDAG;
+import eu.amidst.core.variables.DynamicVariables;
+import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
