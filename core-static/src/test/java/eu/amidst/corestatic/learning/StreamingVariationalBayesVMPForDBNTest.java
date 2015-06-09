@@ -3,10 +3,7 @@ package eu.amidst.corestatic.learning;
 import com.google.common.base.Stopwatch;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.distribution.BaseDistribution_MultinomialParents;
-import eu.amidst.corestatic.distribution.ConditionalDistribution;
-import eu.amidst.corestatic.distribution.ConditionalLinearGaussian;
-import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
+import eu.amidst.corestatic.distribution.*;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.learning.dynamic.BayesianLearningEngineForDBN;
 import eu.amidst.corestatic.learning.dynamic.MaximumLikelihoodForDBN;
@@ -162,22 +159,22 @@ public class StreamingVariationalBayesVMPForDBNTest extends TestCase {
         DynamicVariables dynamicVariables = dbn.getDynamicVariables();
 
         Variable var1 = dbn.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1");
-        ConditionalLinearGaussian distContVar1Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(var1)).getBaseConditionalDistribution(0);
+        ConditionalLinearGaussian distContVar1Class0 = (ConditionalLinearGaussian)((Normal_MultinomialNormalParents)dbn.
+                getConditionalDistributionTimeT(var1)).getNormal_NormalParentsDistribution(0);
         distContVar1Class0.setIntercept(1.0);
         distContVar1Class0.setCoeffForParent(dynamicVariables.getInterfaceVariable(var1), 0.5);
-        ConditionalLinearGaussian distContVar1Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1"))).getBaseConditionalDistribution(1);
+        ConditionalLinearGaussian distContVar1Class1 = (ConditionalLinearGaussian)((Normal_MultinomialNormalParents)dbn.
+                getConditionalDistributionTimeT(dbn.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar1"))).getNormal_NormalParentsDistribution(1);
         distContVar1Class1.setIntercept(-1.0);
         distContVar1Class1.setCoeffForParent(dynamicVariables.getInterfaceVariable(var1), -0.3);
 
         Variable var2 = dbn.getDynamicDAG().getDynamicVariables().getVariableByName("ContinuousVar2");
-        ConditionalLinearGaussian distContVar2Class0 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(var2)).getBaseConditionalDistribution(0);
+        ConditionalLinearGaussian distContVar2Class0 = (ConditionalLinearGaussian)((Normal_MultinomialNormalParents)dbn.
+                getConditionalDistributionTimeT(var2)).getNormal_NormalParentsDistribution(0);
         distContVar2Class0.setIntercept(2.1);
         distContVar2Class0.setCoeffForParent(dynamicVariables.getInterfaceVariable(var2), 0.3);
-        ConditionalLinearGaussian distContVar2Class1 = (ConditionalLinearGaussian)((BaseDistribution_MultinomialParents)dbn.
-                getConditionalDistributionTimeT(var2)).getBaseConditionalDistribution(1);
+        ConditionalLinearGaussian distContVar2Class1 = (ConditionalLinearGaussian)((Normal_MultinomialNormalParents)dbn.
+                getConditionalDistributionTimeT(var2)).getNormal_NormalParentsDistribution(1);
         distContVar2Class1.setIntercept(-2.1);
         distContVar2Class1.setCoeffForParent(dynamicVariables.getInterfaceVariable(var2), -0.3);
 
