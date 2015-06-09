@@ -8,7 +8,7 @@ import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.models.ParentSet;
 import eu.amidst.corestatic.utils.MultinomialIndex;
 import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,14 +33,14 @@ public class BNConverterToHuginTest {
 
         ARFFDataReader fileReader = new ARFFDataReader();
         fileReader.loadFromFile("datasets/syntheticData.arff");
-        StaticVariables modelHeader = new StaticVariables(fileReader.getAttributes());
+        Variables modelHeader = new Variables(fileReader.getAttributes());
 
 
         //***************************************** Network structure **************************************************
         //Create the structure by hand
 
         DAG dag = new DAG(modelHeader);
-        StaticVariables variables = dag.getStaticVariables();
+        Variables variables = dag.getStaticVariables();
 
         Variable A, B, C, D, E, G, H, I;
 

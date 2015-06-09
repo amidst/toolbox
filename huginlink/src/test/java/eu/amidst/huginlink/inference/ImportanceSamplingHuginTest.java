@@ -4,7 +4,7 @@ import eu.amidst.corestatic.inference.ImportanceSampling;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class ImportanceSamplingHuginTest {
         //     System.out.println(e);
         //});
 
-        StaticVariables variables = model.getStaticVariables();
+        Variables variables = model.getStaticVariables();
         Variable varA = variables.getVariableByName("A");
         Variable varB = variables.getVariableByName("B");
         Variable varC = variables.getVariableByName("C");
@@ -51,7 +51,7 @@ public class ImportanceSamplingHuginTest {
         // HUGIN INFERENCE
         //**************************************************************************************************************
 
-        HuginInferenceForBN huginInferenceForBN = new HuginInferenceForBN();
+        HuginInference huginInferenceForBN = new HuginInference();
         huginInferenceForBN.setModel(model);
         huginInferenceForBN.setEvidence(evidence);
         huginInferenceForBN.runInference();
@@ -90,7 +90,7 @@ public class ImportanceSamplingHuginTest {
     private static BayesianNetwork getNoisyModel() throws IOException, ClassNotFoundException {
 
         BayesianNetwork samplingBN = BayesianNetworkLoader.loadFromFile("networks/IS.bn");
-        StaticVariables variables = samplingBN.getStaticVariables();
+        Variables variables = samplingBN.getStaticVariables();
         Variable A = variables.getVariableByName("A");
         Variable B = variables.getVariableByName("B");
         Variable C = variables.getVariableByName("C");

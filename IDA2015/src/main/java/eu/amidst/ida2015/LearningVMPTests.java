@@ -24,7 +24,7 @@ import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBay
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class LearningVMPTests {
     public static void testMixtureOfCLG() throws IOException, ClassNotFoundException {
 
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
@@ -104,7 +104,7 @@ public class LearningVMPTests {
     public static void testMixtureOfCLGConceptDrift() throws IOException, ClassNotFoundException {
 
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
@@ -189,7 +189,7 @@ public class LearningVMPTests {
     public static void testClusteringCLGConceptDrift() throws IOException, ClassNotFoundException {
 
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
@@ -326,7 +326,7 @@ public class LearningVMPTests {
     public static void testCLGConceptDriftWithHiddenContinuous() throws IOException, ClassNotFoundException {
 
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
@@ -432,7 +432,7 @@ public class LearningVMPTests {
     public static void testCLGConceptDriftHiddenMultinomial() throws IOException, ClassNotFoundException {
 
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
@@ -566,7 +566,7 @@ public class LearningVMPTests {
             Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
 
 
-            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
             String beta0fromML = Double.toString(((ConditionalLinearGaussian) learntNormalVarBN.
                     getConditionalDistribution(varA)).getIntercept());
             String beta1fromML = Double.toString(((ConditionalLinearGaussian) learntNormalVarBN.
@@ -652,7 +652,7 @@ public class LearningVMPTests {
             Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
 
 
-            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             //System.out.println(learntNormalVarBN.toString());
 
@@ -921,9 +921,9 @@ public class LearningVMPTests {
                 for (int f = 0; f < fadingFactor.length; f++) {
                     likelihoodFading.setFadingFactor(fadingFactor[f]);
                     likelihoodFading.setWindowSize(windowsSizes[j]);
-                    LearningEngineForBN.setParameterLearningAlgorithm(likelihoodFading);
+                    LearningEngine.setParameterLearningAlgorithm(likelihoodFading);
 
-                    BayesianNetwork MLlearntBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+                    BayesianNetwork MLlearntBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
                     outputPerWindowSize[0][j] += Double.toString(((Normal) ((BaseDistribution_MultinomialParents) MLlearntBN.
                             getConditionalDistribution(varB)).getBaseDistribution(0)).getMean()) + "\t";
                     outputPerWindowSize[1][j] += Double.toString(((ConditionalLinearGaussian) MLlearntBN.

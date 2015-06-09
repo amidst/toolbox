@@ -2,7 +2,7 @@ package eu.amidst.scai2015;
 
 import eu.amidst.corestatic.datastream.*;
 import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
+import eu.amidst.corestatic.inference.InferenceAlgorithm;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.io.DataStreamLoader;
 import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
@@ -10,7 +10,7 @@ import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.MissingAssignment;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
@@ -105,7 +105,7 @@ public class wrapperBN {
 
     public BayesianNetwork wrapperBNOneMonthNB(DataOnMemory<DataInstance> data){
 
-        StaticVariables Vars = new StaticVariables(data.getAttributes());
+        Variables Vars = new Variables(data.getAttributes());
 
         //Split the whole data into training and testing
         List<DataOnMemory<DataInstance>> splitData = this.splitTrainAndTest(data,66.0);
@@ -235,7 +235,7 @@ public class wrapperBN {
     }
 
 
-    public BayesianNetwork train(DataOnMemory<DataInstance> data, StaticVariables allVars, List<Variable> SF, boolean includeClassVariablePM){
+    public BayesianNetwork train(DataOnMemory<DataInstance> data, Variables allVars, List<Variable> SF, boolean includeClassVariablePM){
 
         DAG dag = new DAG(allVars);
         if(includeClassVariablePM)
@@ -257,7 +257,7 @@ public class wrapperBN {
     }
 
     public double testFS(DataOnMemory<DataInstance> data, BayesianNetwork bn){
-        InferenceAlgorithmForBN vmp = new VMP();
+        InferenceAlgorithm vmp = new VMP();
         ArrayList<Prediction> predictions = new ArrayList<>();
 
         for (DataInstance instance : data) {
@@ -289,7 +289,7 @@ public class wrapperBN {
     public double test(DataOnMemory<DataInstance> data, BayesianNetwork bn, HashMap<Integer, Multinomial> posteriors, boolean updatePosteriors){
 
 
-        InferenceAlgorithmForBN vmp = new VMP();
+        InferenceAlgorithm vmp = new VMP();
         ArrayList<Prediction> predictions = new ArrayList<>();
 
         int currentMonthIndex = (int)data.getDataInstance(0).getValue(TIME_ID);
@@ -346,7 +346,7 @@ public class wrapperBN {
     public double propagateAndTest(Queue<DataOnMemory<DataInstance>> data, BayesianNetwork bn){
 
         HashMap<Integer, Multinomial> posteriors = new HashMap<>();
-        InferenceAlgorithmForBN vmp = new VMP();
+        InferenceAlgorithm vmp = new VMP();
         ArrayList<Prediction> predictions = new ArrayList<>();
 
         boolean firstMonth = true;
@@ -409,7 +409,7 @@ public class wrapperBN {
 
     void learnCajamarModel(DataStream<DataInstance> data) {
 
-        StaticVariables Vars = new StaticVariables(data.getAttributes());
+        Variables Vars = new Variables(data.getAttributes());
         classVariable = Vars.getVariableById(Vars.getNumberOfVars()-1);
         classVariable_PM = Vars.getVariableById(Vars.getNumberOfVars()-2);
 
@@ -440,7 +440,7 @@ public class wrapperBN {
             BayesianNetwork bn = null;
             if(isOnlyPrediction()){
                 DataOnMemory<DataInstance> batch = monthsMinus12to0.poll();
-                StaticVariables vars = new StaticVariables(batch.getAttributes());
+                Variables vars = new Variables(batch.getAttributes());
                 bn = train(batch, vars, vars.getListOfVariables(),this.isDynamicNB());
                 double auc = propagateAndTest(monthsMinus12to0, bn);
 

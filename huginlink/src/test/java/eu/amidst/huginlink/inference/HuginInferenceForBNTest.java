@@ -6,7 +6,7 @@ import eu.amidst.corestatic.distribution.Normal;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
@@ -29,7 +29,7 @@ public class HuginInferenceForBNTest {
         BayesianNetwork bn = BNConverterToAMIDST.convertToAmidst(huginBN);
         System.out.println(bn.toString());
 
-        StaticVariables variables = bn.getDAG().getStaticVariables();
+        Variables variables = bn.getDAG().getStaticVariables();
 
         Variable varA = variables.getVariableByName("A");
         Variable varB = variables.getVariableByName("B");
@@ -48,7 +48,7 @@ public class HuginInferenceForBNTest {
         // HUGIN
         //**************************************************************************************************************
 
-        HuginInferenceForBN inferenceHuginForBN = new HuginInferenceForBN();
+        HuginInference inferenceHuginForBN = new HuginInference();
         inferenceHuginForBN.setModel(bn);
         inferenceHuginForBN.setEvidence(assignment);
         inferenceHuginForBN.runInference();

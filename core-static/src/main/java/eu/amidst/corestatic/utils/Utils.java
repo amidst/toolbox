@@ -10,9 +10,7 @@ package eu.amidst.corestatic.utils;
 
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.models.DynamicDAG;
-import eu.amidst.corestatic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.ArrayList;
@@ -135,7 +133,7 @@ public final class Utils {
     }
 
     public static List<Variable> getCausalOrder(DAG dag){
-        StaticVariables variables = dag.getStaticVariables();
+        Variables variables = dag.getStaticVariables();
         int nNrOfAtts = variables.getNumberOfVars();
         List<Variable> order = new ArrayList();
         boolean[] bDone = new boolean[variables.getNumberOfVars()];
@@ -163,63 +161,6 @@ public final class Utils {
         return order;
     }
 
-    public static List<Variable> getCausalOrderTime0(DynamicDAG dag){
-        DynamicVariables variables = dag.getDynamicVariables();
-        int nNrOfAtts = variables.getNumberOfVars();
-        List<Variable> order = new ArrayList();
-        boolean[] bDone = new boolean[variables.getNumberOfVars()];
-
-        for (Variable var: variables){
-            bDone[var.getVarID()] = false;
-        }
-        for (int iAtt = 0; iAtt < nNrOfAtts; iAtt++) {
-            boolean allParentsDone = false;
-            for (Variable var2 : variables){
-                if (!bDone[var2.getVarID()]) {
-                    allParentsDone = true;
-                    int iParent = 0;
-                    for (Variable parent: dag.getParentSetTime0(var2))
-                        allParentsDone = allParentsDone && bDone[parent.getVarID()];
-
-                    if (allParentsDone){
-                        order.add(var2);
-                        bDone[var2.getVarID()] = true;
-                    }
-                }
-            }
-        }
-        return order;
-    }
-
-    public static List<Variable> getCausalOrderTimeT(DynamicDAG dag){
-        DynamicVariables variables = dag.getDynamicVariables();
-        int nNrOfAtts = variables.getNumberOfVars();
-        List<Variable> order = new ArrayList();
-        boolean[] bDone = new boolean[variables.getNumberOfVars()];
-
-        for (Variable var: variables){
-            bDone[var.getVarID()] = false;
-        }
-        for (int iAtt = 0; iAtt < nNrOfAtts; iAtt++) {
-            boolean allParentsDone = false;
-            for (Variable var2 : variables){
-                if (!bDone[var2.getVarID()]) {
-                    allParentsDone = true;
-                    for (Variable parent: dag.getParentSetTimeT(var2)) {
-                        if (parent.isInterfaceVariable())
-                            continue;
-                        allParentsDone = allParentsDone && bDone[parent.getVarID()];
-                    }
-
-                    if (allParentsDone){
-                        order.add(var2);
-                        bDone[var2.getVarID()] = true;
-                    }
-                }
-            }
-        }
-        return order;
-    }
 
     public static int getConditionalDistributionType(Variable amidstVar, BayesianNetwork amidstBN) {
 

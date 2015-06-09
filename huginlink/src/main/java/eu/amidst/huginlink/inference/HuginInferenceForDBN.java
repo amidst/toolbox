@@ -4,10 +4,10 @@ import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
 import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.distribution.UnivariateDistribution;
-import eu.amidst.corestatic.inference.InferenceAlgorithmForDBN;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
-import eu.amidst.corestatic.variables.DynamicAssignment;
-import eu.amidst.corestatic.variables.HashMapAssignment;
+import eu.amidst.dynamic.inference.InferenceAlgorithmForDBN;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.variables.DynamicAssignment;
+import eu.amidst.dynamic.variables.HashMapAssignment;
 import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
 

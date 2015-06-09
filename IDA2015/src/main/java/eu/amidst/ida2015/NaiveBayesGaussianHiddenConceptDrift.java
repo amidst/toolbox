@@ -20,7 +20,7 @@ import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBay
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.ArrayList;
@@ -92,7 +92,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     }
 
     private void buildGlobalDAG(){
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getList().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -133,7 +133,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
     private void buildLocalDAG(){
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getList().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -169,7 +169,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
     private void buildGlobalLocalDAG(){
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getList().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 

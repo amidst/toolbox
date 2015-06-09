@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  * Created by afa on 10/2/15.
  */
 
-public class ImportanceSampling implements InferenceAlgorithmForBN {
+public class ImportanceSampling implements InferenceAlgorithm {
 
     private BayesianNetwork model;
     private BayesianNetwork samplingModel;

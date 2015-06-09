@@ -2,15 +2,15 @@ package eu.amidst.huginlink.inference;
 
 import com.google.common.primitives.Doubles;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.corestatic.distribution.UnivariateDistribution;
-import eu.amidst.corestatic.inference.DynamicVMP;
-import eu.amidst.corestatic.inference.InferenceEngineForDBN;
-import eu.amidst.corestatic.io.DynamicBayesianNetworkLoader;
-import eu.amidst.corestatic.io.DynamicBayesianNetworkWriter;
-import eu.amidst.corestatic.io.DynamicDataStreamLoader;
-import eu.amidst.corestatic.learning.dynamic.DynamicNaiveBayesClassifier;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.inference.DynamicVMP;
+import eu.amidst.dynamic.inference.InferenceEngineForDBN;
+import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
+import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.Variable;
 

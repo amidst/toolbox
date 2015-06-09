@@ -8,19 +8,23 @@
 
 package eu.amidst.examples;
 
-import eu.amidst.corestatic.variables.*;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.datastream.DynamicDataInstance;
 import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
 import eu.amidst.corestatic.distribution.Normal_MultinomialParents;
 import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.io.DynamicDataStreamLoader;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
-import eu.amidst.corestatic.models.DynamicDAG;
+import eu.amidst.corestatic.variables.Assignment;
+import eu.amidst.corestatic.variables.HashMapAssignment;
+import eu.amidst.corestatic.variables.Variables;
+import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.util.Arrays;
 
@@ -33,7 +37,7 @@ public class Examples {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/staticData.arff");
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
 
         Variable A = variables.getVariableByName("A");
         Variable B = variables.getVariableByName("B");
