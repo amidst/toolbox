@@ -19,6 +19,8 @@ import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.io.DataStreamLoader;
 import eu.amidst.corestatic.io.DataStreamWriter;
 import eu.amidst.corestatic.learning.parametric.*;
+import eu.amidst.corestatic.learning.parametric.bayesian.Fading;
+import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
@@ -591,9 +593,8 @@ public class LearningVMPTests {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
 
 
             String varA_Beta0output = "Variable A beta0 (CLG)\n" + beta0fromML + "\n",
@@ -915,9 +916,14 @@ public class LearningVMPTests {
                 outputPerWindowSize[2][j] = windowsSizes[j] + "\t";
                 outputPerWindowSize[3][j] = windowsSizes[j] + "\t";
                 outputPerWindowSize[4][j] = windowsSizes[j] + "\t";
+                MaximumLikelihoodFading likelihoodFading = new MaximumLikelihoodFading();
+
                 for (int f = 0; f < fadingFactor.length; f++) {
-                    BayesianNetwork MLlearntBN = MaximumLikelihoodForBN.
-                            learnParametersStaticModelFading(normalVarBN.getDAG(), data, fadingFactor[f], windowsSizes[j]);
+                    likelihoodFading.setFadingFactor(fadingFactor[f]);
+                    likelihoodFading.setWindowSize(windowsSizes[j]);
+                    LearningEngineForBN.setParameterLearningAlgorithm(likelihoodFading);
+
+                    BayesianNetwork MLlearntBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
                     outputPerWindowSize[0][j] += Double.toString(((Normal) ((BaseDistribution_MultinomialParents) MLlearntBN.
                             getConditionalDistribution(varB)).getBaseDistribution(0)).getMean()) + "\t";
                     outputPerWindowSize[1][j] += Double.toString(((ConditionalLinearGaussian) MLlearntBN.
@@ -988,10 +994,9 @@ public class LearningVMPTests {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
 
             String fadingOutput = "\t";
             String header = "Window Size";
@@ -1040,10 +1045,9 @@ public class LearningVMPTests {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
+        svb.setDAG(normalVarBN.getDAG());
+        svb.setDataStream(data);
 
         String fadingOutput = "\t";
         String header = "Window Size";
@@ -1090,10 +1094,9 @@ public class LearningVMPTests {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
+        svb.setDAG(normalVarBN.getDAG());
+        svb.setDataStream(data);
 
         String fadingOutput = "\t";
         String header = "Window Size";
@@ -1141,10 +1144,9 @@ public class LearningVMPTests {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
+        svb.setDAG(normalVarBN.getDAG());
+        svb.setDataStream(data);
 
         System.out.println("Window Size \t logProg(D) \t Time");
         int[] windowsSizes = {1, 50, 100, 1000, 5000, 10000};
@@ -1175,10 +1177,9 @@ public class LearningVMPTests {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
+        svb.setDAG(normalVarBN.getDAG());
+        svb.setDataStream(data);
 
         System.out.println("Window Size \t logProg(D) \t Time");
         int[] windowsSizes = {1, 50, 100, 1000, 5000, 10000};
@@ -1211,10 +1212,9 @@ public class LearningVMPTests {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
+        svb.setDAG(normalVarBN.getDAG());
+        svb.setDataStream(data);
 
         System.out.println("Window Size \t logProg(D) \t Time");
         int[] windowsSizes = {1, 50, 100, 1000, 5000, 10000};
@@ -1249,10 +1249,9 @@ public class LearningVMPTests {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
 
             String fadingOutput = "\t";
             String header = "Window Size";
@@ -1273,10 +1272,8 @@ public class LearningVMPTests {
                     //System.out.println("  fading: "+fadingFactor[f]);
                     svb.initLearning();
                     svb.setTransitionMethod(new Fading(fadingFactor[f]));
-                    BayesianNetwork bn = MaximumLikelihoodForBN.
-                            learnParametersStaticModelFading(normalVarBN.getDAG(), data, fadingFactor[f], windowsSizes[i]);
                     //double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
-                    //BayesianNetwork bn = svb.getLearntBayesianNetwork();
+                    BayesianNetwork bn = svb.getLearntBayesianNetwork();
                     ConditionalLinearGaussian distMout = ((ConditionalLinearGaussian) bn.
                             getConditionalDistribution(varMout));
                     output += distMout.getIntercept() + "\t" + distMout.getCoeffParents()[1] + "\t" + distMout.getVariance() + "\t";

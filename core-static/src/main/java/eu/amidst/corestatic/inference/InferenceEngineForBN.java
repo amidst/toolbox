@@ -22,45 +22,23 @@ import eu.amidst.corestatic.variables.Variable;
  */
 public final class InferenceEngineForBN {
 
-    private enum InfAlg {VMP, EP};
-
-    InfAlg infAlg;
-
     private static InferenceAlgorithmForBN inferenceAlgorithmForBN = new VMP();
-
-    public static void setInfAlg(InfAlg infAlg) {
-        infAlg = infAlg;
-    }
 
     public static void setInferenceAlgorithmForBN(InferenceAlgorithmForBN inferenceAlgorithmForBN) {
         InferenceEngineForBN.inferenceAlgorithmForBN = inferenceAlgorithmForBN;
     }
 
-    public static void runInference(){
-        inferenceAlgorithmForBN.runInference();
-    }
-
-    public static void setModel(BayesianNetwork model){
-        inferenceAlgorithmForBN.setModel(model);
-    }
-
-    public static void setEvidence(Assignment assignment){
+    public static <E extends UnivariateDistribution> E getPosterior(Variable var, BayesianNetwork bayesianNetwork, Assignment assignment) {
+        inferenceAlgorithmForBN.setModel(bayesianNetwork);
         inferenceAlgorithmForBN.setEvidence(assignment);
-    }
-
-    public double getLogProbabilityOfEvidence(){
-        return inferenceAlgorithmForBN.getLogProbabilityOfEvidence();
-    }
-
-    public void setSeed(int seed){
-        inferenceAlgorithmForBN.setSeed(seed);
-    }
-    public static <E extends UnivariateDistribution> E getPosterior(Variable var){
+        inferenceAlgorithmForBN.runInference();
         return inferenceAlgorithmForBN.getPosterior(var);
     }
 
-    public static <E extends UnivariateDistribution> E getPosterior(String name){
-        return inferenceAlgorithmForBN.getPosterior(inferenceAlgorithmForBN.getOriginalModel().getStaticVariables().getVariableByName(name));
+    public static <E extends UnivariateDistribution> E getPosterior(Variable var, BayesianNetwork bayesianNetwork) {
+        inferenceAlgorithmForBN.setModel(bayesianNetwork);
+        inferenceAlgorithmForBN.runInference();
+        return inferenceAlgorithmForBN.getPosterior(var);
     }
 
 
@@ -78,13 +56,7 @@ public final class InferenceEngineForBN {
 
         Variable varA = bn.getStaticVariables().getVariableById(1);
 
-
-        InferenceEngineForBN.setInfAlg(InfAlg.VMP);
-        InferenceEngineForBN.setModel(bn);
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
-
-        Normal posteriorOfA = InferenceEngineForBN.getPosterior(varA);
+        Normal posteriorOfA = InferenceEngineForBN.getPosterior(varA, bn, assignment);
 
         System.out.println("P(A|B=0.7) = " + posteriorOfA.toString());
 

@@ -3,7 +3,8 @@ package eu.amidst.corestatic.learning;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
-import eu.amidst.corestatic.learning.parametric.MaximumLikelihoodForBN;
+import eu.amidst.corestatic.learning.parametric.LearningEngineForBN;
+import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
 import eu.amidst.corestatic.variables.Variable;
@@ -37,9 +38,11 @@ public class MLMultinomialsTest {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        MaximumLikelihoodForBN.setBatchSize(1000);
-        MaximumLikelihoodForBN.setParallelMode(true);
-        BayesianNetwork bnet = MaximumLikelihoodForBN.learnParametersStaticModel(asianet.getDAG(), data);
+        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
+        maximumLikelihood.setBatchSize(1000);
+        maximumLikelihood.setParallelMode(true);
+        LearningEngineForBN.setParameterLearningAlgorithm(maximumLikelihood);
+        BayesianNetwork bnet = LearningEngineForBN.learnParameters(asianet.getDAG(), data);
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getStaticVariables()) {

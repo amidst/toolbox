@@ -59,8 +59,7 @@ public class VMPTest extends TestCase {
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
 
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Multinomial qADist = ((EF_Multinomial) vmp.getNodes().get(0).getQDist());
         EF_Multinomial qBDist = ((EF_Multinomial) vmp.getNodes().get(1).getQDist());
@@ -73,12 +72,12 @@ public class VMPTest extends TestCase {
         qB[0] = qBDist.getMomentParameters().get(0);
         qB[1] = qBDist.getMomentParameters().get(1);
 
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        //vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        Multinomial postA = InferenceEngineForBN.getPosterior(varA);
+        Multinomial postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
-        Multinomial postB = InferenceEngineForBN.getPosterior(varB);
+        Multinomial postB = vmp.getPosterior(varB);
         System.out.println("P(B) = " + postB.toString());
 
 
@@ -145,13 +144,12 @@ public class VMPTest extends TestCase {
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
 
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        Multinomial postA = InferenceEngineForBN.getPosterior(varA);
+        Multinomial postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
 
         assertEquals(postA.getProbabilities()[0], 0.75, 0.01);
@@ -197,20 +195,19 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
         Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        //vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -238,9 +235,9 @@ public class VMPTest extends TestCase {
         System.out.println("P'(B) = " + qBDist.toString());
         System.out.println("P'(C) = " + qCDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
 
 
     }
@@ -300,8 +297,7 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
@@ -309,11 +305,11 @@ public class VMPTest extends TestCase {
 
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varC, 0.0);
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
 
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
@@ -337,8 +333,8 @@ public class VMPTest extends TestCase {
         System.out.println("P'(A) = " + qADist.toString());
         System.out.println("P'(B) = " + qBDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
 
     }
 
@@ -390,20 +386,19 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
         Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        //vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -431,9 +426,9 @@ public class VMPTest extends TestCase {
         System.out.println("P'(B) = " + qBDist.toString());
         System.out.println("P'(C) = " + qCDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
 
 
     }
@@ -465,20 +460,19 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
         Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        //vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -506,9 +500,9 @@ public class VMPTest extends TestCase {
         System.out.println("P'(B) = " + qBDist.toString());
         System.out.println("P'(C) = " + qCDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
 
 
     }
@@ -542,20 +536,19 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
         Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        //vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -583,9 +576,9 @@ public class VMPTest extends TestCase {
         System.out.println("P'(B) = " + qBDist.toString());
         System.out.println("P'(C) = " + qCDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
 
 
     }
@@ -615,8 +608,7 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
@@ -624,11 +616,11 @@ public class VMPTest extends TestCase {
 
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varC, 0.0);
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
 
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
@@ -652,8 +644,8 @@ public class VMPTest extends TestCase {
         System.out.println("P'(A) = " + qADist.toString());
         System.out.println("P'(B) = " + qBDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
 
     }
 
@@ -682,8 +674,7 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
         Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
@@ -692,11 +683,11 @@ public class VMPTest extends TestCase {
 
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varA, 0.0);
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
 
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
@@ -720,8 +711,8 @@ public class VMPTest extends TestCase {
         System.out.println("P'(C) = " + qCDist.toString());
         System.out.println("P'(B) = " + qBDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
 
     }
 
@@ -759,20 +750,19 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varA, 0.0);
         assignment.setValue(varB, 0.0);
 
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         double result = 0.7 * 0.75 * 0.5 / (0.7 * 0.75 * 0.5 + 0.2 * 0.25 * 0.5);
-        assertEquals(InferenceEngineForBN.getPosterior(varC).getProbability(0), result, 0.01);
+        assertEquals(vmp.getPosterior(varC).getProbability(0), result, 0.01);
 
     }
 
@@ -804,20 +794,19 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
         Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        //vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -845,9 +834,9 @@ public class VMPTest extends TestCase {
         System.out.println("P'(B) = " + qBDist.toString());
         System.out.println("P'(C) = " + qCDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
 
 
     }
@@ -902,20 +891,19 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         Multinomial qADist = vmp.getNodes().get(0).getQDist().toUnivariateDistribution();
         Multinomial qBDist = vmp.getNodes().get(1).getQDist().toUnivariateDistribution();
         Multinomial qCDist = vmp.getNodes().get(2).getQDist().toUnivariateDistribution();
 
 
-        //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        //vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
-        System.out.println("P(B) = " + InferenceEngineForBN.getPosterior(varB).toString());
-        System.out.println("P(C) = " + InferenceEngineForBN.getPosterior(varC).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
@@ -951,9 +939,9 @@ public class VMPTest extends TestCase {
         System.out.println("P'(B) = " + qBDist.toString());
         System.out.println("P'(C) = " + qCDist.toString());
 
-        assertTrue(InferenceEngineForBN.getPosterior(varA).equalDist(qADist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varB).equalDist(qBDist, 0.01));
-        assertTrue(InferenceEngineForBN.getPosterior(varC).equalDist(qCDist, 0.01));
+        assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
+        assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
+        assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
 
     }
 
@@ -984,11 +972,10 @@ public class VMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
-        InferenceEngineForBN.runInference();
+        vmp.setModel(bn);
+        vmp.runInference();
 
-        System.out.println("P(A) = " + InferenceEngineForBN.getPosterior(varA).toString());
+        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
 
     }
 
