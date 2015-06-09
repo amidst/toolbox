@@ -6,17 +6,31 @@
  *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package eu.amidst.core.learning;
+package eu.amidst.core.learning.parametric;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ * Created by ana@cs.aau.dk on 04/03/15.
  */
-@FunctionalInterface
-public interface StaticParameterLearningAlgorithm {
-       public BayesianNetwork learn(DAG dag, DataStream<DataInstance> dataStream);
+public interface BayesianLearningAlgorithmForBN {
+
+    double updateModel(DataOnMemory<DataInstance> batch);
+
+    double getLogMarginalProbability();
+
+    void runLearning();
+
+    void setDAG(DAG dag);
+
+    void setDataStream(DataStream<DataInstance> data);
+
+    BayesianNetwork getLearntBayesianNetwork();
+
+    public void setParallelMode(boolean parallelMode);
+
 }

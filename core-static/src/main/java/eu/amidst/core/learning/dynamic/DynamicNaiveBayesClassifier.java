@@ -13,7 +13,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DynamicDataInstance;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.io.DynamicDataStreamLoader;
-import eu.amidst.core.learning.MaximumLikelihoodForBN;
+import eu.amidst.core.learning.parametric.MaximumLikelihoodForBN;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DynamicBayesianNetwork;
 import eu.amidst.core.models.DynamicDAG;
