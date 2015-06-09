@@ -2,7 +2,7 @@ package eu.amidst.core.learning;
 
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.learning.MaximumLikelihoodForBN;
+import eu.amidst.core.learning.parametric.MaximumLikelihoodForBN;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Distribution;
