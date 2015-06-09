@@ -126,7 +126,7 @@ public class scriptAddClassPreviousMonth {
 
     public static void main(String[] args) {
         try {
-            //scriptAddClassPreviousMonth("/Users/ana/Documents/corestatic/datasets/dynamicDataOnlyContinuous_SEQ_ID.arff");
+            //scriptAddClassPreviousMonth("/Users/ana/Documents/core/scai2015/datasets/dynamicDataOnlyContinuous_SEQ_ID.arff");
             scriptAddClassPreviousMonth(args[0]);
         }catch (IOException ex){}
     }
