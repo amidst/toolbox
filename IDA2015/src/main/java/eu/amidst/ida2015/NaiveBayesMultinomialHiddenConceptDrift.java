@@ -8,19 +8,19 @@
 
 package eu.amidst.ida2015;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.StreamingVariationalBayesVMP;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.StaticVariables;
-import eu.amidst.core.variables.Variable;
+import eu.amidst.corestatic.datastream.Attribute;
+import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.DataOnMemory;
+import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.corestatic.distribution.Multinomial;
+import eu.amidst.corestatic.inference.InferenceEngineForBN;
+import eu.amidst.corestatic.io.DataStreamLoader;
+import eu.amidst.corestatic.learning.parametric.StreamingVariationalBayesVMP;
+import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.corestatic.models.DAG;
+import eu.amidst.corestatic.utils.Utils;
+import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.List;

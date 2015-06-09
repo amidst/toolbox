@@ -8,20 +8,20 @@
 
 package eu.amidst.ida2015;
 
-import eu.amidst.core.datastream.*;
-import eu.amidst.core.distribution.*;
-import eu.amidst.core.inference.InferenceEngineForBN;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.Fading;
-import eu.amidst.core.learning.parametric.PlateuIIDReplication;
-import eu.amidst.core.learning.parametric.StreamingVariationalBayesVMP;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
-import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.StaticVariables;
-import eu.amidst.core.variables.Variable;
+import eu.amidst.corestatic.datastream.*;
+import eu.amidst.corestatic.distribution.*;
+import eu.amidst.corestatic.inference.InferenceEngineForBN;
+import eu.amidst.corestatic.io.DataStreamLoader;
+import eu.amidst.corestatic.learning.parametric.Fading;
+import eu.amidst.corestatic.learning.parametric.PlateuIIDReplication;
+import eu.amidst.corestatic.learning.parametric.StreamingVariationalBayesVMP;
+import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.corestatic.models.DAG;
+import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
+import eu.amidst.corestatic.utils.BayesianNetworkSampler;
+import eu.amidst.corestatic.utils.Utils;
+import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;

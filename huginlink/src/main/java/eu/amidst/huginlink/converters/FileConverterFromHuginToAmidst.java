@@ -2,12 +2,12 @@ package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.io.DynamicBayesianNetworkLoader;
-import eu.amidst.core.io.DynamicBayesianNetworkWriter;
-import eu.amidst.core.io.BayesianNetworkWriter;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DynamicBayesianNetwork;
+import eu.amidst.corestatic.io.BayesianNetworkLoader;
+import eu.amidst.corestatic.io.DynamicBayesianNetworkLoader;
+import eu.amidst.corestatic.io.DynamicBayesianNetworkWriter;
+import eu.amidst.corestatic.io.BayesianNetworkWriter;
+import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.corestatic.models.DynamicBayesianNetwork;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 
