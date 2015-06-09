@@ -56,21 +56,30 @@ for (i in 1:nrow(df)) {
   }
 }
 
-#Remove rows with that only contain ones.
+invbm<-1-bm
+colSums(invbms[,])
 
+#Remove rows with that only contain ones.
+indexes <- which(!apply(bm,2,FUN = function(x){all(x == 1)}))
+bm<-bm[,indexes]
+selectedVars <- vars[indexes]
 
 meses <- as.yearmon(seq(ISOdate(2007,05,01), by = "month", length.out = 71))
 trimester <- meses[seq(1, length(meses), 3)]
 
-postscript("selectedAttributes.eps", width=32.0 ,height=6.0, horizontal = FALSE, onefile = FALSE)
+varLabels <- c("VAR01", "VAR02","VAR03","VAR04","VAR05","VAR06","VAR07","VAR08","VAR09","VAR10","VAR11","SOC01","SOC02","SOC03","SOC04","SOC05","SOC06","SOC07","SOC08","SOC09","SOC10","SOC11","SOC12","SOC13","SOC14","SOC15","SOC16","SOC17","SOC18","SOC19","SOC20","SOC21","SOC22","SOC23","SOC24","SOC25","SOC26","SOC27","SOC28","SOC29","SOC30","SOC31","SOC32","SOC33")
+selectedVarLabels <- varLabels[indexes]
+
+postscript("selectedAttributesSocioD.eps", width=32.0 ,height=6.0, horizontal = FALSE, onefile = FALSE)
 image(data.matrix(bm), axes = FALSE, col = c("black", "white"))
 #abline(v = seq(0,1,by=1/70), col = "gray", lty = 2)
-axis(2,at=seq(0,1,0.023),labels=c("VAR01", "VAR02","VAR03","VAR04","VAR05","VAR06","VAR07","VAR08","VAR09","VAR10","VAR11","SOC01","SOC02","SOC03","SOC04","SOC05","SOC06","SOC07","SOC08","SOC09","SOC10","SOC11","SOC12","SOC13","SOC14","SOC15","SOC16","SOC17","SOC18","SOC19","SOC20","SOC21","SOC22","SOC23","SOC24","SOC25","SOC26","SOC27","SOC28","SOC29","SOC30","SOC31","SOC32","SOC33"), las=1) 
+axis(2,at=seq(0,1,1/(length(selectedVars)-1)),labels=selectedVarLabels, las=1) 
 #axis(1,at=seq(0, 1,by=1/70),labels=meses, las=2)
 axis(1,at=seq(0, 1,by=2/70),labels=meses[seq(1,71,by=2)], las=2)
 #axis(1,at=seq(0, 1,by=3/70),labels=trimester, las=2)
 dev.off()
 
+################################################################################################################################
 #####################################################
 #GRAPH AUC - ROC
 #####################################################
@@ -86,4 +95,22 @@ lines(df$NB.DYNAMIC, col='blue', lty=2)
 legend("bottomright", c("Dynamic NB with FS","Dynamic NB"), col=c("black","blue"),lty = c(1,2))
 axis(1,at=seq(1, 71,by=2),labels=meses[seq(1,71,by=2)], las=2) 
 #abline(v = seq(3,84,by=3), col = "gray", lty = 2)
+dev.off()
+
+#####################################################
+#INCLUDING SOCIODEMOGRAPHIC VARIABLES
+#####################################################
+setwd("~/Documents/Admist-MyFiles/Papers/SCAI2015/FirstResults/RScripts")
+library(zoo)
+path = 'IDAdataSocioD.csv'
+df = read.table(path, header=T, sep=",")
+meses <- as.yearmon(seq(ISOdate(2008,05,01), by = "month", length.out = 71))
+
+postscript("IDAdataAUCSocioD.eps", width=32.0 ,height=6.0, horizontal = FALSE, onefile = FALSE)
+plot(df$NB.FS,xaxt="n",xlab='',type='l',main='',col='white', ylab="AUC",ylim=c(0.65,1))
+abline(v = seq(1,71,by=2), col = "gray", lty = 2)
+lines(df$NB.FS)
+lines(df$NB.DYNAMIC, col='blue', lty=2)
+legend("bottomright", c("Dynamic NB with FS","Dynamic NB"), col=c("black","blue"),lty = c(1,2))
+axis(1,at=seq(1, 71,by=2),labels=meses[seq(1,71,by=2)], las=2) 
 dev.off()
