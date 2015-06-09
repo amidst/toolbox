@@ -9,7 +9,7 @@
 package eu.amidst.ida2015;
 
 import eu.amidst.core.inference.messagepassing.Node;
-import eu.amidst.core.learning.PlateuStructure;
+import eu.amidst.core.learning.parametric.PlateuStructure;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;

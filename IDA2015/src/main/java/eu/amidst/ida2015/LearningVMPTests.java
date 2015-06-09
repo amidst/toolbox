@@ -10,7 +10,6 @@ package eu.amidst.ida2015;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.learning.*;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -19,6 +18,7 @@ import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
+import eu.amidst.core.learning.parametric.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;

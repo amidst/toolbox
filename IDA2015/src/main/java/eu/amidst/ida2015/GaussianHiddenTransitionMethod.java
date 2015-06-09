@@ -10,8 +10,8 @@ package eu.amidst.ida2015;
 
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.*;
-import eu.amidst.core.learning.PlateuStructure;
-import eu.amidst.core.learning.TransitionMethod;
+import eu.amidst.core.learning.parametric.PlateuStructure;
+import eu.amidst.core.learning.parametric.TransitionMethod;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
