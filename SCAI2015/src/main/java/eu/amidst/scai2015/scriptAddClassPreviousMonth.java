@@ -8,16 +8,16 @@
 
 package eu.amidst.scai2015;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
-import eu.amidst.core.datastream.filereaders.DataRow;
-import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.corestatic.datastream.Attribute;
+import eu.amidst.corestatic.datastream.Attributes;
+import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.corestatic.datastream.filereaders.DataRow;
+import eu.amidst.corestatic.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.corestatic.utils.Utils;
+import eu.amidst.corestatic.variables.StateSpaceTypeEnum;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -126,7 +126,7 @@ public class scriptAddClassPreviousMonth {
 
     public static void main(String[] args) {
         try {
-            //scriptAddClassPreviousMonth("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous_SEQ_ID.arff");
+            //scriptAddClassPreviousMonth("/Users/ana/Documents/corestatic/datasets/dynamicDataOnlyContinuous_SEQ_ID.arff");
             scriptAddClassPreviousMonth(args[0]);
         }catch (IOException ex){}
     }
