@@ -24,7 +24,6 @@ hs_err_pid*
 
 # IDE noise
 .idea/
-*.iml
 
 hgapi82_amidst-64.jar
 
@@ -74,3 +73,4 @@ maven_startup.sh
 
 # hugin aux files
 networks/*.hlg
+networks/
