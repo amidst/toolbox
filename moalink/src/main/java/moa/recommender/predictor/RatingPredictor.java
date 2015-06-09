@@ -25,7 +25,7 @@ import java.util.List;
 import moa.recommender.rc.data.RecommenderData;
 
 /**
- * Rating predicting algorithm. The core of any recommender system is its 
+ * Rating predicting algorithm. The corestatic of any recommender system is its
  * rating prediction algorithm. Its purpose is to estimate the rating
  * (a numeric score) that a certain user would give to a certain item,
  * based on previous ratings given of the user and the item.

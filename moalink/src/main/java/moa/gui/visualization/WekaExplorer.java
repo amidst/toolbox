@@ -46,7 +46,7 @@ public class WekaExplorer {
     private static Memory m_Memory = new Memory(true);
 
     public WekaExplorer(Instances instances) {
-        //weka.core.logging.Logger.log(weka.core.logging.Logger.Level.INFO, "Logging started");
+        //weka.corestatic.logging.Logger.log(weka.corestatic.logging.Logger.Level.INFO, "Logging started");
         try {
             javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         } catch (Exception e) {}
