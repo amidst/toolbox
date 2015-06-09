@@ -37,7 +37,7 @@ import moa.options.MultiChoiceOption;
 //import samoa.instances.Instance;
 import weka.core.Instance;
 import weka.core.Utils;
-//import moa.core.Utils;
+//import moa.corestatic.Utils;
 import java.io.*;
 
 

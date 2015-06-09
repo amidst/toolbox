@@ -66,11 +66,11 @@ public class WekaClusteringAlgorithm extends AbstractClusterer{
 /*
 			//System.out.println(clustererClasses[i].getSimpleName());
 			for (Class c : clustererClasses[i].getInterfaces()) {
-			        if (c.equals(weka.core.OptionHandler.class)) {
+			        if (c.equals(weka.corestatic.OptionHandler.class)) {
 			        	try {
-							Enumeration options = ((weka.core.OptionHandler)clustererClasses[i].newInstance()).listOptions();
+							Enumeration options = ((weka.corestatic.OptionHandler)clustererClasses[i].newInstance()).listOptions();
 							while(options.hasMoreElements()){
-								weka.core.Option o = (weka.core.Option)options.nextElement(); 
+								weka.corestatic.Option o = (weka.corestatic.Option)options.nextElement();
 								System.out.print(o.synopsis()+" ");	
 							} 
 							

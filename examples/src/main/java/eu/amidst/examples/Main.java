@@ -10,8 +10,8 @@
 package eu.amidst;
 
 
-import eu.amidst.core.database.DataStream;
-import eu.amidst.core.database.statics.readers.DataStreamReaderFromFile;
+import eu.amidst.corestatic.database.DataStream;
+import eu.amidst.corestatic.database.statics.readers.DataStreamReaderFromFile;
 import eu.amidst.staticmodelling.models.NaiveBayesClassifier;
 import eu.amidst.staticmodelling.models.NaiveBayesClusteringModel;
 
@@ -59,9 +59,9 @@ public class Main {
 
 package eu.amidst.examples;
 
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.corestatic.io.DataStreamLoader;
 
 import java.util.*;
 import java.util.stream.Collectors;
