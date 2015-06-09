@@ -8,9 +8,8 @@ import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
 import eu.amidst.corestatic.distribution.Normal;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
-import eu.amidst.corestatic.learning.parametric.BayesianLearningEngineForBN;
 import eu.amidst.corestatic.learning.parametric.LearningEngineForBN;
-import eu.amidst.corestatic.learning.parametric.StreamingVariationalBayesVMP;
+import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
@@ -55,13 +54,13 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
+        
 
-        BayesianLearningEngineForBN.setDAG(bn.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(bn.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
         System.out.println(bn.toString());
         System.out.println(learnBN.toString());
@@ -100,13 +99,12 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(bn.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(bn.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
         System.out.println(bn.toString());
         System.out.println(learnBN.toString());
@@ -142,13 +140,12 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(bn.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(bn.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
         System.out.println(bn.toString());
         System.out.println(learnBN.toString());
@@ -185,13 +182,13 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
+        
 
-        BayesianLearningEngineForBN.setDAG(bn.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(bn.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
         System.out.println(bn.toString());
         System.out.println(learnBN.toString());
@@ -229,13 +226,12 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(bn.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(bn.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
         System.out.println(bn.toString());
         System.out.println(learnBN.toString());
@@ -272,13 +268,12 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(bn.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(bn.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
             System.out.println(bn.toString());
             System.out.println(learnBN.toString());
@@ -303,15 +298,14 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(asianet.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(asianet.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
+        System.out.println(svb.getLogMarginalProbability());
 
-        BayesianNetwork learnAsianet = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnAsianet = svb.getLearntBayesianNetwork();
 
         System.out.println(asianet.toString());
         System.out.println(learnAsianet.toString());
@@ -343,15 +337,14 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(asianet.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(asianet.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
+        System.out.println(svb.getLogMarginalProbability());
 
-        BayesianNetwork learnAsianet = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnAsianet = svb.getLearntBayesianNetwork();
 
         //System.out.println(asianet.toString());
         //System.out.println(learnAsianet.toString());
@@ -390,15 +383,14 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(oneNormalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(oneNormalVarBN.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
+            System.out.println(svb.getLogMarginalProbability());
 
-            BayesianNetwork learntOneNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            BayesianNetwork learntOneNormalVarBN = svb.getLearntBayesianNetwork();
 
             System.out.println(oneNormalVarBN.toString());
             System.out.println(learntOneNormalVarBN.toString());
@@ -431,15 +423,14 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(normalVarBN.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
+        System.out.println(svb.getLogMarginalProbability());
 
-        learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        learntNormalVarBN = svb.getLearntBayesianNetwork();
 
         System.out.println(normalVarBN.toString());
         System.out.println(learntNormalVarBN.toString());
@@ -477,16 +468,15 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
-
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
 
-            System.out.println(BayesianLearningEngineForBN.getLogMarginalProbability());
-            learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+
+            System.out.println(svb.getLogMarginalProbability());
+            learntNormalVarBN = svb.getLearntBayesianNetwork();
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -524,13 +514,12 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            learntNormalVarBN = svb.getLearntBayesianNetwork();
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -565,13 +554,12 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            learntNormalVarBN = svb.getLearntBayesianNetwork();
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -609,13 +597,12 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(normalVarBN.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            learntNormalVarBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            learntNormalVarBN = svb.getLearntBayesianNetwork();
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -656,13 +643,12 @@ public class BayesianVMPTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.001);
-        BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-        BayesianLearningEngineForBN.setDAG(bn.getDAG());
-        BayesianLearningEngineForBN.setDataStream(data);
-        BayesianLearningEngineForBN.runLearning();
+        svb.setDAG(bn.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
 
-        BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+        BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
         System.out.println(bn.toString());
         System.out.println(learnBN.toString());
@@ -701,15 +687,14 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(bn.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(bn.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            System.out.println("Data Prob: " + BayesianLearningEngineForBN.getLogMarginalProbability());
+            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
-            BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
             System.out.println(bn.toString());
             System.out.println(learnBN.toString());
@@ -746,16 +731,15 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(bn.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(bn.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            System.out.println("Data Prob: " + BayesianLearningEngineForBN.getLogMarginalProbability());
+            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
 
-            BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
             System.out.println(bn.toString());
             System.out.println(learnBN.toString());
@@ -796,16 +780,15 @@ public class BayesianVMPTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.001);
-            BayesianLearningEngineForBN.setBayesianLearningAlgorithmForBN(svb);
 
-            BayesianLearningEngineForBN.setDAG(bn.getDAG());
-            BayesianLearningEngineForBN.setDataStream(data);
-            BayesianLearningEngineForBN.runLearning();
+            svb.setDAG(bn.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
-            System.out.println("Data Prob: " + BayesianLearningEngineForBN.getLogMarginalProbability());
+            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
 
-            BayesianNetwork learnBN = BayesianLearningEngineForBN.getLearntBayesianNetwork();
+            BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
             System.out.println(bn.toString());
             System.out.println(learnBN.toString());

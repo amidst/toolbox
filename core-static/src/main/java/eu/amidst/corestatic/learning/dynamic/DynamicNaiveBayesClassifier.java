@@ -13,7 +13,6 @@ import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.datastream.DynamicDataInstance;
 import eu.amidst.corestatic.io.DataStreamWriter;
 import eu.amidst.corestatic.io.DynamicDataStreamLoader;
-import eu.amidst.corestatic.learning.parametric.MaximumLikelihoodForBN;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DynamicBayesianNetwork;
 import eu.amidst.corestatic.models.DynamicDAG;
@@ -77,7 +76,7 @@ public class DynamicNaiveBayesClassifier {
 
     public void learn(DataStream<DynamicDataInstance> dataStream){
         LearningEngineForDBN.setDynamicStructuralLearningAlgorithm(this::dynamicNaiveBayesStructure);
-        MaximumLikelihoodForBN.setParallelMode(this.isParallelMode());
+        MaximumLikelihoodForDBN.setParallelMode(this.isParallelMode());
         LearningEngineForDBN.setDynamicParameterLearningAlgorithm(MaximumLikelihoodForDBN::learnDynamic);
         bnModel = LearningEngineForDBN.learnDynamicModel(dataStream);
     }

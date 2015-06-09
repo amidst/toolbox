@@ -1,17 +1,15 @@
 package eu.amidst.huginlink.learning;
 
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
 import COM.hugin.HAPI.*;
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.utils.*;
 import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.datastream.DataOnMemory;
+import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.learning.parametric.LearningEngineForBN;
-import eu.amidst.corestatic.learning.parametric.MaximumLikelihoodForBN;
+import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
+import eu.amidst.corestatic.utils.*;
 import eu.amidst.corestatic.variables.StaticVariables;
 import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
@@ -196,13 +194,10 @@ public class ParallelTAN implements AmidstOptionsHandler {
      */
     public BayesianNetwork learnBN(DataStream<DataInstance> dataStream) throws ExceptionHugin {
 
-        //TODO uncomment this and solve the problem
-        //LearningEngine.setStaticStructuralLearningAlgorithm(this::learnDAG);
-        MaximumLikelihoodForBN.setBatchSize(this.batchSize);
-        MaximumLikelihoodForBN.setParallelMode(this.parallelMode);
-        LearningEngineForBN.setStaticParameterLearningAlgorithm(MaximumLikelihoodForBN::learnParametersStaticModel);
+        LearningEngineForBN.setParallelMode(this.parallelMode);
+        LearningEngineForBN.setParameterLearningAlgorithm(new MaximumLikelihood());
 
-        return LearningEngineForBN.learnStaticModel(dataStream);
+        return LearningEngineForBN.learnParameters(this.learnDAG(dataStream), dataStream);
     }
 
     @Override

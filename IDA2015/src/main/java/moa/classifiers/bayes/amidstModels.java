@@ -8,6 +8,8 @@
 
 package moa.classifiers.bayes;
 
+import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
+import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.moalink.arffWekaReader.DataRowWeka;
 import eu.amidst.corestatic.datastream.*;
 import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
@@ -415,13 +417,14 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         double correctPredictions = 0;
         Variable classVariable = bn.getStaticVariables().getVariableById(nb_.getClassIndex());
 
-        InferenceEngineForBN.setModel(bn);
+        VMP vmp = new VMP();
+        vmp.setModel(bn);
         for (DataInstance instance : data) {
             double realValue = instance.getValue(classVariable);
             instance.setValue(classVariable, Utils.missingValue());
-            InferenceEngineForBN.setEvidence(instance);
-            InferenceEngineForBN.runInference();
-            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+            vmp.setEvidence(instance);
+            vmp.runInference();
+            Multinomial posterior = vmp.getPosterior(classVariable);
 
             if (Utils.maxIndex(posterior.getProbabilities())==realValue)
                 correctPredictions++;
@@ -446,15 +449,16 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             return votes;
         }
 
-        InferenceEngineForBN.setModel(learntBN_);
+        InferenceAlgorithmForBN vmp = new VMP();
+        vmp.setModel(learntBN_);
 
         DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
 
         double realValue = dataInstance.getValue(classVar_);
         dataInstance.setValue(classVar_, Utils.missingValue());
-        InferenceEngineForBN.setEvidence(dataInstance);
-        InferenceEngineForBN.runInference();
-        Multinomial posterior = InferenceEngineForBN.getPosterior(classVar_);
+        vmp.setEvidence(dataInstance);
+        vmp.runInference();
+        Multinomial posterior = vmp.getPosterior(classVar_);
         dataInstance.setValue(classVar_, realValue);
 
         return posterior.getProbabilities();

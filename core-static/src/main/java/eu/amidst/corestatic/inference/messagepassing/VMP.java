@@ -10,6 +10,7 @@ package eu.amidst.corestatic.inference.messagepassing;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.corestatic.distribution.ConditionalDistribution;
+import eu.amidst.corestatic.distribution.UnivariateDistribution;
 import eu.amidst.corestatic.exponentialfamily.MomentParameters;
 import eu.amidst.corestatic.exponentialfamily.NaturalParameters;
 import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
@@ -139,19 +140,18 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
 
         VMP vmp = new VMP();
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-
+        Variable var = bn.getStaticVariables().getVariableById(0);
+        UnivariateDistribution uni = null;
         double avg  = 0;
         for (int i = 0; i < 20; i++)
         {
-            InferenceEngineForBN.setModel(bn);
-
             Stopwatch watch = Stopwatch.createStarted();
-            InferenceEngineForBN.runInference();
+            uni = InferenceEngineForBN.getPosterior(var, bn);
             System.out.println(watch.stop());
             avg += watch.elapsed(TimeUnit.MILLISECONDS);
         }
         System.out.println(avg/20);
-        System.out.println(InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableById(0)).toString());
+        System.out.println(uni);
 
     }
 

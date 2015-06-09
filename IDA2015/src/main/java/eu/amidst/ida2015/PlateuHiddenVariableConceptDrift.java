@@ -9,7 +9,7 @@
 package eu.amidst.ida2015;
 
 import eu.amidst.corestatic.inference.messagepassing.Node;
-import eu.amidst.corestatic.learning.parametric.PlateuStructure;
+import eu.amidst.corestatic.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.ArrayList;

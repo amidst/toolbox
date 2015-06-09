@@ -3,16 +3,15 @@ package eu.amidst.huginlink.inference;
 import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.corestatic.distribution.Normal;
-import eu.amidst.corestatic.inference.InferenceEngineForBN;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.variables.HashMapAssignment;
 import eu.amidst.corestatic.variables.StaticVariables;
 import eu.amidst.corestatic.variables.Variable;
-
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import org.junit.Test;
+
 import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
@@ -66,16 +65,15 @@ public class HuginInferenceForBNTest {
         //**************************************************************************************************************
 
         VMP vmp = new VMP();
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setModel(bn);
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        //Multinomial postVMP_A = ((Multinomial)InferenceEngineForBN.getPosterior(varA));
-        //Multinomial postVMP_B = ((Multinomial)InferenceEngineForBN.getPosterior(varB));
-        //Normal postVMP_C = ((Normal)InferenceEngineForBN.getPosterior(varC));
-        Normal postVMP_D = ((Normal)InferenceEngineForBN.getPosterior(varD));
-        //Normal postVMP_E = ((Normal)InferenceEngineForBN.getPosterior(varE));
+        //Multinomial postVMP_A = ((Multinomial)vmp.getPosterior(varA));
+        //Multinomial postVMP_B = ((Multinomial)vmp.getPosterior(varB));
+        //Normal postVMP_C = ((Normal)vmp.getPosterior(varC));
+        Normal postVMP_D = ((Normal)vmp.getPosterior(varD));
+        //Normal postVMP_E = ((Normal)vmp.getPosterior(varE));
 
         //**************************************************************************************************************
         // TESTS
