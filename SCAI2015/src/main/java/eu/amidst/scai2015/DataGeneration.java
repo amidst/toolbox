@@ -86,7 +86,7 @@ public class DataGeneration {
                 dataM.add(instance);
             }
 
-            DataStreamWriter.writeDataToFile(dataM, "./datasets/MPrime_"+M+".arff");
+            DataStreamWriter.writeDataToFile(dataM, "./scai2015/datasets/MPrime_"+M+".arff");
         }
     }
 
@@ -95,6 +95,6 @@ public class DataGeneration {
     public static void main(String[] args) throws IOException {
         //DataGeneration.dataGenerator(args);
 
-        System.out.println(DataStreamLoader.loadFromFile("./datasets/BankArtificialData.arff").stream().count());
+        System.out.println(DataStreamLoader.loadFromFile("./scai2015/datasets/BankArtificialDataSCAI2015.arff").stream().count());
     }
 }
