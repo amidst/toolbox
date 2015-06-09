@@ -4,7 +4,6 @@ import COM.hugin.HAPI.Class;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.io.DynamicBayesianNetworkWriter;
 import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.huginlink.converters.DBNConverterToAmidst;
 import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +43,7 @@ public class DBNConverterToAmidstTest {
 
         Class huginDBN = DBNLoaderFromHugin.loadFromFile("networks/CajamarDBN.oobn");
         DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
-        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.bn");
+        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.dbn");
 
     }
 
