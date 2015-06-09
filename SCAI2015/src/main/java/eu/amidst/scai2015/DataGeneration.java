@@ -20,7 +20,7 @@ import eu.amidst.corestatic.io.DataStreamWriter;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 
 import java.io.IOException;
 import java.util.Random;
@@ -37,7 +37,7 @@ public class DataGeneration {
         for (int M = 0; M < 5; M++) {
 
 
-            StaticVariables vars = new StaticVariables();
+            Variables vars = new Variables();
 
             vars.newGaussianVariable("SEQUENCE_ID");
             vars.newGaussianVariable("TIME_ID");

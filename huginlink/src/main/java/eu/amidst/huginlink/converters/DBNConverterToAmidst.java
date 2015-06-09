@@ -6,10 +6,10 @@ import eu.amidst.corestatic.datastream.Attribute;
 import eu.amidst.corestatic.datastream.Attributes;
 import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
-import eu.amidst.corestatic.models.DynamicDAG;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.corestatic.utils.MultinomialIndex;
-import eu.amidst.corestatic.variables.DynamicVariables;
+import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.corestatic.variables.StateSpaceTypeEnum;
 import eu.amidst.corestatic.variables.Variable;
 

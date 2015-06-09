@@ -8,18 +8,17 @@
 
 package moa.classifiers.bayes;
 
-import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
+import eu.amidst.corestatic.inference.InferenceAlgorithm;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.moalink.arffWekaReader.DataRowWeka;
 import eu.amidst.corestatic.datastream.*;
 import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.distribution.Normal;
-import eu.amidst.corestatic.inference.InferenceEngineForBN;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.StateSpaceType;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
@@ -253,7 +252,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         /* Class attribute */
         convertAttribute(modelContext.classAttribute(), attrList);
         attributes_ = new Attributes(attrList);
-        StaticVariables variables = new StaticVariables(attributes_);
+        Variables variables = new Variables(attributes_);
         String className = modelContext.classAttribute().name();
         classVar_ = variables.getVariableByName(className);
 
@@ -449,7 +448,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             return votes;
         }
 
-        InferenceAlgorithmForBN vmp = new VMP();
+        InferenceAlgorithm vmp = new VMP();
         vmp.setModel(learntBN_);
 
         DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));

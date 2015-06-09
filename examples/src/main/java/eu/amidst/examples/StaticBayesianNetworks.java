@@ -14,7 +14,7 @@ import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.io.BayesianNetworkWriter;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public final class StaticBayesianNetworks {
          *
          * 3. We can extract the Variable objects by using the method getVariableByName();
          */
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
 
         Variable a = variables.getVariableByName("A");
         Variable b = variables.getVariableByName("B");
@@ -160,7 +160,7 @@ public final class StaticBayesianNetworks {
          *
          * 3. We can extract the Variable objects by using the method getVariableByName();
          */
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
 
         Variable a = variables.getVariableByName("A");
         Variable b = variables.getVariableByName("B");

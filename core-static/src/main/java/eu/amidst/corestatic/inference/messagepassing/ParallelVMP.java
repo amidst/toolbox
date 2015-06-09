@@ -19,8 +19,8 @@ import eu.amidst.corestatic.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.corestatic.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.corestatic.exponentialfamily.MomentParameters;
 import eu.amidst.corestatic.exponentialfamily.NaturalParameters;
-import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
-import eu.amidst.corestatic.inference.InferenceEngineForBN;
+import eu.amidst.corestatic.inference.InferenceAlgorithm;
+import eu.amidst.corestatic.inference.InferenceEngine;
 import eu.amidst.corestatic.inference.Sampler;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.models.BayesianNetwork;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public class ParallelVMP implements InferenceAlgorithmForBN, Sampler {
+public class ParallelVMP implements InferenceAlgorithm, Sampler {
 
     BayesianNetwork model;
     EF_BayesianNetwork ef_model;
@@ -343,7 +343,7 @@ public class ParallelVMP implements InferenceAlgorithmForBN, Sampler {
 
         ParallelVMP vmp = new ParallelVMP();
 
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
+        InferenceEngine.setInferenceAlgorithm(vmp);
         Variable var = bn.getStaticVariables().getVariableById(0);
         UnivariateDistribution uni = null;
 
@@ -351,7 +351,7 @@ public class ParallelVMP implements InferenceAlgorithmForBN, Sampler {
         for (int i = 0; i < 20; i++)
         {
             Stopwatch watch = Stopwatch.createStarted();
-            uni = InferenceEngineForBN.getPosterior(var, bn);
+            uni = InferenceEngine.getPosterior(var, bn);
             System.out.println(watch.stop());
             avg += watch.elapsed(TimeUnit.MILLISECONDS);
         }

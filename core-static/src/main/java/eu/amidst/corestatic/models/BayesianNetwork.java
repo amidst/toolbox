@@ -20,7 +20,7 @@ import eu.amidst.corestatic.distribution.ConditionalDistribution;
 import eu.amidst.corestatic.distribution.Distribution;
 import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.Assignment;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.io.Serializable;
@@ -72,7 +72,7 @@ public final class BayesianNetwork implements Serializable {
         return this.getDAG().getStaticVariables().getNumberOfVars();
     }
 
-    public StaticVariables getStaticVariables() {
+    public Variables getStaticVariables() {
         return this.getDAG().getStaticVariables();
     }
 

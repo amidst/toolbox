@@ -7,7 +7,7 @@ import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.MultinomialIndex;
 import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class BNConverterToHugin {
      */
     private void setNodes(BayesianNetwork amidstBN) throws ExceptionHugin {
 
-        StaticVariables amidstVars = amidstBN.getStaticVariables();
+        Variables amidstVars = amidstBN.getStaticVariables();
         int size = amidstVars.getNumberOfVars();
 
         //Hugin always inserts variables at position 0, i.e, for an order A,B,C, it stores C,B,A !!!

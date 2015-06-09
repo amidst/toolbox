@@ -6,7 +6,7 @@ import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.distribution.Distribution;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
-import eu.amidst.corestatic.learning.parametric.LearningEngineForBN;
+import eu.amidst.corestatic.learning.parametric.LearningEngine;
 import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
@@ -47,11 +47,11 @@ public class MLTestOneVar {
         MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
         maximumLikelihood.setBatchSize(1000);
         maximumLikelihood.setParallelMode(true);
-        LearningEngineForBN.setParameterLearningAlgorithm(maximumLikelihood);
+        LearningEngine.setParameterLearningAlgorithm(maximumLikelihood);
 
 
         //using Maximum likelihood learnParametersStaticModel
-        BayesianNetwork bn = LearningEngineForBN.learnParameters(net.getDAG(), data);
+        BayesianNetwork bn = LearningEngine.learnParameters(net.getDAG(), data);
         System.out.println(bn.toString());
 
 

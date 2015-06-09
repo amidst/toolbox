@@ -2,12 +2,12 @@ package eu.amidst.huginlink.inference;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.corestatic.io.DynamicDataStreamLoader;
-import eu.amidst.corestatic.learning.dynamic.DynamicNaiveBayesClassifier;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
 
 import java.io.IOException;

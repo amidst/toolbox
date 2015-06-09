@@ -8,7 +8,7 @@
 
 package eu.amidst.corestatic.models;
 
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.io.Serializable;
@@ -23,10 +23,10 @@ public class DAG implements Serializable {
 
     private static final long serialVersionUID = 2889423026182605212L;
 
-    private StaticVariables variables;
+    private Variables variables;
     private List<ParentSet> parents;
 
-    public DAG(StaticVariables variables) {
+    public DAG(Variables variables) {
         this.variables = variables;
         this.parents = new ArrayList(variables.getNumberOfVars());
 
@@ -37,7 +37,7 @@ public class DAG implements Serializable {
         this.variables.block();
     }
 
-    public StaticVariables getStaticVariables() {
+    public Variables getStaticVariables() {
         return this.variables;
     }
 

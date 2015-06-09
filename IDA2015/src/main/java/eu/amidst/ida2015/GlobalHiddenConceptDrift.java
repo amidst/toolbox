@@ -20,7 +20,7 @@ import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
 import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.io.IOException;
@@ -711,7 +711,7 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("cl");
         Variable at1 = variables.getVariableByName("at1");
@@ -810,7 +810,7 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
 
         List<Variable> localHidden = new ArrayList<Variable>();
         for (Attribute att : data.getAttributes()){
@@ -929,7 +929,7 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("output");
 
@@ -993,7 +993,7 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/electricityOriginal.arff");
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("class");
         //Variable localVariable = variables.newMultionomialVariable("local",2);
@@ -1064,7 +1064,7 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable localHidden = variables.newMultionomialVariable("Local", 2);
 
@@ -1123,7 +1123,7 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
 
-            StaticVariables variables = new StaticVariables(data.getAttributes());
+            Variables variables = new Variables(data.getAttributes());
         Variable classVariable = variables.getVariableByName("cl");
         Variable at1 = variables.getVariableByName("at1");
         Variable at2 = variables.getVariableByName("at2");

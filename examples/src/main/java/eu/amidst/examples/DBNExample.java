@@ -9,13 +9,13 @@
 package eu.amidst.examples;
 
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
-import eu.amidst.corestatic.io.DynamicDataStreamLoader;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
-import eu.amidst.corestatic.models.DynamicDAG;
-import eu.amidst.corestatic.variables.DynamicVariables;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.corestatic.variables.Variable;
 
 /**
