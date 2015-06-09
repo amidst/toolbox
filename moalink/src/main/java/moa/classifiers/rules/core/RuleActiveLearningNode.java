@@ -82,12 +82,12 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
 
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#learnFromInstance(weka.core.Instance)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#learnFromInstance(weka.corestatic.Instance)
 	 */
 	abstract public void learnFromInstance(Instance inst);
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#learnFromInstance(weka.core.Instance, moa.classifiers.trees.HoeffdingTree)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#learnFromInstance(weka.corestatic.Instance, moa.classifiers.trees.HoeffdingTree)
 	 */
 	@Override
     public void learnFromInstance(Instance inst, HoeffdingTree ht) {
@@ -102,7 +102,7 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
 
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#updateStatistics(weka.core.Instance)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#updateStatistics(weka.corestatic.Instance)
 	 */
 	public void updateStatistics(Instance instance) {
         learnFromInstance(instance);
@@ -122,7 +122,7 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
     }
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getPrediction(weka.core.Instance)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getPrediction(weka.corestatic.Instance)
 	 */
 	public double[] getPrediction(Instance instance) {
         int predictionMode = this.getLearnerToUse(instance, this.predictionFunction);
@@ -130,13 +130,13 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
     }
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getPrediction(weka.core.Instance, int)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getPrediction(weka.corestatic.Instance, int)
 	 */
 	abstract public double[] getPrediction(Instance instance, int predictionMode);
 	
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getNormalizedPrediction(weka.core.Instance)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getNormalizedPrediction(weka.corestatic.Instance)
 	 */
 
 	abstract public int getLearnerToUse(Instance instance, int predictionMode);
@@ -146,7 +146,7 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
     
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#computeError(weka.core.Instance)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#computeError(weka.corestatic.Instance)
 	 */
 	abstract public double computeError(Instance instance);
 
@@ -171,7 +171,7 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
    
 
     /* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#isAnomaly(weka.core.Instance, double, double, int)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#isAnomaly(weka.corestatic.Instance, double, double, int)
 	 */
 	abstract public boolean isAnomaly(Instance instance,
             double uniVariateAnomalyProbabilityThreshold,
@@ -230,7 +230,7 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
 	}
 
 	/* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#setBestSuggestion(moa.classifiers.core.AttributeSplitSuggestion)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#setBestSuggestion(moa.classifiers.corestatic.AttributeSplitSuggestion)
 	 */
 	public void setBestSuggestion(AttributeSplitSuggestion bestSuggestion) {
 		this.bestSuggestion = bestSuggestion;
