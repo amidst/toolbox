@@ -24,7 +24,6 @@ hs_err_pid*
 
 # IDE noise
 .idea/
-*.iml
 
 hgapi82_amidst-64.jar
 
