@@ -8,11 +8,11 @@
 
 package eu.amidst.scai2015;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.core.utils.Utils;
+import eu.amidst.corestatic.datastream.Attribute;
+import eu.amidst.corestatic.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.corestatic.utils.Utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class scriptRemoveClientsWithMissing {
     }
     public static void main(String[] args) {
         try {
-            //removeClientsWithMissing("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous_SEQ_ID_DEFAULTING_PM.arff");
+            //removeClientsWithMissing("/Users/ana/Documents/corestatic/datasets/dynamicDataOnlyContinuous_SEQ_ID_DEFAULTING_PM.arff");
             removeClientsWithMissing(args[0]);
         }catch (IOException ex){}
     }

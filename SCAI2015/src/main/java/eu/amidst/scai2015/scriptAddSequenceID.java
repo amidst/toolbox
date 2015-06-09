@@ -8,16 +8,16 @@
 
 package eu.amidst.scai2015;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
-import eu.amidst.core.datastream.filereaders.DataRow;
-import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.corestatic.datastream.Attribute;
+import eu.amidst.corestatic.datastream.Attributes;
+import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.corestatic.datastream.filereaders.DataRow;
+import eu.amidst.corestatic.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.corestatic.utils.Utils;
+import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -129,7 +129,7 @@ public class scriptAddSequenceID {
 
     public static void main(String[] args) {
         try {
-            //scriptAddSequenceID("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            //scriptAddSequenceID("/Users/ana/Documents/corestatic/datasets/dynamicDataOnlyContinuous.arff");
             scriptAddSequenceID(args[0]);
             //removeInstancesWithMissing(args[0]);
         }catch (IOException ex){}

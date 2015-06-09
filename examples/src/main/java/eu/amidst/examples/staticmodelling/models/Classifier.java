@@ -9,7 +9,7 @@
 package eu.amidst.examples.staticmodelling.models;
 
 
-import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.DataInstance;
 
 /**
  * Created by afa on 02/07/14.

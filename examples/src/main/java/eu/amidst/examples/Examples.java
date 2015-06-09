@@ -8,19 +8,19 @@
 
 package eu.amidst.examples;
 
-import eu.amidst.core.variables.*;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.datastream.DynamicDataInstance;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.distribution.Normal_MultinomialParents;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.io.DynamicDataStreamLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.models.DynamicDAG;
+import eu.amidst.corestatic.variables.*;
+import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.corestatic.datastream.DynamicDataInstance;
+import eu.amidst.corestatic.distribution.Multinomial;
+import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
+import eu.amidst.corestatic.distribution.Normal_MultinomialParents;
+import eu.amidst.corestatic.io.DataStreamLoader;
+import eu.amidst.corestatic.io.DynamicDataStreamLoader;
+import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.corestatic.models.DAG;
+import eu.amidst.corestatic.models.DynamicBayesianNetwork;
+import eu.amidst.corestatic.models.DynamicDAG;
 
 import java.util.Arrays;
 

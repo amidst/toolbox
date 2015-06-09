@@ -1,0 +1,158 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ */
+
+package eu.amidst.corestatic.inference.messagepassing;
+
+import com.google.common.base.Stopwatch;
+import eu.amidst.corestatic.distribution.ConditionalDistribution;
+import eu.amidst.corestatic.exponentialfamily.MomentParameters;
+import eu.amidst.corestatic.exponentialfamily.NaturalParameters;
+import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
+import eu.amidst.corestatic.inference.InferenceEngineForBN;
+import eu.amidst.corestatic.inference.Sampler;
+import eu.amidst.corestatic.io.BayesianNetworkLoader;
+import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.corestatic.models.DAG;
+import eu.amidst.corestatic.variables.Variable;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+/**
+ * Created by andresmasegosa on 03/02/15.
+ */
+public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithmForBN, Sampler {
+
+    boolean testELBO=true;
+
+    public void setTestELBO(boolean testELBO) {
+        this.testELBO = testELBO;
+    }
+
+    @Override
+    public Message<NaturalParameters> newSelfMessage(Node node) {
+        Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+        Message<NaturalParameters> message = new Message(node);
+        message.setVector(node.getPDist().getExpectedNaturalFromParents(momentParents));
+        message.setDone(node.messageDoneFromParents());
+
+        return message;
+    }
+
+    @Override
+    public Message<NaturalParameters> newMessageToParent(Node childrenNode, Node parent) {
+        Map<Variable, MomentParameters> momentChildCoParents = childrenNode.getMomentParents();
+
+        Message<NaturalParameters> message = new Message<>(parent);
+        message.setVector(childrenNode.getPDist().getExpectedNaturalToParent(childrenNode.nodeParentToVariable(parent), momentChildCoParents));
+        message.setDone(childrenNode.messageDoneToParent(parent.getMainVariable()));
+
+        return message;
+    }
+
+    @Override
+    public void updateCombinedMessage(Node node, Message<NaturalParameters> message) {
+        node.getQDist().setNaturalParameters(message.getVector());
+        node.setIsDone(message.isDone());
+    }
+
+    public boolean testConvergence(){
+
+        boolean convergence = false;
+        //Compute lower-bound
+        double newelbo = this.computeLogProbabilityOfEvidence();
+        if (Math.abs(newelbo - local_elbo) < threshold) {
+            convergence = true;
+        }
+
+        if (testELBO && (!convergence && newelbo/nodes.size() < (local_elbo/nodes.size() - 0.01) && local_iter>-1) || Double.isNaN(local_elbo)){
+            throw new IllegalStateException("The elbo is not monotonically increasing at iter "+local_iter+": " + local_elbo + ", "+ newelbo);
+        }
+
+        local_elbo = newelbo;
+
+        return convergence;
+
+    }
+
+    public double computeLogProbabilityOfEvidence(){
+        return this.nodes.stream().mapToDouble(node -> this.computeELBO(node)).sum();
+    }
+
+
+    private double computeELBO(Node node){
+
+        Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+
+        double elbo=0;
+        NaturalParameters expectedNatural = node.getPDist().getExpectedNaturalFromParents(momentParents);
+
+        if (!node.isObserved()) {
+            expectedNatural.substract(node.getQDist().getNaturalParameters());
+            elbo += expectedNatural.dotProduct(node.getQDist().getMomentParameters());
+            elbo -= node.getPDist().getExpectedLogNormalizer(momentParents);
+            elbo += node.getQDist().computeLogNormalizer();
+        }else {
+            elbo += expectedNatural.dotProduct(node.getSufficientStatistics());
+            elbo -= node.getPDist().getExpectedLogNormalizer(momentParents);
+            elbo += node.getPDist().computeLogBaseMeasure(this.assignment);
+        }
+
+        if (elbo>0 && !node.isObserved() && Math.abs(expectedNatural.sum())<0.01) {
+            elbo=0;
+        }
+
+        if ((elbo>2 && !node.isObserved()) || Double.isNaN(elbo)) {
+            node.getPDist().getExpectedLogNormalizer(momentParents);
+            throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + node.getMainVariable().getName() + ", " +  elbo + ", " + expectedNatural.sum());
+        }
+
+        return  elbo;
+    }
+
+    @Override
+    public BayesianNetwork getSamplingModel() {
+
+        DAG dag = new DAG(this.model.getStaticVariables());
+
+        List<ConditionalDistribution> distributionList =
+                this.model.getStaticVariables().getListOfVariables().stream()
+                        .map(var -> (ConditionalDistribution)this.getPosterior(var))
+                        .collect(Collectors.toList());
+
+        return BayesianNetwork.newBayesianNetwork(dag, distributionList);
+    }
+
+    public static void main(String[] arguments) throws IOException, ClassNotFoundException {
+
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
+        System.out.println(bn.getNumberOfVars());
+        System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfParameters()).max().getAsInt());
+
+        VMP vmp = new VMP();
+        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
+
+        double avg  = 0;
+        for (int i = 0; i < 20; i++)
+        {
+            InferenceEngineForBN.setModel(bn);
+
+            Stopwatch watch = Stopwatch.createStarted();
+            InferenceEngineForBN.runInference();
+            System.out.println(watch.stop());
+            avg += watch.elapsed(TimeUnit.MILLISECONDS);
+        }
+        System.out.println(avg/20);
+        System.out.println(InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableById(0)).toString());
+
+    }
+
+}

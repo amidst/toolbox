@@ -8,13 +8,13 @@
 
 package eu.amidst.ida2015;
 
-import eu.amidst.core.exponentialfamily.EF_BaseDistribution_MultinomialParents;
-import eu.amidst.core.exponentialfamily.EF_Dirichlet;
-import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_Multinomial_Dirichlet;
-import eu.amidst.core.learning.parametric.PlateuStructure;
-import eu.amidst.core.learning.parametric.TransitionMethod;
-import eu.amidst.core.variables.Variable;
+import eu.amidst.corestatic.exponentialfamily.EF_BaseDistribution_MultinomialParents;
+import eu.amidst.corestatic.exponentialfamily.EF_Dirichlet;
+import eu.amidst.corestatic.exponentialfamily.EF_LearningBayesianNetwork;
+import eu.amidst.corestatic.exponentialfamily.EF_Multinomial_Dirichlet;
+import eu.amidst.corestatic.learning.parametric.PlateuStructure;
+import eu.amidst.corestatic.learning.parametric.TransitionMethod;
+import eu.amidst.corestatic.variables.Variable;
 
 import java.util.List;
 

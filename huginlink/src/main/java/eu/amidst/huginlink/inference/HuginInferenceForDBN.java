@@ -2,13 +2,13 @@ package eu.amidst.huginlink.inference;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.inference.InferenceAlgorithmForDBN;
-import eu.amidst.core.models.DynamicBayesianNetwork;
-import eu.amidst.core.variables.DynamicAssignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
+import eu.amidst.corestatic.distribution.Multinomial;
+import eu.amidst.corestatic.distribution.UnivariateDistribution;
+import eu.amidst.corestatic.inference.InferenceAlgorithmForDBN;
+import eu.amidst.corestatic.models.DynamicBayesianNetwork;
+import eu.amidst.corestatic.variables.DynamicAssignment;
+import eu.amidst.corestatic.variables.HashMapAssignment;
+import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
 
 import java.util.List;

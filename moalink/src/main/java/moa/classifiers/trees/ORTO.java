@@ -41,7 +41,7 @@ import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassO
 import moa.classifiers.core.attributeclassobservers.NullAttributeClassObserver;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion;
-// import moa.classifiers.core.splitcriteria.SDRSplitCriterion;
+// import moa.classifiers.corestatic.splitcriteria.SDRSplitCriterion;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.DoubleVector;
 import moa.core.AutoExpandVector;
@@ -50,7 +50,7 @@ import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.options.*;
 import weka.core.Instance;
-// import weka.core.Utils;
+// import weka.corestatic.Utils;
 
 /*
  * Implementation of ORTO, option tree for data streams.
