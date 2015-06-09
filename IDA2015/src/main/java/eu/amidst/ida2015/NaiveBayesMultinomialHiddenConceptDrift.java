@@ -13,9 +13,9 @@ import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataOnMemory;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.inference.InferenceEngineForBN;
+import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.learning.parametric.StreamingVariationalBayesVMP;
+import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.Utils;
@@ -180,13 +180,14 @@ public class NaiveBayesMultinomialHiddenConceptDrift {
 
         Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
         double predictions = 0;
-        InferenceEngineForBN.setModel(bn);
+        VMP vmp = new VMP();
+        vmp.setModel(bn);
         for (DataInstance instance : data) {
             double realValue = instance.getValue(classVariable);
             instance.setValue(classVariable, Utils.missingValue());
-            InferenceEngineForBN.setEvidence(instance);
-            InferenceEngineForBN.runInference();
-            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+            vmp.setEvidence(instance);
+            vmp.runInference();
+            Multinomial posterior = vmp.getPosterior(classVariable);
             if (Utils.maxIndex(posterior.getProbabilities())==realValue)
                 predictions++;
 

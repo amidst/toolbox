@@ -10,7 +10,7 @@ package eu.amidst.examples;
 
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.learning.NaiveBayesClassifier;
+import eu.amidst.corestatic.classifiers.NaiveBayesClassifier;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;

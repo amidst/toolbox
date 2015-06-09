@@ -10,11 +10,11 @@ package eu.amidst.ida2015;
 
 import eu.amidst.corestatic.datastream.*;
 import eu.amidst.corestatic.distribution.*;
-import eu.amidst.corestatic.inference.InferenceEngineForBN;
+import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.learning.parametric.Fading;
-import eu.amidst.corestatic.learning.parametric.PlateuIIDReplication;
-import eu.amidst.corestatic.learning.parametric.StreamingVariationalBayesVMP;
+import eu.amidst.corestatic.learning.parametric.bayesian.Fading;
+import eu.amidst.corestatic.learning.parametric.bayesian.PlateuIIDReplication;
+import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
@@ -907,13 +907,14 @@ public class GlobalHiddenConceptDrift {
     public static double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data, Variable classVariable){
 
         double predictions = 0;
-        InferenceEngineForBN.setModel(bn);
+        VMP vmp = new VMP();
+        vmp.setModel(bn);
         for (DataInstance instance : data) {
             double realValue = instance.getValue(classVariable);
             instance.setValue(classVariable, Utils.missingValue());
-            InferenceEngineForBN.setEvidence(instance);
-            InferenceEngineForBN.runInference();
-            Multinomial posterior = InferenceEngineForBN.getPosterior(classVariable);
+            vmp.setEvidence(instance);
+            vmp.runInference();
+            Multinomial posterior = vmp.getPosterior(classVariable);
             if (Utils.maxIndex(posterior.getProbabilities())==realValue)
                 predictions++;
 

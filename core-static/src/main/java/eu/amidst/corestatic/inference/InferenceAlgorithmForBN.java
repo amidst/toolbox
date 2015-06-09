@@ -18,17 +18,21 @@ import eu.amidst.corestatic.variables.Variable;
  */
 public interface InferenceAlgorithmForBN {
 
-    public void runInference();
+    void runInference();
 
-    public void setModel(BayesianNetwork model);
+    void setModel(BayesianNetwork model);
 
-    public BayesianNetwork getOriginalModel();
+    BayesianNetwork getOriginalModel();
 
-    public void setEvidence(Assignment assignment);
+    void setEvidence(Assignment assignment);
 
-    public <E extends UnivariateDistribution> E getPosterior(Variable var);
+    <E extends UnivariateDistribution> E getPosterior(Variable var);
 
-    public double getLogProbabilityOfEvidence();
+    default <E extends UnivariateDistribution> E getPosterior(int varID){
+        return this.getPosterior(this.getOriginalModel().getStaticVariables().getVariableById(varID));
+    }
 
-    public void setSeed(int seed);
+    double getLogProbabilityOfEvidence();
+
+    void setSeed(int seed);
 }

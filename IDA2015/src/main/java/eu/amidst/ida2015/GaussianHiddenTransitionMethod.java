@@ -10,8 +10,8 @@ package eu.amidst.ida2015;
 
 import eu.amidst.corestatic.distribution.Normal;
 import eu.amidst.corestatic.exponentialfamily.*;
-import eu.amidst.corestatic.learning.parametric.PlateuStructure;
-import eu.amidst.corestatic.learning.parametric.TransitionMethod;
+import eu.amidst.corestatic.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.corestatic.learning.parametric.bayesian.TransitionMethod;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.List;

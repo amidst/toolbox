@@ -344,19 +344,19 @@ public class ParallelVMP implements InferenceAlgorithmForBN, Sampler {
         ParallelVMP vmp = new ParallelVMP();
 
         InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
+        Variable var = bn.getStaticVariables().getVariableById(0);
+        UnivariateDistribution uni = null;
 
         double avg  = 0;
         for (int i = 0; i < 20; i++)
         {
-            InferenceEngineForBN.setModel(bn);
-
             Stopwatch watch = Stopwatch.createStarted();
-            InferenceEngineForBN.runInference();
+            uni = InferenceEngineForBN.getPosterior(var, bn);
             System.out.println(watch.stop());
             avg += watch.elapsed(TimeUnit.MILLISECONDS);
         }
         System.out.println(avg/20);
-        System.out.println(InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableById(0)).toString());
+        System.out.println(uni);
 
     }
 

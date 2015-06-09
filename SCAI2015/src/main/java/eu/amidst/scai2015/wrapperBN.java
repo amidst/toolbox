@@ -5,7 +5,7 @@ import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.learning.parametric.StreamingVariationalBayesVMP;
+import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.Utils;
