@@ -13,8 +13,8 @@ import eu.amidst.corestatic.distribution.ConditionalDistribution;
 import eu.amidst.corestatic.distribution.UnivariateDistribution;
 import eu.amidst.corestatic.exponentialfamily.MomentParameters;
 import eu.amidst.corestatic.exponentialfamily.NaturalParameters;
-import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
-import eu.amidst.corestatic.inference.InferenceEngineForBN;
+import eu.amidst.corestatic.inference.InferenceAlgorithm;
+import eu.amidst.corestatic.inference.InferenceEngine;
 import eu.amidst.corestatic.inference.Sampler;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.models.BayesianNetwork;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithmForBN, Sampler {
+public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithm, Sampler {
 
     boolean testELBO=true;
 
@@ -139,14 +139,14 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
         System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfParameters()).max().getAsInt());
 
         VMP vmp = new VMP();
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
+        InferenceEngine.setInferenceAlgorithm(vmp);
         Variable var = bn.getStaticVariables().getVariableById(0);
         UnivariateDistribution uni = null;
         double avg  = 0;
         for (int i = 0; i < 20; i++)
         {
             Stopwatch watch = Stopwatch.createStarted();
-            uni = InferenceEngineForBN.getPosterior(var, bn);
+            uni = InferenceEngine.getPosterior(var, bn);
             System.out.println(watch.stop());
             avg += watch.elapsed(TimeUnit.MILLISECONDS);
         }

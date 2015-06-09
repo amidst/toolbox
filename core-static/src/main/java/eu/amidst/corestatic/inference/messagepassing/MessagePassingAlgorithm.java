@@ -16,7 +16,7 @@ package eu.amidst.corestatic.inference.messagepassing;
 import eu.amidst.corestatic.distribution.UnivariateDistribution;
 import eu.amidst.corestatic.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.corestatic.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
+import eu.amidst.corestatic.inference.InferenceAlgorithm;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.Vector;
 import eu.amidst.corestatic.variables.Assignment;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 03/02/15.
  */
-public abstract class MessagePassingAlgorithm<E extends Vector> implements InferenceAlgorithmForBN {
+public abstract class MessagePassingAlgorithm<E extends Vector> implements InferenceAlgorithm {
 
     protected BayesianNetwork model;
     protected EF_BayesianNetwork ef_model;

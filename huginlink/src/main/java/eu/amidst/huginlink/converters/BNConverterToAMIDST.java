@@ -9,7 +9,7 @@ import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.MultinomialIndex;
 import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.StateSpaceTypeEnum;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.ArrayList;
@@ -67,10 +67,10 @@ public class BNConverterToAMIDST {
                 attributes.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.REAL, 0));
             }
         }
-        StaticVariables staticVariables = new StaticVariables(new Attributes(attributes));
-        DAG dag = new DAG(staticVariables);
+        Variables variables = new Variables(new Attributes(attributes));
+        DAG dag = new DAG(variables);
 
-        StaticVariables amidstVariables = staticVariables;
+        Variables amidstVariables = variables;
 
         for(int i=0;i<numNodes;i++){
             Node huginChild = huginNodes.get(i);
@@ -291,7 +291,7 @@ public class BNConverterToAMIDST {
     private void setDistributions() throws ExceptionHugin {
 
         NodeList huginNodes = this.huginBN.getNodes();
-        StaticVariables amidstVariables = this.amidstBN.getStaticVariables();
+        Variables amidstVariables = this.amidstBN.getStaticVariables();
 
         for (int i = 0; i < huginNodes.size(); i++) {
 

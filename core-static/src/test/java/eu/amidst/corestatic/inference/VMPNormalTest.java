@@ -8,7 +8,7 @@ import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.corestatic.distribution.ConditionalLinearGaussian;
 import eu.amidst.corestatic.distribution.Normal;
@@ -48,7 +48,7 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 2 Guassian variables A->B
     public static void test2() throws IOException, ClassNotFoundException{
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
 
@@ -129,7 +129,7 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables A->C<-B
     public static void test3() throws IOException, ClassNotFoundException{
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
@@ -239,7 +239,7 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables A->C<-B  And C is Observed
     public static void test4() throws IOException, ClassNotFoundException{
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
@@ -341,7 +341,7 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables such that C has two children A and B: i.e., C->A and C->B
     public static void test5() throws IOException, ClassNotFoundException{
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
@@ -449,7 +449,7 @@ public class VMPNormalTest extends TestCase {
     //In this test, Both A and B are observed
     public static void test6() throws IOException, ClassNotFoundException{
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
@@ -542,7 +542,7 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables with a dag structure defined as A->B->C
     public static void test7() throws IOException, ClassNotFoundException{
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
@@ -652,7 +652,7 @@ public class VMPNormalTest extends TestCase {
     //In this test, variable B is observed
     public static void test8() throws IOException, ClassNotFoundException{
 
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");

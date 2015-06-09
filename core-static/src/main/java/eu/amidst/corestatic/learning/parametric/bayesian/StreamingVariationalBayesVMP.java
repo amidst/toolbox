@@ -272,7 +272,7 @@ public class StreamingVariationalBayesVMP implements BayesianParameterLearningAl
                 .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
                 .collect(Collectors.toList());
 
-        this.ef_extendedBN = new EF_LearningBayesianNetwork(dists, dag.getStaticVariables());
+        this.ef_extendedBN = new EF_LearningBayesianNetwork(dists);
         this.plateuStructure.setSeed(seed);
         plateuStructure.setEFBayesianNetwork(ef_extendedBN);
         plateuStructure.replicateModel();

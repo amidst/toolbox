@@ -2,7 +2,7 @@ package eu.amidst.corestatic.models;
 
 
 import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class DAGTest {
 
         ARFFDataReader reader = new ARFFDataReader();
         reader.loadFromFile("datasets/dataWeka/contact-lenses.arff");
-        StaticVariables variables = new StaticVariables(reader.getAttributes());
+        Variables variables = new Variables(reader.getAttributes());
         DAG dag = new DAG(variables);
         DAG dag2 = new DAG(variables);
 

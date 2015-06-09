@@ -10,12 +10,12 @@ package eu.amidst.examples;
 
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.corestatic.io.DataStreamWriter;
-import eu.amidst.corestatic.io.DynamicDataStreamLoader;
-import eu.amidst.corestatic.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
 import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
 

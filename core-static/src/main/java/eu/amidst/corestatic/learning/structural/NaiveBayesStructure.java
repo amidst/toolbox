@@ -16,7 +16,7 @@ import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataOnMemory;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 /**
@@ -44,7 +44,7 @@ public class NaiveBayesStructure implements StructuralLearningAlgorithm {
 
     @Override
     public void runLearning() {
-        StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
+        Variables modelHeader = new Variables(dataStream.getAttributes());
         dag = new DAG(modelHeader);
         Variable classVar = modelHeader.getVariableById(modelHeader.getNumberOfVars()-1);
         dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));

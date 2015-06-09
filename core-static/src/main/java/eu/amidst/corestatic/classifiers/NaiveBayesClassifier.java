@@ -11,7 +11,7 @@ package eu.amidst.corestatic.classifiers;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.inference.InferenceAlgorithmForBN;
+import eu.amidst.corestatic.inference.InferenceAlgorithm;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
 import eu.amidst.corestatic.learning.parametric.ParameterLearningAlgorithm;
@@ -19,7 +19,7 @@ import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 /**
@@ -30,7 +30,7 @@ public class NaiveBayesClassifier implements Classifier{
     int classVarID;
     BayesianNetwork bnModel;
     boolean parallelMode = true;
-    InferenceAlgorithmForBN predictions;
+    InferenceAlgorithm predictions;
 
     public NaiveBayesClassifier(){
         predictions=new VMP();
@@ -67,7 +67,7 @@ public class NaiveBayesClassifier implements Classifier{
     }
 
     private DAG staticNaiveBayesStructure(DataStream<DataInstance> dataStream){
-        StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
+        Variables modelHeader = new Variables(dataStream.getAttributes());
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
         DAG dag = new DAG(modelHeader);
         if (parallelMode)

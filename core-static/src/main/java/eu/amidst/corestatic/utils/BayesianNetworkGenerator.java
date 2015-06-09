@@ -12,7 +12,7 @@ import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.io.BayesianNetworkWriter;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.io.IOException;
@@ -62,20 +62,20 @@ public final class BayesianNetworkGenerator{
 
     public static BayesianNetwork generateNaiveBayesWithGlobalHiddenVar(int nClassLabels, String nameGlobalHiddenVar){
 
-        StaticVariables staticVariables  = new StaticVariables();
+        Variables variables = new Variables();
 
 
         IntStream.range(0,numberOfDiscreteVars-1)
-                .forEach(i -> staticVariables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+                .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
         IntStream.range(0,numberOfContinuousVars)
-                .forEach(i -> staticVariables.newGaussianVariable("GaussianVar" + i));
+                .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
-        Variable globalHiddenVar =  staticVariables.newGaussianVariable(nameGlobalHiddenVar);
+        Variable globalHiddenVar =  variables.newGaussianVariable(nameGlobalHiddenVar);
 
-        Variable classVar = staticVariables.newMultionomialVariable("ClassVar", nClassLabels);
+        Variable classVar = variables.newMultionomialVariable("ClassVar", nClassLabels);
 
-        DAG dag = new DAG(staticVariables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSets().stream()
                 .filter(parentSet -> !parentSet.getMainVar().equals(classVar) && !parentSet.getMainVar().equals(globalHiddenVar))
@@ -91,18 +91,18 @@ public final class BayesianNetworkGenerator{
 
     public static BayesianNetwork generateNaiveBayes(int nClassLabels){
 
-        StaticVariables staticVariables  = new StaticVariables();
+        Variables variables = new Variables();
 
 
         IntStream.range(0,numberOfDiscreteVars-1)
-                .forEach(i -> staticVariables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+                .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
         IntStream.range(0,numberOfContinuousVars)
-                .forEach(i -> staticVariables.newGaussianVariable("GaussianVar" + i));
+                .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
-        Variable classVar = staticVariables.newMultionomialVariable("ClassVar", nClassLabels);
+        Variable classVar = variables.newMultionomialVariable("ClassVar", nClassLabels);
 
-        DAG dag = new DAG(staticVariables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSets().stream()
                 .filter(parentSet -> parentSet.getMainVar().getVarID()!=classVar.getVarID())
@@ -115,12 +115,12 @@ public final class BayesianNetworkGenerator{
         return network;
     }
 
-    public static DAG generateTreeDAG(StaticVariables staticVariables) {
-        DAG dag = new DAG(staticVariables);
+    public static DAG generateTreeDAG(Variables variables) {
+        DAG dag = new DAG(variables);
 
         List<Variable> connectedVars = new ArrayList();
 
-        List<Variable> nonConnectedVars = staticVariables.getListOfVariables().stream().collect(Collectors.toList());
+        List<Variable> nonConnectedVars = variables.getListOfVariables().stream().collect(Collectors.toList());
 
         Random random = new Random(seed);
 
@@ -147,27 +147,27 @@ public final class BayesianNetworkGenerator{
 
     public static BayesianNetwork generateBayesianNetwork(){
 
-        StaticVariables staticVariables  = new StaticVariables();
+        Variables variables = new Variables();
 
 
         IntStream.range(0,numberOfDiscreteVars)
-                .forEach(i -> staticVariables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+                .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
         IntStream.range(0,numberOfContinuousVars)
-                .forEach(i -> staticVariables.newGaussianVariable("GaussianVar" + i));
+                .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
-        DAG dag = generateTreeDAG(staticVariables);
+        DAG dag = generateTreeDAG(variables);
 
-        int dagLinks = staticVariables.getNumberOfVars()-1;
+        int dagLinks = variables.getNumberOfVars()-1;
 
         Random random = new Random(seed);
         while (dagLinks< numberOfLinks){
-            Variable var1 = staticVariables.getVariableById(random.nextInt(staticVariables.getNumberOfVars()));
-            int max = staticVariables.getNumberOfVars() - var1.getVarID() - 1;
+            Variable var1 = variables.getVariableById(random.nextInt(variables.getNumberOfVars()));
+            int max = variables.getNumberOfVars() - var1.getVarID() - 1;
             if (max == 0)
                 continue;
 
-            Variable var2 = staticVariables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
+            Variable var2 = variables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
 
             if (dag.getParentSet(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSet(var2).getNumberOfParents()>=3)
                 continue;

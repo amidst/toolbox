@@ -12,8 +12,6 @@ import eu.amidst.corestatic.distribution.ConditionalDistribution;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.Vector;
 import eu.amidst.corestatic.variables.Assignment;
-import eu.amidst.corestatic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.StaticVariables;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.ArrayList;
@@ -32,7 +30,7 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
 
     public EF_LearningBayesianNetwork(DAG dag){
 
-        parametersVariables = new ParameterVariables(dag.getStaticVariables());
+        parametersVariables = new ParameterVariables(dag.getStaticVariables().getNumberOfVars());
 
         distributionList =
                 dag.getStaticVariables()
@@ -48,28 +46,12 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     }
 
 
-    public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions, StaticVariables staticVariables){
+    public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions){
 
-        parametersVariables = new ParameterVariables(staticVariables);
+        parametersVariables = new ParameterVariables(distributions.size());
 
         distributionList =
                 distributions
-                        .stream()
-                        .map(dist -> dist.toExtendedLearningDistribution(parametersVariables))
-                        .flatMap(listOfDist -> listOfDist.stream())
-                        .sorted((a,b) -> a.getVariable().getVarID() - b.getVariable().getVarID())
-                        .collect(Collectors.toList());
-
-        this.naturalParameters = null;
-        this.momentParameters = null;
-    }
-
-    public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions, DynamicVariables dynamicVariables){
-
-        parametersVariables = new ParameterVariables(dynamicVariables);
-
-        distributionList =
-                        distributions
                         .stream()
                         .map(dist -> dist.toExtendedLearningDistribution(parametersVariables))
                         .flatMap(listOfDist -> listOfDist.stream())
