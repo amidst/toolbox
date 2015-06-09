@@ -14,7 +14,7 @@ import eu.amidst.corestatic.datastream.Attributes;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class TestReaderStatic {
     private static final double DELTA = 1e-15;
     private static ARFFDataReader reader;
     private static Attributes attributes;
-    private static StaticVariables staticVariables;
+    private static Variables variables;
     private static DataRow datarow = null;
     private static DataInstance nextInstance = null;
     private static int index;
@@ -44,7 +44,7 @@ public class TestReaderStatic {
         dataOnDiskReader = new DataStreamFromFile(reader);
         dataOnDiskIterator = dataOnDiskReader.iterator();
         attributes = dataOnDiskReader.getAttributes();
-        staticVariables = new StaticVariables(attributes);
+        variables = new Variables(attributes);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class TestReaderStatic {
         }
 
         /* Numeric attribute */
-        Assert.assertEquals(5, (int) nextInstance.getValue(staticVariables.getVariableByName("wage-increase-first-year")));
+        Assert.assertEquals(5, (int) nextInstance.getValue(variables.getVariableByName("wage-increase-first-year")));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class TestReaderStatic {
         }
 
         /* Numeric attribute */
-        Assert.assertEquals(5, (int) nextInstance.getValue(staticVariables.getVariableByName("wage-increase-first-year")));
+        Assert.assertEquals(5, (int) nextInstance.getValue(variables.getVariableByName("wage-increase-first-year")));
     }
 
     @Test
@@ -92,9 +92,9 @@ public class TestReaderStatic {
         }
 
         /* Discrete attribute */
-        Assert.assertEquals(1, (int) nextInstance.getValue(staticVariables.getVariableByName("vacation")));
+        Assert.assertEquals(1, (int) nextInstance.getValue(variables.getVariableByName("vacation")));
         /* Number of states */
-        Assert.assertEquals(3, staticVariables.getVariableByName("pension").getNumberOfStates());
+        Assert.assertEquals(3, variables.getVariableByName("pension").getNumberOfStates());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class TestReaderStatic {
             nextInstance = dataOnDiskIterator.next();
         }
 
-        var = staticVariables.getVariableByName("wage-increase-first-year");
+        var = variables.getVariableByName("wage-increase-first-year");
         Assert.assertEquals(Double.NaN, nextInstance.getValue(var), DELTA);
     }
 

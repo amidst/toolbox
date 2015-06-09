@@ -3,7 +3,7 @@ package eu.amidst.corestatic.models;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +20,7 @@ public class BayesianNetworkTest {
     @Test
     public void testingBN(){
 
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
 
         Variable A = variables.getVariableByName("A");
         Variable B = variables.getVariableByName("B");

@@ -2,8 +2,8 @@ package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.Class;
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.corestatic.io.DynamicBayesianNetworkWriter;
-import eu.amidst.corestatic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 import org.junit.Before;
 import org.junit.Test;

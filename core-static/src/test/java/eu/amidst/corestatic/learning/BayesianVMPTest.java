@@ -8,12 +8,12 @@ import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
 import eu.amidst.corestatic.distribution.Normal;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
-import eu.amidst.corestatic.learning.parametric.LearningEngineForBN;
+import eu.amidst.corestatic.learning.parametric.LearningEngine;
 import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import junit.framework.TestCase;
 
@@ -26,7 +26,7 @@ import java.util.Random;
 public class BayesianVMPTest extends TestCase {
 
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
 
         DAG dag = new DAG(variables);
@@ -43,7 +43,7 @@ public class BayesianVMPTest extends TestCase {
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
 
-        BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(bn.getDAG(), data);
+        BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(bn.getDAG(), data);
 
         System.out.println(learntNormalVarBN.toString());
 
@@ -68,7 +68,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testMultinomials2() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
 
@@ -90,7 +90,7 @@ public class BayesianVMPTest extends TestCase {
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
 
-        System.out.println(LearningEngineForBN.learnParameters(bn.getDAG(), data).toString());
+        System.out.println(LearningEngine.learnParameters(bn.getDAG(), data).toString());
 
         StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
         svb.setWindowsSize(1000);
@@ -112,7 +112,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testMultinomials3() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
@@ -153,7 +153,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testMultinomials4() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
@@ -197,7 +197,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testMultinomials5() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 5);
         Variable varB = variables.newMultionomialVariable("B", 5);
         Variable varC = variables.newMultionomialVariable("C", 5);
@@ -240,7 +240,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testMultinomial6() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varB = variables.newMultionomialVariable("B",4);
 
         DAG dag = new DAG(variables);
@@ -373,7 +373,7 @@ public class BayesianVMPTest extends TestCase {
 
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            System.out.println(LearningEngineForBN.learnParameters(oneNormalVarBN.getDAG(), data).toString());
+            System.out.println(LearningEngine.learnParameters(oneNormalVarBN.getDAG(), data).toString());
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setWindowsSize(1);
@@ -410,7 +410,7 @@ public class BayesianVMPTest extends TestCase {
         sampler.setSeed(1);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+        BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
         System.out.println(normalVarBN.toString());
         System.out.println(learntNormalVarBN.toString());
@@ -453,7 +453,7 @@ public class BayesianVMPTest extends TestCase {
             sampler.setSeed(2);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -500,7 +500,7 @@ public class BayesianVMPTest extends TestCase {
             sampler.setSeed(0);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -541,7 +541,7 @@ public class BayesianVMPTest extends TestCase {
             sampler.setSeed(0);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -583,7 +583,7 @@ public class BayesianVMPTest extends TestCase {
             sampler.setSeed(0);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            BayesianNetwork learntNormalVarBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
+            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -615,7 +615,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testGaussian5() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
@@ -656,7 +656,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testGaussian6() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
@@ -703,7 +703,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testGaussian7() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varB = variables.newGaussianVariable("B");
 
         DAG dag = new DAG(variables);
@@ -748,7 +748,7 @@ public class BayesianVMPTest extends TestCase {
     }
 
     public static void testGaussian8() throws IOException, ClassNotFoundException {
-        StaticVariables variables = new StaticVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");

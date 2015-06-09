@@ -17,10 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by ana@cs.aau.dk on 03/11/14.
  */
-public class HashMapAssignment implements Assignment, DynamicAssignment {
+public class HashMapAssignment implements Assignment {
     private Map<Variable,Double> assignment;
-    int sequenceID;
-    int timeID;
 
     public HashMapAssignment(int nOfVars){
         assignment = new ConcurrentHashMap(nOfVars);
@@ -41,25 +39,6 @@ public class HashMapAssignment implements Assignment, DynamicAssignment {
     public void setValue(Variable var, double val) {
         this.assignment.put(var,val);
     }
-
-    @Override
-    public int getSequenceID() {
-        return sequenceID;
-    }
-
-    public void setSequenceID(int sequenceID) {
-        this.sequenceID = sequenceID;
-    }
-
-    @Override
-    public int getTimeID() {
-        return timeID;
-    }
-
-    public void setTimeID(int timeID) {
-        this.timeID = timeID;
-    }
-
 
     // Now you can use the following loop to iterate over all assignments:
     // for (Map.Entry<Variable, Double> entry : assignment.entrySet()) return entry;

@@ -6,7 +6,7 @@ import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import junit.framework.TestCase;
 
@@ -23,7 +23,7 @@ public class VMPHuginTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        StaticVariables variables = bn.getDAG().getStaticVariables();
+        Variables variables = bn.getDAG().getStaticVariables();
 
         Variable varX = variables.getVariableByName("X");
         Variable varB = variables.getVariableByName("B");
@@ -54,7 +54,7 @@ public class VMPHuginTest extends TestCase {
         System.out.println("Prob of having lung cancer P(L) = " + postL.toString());
 
         //test with Hugin inference
-        HuginInferenceForBN inferenceHuginForBN = new HuginInferenceForBN();
+        HuginInference inferenceHuginForBN = new HuginInference();
         inferenceHuginForBN.setModel(bn);
         inferenceHuginForBN.setEvidence(assignment);
         inferenceHuginForBN.runInference();
@@ -72,7 +72,7 @@ public class VMPHuginTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        StaticVariables variables = bn.getDAG().getStaticVariables();
+        Variables variables = bn.getDAG().getStaticVariables();
 
         Variable varB = variables.getVariableByName("B");
         Variable varF = variables.getVariableByName("F");
@@ -105,7 +105,7 @@ public class VMPHuginTest extends TestCase {
         System.out.println("Prob of metals emission P(Mout) = " + postMout.toString());
 
         //test with Hugin inference
-        HuginInferenceForBN inferenceHuginForBN = new HuginInferenceForBN();
+        HuginInference inferenceHuginForBN = new HuginInference();
         inferenceHuginForBN.setModel(bn);
         inferenceHuginForBN.setEvidence(assignment);
         inferenceHuginForBN.runInference();

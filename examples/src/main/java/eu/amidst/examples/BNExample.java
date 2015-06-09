@@ -13,7 +13,7 @@ import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.io.DataStreamLoader;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 
 /**
@@ -24,7 +24,7 @@ public class BNExample {
     public static BayesianNetwork getAmidst_BN_Example() {
 
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
-        StaticVariables variables = new StaticVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
 
         Variable a = variables.getVariableByName("A");
         Variable b = variables.getVariableByName("B");

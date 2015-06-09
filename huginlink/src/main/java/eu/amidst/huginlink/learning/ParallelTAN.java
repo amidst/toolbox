@@ -5,12 +5,12 @@ import com.google.common.base.Stopwatch;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataOnMemory;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.learning.parametric.LearningEngineForBN;
+import eu.amidst.corestatic.learning.parametric.LearningEngine;
 import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.*;
-import eu.amidst.corestatic.variables.StaticVariables;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
@@ -136,7 +136,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @throws ExceptionHugin
      */
     public DAG learnDAG(DataStream dataStream) throws ExceptionHugin {
-        StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
+        Variables modelHeader = new Variables(dataStream.getAttributes());
         DAG dag = new DAG(modelHeader);
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
 
@@ -194,10 +194,10 @@ public class ParallelTAN implements AmidstOptionsHandler {
      */
     public BayesianNetwork learnBN(DataStream<DataInstance> dataStream) throws ExceptionHugin {
 
-        LearningEngineForBN.setParallelMode(this.parallelMode);
-        LearningEngineForBN.setParameterLearningAlgorithm(new MaximumLikelihood());
+        LearningEngine.setParallelMode(this.parallelMode);
+        LearningEngine.setParameterLearningAlgorithm(new MaximumLikelihood());
 
-        return LearningEngineForBN.learnParameters(this.learnDAG(dataStream), dataStream);
+        return LearningEngine.learnParameters(this.learnDAG(dataStream), dataStream);
     }
 
     @Override

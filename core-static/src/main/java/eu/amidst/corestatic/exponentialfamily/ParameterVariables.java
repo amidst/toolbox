@@ -38,16 +38,10 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
 
     int baseIndex;
 
-    public ParameterVariables(StaticVariables staticVariables_) {
+    public ParameterVariables(int numberOfVariables) {
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
-        this.baseIndex=staticVariables_.getNumberOfVars();
-    }
-
-    public ParameterVariables(DynamicVariables dynamicVariables_) {
-        this.allVariables = new ArrayList<>();
-        this.mapping = new ConcurrentHashMap<>();
-        this.baseIndex=dynamicVariables_.getNumberOfVars();
+        this.baseIndex=numberOfVariables;
     }
 
     public Variable newGaussianParameter(String name) {
