@@ -73,4 +73,3 @@ maven_startup.sh
 
 # hugin aux files
 networks/*.hlg
-networks/
