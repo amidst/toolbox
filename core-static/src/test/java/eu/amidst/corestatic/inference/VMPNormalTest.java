@@ -34,13 +34,11 @@ public class VMPNormalTest extends TestCase {
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-
-            InferenceEngineForBN.setModel(bn);
+            vmp.setModel(bn);
 
             Stopwatch watch = Stopwatch.createStarted();
 
-            InferenceEngineForBN.runInference();
+            vmp.runInference();
             System.out.println(watch.stop());
 
             //bn.getStaticVariables().getListOfVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableByName(var.getName())).toString()));
@@ -83,8 +81,7 @@ public class VMPNormalTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
@@ -95,11 +92,11 @@ public class VMPNormalTest extends TestCase {
         double meanQB= qBDist.getMomentParameters().get(0);
         double sdQB= Math.sqrt(qBDist.getMomentParameters().get(1) - qBDist.getMomentParameters().get(0)*qBDist.getMomentParameters().get(0));
 
-        InferenceEngineForBN.runInference();
+        vmp.runInference();
 
-        Normal postA = InferenceEngineForBN.getPosterior(varA);
+        Normal postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
-        Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
+        Normal postB = ((Normal)vmp.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
 
         boolean convergence = false;
@@ -179,8 +176,7 @@ public class VMPNormalTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
@@ -196,13 +192,13 @@ public class VMPNormalTest extends TestCase {
         double sdQC= Math.sqrt(qCDist.getMomentParameters().get(1) - qCDist.getMomentParameters().get(0)*qCDist.getMomentParameters().get(0));
 
         //InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.runInference();
 
-        Normal postA = InferenceEngineForBN.getPosterior(varA);
+        Normal postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
-        Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
+        Normal postB = ((Normal)vmp.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
+        Normal postC = ((Normal)vmp.getPosterior(varC));
         System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
@@ -290,8 +286,7 @@ public class VMPNormalTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
@@ -308,13 +303,13 @@ public class VMPNormalTest extends TestCase {
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varC, 0.7);
 
-        InferenceEngineForBN.setEvidence(assignment);
+        vmp.setEvidence(assignment);
 
-        InferenceEngineForBN.runInference();
+        vmp.runInference();
 
-        Normal postA = InferenceEngineForBN.getPosterior(varA);
+        Normal postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
-        Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
+        Normal postB = vmp.getPosterior(varB);
         System.out.println("P(B) = " + postB.toString());
 
         boolean convergence = false;
@@ -394,8 +389,7 @@ public class VMPNormalTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
@@ -410,13 +404,13 @@ public class VMPNormalTest extends TestCase {
         double meanQC= qCDist.getMomentParameters().get(0);
         double sdQC= Math.sqrt(qCDist.getMomentParameters().get(1) - qCDist.getMomentParameters().get(0)*qCDist.getMomentParameters().get(0));
 
-        InferenceEngineForBN.runInference();
+        vmp.runInference();
 
-        Normal postA = InferenceEngineForBN.getPosterior(varA);
+        Normal postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
-        Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
+        Normal postB = ((Normal)vmp.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
+        Normal postC = ((Normal)vmp.getPosterior(varC));
         System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
@@ -503,8 +497,7 @@ public class VMPNormalTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
@@ -520,10 +513,10 @@ public class VMPNormalTest extends TestCase {
         double meanQC= qCDist.getMomentParameters().get(0);
         double sdQC= Math.sqrt(qCDist.getMomentParameters().get(1) - qCDist.getMomentParameters().get(0)*qCDist.getMomentParameters().get(0));
 
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
+        Normal postC = ((Normal)vmp.getPosterior(varC));
         System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
@@ -598,8 +591,7 @@ public class VMPNormalTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
@@ -614,13 +606,13 @@ public class VMPNormalTest extends TestCase {
         double meanQC= qCDist.getMomentParameters().get(0);
         double sdQC= Math.sqrt(qCDist.getMomentParameters().get(1) - qCDist.getMomentParameters().get(0)*qCDist.getMomentParameters().get(0));
 
-        InferenceEngineForBN.runInference();
+        vmp.runInference();
 
-        Normal postA = InferenceEngineForBN.getPosterior(varA);
+        Normal postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
-        Normal postB = ((Normal)InferenceEngineForBN.getPosterior(varB));
+        Normal postB = ((Normal)vmp.getPosterior(varB));
         System.out.println("P(B) = " + postB.toString());
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
+        Normal postC = ((Normal)vmp.getPosterior(varC));
         System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
@@ -709,8 +701,7 @@ public class VMPNormalTest extends TestCase {
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         EF_Normal qADist = ((EF_Normal) vmp.getNodes().get(0).getQDist());
         EF_Normal qBDist = ((EF_Normal) vmp.getNodes().get(1).getQDist());
@@ -727,12 +718,12 @@ public class VMPNormalTest extends TestCase {
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varB, 0.4);
 
-        InferenceEngineForBN.setEvidence(assignment);
-        InferenceEngineForBN.runInference();
+        vmp.setEvidence(assignment);
+        vmp.runInference();
 
-        Normal postA = InferenceEngineForBN.getPosterior(varA);
+        Normal postA = vmp.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
-        Normal postC = ((Normal)InferenceEngineForBN.getPosterior(varC));
+        Normal postC = ((Normal)vmp.getPosterior(varC));
         System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;

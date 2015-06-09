@@ -2,11 +2,12 @@ package eu.amidst.corestatic.learning;
 
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.learning.parametric.MaximumLikelihoodForBN;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.distribution.Distribution;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
+import eu.amidst.corestatic.learning.parametric.LearningEngineForBN;
+import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
 import eu.amidst.corestatic.variables.Variable;
@@ -43,11 +44,14 @@ public class MLTestOneVar {
         //Structure learning is excluded from the test, i.e., so we use here the same initial network structure net.getDAG()
 
         //Parameter Learning
-        MaximumLikelihoodForBN.setBatchSize(10);
-        MaximumLikelihoodForBN.setParallelMode(false);
+        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
+        maximumLikelihood.setBatchSize(1000);
+        maximumLikelihood.setParallelMode(true);
+        LearningEngineForBN.setParameterLearningAlgorithm(maximumLikelihood);
+
 
         //using Maximum likelihood learnParametersStaticModel
-        BayesianNetwork bn = MaximumLikelihoodForBN.learnParametersStaticModel(net.getDAG(), data);
+        BayesianNetwork bn = LearningEngineForBN.learnParameters(net.getDAG(), data);
         System.out.println(bn.toString());
 
 

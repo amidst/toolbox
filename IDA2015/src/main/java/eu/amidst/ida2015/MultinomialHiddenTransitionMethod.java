@@ -12,8 +12,8 @@ import eu.amidst.corestatic.exponentialfamily.EF_BaseDistribution_MultinomialPar
 import eu.amidst.corestatic.exponentialfamily.EF_Dirichlet;
 import eu.amidst.corestatic.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.corestatic.exponentialfamily.EF_Multinomial_Dirichlet;
-import eu.amidst.corestatic.learning.parametric.PlateuStructure;
-import eu.amidst.corestatic.learning.parametric.TransitionMethod;
+import eu.amidst.corestatic.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.corestatic.learning.parametric.bayesian.TransitionMethod;
 import eu.amidst.corestatic.variables.Variable;
 
 import java.util.List;

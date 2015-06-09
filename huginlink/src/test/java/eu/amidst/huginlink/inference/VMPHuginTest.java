@@ -2,10 +2,9 @@ package eu.amidst.huginlink.inference;
 
 import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.distribution.Normal;
-import eu.amidst.corestatic.inference.InferenceEngineForBN;
 import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
+import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.variables.HashMapAssignment;
 import eu.amidst.corestatic.variables.StaticVariables;
 import eu.amidst.corestatic.variables.Variable;
@@ -36,8 +35,7 @@ public class VMPHuginTest extends TestCase {
         Variable varE = variables.getVariableByName("E");
 
         VMP vmp = new VMP();
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varX, 0.0);
@@ -48,11 +46,11 @@ public class VMPHuginTest extends TestCase {
         assignment.setValue(varT, 0.0);
         assignment.setValue(varE, 0.0);
 
-        InferenceEngineForBN.setEvidence(assignment);
+        vmp.setEvidence(assignment);
 
-        InferenceEngineForBN.runInference();
+        vmp.runInference();
 
-        Multinomial postL = ((Multinomial)InferenceEngineForBN.getPosterior(varL));
+        Multinomial postL = ((Multinomial)vmp.getPosterior(varL));
         System.out.println("Prob of having lung cancer P(L) = " + postL.toString());
 
         //test with Hugin inference
@@ -87,8 +85,7 @@ public class VMPHuginTest extends TestCase {
         Variable varMout = variables.getVariableByName("Mout");
 
         VMP vmp = new VMP();
-        InferenceEngineForBN.setInferenceAlgorithmForBN(vmp);
-        InferenceEngineForBN.setModel(bn);
+        vmp.setModel(bn);
 
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varB, 1.0);
@@ -100,11 +97,11 @@ public class VMPHuginTest extends TestCase {
         assignment.setValue(varL, 1.0);
         assignment.setValue(varMin, -0.5);
 
-        InferenceEngineForBN.setEvidence(assignment);
+        vmp.setEvidence(assignment);
 
-        InferenceEngineForBN.runInference();
+        vmp.runInference();
 
-        Normal postMout = ((Normal)InferenceEngineForBN.getPosterior(varMout));
+        Normal postMout = ((Normal)vmp.getPosterior(varMout));
         System.out.println("Prob of metals emission P(Mout) = " + postMout.toString());
 
         //test with Hugin inference

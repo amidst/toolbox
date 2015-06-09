@@ -8,14 +8,10 @@
 
 package eu.amidst.corestatic.learning.parametric;
 
-import com.google.common.base.Stopwatch;
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.learning.structural.StaticStructuralLearningAlgorithm;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.variables.StaticVariables;
-import eu.amidst.corestatic.variables.Variable;
 
 /**
  *
@@ -27,53 +23,27 @@ import eu.amidst.corestatic.variables.Variable;
  */
 public final class LearningEngineForBN {
 
-
-    private static StaticParameterLearningAlgorithm staticParameterLearningAlgorithm = MaximumLikelihoodForBN::learnParametersStaticModel;
-
-    private static StaticStructuralLearningAlgorithm staticStructuralLearningAlgorithm = LearningEngineForBN::staticNaiveBayesStructure;
+    private static boolean parallelMode = false;
 
 
-    private static DAG staticNaiveBayesStructure(DataStream<DataInstance> dataStream){
-        StaticVariables modelHeader = new StaticVariables(dataStream.getAttributes());
-        DAG dag = new DAG(modelHeader);
-        Variable classVar = modelHeader.getVariableById(modelHeader.getNumberOfVars()-1);
-        dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
+    private static ParameterLearningAlgorithm parameterLearningAlgorithm = new MaximumLikelihood();
 
-        return dag;
+
+    public static void setParameterLearningAlgorithm(ParameterLearningAlgorithm parameterLearningAlgorithm) {
+        LearningEngineForBN.parameterLearningAlgorithm = parameterLearningAlgorithm;
     }
 
-    public static void setStaticParameterLearningAlgorithm(StaticParameterLearningAlgorithm staticParameterLearningAlgorithm) {
-        LearningEngineForBN.staticParameterLearningAlgorithm = staticParameterLearningAlgorithm;
-    }
-
-
-    public static void setStaticStructuralLearningAlgorithm(StaticStructuralLearningAlgorithm staticStructuralLearningAlgorithm) {
-        LearningEngineForBN.staticStructuralLearningAlgorithm = staticStructuralLearningAlgorithm;
+    public static void setParallelMode(boolean parallelMode) {
+        LearningEngineForBN.parallelMode = parallelMode;
     }
 
     public static BayesianNetwork learnParameters(DAG dag, DataStream<DataInstance> dataStream){
-        return staticParameterLearningAlgorithm.learn(dag,dataStream);
+        parameterLearningAlgorithm.setParallelMode(parallelMode);
+        parameterLearningAlgorithm.setDAG(dag);
+        parameterLearningAlgorithm.setDataStream(dataStream);
+        parameterLearningAlgorithm.runLearning();
+        return parameterLearningAlgorithm.getLearntBayesianNetwork();
     }
-
-
-    public static DAG learnDAG(DataStream<DataInstance> dataStream){
-        return staticStructuralLearningAlgorithm.learn(dataStream);
-    }
-
-
-    public static BayesianNetwork learnStaticModel(DataStream<DataInstance> database){
-
-        Stopwatch watch = Stopwatch.createStarted();
-        DAG dag = staticStructuralLearningAlgorithm.learn(database);
-        System.out.println("Structural Learning : " + watch.stop());
-
-        watch = Stopwatch.createStarted();
-        BayesianNetwork network = staticParameterLearningAlgorithm.learn(dag,database);
-        System.out.println("Parameter Learning: " + watch.stop());
-
-        return network;
-    }
-
 
     public static void main(String[] args) throws Exception{
 
