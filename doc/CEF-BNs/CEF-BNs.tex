@@ -19,7 +19,9 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage[titletoc,title]{appendix}
+\usepackage{amsthm}
 
+\newtheorem{theorem}{Theorem}
 
 \parskip 6pt % 1pt = 0.351 mm
 \parindent 0pt
@@ -225,6 +227,33 @@ A BN is said to be a conjugate exponential family (CEF) model if all its CPDs be
 
 In this section, we show why conjugate exponential family Bayesian networks (CEF-BNs) are quite amenable to be represented (and coded) as exponential family models. 
 
+\begin{theorem}
+A CEF-BN can be represented as an exponential family model by composing the F-form representations of its conditional probability distributions as follows, 
+
+\begin{itemize}
+\item the natural parameters  $\theta$ of a CEF-BN are formed by the composition of the local natural parameters of each conditional distribution, 
+
+$$\theta = (\theta_1, \ldots, \theta_n)$$
+
+\noindent where $\theta_i$ corresponds to natural parameters of the conditional distribution of $X_i$ expressed in F-form.
+
+\item the sufficient statistics $s(X_1,\ldots,X_n)$ of a CEF-BN are formed the composition of the local sufficient statistics of each conditional distribution, 
+
+$$s(X_1,\ldots,X_n) = (s(X_1,Pa(X_1)), \ldots, s(X_n,Pa(X_n))$$
+
+\noindent where $s(X_i,Pa(X_i))$ corresponds to sufficient statistics of the conditional distribution of $X_i$ expressed in F-form.
+
+\item the log-normalizer $A(\theta)$ of a CEF-BN is the sum of the local conditional log-normalizer of each conditional distribution,
+
+
+$$ A(\theta) = \sum_{i=1}^n B_i(\theta_i) $$
+
+\noindent where $B_i(\theta_i)$ corresponds to \textit{conditional log-normalizer} of the conditional distribution of $X_i$ expressed in F-form.
+
+\end{itemize}
+
+\end{theorem}
+\begin{proof}
 By using Equation \ref{Equation:EqCED}, a CEF-BN can be represented in the following way: 
 
 \begin{eqnarray}
@@ -245,14 +274,7 @@ s_n\big(X_n,Pa(X_n)\big) \\
 \end{pmatrix}
 - \sum_{i=1}^n B_i(\theta_i)
 \end{eqnarray}
-
-The above expression shows us that we can represent a CEF-BN by using the local representations of the conditional probability distributions. In fact, 
-
-\begin{itemize}
-\item the natural parameters $\theta$ are formed by the composition of the local natural parameters of each conditional distribution, 
-\item the sufficient statistics $s$ are formed the composition of the local sufficient statistics of each conditional distribution, and 
-\item the log-normalizer $B$ is the sum of the local conditional log-normalizer of each conditional distribution. 
-\end{itemize}
+\end{proof}
 
 Hence, in order to represent a BN as a CEF model, we only have to worry about the local representation of each CPD as in Equation \ref{Equation:CEFSS}. The global representation is then just obtained by composing all these local representations. 
 
