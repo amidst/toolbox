@@ -64,12 +64,12 @@ import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.io.DataStreamLoader;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 public class Main {
 
@@ -100,7 +100,7 @@ public class Main {
      Map<String, Long> letterToCount =
              words.map(w -> w.split(""))
                      .flatMap(Arrays::stream)
-                     .collect(Collectors.groupingBy(identity(), counting()));
+                     .collect(groupingBy(identity(), counting()));
 
      System.out.println(letterToCount.toString());
 
@@ -116,6 +116,14 @@ public class Main {
          System.out.println(it.next().toString(data.getAttributes()));
      }
 
+
+     List<String> docs  = Arrays.asList("Hola bien", "estoy bien");
+
+     Map<String, Long> wordToCount =  docs.parallelStream()
+             .flatMap(doc -> Arrays.stream(doc.split(" ")))
+             .collect(groupingBy(identity(), counting()));
+
+     System.out.println(wordToCount);
  }
 
 }
