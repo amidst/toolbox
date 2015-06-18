@@ -2,25 +2,22 @@ package eu.amidst.huginlink.learning;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
-
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.io.DataStreamLoader;
 import eu.amidst.corestatic.io.DataStreamWriter;
 import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
+import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.lang.Runtime;
-
-import org.apache.commons.cli.*;
 
 /**
  * This class implements the parallel learning of a TAN model.
@@ -88,9 +85,8 @@ public class ParallelTANDemo {
 
         //It may need many GBs, so avoid putting this file in a Dropbox folder!!!
         dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
-        BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
-        BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(numContVars);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(numDiscVars, 2);
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
@@ -144,9 +140,8 @@ public class ParallelTANDemo {
 
     /* Generate some fake data and write to file */
         dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
-        BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
-        BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(numContVars);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(numDiscVars, 2);
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
@@ -198,9 +193,8 @@ public class ParallelTANDemo {
         if (dataFileInput.isEmpty()) {
             //It may need many GBs, so avoid putting this file in a Dropbox folder!!!
             dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
-            BayesianNetworkGenerator.setNumberOfContinuousVars(numContVars);
-            BayesianNetworkGenerator.setNumberOfDiscreteVars(numDiscVars);
-            BayesianNetworkGenerator.setNumberOfStates(numStates);
+            BayesianNetworkGenerator.setNumberOfGaussianVars(numContVars);
+            BayesianNetworkGenerator.setNumberOfMultinomialVars(numDiscVars, numStates);
             BayesianNetworkGenerator.setSeed(0);
             BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
