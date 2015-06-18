@@ -78,6 +78,8 @@ public class MaximumLikelihood implements ParameterLearningAlgorithm{
     @Override
     public void runLearning() {
 
+        this.initLearning();
+
         efBayesianNetwork = new EF_BayesianNetwork(dag);
 
 
