@@ -30,6 +30,9 @@ hgapi82_amidst-64.jar
 # pdf noise
 doc/REproccess.pdf
 
+*.iml
+*/*.iml
+papers/*/*.iml
 target/maven-archiver*
 target/surefire-reports*
 target/*
@@ -39,8 +42,7 @@ core-static/target/*
 sparklink/target/*
 core-dynamic/target/*
 examplesIDA2015/target/*
-SCAI2015/target/*
-caepia2015/target/*
+papers/*/target/*
 classes/*
 
 # latex noise
