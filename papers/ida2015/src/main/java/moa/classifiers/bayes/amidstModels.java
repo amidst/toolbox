@@ -8,24 +8,23 @@
 
 package moa.classifiers.bayes;
 
-import eu.amidst.corestatic.inference.InferenceAlgorithm;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.moalink.arffWekaReader.DataRowWeka;
 import eu.amidst.corestatic.datastream.*;
 import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
 import eu.amidst.corestatic.distribution.Multinomial;
 import eu.amidst.corestatic.distribution.Normal;
+import eu.amidst.corestatic.inference.InferenceAlgorithm;
+import eu.amidst.corestatic.inference.messagepassing.VMP;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.StateSpaceType;
-import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.ida2015.GaussianHiddenTransitionMethod;
 import eu.amidst.ida2015.NaiveBayesGaussianHiddenConceptDrift;
+import eu.amidst.moalink.converterFromMoaToAmidst.DataRowWeka;
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.SemiSupervisedLearner;
 import moa.core.InstancesHeader;
 import moa.core.Measurement;
 import moa.options.FloatOption;
@@ -41,10 +40,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+//import moa.classifiers.SemiSupervisedLearner;
+
 /**
  * Created by ana@cs.aau.dk on 20/04/15.
  */
-public class amidstModels extends AbstractClassifier implements SemiSupervisedLearner{
+public class amidstModels extends AbstractClassifier{// implements SemiSupervisedLearner{
 
     private static final long serialVersionUID = 1L;
 
@@ -281,8 +282,9 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
     @Override
     public void trainOnInstance(Instance inst) {
         boolean isTraining = (inst.weight() > 0.0);
-        if (this instanceof SemiSupervisedLearner == false &&
-                inst.classIsMissing() == true){
+        //if (this instanceof SemiSupervisedLearner == false &&
+        //        inst.classIsMissing() == true){
+        if (inst.classIsMissing() == true){
             isTraining = false;
         }
         if (isTraining) {

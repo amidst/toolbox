@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>AmidstToolbox</artifactId>
+        <groupId>eu.amidst</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>eu.amidst</groupId>
+    <artifactId>moa-customized</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>3.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.moa</groupId>
+            <artifactId>moa</artifactId>
+            <version>2013.11</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core-static</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>moalink</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>ida2015</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+
+</project>
