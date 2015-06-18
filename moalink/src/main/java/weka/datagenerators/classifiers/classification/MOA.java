@@ -69,7 +69,7 @@ import moa.streams.generators.LEDGenerator;
  * 
  * <pre> -B &lt;classname + options&gt;
  *  The MOA stream generator.
- *  (default: moa.streams.generators.LEDGenerator)</pre>
+ *  (default: LEDGenerator)</pre>
  * 
  <!-- options-end -->
  *
@@ -141,7 +141,7 @@ public class MOA
    * 
    * <pre> -B &lt;classname + options&gt;
    *  The MOA stream generator.
-   *  (default: moa.streams.generators.LEDGenerator)</pre>
+   *  (default: LEDGenerator)</pre>
    * 
    <!-- options-end -->
    *
