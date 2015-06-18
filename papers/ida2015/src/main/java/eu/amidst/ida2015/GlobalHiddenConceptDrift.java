@@ -100,8 +100,8 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftWithRandomChangesMissingLabels(String[] args) {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(0, 2);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayesWithGlobalHiddenVar(2, "Global");
 
         naiveBayes.randomInitialization(new Random(0));
@@ -224,8 +224,8 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftWithRandomChanges(String[] args) {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(0, 2);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayesWithGlobalHiddenVar(2, "Global");
 
         naiveBayes.randomInitialization(new Random(0));
@@ -337,8 +337,8 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftSmoothChanges(String[] args) {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(0, 2);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayesWithGlobalHiddenVar(2, "Global");
 
         naiveBayes.randomInitialization(new Random(1));
@@ -531,8 +531,8 @@ public class GlobalHiddenConceptDrift {
 
     public static void randomChangesMultipleGlobalHidden(String[] args) throws IOException {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(0);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(0, 2);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayesWithGlobalHiddenVar(2, "Global");
 
         naiveBayes.randomInitialization(new Random(0));

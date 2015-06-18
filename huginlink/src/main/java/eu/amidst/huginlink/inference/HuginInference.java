@@ -168,8 +168,8 @@ public class HuginInference implements InferenceAlgorithm {
 
     public static void main(String args[]) throws ExceptionHugin {
 
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(2);
-        BayesianNetworkGenerator.setNumberOfContinuousVars(2);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(2, 2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(2);
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 

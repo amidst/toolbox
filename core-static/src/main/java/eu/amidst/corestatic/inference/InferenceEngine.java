@@ -44,8 +44,8 @@ public final class InferenceEngine {
 
     public static void main(String[] arguments){
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(2);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(1);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(2);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(1, 2);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
         HashMapAssignment assignment = new HashMapAssignment(1);
