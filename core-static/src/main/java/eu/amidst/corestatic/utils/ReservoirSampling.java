@@ -54,9 +54,7 @@ public class ReservoirSampling {
         DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticDataCajaMar.arff");
         DataOnMemory<DataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
 
-
-
     }
 
 
-    }
+}

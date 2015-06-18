@@ -136,6 +136,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
         System.out.println(bn.getNumberOfVars());
+        System.out.println(bn.getDAG().getNumberOfLinks());
         System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfParameters()).max().getAsInt());
 
         VMP vmp = new VMP();

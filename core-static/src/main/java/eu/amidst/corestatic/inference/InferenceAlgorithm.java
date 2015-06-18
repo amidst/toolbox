@@ -13,6 +13,10 @@ import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.variables.Assignment;
 import eu.amidst.corestatic.variables.Variable;
 
+import java.util.Random;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+
 /**
  * Created by andresmasegosa on 30/01/15.
  */
@@ -25,6 +29,19 @@ public interface InferenceAlgorithm {
     BayesianNetwork getOriginalModel();
 
     void setEvidence(Assignment assignment);
+
+    void setParallelMode(boolean parallelMode_);
+
+    default double getExpectedValue(Variable var, Function<Double,Double> function){
+        UnivariateDistribution univariateDistribution = this.getPosterior(var);
+
+        Random random = new Random(0);
+        int nSamples = 1000;
+        double val = IntStream.range(0, nSamples).mapToDouble(i -> univariateDistribution.sample(random))
+                                .map(sample -> function.apply(sample))
+                                .sum();
+        return val/nSamples;
+    }
 
     <E extends UnivariateDistribution> E getPosterior(Variable var);
 
