@@ -31,12 +31,8 @@ public class BayesianNetworkWithNoHiddenVars {
 
     public static void main(String[] args) throws Exception {
 
-        /**
-         * 1. Our data is on disk and does not fit in memory. So, we use a DataOnDisk object.
-         * 2. Our data is static and is on file, so we create the DataOnDisk using a StaticDataOnDiskFromFile object.
-         * 3. Our data is in Weka format, so we use a WekaDataFileReader.
-         */
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
 
 
         /**
