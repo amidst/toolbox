@@ -308,6 +308,11 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
     }
 
     @Override
+    public void setParallelMode(boolean parallelMode_) {
+
+    }
+
+    @Override
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
         return this.getNodeOfVar(var).getQDist().toUnivariateDistribution();
     }

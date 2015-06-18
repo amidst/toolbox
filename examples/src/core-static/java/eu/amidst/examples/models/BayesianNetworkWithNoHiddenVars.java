@@ -26,7 +26,7 @@ import eu.amidst.corestatic.variables.Variables;
  *
  *  Created by andresmasegosa on 18/6/15.
  */
-public class BNWithNoHiddenVariables {
+public class BayesianNetworkWithNoHiddenVars {
 
 
     public static void main(String[] args) throws Exception {

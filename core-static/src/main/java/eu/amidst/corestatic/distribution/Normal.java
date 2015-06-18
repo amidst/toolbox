@@ -144,7 +144,7 @@ public class Normal extends UnivariateDistribution {
     @Override
     public String toString() {
         //return "Normal ("+this.getVariable().getName()+") [ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
-        return "[ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
+        return "Normal [ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
     }
 
     public boolean equalDist(Normal dist, double threshold){

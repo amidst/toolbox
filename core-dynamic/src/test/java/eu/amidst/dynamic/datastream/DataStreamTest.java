@@ -22,9 +22,8 @@ public class DataStreamTest extends TestCase {
     @Test
     public void test1() {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(1);
-        BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(1, 2);
         BayesianNetworkGenerator.setSeed(0);
         final BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
 
@@ -46,9 +45,8 @@ public class DataStreamTest extends TestCase {
     public void test2() {
 
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(1);
-        BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(1, 2);
         BayesianNetworkGenerator.setSeed(0);
         final BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
 
