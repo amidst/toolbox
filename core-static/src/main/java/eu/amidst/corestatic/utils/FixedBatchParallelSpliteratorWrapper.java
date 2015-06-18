@@ -8,13 +8,13 @@
 
 package eu.amidst.corestatic.utils;
 
-import static java.util.Spliterators.spliterator;
-import static java.util.stream.StreamSupport.stream;
-
 import java.util.Comparator;
 import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static java.util.stream.StreamSupport.stream;
 
 public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
     private final Spliterator<T> spliterator;
@@ -44,7 +44,7 @@ public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
         int j = 0;
         do a[j] = holder.value; while (++j < batchSize && tryAdvance(holder));
         if (est != Long.MAX_VALUE) est -= j;
-        return spliterator(a, 0, j, characteristics());
+        return Spliterators.spliterator(a, 0, j, characteristics());
     }
     @Override public boolean tryAdvance(Consumer<? super T> action) {
         return spliterator.tryAdvance(action);
