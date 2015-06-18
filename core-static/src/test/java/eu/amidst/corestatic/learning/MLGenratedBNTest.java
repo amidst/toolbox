@@ -23,9 +23,8 @@ public class MLGenratedBNTest {
 
         BayesianNetworkGenerator.loadOptions();
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(10);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(1);
-        BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(1, 2);
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
         System.out.println(naiveBayes.toString());

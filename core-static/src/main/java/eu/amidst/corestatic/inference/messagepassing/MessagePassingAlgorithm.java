@@ -126,13 +126,6 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
         nIter=local_iter;
     }
 
-
-    public abstract Message<E> newSelfMessage(Node node);
-
-    public abstract Message<E> newMessageToParent(Node childrenNode, Node parentNode);
-
-    public abstract void updateCombinedMessage(Node node, Message<E> message);
-
     public int getNumberOfIterations(){
         return nIter;
     }
@@ -221,6 +214,12 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     public <E extends EF_UnivariateDistribution> E getEFPosterior(Variable var) {
         return (E)this.getNodeOfVar(var).getQDist();
     }
+
+    public abstract Message<E> newSelfMessage(Node node);
+
+    public abstract Message<E> newMessageToParent(Node childrenNode, Node parentNode);
+
+    public abstract void updateCombinedMessage(Node node, Message<E> message);
 
     public abstract boolean testConvergence();
 

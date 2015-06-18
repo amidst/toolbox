@@ -31,7 +31,7 @@ import java.util.Arrays;
  *
  * Created by andresmasegosa on 18/6/15.
  */
-public class BNWithHiddenVaribles {
+public class BayesianNetworkWithHiddenVars {
 
     public static void main(String[] args) throws Exception {
         /**
@@ -116,6 +116,9 @@ public class BNWithHiddenVaribles {
         BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
         System.out.println(bn.toString());
 
+        /**
+         * Finally teh Bayesian network is saved to a file.
+         */
         BayesianNetworkWriter.saveToFile(bn, "networks/huginStaticBNHiddenExample.bn");
 
     }

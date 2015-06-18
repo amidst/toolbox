@@ -242,9 +242,8 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
         BayesianNetworkGenerator.loadOptions();
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(2000);
-        BayesianNetworkGenerator.setNumberOfStates(10);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(2000, 10);
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
