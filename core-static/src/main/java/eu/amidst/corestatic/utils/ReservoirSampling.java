@@ -51,7 +51,7 @@ public class ReservoirSampling {
     }
 
     public static void main(String[] args) throws Exception {
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticDataCajaMar.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticDataCajaMar.arff");
         DataOnMemory<DataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
 
     }
