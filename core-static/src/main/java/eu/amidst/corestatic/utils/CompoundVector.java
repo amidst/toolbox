@@ -14,6 +14,7 @@ import eu.amidst.corestatic.exponentialfamily.SufficientStatistics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
 
@@ -37,6 +38,9 @@ public class CompoundVector implements SufficientStatistics, MomentParameters, N
         }
     }
 
+    public static <T> CompoundVector newCompoundVector(List<Map.Entry<Integer,T>> vectors){
+        return null;
+    }
     public void setVectorByPosition(int position, Vector vec) {
         baseVectors.get(position).setVector(vec);
     }

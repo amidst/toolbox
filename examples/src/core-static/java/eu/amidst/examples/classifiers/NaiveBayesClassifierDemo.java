@@ -6,48 +6,40 @@
  *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package eu.amidst.examples;
+package eu.amidst.examples.classifiers;
 
 import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.io.DataStreamWriter;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.corestatic.classifiers.NaiveBayesClassifier;
 import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
-
-import java.io.IOException;
 
 /**
  * Created by andresmasegosa on 15/01/15.
  */
-public class DynamicNaiveBayesClassifierDemo {
-    public static void main(String[] args) throws IOException {
+public class NaiveBayesClassifierDemo {
+    public static void main(String[] args) {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
-        BayesianNetworkGenerator.setNumberOfStates(3);
+        BayesianNetworkGenerator.loadOptions();
+
         BayesianNetworkGenerator.setSeed(0);
+        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
+        BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
+        BayesianNetworkGenerator.setNumberOfStates(10);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
+        System.out.println(bn.toString());
 
-        int sampleSize = 10000000;
+        int sampleSize = 10000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        String file = "./datasets/randomdata.arff";
-        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
-        DataStreamWriter.writeDataToFile(dataStream, file);
+        DataStream<DataInstance> data =  sampler.sampleToDataStream(sampleSize);
 
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
-
-        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
+        NaiveBayesClassifier model = new NaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
         model.setParallelMode(true);
         model.learn(data);
-        DynamicBayesianNetwork nbClassifier = model.getDynamicBNModel();
+        BayesianNetwork nbClassifier = model.getBNModel();
         System.out.println(nbClassifier.toString());
-
 
     }
 }
