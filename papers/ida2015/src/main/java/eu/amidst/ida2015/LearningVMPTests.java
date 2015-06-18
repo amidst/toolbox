@@ -796,7 +796,7 @@ public class LearningVMPTests {
 
             DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-            data = DataStreamLoader.loadFromFile("./datasets/tmp.arff");
+            data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
 
             StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
             svb.setParallelMode(false);
@@ -902,7 +902,7 @@ public class LearningVMPTests {
 
             DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-            data = DataStreamLoader.loadFromFile("./datasets/tmp.arff");
+            data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
 
 
             int[] windowsSizes = {1, 2, 10, 100, 1000};
