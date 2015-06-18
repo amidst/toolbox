@@ -31,8 +31,9 @@ import eu.amidst.corestatic.utils.ReservoirSampling;
 public class ReservoirSampleExample {
 
     public static void main(String[] args) throws Exception {
-        //We first load the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/syntheticData.arff");
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
 
         //ReservoirSampling allows to create a DataOnMemory object containing a unfiorm subsample of the data stream
         DataOnMemory<DataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(100, data);

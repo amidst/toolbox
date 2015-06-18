@@ -26,8 +26,8 @@ public class DataStreamsExmaple {
 
     public static void main(String[] args) throws Exception {
 
-        //We can load a data set using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/SmallDataSet.arff");
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/SmallDataSet.arff");
 
         //1. Access to the attributes defining the data set
         System.out.println("1. Access to the attributes defining the data set");

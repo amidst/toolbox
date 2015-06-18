@@ -24,7 +24,7 @@ public final class DataStreamLoader {
         dataFileReader = dataFileReader;
     }
 
-    public static DataStream<DataInstance> loadFromFile(String path){
+    public static DataStream<DataInstance> openFromFile(String path){
         dataFileReader.loadFromFile(path);
         return new DataStreamFromFile(dataFileReader);
     }
