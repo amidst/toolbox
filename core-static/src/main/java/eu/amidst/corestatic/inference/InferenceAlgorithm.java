@@ -30,7 +30,14 @@ public interface InferenceAlgorithm {
 
     void setEvidence(Assignment assignment);
 
-    void setParallelMode(boolean parallelMode_);
+    /**
+     * This method is only implemented for those inference
+     * algorithms which can be run in parallel.
+     * @param parallelMode_
+     */
+    default void setParallelMode(boolean parallelMode_){
+
+    }
 
     default double getExpectedValue(Variable var, Function<Double,Double> function){
         UnivariateDistribution univariateDistribution = this.getPosterior(var);
