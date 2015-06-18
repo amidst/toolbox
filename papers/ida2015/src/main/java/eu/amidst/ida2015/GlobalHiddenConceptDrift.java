@@ -20,8 +20,8 @@ import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
 import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.corestatic.variables.Variables;
 
 import java.io.IOException;
 import java.util.ArrayList;

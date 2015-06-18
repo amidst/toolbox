@@ -20,8 +20,8 @@ import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBay
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.Variables;
 import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.corestatic.variables.Variables;
 
 import java.util.ArrayList;
 import java.util.List;

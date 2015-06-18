@@ -121,7 +121,7 @@ public class MOA
    *
    * <pre> -B &lt;classname + options&gt;
    *  The MOA classifier to use.
-   *  (default: moa.classifiers.trees.DecisionStump)</pre>
+   *  (default: DecisionStump)</pre>
    *
    * <pre> -D
    *  If set, classifier is run in debug mode and
