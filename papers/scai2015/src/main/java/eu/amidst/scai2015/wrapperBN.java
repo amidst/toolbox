@@ -468,8 +468,8 @@ public class wrapperBN {
 
     public static void main(String[] args) throws IOException {
 
-        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile("datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
+        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/BankArtificialDataSCAI2015_DEFAULTING_PM.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(args[0]);
 
         for (int i = 1; i < args.length ; i++) {
             if(args[i].equalsIgnoreCase("PRCArea"))
