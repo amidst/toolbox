@@ -429,7 +429,7 @@ public class GlobalHiddenConceptDrift {
     }
     public static void conceptDriftSeaLevelMultipleGlobalHidden(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
 
         int windowSizeModel = 100;
@@ -709,7 +709,7 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftSeaLevel(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/sea.arff");
 
         Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
@@ -808,7 +808,7 @@ public class GlobalHiddenConceptDrift {
 
     public static void localConceptDriftSeaLevel(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/sea.arff");
 
         Variables variables = new Variables(data.getAttributes());
 
@@ -927,7 +927,7 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftHyperplane(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
         Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
@@ -991,7 +991,7 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftElectricyt(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/electricityOriginal.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/electricityOriginal.arff");
 
         Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
@@ -1062,7 +1062,7 @@ public class GlobalHiddenConceptDrift {
     }
     public static void conceptDriftHyperplaneLocal(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
         Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
@@ -1121,7 +1121,7 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftSeaLevelFading(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/sea.arff");
 
             Variables variables = new Variables(data.getAttributes());
         Variable classVariable = variables.getVariableByName("cl");
@@ -1188,9 +1188,9 @@ public class GlobalHiddenConceptDrift {
 
     public static void conceptDriftIDA2015(String[] args) throws IOException {
 
-        DataStream<DataInstance> data = DataStreamLoader.loadFromFile(args[0]);
-        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/DriftSets/hyperplane9.arff");
-        //DataStream<DataInstance> data = DataStreamLoader.loadFromFile("./IDA2015/IDA2015 Artificial Data/HYP1.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(args[0]);
+        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/hyperplane9.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/IDA2015 Artificial Data/HYP1.arff");
 
         int windowsSize = Integer.parseInt(args[1]);
         int windowSizeModel = windowsSize;
