@@ -27,10 +27,9 @@ import java.util.stream.IntStream;
  */
 public final class BayesianNetworkGenerator{
 
-    private static int numberOfVars;
     private static int numberOfLinks;
-    private static int numberOfDiscreteVars;
-    private static int numberOfContinuousVars;
+    private static int numberOfMultinomialVars;
+    private static int numberOfGaussianVars;
     private static int numberOfStates;
     private static int seed;
 
@@ -38,26 +37,20 @@ public final class BayesianNetworkGenerator{
         BayesianNetworkGenerator.seed = seed;
     }
 
-    public static void setNumberOfVars(int numberOfVars) {
-        BayesianNetworkGenerator.numberOfVars = numberOfVars;
-    }
-
     public static void setNumberOfLinks(int numberOfLinks) {
+        int numberOfVars = numberOfMultinomialVars + numberOfGaussianVars;
         if (numberOfLinks<(numberOfVars-1) || numberOfLinks>numberOfVars*(numberOfVars-1)/2)
             throw new IllegalArgumentException("Number of links is not between " + (numberOfVars-1) + " and " + numberOfVars*(numberOfVars-1)/2);
         BayesianNetworkGenerator.numberOfLinks = numberOfLinks;
     }
 
-    public static void setNumberOfDiscreteVars(int numberOfDiscreteVars) {
-        BayesianNetworkGenerator.numberOfDiscreteVars = numberOfDiscreteVars;
+    public static void setNumberOfMultinomialVars(int numberOfMultinomialVars_, int numberOfStates_) {
+        BayesianNetworkGenerator.numberOfMultinomialVars = numberOfMultinomialVars_;
+        BayesianNetworkGenerator.numberOfStates = numberOfStates_;
     }
 
-    public static void setNumberOfContinuousVars(int numberOfContinuousVars) {
-        BayesianNetworkGenerator.numberOfContinuousVars = numberOfContinuousVars;
-    }
-
-    public static void setNumberOfStates(int numberOfStates) {
-        BayesianNetworkGenerator.numberOfStates = numberOfStates;
+    public static void setNumberOfGaussianVars(int numberOfGaussianVars) {
+        BayesianNetworkGenerator.numberOfGaussianVars = numberOfGaussianVars;
     }
 
     public static BayesianNetwork generateNaiveBayesWithGlobalHiddenVar(int nClassLabels, String nameGlobalHiddenVar){
@@ -65,10 +58,10 @@ public final class BayesianNetworkGenerator{
         Variables variables = new Variables();
 
 
-        IntStream.range(0,numberOfDiscreteVars-1)
+        IntStream.range(0, numberOfMultinomialVars -1)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
-        IntStream.range(0,numberOfContinuousVars)
+        IntStream.range(0, numberOfGaussianVars)
                 .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
         Variable globalHiddenVar =  variables.newGaussianVariable(nameGlobalHiddenVar);
@@ -94,10 +87,10 @@ public final class BayesianNetworkGenerator{
         Variables variables = new Variables();
 
 
-        IntStream.range(0,numberOfDiscreteVars-1)
+        IntStream.range(0, numberOfMultinomialVars -1)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
-        IntStream.range(0,numberOfContinuousVars)
+        IntStream.range(0, numberOfGaussianVars)
                 .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
         Variable classVar = variables.newMultionomialVariable("ClassVar", nClassLabels);
@@ -150,10 +143,10 @@ public final class BayesianNetworkGenerator{
         Variables variables = new Variables();
 
 
-        IntStream.range(0,numberOfDiscreteVars)
+        IntStream.range(0, numberOfMultinomialVars)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
-        IntStream.range(0,numberOfContinuousVars)
+        IntStream.range(0, numberOfGaussianVars)
                 .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
         DAG dag = generateTreeDAG(variables);
@@ -190,17 +183,16 @@ public final class BayesianNetworkGenerator{
         return  classNameID() +", "+
                 "-numberOfVars, 10, Total number of variables\\" +
                 "-numberOfLinks, 3, Number of links\\" +
-                "-numberOfDiscreteVars, 10, Number of discrete variables\\"+
-                "-numberOfContinuousVars, 0, Number of continuous variables.\\" +
+                "-numberOfMultinomialVars, 10, Number of discrete variables\\"+
+                "-numberOfGaussianVars, 0, Number of continuous variables.\\" +
                 "-numberOfStates, 2, Number of states per discrete variable\\" +
                 "-seed, 0, seed for random number generator\\";
     }
 
     public static void loadOptions(){
-        numberOfVars = getIntOption("-numberOfVars");
         numberOfLinks = getIntOption("-numberOfLinks");
-        numberOfDiscreteVars = getIntOption("-numberOfDiscreteVars");
-        numberOfContinuousVars = getIntOption("-numberOfContinuousVars");
+        numberOfMultinomialVars = getIntOption("-numberOfMultinomialVars");
+        numberOfGaussianVars = getIntOption("-numberOfGaussianVars");
         numberOfStates = getIntOption("-numberOfStates");
         seed = getIntOption("-seed");
     }
@@ -233,10 +225,9 @@ public final class BayesianNetworkGenerator{
 
 
         numberOfLinks=nLinks;
-        numberOfDiscreteVars=nDiscrete;
-        numberOfContinuousVars=nContin;
+        numberOfMultinomialVars =nDiscrete;
+        numberOfGaussianVars =nContin;
         numberOfStates =nStates;
-        numberOfVars=nDiscrete+nContin;
         seed = seed_;
 
         BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
@@ -247,9 +238,8 @@ public final class BayesianNetworkGenerator{
 
         BayesianNetworkGenerator.loadOptions();
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(5);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
-        BayesianNetworkGenerator.setNumberOfStates(2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(5);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(5, 2);
         BayesianNetworkGenerator.setNumberOfLinks(15);
         BayesianNetworkGenerator.setSeed(0);
 
