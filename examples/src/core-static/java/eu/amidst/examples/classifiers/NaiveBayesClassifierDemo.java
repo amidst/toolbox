@@ -24,9 +24,8 @@ public class NaiveBayesClassifierDemo {
         BayesianNetworkGenerator.loadOptions();
 
         BayesianNetworkGenerator.setSeed(0);
-        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(10);
-        BayesianNetworkGenerator.setNumberOfStates(10);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(10, 10);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
         System.out.println(bn.toString());
 

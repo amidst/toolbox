@@ -93,9 +93,8 @@ public class NaiveBayesClassifier implements Classifier{
 
     public static void main(String[] args){
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(50000);
-        BayesianNetworkGenerator.setNumberOfStates(10);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(50000, 10);
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);

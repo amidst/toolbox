@@ -27,9 +27,8 @@ import java.io.IOException;
 public class DynamicNaiveBayesClassifierDemo {
     public static void main(String[] args) throws IOException {
 
-        BayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        BayesianNetworkGenerator.setNumberOfDiscreteVars(5);
-        BayesianNetworkGenerator.setNumberOfStates(3);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(5, 3);
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
