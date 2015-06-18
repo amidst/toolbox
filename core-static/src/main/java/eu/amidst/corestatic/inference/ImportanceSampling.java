@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -170,6 +171,15 @@ public class ImportanceSampling implements InferenceAlgorithm {
             //weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp)).collect(Collectors.toList());
             weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp));
         }
+    }
+
+    @Override
+    public double getExpectedValue(Variable var, Function<Double,Double> function) {
+        List<Double> sum = weightedSampleList
+                .map(ws ->Arrays.asList(ws.weight, ws.weight*function.apply(ws.assignment.getValue(var))))
+                .reduce(Arrays.asList(0.0, 0.0), (e1, e2) -> Arrays.asList(e1.get(0) + e2.get(0), e1.get(1) + e2.get(1)));
+
+        return sum.get(1)/sum.get(0);
     }
 
     public double runQuery(Variable continuousVarInterest, double a, double b) {

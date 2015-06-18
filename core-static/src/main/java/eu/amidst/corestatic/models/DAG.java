@@ -37,6 +37,9 @@ public class DAG implements Serializable {
         this.variables.block();
     }
 
+    public long getNumberOfLinks(){
+        return this.parents.stream().mapToInt(p -> p.getNumberOfParents()).count();
+    }
     public Variables getStaticVariables() {
         return this.variables;
     }
