@@ -20,8 +20,8 @@ import eu.amidst.corestatic.variables.HashMapAssignment;
 import eu.amidst.corestatic.variables.Variable;
 
 /**
- * This example show how to perform inference in a Bayesian network model using the InferenceEngine class.
- * This class aims to be a much straightfoward to perform queries over a Bayesian network model.
+ * This example show how to perform inference in a Bayesian network model using the InferenceEngine static class.
+ * This class aims to be a straigthfoward way to perform queries over a Bayesian network model.
  *
  * Created by andresmasegosa on 18/6/15.
  */
@@ -42,6 +42,9 @@ public class InferenceEngineExample {
 
         //Then we query the posterior of
         System.out.println("P(Mout|W=0) = " + InferenceEngine.getPosterior(varMout, bn, assignment));
+
+        //Or some more refined queries
+        System.out.println("P(0.7<Mout<6.59 | W=0) = " + InferenceEngine.getExpectedValue(varMout, bn, v -> (0.7 < v && v < 6.59) ? 1.0 : 0.0 ));
 
     }
 

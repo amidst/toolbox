@@ -1,6 +1,7 @@
 package eu.amidst.corestatic.learning;
 
 import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.DataOnMemory;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.io.BayesianNetworkLoader;
 import eu.amidst.corestatic.learning.parametric.LearningEngine;
@@ -19,7 +20,45 @@ import java.io.IOException;
 public class MLMultinomialsTest {
 
     @Test
-    public void testingML() throws IOException, ClassNotFoundException {
+    public void testingMLSequential() throws IOException, ClassNotFoundException {
+
+        // load the true Asia Bayesian network
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+
+        System.out.println("\nAsia network \n ");
+        //System.out.println(asianet.getDAG().toString());
+        //System.out.println(asianet.toString());
+
+        //Sampling from Asia BN
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
+        sampler.setSeed(0);
+
+        //Load the sampled data
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+        //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
+        // and just learn then test the parameter learning
+
+        //Parameter Learning
+        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
+        maximumLikelihood.setBatchSize(1000);
+        LearningEngine.setParameterLearningAlgorithm(maximumLikelihood);
+        BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
+
+        //Check if the probability distributions of each node
+        for (Variable var : asianet.getStaticVariables()) {
+            System.out.println("\n------ Variable " + var.getName() + " ------");
+            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
+        }
+
+        //Or check directly if the true and learned networks are equals
+        Assert.assertTrue(bnet.equalBNs(asianet, 0.05));
+    }
+
+
+    @Test
+    public void testingMLParallel() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
@@ -56,4 +95,45 @@ public class MLMultinomialsTest {
         Assert.assertTrue(bnet.equalBNs(asianet, 0.05));
     }
 
+    @Test
+    public void testingMLBatches() throws IOException, ClassNotFoundException {
+
+        // load the true Asia Bayesian network
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+
+        System.out.println("\nAsia network \n ");
+        //System.out.println(asianet.getDAG().toString());
+        //System.out.println(asianet.toString());
+
+        //Sampling from Asia BN
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
+        sampler.setSeed(0);
+
+        //Load the sampled data
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+        //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
+        // and just learn then test the parameter learning
+
+        //Parameter Learning
+        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
+        maximumLikelihood.setDAG(asianet.getDAG());
+        maximumLikelihood.initLearning();
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)){
+            maximumLikelihood.updateModel(batch);
+        }
+
+        BayesianNetwork bnet = maximumLikelihood.getLearntBayesianNetwork();
+
+        //Check if the probability distributions of each node
+        for (Variable var : asianet.getStaticVariables()) {
+            System.out.println("\n------ Variable " + var.getName() + " ------");
+            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
+        }
+
+        //Or check directly if the true and learned networks are equals
+        Assert.assertTrue(bnet.equalBNs(asianet, 0.05));
+    }
 }
