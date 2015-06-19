@@ -10,6 +10,7 @@
 *.ear
 
 # other pdfs to ignore
+*.pdf
 doc/testEvaluation/testCajamar.*
 doc/testEvaluation/testDaimler.*
 doc/presentations/omv_meeting.pdf
