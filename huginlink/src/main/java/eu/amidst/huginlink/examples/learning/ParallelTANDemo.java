@@ -1,4 +1,4 @@
-package eu.amidst.huginlink.learning;
+package eu.amidst.huginlink.examples.learning;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
@@ -11,6 +11,7 @@ import eu.amidst.corestatic.io.DataStreamWriter;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
 import eu.amidst.corestatic.utils.BayesianNetworkSampler;
+import eu.amidst.huginlink.learning.ParallelTAN;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;

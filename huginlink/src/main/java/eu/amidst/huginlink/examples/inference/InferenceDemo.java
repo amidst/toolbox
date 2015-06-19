@@ -1,4 +1,4 @@
-package eu.amidst.huginlink.inference;
+package eu.amidst.huginlink.examples.inference;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
