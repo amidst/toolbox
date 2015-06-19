@@ -5,22 +5,14 @@
 
 package weka.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dialog;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.beans.PropertyEditorSupport;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import moa.gui.ClassOptionEditComponent;
 import moa.options.ClassOption;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.beans.PropertyEditorSupport;
 
 /**
  * An editor for MOA ClassOption objects.
