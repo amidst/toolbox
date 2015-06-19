@@ -40,7 +40,7 @@ public class ImportanceSamplingExample {
         Variable varMout = bn.getStaticVariables().getVariableByName("Mout");
         Variable varW = bn.getStaticVariables().getVariableByName("W");
 
-        //First we create an instance of a inference algorithm. In this case, we use the VMP class.
+        //First we create an instance of a inference algorithm. In this case, we use the ImportanceSampling class.
         InferenceAlgorithm inferenceAlgorithm = new ImportanceSampling();
         //Then, we set the BN model
         inferenceAlgorithm.setModel(bn);

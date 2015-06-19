@@ -19,7 +19,8 @@ import java.util.Arrays;
 
 /**
  *
- * This example show the basic functionality of the class Variables.
+ * This example show the basic functionality of the classes Variables and Variable.
+ *
  *
  * Created by andresmasegosa on 18/6/15.
  */
@@ -44,7 +45,7 @@ public class VariablesExample {
         FiniteStateSpace states = multinomialVar2.getStateSpaceType();
         states.getStatesNames().forEach(System.out::println);
 
-       //Variable objects can also be used, for example, to know if one variable can be set as parent of some other variable
+        //Variable objects can also be used, for example, to know if one variable can be set as parent of some other variable
         System.out.println("Can a Gaussian variable be parent of Multinomial variable? " +
                 (multinomialVar.getDistributionType().isParentCompatible(gaussianVar)));
 
