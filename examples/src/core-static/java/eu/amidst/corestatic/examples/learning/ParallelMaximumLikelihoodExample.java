@@ -15,7 +15,6 @@ import eu.amidst.corestatic.datastream.DataInstance;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.io.DataStreamLoader;
 import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
-import eu.amidst.corestatic.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.corestatic.models.BayesianNetwork;
 import eu.amidst.corestatic.models.DAG;
 import eu.amidst.corestatic.variables.Variable;
@@ -58,14 +57,17 @@ public class ParallelMaximumLikelihoodExample {
         //We can open the data stream using the static class DataStreamLoader
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
 
-        //We create a ParameterLearningAlgorithm object with the MaximumLikehood builder
-        ParameterLearningAlgorithm parameterLearningAlgorithm = new MaximumLikelihood();
+        //We create a MaximumLikelihood object with the MaximumLikehood builder
+        MaximumLikelihood parameterLearningAlgorithm = new MaximumLikelihood();
 
         //We activate the parallel mode.
         parameterLearningAlgorithm.setParallelMode(true);
 
         //We fix the DAG structure
         parameterLearningAlgorithm.setDAG(getNaiveBayesStructure(data,0));
+
+        //We set the batch size which will be employed to learn the model in parallel
+        parameterLearningAlgorithm.setBatchSize(100);
 
         //We set the data which is going to be used for leaning the parameters
         parameterLearningAlgorithm.setDataStream(data);
