@@ -55,12 +55,12 @@ public class MaximumLikelihood implements ParameterLearningAlgorithm{
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
 
-        batch.stream()
-                .peek(w -> {
-                    dataInstanceCount.addAndGet(1.0);
-                })
-                .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(this.sumSS, SufficientStatistics::sumVector);
+        this.sumSS = batch.stream()
+                    .peek(w -> {
+                        dataInstanceCount.addAndGet(1.0);
+                    })
+                    .map(efBayesianNetwork::getSufficientStatistics)
+                    .reduce(this.sumSS, SufficientStatistics::sumVector);
 
         return Double.NaN;
     }
@@ -97,9 +97,7 @@ public class MaximumLikelihood implements ParameterLearningAlgorithm{
                     dataInstanceCount.getAndAdd(1.0);
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(SufficientStatistics::sumVector).get();
-        //.reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumVector);
-
+                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumVector);
     }
 
     @Override

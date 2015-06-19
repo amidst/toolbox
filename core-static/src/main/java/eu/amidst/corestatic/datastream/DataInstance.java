@@ -8,6 +8,7 @@
 
 package eu.amidst.corestatic.datastream;
 
+import eu.amidst.corestatic.utils.Utils;
 import eu.amidst.corestatic.variables.Assignment;
 import eu.amidst.corestatic.variables.Variable;
 
@@ -18,12 +19,16 @@ public interface DataInstance extends Assignment {
 
     @Override
     default double getValue(Variable var) {
-        return this.getValue(var.getAttribute());
+        if (var.getAttribute()==null)
+            return Utils.missingValue();
+        else
+            return this.getValue(var.getAttribute());
     }
 
     @Override
     default void setValue(Variable var, double value) {
-        this.setValue(var.getAttribute(), value);
+        if (var.getAttribute()!=null)
+            this.setValue(var.getAttribute(), value);
     }
 
     double getValue(Attribute att);
