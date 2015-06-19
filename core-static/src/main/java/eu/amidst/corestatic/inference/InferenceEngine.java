@@ -17,6 +17,8 @@ import eu.amidst.corestatic.variables.Assignment;
 import eu.amidst.corestatic.variables.HashMapAssignment;
 import eu.amidst.corestatic.variables.Variable;
 
+import java.util.function.Function;
+
 /**
  * Created by andresmasegosa on 30/01/15.
  */
@@ -27,6 +29,13 @@ public final class InferenceEngine {
     public static void setInferenceAlgorithm(InferenceAlgorithm inferenceAlgorithm) {
         InferenceEngine.inferenceAlgorithm = inferenceAlgorithm;
     }
+
+    public static double getExpectedValue(Variable var, BayesianNetwork bayesianNetwork, Function<Double,Double> function) {
+        inferenceAlgorithm.setModel(bayesianNetwork);
+        inferenceAlgorithm.runInference();
+        return inferenceAlgorithm.getExpectedValue(var,function);
+    }
+
 
     public static <E extends UnivariateDistribution> E getPosterior(Variable var, BayesianNetwork bayesianNetwork, Assignment assignment) {
         inferenceAlgorithm.setModel(bayesianNetwork);
