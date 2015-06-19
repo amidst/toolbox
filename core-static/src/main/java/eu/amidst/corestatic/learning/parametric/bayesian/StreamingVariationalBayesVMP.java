@@ -194,7 +194,7 @@ public class StreamingVariationalBayesVMP implements BayesianParameterLearningAl
         return elboBatch;
     }
 
-    public double updateModelSequential(DataOnMemory<DataInstance> batch) {
+    private double updateModelSequential(DataOnMemory<DataInstance> batch) {
         nBatches++;
         //System.out.println("\n Batch:");
         this.plateuStructure.setEvidence(batch.getList());

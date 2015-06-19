@@ -9,6 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/core-static/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/huginlink/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/moalink/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/cim2015/java" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
