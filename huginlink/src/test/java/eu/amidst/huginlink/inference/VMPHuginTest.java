@@ -1,13 +1,13 @@
 package eu.amidst.huginlink.inference;
 
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.distribution.Normal;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.corestatic.io.BayesianNetworkLoader;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.Variables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.variables.HashMapAssignment;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
 
 import java.io.IOException;

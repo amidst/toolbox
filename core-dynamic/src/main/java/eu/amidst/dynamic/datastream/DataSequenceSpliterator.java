@@ -8,9 +8,9 @@
 
 package eu.amidst.dynamic.datastream;
 
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.datastream.DataOnMemoryListContainer;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.DataStream;
 
 import java.util.Comparator;
 import java.util.Spliterator;

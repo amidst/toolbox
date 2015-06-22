@@ -15,8 +15,8 @@ import COM.hugin.HAPI.Class;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.corestatic.variables.Variable;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
 

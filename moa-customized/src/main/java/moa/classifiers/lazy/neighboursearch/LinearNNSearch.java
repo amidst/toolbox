@@ -23,9 +23,9 @@ package moa.classifiers.lazy.neighboursearch;
 
 import weka.core.Instance;
 import weka.core.Instances;
-//import weka.corestatic.Option;
-//import weka.corestatic.RevisionUtils;
-//import weka.corestatic.Utils;
+//import weka.core.Option;
+//import weka.core.RevisionUtils;
+//import weka.core.Utils;
 
 /**
  <!-- globalinfo-start -->
