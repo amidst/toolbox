@@ -19,7 +19,7 @@ import eu.amidst.huginlink.io.BNWriterToHugin;
 
 /**
  *
- * This class shows how to use the class BNLoaderFromHugin and BNWriterToHugin classes to load and
+ * This example shows how to use the class BNLoaderFromHugin and BNWriterToHugin classes to load and
  * write Bayesian networks in Hugin format.
  *
  * Created by andresmasegosa on 19/6/15.
