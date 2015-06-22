@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithm, Sampler {
 
-    boolean testELBO=true;
+    boolean testELBO=false;
 
     public void setTestELBO(boolean testELBO) {
         this.testELBO = testELBO;
@@ -111,7 +111,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
             elbo=0;
         }
 
-        if ((elbo>2 && !node.isObserved()) || Double.isNaN(elbo)) {
+        if (this.testELBO && ((elbo>2 && !node.isObserved()) || Double.isNaN(elbo))) {
             node.getPDist().getExpectedLogNormalizer(momentParents);
             throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + node.getMainVariable().getName() + ", " +  elbo + ", " + expectedNatural.sum());
         }

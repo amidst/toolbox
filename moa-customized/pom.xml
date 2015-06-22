@@ -19,9 +19,9 @@
             <version>3.7.12</version>
         </dependency>
         <dependency>
-            <groupId>nz.ac.waikato.cms.moa</groupId>
-            <artifactId>moa</artifactId>
-            <version>2013.11</version>
+            <groupId>com.googlecode.sizeofag</groupId>
+            <artifactId>sizeofag</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
