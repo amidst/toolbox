@@ -59,7 +59,7 @@ public class DynamicNaiveBayesClassifier {
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
         DynamicDAG dag = new DynamicDAG(modelHeader);
 
-        // TODO Remove this commented part. Done for efficiency in the inference demo.
+        // TODO Remove this commented part. Done for efficiency in the inference demos.
 
         dag.getParentSetsTimeT().stream()
                 .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
