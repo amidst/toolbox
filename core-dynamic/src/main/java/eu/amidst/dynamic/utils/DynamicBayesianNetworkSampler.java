@@ -9,18 +9,18 @@
 package eu.amidst.dynamic.utils;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.io.DataStreamWriter;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.corestatic.utils.LocalRandomGenerator;
-import eu.amidst.corestatic.utils.Utils;
+import eu.amidst.core.utils.LocalRandomGenerator;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.util.*;
 import java.util.stream.Collectors;

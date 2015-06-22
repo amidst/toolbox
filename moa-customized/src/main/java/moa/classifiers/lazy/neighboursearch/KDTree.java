@@ -79,7 +79,7 @@ import weka.core.Instances;
  * 
  * <pre> -S &lt;classname and options&gt;
  *  Node splitting method to use.
- *  (default: weka.corestatic.neighboursearch.kdtrees.SlidingMidPointOfWidestSide)</pre>
+ *  (default: weka.core.neighboursearch.kdtrees.SlidingMidPointOfWidestSide)</pre>
  * 
  * <pre> -W &lt;value&gt;
  *  Set minimal width of a box

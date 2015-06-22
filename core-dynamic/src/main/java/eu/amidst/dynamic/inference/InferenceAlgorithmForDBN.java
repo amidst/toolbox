@@ -8,10 +8,10 @@
 
 package eu.amidst.dynamic.inference;
 
-import eu.amidst.corestatic.distribution.UnivariateDistribution;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 30/01/15.

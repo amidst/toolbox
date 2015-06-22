@@ -9,12 +9,12 @@
 package eu.amidst.dynamic.learning.dynamic;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 06/01/15.

@@ -10,8 +10,8 @@
 package eu.amidst;
 
 
-import eu.amidst.corestatic.database.DataStream;
-import eu.amidst.corestatic.database.statics.readers.DataStreamReaderFromFile;
+import eu.amidst.core.database.DataStream;
+import eu.amidst.core.database.statics.readers.DataStreamReaderFromFile;
 import eu.amidst.staticmodelling.models.NaiveBayesClassifier;
 import eu.amidst.staticmodelling.models.NaiveBayesClusteringModel;
 
@@ -59,17 +59,17 @@ public class Main {
 
 package eu.amidst.dynamic.examples;
 
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.corestatic.exponentialfamily.SufficientStatistics;
-import eu.amidst.corestatic.io.BayesianNetworkLoader;
-import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.utils.CompoundVector;
-import eu.amidst.corestatic.variables.Assignment;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.Variable;
 
 import java.util.*;
 import java.util.function.Function;

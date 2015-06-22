@@ -9,12 +9,12 @@
 package eu.amidst.dynamic.learning.dynamic;
 
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.exponentialfamily.EF_LearningBayesianNetwork;
-import eu.amidst.corestatic.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.corestatic.inference.messagepassing.Node;
+import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
