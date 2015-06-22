@@ -3,8 +3,8 @@ package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.corestatic.io.BayesianNetworkWriter;
-import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.core.io.BayesianNetworkWriter;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import org.junit.Before;
 import org.junit.Test;

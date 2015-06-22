@@ -8,7 +8,7 @@
 
 package eu.amidst.dynamic.learning.dynamic;
 
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;

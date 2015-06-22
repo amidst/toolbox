@@ -8,9 +8,9 @@
 
 package eu.amidst.dynamic.datastream.filereaders;
 
-import eu.amidst.corestatic.datastream.Attribute;
+import eu.amidst.core.datastream.Attribute;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.datastream.filereaders.DataRow;
+import eu.amidst.core.datastream.filereaders.DataRow;
 
 /**
  * Created by andresmasegosa on 11/11/14.

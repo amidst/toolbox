@@ -8,16 +8,16 @@
 
 package eu.amidst.dynamic.learning.dynamic;
 
-import eu.amidst.corestatic.datastream.DataOnMemory;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.exponentialfamily.EF_ConditionalDistribution;
-import eu.amidst.corestatic.exponentialfamily.EF_LearningBayesianNetwork;
-import eu.amidst.corestatic.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.corestatic.exponentialfamily.ParameterVariables;
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.ParameterVariables;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.util.List;
 import java.util.stream.Collectors;

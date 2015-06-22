@@ -8,7 +8,7 @@
 
 package eu.amidst.dynamic.datastream;
 
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 
 /**
  * Created by andresmasegosa on 19/02/15.

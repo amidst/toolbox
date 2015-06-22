@@ -9,10 +9,10 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.dynamic.datastream.DataSequence;
-import eu.amidst.corestatic.distribution.UnivariateDistribution;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.util.stream.Stream;
 

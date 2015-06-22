@@ -12,15 +12,15 @@
 package eu.amidst.scai2015;
 
 
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataOnMemoryListContainer;
-import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.io.DataStreamWriter;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.utils.BayesianNetworkSampler;
-import eu.amidst.corestatic.variables.Variables;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.io.DataStreamWriter;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.variables.Variables;
 
 import java.io.IOException;
 import java.util.Random;

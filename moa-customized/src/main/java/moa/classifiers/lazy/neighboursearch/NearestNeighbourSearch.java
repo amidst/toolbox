@@ -530,7 +530,7 @@ public abstract class NearestNeighbourSearch
    */
   public String distanceFunctionTipText() {
     return "The distance function to use for finding neighbours " +
-           "(default: weka.corestatic.EuclideanDistance). ";
+           "(default: weka.core.EuclideanDistance). ";
   }
   
   /**
