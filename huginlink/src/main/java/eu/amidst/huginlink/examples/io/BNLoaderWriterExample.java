@@ -12,7 +12,7 @@ package eu.amidst.huginlink.examples.io;
 
 
 import COM.hugin.HAPI.Domain;
-import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;

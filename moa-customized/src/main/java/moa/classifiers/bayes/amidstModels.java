@@ -8,19 +8,19 @@
 
 package moa.classifiers.bayes;
 
-import eu.amidst.corestatic.datastream.*;
-import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.distribution.Normal;
-import eu.amidst.corestatic.inference.InferenceAlgorithm;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.StateSpaceType;
-import eu.amidst.corestatic.variables.Variable;
-import eu.amidst.corestatic.variables.Variables;
-import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.ida2015.GaussianHiddenTransitionMethod;
 import eu.amidst.ida2015.NaiveBayesGaussianHiddenConceptDrift;
 import eu.amidst.moalink.converterFromMoaToAmidst.DataRowWeka;

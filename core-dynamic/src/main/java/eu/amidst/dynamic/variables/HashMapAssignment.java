@@ -8,8 +8,8 @@
 
 package eu.amidst.dynamic.variables;
 
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Variable;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,7 +1,7 @@
 package eu.amidst.dynamic.datastream;
 
 import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
-import eu.amidst.corestatic.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;

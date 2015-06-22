@@ -8,7 +8,7 @@
 
 package eu.amidst.dynamic.utils;
 
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 

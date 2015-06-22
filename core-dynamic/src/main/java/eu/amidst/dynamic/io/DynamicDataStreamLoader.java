@@ -8,11 +8,11 @@
 
 package eu.amidst.dynamic.io;
 
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.datastream.filereaders.DataFileReader;
+import eu.amidst.core.datastream.filereaders.DataFileReader;
 import eu.amidst.dynamic.datastream.filereaders.DynamicDataStreamFromFile;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
 /**
  * Created by andresmasegosa on 23/02/15.

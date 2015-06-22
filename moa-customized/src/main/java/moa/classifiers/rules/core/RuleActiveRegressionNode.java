@@ -95,7 +95,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 	}
 
 	/* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#updateStatistics(weka.corestatic.Instance)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#updateStatistics(weka.core.Instance)
 	 */
 	public void updateStatistics(Instance instance) {
 		super.updateStatistics(instance);
@@ -146,7 +146,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 	}
 
 	/* (non-Javadoc)
-	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getLearnerToUse(weka.corestatic.Instance, int)
+	 * @see moa.classifiers.rules.RuleActiveLearningNodeInterface#getLearnerToUse(weka.core.Instance, int)
 	 */
 	public int getLearnerToUse(Instance instance, int predMode) {
 		int predictionMode = predMode;

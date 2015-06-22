@@ -1,7 +1,7 @@
 package eu.amidst.moalink.converterFromMoaToAmidst;
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.filereaders.DataRow;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.filereaders.DataRow;
 import weka.core.Instance;
 
 /**
