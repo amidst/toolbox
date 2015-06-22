@@ -147,8 +147,8 @@ public class DAG implements Serializable {
 
         public void addParent(Variable var) {
             if (!mainVar.getDistributionType().isParentCompatible(var)){
-                throw new IllegalArgumentException("Adding a parent var" +var.getName()+ "of type "+var.getDistributionTypeEnum().toString()+" which is not compatible" +
-                        "with children variable "+this.getMainVar().getName()+"of type "+this.mainVar.getDistributionTypeEnum().toString());
+                throw new IllegalArgumentException("Adding a parent var " +var.getName()+ " of type "+var.getDistributionTypeEnum().toString()+" which is not compatible " +
+                        "with children variable "+this.getMainVar().getName()+" of type "+this.mainVar.getDistributionTypeEnum().toString());
             }
 
             if (this.contains(var)) {
