@@ -13,6 +13,7 @@ package eu.amidst.corestatic.examples.learning;
  */
 
 import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.corestatic.datastream.DataOnMemory;
 import eu.amidst.corestatic.datastream.DataStream;
 import eu.amidst.corestatic.io.DataStreamLoader;
 import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
@@ -32,7 +33,7 @@ import eu.amidst.corestatic.variables.Variables;
  *
  * Created by andresmasegosa on 18/6/15.
  */
-public class StreamingVMPExample {
+public class StreamingVMPByBatchExample {
 
 
     /**
@@ -72,11 +73,15 @@ public class StreamingVMPExample {
         //We fix the size of the window, which must be equal to the size of the data batches we use for learning
         parameterLearningAlgorithm.setWindowsSize(5);
 
-        //We set the data which is going to be used for leaning the parameters
-        parameterLearningAlgorithm.setDataStream(data);
 
-        //We perform the learning
-        parameterLearningAlgorithm.runLearning();
+        //We should invoke this method before processing any data
+        parameterLearningAlgorithm.initLearning();
+
+
+        //Then we show how we can perform parameter learnig by a sequential updating of data batches.
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(5)){
+            parameterLearningAlgorithm.updateModel(batch);
+        }
 
         //And we get the model
         BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
