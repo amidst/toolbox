@@ -22,7 +22,8 @@ import eu.amidst.corestatic.variables.Variables;
 
 /**
  *
- * This examples shows how to learn in parallel the parameters of a Bayesian network from a stream of data.
+ * This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum
+ * likelihood.
  *
  * Created by andresmasegosa on 18/6/15.
  */
@@ -71,7 +72,6 @@ public class ParallelMaximumLikelihoodExample {
 
         //We set the data which is going to be used for leaning the parameters
         parameterLearningAlgorithm.setDataStream(data);
-
 
         //We perform the learning
         parameterLearningAlgorithm.runLearning();

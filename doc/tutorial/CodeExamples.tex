@@ -1,6 +1,6 @@
 % !TEX root = TexMain.tex
 %----------------------------------------------------------------------------------------------------------------------------------------
-\chapter{Code Examples of the AMIDST Core API}\label{sec:codeExamples}
+\chapter{Code Examples of the Core API}\label{sec:codeExamples}
 %----------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -458,6 +458,197 @@ System.out.println("P(0.7<Mout<6.59 | W=0) = " + inferenceAlgorithm.getExpectedV
 
 //We can also compute the probability of the evidence
 System.out.println("P(W=0) = "+Math.exp(inferenceAlgorithm.getLogProbabilityOfEvidence()));
+\end{lstlisting}
+
+
+\section{Learning Algorithms}
+
+\subsection{Parallel Maximum Likelihood}
+
+This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum likelihood.
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+
+//We create a MaximumLikelihood object with the MaximumLikehood builder
+MaximumLikelihood parameterLearningAlgorithm = new MaximumLikelihood();
+
+//We activate the parallel mode.
+parameterLearningAlgorithm.setParallelMode(true);
+
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(getNaiveBayesStructure(data,0));
+
+//We set the batch size which will be employed to learn the model in parallel
+parameterLearningAlgorithm.setBatchSize(100);
+
+//We set the data which is going to be used for leaning the parameters
+parameterLearningAlgorithm.setDataStream(data);
+
+
+//We perform the learning
+parameterLearningAlgorithm.runLearning();
+
+//And we get the model
+BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+//We print the model
+System.out.println(bnModel.toString());
+\end{lstlisting}
+
+\subsection{Streaming Variational Bayes}
+
+This examples shows how to learn in the parameters of a Bayesian network from a stream of data with a Bayesian
+approach using the following algorithm
+
+\textit{Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., \& Jordan, M. I. (2013). Streaming variational Bayes. 
+In Advances in Neural Information Processing Systems (pp. 1727-1735).
+}
+
+
+
+\subsubsection*{Version 1}
+
+In this first example we show a simple way to invoke this learning algorithm,
+
+
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+
+//We create a StreamingVariationalBayesVMP object
+StreamingVariationalBayesVMP parameterLearningAlgorithm = new StreamingVariationalBayesVMP();
+
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(getHiddenNaiveBayesStructure(data));
+
+//We fix the size of the window, which must be equal to the size of the data batches we use for learning
+parameterLearningAlgorithm.setWindowsSize(5);
+
+//We set the data which is going to be used for leaning the parameters
+parameterLearningAlgorithm.setDataStream(data);
+
+//We perform the learning
+parameterLearningAlgorithm.runLearning();
+
+//And we get the model
+BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+//We print the model
+System.out.println(bnModel.toString());
+\end{lstlisting}
+
+
+\subsubsection*{Version 2}
+
+In this second example we show a alternative use of this class which explicitly update the model by batches, 
+
+
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+
+//We create a StreamingVariationalBayesVMP object
+StreamingVariationalBayesVMP parameterLearningAlgorithm = new StreamingVariationalBayesVMP();
+
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(getHiddenNaiveBayesStructure(data));
+
+//We fix the size of the window, which must be equal to the size of the data batches 
+//we use for learning
+parameterLearningAlgorithm.setWindowsSize(5);
+
+
+//We should invoke this method before processing any data
+parameterLearningAlgorithm.initLearning();
+
+
+//Then we show how we can perform parameter learnig by a sequential updating of 
+//data batches.
+for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(5)){
+    parameterLearningAlgorithm.updateModel(batch);
+}
+
+//And we get the model
+BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+//We print the model
+System.out.println(bnModel.toString());
+\end{lstlisting}
+
+
+% !TEX root = TexMain.tex
+%----------------------------------------------------------------------------------------------------------------------------------------
+\chapter{Code Examples of the HuginLink API}\label{sec:codeExamples}
+%----------------------------------------------------------------------------------------------------------------------------------------
+
+\section{Models conversion between AMIDST and Hugin}
+
+This example shows how to use the class BNConverterToAMIDST and BNConverterToHugin to convert a 
+Bayesian network models between Hugin and AMIDST formats
+
+
+\begin{lstlisting}
+//We load from Hugin format
+Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/asia.net");
+
+//Then, it is converted to AMIDST BayesianNetwork object
+BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
+
+//Then, it is converted to Hugin Bayesian Network object
+huginBN = BNConverterToHugin.convertToHugin(amidstBN);
+
+System.out.println(amidstBN.toString());
+System.out.println(huginBN.toString());
+\end{lstlisting}
+
+
+
+\section{I/O of Bayesian Networks}
+
+This example shows how to use the class BNLoaderFromHugin and BNWriterToHugin classes to load and
+write Bayesian networks in Hugin format.
+
+\begin{lstlisting}
+//We load from Hugin format
+Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/asia.net");
+
+//We save a AMIDST BN to Hugin format
+BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
+BNWriterToHugin.saveToHuginFile(amidstBN,"networks/tmp.net");
+\end{lstlisting}
+
+\section{Invoking Hugin's inference engine}
+
+This example we show how to perform inference using Hugin (http://www.hugin.com) inference engine within the AMIDST toolbox
+
+\begin{lstlisting}
+//We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
+BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
+
+//We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
+Variable varMout = bn.getStaticVariables().getVariableByName("Mout");
+Variable varW = bn.getStaticVariables().getVariableByName("W");
+
+//First we create an instance of a inference algorithm. In this case, we use the ImportanceSampling class.
+InferenceAlgorithm inferenceAlgorithm = new HuginInference();
+//Then, we set the BN model
+inferenceAlgorithm.setModel(bn);
+
+//If exists, we also set the evidence.
+Assignment assignment = new HashMapAssignment(1);
+assignment.setValue(varW,0);
+inferenceAlgorithm.setEvidence(assignment);
+
+//Then we run inference
+inferenceAlgorithm.runInference();
+
+//Then we query the posterior of
+System.out.println("P(Mout|W=0) = " + inferenceAlgorithm.getPosterior(varMout));
+
+//Or some more refined queries
+System.out.println("P(0.7<Mout<3.5 | W=0) = " + inferenceAlgorithm.getExpectedValue(varMout, v -> (0.7 < v && v < 3.5) ? 1.0 : 0.0 ));
+
 \end{lstlisting}
 
 %%% Local Variables:
