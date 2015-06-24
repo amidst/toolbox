@@ -40,6 +40,11 @@ public class HashMapAssignment implements Assignment {
         this.assignment.put(var,val);
     }
 
+    @Override
+    public Set<Variable> getVariables() {
+        return assignment.keySet();
+    }
+
     // Now you can use the following loop to iterate over all assignments:
     // for (Map.Entry<Variable, Double> entry : assignment.entrySet()) return entry;
     public Set<Map.Entry<Variable,Double>> entrySet(){

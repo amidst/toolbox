@@ -195,7 +195,7 @@ public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEv
     public RunOutlierVisualizer(OutlierVisualTab visualPanel, OutlierSetupTab outlierSetupTab){
         m_outlier[ALGORITHM_1] = outlierSetupTab.getOutlierer0();        
         m_outlier[ALGORITHM_1].prepareForUse();        
-        // show algorithm output to log-panel
+        // show algorithm outputString to log-panel
         m_outlier[ALGORITHM_1].SetUserInfo(false, false, new LogPanelPrintMsg(), 2000);
         m_outlier[ALGORITHM_1].outlierNotifier = new MyOutlierNotifier(ALGORITHM_1);
         
@@ -203,7 +203,7 @@ public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEv
         bUseAlgorithm2 = (m_outlier[ALGORITHM_2] != null);
         if (bUseAlgorithm2) {
             m_outlier[ALGORITHM_2].prepareForUse();        
-            // show algorithm output to log-panel
+            // show algorithm outputString to log-panel
             m_outlier[ALGORITHM_2].SetUserInfo(false, false, new LogPanelPrintMsg(), 2000);
             m_outlier[ALGORITHM_2].outlierNotifier = new MyOutlierNotifier(ALGORITHM_2);
         }

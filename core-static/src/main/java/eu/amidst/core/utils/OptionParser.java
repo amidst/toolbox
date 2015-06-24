@@ -57,7 +57,7 @@ public class OptionParser {
                     options = options.replace("\\","\n");
                     System.out.println(options);
                 }else if(args[++i].equalsIgnoreCase("-r")){
-                     //TODO: Parse this output to make it look/read good
+                     //TODO: Parse this outputString to make it look/read good
                     String options = getListOptionsRecursively(classNameID);
                     options = options.replace("\\","\n");
                     System.out.println(options);

@@ -26,8 +26,8 @@ public class MLMultinomialsTest {
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
 
         System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().toString());
-        //System.out.println(asianet.toString());
+        //System.out.println(asianet.getDAG().outputString());
+        //System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -64,8 +64,8 @@ public class MLMultinomialsTest {
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
 
         System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().toString());
-        //System.out.println(asianet.toString());
+        //System.out.println(asianet.getDAG().outputString());
+        //System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -102,8 +102,8 @@ public class MLMultinomialsTest {
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
 
         System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().toString());
-        //System.out.println(asianet.toString());
+        //System.out.println(asianet.getDAG().outputString());
+        //System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);

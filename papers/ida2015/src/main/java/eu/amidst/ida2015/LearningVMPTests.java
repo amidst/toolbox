@@ -654,7 +654,7 @@ public class LearningVMPTests {
 
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
-            //System.out.println(learntNormalVarBN.toString());
+            //System.out.println(learntNormalVarBN.outputString());
 
 
             String meanfromML = Double.toString(((Normal) ((BaseDistribution_MultinomialParents) learntNormalVarBN.

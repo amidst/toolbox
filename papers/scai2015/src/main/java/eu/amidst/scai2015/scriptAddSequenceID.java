@@ -66,6 +66,7 @@ public class scriptAddSequenceID {
         //seqID and counter respectively
         int[] auxValues = new int[]{0,0};
 
+        Attributes attributes = new Attributes(newAttsList);
         data.stream().forEach(e -> {
 
             if(auxValues[0]!=e.getValue(timeID)) {
@@ -73,7 +74,7 @@ public class scriptAddSequenceID {
                 auxValues[1] = 0;
             }
 
-            DataRow dataRow = new DataRowFromAtts(newAttsList.size());
+            DataRow dataRow = new DataRowFromAtts(attributes);
             for (Attribute att : atts) {
                 dataRow.setValue(newAtts.getAttributeByName(att.getName()), e.getValue(att));
             }
@@ -97,11 +98,12 @@ public class scriptAddSequenceID {
 
     private static class DataRowFromAtts implements DataRow {
         private Map<Attribute,Double> assignment;
+        private Attributes attributes;
 
-        public DataRowFromAtts(int nOfAtts){
-            assignment = new ConcurrentHashMap(nOfAtts);
+        public DataRowFromAtts(Attributes attributes_){
+            attributes = attributes_;
+            assignment = new ConcurrentHashMap(attributes.getNumberOfAttributes());
         }
-
         @Override
         public double getValue(Attribute key){
             Double val = assignment.get(key);
@@ -116,6 +118,11 @@ public class scriptAddSequenceID {
         @Override
         public void setValue(Attribute att, double val) {
             this.assignment.put(att,val);
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return this.attributes;
         }
 
 

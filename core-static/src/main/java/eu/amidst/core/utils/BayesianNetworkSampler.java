@@ -129,6 +129,16 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                     }
 
                     @Override
+                    public Attributes getAttributes() {
+                        return null;
+                    }
+
+                    @Override
+                    public Set<Variable> getVariables(){
+                        return assignment.getVariables();
+                    }
+
+                    @Override
                     public double getValue(Attribute att) {
                         return this.assignment.getValue(sampler.network.getStaticVariables().getVariableByName(att.getName()));
                     }
@@ -208,16 +218,16 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         System.out.println(watch.stop());
 
         for (Assignment assignment : sampler.getSampleIterator(2)){
-            System.out.println(assignment.toString(network.getStaticVariables().getListOfVariables()));
+            System.out.println(assignment.outputString());
         }
         System.out.println();
 
         for (Assignment assignment : sampler.getSampleList(2)){
-            System.out.println(assignment.toString(network.getStaticVariables().getListOfVariables()));
+            System.out.println(assignment.outputString());
         }
         System.out.println();
 
-        sampler.getSampleStream(2).forEach( e -> System.out.println(e.toString(network.getStaticVariables().getListOfVariables())));
+        sampler.getSampleStream(2).forEach( e -> System.out.println(e.outputString()));
     }
 
 }

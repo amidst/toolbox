@@ -70,8 +70,9 @@ public final class scriptAddIndicators{
 
         DataStreamFromFile data = new DataStreamFromFile(reader);
 
+        Attributes attributes = new Attributes(newAtts);
         data.stream().forEach(e -> {
-            DataRow dataRow = new DataRowFromAtts(newAtts.size());
+            DataRow dataRow = new DataRowFromAtts(attributes);
             for (Attribute att : atts) {
                 dataRow.setValue(att, e.getValue(att));
                 String name = att.getName();
@@ -105,9 +106,11 @@ public final class scriptAddIndicators{
 
     private static class DataRowFromAtts implements DataRow {
         private Map<Attribute,Double> assignment;
+        private Attributes attributes;
 
-        public DataRowFromAtts(int nOfAtts){
-            assignment = new ConcurrentHashMap(nOfAtts);
+        public DataRowFromAtts(Attributes attributes_){
+            attributes = attributes_;
+            assignment = new ConcurrentHashMap(attributes.getNumberOfAttributes());
         }
 
         @Override
@@ -124,6 +127,11 @@ public final class scriptAddIndicators{
         @Override
         public void setValue(Attribute att, double val) {
             this.assignment.put(att,val);
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return this.attributes;
         }
 
 

@@ -174,8 +174,8 @@ public class RandomRules extends AbstractClassifier implements Regressor {
         Instance instance = new DenseInstance(1.0, attVals);
         instance.setDataset(dataset[classifierIndex]);
         instance.setClassValue(inst.classValue());
-       // System.out.println(inst.toString());
-       // System.out.println(instance.toString());
+       // System.out.println(inst.outputString());
+       // System.out.println(instance.outputString());
        // System.out.println("============");
         return instance;
     }

@@ -8,7 +8,6 @@
 
 package eu.amidst.core.datastream.filereaders;
 
-import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -34,11 +33,6 @@ public class DataStreamFromFile implements DataStream<DataInstance> {
     @Override
     public Stream<DataInstance> stream() {
         return this.reader.stream().map( dataRow -> new DataInstanceImpl(dataRow));
-    }
-
-    @Override
-    public Stream<DataInstance> parallelStream(){
-        return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), 128);
     }
 
     @Override

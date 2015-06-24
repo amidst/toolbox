@@ -29,7 +29,7 @@ public class VMPNormalTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
             //bn.randomInitialization(new Random(i));
-            //System.out.println(bn.toString());
+            //System.out.println(bn.outputString());
             VMP vmp = new VMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
@@ -41,7 +41,7 @@ public class VMPNormalTest extends TestCase {
             vmp.runInference();
             System.out.println(watch.stop());
 
-            //bn.getStaticVariables().getListOfVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableByName(var.getName())).toString()));
+            //bn.getStaticVariables().getListOfVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableByName(var.getName())).outputString()));
         }
     }
 
