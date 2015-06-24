@@ -17,9 +17,17 @@ import java.util.stream.Stream;
 import static java.util.Spliterators.spliterator;
 import static java.util.stream.StreamSupport.stream;
 
+/**
+ * This class implements a {@link Spliterator} for iterating using data batches a given {@link DataStream}.
+ * The data batches are explicitly stored in {@link DataOnMemory} objects. <p>
+ *
+ * It is used by the class {@link DataStream}.
+ *
+ * @param <T>
+ */
 public class BatchesSpliterator<T extends DataInstance> implements Spliterator<DataOnMemory<T>> {
-    private final DataStream<T> dataStream;
 
+    private final DataStream<T> dataStream;
     private final Spliterator<T> spliterator;
     private final int batchSize;
     private final int characteristics;
@@ -45,7 +53,11 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
         return new BatchIterator<T>(toFixedBatchStream(dataStream_, batchSize));
     }
 
-    @Override public Spliterator<DataOnMemory<T>> trySplit() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Spliterator<DataOnMemory<T>> trySplit() {
         final HoldingConsumer<T> holder = new HoldingConsumer<>();
         if (!spliterator.tryAdvance(holder))
             return null;
@@ -60,6 +72,10 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
         if (est != Long.MAX_VALUE) est -= 1;
         return spliterator(a, 0, 1, characteristics());
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean tryAdvance(Consumer<? super DataOnMemory<T>> action) {
         final HoldingConsumer<T> holder = new HoldingConsumer<>();
@@ -82,15 +98,30 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public Comparator<? super DataOnMemory<T>> getComparator() {
         if (hasCharacteristics(SORTED)) return null;
         throw new IllegalStateException();
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public long estimateSize() { return est; }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public int characteristics() { return characteristics; }
 
     static final class HoldingConsumer<T> implements Consumer<T> {
         T value;
+
+        /**
+         * {@inheritDoc}
+         */
         @Override public void accept(T value) { this.value = value; }
     }
 
@@ -102,6 +133,9 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
             stream=stream_;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Iterator<DataOnMemory<T>> iterator() {
             return this.stream.iterator();

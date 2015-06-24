@@ -12,15 +12,37 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 
 /**
- * Created by andresmasegosa on 11/11/14.
+ *
+ * This interface represents a row of the data matrix containing the data. It can also
+ * be seen as a specific assignment to the attributes of a data set.
+ *
  */
 public interface DataRow {
 
+    /**
+     * This method return the value assigned to a given Attribute
+     * @param att, the Attribute object we want to query
+     * @return The assigned value to the given Attribute. Returns a Double.NaN if
+     * the attribute is not observed in this assignment.
+     */
     double getValue(Attribute att);
 
+    /**
+     * This method set the value assigned to an Attribute. If the value is already include,
+     * then the value is updated accordingly.
+     *
+     * @param att, the Attribute object we want to assign
+     * @param value, the assigned value
+     */
     void setValue(Attribute att, double value);
 
+    /**
+     * This method return the set of attributes which have an assigned value
+     * stored in this object.
+     * @return A valid Attributes object
+     */
     Attributes getAttributes();
+
 }
 
 

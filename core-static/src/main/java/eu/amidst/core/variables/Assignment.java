@@ -11,10 +11,10 @@ package eu.amidst.core.variables;
 import java.util.Set;
 
 /**
- * This interface defines a collection of assignments to variables. I.e.
- * "(A=0.1, B = True)", assuming A is continuous variable and B a binary variable.
+ * This interface defines a collection of assignments to variables. <p>
  *
- * Created by ana@cs.aau.dk on 03/11/14.
+ * I.e. "(A=0.1, B = True)", assuming A is continuous variable and B a binary variable.
+ *
  */
 public interface Assignment {
 
@@ -28,7 +28,7 @@ public interface Assignment {
 
     /**
      * This method set the value assigned to a variable. If the value is already include,
-     * then update the value accordingly.
+     * then the value is updated accordingly.
      *
      * @param var, the Variable object we want to assign
      * @param value, the assigned value
@@ -36,8 +36,18 @@ public interface Assignment {
     void setValue(Variable var, double value);
 
 
+    /**
+     * This method returns the set of variables contained in the assignment.
+     * @return A valide Set object
+     */
     Set<Variable> getVariables();
 
+    /**
+     * This method contains a default implementation of a "toString()" method. It produces
+     * a String detailed all the variable-value assignments stored in the object. E.g., {A=0, B=1.7}.
+     *
+     * @return A String object starting with "{" and endind with "}".
+     */
     default String outputString(){
 
         StringBuilder builder = new StringBuilder(this.getVariables().size()*2);
@@ -46,5 +56,4 @@ public interface Assignment {
         builder.append("}");
         return builder.toString();
     }
-
 }

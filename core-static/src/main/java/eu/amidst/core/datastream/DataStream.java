@@ -13,25 +13,24 @@ import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+//TODO: Which the index of the variables TIME_ID and SEQ_ID
+
 /**
  *
  * The AMIDST Toolbox is specially designed to deal with data streams. The interface
  * eu.amidst.core.DataStream is the main point for dealing this kind of data. It is specially
  * designed to consume the data sequentially without loading it into main memory. In this way, the class
  * can handle very large data sets. A DataStream object is composed as a collection of
- * eu.amidst.core.DataInstance objects.
+ * eu.amidst.core.DataInstance objects. <p>
  *
- * For an example of use see the class
+ * For an example of use see the class <br>
  *
- *  eu.amidst.core.examples.datastream.DataStreamExample
+ *  eu.amidst.core.examples.datastream.DataStreamExample <p>
  *
- * For details about the implementation of this class see Section 3 of the following paper,
+ * For details about the implementation of this class see Section 3 of the following paper, <br>
  *
  *  "Borchani et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015)"
  *
- *
- * //TODO: Which the index of the variables TIME_ID and SEQ_ID
- * Created by andresmasegosa on 11/12/14.
  */
 public interface DataStream<E extends DataInstance> extends Iterable<E> {
 
@@ -47,8 +46,8 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
     void close();
 
     /**
-     * A data streams could be restarted. So, we can iterate over all the data samples again.
-     * @return Whether the data stream can be resarted
+     * A data streams could be restarted. So, we could iterate over all the data samples again.
+     * @return Whether the data stream can be restarted
      */
     boolean isRestartable();
 
