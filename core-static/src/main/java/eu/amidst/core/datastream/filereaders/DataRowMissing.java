@@ -12,20 +12,39 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 
 /**
- * Created by ana@cs.aau.dk on 13/11/14.
+ *
+ * This class represents a {@link DataRow} object where all the attributes
+ * have assigned a missing value.
+ *
  */
 public class DataRowMissing implements DataRow{
 
+    /**
+     * Return a Double.NaN value representing a missing observation
+     * @param att, the Attribute object we want to query
+     * @return a Double.NaN value
+     */
     @Override
     public double getValue(Attribute att) {
         return Double.NaN;
     }
 
+
+    /**
+     * This method makes no sense in this implementation of a DataRow
+     * @param att, the Attribute object we want to assign
+     * @param value, the assigned value
+     */
     @Override
     public void setValue(Attribute att, double value) {
 
     }
 
+
+    /**
+     * This method makes no sense in this implementation of a DataRow.
+     * @return null
+     */
     @Override
     public Attributes getAttributes() {
         return null;
