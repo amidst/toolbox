@@ -8,7 +8,7 @@
 
 package eu.amidst.dynamic.variables;
 
-import eu.amidst.corestatic.variables.Assignment;
+import eu.amidst.core.variables.Assignment;
 
 /**
  * Created by andresmasegosa on 12/02/15.

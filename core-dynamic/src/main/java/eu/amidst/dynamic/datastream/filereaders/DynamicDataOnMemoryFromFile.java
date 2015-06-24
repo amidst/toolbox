@@ -8,13 +8,13 @@
 
 package eu.amidst.dynamic.datastream.filereaders;
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.datastream.DataOnMemory;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.datastream.filereaders.DataFileReader;
-import eu.amidst.corestatic.datastream.filereaders.DataRow;
-import eu.amidst.corestatic.datastream.filereaders.DataRowMissing;
+import eu.amidst.core.datastream.filereaders.DataFileReader;
+import eu.amidst.core.datastream.filereaders.DataRow;
+import eu.amidst.core.datastream.filereaders.DataRowMissing;
 
 import java.util.ArrayList;
 import java.util.Arrays;

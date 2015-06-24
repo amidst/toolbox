@@ -79,7 +79,7 @@ import weka.core.Instances;
  * 
  * <pre> -S &lt;classname and options&gt;
  *  Node splitting method to use.
- *  (default: weka.corestatic.neighboursearch.kdtrees.SlidingMidPointOfWidestSide)</pre>
+ *  (default: weka.core.neighboursearch.kdtrees.SlidingMidPointOfWidestSide)</pre>
  * 
  * <pre> -W &lt;value&gt;
  *  Set minimal width of a box
@@ -912,7 +912,7 @@ public class KDTree
     // todo: undecided situations
     int numCent = centList.length;
 
-    // WARNING: assignments is "input/output-parameter"
+    // WARNING: assignments is "input/outputString-parameter"
     // should not be null and the following should not happen
     if (assignments == null) {
       assignments = new int[m_Instances.numInstances()];

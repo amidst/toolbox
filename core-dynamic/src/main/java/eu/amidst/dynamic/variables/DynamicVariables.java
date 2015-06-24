@@ -24,11 +24,11 @@
 
 package eu.amidst.dynamic.variables;
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.variables.*;
-import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.Serializable;
 import java.util.*;

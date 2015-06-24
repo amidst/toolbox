@@ -97,7 +97,7 @@ public class FloatOptionEditComponent extends JPanel implements
     @Override
     public void applyState() {
         this.editedOption.setValue(((Double) this.spinner.getValue()).doubleValue());
-        // this.editedOption.setValue(Double.parseDouble(this.spinner.getValue().toString()));
+        // this.editedOption.setValue(Double.parseDouble(this.spinner.getValue().outputString()));
     }
 
     @Override

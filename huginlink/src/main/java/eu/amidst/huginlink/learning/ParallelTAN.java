@@ -2,16 +2,16 @@ package eu.amidst.huginlink.learning;
 
 import COM.hugin.HAPI.*;
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataOnMemory;
-import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.learning.parametric.LearningEngine;
-import eu.amidst.corestatic.learning.parametric.MaximumLikelihood;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.utils.*;
-import eu.amidst.corestatic.variables.Variables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.learning.parametric.LearningEngine;
+import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.*;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 
@@ -257,7 +257,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         for (int i = 1; i <= 4; i++) {
             int samplesOnMemory = 1000;
             int numCores = i;
-            System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "corestatic/s ...");
+            System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
             ParallelTAN tan = new ParallelTAN();
             tan.setOptions(args);
             //tan.loadOptionsFromFile("configurationFiles/conf.txt");

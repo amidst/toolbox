@@ -8,12 +8,12 @@
 
 package eu.amidst.dynamic.examples.classifiers;
 
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.classifiers.NaiveBayesClassifier;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
-import eu.amidst.corestatic.utils.BayesianNetworkSampler;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.classifiers.NaiveBayesClassifier;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 
 /**
  * Created by andresmasegosa on 15/01/15.

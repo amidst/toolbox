@@ -226,7 +226,7 @@ public class CMM extends MeasureCollection{
                         matchIndex = hc0;
                     }
                     if(debug){
-                        //System.out.println("FC"+fc+"("+Arrays.toString(mapFC[fc])+") - HC0_"+hc0+"("+Arrays.toString(mapGT[hc0])+"):"+errDiff);
+                        //System.out.println("FC"+fc+"("+Arrays.outputString(mapFC[fc])+") - HC0_"+hc0+"("+Arrays.outputString(mapGT[hc0])+"):"+errDiff);
                     }
                 }
                 //if we have a fitting profile overwrite the min error choice

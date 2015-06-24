@@ -67,7 +67,7 @@ public class EvaluateModelRegression extends RegressionMainTask {
             Integer.MAX_VALUE);
 
     public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
+            "File to append outputString predictions to.", null, "pred", true);
 
     public EvaluateModelRegression() {
     }
@@ -94,7 +94,7 @@ public class EvaluateModelRegression extends RegressionMainTask {
         long instancesProcessed = 0;
         monitor.setCurrentActivity("Evaluating model...", -1.0);
 
-        //File for output predictions
+        //File for outputString predictions
         File outputPredictionFile = this.outputPredictionFileOption.getFile();
         PrintStream outputPredictionResultStream = null;
         if (outputPredictionFile != null) {

@@ -8,8 +8,8 @@
 
 package eu.amidst.dynamic.datastream;
 
-import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.utils.FixedBatchParallelSpliteratorWrapper;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
 import java.util.stream.Stream;
 

@@ -87,9 +87,9 @@ public class EvaluateClustering extends MainTask {
                 (int) this.instanceLimitOption.getValue(),
                 (String) dumpFileOption.getValue());
 
-        LearningCurve learningCurve = new LearningCurve("EvaluateClustering does not support custom output file (> [filename]).\n" +
+        LearningCurve learningCurve = new LearningCurve("EvaluateClustering does not support custom outputString file (> [filename]).\n" +
         												"Check out the dump file to see the results (if you haven't specified, dumpClustering.csv by default).");
-        //System.out.println(learner.toString());
+        //System.out.println(learner.outputString());
         return learningCurve;
     }
 }

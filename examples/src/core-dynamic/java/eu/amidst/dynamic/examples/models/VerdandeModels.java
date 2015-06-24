@@ -9,15 +9,15 @@
 package eu.amidst.dynamic.examples.models;
 
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public final class VerdandeModels {
     }
 
     /**
-     * In this example we show how to create an input-output SKF (as in Figure 4.28 of Deliverable 2.1).
+     * In this example we show how to create an input-outputString SKF (as in Figure 4.28 of Deliverable 2.1).
      */
     public static void VerdandeInputOutputSKF() throws IOException {
 
@@ -141,7 +141,7 @@ public final class VerdandeModels {
          * 2. The printed graph is structured in two layers. We first display the graph structure for time 0 (no
          * temporal dependencies) and, the, we time t (with temporal dependencies).
          */
-        System.out.println("Input-output SKF (Figure 4.28 of D2.1)");
+        System.out.println("Input-outputString SKF (Figure 4.28 of D2.1)");
         System.out.println(dynamicDAG.toString());
 
         /**
@@ -163,7 +163,7 @@ public final class VerdandeModels {
     }
 
     /**
-     * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
+     * In this example we show how to create an input-outputString KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
     public static void VerdandeInputOutputKFwithMG() throws IOException {
 
@@ -309,7 +309,7 @@ public final class VerdandeModels {
          * temporal dependencies) and, the, we time t (with temporal dependencies).
          */
         System.out.println("-------------------------------------\n");
-        System.out.println("Input-output KF (Figure 4.29 of D2.1)\n");
+        System.out.println("Input-outputString KF (Figure 4.29 of D2.1)\n");
         System.out.println(dynamicDAG.toString());
 
         /**
@@ -332,7 +332,7 @@ public final class VerdandeModels {
     }
 
     /**
-     * In this example we show how to create an input-output KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
+     * In this example we show how to create an input-outputString KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
     public static void VerdandeInputOutputHMM() throws IOException {
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
@@ -363,7 +363,7 @@ public final class VerdandeModels {
         dynamicDAG.getParentSetTimeT(observedGammaDiff).addParent(shift);
 
         System.out.println("-------------------------------------\n");
-        System.out.println("Input-output HMM (Figure 4.31 of D2.1)\n");
+        System.out.println("Input-outputString HMM (Figure 4.31 of D2.1)\n");
         System.out.println(dynamicDAG.toString());
 
 

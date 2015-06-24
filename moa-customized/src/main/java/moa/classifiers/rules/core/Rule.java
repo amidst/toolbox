@@ -130,7 +130,7 @@ public class Rule extends AbstractMOAObject {
 	}
 
 	/**
-	 * MOA GUI output
+	 * MOA GUI outputString
 	 */
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
