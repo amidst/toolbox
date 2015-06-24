@@ -660,3 +660,57 @@ System.out.println("P(0.7<Mout<3.5 | W=0) = " + inferenceAlgorithm.getExpectedVa
 
 
 \end{lstlisting}
+
+% !TEX root = TexMain.tex
+%----------------------------------------------------------------------------------------------------------------------------------------
+\chapter{MoaLink Module: AMIDST models from MOA}\label{sec:codeExamples}
+%----------------------------------------------------------------------------------------------------------------------------------------
+
+\section{Generate Jar with AMIDST extension}
+In the moalink directory, run the \texttt{compileWithDependencies.sh}. A moalink-1.0-SNAPSHOT-jar-with-dependencies.jar will be generated in the \texttt{target} directory. Please place this jar file on your library path for moa. 
+
+With this jar file we can make use of the different learning and inference algorithms in AMIDST to learn for expressive Bayesian network models for classification, regression and clustering. AMIDST offer the possibility to add latent Gaussian and/or Multinomial variables to a base naive Bayes structure. Normally, the addition of these latent variables should provide classifiers with lower bias and higher variance, that is, more sophisticated classifiers that are able to lean more complex interdependencies in the data but also more prone to overfit. The user should evaluate the complexity of his/her dataset and choose the number of latent Gaussian variables and states of the multinomial latent variable accordingly.
+
+With the following command, MOA gui can be invoked e.g (remember to place \texttt{compileWithDependencies.sh} under the lib folder reference in the \verb'-cp' option):
+
+\begin{verbatim}
+java -Xmx512m -cp "../lib/*" -javaagent:../lib/sizeofag-1.0.0.jar
+moa.gui.GUI
+\end{verbatim}
+
+In the following sections we include some command examples to use the AMIDST models from MOA from the command line in a Unix machine\footnote{Note that these examples should be slightly adapted to run on a Windows machine: e.g. use \textasciicircum~ instead of \textbackslash~ to escape brackets.}.
+
+\section{AMIDST Classifiers from MOA}
+
+The following command can be used to learn a Bayesian model with a latent Gaussian variable (HG) and a multinomial with 2 states (HM), as displayed in Figure \ref{fig:HODE} (a). The VMP algorithm is used to learn the parameters of these two non-observed variables and make predictions over the class variable.
+
+\begin{figure}[htb]
+   \centering
+   \begin{tabular}{cc}
+	\includegraphics[scale=0.8]{figs/HODE}&
+	\includegraphics[scale=0.8]{figs/regressionHODE}\\
+	(a) Model for classification & (b) Model for regression \\
+	\end{tabular}
+\caption{Bayesian network model learnt for a stream of data with $10$ numeric attributes. Grey nodes represent discrete variables and white nodes continuous variables. It corresponds to a Naive Bayes model structure enriched with a Gaussian and a 2-state multinomial parent. The C and R variables represent the class and the regressor variables respectively.}
+\label{fig:HODE}
+\end{figure}
+
+\begin{verbatim}
+java -Xmx512m -cp "../lib/*" -javaagent:../lib/sizeofag-1.0.0.jar 
+moa.DoTask EvaluatePrequential -l \(bayes.AmidstClassifier -g 1 
+-m 2\) -s generators.RandomRBFGenerator -i 10000 -f 1000 -q 1000
+\end{verbatim}
+
+\section{AMIDST Regression from MOA}
+
+It is possible to learn an enriched naive Bayes model for regression if the class label is of a continuous nature. The following command uses the model in Figure \ref{fig:HODE}(b) on a toy dataset from WEKA's collection of regression problems\footnote{\url{http://prdownloads.sourceforge.net/weka/datasets-numeric.jar}}.
+
+\begin{verbatim}
+java -Xmx512m -cp "../lib/*" -javaagent:../lib/sizeofag-1.0.0.jar 
+moa.DoTask EvaluatePrequentialRegression -l bayes.AmidstRegressor
+ -s (ArffFileStream -f ./quake.arff)
+\end{verbatim}
+
+Note that the simpler the dataset the less complex the model should be. In this case, \texttt{quake.arff} is a very simple and small dataset that should probably be learn with a more simple classifier, that is, a high-bias-low-variance classifier, in order to avoid overfitting. This aims at providing a simple running example.
+
+%\section{AMIDST Clustering from MOA}
