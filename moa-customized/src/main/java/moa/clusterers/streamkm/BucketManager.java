@@ -86,7 +86,7 @@ public class BucketManager  {
 				curbucket++;
 				nextbucket++;
 				/*
-				as long as the next bucket is full output the coreset to the spillover of the next bucket
+				as long as the next bucket is full outputString the coreset to the spillover of the next bucket
 				*/
 				while(this.buckets[nextbucket].cursize == this.maxBucketsize){
 					//printf("Bucket %d full \n",nextbucket);
@@ -143,7 +143,7 @@ public class BucketManager  {
 			int j;
 			for(j=i+1; j < this.numberOfBuckets; j++){
 				if(this.buckets[j].cursize != 0){
-					//output the coreset into the spillover of bucket j
+					//outputString the coreset into the spillover of bucket j
 					this.treeCoreset.unionTreeCoreset(this.maxBucketsize,this.maxBucketsize,
 						this.maxBucketsize,d, 
 						this.buckets[j].points,coreset,

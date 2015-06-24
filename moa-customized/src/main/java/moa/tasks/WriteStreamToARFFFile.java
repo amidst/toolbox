@@ -32,7 +32,7 @@ import moa.options.IntOption;
 import moa.streams.InstanceStream;
 
 /**
- * Task to output a stream to an ARFF file
+ * Task to outputString a stream to an ARFF file
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -58,7 +58,7 @@ public class WriteStreamToARFFFile extends MainTask {
             Integer.MAX_VALUE);
 
     public FlagOption suppressHeaderOption = new FlagOption("suppressHeader",
-            'h', "Suppress header from output.");
+            'h', "Suppress header from outputString.");
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {

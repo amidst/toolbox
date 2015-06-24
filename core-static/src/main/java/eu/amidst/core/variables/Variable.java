@@ -15,7 +15,7 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import java.util.List;
 
 /**
- * TODO Implements toString method
+ * TODO Implements outputString method
  * Created by afa on 02/07/14.
  */
 public interface Variable {

@@ -75,7 +75,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
     protected double[] m_classTotals;
 
     /**
-     * copy of header information for use in toString method
+     * copy of header information for use in outputString method
      */
     protected Instances m_headerInfo;
 

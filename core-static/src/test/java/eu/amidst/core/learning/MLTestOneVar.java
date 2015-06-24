@@ -37,7 +37,7 @@ public class MLTestOneVar {
         System.out.println(watch.stop());
 
         DataStream<DataInstance> data = sampler.sampleToDataStream(10);
-        data.stream().forEach( e -> System.out.println(e.toString(net.getStaticVariables().getListOfVariables())));
+        data.stream().forEach( e -> System.out.println(e.outputString()));
 
         //Load the sampled data
         data = sampler.sampleToDataStream(10);

@@ -175,7 +175,7 @@ public class AmidstRegressor extends AbstractClassifier implements Regressor {
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, this.attributes_));
         if(batch_.getNumberOfDataInstances() < getBatchSize_()-1) {  //store
             batch_.add(dataInstance);
         }else{                                                  //store & learn
@@ -215,7 +215,7 @@ public class AmidstRegressor extends AbstractClassifier implements Regressor {
             return new double[0];
         }
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, this.attributes_));
         double realValue = dataInstance.getValue(targetVar_);
         dataInstance.setValue(targetVar_, Utils.missingValue());
         this.predictions_.setEvidence(dataInstance);

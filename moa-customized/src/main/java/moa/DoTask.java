@@ -109,10 +109,10 @@ public class DoTask {
                 // create standard options
                 FlagOption suppressStatusOutputOption = new FlagOption(
                         "suppressStatusOutput", 'S',
-                        "Suppress the task status output that is normally send to stderr.");
+                        "Suppress the task status outputString that is normally send to stderr.");
                 FlagOption suppressResultOutputOption = new FlagOption(
                         "suppressResultOutput", 'R',
-                        "Suppress the task result output that is normally send to stdout.");
+                        "Suppress the task result outputString that is normally send to stdout.");
                 IntOption statusUpdateFrequencyOption = new IntOption(
                         "statusUpdateFrequency",
                         'F',
@@ -164,7 +164,7 @@ public class DoTask {
                             progressLine.setCharAt(
                                     MAX_STATUS_STRING_LENGTH - 1, '~');
                         }
-                        //System.err.print(progressLine.toString());
+                        //System.err.print(progressLine.outputString());
                         //System.err.print('\r');
                         if (++progressAnimIndex >= progressAnimSequence.length) {
                             progressAnimIndex = 0;

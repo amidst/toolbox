@@ -220,7 +220,7 @@ public class CMM_GTAnalysis{
     
     
     /**
-     * Main class to model the new clusters that will be the output of the cluster analysis
+     * Main class to model the new clusters that will be the outputString of the cluster analysis
      *
      */
     protected class GTCluster{

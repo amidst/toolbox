@@ -9,6 +9,7 @@
 package eu.amidst.dynamic.utils;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Sets;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -19,7 +20,7 @@ import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.variables.HashMapAssignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.*;
@@ -198,16 +199,6 @@ public class DynamicBayesianNetworkSampler {
             this.timeID = timeID1;
         }
 
-
-
-        @Override
-        public String toString(List<Variable> vars) {
-            StringBuilder builder = new StringBuilder(vars.size()*2);
-            vars.stream().limit(vars.size()-1).forEach(var -> builder.append(this.getValue(var)+","));
-            builder.append(this.getValue(vars.get(vars.size()-1)));
-            return builder.toString();
-        }
-
         @Override
         public int getSequenceID() {
             return sequenceID;
@@ -234,6 +225,16 @@ public class DynamicBayesianNetworkSampler {
             } else {
                 dataPresent.setValue(var, val);
             }
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return null;
+        }
+
+        @Override
+        public Set<Variable> getVariables(){
+            return Sets.union(dataPresent.getVariables(), dataPast.getVariables());
         }
 
         @Override
@@ -283,7 +284,7 @@ public class DynamicBayesianNetworkSampler {
         for (DynamicAssignment dynamicdataassignment : sampler.sampleToDataBase(3, 2)){
             System.out.println("\nSequence ID" + dynamicdataassignment.getSequenceID());
             System.out.println("\nTime ID" + dynamicdataassignment.getTimeID());
-            System.out.println(dynamicdataassignment.toString(network.getDynamicVariables().getListOfDynamicVariables()));
+            System.out.println(dynamicdataassignment.outputString());
         }
 
     }

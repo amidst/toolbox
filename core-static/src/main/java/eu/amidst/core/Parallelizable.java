@@ -13,9 +13,9 @@ package eu.amidst.core;
  */
 public interface Parallelizable {
 
-    public static void setParallelMode(boolean parallelMode){}
+    void setParallelMode(boolean parallelMode);
 
 
-    public static boolean isParallelMode(){ return false;};
+    boolean isParallelMode();
 
 }

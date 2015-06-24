@@ -46,7 +46,7 @@ public class F1 extends MeasureCollection{
         }
 
         MembershipMatrix mm = new MembershipMatrix(clustering, points);
-        //System.out.println(mm.toString());
+        //System.out.println(mm.outputString());
 
         int numClasses = mm.getNumClasses();
         if(mm.hasNoiseClass())

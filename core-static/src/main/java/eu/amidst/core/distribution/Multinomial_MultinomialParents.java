@@ -170,7 +170,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
             str.append(this.getMultinomial(i).toString());
             if (getNumberOfParentAssignments() > 1) {
                 Assignment parentAssignment = MultinomialIndex.getVariableAssignmentFromIndex(this.getConditioningVariables(), i);
-                str.append(" | "+parentAssignment.toString(this.getConditioningVariables()));
+                str.append(" | "+parentAssignment.outputString());
                 if(i < getNumberOfParentAssignments() - 1) str.append("\n");
             }
         }

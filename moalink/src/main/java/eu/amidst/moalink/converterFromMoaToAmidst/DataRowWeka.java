@@ -1,6 +1,7 @@
 package eu.amidst.moalink.converterFromMoaToAmidst;
 
 import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.filereaders.DataRow;
 import weka.core.Instance;
 
@@ -9,11 +10,14 @@ import weka.core.Instance;
  */
 public class DataRowWeka implements DataRow {
 
+    private Attributes attributes;
     private Instance dataRow;
 
-    public DataRowWeka(Instance dataRow){
+    public DataRowWeka(Instance dataRow, Attributes attributes_){
         this.dataRow = dataRow;
+        this.attributes = attributes_;
     }
+
     @Override
     public double getValue(Attribute att) {
         return dataRow.value(att.getIndex());
@@ -22,5 +26,10 @@ public class DataRowWeka implements DataRow {
     @Override
     public void setValue(Attribute att, double value) {
         dataRow.setValue(att.getIndex(), value);
+    }
+
+    @Override
+    public Attributes getAttributes() {
+        return this.attributes;
     }
 }

@@ -346,8 +346,8 @@ public class BayesianVMPTest extends TestCase {
 
         BayesianNetwork learnAsianet = svb.getLearntBayesianNetwork();
 
-        //System.out.println(asianet.toString());
-        //System.out.println(learnAsianet.toString());
+        //System.out.println(asianet.outputString());
+        //System.out.println(learnAsianet.outputString());
         //assertTrue(asianet.equalBNs(learnAsianet,0.05));
 
     }
@@ -766,7 +766,7 @@ public class BayesianVMPTest extends TestCase {
 
             bn.randomInitialization(new Random(i));
 
-            //System.out.println(bn.toString());
+            //System.out.println(bn.outputString());
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setMARVar(varB,0.7);

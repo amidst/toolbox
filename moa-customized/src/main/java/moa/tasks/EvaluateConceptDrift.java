@@ -89,7 +89,7 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
             "File to append intermediate csv results to.", null, "csv", true);
 
     /*public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);*/
+            "File to append outputString predictions to.", null, "pred", true);*/
 
     @Override
     public Class<?> getTaskResultType() {
@@ -129,7 +129,7 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
                         "Unable to open immediate result file: " + dumpFile, ex);
             }
         }
-        //File for output predictions
+        //File for outputString predictions
       /*  File outputPredictionFile = this.outputPredictionFileOption.getFile();
         PrintStream outputPredictionResultStream = null;
         if (outputPredictionFile != null) {
