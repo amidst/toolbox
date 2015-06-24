@@ -11,11 +11,33 @@ package eu.amidst.core.datastream;
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 11/11/14.
+ *
+ *  This class is an specialization of the {@link DataStream} class which keeps all the data on main memory. <p>
+ *
+ *  This class is designed to provide random accessing to {@link DataInstance} composing the data set. It is also
+ *  widely used to deal with mini-batches of data.
+ *
  */
 public interface DataOnMemory<E extends DataInstance> extends DataStream<E> {
+
+    /**
+     * Return the number of data instances of the data set.
+     * @return a positive integer
+     */
     int getNumberOfDataInstances();
+
+    /**
+     * Return the data instance in the i-th positon.
+     * @param i, a positive index
+     * @return
+     */
     E getDataInstance(int i);
+
+    /**
+     * Return a list with all the {@link DataInstance} objects of the data set.
+     * @return
+     */
     List<E> getList();
+
 }
 

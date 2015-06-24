@@ -15,36 +15,56 @@ import eu.amidst.core.datastream.DataStream;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 11/11/14.
+ * This class produces {@link DataStream} objects which consumes data which is placed on a file.
  */
 public class DataStreamFromFile implements DataStream<DataInstance> {
 
+    /** The DataFileReader object providing access the the data on the text file */
     DataFileReader reader;
 
+    /**
+     * A constructor initialized with a DataFileReader object.
+     * @param reader1
+     */
     public DataStreamFromFile(DataFileReader reader1) {
         this.reader = reader1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Attributes getAttributes() {
         return reader.getAttributes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Stream<DataInstance> stream() {
         return this.reader.stream().map( dataRow -> new DataInstanceImpl(dataRow));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         this.reader.close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRestartable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void restart() {
         this.reader.restart();
