@@ -9,7 +9,7 @@
 package eu.amidst.dynamic.datastream.sequence.readers;
 
 
-import eu.amidst.corestatic.datastream.Attributes;
+import eu.amidst.core.datastream.Attributes;
 
 /**
  * Created by afa on 03/07/14.

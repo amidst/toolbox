@@ -8,19 +8,19 @@
 
 package moa.classifiers.bayes;
 
-import eu.amidst.corestatic.datastream.*;
-import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.distribution.Normal;
-import eu.amidst.corestatic.inference.InferenceAlgorithm;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.StateSpaceType;
-import eu.amidst.corestatic.variables.Variable;
-import eu.amidst.corestatic.variables.Variables;
-import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.ida2015.GaussianHiddenTransitionMethod;
 import eu.amidst.ida2015.NaiveBayesGaussianHiddenConceptDrift;
 import eu.amidst.moalink.converterFromMoaToAmidst.DataRowWeka;
@@ -236,7 +236,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         }
         attributes_ = new Attributes(attributesExtendedList);
         batch_ = new DataOnMemoryListContainer(attributes_);
-        //System.out.println(nb_.getLearntBayesianNetwork().getDAG().toString());
+        //System.out.println(nb_.getLearntBayesianNetwork().getDAG().outputString());
 
     }
 
@@ -307,7 +307,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             firstInstanceForBatch = null;
         }
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst, this.attributes_));
         if(count_ < windowSize_){
                 batch_.add(dataInstance);
                 count_++;
@@ -320,7 +320,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             nb_.updateModel(batch_);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
-            //System.out.println(learntBN_.toString());
+            //System.out.println(learntBN_.outputString());
 
             System.out.print(nbatch);
 
@@ -347,7 +347,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             firstInstanceForBatch = null;
         }
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst, this.attributes_));
         if(count_ < windowSize_ && (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
                 batch_.add(dataInstance);
                 count_++;
@@ -376,7 +376,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
             nb_.updateModel(batch_);
             batch_ = new DataOnMemoryListContainer(attributes_);
             learntBN_ = nb_.getLearntBayesianNetwork();
-            //System.out.println(learntBN_.toString());
+            //System.out.println(learntBN_.outputString());
 
             for (int i = 0; i < nb_.getHiddenVars().size(); i++) {
                 Normal normal = nb_.getSvb().getPlateuStructure().getEFVariablePosterior(nb_.getHiddenVars().get(i), 0).toUnivariateDistribution();
@@ -451,7 +451,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
         InferenceAlgorithm vmp = new VMP();
         vmp.setModel(learntBN_);
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst, this.attributes_));
 
         double realValue = dataInstance.getValue(classVar_);
         dataInstance.setValue(classVar_, Utils.missingValue());

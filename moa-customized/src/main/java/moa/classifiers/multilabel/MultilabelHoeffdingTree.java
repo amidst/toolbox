@@ -198,7 +198,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves {
 			if (leafNode == null) {
 				leafNode = foundNode.parent;
 			}
-			//System.out.println("y[] = "+Arrays.toString(leafNode.getClassVotes(inst,this)));
+			//System.out.println("y[] = "+Arrays.outputString(leafNode.getClassVotes(inst,this)));
 			return leafNode.getClassVotes(inst, this);
 		}
 		// Return empty array (this should only happen once! -- before we build the root node).

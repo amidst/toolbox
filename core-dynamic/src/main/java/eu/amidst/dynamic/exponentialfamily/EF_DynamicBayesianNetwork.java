@@ -9,10 +9,10 @@
 package eu.amidst.dynamic.exponentialfamily;
 
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.exponentialfamily.*;
+import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.corestatic.utils.Vector;
+import eu.amidst.core.utils.Vector;
 
 import java.util.stream.Collectors;
 

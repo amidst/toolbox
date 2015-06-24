@@ -1,17 +1,17 @@
 package eu.amidst.dynamic.datastream;
 
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.datastream.filereaders.DataOnMemoryFromFile;
-import eu.amidst.corestatic.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.filereaders.DataOnMemoryFromFile;
+import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.dynamic.datastream.filereaders.DynamicDataOnMemoryFromFile;
 import eu.amidst.dynamic.datastream.filereaders.DynamicDataStreamFromFile;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.corestatic.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.corestatic.exponentialfamily.SufficientStatistics;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
-import eu.amidst.corestatic.utils.BayesianNetworkSampler;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 import junit.framework.TestCase;
 import org.junit.Test;
 

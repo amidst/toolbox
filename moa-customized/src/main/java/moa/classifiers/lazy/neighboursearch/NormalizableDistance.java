@@ -30,8 +30,8 @@ import weka.core.Instances;
  * Euclidean or Manhattan distance.
  *
  * @author Fracpete (fracpete at waikato dot ac dot nz)
- * @author Gabi Schmidberger (gabi@cs.waikato.ac.nz) -- original code from weka.corestatic.EuclideanDistance
- * @author Ashraf M. Kibriya (amk14@cs.waikato.ac.nz) -- original code from weka.corestatic.EuclideanDistance
+ * @author Gabi Schmidberger (gabi@cs.waikato.ac.nz) -- original code from weka.core.EuclideanDistance
+ * @author Ashraf M. Kibriya (amk14@cs.waikato.ac.nz) -- original code from weka.core.EuclideanDistance
  * @version $Revision: 8034 $
  */
 public abstract class NormalizableDistance

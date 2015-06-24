@@ -8,20 +8,20 @@
 
 package eu.amidst.dynamic.inference;
 
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.distribution.UnivariateDistribution;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
-import eu.amidst.corestatic.inference.messagepassing.Node;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
+import eu.amidst.core.inference.messagepassing.Node;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.corestatic.utils.Utils;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.dynamic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.Variable;
-import eu.amidst.corestatic.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 
 import java.io.IOException;
 import java.util.*;
@@ -35,7 +35,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     DynamicBayesianNetwork model;
     EF_DynamicBayesianNetwork ef_model;
-    DynamicAssignment assignment = new HashMapAssignment(0);
+    DynamicAssignment assignment = new HashMapDynamicAssignment(0);
 
     List<Node>  nodesTimeT;
     List<Node>  nodesClone;
@@ -221,10 +221,10 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     private void moveWindow(int nsteps){
         //The first step we need to manually move the evidence from master to clone variables.
-        HashMapAssignment newassignment =null;
+        HashMapDynamicAssignment newassignment =null;
 
         if (this.assignment!=null) {
-            newassignment=new HashMapAssignment(this.model.getNumberOfDynamicVars());
+            newassignment=new HashMapDynamicAssignment(this.model.getNumberOfDynamicVars());
             for (Variable var : this.model.getDynamicVariables()) {
                 newassignment.setValue(this.model.getDynamicVariables().getInterfaceVariable(var), this.assignment.getValue(var));
                 newassignment.setValue(var, Utils.missingValue());

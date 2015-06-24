@@ -1,17 +1,17 @@
 package eu.amidst.scai2015;
 
-import eu.amidst.corestatic.datastream.*;
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.inference.InferenceAlgorithm;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.MissingAssignment;
-import eu.amidst.corestatic.variables.Variables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.learning.parametric.bayesian.StreamingVariationalBayesVMP;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.MissingAssignment;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.evaluation.ThresholdCurve;
@@ -123,7 +123,7 @@ public class wrapperBN {
         //Learn the initial BN with training data including only the class variable
         BayesianNetwork bNet = train(trainingData, Vars, SF,false);
 
-        //System.out.println(bNet.toString());
+        //System.out.println(bNet.outputString());
 
         //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
         double score = testFS(testData, bNet);
@@ -197,7 +197,7 @@ public class wrapperBN {
         //Final training with the winning SF and the full initial data
         bNet = train(data, Vars, SF, true);
 
-        //System.out.println(bNet.getDAG().toString());
+        //System.out.println(bNet.getDAG().outputString());
 
         return bNet;
     }

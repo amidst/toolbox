@@ -103,7 +103,7 @@ public class AutoClassDiscovery {
             }
 
             /*while (pathTokens.hasMoreElements()) {
-            String pathToSearch = pathTokens.nextElement().toString();
+            String pathToSearch = pathTokens.nextElement().outputString();
             if (pathToSearch.endsWith(".jar")) {
             try {
             JarFile jar = new JarFile(pathToSearch);

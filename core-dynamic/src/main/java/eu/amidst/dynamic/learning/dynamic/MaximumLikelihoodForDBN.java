@@ -9,14 +9,14 @@
 package eu.amidst.dynamic.learning.dynamic;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
-import eu.amidst.corestatic.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.corestatic.utils.ArrayVector;
-import eu.amidst.corestatic.utils.Vector;
+import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.Vector;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
