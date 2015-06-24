@@ -15,13 +15,22 @@ import eu.amidst.core.variables.Variable;
 import java.util.Set;
 
 /**
+ *  Considering that a {@link DataStream} is composed  by a collection of {@link DataInstance} objects.
+ *  Then, the {@link DataInstance} interface represents a data sample. It should basically be seen
+ *  as a specific assignment to the {@link Attribute} objects defining the DataStream object.<p>
  *
+ *  To simplify the use of this class across the toolbox, it also inherits from
+ *  {@link Assignment} and can also be interpreted as an assignment to some {@link Variable} objects. This
+ *  variable objects have associated an Attribute object.<p>
  *
+ *  So a DataInstance object can be queried either using an{@link Attribute} object or a {@link Variable} object.
  *
- * Created by ana@cs.aau.dk on 10/11/14.
  */
 public interface DataInstance extends Assignment {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default double getValue(Variable var) {
         if (var.getAttribute()==null)
@@ -30,20 +39,45 @@ public interface DataInstance extends Assignment {
             return this.getValue(var.getAttribute());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default void setValue(Variable var, double value) {
         if (var.getAttribute()!=null)
             this.setValue(var.getAttribute(), value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default Set<Variable> getVariables(){
         return null;
     }
 
+
+    /**
+     * This method return the set of attributes which have an assigned value
+     * stored in this object.
+     * @return A valid Attributes object
+     */
     Attributes getAttributes();
 
+    /**
+     * This method return the value assigned to a given Attribute
+     * @param att, the Attribute object we want to query
+     * @return The assigned value to the given Attribute. Returns a Double.NaN if
+     * the attribute is not observed in this assignment.
+     */
     double getValue(Attribute att);
 
+    /**
+     * This method set the value assigned to an Attribute. If the value is already include,
+     * then the value is updated accordingly.
+     *
+     * @param att, the Attribute object we want to assign
+     * @param val, the assigned value
+     */
     void setValue(Attribute att, double val);
 }

@@ -15,31 +15,53 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Created by sigveh on 10/16/14.
+ *
+ * This class acts as a container of for the {@link Attribute} objects of a data set.
+ *
  */
 public class Attributes implements Serializable, Iterable<Attribute> {
 
+    /** The serial vesion ID for serializing the object */
     private static final long serialVersionUID = -1877629684033612201L;
 
+    /** The name of attribute acting as a TIME_ID*/
     public static final String TIME_ID_ATT_NAME = "TIME_ID";
 
+    /** The name of attribute acting as a SEQUENCE_ID*/
     public static final String SEQUENCE_ID_ATT_NAME = "SEQUENCE_ID";
 
+    /** A list containing the  Attribue objects*/
     private List<Attribute> attributes;
 
-
+    /**
+     * A constructor using a List of Attribute objects
+     * @param attributes, a non-empty list of Attribute objects
+     */
     public Attributes(List<Attribute> attributes){
         this.attributes = Collections.unmodifiableList(attributes);
     }
 
+    /**
+     * Return the list of Attribute objects kept in this object
+     * @return
+     */
     public List<Attribute> getList(){
         return attributes;
     }
 
+    /**
+     * Return the number of Attribute objects
+     * @return
+     */
     public int getNumberOfAttributes(){
         return this.attributes.size();
     }
 
+    /**
+     * Return a list with the Attribute objects except those which
+     * act as TIME_ID and SEQUENCE_ID
+     * @return
+     */
     //TODO This method is not standard?!?
     public List<Attribute> getListExceptTimeAndSeq(){
         List<Attribute> attributeList = new ArrayList<>();
@@ -52,15 +74,23 @@ public class Attributes implements Serializable, Iterable<Attribute> {
         return attributeList;
     }
 
-    public void print(){}
-
+    /**
+     * Return the attribute with the given name
+     * @param name, a valid name of an attribute
+     * @return The requested Attribute object. If there is any attribute
+     * with the requested name, it throws an IllegalArgumentException.
+     */
     public Attribute getAttributeByName(String name){
         for(Attribute att: getList()){
             if(att.getName().equals(name)){ return att;}
         }
-        throw new UnsupportedOperationException("Attribute "+name+" is not part of the list of Attributes");
+        throw new IllegalArgumentException("Attribute "+name+" is not part of the list of Attributes");
     }
 
+    /**
+     * Return a iterator over the attributes stored in the object.
+     * @return
+     */
     @Override
     public Iterator<Attribute> iterator() {
         return attributes.iterator();

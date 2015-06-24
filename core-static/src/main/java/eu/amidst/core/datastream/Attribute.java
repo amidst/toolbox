@@ -15,7 +15,6 @@
  * ********************************************************
  */
 
-
 package eu.amidst.core.datastream;
 
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
@@ -26,17 +25,35 @@ import eu.amidst.core.variables.StateSpaceTypeEnum;
 import java.io.Serializable;
 
 /**
- * Created by sigveh on 10/20/14.
+ *
+ * If we look at a data sets as a data  matrix, an Attribute class would
+ * represent a column of the matrix. This Attribute contains information such as
+ * the name of the column and the type of data (discrete, continuous, etc.) it contains.
+ *
  */
 
 public final class Attribute implements Serializable {
 
+    /** The serial vesion ID for serializing the object */
     private static final long serialVersionUID = -2932037991574118651L;
 
+    /** The index of the column**/
     private final int index;
+
+    /** The name of the column */
     private final String name;
+
+    /** The states values in case the column represent a discrete attribute*/
     private final StateSpaceType stateSpaceType;
 
+    /**
+     * A builder for attributes
+     * @param index, the index of column which the Attribute object refers to
+     * @param name, the name of the attribute,
+     * @param unit, the name of the unit of the attribute,
+     * @param stateSpaceTypeEnum1, the state space of the attribute (finite or real).
+     * @param numberOfStates, the number of states of the attribute in case its state space is finite
+     */
     public Attribute(int index, String name, String unit, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
 
         this.index = index;
@@ -52,6 +69,13 @@ public final class Attribute implements Serializable {
         }
     }
 
+    /**
+     * A builder for attributes
+     * @param index, the index of column which the Attribute object refers to
+     * @param name, the name of the attribute,
+     * @param stateSpaceTypeEnum1, the state space of the attribute (finite or real).
+     * @param numberOfStates, the number of states of the attribute in case its state space is finite
+     */
     public Attribute(int index, String name, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
 
         this.index = index;
@@ -65,24 +89,49 @@ public final class Attribute implements Serializable {
         }
     }
 
+    /**
+     * A builder for attributes
+     * @param index, the index of column which the Attribute object refers to
+     * @param name, the name of the attribute,
+     * @param stateSpaceType1, an  StateSpaceType object defining the attribute.
+     */
     public Attribute(int index, String name, StateSpaceType stateSpaceType1) {
         this.index = index;
         this.name = name;
         this.stateSpaceType = stateSpaceType1;
     }
 
+    /**
+     * Return the index of the attribute
+     * @return a integer i>=0
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Return the name of the attribute
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Return an StateSpaceType object describing the attribute
+     * @param <E>
+     * @return
+     */
     public <E extends StateSpaceType> E getStateSpaceType() {
         return (E) stateSpaceType;
     }
 
+    /**
+     * Two attributes are considered to be equal if they have
+     * the same name and the same StateSpaceType
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o){
@@ -101,6 +150,10 @@ public final class Attribute implements Serializable {
         return true;
     }
 
+    /**
+     * The hasCode of the object.
+     * @return
+     */
     @Override
     public int hashCode() {
         int result = name.hashCode();
