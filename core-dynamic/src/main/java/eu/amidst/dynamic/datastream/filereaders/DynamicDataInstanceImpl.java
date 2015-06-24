@@ -9,6 +9,7 @@
 package eu.amidst.dynamic.datastream.filereaders;
 
 import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.datastream.filereaders.DataRow;
 
@@ -50,6 +51,11 @@ class DynamicDataInstanceImpl implements DynamicDataInstance {
         }else {
             dataRowPast.setValue(att, value);
         }
+    }
+
+    @Override
+    public Attributes getAttributes() {
+        return dataRowPresent.getAttributes();
     }
 
     @Override

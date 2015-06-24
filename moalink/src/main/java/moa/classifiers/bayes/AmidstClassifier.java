@@ -176,7 +176,7 @@ public class AmidstClassifier extends AbstractClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, this.attributes_));
         if(batch_.getNumberOfDataInstances() < getBatchSize_()-1) {  //store
             batch_.add(dataInstance);
         }else{                                                  //store & learn
@@ -202,7 +202,7 @@ public class AmidstClassifier extends AbstractClassifier {
             return new double[0];
         }
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, this.attributes_));
         double realValue = dataInstance.getValue(classVar_);
         dataInstance.setValue(classVar_, Utils.missingValue());
         this.predictions_.setEvidence(dataInstance);

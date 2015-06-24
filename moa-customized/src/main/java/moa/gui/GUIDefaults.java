@@ -189,7 +189,7 @@ public class GUIDefaults
         Collections.sort(sorted);
         names = sorted.elements();
 
-        // output
+        // outputString
         while (names.hasMoreElements()) {
             name = names.nextElement().toString();
             System.out.println("- " + name + ": " + PROPERTIES.getProperty(name, ""));

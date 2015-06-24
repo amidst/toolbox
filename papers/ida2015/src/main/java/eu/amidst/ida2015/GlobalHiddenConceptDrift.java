@@ -144,7 +144,7 @@ public class GlobalHiddenConceptDrift {
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
             //System.out.println("****************");
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
             //System.out.println("****************");
@@ -176,7 +176,7 @@ public class GlobalHiddenConceptDrift {
                 newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
             }
 
-            //System.out.println(naiveBayes.toString());
+            //System.out.println(naiveBayes.outputString());
 
             sampler = new BayesianNetworkSampler(naiveBayes);
             sampler.setHiddenVar(globalHidden);
@@ -201,7 +201,7 @@ public class GlobalHiddenConceptDrift {
                 BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
                 //System.out.println("****************");
-                //System.out.println(learntBN.toString());
+                //System.out.println(learntBN.outputString());
                 Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
                 //System.out.println("Global Hidden: " + normal.getMean() + ", " + normal.getVariance());
                 //System.out.println("****************");
@@ -267,7 +267,7 @@ public class GlobalHiddenConceptDrift {
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
             //System.out.println("****************");
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
             //System.out.println("****************");
@@ -301,7 +301,7 @@ public class GlobalHiddenConceptDrift {
                 newdist.getNormal_NormalParentsDistribution(1).setCoeffForParent(globalHidden, 0.0);
             }
 
-            //System.out.println(naiveBayes.toString());
+            //System.out.println(naiveBayes.outputString());
 
             sampler = new BayesianNetworkSampler(naiveBayes);
             sampler.setHiddenVar(globalHidden);
@@ -313,7 +313,7 @@ public class GlobalHiddenConceptDrift {
                 BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
                 //System.out.println("****************");
-                //System.out.println(learntBN.toString());
+                //System.out.println(learntBN.outputString());
                 Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
                 //System.out.println("Global Hidden: " + normal.getMean() + ", " + normal.getVariance());
                 //System.out.println("****************");
@@ -380,7 +380,7 @@ public class GlobalHiddenConceptDrift {
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
             //System.out.println("****************");
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             //System.out.println("Global Hidden: " + normal.getMean() +", " + normal.getVariance());
             //System.out.println("****************");
@@ -413,7 +413,7 @@ public class GlobalHiddenConceptDrift {
                 BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
                 //System.out.println("****************");
-                //System.out.println(learntBN.toString());
+                //System.out.println(learntBN.outputString());
                 Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
                 //System.out.println("Global Hidden: " + normal.getMean() + ", " + normal.getVariance());
                 //System.out.println("****************");
@@ -640,7 +640,7 @@ public class GlobalHiddenConceptDrift {
                 newdist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{0.0});
             }
 
-            //System.out.println(naiveBayes.toString());
+            //System.out.println(naiveBayes.outputString());
 
             sampler = new BayesianNetworkSampler(naiveBayes);
             sampler.setHiddenVar(globalHidden);
@@ -745,7 +745,7 @@ public class GlobalHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
 
-        //System.out.println(svb.getLearntBayesianNetwork().toString());
+        //System.out.println(svb.getLearntBayesianNetwork().outputString());
 
         Random random  = new Random(0);
         double acumLL = 0;
@@ -771,7 +771,7 @@ public class GlobalHiddenConceptDrift {
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
 
             Normal_MultinomialNormalParents dist1 = learntBN.getConditionalDistribution(at1);
@@ -848,7 +848,7 @@ public class GlobalHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
 
-        //System.out.println(svb.getLearntBayesianNetwork().toString());
+        //System.out.println(svb.getLearntBayesianNetwork().outputString());
 
         Random random  = new Random(0);
         double acumLL = 0;
@@ -866,7 +866,7 @@ public class GlobalHiddenConceptDrift {
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
 
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(localHidden.get(1), 0).toUnivariateDistribution();
             System.out.print(count + "\t" + normal.getMean());
 
@@ -931,7 +931,7 @@ public class GlobalHiddenConceptDrift {
 
         Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
-        Variable classVariable = variables.getVariableByName("output");
+        Variable classVariable = variables.getVariableByName("outputString");
 
         DAG dag = new DAG(variables);
 
@@ -957,7 +957,7 @@ public class GlobalHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
 
-        //System.out.println(svb.getLearntBayesianNetwork().toString());
+        //System.out.println(svb.getLearntBayesianNetwork().outputString());
 
         Random random = new Random(0);
         double acumLL = 0;
@@ -975,7 +975,7 @@ public class GlobalHiddenConceptDrift {
             acumLL += svb.updateModel(batch);
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
 
@@ -1022,7 +1022,7 @@ public class GlobalHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
 
-        //System.out.println(svb.getLearntBayesianNetwork().toString());
+        //System.out.println(svb.getLearntBayesianNetwork().outputString());
 
         int countMonth = 0;
         Random random = new Random(0);
@@ -1046,7 +1046,7 @@ public class GlobalHiddenConceptDrift {
             acumLL += svb.updateModel(batch);
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
 
@@ -1068,7 +1068,7 @@ public class GlobalHiddenConceptDrift {
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable localHidden = variables.newMultionomialVariable("Local", 2);
 
-        Variable classVariable = variables.getVariableByName("output");
+        Variable classVariable = variables.getVariableByName("outputString");
 
         DAG dag = new DAG(variables);
 
@@ -1094,7 +1094,7 @@ public class GlobalHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
 
-        //System.out.println(svb.getLearntBayesianNetwork().toString());
+        //System.out.println(svb.getLearntBayesianNetwork().outputString());
 
         double acumLL = 0;
         double avAcc = 0;
@@ -1105,7 +1105,7 @@ public class GlobalHiddenConceptDrift {
             acumLL += svb.updateModel(batch);
 
             BayesianNetwork learntBN = svb.getLearntBayesianNetwork();
-            //System.out.println(learntBN.toString());
+            //System.out.println(learntBN.outputString());
             Normal normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
             normal = svb.getPlateuStructure().getEFVariablePosterior(globalHidden, 0).toUnivariateDistribution();
 
@@ -1150,7 +1150,7 @@ public class GlobalHiddenConceptDrift {
         svb.setDAG(dag);
         svb.initLearning();
 
-        //System.out.println(svb.getLearntBayesianNetwork().toString());
+        //System.out.println(svb.getLearntBayesianNetwork().outputString());
 
         double acumLL = 0;
         double avACC = 0;

@@ -47,7 +47,7 @@ public interface MOAObject extends Serializable {
 
     /**
      * Returns a string representation of this object.
-     * Used in <code>AbstractMOAObject.toString</code>
+     * Used in <code>AbstractMOAObject.outputString</code>
      * to give a string representation of the object.
      *
      * @param sb	the stringbuilder to add the description

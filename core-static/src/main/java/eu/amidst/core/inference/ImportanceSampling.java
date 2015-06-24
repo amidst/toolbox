@@ -124,7 +124,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
                 else {
 
                     univariateSamplingDistribution = vmp.getPosterior(samplingVar);
-                    //System.out.println(univariateSamplingDistribution.toString());
+                    //System.out.println(univariateSamplingDistribution.outputString());
                 }
 
                 simulatedValue = univariateSamplingDistribution.sample(random);

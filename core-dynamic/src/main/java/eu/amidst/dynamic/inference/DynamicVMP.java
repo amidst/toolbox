@@ -19,7 +19,7 @@ import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.dynamic.variables.HashMapAssignment;
+import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 
@@ -35,7 +35,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     DynamicBayesianNetwork model;
     EF_DynamicBayesianNetwork ef_model;
-    DynamicAssignment assignment = new HashMapAssignment(0);
+    DynamicAssignment assignment = new HashMapDynamicAssignment(0);
 
     List<Node>  nodesTimeT;
     List<Node>  nodesClone;
@@ -221,10 +221,10 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     private void moveWindow(int nsteps){
         //The first step we need to manually move the evidence from master to clone variables.
-        HashMapAssignment newassignment =null;
+        HashMapDynamicAssignment newassignment =null;
 
         if (this.assignment!=null) {
-            newassignment=new HashMapAssignment(this.model.getNumberOfDynamicVars());
+            newassignment=new HashMapDynamicAssignment(this.model.getNumberOfDynamicVars());
             for (Variable var : this.model.getDynamicVariables()) {
                 newassignment.setValue(this.model.getDynamicVariables().getInterfaceVariable(var), this.assignment.getValue(var));
                 newassignment.setValue(var, Utils.missingValue());

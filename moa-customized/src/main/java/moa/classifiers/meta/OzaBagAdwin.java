@@ -55,7 +55,7 @@ import moa.options.IntOption;
  * <p>ADWIN is parameter- and assumption-free in the sense that it automatically
  * detects and adapts to the current rate of change. Its only parameter is a
  * conﬁdence bound δ, indicating how conﬁdent we want to be in the algorithm’s
- * output, inherent to all algorithms dealing with random processes. Also
+ * outputString, inherent to all algorithms dealing with random processes. Also
  * important, ADWIN does not maintain the window explicitly, but compresses it
  * using a variant of the exponential histogram technique. This means that it
  * keeps a window of length W using only O(log W) memory and O(log W) processing

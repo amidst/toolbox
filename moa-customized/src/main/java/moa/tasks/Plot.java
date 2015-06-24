@@ -56,7 +56,7 @@ public class Plot extends MainTask {
 
     
     /**
-     * FileOption for selecting the plot output file.
+     * FileOption for selecting the plot outputString file.
      */
     public FileOption plotOutputOption = new FileOption("plotOutputFile", 'r',
 	    "File with the result plot (image).", null, "eps", true);
@@ -92,7 +92,7 @@ public class Plot extends MainTask {
      * Gnuplot terminal - postscript, png, pdf etc.
      */
     public MultiChoiceOption outputTypeOption = new MultiChoiceOption(
-	    "outputType", 't', "Gnuplot output terminal.", Terminal
+	    "outputType", 't', "Gnuplot outputString terminal.", Terminal
 		    .getStringValues(), Terminal.getDescriptions(), 8);
 
     /**
@@ -206,7 +206,7 @@ public class Plot extends MainTask {
 	    " ");
 
     /**
-     * Plot output terminal.
+     * Plot outputString terminal.
      * @author Dariusz Brzezi�ski
      *
      */
@@ -378,7 +378,7 @@ public class Plot extends MainTask {
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 	File resultFile = this.plotOutputOption.getFile();
 	if (this.plotOutputOption.getFile() == null) {
-	    throw new RuntimeException("Plot output file option not set!");
+	    throw new RuntimeException("Plot outputString file option not set!");
 	}
 
 	String resultDirectory = (new File(resultFile.getAbsolutePath()))
@@ -480,7 +480,7 @@ public class Plot extends MainTask {
 
     /**
      * Creates the content of the gnuplot script.
-     * @param resultFile path of the plot output file
+     * @param resultFile path of the plot outputString file
      * @return gnuplot script
      */
     private String createScript(File resultFile) {
@@ -491,7 +491,7 @@ public class Plot extends MainTask {
 	String script = "set term "
 		+ terminalOptions(Terminal.valueOf(outputTypeOption
 			.getChosenLabel())) + newLine;
-	script += "set output '" + resultFile.getAbsolutePath() + "'" + newLine;
+	script += "set outputString '" + resultFile.getAbsolutePath() + "'" + newLine;
 	script += "set datafile separator ','" + newLine;
 	script += "set grid" + newLine;
 	script += "set style line 1 pt 8" + newLine;

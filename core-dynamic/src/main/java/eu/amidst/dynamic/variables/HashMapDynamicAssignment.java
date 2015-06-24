@@ -18,12 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by ana@cs.aau.dk on 03/11/14.
  */
-public class HashMapAssignment implements DynamicAssignment {
+public class HashMapDynamicAssignment implements DynamicAssignment {
     private Map<Variable,Double> assignment;
     int sequenceID;
     int timeID;
 
-    public HashMapAssignment(int nOfVars){
+    public HashMapDynamicAssignment(int nOfVars){
         assignment = new ConcurrentHashMap(nOfVars);
     }
 
@@ -41,6 +41,11 @@ public class HashMapAssignment implements DynamicAssignment {
     @Override
     public void setValue(Variable var, double val) {
         this.assignment.put(var,val);
+    }
+
+    @Override
+    public Set<Variable> getVariables() {
+        return null;
     }
 
     @Override

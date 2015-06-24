@@ -48,7 +48,7 @@ import moa.streams.clustering.ClusterEvent;
 import moa.tasks.ConceptDriftMainTask;
 
 /**
- * This panel displays text. Used to output the results of tasks.
+ * This panel displays text. Used to outputString the results of tasks.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
