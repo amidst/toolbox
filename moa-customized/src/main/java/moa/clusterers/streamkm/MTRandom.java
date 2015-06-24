@@ -308,7 +308,7 @@ public class MTRandom extends Random {
 	 * mt.setSeed(12345);
 	 * int foo = mt.nextInt(32);</pre>
 	 * 
-	 * @param bits The number of significant bits desired in the output.
+	 * @param bits The number of significant bits desired in the outputString.
 	 * @return The next value in the pseudo random sequence with the
 	 * specified number of bits in the lower part of the integer.
 	 */

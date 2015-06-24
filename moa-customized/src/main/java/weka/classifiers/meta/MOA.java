@@ -48,7 +48,7 @@ import java.util.Vector;
  *
  * <pre> -D
  *  If set, classifier is run in debug mode and
- *  may output additional info to the console</pre>
+ *  may outputString additional info to the console</pre>
  *
  <!-- options-end -->
  *
@@ -118,7 +118,7 @@ public class MOA
    *
    * <pre> -D
    *  If set, classifier is run in debug mode and
-   *  may output additional info to the console</pre>
+   *  may outputString additional info to the console</pre>
    *
    <!-- options-end -->
    *

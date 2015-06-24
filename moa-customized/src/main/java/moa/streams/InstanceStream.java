@@ -48,10 +48,10 @@ public interface InstanceStream extends MOAObject {
     public long estimatedRemainingInstances();
 
     /**
-     * Gets whether this stream has more instances to output.
+     * Gets whether this stream has more instances to outputString.
      * This is useful when reading streams from files.
      *
-     * @return true if this stream has more instances to output
+     * @return true if this stream has more instances to outputString
      */
     public boolean hasMoreInstances();
 

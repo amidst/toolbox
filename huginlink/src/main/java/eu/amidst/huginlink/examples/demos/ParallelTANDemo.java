@@ -12,15 +12,15 @@ package eu.amidst.huginlink.examples.demos;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataStream;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.corestatic.io.BayesianNetworkLoader;
-import eu.amidst.corestatic.io.DataStreamLoader;
-import eu.amidst.corestatic.io.DataStreamWriter;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
-import eu.amidst.corestatic.utils.BayesianNetworkSampler;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.io.DataStreamWriter;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.huginlink.learning.ParallelTAN;
 import org.apache.commons.cli.*;
 
@@ -69,7 +69,7 @@ public class ParallelTANDemo {
 
         for (Integer samplesOnMemory : vSamplesOnMemory) {
             for (Integer numCores : vNumCores) {
-                System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "corestatic/s ...");
+                System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
                 DataStream<DataInstance> data = DataStreamLoader.openFromFile(dataFile);
 
                 ParallelTAN tan = new ParallelTAN();
@@ -109,7 +109,7 @@ public class ParallelTANDemo {
 
         data = DataStreamLoader.openFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
-        System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, 1 corestatic(s) ...");
+        System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, 1 core(s) ...");
 
 
         nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
@@ -125,7 +125,7 @@ public class ParallelTANDemo {
         System.out.println();
 
 
-        System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " corestatic(s) ...");
+        System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
 
         data = DataStreamLoader.openFromFile(dataFile);
 
@@ -176,7 +176,7 @@ public class ParallelTANDemo {
         tan.setNameTarget(nameTarget);
         tan.setBatchSize(batchSize);
 
-        System.out.println("\nLearning TAN (" + nOfVars + " variables) using " + tan.getNumCores() + " corestatic/s.");
+        System.out.println("\nLearning TAN (" + nOfVars + " variables) using " + tan.getNumCores() + " core/s.");
         System.out.println("Structure learning (Hugin) uses " + tan.getNumSamplesOnMemory() + " samples.");
         System.out.println("Parameter learning (toolbox) uses " +
                 sampleSize + " samples (batch size " + tan.getBatchSize() + ").");
@@ -215,12 +215,12 @@ public class ParallelTANDemo {
 
             data = DataStreamLoader.openFromFile(dataFile);
             nOfVars = numContVars + numDiscVars;
-            System.out.println("Learning TAN: " + nOfVars + " variables, " + numStates + " states/var, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " corestatic(s) ...");
+            System.out.println("Learning TAN: " + nOfVars + " variables, " + numStates + " states/var, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
         } else {
             data = DataStreamLoader.openFromFile(dataFile);
             numDiscVars = data.getAttributes().getNumberOfAttributes();
             nOfVars = numContVars + numDiscVars;
-            System.out.println("Learning TAN: " + nOfVars + " variables, " + " samples on file " + dataFileInput + "," + samplesOnMemory + " samples on memory, " + numCores + " corestatic(s) ...");
+            System.out.println("Learning TAN: " + nOfVars + " variables, " + " samples on file " + dataFileInput + "," + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
         }
 
         nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
@@ -340,7 +340,7 @@ public class ParallelTANDemo {
     public static Options constructOptions() {
         final Options options = new Options();
         options.addOption("c", "numCores", true, "Here you can set # of cores for hugin.");
-        options.addOption("s", "samples", true, "Here you can set # of (out-of-corestatic) samples for parameter learning (amidst).");
+        options.addOption("s", "samples", true, "Here you can set # of (out-of-core) samples for parameter learning (amidst).");
         options.addOption("m", "samplesOnMemory", true, "Here you can set # of (in memory) samples for structural learning (hugin).");
         options.addOption("v", "variables", true, "Here you can set # of variables .");
         options.addOption("d", "dataPath", true, "Here you can specify the data path .");

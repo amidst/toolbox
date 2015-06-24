@@ -86,146 +86,230 @@ In this technical report, we propose to use the so-called conjugate exponential 
 Moreover, we describe previously proposed learning and inference algorithms than can be directly implemented on top of this general and unique CEF representation. The result is a suitable framework for coding a toolbox which aims to deal with the problem of representing, making inference, and learning general BNs from data.
 
 %------------------------------------------------------------------------------------------------------
-\section{Background and notation}
+\section{Exponential family models}
 %------------------------------------------------------------------------------------------------------
 
-\subsection*{Bayesian networks}
-Let $\bm X = \{X_1,\ldots,X_N\}$ denote the set of stochastic random variables defining our domain problem and $\bm x$ an observation vector. A Bayesian network (BN) defines a joint distribution $P(\bm X)$ in the following form:
-
-$$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$ 
-
-\noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. BNs can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, is associated with a factor or conditional probability $p(X_i|Pa(X_i))$. Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
-
 %------------------------------------------------------------------------------------------------------
-\subsection*{Exponential family models}
+\subsection*{Definition}
 %------------------------------------------------------------------------------------------------------
 
-A BN defines a joint probability in the exponential family with a natural (or canonical) parametrization if the joint distribution can be functionally expressed as follows:
+Let $\bm X = \{X_1,\ldots,X_N\}$ denote the set of stochastic random variables defining our domain problem and $\bm x$ an observation vector.  We say that the joint probability distribution $p(\cdot|\theta)$ parametrized by a parameter vector $\theta$ is an \textit{exponential family model} with a natural (or canonical) parametrization if the logarithm of $p$ can be functionally expressed as follows
 
 \begin{equation}
 \label{Equation:EFCanonical}
-p(\bm x | \theta) = h(x)~exp\big(\theta^T s(\bm x) - A(\theta) \big)
+\ln p_\theta(\bm x) = \theta^T s(\bm x) - A(\theta) + h(\bm x),
 \end{equation}
 
-\noindent where $h(x)$ is the base measure, $A$ is the log partition function, and $\theta$ is a natural parameter that belongs to the \emph{natural parameter space} $\Theta$ defined as follows:
+\noindent which is based on the following definitions,
 
+
+\begin{itemize}
+\item $h(x)$ is the log-base measure. Its domain, denoted by $\mathcal{X}$, is the Cartesian product of the domains of random variables in $\bm X$, and its codomain are the positive real numbers, $ h: \mathcal{X} \rightarrow \Re^+$.
+
+\item $\theta\in \Theta$ is the natural parameter vector and $\Theta\subseteq \Re^K$ is the natural parameter space, where $K$ being called  the dimension of the model. This \emph{natural parameter space} $\Theta$ is defined as follows:
 \begin{equation}
 \label{Equation:NPS}
-\Theta \equiv \{ \theta \in\Re^K: \int_{\bm x} h(\bm x)~exp\big(\theta^T s(\bm x) \big)~d\bm x < \infty \}
+\Theta \equiv \{ \theta \in\Re^K: \int_{\bm x} exp\big(\theta^T s(\bm x) + h(\bm x) \big)~d\bm x < \infty \}
 \end{equation}
+\noindent i.e., as the the set of parameter vectors which define a proper normalizable density. 
 
-\noindent where $s(\bm x)$ is the vector of sufficient statistics belonging to $\mathcal{S} \subseteq\Re^K$.
+\item $A(\theta)$ is the log-partition function, which is defined as follows:
 
-In addition, the \emph{expectation or moment parameter} $\mu\in\mathcal{S}$ can be used as well to parametrize probability
-distributions of the exponential family. $\mu$ is defined as the \emph{expected vector of sufficient statistics} with respect to $\theta$:
+$$ A(\theta) = \int_{\bm x} exp\big(\theta^T s(\bm x) + h(\bm x)\big)~d\bm x$$
+
+So, its domain is $\Theta$ and its codomain are the positive real numbers, $ A: \Theta \rightarrow \Re^+$.
+
+\item $s(\bm x)$ is the sufficient statistics function, whose domain is $\mathcal{X}$ and is codomain is denoted by $\mathcal{S}\subseteq \Re^K$, $\bm s : \mathcal{X}\rightarrow \mathcal{S}$. We also refers to $s(\bm x)$ as the sufficient statistics (vector) of the observation $\bm x$. 
+\end{itemize}
+
+
+%------------------------------------------------------------------------------------------------------
+\subsection*{Dual Parametrization}
+%------------------------------------------------------------------------------------------------------
+A key property of exponential family models is that they can be alternatively parametrized by a \emph{expectation or moment parameter} vector $\mu \in \mathcal{S}$. More precisely, $\mu$ is defined as the \emph{expected vector of sufficient statistics} with respect to $\theta$:
 
 \begin{equation}
 \label{Equation:NaturalToMoment}
 \begin{array}{lll}
-\bm \mu & \triangleq & \e{s(\bm x)|\theta}  = \int_{\bm x} s(\bm x)~p(\bm x|\theta)~d\bm x\\
+\bm \mu & \triangleq & \e{s(\bm x)|\theta}  = \int_{\bm x} s(\bm x)~p_\theta(\bm x)~d\bm x\\
 \end{array}
 \end{equation}
 
-The \emph{natural parameter} $\theta$ associated to an \emph{moment parameter} $\mu$ is obtained by solving the following optimization problem denoted as:
+The transformation between $\theta$ and $\mu$ is one-to-one: $\mu$ is a dual set of the model parameter $\theta$ \cite{amari1985differential}. That is to say, for each $\theta\in \Theta$ we always have an associated $\mu\in\mathcal{S}$ and both have the same dimension and parameterize the same probability distribution. Therefore, Equation (\ref{Equation:NaturalToMoment}) can be inverted. The \emph{natural parameter} $\theta$ associated to an \emph{moment parameter} $\mu$ is obtained by solving the following optimization problem,
  
 \begin{eqnarray}
 \label{Equation:MomentToNatural}
 \theta(\mu) = arg\max_{\theta\in\Theta}~\theta^T\mu -A(\theta)
 \end{eqnarray}
 
-Given the natural parameters, the inverse step of updating the moment parameters is not trivial in the case of conditional distributions, since as we will see in Section \ref{sec:CondDist}, the transformation requires the joint probability distribution of both children and parents. 
+\noindent where $\theta (\cdot)$ is, by abuse of notation, the transformation function from expectation parameters to natural parameters, i.e. $\theta (\cdot) : \mathcal{S} \rightarrow \Theta$.
 
-The importance of being able to convert from one parameter space to another takes special relevance in the implementation of the variational message passing algorithm, where message passing and updates are in general carried out in two different spaces. Another less explored alternative is the use of \textit{root} parameters, in order to prevent possible numerical imprecision. More information on this topic can be found in the following technical report \cite{HowJeb05}.
+%The above equation is also known as the \emph{maximum likelihood
+%function}, because $\theta(\frac{1}{n}\sum_{i=1}^n s(y_i,x_i))$
+%gives the maximum likelihood estimation $\theta^\star$ for a data
+%set with $n$ observations $\{(y_1,x_1),\ldots,(y_n,x_n)\}$.
+
+%Given the natural parameters, the inverse step of updating the moment parameters is not trivial in the case of conditional distributions, since as we will see in Section \ref{sec:CondDist}, the transformation requires the joint probability distribution of both children and parents. 
+
+%The importance of being able to convert from one parameter space to another takes special relevance in the implementation of the variational message passing algorithm, where message passing and updates are in general carried out in two different spaces. Another less explored alternative is the use of \textit{root} parameters, in order to prevent possible numerical imprecision. More information on this topic can be found in the following technical report \cite{HowJeb05}.
+
+%%------------------------------------------------------------------------------------------------------
+%\subsection*{Regular exponential family}
+%%------------------------------------------------------------------------------------------------------
+%
+%A BN belongs to the linear exponential family if the natural parameter space $\Theta$ is an open and convex set. Additionally, a linear exponential family is said to be minimal if there is non-zero constant vector $\alpha$, such that $\alpha^Ts(\bm x)$ is equal to a constant for all $\bm x$.  We will consider the \textit{regular exponential family} (REF) to be the linear exponential one with minimal representation.
+%
+%
+%The REF with a minimal representation has been widely studied in the literature. The distributions in this family present many useful properties. The following two properties are considered among the most relevant ones: i)  the transformation between $\theta$ and $\mu$ parameters is a one-to-one correspondence, i.e., $\mu$ is a dual set of the model parameter $\theta$; and ii) the moment parameters $\mu$ are equal to the gradient of the log-normalizer (the proof of this equality is included in Appendix \ref{appendix:regularEFequality}):
+%
+%\begin{equation}
+%\label{Equation:RegularEFEquality}
+%\mu = \frac{\partial A(\theta)}{\partial \theta}
+%\end{equation}
+%
+%
+%However, any BN which contains immoralities does not induce a linear exponential family (some parameters are restricted to (non)-linear constraints to ensure the conditional independence). Consequently, some of the nice properties of the REF are lost. In this case, we need to rely on a more general family called the \textit{curved exponential family} where the probability distribution can be more generally expressed as follows:
+%
+%\begin{equation*}
+%p(\bm x |\theta) = h(x)~exp(\psi(\theta)^Ts(\bm x) - A(\theta) )
+%\end{equation*}
+%
+%\noindent where $\psi$ is  a parameter transformation function. In our case, we will consider only the cases where $\psi$ is invertible. In this way, we could re-parametrize the distribution in a canonical form as shown in Equation \ref{Equation:EFCanonical}, where the natural parameter space is not any more an open convex set.
+%
+%
+%\begin{exmp}
+%
+%A Bernoulli distribution can be represented as a curved exponential family as follows: 
+%
+%$$
+%\ln p(x| \rho ) = 
+%\begin{pmatrix}
+%\ln \rho\\
+%\ln (1-\rho)
+%\end{pmatrix}^T
+%\begin{pmatrix}
+%I(x=0)\\
+%I(x=1)
+%\end{pmatrix}
+%$$
+%
+%\noindent such that $\psi$ function is defined as follows: $\psi(\rho) = \big(\ln \rho, \ln (1-\rho) \big)$. Moreover, this distribution can be re-parametrized in cannonical form as follows: 
+%
+%$$
+%\ln p(x| \theta ) = 
+%\begin{pmatrix}
+%\theta_1\\
+%\theta_2
+%\end{pmatrix}^T
+%\begin{pmatrix}
+%I(x=0)\\
+%I(x=1)
+%\end{pmatrix}
+%$$
+%
+%\noindent where $\theta\in\Theta = \{ (\theta_1, \theta_2) \in \Re^2 : e^{\theta_1} + e^{\theta_2} = 1\}$.  As can be seen, $\Theta$ is not an open convex set in $\Re^2$. 
+%
+%\end{exmp}
+
+%%------------------------------------------------------------------------------------------------------
+%\subsection*{Conjugate Distributions} \label{sec:ConjuagateDist}
+%%------------------------------------------------------------------------------------------------------
+%
+%A distribution $p(\theta|\alpha)$, parametrized by the parameter vector $\alpha$, is a conjugate prior of the distribution $p(\bm x|\theta)$ if it can be expressed in the following functional form, 
+%\begin{equation*}
+%p(\theta|\alpha) \propto exp(\langle s(\theta), \alpha \rangle -
+%A_g(\alpha))
+%\end{equation*}
+%\noindent where the sufficient statistics of $\theta$ are expressed as follows
+%$s(\theta)=(\theta,-A(\theta))$ and the parameter vector $\alpha$
+%is defined by two components $(\bar{\alpha}, \nu)$ where $\nu$ is a positive
+%scalar and $\bar{\alpha}$ is a vector also belonging to
+%$\mathcal{S}$ \cite{bernardo2009bayesian}.  Then $p(\bm x|\theta)$ and $p(\theta|\alpha)$ forms an exponentially 
+%
+%%The second component $\nu$ is a positive scalar and  corresponds to the effective number of observations that the prior distribution contributes. And the first component $\bar{\alpha}$, also belonging to $\mathcal{S}$, determines how these pseudo-observations contribute to the sufficient statistics.
+%
+%Alternatively, we say that 
+%
+%
+%
+%
+%
+%
+%
+%If, moreover, if 
+%the distributions of variables, conditioned on their parents, are drawn from the exponential family and are conjugate2 with respect to the distributions over these parent variables. A model where both of these constraints hold is known as a conjugate-exponential model.
+%
+%A conditional distribution $p(\bm X | \bm Y)$ is said to be \textit{conjugate} to a child distribution $p(\bm W| \bm X)$ if $p(\bm X|\bm Y)$ has the same functional form, with respect to $\bm X$, as $p(\bm W|\bm X)$. 
+
+
+%\begin{equation}
+%\label{eq:CE_F1}
+%\ln p(\bm x | \bm y) =\theta(\bm y)^Ts(x) - A \big(\theta  (\bm y) \big)  + h(\bm x)
+%\end{equation}
+%\noindent where $\theta(\bm y)$ denotes that the natural parameters are now a function of $\bm y$.  %Equivalently, we can say that $p(X|Pa(X))$ is in the exponential family if for any assignment, $\bm \pi$  to the parents variables, $p(X|\bm\pi)$ is in exponential form. 
+
 
 %------------------------------------------------------------------------------------------------------
-\subsection*{Regular exponential family}
+\subsection*{Conjugate exponential (CE) models} \label{sec:CondDist}
 %------------------------------------------------------------------------------------------------------
 
-A BN belongs to the linear exponential family if the natural parameter space $\Theta$ is an open and convex set. Additionally, a linear exponential family is said to be minimal if there is non-zero constant vector $\alpha$, such that $\alpha^Ts(\bm x)$ is equal to a constant for all $\bm x$.  We will consider the \textit{regular exponential family} (REF) to be the linear exponential one with minimal representation.
+A conditional distribution $p(\bm X | \bm Y)$ is  in the exponential family if, for any assignment $\bm y$ of the variables in $\bm Y$, the probability distribution $p(\bm X|\bm y)$ can be expressed in exponential form. Moreover, $p(\bm X | \bm Y)$ is said to be \textit{conjugate} with respect to the distribution $p(\bm Y)$ if the latter has the same functional form than the posterior $p(\bm Y|\bm X)\propto p(\bm X|\bm Y)p(\bm Y)$. Then, the joint distribution $p(\bm X, \bm Y)= p(\bm X|\bm Y)p(\bm Y)$ is said to be a \textit{conjugate exponential} (CE) model. 
 
+% In fact, Equation \ref{eq:CE_F1} usually implies the existence a \textit{conjugate prior} $p(\bm Y)$ for $p(\bm X | \bm Y)$.  
 
-The REF with a minimal representation has been widely studied in the literature. The distributions in this family present many useful properties. The following two properties are considered among the most relevant ones: i)  the transformation between $\theta$ and $\mu$ parameters is a one-to-one correspondence, i.e., $\mu$ is a dual set of the model parameter $\theta$; and ii) the moment parameters $\mu$ are equal to the gradient of the log-normalizer (the proof of this equality is included in Appendix \ref{appendix:regularEFequality}):
+An important property of the CE models, which will be heavily employed in the rest of the paper, is that we can alternatively express the conditional distribution $p(\bm X|\bm Y)$ in any of the three following functional forms, 
 
-\begin{equation}
-\label{Equation:RegularEFEquality}
-\mu = \frac{\partial A(\theta)}{\partial \theta}
-\end{equation}
+\begin{description}
 
-
-However, any BN which contains immoralities does not induce a linear exponential family (some parameters are restricted to (non)-linear constraints to ensure the conditional independence). Consequently, some of the nice properties of the REF are lost. In this case, we need to rely on a more general family called the \textit{curved exponential family} where the probability distribution can be more generally expressed as follows:
-
-\begin{equation*}
-p(\bm x |\theta) = h(x)~exp(\psi(\theta)^Ts(\bm x) - A(\theta) )
-\end{equation*}
-
-\noindent where $\psi$ is  a parameter transformation function. In our case, we will consider only the cases where $\psi$ is invertible. In this way, we could re-parametrize the distribution in a canonical form as shown in Equation \ref{Equation:EFCanonical}, where the natural parameter space is not any more an open convex set.
-
-
-\begin{exmp}
-
-A Bernoulli distribution can be represented as a curved exponential family as follows: 
-
-$$
-\ln p(x| \rho ) = 
-\begin{pmatrix}
-\ln \rho\\
-\ln (1-\rho)
-\end{pmatrix}^T
-\begin{pmatrix}
-I(x=0)\\
-I(x=1)
-\end{pmatrix}
-$$
-
-\noindent such that $\psi$ function is defined as follows: $\psi(\rho) = \big(\ln \rho, \ln (1-\rho) \big)$. Moreover, this distribution can be re-parametrized in cannonical form as follows: 
-
-$$
-\ln p(x| \theta ) = 
-\begin{pmatrix}
-\theta_1\\
-\theta_2
-\end{pmatrix}^T
-\begin{pmatrix}
-I(x=0)\\
-I(x=1)
-\end{pmatrix}
-$$
-
-\noindent where $\theta\in\Theta = \{ (\theta_1, \theta_2) \in \Re^2 : e^{\theta_1} + e^{\theta_2} = 1\}$.  As can be seen, $\Theta$ is not an open convex set in $\Re^2$. 
-
-\end{exmp}
-
-%------------------------------------------------------------------------------------------------------
-\subsection*{Conditional distributions as exponential family models} \label{sec:CondDist}
-%------------------------------------------------------------------------------------------------------
-
-A conditional distribution $p(X|Pa(X))$ is in the exponential family if it can be written in the following functional form:
-
-\begin{equation}
-p(x | Pa(X)) = h(x)~exp \Big( \theta \big(Pa(X) \big)^Ts(x) - A \big(\theta  \big(Pa(X)  \big) \big) \Big) 
-\end{equation}
-
-\noindent where $\theta  \big(Pa(X) \big)$ denotes that the natural parameters which are now a function of the parent variables of $X$.  %Equivalently, we can say that $p(X|Pa(X))$ is in the exponential family if for any assignment, $\bm \pi$  to the parents variables, $p(X|\bm\pi)$ is in exponential form. 
-
-A conditional distribution $p(X|Y)$ is said to be \textit{conjugate} to a child distribution $p(W|X)$ if $p(X|Y)$ has the same functional form, with respect to $X$, as $p(W|X)$. An important property of the conjugate exponential conditional distributions is that they can also be expressed in the following functional form:
- 
+\item[Conditional form (C-form):]
 \begin{equation}
 \label{Equation:EqCED}
-p(x | \bm y) = h(x)~exp\big(\theta^T~s(x,\bm y) - B(\theta) \big) 
+\ln p(\bm x | \bm y) = \theta_{\bm X}(\bm y)^Ts(\bm x) - A(\theta(\bm x)) + h(\bm x) 
 \end{equation}
-\noindent where $B(\theta)$ is the conditional log-normalizer. 
 
-A BN is said to be a conjugate exponential family (CEF) model if all its CPDs belong to the exponential family and are conjugate as well. Importantly enough, the use of conjugate distributions allows that the posterior for each distribution has the same form as the prior, which means that only the parameter values change, but the functional form of the distribution remains the same.
+\item[Posterior form (P-form):]
+\begin{equation}
+\label{Equation:EqCED}
+\ln p(\bm x | \bm y) = \theta(\bm x)^Ts(\bm y) - A(\theta(\bm y)) + h(\bm x) 
+\end{equation}
+
+\item[Full form (F-form):]
+\begin{equation}
+\label{Equation:EqCED}
+\ln p(\bm x | \bm y) = \theta^Ts(\bm x,\bm y) - A(\theta) + h(\bm x) 
+\end{equation}
+
+\end{description}
+ 
+In the first and second functional form, $\theta(\bm y)$ and $\theta(\bm x)$ denote that the natural parameters are now a function of $\bm y$ and $\bm x$, respectively, which is not the case for the last functional form. The three functional forms above hold because, in a conjugate-exponential model, the log conditional $\ln p(\bm X| \bm Y )$ must be a multi-linear function of the sufficient statistic functions of $\bm X$ and $\bm Y$. 
+
+
+%$A_1$, $A_2$ and $A_3$ refers to different 
+
+
+
+
+%A BN is said to be a conjugate exponential family (CEF) model if all its CPDs belong to the exponential family and are conjugate as well. Importantly enough, the use of conjugate distributions allows that the posterior for each distribution has the same form as the prior, which means that only the parameter values change, but the functional form of the distribution remains the same.
 
 %------------------------------------------------------------------------------------------------------
-\section{Bayesian networks as CEF models}\label{Section:CEFBN}
+\section{Representing Bayesian networks as CEF models}\label{Section:CEFBN}
 %------------------------------------------------------------------------------------------------------
+
+A Bayesian network (BN) defines a joint distribution $P(\bm X)$ in the following form:
+
+$$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$ 
+
+\noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. BNs can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, is associated with a factor or conditional probability $p(X_i|Pa(X_i))$. Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
+
+A BN is said to be a conjugate exponential model if all its conditional probability distributions belong to the exponential family and are conjugate as well. 
+
+%Importantly enough, the use of conjugate distributions allows that the posterior for each distribution has the same form as the prior, which means that only the parameter values change, but the functional form of the distribution remains the same.
 
 %------------------------------------------------------------------------------------------------------
 \subsection{Representation} \label{Section:CEFBN:Representation}
 %------------------------------------------------------------------------------------------------------
 
-In this section, we show why conjugate exponential family Bayesian networks (CEF-BNs) are quite amenable to be represented (and coded) as exponential family models. 
+In this section, we show why conjugate exponential family Bayesian networks (CE-BNs) are quite amenable to be represented (and coded) as exponential family models. 
 
 \begin{theorem}
 A CEF-BN can be represented as an exponential family model by composing the F-form representations of its conditional probability distributions as follows, 

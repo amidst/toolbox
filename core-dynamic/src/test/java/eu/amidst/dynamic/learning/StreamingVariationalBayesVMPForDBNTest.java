@@ -1,10 +1,10 @@
 package eu.amidst.dynamic.learning;
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.distribution.*;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
+import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.dynamic.learning.dynamic.BayesianLearningEngineForDBN;
 import eu.amidst.dynamic.learning.dynamic.MaximumLikelihoodForDBN;
 import eu.amidst.dynamic.learning.dynamic.StreamingVariationalBayesVMPForDBN;
@@ -13,7 +13,7 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
 import org.junit.Test;
 

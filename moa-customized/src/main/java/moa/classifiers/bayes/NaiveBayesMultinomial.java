@@ -36,7 +36,7 @@ import moa.core.DoubleVector;
  * naive assumption that all inputs are independent. For more information
  * see,<br/> <br/> Andrew Mccallum, Kamal Nigam: A Comparison of Event Models
  * for Naive Bayes Text Classification. In: AAAI-98 Workshop on 'Learning for
- * Text Categorization', 1998.<br/> <br/> The corestatic equation for this
+ * Text Categorization', 1998.<br/> <br/> The core equation for this
  * classifier:<br/> <br/> P[Ci|D] = (P[D|Ci] x P[Ci]) / P[D] (Bayes rule)<br/>
  * <br/> where Ci is class i and D is a document.<br/> <br/> Incremental version
  * of the algorithm.
@@ -75,7 +75,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
     protected double[] m_classTotals;
 
     /**
-     * copy of header information for use in toString method
+     * copy of header information for use in outputString method
      */
     protected Instances m_headerInfo;
 

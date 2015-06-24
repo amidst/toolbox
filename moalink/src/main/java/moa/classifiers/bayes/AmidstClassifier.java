@@ -1,19 +1,19 @@
 package moa.classifiers.bayes;
 
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.DataOnMemoryListContainer;
-import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.inference.InferenceAlgorithm;
-import eu.amidst.corestatic.inference.messagepassing.VMP;
-import eu.amidst.corestatic.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.corestatic.learning.parametric.bayesian.StreamingVariationalBayesVMP;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.Variable;
-import eu.amidst.corestatic.variables.Variables;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
+import eu.amidst.core.learning.parametric.bayesian.StreamingVariationalBayesVMP;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import eu.amidst.moalink.converterFromMoaToAmidst.Converter;
 import eu.amidst.moalink.converterFromMoaToAmidst.DataRowWeka;
 import moa.classifiers.AbstractClassifier;
@@ -176,7 +176,7 @@ public class AmidstClassifier extends AbstractClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, this.attributes_));
         if(batch_.getNumberOfDataInstances() < getBatchSize_()-1) {  //store
             batch_.add(dataInstance);
         }else{                                                  //store & learn
@@ -202,7 +202,7 @@ public class AmidstClassifier extends AbstractClassifier {
             return new double[0];
         }
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, this.attributes_));
         double realValue = dataInstance.getValue(classVar_);
         dataInstance.setValue(classVar_, Utils.missingValue());
         this.predictions_.setEvidence(dataInstance);

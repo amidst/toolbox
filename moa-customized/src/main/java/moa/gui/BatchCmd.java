@@ -222,7 +222,7 @@ public class BatchCmd implements ClusterEventListener{
 	public static void exportCSV(String filepath, ArrayList<ClusterEvent> clusterEvents, MeasureCollection[] measures, int horizon) {
 		PrintWriter out = null;
 		try {
-			// Prepare an output file			
+			// Prepare an outputString file
 			if (!filepath.endsWith(".csv")) {
 				filepath += ".csv";
 			}

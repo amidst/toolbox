@@ -8,16 +8,16 @@
 
 package eu.amidst.scai2015;
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.datastream.DataInstance;
-import eu.amidst.corestatic.datastream.filereaders.DataInstanceImpl;
-import eu.amidst.corestatic.datastream.filereaders.DataRow;
-import eu.amidst.corestatic.datastream.filereaders.DataStreamFromFile;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.StateSpaceTypeEnum;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.datastream.filereaders.DataRow;
+import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -69,8 +69,9 @@ public class scriptAddClassPreviousMonth {
         Attribute seqID = atts.getAttributeByName("SEQUENCE_ID");
         Attribute timeID = atts.getAttributeByName("TIME_ID");
 
+        Attributes attributes = new Attributes(newAtts);
         data.stream().forEach(e -> {
-            DataRow dataRow = new DataRowFromAtts(newAtts.size());
+            DataRow dataRow = new DataRowFromAtts(attributes);
             for (Attribute att : atts) {
                 dataRow.setValue(att, e.getValue(att));
             }
@@ -94,9 +95,11 @@ public class scriptAddClassPreviousMonth {
 
     private static class DataRowFromAtts implements DataRow {
         private Map<Attribute,Double> assignment;
+        private Attributes attributes;
 
-        public DataRowFromAtts(int nOfAtts){
-            assignment = new ConcurrentHashMap(nOfAtts);
+        public DataRowFromAtts(Attributes attributes_){
+            attributes = attributes_;
+            assignment = new ConcurrentHashMap(attributes.getNumberOfAttributes());
         }
 
         @Override
@@ -113,6 +116,11 @@ public class scriptAddClassPreviousMonth {
         @Override
         public void setValue(Attribute att, double val) {
             this.assignment.put(att,val);
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return this.attributes;
         }
 
 

@@ -75,7 +75,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			's',
 			"Split criterion to use.",
 			SplitCriterion.class,
-			"moa.classifiers.corestatic.splitcriteria.VarianceReductionSplitCriterion");
+			"moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
 
 	public IntOption gracePeriodOption = new IntOption(
 			"gracePeriod",

@@ -191,8 +191,8 @@ public class ClusterGenerator extends AbstractClusterer{
                     //normalize length and then strecht to reach error position
                     vector[d]=vector[d]/vectorLength*length;
                 }
-//                System.out.println("Center "+Arrays.toString(center));
-//                System.out.println("Vector "+Arrays.toString(vector));
+//                System.out.println("Center "+Arrays.outputString(center));
+//                System.out.println("Vector "+Arrays.outputString(vector));
                 //check if error position is within bounds
                 double [] newCenter = new double[center.length];
                 for (int d = 0; d < center.length; d++) {
@@ -212,7 +212,7 @@ public class ClusterGenerator extends AbstractClusterer{
                         System.out.println("This shouldnt have happend, Cluster center out of bounds:"+Arrays.toString(newCenter));
                     }
                 }
-                //System.out.println("new Center "+Arrays.toString(newCenter));
+                //System.out.println("new Center "+Arrays.outputString(newCenter));
 
             }
             

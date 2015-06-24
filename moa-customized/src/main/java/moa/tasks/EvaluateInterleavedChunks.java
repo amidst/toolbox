@@ -111,7 +111,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 			Integer.MAX_VALUE);
 
 	/**
-	 * Allows to define the output file name and location.
+	 * Allows to define the outputString file name and location.
 	 */
 	public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
 			"File to append intermediate csv reslts to.", null, "csv", true);
@@ -216,7 +216,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 			
 			sampleTrainTime += TimingUtils.getNanoCPUTimeOfCurrentThread() - trainStartTime;
 			
-			////Result output
+			////Result outputString
 			if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0) {
 				
 				double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs

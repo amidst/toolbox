@@ -2,15 +2,15 @@ package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.Class;
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 import org.junit.Before;
 import org.junit.Test;
 

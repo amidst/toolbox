@@ -2,7 +2,7 @@ package eu.amidst.huginlink.io;
 
 import COM.hugin.HAPI.Domain;
 import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.corestatic.models.BayesianNetwork;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 
 /**

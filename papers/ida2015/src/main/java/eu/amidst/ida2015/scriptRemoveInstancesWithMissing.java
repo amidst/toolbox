@@ -9,11 +9,11 @@
 package eu.amidst.ida2015;
 
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.filereaders.DataStreamFromFile;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataWriter;
-import eu.amidst.corestatic.utils.Utils;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
+import eu.amidst.core.utils.Utils;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -60,7 +60,7 @@ public final class scriptRemoveInstancesWithMissing{
     }
     public static void main(String[] args) {
         try {
-            //removeInstancesWithMissing("/Users/ana/Documents/corestatic/datasets/dynamicDataOnlyContinuous.arff");
+            //removeInstancesWithMissing("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
             removeInstancesWithMissing(args[0]);
         }catch (IOException ex){}
     }

@@ -107,7 +107,7 @@ public class NaiveBayes extends AbstractClassifier {
                         "Observations for ");
                 out.append(getAttributeNameString(j));
                 out.append(": ");
-                // TODO: implement observer output
+                // TODO: implement observer outputString
                 out.append(this.attributeObservers.get(j));
             }
             StringUtils.appendNewline(out);
