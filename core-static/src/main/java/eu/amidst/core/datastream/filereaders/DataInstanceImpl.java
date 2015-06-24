@@ -9,6 +9,7 @@
 package eu.amidst.core.datastream.filereaders;
 
 import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 
 /**
@@ -20,6 +21,11 @@ public class DataInstanceImpl implements DataInstance {
 
     public DataInstanceImpl(DataRow dataRow1){
         dataRow=dataRow1;
+    }
+
+    @Override
+    public Attributes getAttributes() {
+        return dataRow.getAttributes();
     }
 
     @Override

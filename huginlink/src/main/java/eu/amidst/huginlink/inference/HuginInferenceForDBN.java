@@ -7,7 +7,7 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.dynamic.inference.InferenceAlgorithmForDBN;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.dynamic.variables.HashMapAssignment;
+import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
 
@@ -46,7 +46,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
     /**
      * The AMIDST assignment to be evidenced into the Hugin model.
      */
-    private DynamicAssignment assignment = new HashMapAssignment(0);
+    private DynamicAssignment assignment = new HashMapDynamicAssignment(0);
 
     /**
      * The time ID of the current assignment being processed.

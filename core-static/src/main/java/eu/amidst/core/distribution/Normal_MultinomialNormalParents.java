@@ -177,7 +177,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
         for (int i = 0; i < getNumberOfParentAssignments(); i++) {
             str.append(this.getNormal_NormalParentsDistribution(i).toString());
             Assignment parentAssignment = MultinomialIndex.getVariableAssignmentFromIndex(this.getMultinomialParents(), i);
-            str.append(" | "+parentAssignment.toString(this.getMultinomialParents())+"\n");
+            str.append(" | "+parentAssignment.outputString()+"\n");
         }
 
         return str.toString();

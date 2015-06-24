@@ -150,8 +150,10 @@ public class ARFFDataReader implements DataFileReader {
 
     private static class DataRowWeka implements DataRow{
         double[] data;
+        Attributes atts;
 
-        public DataRowWeka(Attributes atts, String line){
+        public DataRowWeka(Attributes atts_, String line){
+            atts = atts_;
             data = new double[atts.getNumberOfAttributes()];
             String[] parts = line.split(",");
             if (parts.length!=atts.getNumberOfAttributes())
@@ -182,6 +184,11 @@ public class ARFFDataReader implements DataFileReader {
         @Override
         public void setValue(Attribute att, double value) {
             this.data[att.getIndex()]=value;
+        }
+
+        @Override
+        public Attributes getAttributes() {
+            return atts;
         }
     }
 }

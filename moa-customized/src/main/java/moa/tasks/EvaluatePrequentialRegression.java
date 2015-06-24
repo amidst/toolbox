@@ -93,7 +93,7 @@ public class EvaluatePrequentialRegression extends RegressionMainTask {
             "File to append intermediate csv results to.", null, "csv", true);
 
     public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
+            "File to append outputString predictions to.", null, "pred", true);
 
     //New for prequential method DEPRECATED
     public IntOption widthOption = new IntOption("width",
@@ -163,7 +163,7 @@ public class EvaluatePrequentialRegression extends RegressionMainTask {
                         "Unable to open immediate result file: " + dumpFile, ex);
             }
         }
-        //File for output predictions
+        //File for outputString predictions
         File outputPredictionFile = this.outputPredictionFileOption.getFile();
         PrintStream outputPredictionResultStream = null;
         if (outputPredictionFile != null) {

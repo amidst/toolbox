@@ -123,7 +123,7 @@ public class wrapperBN {
         //Learn the initial BN with training data including only the class variable
         BayesianNetwork bNet = train(trainingData, Vars, SF,false);
 
-        //System.out.println(bNet.toString());
+        //System.out.println(bNet.outputString());
 
         //Evaluate the initial BN with testing data including only the class variable, i.e., initial score or initial auc
         double score = testFS(testData, bNet);
@@ -197,7 +197,7 @@ public class wrapperBN {
         //Final training with the winning SF and the full initial data
         bNet = train(data, Vars, SF, true);
 
-        //System.out.println(bNet.getDAG().toString());
+        //System.out.println(bNet.getDAG().outputString());
 
         return bNet;
     }

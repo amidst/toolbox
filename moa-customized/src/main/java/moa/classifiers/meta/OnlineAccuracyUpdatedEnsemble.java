@@ -66,12 +66,12 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier {
 			33554432, 0, Integer.MAX_VALUE);
 	
 	/**
-	 * Determines whether additional information should be sent to the output.
+	 * Determines whether additional information should be sent to the outputString.
 	 */
 	public FlagOption verboseOption = new FlagOption("verbose", 'v', "When checked the algorithm outputs additional information about component classifier weights.");
 	
 	/**
-	 * Determines whether additional information should be sent to the output.
+	 * Determines whether additional information should be sent to the outputString.
 	 */
 	public FlagOption linearOption = new FlagOption("linearFunction", 'f', "When checked the algorithm uses a linear weighting function.");
 

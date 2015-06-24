@@ -12,10 +12,12 @@
 package eu.amidst.core.variables;
 
 
+import com.google.common.collect.Sets;
 import eu.amidst.core.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by andresmasegosa on 26/5/15.
@@ -47,5 +49,10 @@ public class MissingAssignment implements Assignment{
             throw new IllegalArgumentException("A missing variable can not be modified");
         else
             assignment.setValue(var,value);
+    }
+
+    @Override
+    public Set<Variable> getVariables() {
+        return Sets.union(assignment.getVariables(),missingVars.keySet());
     }
 }

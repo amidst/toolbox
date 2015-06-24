@@ -8,24 +8,41 @@
 
 package eu.amidst.core.variables;
 
-import java.util.List;
+import java.util.Set;
 
 /**
+ * This interface defines a collection of assignments to variables. I.e.
+ * "(A=0.1, B = True)", assuming A is continuous variable and B a binary variable.
+ *
  * Created by ana@cs.aau.dk on 03/11/14.
  */
 public interface Assignment {
 
+    /**
+     * This method return the value assigned to a given variable
+     * @param var, the Variable object we want to query
+     * @return The assigned value to the given variable. Returns a Double.NaN if
+     * the variable is not included in the assignment.
+     */
     double getValue(Variable var);
 
+    /**
+     * This method set the value assigned to a variable. If the value is already include,
+     * then update the value accordingly.
+     *
+     * @param var, the Variable object we want to assign
+     * @param value, the assigned value
+     */
     void setValue(Variable var, double value);
 
-    // TODO Check THIS!!
-    default String toString(List<Variable> vars){
-        StringBuilder builder = new StringBuilder(vars.size()*2);
+
+    Set<Variable> getVariables();
+
+    default String outputString(){
+
+        StringBuilder builder = new StringBuilder(this.getVariables().size()*2);
         builder.append("{");
-        //vars.stream().limit(vars.size()-1).forEach(var -> builder.append(var.getName()+ " = "+(int)this.getValue(var)+", "));
-        vars.stream().limit(vars.size()-1).forEach(var -> builder.append( var.getName()+ " = "+ (var.isMultinomial() ? (int)this.getValue(var) : String.format("%1$,.3f", this.getValue(var)) ) + ", "));
-        builder.append(vars.get(vars.size()-1).getName()+ " = "+ (vars.get(vars.size()-1).isMultinomial() ? (int)this.getValue(vars.get(vars.size()-1)) : String.format("%1$,.3f", this.getValue(vars.get(vars.size()-1))) ));
+        this.getVariables().stream().forEach(var -> builder.append(var.getName()+ " = "+(int)this.getValue(var)+", "));
         builder.append("}");
         return builder.toString();
     }

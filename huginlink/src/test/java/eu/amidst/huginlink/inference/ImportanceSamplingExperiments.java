@@ -62,7 +62,7 @@ public class ImportanceSamplingExperiments {
             } while ( ArrayUtils.contains(indexesEvidence, varIndex) );
 
             indexesEvidence[k+1]=varIndex;
-            //System.out.println(Arrays.toString(indexesEvidence));
+            //System.out.println(Arrays.outputString(indexesEvidence));
             //System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
 
             assignment.setValue(aux,evidence[k]);
@@ -173,8 +173,8 @@ public class ImportanceSamplingExperiments {
             BayesianNetworkGenerator.generateBNtoFile(nDiscrete, nStates, nContin, nLinks, seed, filename);
             bn = BayesianNetworkLoader.loadFromFile(filename);
             /*
-            System.out.println(bn.toString());
-            System.out.println(bn.getDAG().toString());
+            System.out.println(bn.outputString());
+            System.out.println(bn.getDAG().outputString());
             */
 
             //*****************************************************************
@@ -196,7 +196,7 @@ public class ImportanceSamplingExperiments {
             b = middlePoint + 0.5;
 
             /*
-            System.out.println("Variable of interest: " + varname + " in interval (" + Double.toString(a) + "," + Double.toString(b) + ")");
+            System.out.println("Variable of interest: " + varname + " in interval (" + Double.outputString(a) + "," + Double.outputString(b) + ")");
             System.out.println();
             */
 
@@ -314,11 +314,11 @@ public class ImportanceSamplingExperiments {
             // EXECUTION TIMES FOR EACH METHOD
             //*****************************************************************
             /*
-            System.out.println("Execution time (VMP):      " + Double.toString(execTimeVMP) + " seconds");
-            System.out.println("Execution time (IS-VMP):   " + Double.toString(execTimeISVMP) + " seconds");
-            System.out.println("Execution time (IS):       " + Double.toString(execTimeIS) + " seconds");
-            System.out.println("Execution time (IS-exact): " + Double.toString(execTimeISexact) + " seconds");
-            System.out.println("Execution time (HUGIN):    " + Double.toString(execTimeHugin) + " seconds");
+            System.out.println("Execution time (VMP):      " + Double.outputString(execTimeVMP) + " seconds");
+            System.out.println("Execution time (IS-VMP):   " + Double.outputString(execTimeISVMP) + " seconds");
+            System.out.println("Execution time (IS):       " + Double.outputString(execTimeIS) + " seconds");
+            System.out.println("Execution time (IS-exact): " + Double.outputString(execTimeISexact) + " seconds");
+            System.out.println("Execution time (HUGIN):    " + Double.outputString(execTimeHugin) + " seconds");
             System.out.println();
             */
 
@@ -333,11 +333,11 @@ public class ImportanceSamplingExperiments {
             // POSTERIOR DISTRIBUTIONS WITH EACH METHOD
             //*****************************************************************
             /*
-            System.out.println("Posterior of " + varInterest.getName() + " (VMP):      " + posteriorVMP.toString());
-            System.out.println("Posterior of " + varInterest.getName() + " (IS-VMP):   " + posteriorISVMP.toString());
-            System.out.println("Posterior of " + varInterest.getName() + " (IS):       " + posteriorIS.toString());
-            System.out.println("Posterior of " + varInterest.getName() + " (IS-exact): " + posteriorISexact.toString());
-            System.out.println("Posterior of " + varInterest.getName() + " (HUGIN):    " + posteriorHUGIN.toString());
+            System.out.println("Posterior of " + varInterest.getName() + " (VMP):      " + posteriorVMP.outputString());
+            System.out.println("Posterior of " + varInterest.getName() + " (IS-VMP):   " + posteriorISVMP.outputString());
+            System.out.println("Posterior of " + varInterest.getName() + " (IS):       " + posteriorIS.outputString());
+            System.out.println("Posterior of " + varInterest.getName() + " (IS-exact): " + posteriorISexact.outputString());
+            System.out.println("Posterior of " + varInterest.getName() + " (HUGIN):    " + posteriorHUGIN.outputString());
             System.out.println();
             */
 
@@ -345,7 +345,7 @@ public class ImportanceSamplingExperiments {
             // QUERY ABOUT PROBABILITY IN (a,b)
             //*****************************************************************
             /*
-            System.out.println("Query: P(" + Double.toString(a) + " < " + varInterest.getName() + " < " + Double.toString(b) + ")");
+            System.out.println("Query: P(" + Double.outputString(a) + " < " + varInterest.getName() + " < " + Double.outputString(b) + ")");
             System.out.println("Probability (VMP):      " + probVMP);
             System.out.println("Probability (IS-VMP):   " + probISVMP);
             System.out.println("Probability (IS):       " + probIS);
@@ -365,14 +365,14 @@ public class ImportanceSamplingExperiments {
         System.out.println(Arrays.toString(timeISVMP));
         System.out.println(Arrays.toString(timeIS));
         System.out.println(Arrays.toString(timeISexact));
-        //System.out.println(Arrays.toString(timeHUGIN));
+        //System.out.println(Arrays.outputString(timeHUGIN));
         System.out.println();
         System.out.println("Probabilities: (VMP,IS-VMP,IS,IS-EXACT)");
         System.out.println(Arrays.toString(probabilitiesVMP));
         System.out.println(Arrays.toString(probabilitiesISVMP));
         System.out.println(Arrays.toString(probabilitiesIS));
         System.out.println(Arrays.toString(probabilitiesISexact));
-        //System.out.println(Arrays.toString(probabilitiesHUGIN));
+        //System.out.println(Arrays.outputString(probabilitiesHUGIN));
         System.out.println();
 
         double meanTimeVMP = Arrays.stream(timeVMP).average().getAsDouble();

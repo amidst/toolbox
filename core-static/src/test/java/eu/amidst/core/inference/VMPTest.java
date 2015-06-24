@@ -930,9 +930,9 @@ public class VMPTest extends TestCase {
 
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
             System.out.println(oldvalue);
-            //System.out.println("P'(A) = " + qADist.toString());
-            //System.out.println("P'(B) = " + qBDist.toString());
-            //System.out.println("P'(C) = " + qCDist.toString());
+            //System.out.println("P'(A) = " + qADist.outputString());
+            //System.out.println("P'(B) = " + qBDist.outputString());
+            //System.out.println("P'(C) = " + qCDist.outputString());
         }
 
         System.out.println("P'(A) = " + qADist.toString());

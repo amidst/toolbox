@@ -912,7 +912,7 @@ public class KDTree
     // todo: undecided situations
     int numCent = centList.length;
 
-    // WARNING: assignments is "input/output-parameter"
+    // WARNING: assignments is "input/outputString-parameter"
     // should not be null and the following should not happen
     if (assignments == null) {
       assignments = new int[m_Instances.numInstances()];
