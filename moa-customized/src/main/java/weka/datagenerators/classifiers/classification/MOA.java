@@ -46,7 +46,7 @@ import java.util.Vector;
  *  Prints this help.</pre>
  * 
  * <pre> -o &lt;file&gt;
- *  The name of the output file, otherwise the generated data is
+ *  The name of the outputString file, otherwise the generated data is
  *  printed to stdout.</pre>
  * 
  * <pre> -r &lt;name&gt;
@@ -118,7 +118,7 @@ public class MOA
    *  Prints this help.</pre>
    * 
    * <pre> -o &lt;file&gt;
-   *  The name of the output file, otherwise the generated data is
+   *  The name of the outputString file, otherwise the generated data is
    *  printed to stdout.</pre>
    * 
    * <pre> -r &lt;name&gt;
@@ -288,7 +288,7 @@ public class MOA
 
   /**
    * Generates a comment string that documentates the data generator.
-   * By default this string is added at the beginning of the produced output
+   * By default this string is added at the beginning of the produced outputString
    * as ARFF file type, next after the options.
    * 
    * @return string contains info about the generated rules
@@ -299,7 +299,7 @@ public class MOA
 
   /**
    * Generates a comment string that documentats the data generator.
-   * By default this string is added at the end of theproduces output
+   * By default this string is added at the end of theproduces outputString
    * as ARFF file type.
    * 
    * @return string contains info about the generated rules

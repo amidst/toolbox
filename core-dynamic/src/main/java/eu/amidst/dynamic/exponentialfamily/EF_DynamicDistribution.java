@@ -17,11 +17,11 @@
 package eu.amidst.dynamic.exponentialfamily;
 
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.exponentialfamily.MomentParameters;
-import eu.amidst.corestatic.exponentialfamily.NaturalParameters;
-import eu.amidst.corestatic.exponentialfamily.SufficientStatistics;
-import eu.amidst.corestatic.utils.Vector;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.exponentialfamily.MomentParameters;
+import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 13/11/14.

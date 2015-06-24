@@ -8,10 +8,10 @@
 
 package eu.amidst.dynamic.datastream.filereaders;
 
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.datastream.DataStream;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.corestatic.datastream.filereaders.DataFileReader;
+import eu.amidst.core.datastream.filereaders.DataFileReader;
 
 import java.util.stream.Stream;
 

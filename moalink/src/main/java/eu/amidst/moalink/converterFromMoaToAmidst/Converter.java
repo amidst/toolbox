@@ -1,12 +1,12 @@
 package eu.amidst.moalink.converterFromMoaToAmidst;
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.Attributes;
-import eu.amidst.corestatic.variables.StateSpaceType;
-import eu.amidst.corestatic.variables.Variable;
-import eu.amidst.corestatic.variables.Variables;
-import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.corestatic.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.variables.StateSpaceType;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import moa.core.InstancesHeader;
 
 import java.util.ArrayList;

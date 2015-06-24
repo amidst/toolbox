@@ -104,10 +104,10 @@ System.out.println("Can a Multinomial variable be parent of Gaussian variable? "
 
 
 
-\section{Creation of Bayesian Networks}
+\section{Handling Bayesian Networks}
 
 
-\subsection{Bayesian Networks with no hidden variables}
+\subsection{Creating Bayesian Networks with no hidden variables}
 
 In this example, we take a data set, create a BN and we compute the log-likelihood of all the samples
 of this data set. The numbers defining the probability distributions of the BN are randomly fixed.
@@ -211,7 +211,7 @@ BayesianNetworkWriter.saveToFile(bn, "networks/huginStaticBNExample.bn");
 \end{lstlisting}
 
 
-\subsection{Bayesian Networks with hidden variables}
+\subsection{Creating Bayesian Networks with hidden variables}
 
 In this example, we simply show how to create a BN model with hidden variables. We simply create a BN for clustering, i.e.,  a naive-Bayes like structure with a single common hidden variable acting as parant of all the observable variables.
  
@@ -306,6 +306,44 @@ System.out.println(bn.toString());
  * Finally the Bayesian network is saved to a file.
  */
 BayesianNetworkWriter.saveToFile(bn, "networks/huginStaticBNHiddenExample.bn");
+
+\end{lstlisting}
+
+\subsection{Modifying Bayesian Networks}
+
+In this example we show how to access and modify the conditional probabilities of a Bayesian network model.
+
+\begin{lstlisting}
+//We first generate a Bayesian network with one multinomial, one Gaussian variable and one link
+BayesianNetworkGenerator.setNumberOfGaussianVars(1);
+BayesianNetworkGenerator.setNumberOfMultinomialVars(1,2);
+BayesianNetworkGenerator.setNumberOfLinks(1);
+
+BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
+
+//We print the randomly generated Bayesian networks
+System.out.println(bn.toString());
+
+//We first access the variable we are interested in
+Variable multiVar = bn.getStaticVariables().getVariableByName("DiscreteVar0");
+
+//Using the above variable we can get the associated distribution and modify it
+Multinomial multinomial = bn.getConditionalDistribution(multiVar);
+multinomial.setProbabilities(new double[]{0.2, 0.8});
+
+//Same than before but accessing the another variable
+Variable normalVar = bn.getStaticVariables().getVariableByName("GaussianVar0");
+
+//In this case, the conditional distribtuion is of the type "Normal given Multinomial Parents"
+Normal_MultinomialParents normalMultiDist = bn.getConditionalDistribution(normalVar);
+normalMultiDist.getNormal(0).setMean(1.0);
+normalMultiDist.getNormal(0).setVariance(1.0);
+
+normalMultiDist.getNormal(1).setMean(0.0);
+normalMultiDist.getNormal(1).setVariance(1.0);
+
+//We print modified Bayesian network
+System.out.println(bn.toString());
 
 \end{lstlisting}
 

@@ -38,7 +38,7 @@ public interface ChangeDetector extends OptionHandler {
     /**
      * Adding a numeric value to the change detector<br><br>
      *
-     * The output of the change detector is modified after the insertion of a
+     * The outputString of the change detector is modified after the insertion of a
      * new item inside.
      *
      * @param inputValue the number to insert into the change detector
@@ -74,7 +74,7 @@ public interface ChangeDetector extends OptionHandler {
     public double getDelay();
 
     /**
-     * Gets the output state of the change detection.
+     * Gets the outputString state of the change detection.
      *
      * @return an array with the number of change detections, number of
      * warnings, delay, and estimation.

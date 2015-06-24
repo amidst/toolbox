@@ -17,11 +17,11 @@
 package eu.amidst.dynamic.models;
 
 
-import eu.amidst.corestatic.distribution.ConditionalDistribution;
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.Assignment;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
 import java.util.ArrayList;

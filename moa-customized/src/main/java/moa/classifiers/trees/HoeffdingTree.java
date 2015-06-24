@@ -62,7 +62,7 @@ import weka.core.Utils;
  * case, the goodness of an attribute).</p> <p>A theoretically appealing feature
  * of Hoeffding Trees not shared by other incremental decision tree learners is
  * that it has sound guarantees of performance. Using the Hoeffding bound one
- * can show that its output is asymptotically nearly identical to that of a
+ * can show that its outputString is asymptotically nearly identical to that of a
  * non-incremental learner using inﬁnitely many examples. See for details:</p>
  *
  * <p>G. Hulten, L. Spencer, and P. Domingos. Mining time-changing data streams.

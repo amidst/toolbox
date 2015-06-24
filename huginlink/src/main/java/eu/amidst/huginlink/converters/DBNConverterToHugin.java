@@ -2,14 +2,14 @@ package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.corestatic.utils.MultinomialIndex;
+import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.List;

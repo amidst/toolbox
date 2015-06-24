@@ -16,9 +16,9 @@
 
 package eu.amidst.dynamic.models;
 
-import eu.amidst.corestatic.models.ParentSet;
+import eu.amidst.core.models.ParentSet;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
 import java.util.ArrayList;

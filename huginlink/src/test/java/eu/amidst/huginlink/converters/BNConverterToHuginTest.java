@@ -1,15 +1,15 @@
 package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.*;
-import eu.amidst.corestatic.distribution.*;
-import eu.amidst.corestatic.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.models.DAG;
-import eu.amidst.corestatic.models.ParentSet;
-import eu.amidst.corestatic.utils.MultinomialIndex;
-import eu.amidst.corestatic.utils.Utils;
-import eu.amidst.corestatic.variables.Variables;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.distribution.*;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.models.ParentSet;
+import eu.amidst.core.utils.MultinomialIndex;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 import org.junit.Before;
 import org.junit.Test;
 

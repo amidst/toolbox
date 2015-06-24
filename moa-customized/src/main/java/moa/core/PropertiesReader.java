@@ -46,7 +46,7 @@ public final class PropertiesReader {
      * override all these settings.
      *
      * @param resourceName the location of the resource that should be
-     * loaded.  e.g.: "weka/corestatic/Utils.props". (The use of hardcoded
+     * loaded.  e.g.: "weka/core/Utils.props". (The use of hardcoded
      * forward slashes here is OK - see
      * jdk1.1/docs/guide/misc/resources.html) This routine will also
      * look for the file (in this case) "Utils.props" in the users home

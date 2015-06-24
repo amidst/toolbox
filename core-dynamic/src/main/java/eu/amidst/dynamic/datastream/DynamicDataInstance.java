@@ -8,10 +8,10 @@
 
 package eu.amidst.dynamic.datastream;
 
-import eu.amidst.corestatic.datastream.Attribute;
-import eu.amidst.corestatic.datastream.DataInstance;
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.corestatic.variables.Variable;
+import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 27/01/15.

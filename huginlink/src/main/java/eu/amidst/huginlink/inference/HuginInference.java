@@ -1,15 +1,15 @@
 package eu.amidst.huginlink.inference;
 
 import COM.hugin.HAPI.*;
-import eu.amidst.corestatic.distribution.UnivariateDistribution;
-import eu.amidst.corestatic.inference.InferenceAlgorithm;
-import eu.amidst.corestatic.models.BayesianNetwork;
-import eu.amidst.corestatic.utils.BayesianNetworkGenerator;
-import eu.amidst.corestatic.variables.Assignment;
-import eu.amidst.corestatic.variables.HashMapAssignment;
-import eu.amidst.corestatic.variables.Variable;
-import eu.amidst.corestatic.distribution.Multinomial;
-import eu.amidst.corestatic.distribution.Normal;
+import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;
 
@@ -201,9 +201,9 @@ public class HuginInference implements InferenceAlgorithm {
 
         // POSTERIOR DISTRIBUTION
         System.out.println((inferenceForBN.getPosterior(ClassVar)).toString());
-        //System.out.println((inferenceForBN.getPosterior(DiscreteVar0)).toString());
-        //System.out.println((inferenceForBN.getPosterior(GaussianVar0)).toString());
-        //System.out.println((inferenceForBN.getPosterior(GaussianVar1)).toString());
+        //System.out.println((inferenceForBN.getPosterior(DiscreteVar0)).outputString());
+        //System.out.println((inferenceForBN.getPosterior(GaussianVar0)).outputString());
+        //System.out.println((inferenceForBN.getPosterior(GaussianVar1)).outputString());
 
         //---------------------------------------------------------------------------
     }
