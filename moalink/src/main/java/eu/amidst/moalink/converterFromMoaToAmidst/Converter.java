@@ -19,19 +19,25 @@ import java.util.List;
 public final class Converter {
 
     public static Attributes convertAttributes(InstancesHeader modelContext){
-        weka.core.Attribute attrWeka;
         Enumeration attributesWeka = modelContext.enumerateAttributes();
+        return convertAttributes(attributesWeka, modelContext.classAttribute());
+
+    }
+
+    public static Attributes convertAttributes(Enumeration<weka.core.Attribute> attributesEnumeration,
+                                               weka.core.Attribute classAtt){
+        weka.core.Attribute attrWeka;
         List<Attribute> attrList = new ArrayList<>();
         /* Predictive attributes */
-        while (attributesWeka.hasMoreElements()) {
-            attrWeka = (weka.core.Attribute) attributesWeka.nextElement();
+        while (attributesEnumeration.hasMoreElements()) {
+            attrWeka = (weka.core.Attribute) attributesEnumeration.nextElement();
             convertAttribute(attrWeka,attrList);
         }
-
-        convertAttribute(modelContext.classAttribute(), attrList);
+        convertAttribute(classAtt, attrList);
         return new Attributes(attrList);
 
     }
+
 
     public static Variable getClassVariable(InstancesHeader modelContext, Attributes atts){
         Variables variables = new Variables(atts);
