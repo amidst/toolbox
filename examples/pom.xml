@@ -39,7 +39,7 @@
     <build>
     <plugins>
         <plugin>
-            <groupId>eu.amidst</groupId>
+            <groupId>org.codehaus.mojo</groupId>
             <artifactId>build-helper-maven-plugin</artifactId>
             <executions>
                 <execution>
