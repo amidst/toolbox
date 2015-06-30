@@ -52,11 +52,6 @@ public class DrillingAttributes extends Attributes {
     }
 
     @Override
-    public void print() {
-
-    }
-
-    @Override
     public Attribute getAttributeByName(String name) {
         return null;
     }
