@@ -121,7 +121,7 @@ public class ExperimentsParallelSVB {
 
     public static void main(String[] args) throws Exception {
 
-        int[] nCores = {32,16,8,4,2,1};
+        int[] nCores = {32,32,16,8,4,2,1};
 
         for (int K = 0; K <nCores.length; K++) {
             args[0] = nCores[K] + "";
