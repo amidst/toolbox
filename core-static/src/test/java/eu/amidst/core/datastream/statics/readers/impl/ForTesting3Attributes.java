@@ -31,6 +31,11 @@ public class ForTesting3Attributes extends Attributes {
     }
 
     @Override
+    public void print() {
+
+    }
+
+    @Override
     public Attribute getAttributeByName(String name) {
         return null;
     }
