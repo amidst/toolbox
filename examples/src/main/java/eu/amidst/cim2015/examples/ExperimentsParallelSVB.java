@@ -123,25 +123,29 @@ public class ExperimentsParallelSVB {
 
         //args= new String[]{"4"};
 
-        int nCores =Integer.parseInt(args[0]);
+        //int nCores =Integer.parseInt(args[0]);
+        int[] nCores = {1,2,4,8,32};
+
+        for (int K = 0; K <nCores.length; K++) {
+            args[0] = nCores[K] + "";
 
 
-        for (int i = 0; i < 0; i++) {
-            System.out.println("Discard "+i);
-            ExperimentsParallelSVB.parallelSVB(args);
+            for (int i = 0; i < 0; i++) {
+                //System.out.println("Discard " + i);
+                ExperimentsParallelSVB.parallelSVB(args);
+            }
+
+            long currentTime = System.nanoTime();
+
+            for (int i = 0; i < 1; i++) {
+                //System.out.println("Test " + i);
+                ExperimentsParallelSVB.parallelSVB(args);
+            }
+
+            currentTime = (System.nanoTime() - currentTime) / 1;
+
+            double seconds = currentTime / 1000000000.0;
+            System.out.println(nCores[K] + "\t" + seconds + "\t" + SAMPLES / seconds);
         }
-
-        long currentTime = System.nanoTime();
-
-        for (int i = 0; i < 1; i++) {
-            System.out.println("Test "+i);
-            ExperimentsParallelSVB.parallelSVB(args);
-        }
-
-        currentTime = (System.nanoTime() - currentTime)/1;
-
-        double seconds = currentTime/1000000000.0;
-        System.out.println(nCores +"\t"+seconds+"\t"+SAMPLES/seconds);
-
     }
 }
