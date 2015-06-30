@@ -102,7 +102,7 @@ public class ExperimentsParallelSVB {
 
 
         //We can activate the output
-        parameterLearningAlgorithm.setOutput(true);
+        parameterLearningAlgorithm.setOutput(false);
 
 
         //We set the data which is going to be used for leaning the parameters
