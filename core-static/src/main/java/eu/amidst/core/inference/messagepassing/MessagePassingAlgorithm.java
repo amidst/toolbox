@@ -44,7 +44,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     protected Random random = new Random(0);
     protected int seed=0;
     protected int maxIter = 1000;
-    protected double threshold = 0.0001;
+    protected double threshold = 0.001;
     protected boolean output = false;
     protected int nIter = 0;
 
