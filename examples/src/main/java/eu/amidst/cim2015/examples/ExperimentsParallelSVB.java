@@ -121,19 +121,16 @@ public class ExperimentsParallelSVB {
 
     public static void main(String[] args) throws Exception {
 
-        //args= new String[]{"4"};
-
-        //int nCores =Integer.parseInt(args[0]);
-        int[] nCores = {1,2,4,8,32};
+        int[] nCores = {32,16,8,4,2,1};
 
         for (int K = 0; K <nCores.length; K++) {
             args[0] = nCores[K] + "";
 
 
-            for (int i = 0; i < 0; i++) {
+            //for (int i = 0; i < 0; i++) {
                 //System.out.println("Discard " + i);
-                ExperimentsParallelSVB.parallelSVB(args);
-            }
+            //    ExperimentsParallelSVB.parallelSVB(args);
+            //}
 
             long currentTime = System.nanoTime();
 
