@@ -5,7 +5,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
-import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -114,7 +114,7 @@ public final class batchSizeComparisonsML {
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/sampleBatchSize.arff");
 
 
-        MaximumLikelihood parameterLearningAlgorithm = new MaximumLikelihood();
+        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setParallelMode(isParallel());
         parameterLearningAlgorithm.setDAG(dag);
         parameterLearningAlgorithm.setDataStream(data);
