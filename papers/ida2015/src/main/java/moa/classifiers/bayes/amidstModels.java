@@ -113,7 +113,7 @@ public class amidstModels extends AbstractClassifier{// implements SemiSupervise
     /**
      * Private fields
      */
-    //private StreamingVariationalBayesVMP svb_ = null;
+    //private SVB svb_ = null;
 
     NaiveBayesGaussianHiddenConceptDrift nb_ = null;
 

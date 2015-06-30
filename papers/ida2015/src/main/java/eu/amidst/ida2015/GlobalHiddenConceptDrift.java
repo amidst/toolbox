@@ -14,7 +14,7 @@ import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.Fading;
 import eu.amidst.core.learning.parametric.bayesian.PlateuIIDReplication;
-import eu.amidst.core.learning.parametric.bayesian.StreamingVariationalBayesVMP;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -129,7 +129,7 @@ public class GlobalHiddenConceptDrift {
         DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
         int count = windowSize;
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setParallelMode(false);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden),true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 10));
@@ -253,7 +253,7 @@ public class GlobalHiddenConceptDrift {
         DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
         int count = windowSize;
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden),true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 1, 5));
         svb.setWindowsSize(windowSize);
@@ -359,7 +359,7 @@ public class GlobalHiddenConceptDrift {
         DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
         int count = windowSize;
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 1, 5));
@@ -735,7 +735,7 @@ public class GlobalHiddenConceptDrift {
         int windowSizeData = 1000;
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setParallelMode(false);
         svb.setRandomRestart(false);
         svb.setSeed(1);
@@ -840,7 +840,7 @@ public class GlobalHiddenConceptDrift {
         int count = windowSize;
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(localHidden, true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(localHidden, 0, 10));
@@ -948,7 +948,7 @@ public class GlobalHiddenConceptDrift {
         int count = windowSize;
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setParallelMode(true);
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
@@ -1014,7 +1014,7 @@ public class GlobalHiddenConceptDrift {
         int count = windowSize;
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 0, 0.1));
@@ -1086,7 +1086,7 @@ public class GlobalHiddenConceptDrift {
         int count = windowSize;
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(globalHidden), true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(Arrays.asList(globalHidden), 1, 5));
@@ -1142,7 +1142,7 @@ public class GlobalHiddenConceptDrift {
         int count = windowSize;
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setPlateuStructure(new PlateuIIDReplication());
         svb.setTransitionMethod(new Fading(0.0001));

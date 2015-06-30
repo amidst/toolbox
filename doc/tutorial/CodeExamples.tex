@@ -543,25 +543,31 @@ approach using the following algorithm
 In Advances in Neural Information Processing Systems (pp. 1727-1735).
 }
 
-
-
 \subsubsection*{Version 1}
 
-In this first example we show a simple way to invoke this learning algorithm,
+In this first example we show a simple way to invoke this parallel learning algorithm by using the class \textit{ParallelSVB}.
 
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
 
-//We create a StreamingVariationalBayesVMP object
-StreamingVariationalBayesVMP parameterLearningAlgorithm = new StreamingVariationalBayesVMP();
+//We create a ParallelSVB object
+ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
 
-//We fix the DAG structure
-parameterLearningAlgorithm.setDAG(getHiddenNaiveBayesStructure(data));
+//We fix the number of cores we want to exploit
+parameterLearningAlgorithm.setNCores(4);
 
-//We fix the size of the window, which must be equal to the size of the data batches we use for learning
-parameterLearningAlgorithm.setWindowsSize(5);
+//We fix the DAG structure, which is a Naive Bayes with a 
+//global latent binary variable
+parameterLearningAlgorithm.setDAG(StreamingVMPExample.getHiddenNaiveBayesStructure(data));
+
+
+//We fix the size of the window
+parameterLearningAlgorithm.getSVBEngine().setWindowsSize(100);
+
+//We can activate the output
+parameterLearningAlgorithm.setOutput(true);
 
 //We set the data which is going to be used for leaning the parameters
 parameterLearningAlgorithm.setDataStream(data);
@@ -574,28 +580,32 @@ BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
 
 //We print the model
 System.out.println(bnModel.toString());
+
 \end{lstlisting}
 
 
 \subsubsection*{Version 2}
 
-In this second example we show a alternative use of this class which explicitly update the model by batches, 
+In this second example we show a alternative implementation which explicitly updates the model by batches by using the class \textit{SVB}.
 
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
 
 //We create a StreamingVariationalBayesVMP object
 StreamingVariationalBayesVMP parameterLearningAlgorithm = new StreamingVariationalBayesVMP();
 
-//We fix the DAG structure
+//We fix the DAG structure, which is a Naive Bayes with a 
+//global latent binary variable
 parameterLearningAlgorithm.setDAG(getHiddenNaiveBayesStructure(data));
 
 //We fix the size of the window, which must be equal to the size of the data batches 
 //we use for learning
 parameterLearningAlgorithm.setWindowsSize(5);
 
+//We can activate the output
+parameterLearningAlgorithm.setOutput(true);
 
 //We should invoke this method before processing any data
 parameterLearningAlgorithm.initLearning();

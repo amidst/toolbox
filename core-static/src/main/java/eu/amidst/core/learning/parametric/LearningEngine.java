@@ -26,7 +26,7 @@ public final class LearningEngine {
     private static boolean parallelMode = false;
 
 
-    private static ParameterLearningAlgorithm parameterLearningAlgorithm = new MaximumLikelihood();
+    private static ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
 
 
     public static void setParameterLearningAlgorithm(ParameterLearningAlgorithm parameterLearningAlgorithm) {
@@ -57,8 +57,8 @@ public final class LearningEngine {
 //        tan.setNameTarget("p48124091");
 //        LearningEngine.setStaticStructuralLearningAlgorithm(tan::learnDAG);
 //
-//        MaximumLikelihood.setBatchSize(1000);
-//        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
+//        ParallelMaximumLikelihood.setBatchSize(1000);
+//        LearningEngine.setStaticParameterLearningAlgorithm(ParallelMaximumLikelihood::learnParametersStaticModel);
 //
 //        BayesianNetwork tanModel = LearningEngine.learnStaticModel(data);
 

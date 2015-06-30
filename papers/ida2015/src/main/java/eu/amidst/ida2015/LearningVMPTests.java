@@ -20,7 +20,7 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.*;
 import eu.amidst.core.learning.parametric.bayesian.Fading;
-import eu.amidst.core.learning.parametric.bayesian.StreamingVariationalBayesVMP;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -72,7 +72,7 @@ public class LearningVMPTests {
 
         int windowSize = 10;
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         //svb.setSeed(1);
         //svb.setFading(0.9);
         VMP vmp = svb.getPlateuStructure().getVMP();
@@ -134,7 +134,7 @@ public class LearningVMPTests {
 
         int windowSize = 10;
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setTransitionMethod(new Fading(0.9));
         VMP vmp = svb.getPlateuStructure().getVMP();
@@ -237,7 +237,7 @@ public class LearningVMPTests {
 
         int windowSize = 200;
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(3);
         svb.setTransitionMethod(new Fading(0.1));
         VMP vmp = svb.getPlateuStructure().getVMP();
@@ -363,7 +363,7 @@ public class LearningVMPTests {
         DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setTransitionMethod(new Fading(0.95));
         VMP vmp = svb.getPlateuStructure().getVMP();
@@ -472,7 +472,7 @@ public class LearningVMPTests {
         DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         svb.setTransitionMethod(new Fading(0.95));
         VMP vmp = svb.getPlateuStructure().getVMP();
@@ -587,7 +587,7 @@ public class LearningVMPTests {
             /**
              * Streaming Variational Bayes for batches of 1 sample
              */
-            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+            SVB svb = new SVB();
             svb.setSeed(i);
             VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
@@ -684,7 +684,7 @@ public class LearningVMPTests {
             /**
              * Streaming Variational Bayes for batches of different sizes
              */
-            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+            SVB svb = new SVB();
             svb.setParallelMode(false);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuStructure().getVMP();
@@ -798,7 +798,7 @@ public class LearningVMPTests {
 
             data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
 
-            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+            SVB svb = new SVB();
             svb.setParallelMode(false);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuStructure().getVMP();
@@ -916,7 +916,7 @@ public class LearningVMPTests {
                 outputPerWindowSize[2][j] = windowsSizes[j] + "\t";
                 outputPerWindowSize[3][j] = windowsSizes[j] + "\t";
                 outputPerWindowSize[4][j] = windowsSizes[j] + "\t";
-                MaximumLikelihoodFading likelihoodFading = new MaximumLikelihoodFading();
+                ParallelMaximumLikelihoodFading likelihoodFading = new ParallelMaximumLikelihoodFading();
 
                 for (int f = 0; f < fadingFactor.length; f++) {
                     likelihoodFading.setFadingFactor(fadingFactor[f]);
@@ -988,7 +988,7 @@ public class LearningVMPTests {
             sampler.setSeed(j);
             DataStream<DataInstance> data = sampler.sampleToDataStream(100000);
 
-            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+            SVB svb = new SVB();
             svb.setSeed(j);
             VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
@@ -1039,7 +1039,7 @@ public class LearningVMPTests {
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
@@ -1088,7 +1088,7 @@ public class LearningVMPTests {
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
@@ -1138,7 +1138,7 @@ public class LearningVMPTests {
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
@@ -1171,7 +1171,7 @@ public class LearningVMPTests {
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
@@ -1206,7 +1206,7 @@ public class LearningVMPTests {
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
-        StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+        SVB svb = new SVB();
         svb.setSeed(0);
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
@@ -1243,7 +1243,7 @@ public class LearningVMPTests {
             //BayesianNetwork MLlearntBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 
 
-            StreamingVariationalBayesVMP svb = new StreamingVariationalBayesVMP();
+            SVB svb = new SVB();
             svb.setSeed(j);
             VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);

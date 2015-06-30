@@ -38,4 +38,5 @@ public interface ParameterLearningAlgorithm {
 
     void setParallelMode(boolean parallelMode);
 
+    void setOutput(boolean activateOutput);
 }

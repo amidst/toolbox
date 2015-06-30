@@ -41,6 +41,8 @@ public class Main {
         multinomial.setProbabilities(new double[]{0.2, 0.8});
 
 
+
+
     }
 
 }
