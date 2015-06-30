@@ -86,8 +86,8 @@ public final class LearningEngineForDBN {
 //        tan.setNameTarget("p48124091");
 //        LearningEngine.setStaticStructuralLearningAlgorithm(tan::learnDAG);
 //
-//        MaximumLikelihood.setBatchSize(1000);
-//        LearningEngine.setStaticParameterLearningAlgorithm(MaximumLikelihood::learnParametersStaticModel);
+//        ParallelMaximumLikelihood.setBatchSize(1000);
+//        LearningEngine.setStaticParameterLearningAlgorithm(ParallelMaximumLikelihood::learnParametersStaticModel);
 //
 //        BayesianNetwork tanModel = LearningEngine.learnStaticModel(data);
 

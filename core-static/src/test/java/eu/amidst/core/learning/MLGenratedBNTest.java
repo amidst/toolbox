@@ -3,7 +3,7 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.LearningEngine;
-import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -37,10 +37,10 @@ public class MLGenratedBNTest {
 
 
         //Parameter Learning
-        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
-        maximumLikelihood.setBatchSize(1000);
-        maximumLikelihood.setParallelMode(true);
-        LearningEngine.setParameterLearningAlgorithm(maximumLikelihood);
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setParallelMode(true);
+        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork bnet = LearningEngine.learnParameters(naiveBayes.getDAG(), data);
 
         //Check the probability distributions of each node

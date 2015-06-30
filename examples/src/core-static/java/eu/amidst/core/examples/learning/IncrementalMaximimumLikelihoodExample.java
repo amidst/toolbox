@@ -16,7 +16,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -62,7 +62,7 @@ public class IncrementalMaximimumLikelihoodExample {
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
 
         //We create a ParameterLearningAlgorithm object with the MaximumLikehood builder
-        ParameterLearningAlgorithm parameterLearningAlgorithm = new MaximumLikelihood();
+        ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
 
         //We fix the DAG structure
         parameterLearningAlgorithm.setDAG(getNaiveBayesStructure(data,0));

@@ -4,7 +4,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.learning.parametric.LearningEngine;
-import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
@@ -46,10 +46,10 @@ public class MLMultinomialsNormalsTest {
             // and just learn then test the parameter learning
 
             //Parameter Learning
-            MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
-            maximumLikelihood.setBatchSize(1000);
-            maximumLikelihood.setParallelMode(true);
-            LearningEngine.setParameterLearningAlgorithm(maximumLikelihood);
+            ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setParallelMode(true);
+            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
 
             BayesianNetwork bnet = LearningEngine.learnParameters(trueBN.getDAG(), data);
 

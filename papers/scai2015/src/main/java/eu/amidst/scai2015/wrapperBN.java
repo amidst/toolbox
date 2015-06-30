@@ -5,7 +5,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.StreamingVariationalBayesVMP;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
@@ -246,7 +246,7 @@ public class wrapperBN {
                 .filter(w -> w.getMainVar().getVarID() != classVariable.getVarID())
                 .forEach(w -> w.addParent(classVariable));
 
-        StreamingVariationalBayesVMP vmp = new StreamingVariationalBayesVMP();
+        SVB vmp = new SVB();
 
         vmp.setDAG(dag);
         vmp.setDataStream(data);

@@ -13,7 +13,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -80,7 +80,7 @@ public class NaiveBayesClassifier implements Classifier{
 
     @Override
     public void learn(DataStream<DataInstance> dataStream){
-        ParameterLearningAlgorithm parameterLearningAlgorithm = new MaximumLikelihood();
+        ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.staticNaiveBayesStructure(dataStream));
         parameterLearningAlgorithm.setDataStream(dataStream);

@@ -8,7 +8,7 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.core.learning.parametric.bayesian.StreamingVariationalBayesVMP;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
@@ -166,11 +166,11 @@ public class AmidstRegressor extends AbstractClassifier implements Regressor {
 
         /*
         if(getnOfStatesMultHiddenVar_() == 0 && getnOfGaussianHiddenVars_() == 0){   //ML can be used when Lapalace is introduced
-            parameterLearningAlgorithm_ = new MaximumLikelihood();
+            parameterLearningAlgorithm_ = new ParallelMaximumLikelihood();
         }else
-            parameterLearningAlgorithm_ = new StreamingVariationalBayesVMP();
+            parameterLearningAlgorithm_ = new SVB();
             */
-        parameterLearningAlgorithm_ = new StreamingVariationalBayesVMP();
+        parameterLearningAlgorithm_ = new SVB();
     }
 
     @Override

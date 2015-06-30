@@ -16,7 +16,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.StreamingVariationalBayesVMP;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
@@ -39,7 +39,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     int classIndex = -1;
     DriftDetector conceptDriftDetector;
     int seed = 0;
-    StreamingVariationalBayesVMP svb;
+    SVB svb;
     List<Variable> hiddenVars;
     double fading = 1.0;
     int numberOfGlobalVars = 1;
@@ -87,7 +87,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
         this.seed = seed;
     }
 
-    public StreamingVariationalBayesVMP getSvb() {
+    public SVB getSvb() {
         return svb;
     }
 
@@ -119,7 +119,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
         System.out.println(dag.toString());
 
-        svb = new StreamingVariationalBayesVMP();
+        svb = new SVB();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(hiddenVars, true));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
@@ -158,7 +158,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
         System.out.println(dag.toString());
 
-        svb = new StreamingVariationalBayesVMP();
+        svb = new SVB();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(hiddenVars, true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance));
@@ -199,7 +199,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
         System.out.println(dag.toString());
 
-        svb = new StreamingVariationalBayesVMP();
+        svb = new SVB();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(hiddenVars, true));
         svb.setTransitionMethod(new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance));

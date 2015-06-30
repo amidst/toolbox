@@ -6,7 +6,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.LearningEngine;
-import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.*;
@@ -195,7 +195,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     public BayesianNetwork learnBN(DataStream<DataInstance> dataStream) throws ExceptionHugin {
 
         LearningEngine.setParallelMode(this.parallelMode);
-        LearningEngine.setParameterLearningAlgorithm(new MaximumLikelihood());
+        LearningEngine.setParameterLearningAlgorithm(new ParallelMaximumLikelihood());
 
         return LearningEngine.learnParameters(this.learnDAG(dataStream), dataStream);
     }

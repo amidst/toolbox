@@ -5,7 +5,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.learning.parametric.LearningEngine;
-import eu.amidst.core.learning.parametric.MaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
@@ -39,9 +39,9 @@ public class MLMultinomialsTest {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
-        maximumLikelihood.setBatchSize(1000);
-        LearningEngine.setParameterLearningAlgorithm(maximumLikelihood);
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setBatchSize(1000);
+        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
 
         //Check if the probability distributions of each node
@@ -77,10 +77,10 @@ public class MLMultinomialsTest {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
-        maximumLikelihood.setBatchSize(1000);
-        maximumLikelihood.setParallelMode(true);
-        LearningEngine.setParameterLearningAlgorithm(maximumLikelihood);
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setParallelMode(true);
+        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
 
         //Check if the probability distributions of each node
@@ -115,15 +115,15 @@ public class MLMultinomialsTest {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        MaximumLikelihood maximumLikelihood = new MaximumLikelihood();
-        maximumLikelihood.setDAG(asianet.getDAG());
-        maximumLikelihood.initLearning();
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setDAG(asianet.getDAG());
+        parallelMaximumLikelihood.initLearning();
 
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)){
-            maximumLikelihood.updateModel(batch);
+            parallelMaximumLikelihood.updateModel(batch);
         }
 
-        BayesianNetwork bnet = maximumLikelihood.getLearntBayesianNetwork();
+        BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getStaticVariables()) {
