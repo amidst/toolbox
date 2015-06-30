@@ -14,8 +14,6 @@ package eu.amidst.cim2015.examples;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -45,7 +43,7 @@ public class ExperimentsParallelSVB {
         Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
 
         //We define the global latent binary variable
-        Variable globalHiddenGaussian = modelHeader.newMultionomialVariable("globalHiddenGaussian", 2);
+        Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");
 
         Variable classVar = modelHeader.getVariableById(0);
 
@@ -78,11 +76,15 @@ public class ExperimentsParallelSVB {
         return dag;
     }
 
-    public static void parallelSVB(int nCores) throws Exception {
+    public static void parallelSVB(String[] args) throws Exception {
+
+        int nCores = Integer.parseInt(args[0]);
+        int nVars = Integer.parseInt(args[1]);
+        int windowSize = Integer.parseInt(args[2]);
 
         //We can open the data stream using the static class DataStreamLoader
-        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(10, 2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(nVars);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(nVars, 2);
         BayesianNetwork bn  =BayesianNetworkGenerator.generateBayesianNetwork();
         DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(SAMPLES);
 
@@ -96,7 +98,7 @@ public class ExperimentsParallelSVB {
         parameterLearningAlgorithm.setDAG(ExperimentsParallelSVB.getHiddenNaiveBayesStructure(data));
 
         //We fix the size of the window, which must be equal to the size of the data batches we use for learning
-        parameterLearningAlgorithm.getSVBEngine().setWindowsSize(100);
+        parameterLearningAlgorithm.getSVBEngine().setWindowsSize(windowSize);
 
 
         //We can activate the output
@@ -126,14 +128,14 @@ public class ExperimentsParallelSVB {
 
         for (int i = 0; i < 0; i++) {
             System.out.println("Discard "+i);
-            ExperimentsParallelSVB.parallelSVB(nCores);
+            ExperimentsParallelSVB.parallelSVB(args);
         }
 
         long currentTime = System.nanoTime();
 
         for (int i = 0; i < 1; i++) {
             System.out.println("Test "+i);
-            ExperimentsParallelSVB.parallelSVB(nCores);
+            ExperimentsParallelSVB.parallelSVB(args);
         }
 
         currentTime = (System.nanoTime() - currentTime)/1;
