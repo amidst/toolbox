@@ -119,7 +119,7 @@ public class ExperimentsParallelSVB {
 
     public static void main(String[] args) throws Exception {
 
-        args= new String[]{"4"};
+        //args= new String[]{"4"};
 
         int nCores =Integer.parseInt(args[0]);
 
