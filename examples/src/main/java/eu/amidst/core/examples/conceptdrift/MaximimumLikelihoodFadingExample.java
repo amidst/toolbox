@@ -8,40 +8,44 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package eu.amidst.core.examples.learning;
+package eu.amidst.core.examples.conceptdrift;
 
 
+import eu.amidst.core.conceptdrift.MaximumLikelihoodFading;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.examples.learning.MaximimumLikelihoodByBatchExample;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 
 /**
  *
- * This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum
- * likelihood.
+ * This example shows how to adaptively learn the parameters of a Bayesian network from a stream of data using exponential
+ * forgetting with a given fading factor, directly inspired by the approach presented in
+ *
+ *      Olesen, K. G., Lauritzen, S. L., & Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal
+ *      probabilistic networks. In Proceedings of the Eighth international conference on Uncertainty
+ *      in Artificial Intelligence (pp. 223-229). Morgan Kaufmann Publishers Inc.
  *
  * Created by andresmasegosa on 18/6/15.
  */
-public class ParallelMaximumLikelihoodExample {
-
+public class MaximimumLikelihoodFadingExample {
 
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
 
-        //We create a ParallelMaximumLikelihood object with the MaximumLikehood builder
-        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
-
-        //We activate the parallel mode.
-        parameterLearningAlgorithm.setParallelMode(true);
+        //We create a ParameterLearningAlgorithm object with the MaximumLikelihoodFading builder
+        MaximumLikelihoodFading parameterLearningAlgorithm = new MaximumLikelihoodFading();
 
         //We fix the DAG structure
         parameterLearningAlgorithm.setDAG(MaximimumLikelihoodByBatchExample.getNaiveBayesStructure(data, 0));
 
-        //We set the batch size which will be employed to learn the model in parallel
+        //We fix the fading or forgeting factor
+        parameterLearningAlgorithm.setFadingFactor(0.9);
+
+        //We set the batch size which will be employed to learn the model
         parameterLearningAlgorithm.setBatchSize(100);
 
         //We set the data which is going to be used for leaning the parameters
@@ -55,7 +59,6 @@ public class ParallelMaximumLikelihoodExample {
 
         //We print the model
         System.out.println(bnModel.toString());
-
     }
 
 }

@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.core.learning.parametric;
+package eu.amidst.core.conceptdrift;
 
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -17,30 +17,22 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 
 /**
  * Created by andresmasegosa on 9/6/15.
  */
-public class ParallelMaximumLikelihoodFading extends ParallelMaximumLikelihood {
+public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implements FadingLearner {
 
     double fadingFactor;
-
-    int windowSize;
 
     public double getFadingFactor() {
         return fadingFactor;
     }
 
+    @Override
     public void setFadingFactor(double fadingFactor) {
         this.fadingFactor = fadingFactor;
-    }
-
-    public int getWindowSize() {
-        return windowSize;
-    }
-
-    public void setWindowSize(int windowsSize) {
-        this.windowSize = windowsSize;
     }
 
     @Override
@@ -53,7 +45,7 @@ public class ParallelMaximumLikelihoodFading extends ParallelMaximumLikelihood {
         sumSS.multiplyBy(fadingFactor);
         sumSS.sum(batchSS);
 
-        dataInstanceCount.set(dataInstanceCount.get() * fadingFactor + windowSize);
+        dataInstanceCount.set(dataInstanceCount.get() * fadingFactor + batch.getNumberOfDataInstances());
 
         return Double.NaN;
     }
@@ -67,7 +59,7 @@ public class ParallelMaximumLikelihoodFading extends ParallelMaximumLikelihood {
 
         dataInstanceCount = new AtomicDouble(0);
         sumSS = efBayesianNetwork.createZeroedSufficientStatistics();
-        for (DataOnMemory<DataInstance> batch : dataStream.iterableOverBatches(windowSize)){
+        for (DataOnMemory<DataInstance> batch : dataStream.iterableOverBatches(batchSize)){
             SufficientStatistics batchSS = batch.stream()
                     .map(efBayesianNetwork::getSufficientStatistics)
                     .reduce(SufficientStatistics::sumVector).get();
@@ -75,10 +67,13 @@ public class ParallelMaximumLikelihoodFading extends ParallelMaximumLikelihood {
             sumSS.multiplyBy(fadingFactor);
             sumSS.sum(batchSS);
 
-            dataInstanceCount.set(dataInstanceCount.get()*fadingFactor + windowSize);
+            dataInstanceCount.set(dataInstanceCount.get()*fadingFactor + batchSize);
         }
     }
 
 
-
+    @Override
+    public void setParallelMode(boolean parallelMode) {
+        throw new UnsupportedOperationException("Non Parallel Mode Supported.");
+    }
 }

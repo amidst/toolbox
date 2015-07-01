@@ -33,13 +33,13 @@ import java.util.stream.Stream;
  */
 public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
 
-    int batchSize = 1000;
-    boolean parallelMode = true;
-    DataStream<DataInstance> dataStream;
-    DAG dag;
-    AtomicDouble dataInstanceCount;
-    SufficientStatistics sumSS;
-    EF_BayesianNetwork efBayesianNetwork;
+    protected int batchSize = 1000;
+    protected boolean parallelMode = true;
+    protected DataStream<DataInstance> dataStream;
+    protected DAG dag;
+    protected AtomicDouble dataInstanceCount;
+    protected SufficientStatistics sumSS;
+    protected EF_BayesianNetwork efBayesianNetwork;
 
     public void setBatchSize(int batchSize_) {
         batchSize = batchSize_;
@@ -103,6 +103,11 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
     @Override
     public void setDAG(DAG dag_) {
         this.dag = dag_;
+    }
+
+    @Override
+    public void setSeed(int seed) {
+
     }
 
     @Override

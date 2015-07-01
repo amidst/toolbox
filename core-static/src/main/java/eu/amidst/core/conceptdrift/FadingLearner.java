@@ -1,5 +1,3 @@
-package eu.amidst.core.learning.parametric;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -11,34 +9,14 @@ package eu.amidst.core.learning.parametric;
  *
  */
 
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
+package eu.amidst.core.conceptdrift;
+
 
 /**
- * Created by ana@cs.aau.dk on 04/03/15.
+ * Created by andresmasegosa on 1/7/15.
  */
-public interface ParameterLearningAlgorithm {
+public interface FadingLearner {
 
-    void initLearning();
+    void setFadingFactor(double fading);
 
-    double updateModel(DataOnMemory<DataInstance> batch);
-
-    void setDataStream(DataStream<DataInstance> data);
-
-    double getLogMarginalProbability();
-
-    void runLearning();
-
-    void setDAG(DAG dag);
-
-    void setSeed(int seed);
-
-    BayesianNetwork getLearntBayesianNetwork();
-
-    void setParallelMode(boolean parallelMode);
-
-    void setOutput(boolean activateOutput);
 }

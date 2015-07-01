@@ -1,6 +1,3 @@
-package eu.amidst.core.examples.learning;
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -11,10 +8,13 @@ package eu.amidst.core.examples.learning;
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
+package eu.amidst.core.examples.learning;
+
+
+
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
@@ -24,7 +24,7 @@ import eu.amidst.core.variables.Variables;
 
 /**
  *
- * This examples shows how to learn in the parameters of a Bayesian network from a stream of data with a Bayesian
+ * This example shows how to learn the parameters of a Bayesian network from a stream of data with a Bayesian
  * approach using the following algorithm
  *
  * Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
@@ -69,7 +69,6 @@ public class SVBExample {
 
         //We fix the DAG structure
         parameterLearningAlgorithm.setDAG(getHiddenNaiveBayesStructure(data));
-        parameterLearningAlgorithm.setDAG(BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn").getDAG());
 
         //We fix the size of the window
         parameterLearningAlgorithm.setWindowsSize(100);

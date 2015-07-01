@@ -63,7 +63,6 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
 
         for (int i = 0; i < nCores; i++) {
             svbEngines[i] = new SVB();
-            svbEngines[i].setParallelMode(false);
             svbEngines[i].setSeed(this.seed);
             svbEngines[i].setDAG(this.dag);
             //svbEngines[i].setPlateuStructure(this.SVBEngine.getPlateuStructure());

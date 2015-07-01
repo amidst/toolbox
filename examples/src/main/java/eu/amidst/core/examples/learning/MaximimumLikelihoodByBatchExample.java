@@ -1,6 +1,3 @@
-package eu.amidst.core.examples.learning;
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -11,6 +8,9 @@ package eu.amidst.core.examples.learning;
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
+package eu.amidst.core.examples.learning;
+
+
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -25,11 +25,11 @@ import eu.amidst.core.variables.Variables;
 
 /**
  *
- * This examples shows how to learn in parallel the parameters of a Bayesian network from a stream of data.
+ * This other example shows how to learn incrementally the parameters of a Bayesian network using data batches
  *
  * Created by andresmasegosa on 18/6/15.
  */
-public class IncrementalMaximimumLikelihoodExample {
+public class MaximimumLikelihoodByBatchExample {
 
 
     /**
@@ -38,7 +38,7 @@ public class IncrementalMaximimumLikelihoodExample {
      * @param classIndex
      * @return
      */
-    private static DAG getNaiveBayesStructure(DataStream<DataInstance> dataStream, int classIndex){
+    public static DAG getNaiveBayesStructure(DataStream<DataInstance> dataStream, int classIndex){
 
         //We create a Variables object from the attributes of the data stream
         Variables modelHeader = new Variables(dataStream.getAttributes());
@@ -59,7 +59,7 @@ public class IncrementalMaximimumLikelihoodExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
 
         //We create a ParameterLearningAlgorithm object with the MaximumLikehood builder
         ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
@@ -72,7 +72,7 @@ public class IncrementalMaximimumLikelihoodExample {
 
 
         //Then we show how we can perform parameter learnig by a sequential updating of data batches.
-        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(5)){
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)){
             parameterLearningAlgorithm.updateModel(batch);
         }
 

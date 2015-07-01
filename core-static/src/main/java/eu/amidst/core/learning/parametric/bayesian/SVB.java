@@ -36,7 +36,7 @@ public class SVB implements BayesianParameterLearningAlgorithm {
     DAG dag;
     DataStream<DataInstance> dataStream;
     double elbo;
-    boolean parallelMode=false;
+    boolean nonSequentialModel=false;
     boolean randomRestart=false;
     int windowsSize=100;
     int seed = 0;
@@ -123,15 +123,15 @@ public class SVB implements BayesianParameterLearningAlgorithm {
     @Override
     public void runLearning() {
         this.initLearning();
-        if (!parallelMode) {
+        if (!nonSequentialModel) {
             this.elbo = this.dataStream.streamOfBatches(this.windowsSize).mapToDouble(this::updateModel).sum();
         }else {
             this.elbo = this.dataStream.streamOfBatches(this.windowsSize).mapToDouble(this::updateModelParallel).sum();
        }
     }
 
-    public void setParallelMode(boolean parallelMode) {
-        this.parallelMode = parallelMode;
+    public void setNonSequentialModel(boolean nonSequentialModel_) {
+        this.nonSequentialModel = nonSequentialModel_;
     }
 
     @Override
@@ -142,7 +142,7 @@ public class SVB implements BayesianParameterLearningAlgorithm {
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
         double elboBatch = 0;
-        if (!parallelMode){
+        if (!nonSequentialModel){
             if (this.randomRestart) this.getPlateuStructure().resetQs();
             elboBatch =  this.updateModelSequential(batch);
         }else{
@@ -273,7 +273,7 @@ public class SVB implements BayesianParameterLearningAlgorithm {
 
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
-        if(!parallelMode)
+        if(!nonSequentialModel)
             return BayesianNetwork.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
         else{
             CompoundVector posterior = (CompoundVector)this.getNaturalParameterPosterior().getVector();
@@ -307,6 +307,11 @@ public class SVB implements BayesianParameterLearningAlgorithm {
 
             return learntBN;
         }
+    }
+
+    @Override
+    public void setParallelMode(boolean parallelMode) {
+        throw new UnsupportedOperationException("Non Parallel Mode Supported. Use class ParallelSVB");
     }
 
     static class BatchOutput{

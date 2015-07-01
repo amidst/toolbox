@@ -104,8 +104,8 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     }
 
 
-    public EF_ConditionalDistribution getDistribution(Variable var) {
-        return distributionList.get(var.getVarID());
+    public <E extends EF_ConditionalDistribution> E getDistribution(Variable var) {
+        return (E)distributionList.get(var.getVarID());
     }
 
     public void setDistribution(Variable var, EF_ConditionalDistribution dist) {

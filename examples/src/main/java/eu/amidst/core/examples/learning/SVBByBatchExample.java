@@ -1,6 +1,3 @@
-package eu.amidst.core.examples.learning;
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -12,6 +9,11 @@ package eu.amidst.core.examples.learning;
  *
  */
 
+package eu.amidst.core.examples.learning;
+
+
+
+
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -21,7 +23,7 @@ import eu.amidst.core.models.BayesianNetwork;
 
 /**
  *
- * This examples shows how to learn in the parameters of a Bayesian network from a stream of data with a Bayesian
+ * This example shows how to learn incrementally the parameters of a Bayesian network from a stream of data with a Bayesian
  * approach using the following algorithm
  *
  * Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
@@ -54,7 +56,7 @@ public class SVBByBatchExample {
         parameterLearningAlgorithm.initLearning();
 
 
-        //Then we show how we can perform parameter learnig by a sequential updating of data batches.
+        //Then we show how we can perform parameter learning by a sequential updating of data batches.
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(5)){
             parameterLearningAlgorithm.updateModel(batch);
         }
