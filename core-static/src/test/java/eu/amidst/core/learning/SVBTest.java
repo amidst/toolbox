@@ -457,10 +457,9 @@ public class SVBTest extends TestCase {
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
 
             SVB svb = new SVB();
-            svb.setParallelMode(false);
             svb.setWindowsSize(1000);
             svb.setSeed(i);
             VMP vmp = svb.getPlateuStructure().getVMP();
@@ -480,7 +479,7 @@ public class SVBTest extends TestCase {
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
         }
 
     }
@@ -504,7 +503,7 @@ public class SVBTest extends TestCase {
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.1));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
 
 
             SVB svb = new SVB();
@@ -539,13 +538,13 @@ public class SVBTest extends TestCase {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
-            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(20000);
 
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.6));
 
             SVB svb = new SVB();
             svb.setWindowsSize(1000);
@@ -563,7 +562,7 @@ public class SVBTest extends TestCase {
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.6));
         }
     }
 
