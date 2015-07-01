@@ -38,6 +38,10 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
         this.testELBO = testELBO;
     }
 
+    public boolean isTestELBO() {
+        return testELBO;
+    }
+
     @Override
     public Message<NaturalParameters> newSelfMessage(Node node) {
         Map<Variable, MomentParameters> momentParents = node.getMomentParents();
