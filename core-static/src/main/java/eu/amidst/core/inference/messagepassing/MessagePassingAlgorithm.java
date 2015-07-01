@@ -59,8 +59,16 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
         this.threshold = threshold;
     }
 
+    public double getThreshold() {
+        return threshold;
+    }
+
     public void setMaxIter(int maxIter) {
         this.maxIter = maxIter;
+    }
+
+    public int getMaxIter() {
+        return maxIter;
     }
 
     public void resetQs(){
