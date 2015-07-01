@@ -31,7 +31,7 @@ public final class BayesianNetworkGenerator{
     private static int numberOfMultinomialVars;
     private static int numberOfGaussianVars;
     private static int numberOfStates;
-    private static int seed;
+    private static int seed=0;
 
     public static void setSeed(int seed) {
         BayesianNetworkGenerator.seed = seed;
