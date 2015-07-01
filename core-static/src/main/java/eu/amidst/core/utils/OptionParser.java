@@ -158,16 +158,18 @@ public class OptionParser {
             }
             else if(allOptions.get(className) == null){
                 if((i+1)<commandLineOptions.length)
-                    if(!commandLineOptions[i+1].trim().startsWith("-"))
+                    if(!commandLineOptions[i+1].trim().startsWith("-")) {
                         local.put(commandLineOptions[i].trim(), commandLineOptions[++i].trim());
-                    else
-                        local.put(commandLineOptions[i].trim(), "true");
+                        continue;
+                    }
+                local.put(commandLineOptions[i].trim(), "true");
             }else{
                 if((i+1)<commandLineOptions.length)
-                    if(!commandLineOptions[i+1].trim().startsWith("-"))
+                    if(!commandLineOptions[i+1].trim().startsWith("-")) {
                         allOptions.get(className).put(commandLineOptions[i].trim(), commandLineOptions[++i].trim());
-                    else
-                        allOptions.get(className).put(commandLineOptions[i].trim(), "true");
+                        continue;
+                    }
+                allOptions.get(className).put(commandLineOptions[i].trim(), "true");
             }
         }
         //In case the separator (for subOptions) has not been added at the end
