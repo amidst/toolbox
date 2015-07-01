@@ -21,6 +21,11 @@ import java.util.stream.IntStream;
  */
 public final class batchSizeComparisonsML {
 
+    /*Options for core comparisons*/
+    static boolean coreComparison = false;
+    static int batchSize = 1000;
+
+    /*Options for batch size comparisons*/
     static boolean parallel = true;
     static boolean sampleData = true;
     static int sampleSize = 1000000;
@@ -103,9 +108,63 @@ public final class batchSizeComparisonsML {
         batchSizeComparisonsML.sampleData = sampleData;
     }
 
+    public static boolean isCoreComparison() {
+        return coreComparison;
+    }
+
+    public static void setCoreComparison(boolean coreComparison) {
+        batchSizeComparisonsML.coreComparison = coreComparison;
+    }
+
+    public static int getBatchSize() {
+        return batchSize;
+    }
+
+    public static void setBatchSize(int batchSize) {
+        batchSizeComparisonsML.batchSize = batchSize;
+    }
+
     static DAG dag;
 
+    public static void compareNumberOfCores() throws IOException {
+
+        System.out.println("Comparison with different number of cores");
+        System.out.println("-----------------------------------------");
+        createBayesianNetwork();
+        if(isSampleData())
+            sampleBayesianNetwork();
+
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/sampleBatchSize.arff");
+
+
+        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        parameterLearningAlgorithm.setParallelMode(isParallel());
+        parameterLearningAlgorithm.setDAG(dag);
+        parameterLearningAlgorithm.setDataStream(data);
+        parameterLearningAlgorithm.setBatchSize(getBatchSize());
+
+
+        System.out.println("Available number of processors: "+Runtime.getRuntime().availableProcessors());
+        System.out.println("AverageTime");
+        //We discard the first five experiments and then record the following 10 repetitions
+        long average = 0L;
+        for (int j = 0; j <16; j++) {
+            long start = System.nanoTime();
+            parameterLearningAlgorithm.runLearning();
+            long duration = (System.nanoTime() - start) / 1;
+            double seconds = duration / 1000000000.0;
+            //System.out.println("Iteration ["+j+"] = "+duration + " msecs");
+            if(j>4){
+                average+=seconds;
+            }
+        }
+        System.out.println(average/10.0 + " secs");
+    }
+
     public static void compareBatchSizes() throws IOException {
+
+        System.out.println("Batch size comparisons");
+        System.out.println("----------------------");
 
         createBayesianNetwork();
         if(isSampleData())
@@ -129,13 +188,14 @@ public final class batchSizeComparisonsML {
                 parameterLearningAlgorithm.setBatchSize(batchSizes[i]);
                 long start = System.nanoTime();
                 parameterLearningAlgorithm.runLearning();
-                long duration = (System.nanoTime() - start) / 1_000_000;
+                long duration = (System.nanoTime() - start) / 1;
+                double seconds = duration / 1000000000.0;
                 //System.out.println("Iteration ["+j+"] = "+duration + " msecs");
                 if(j>4){
-                    average+=duration;
+                    average+=seconds;
                 }
             }
-            System.out.println(batchSizes[i]+"\t"+average/10.0 + " msecs");
+            System.out.println(batchSizes[i]+"\t"+average/10.0 + " secs");
         }
     }
 
@@ -199,7 +259,10 @@ public final class batchSizeComparisonsML {
     public static void main(String[] args) throws Exception {
         OptionParser.setArgsOptions(batchSizeComparisonsML.class, args);
         batchSizeComparisonsML.loadOptions();
-        compareBatchSizes();
+        if(isCoreComparison())
+            compareNumberOfCores();
+        else
+            compareBatchSizes();
     }
 
     public static String classNameID(){
@@ -228,7 +291,9 @@ public final class batchSizeComparisonsML {
                 "-SPGV, 2, Num of gaussian super-parent variables\\"+
                 "-SPDV, 10, Num of states for super-parent discrete variable\\"+
                 "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\"+
-                "-parallelMode, true, Run in parallel\\";
+                "-parallelMode, true, Run in parallel\\"+
+                "-coreComparison, false, Perform comparisons varying the number of cores\\"+
+                "-batchSize, 1000, Batch size for comparisons in the number of cores\\";
     }
 
     public static void loadOptions(){
@@ -240,6 +305,8 @@ public final class batchSizeComparisonsML {
         setSampleSize(getIntOption("-sampleSize"));
         setSampleData(getBooleanOption("-sampleData"));
         setParallel(getBooleanOption("-parallelMode"));
+        setCoreComparison(getBooleanOption("-coreComparison"));
+        setBatchSize(getIntOption("-batchSize"));
     }
 
 }
