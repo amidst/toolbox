@@ -157,9 +157,17 @@ public class OptionParser {
                 local = new HashMap<>();
             }
             else if(allOptions.get(className) == null){
-                local.put(commandLineOptions[i].trim(), commandLineOptions[++i].trim());
+                if((i+1)<commandLineOptions.length)
+                    if(!commandLineOptions[i+1].trim().startsWith("-"))
+                        local.put(commandLineOptions[i].trim(), commandLineOptions[++i].trim());
+                    else
+                        local.put(commandLineOptions[i].trim(), "true");
             }else{
-                allOptions.get(className).put(commandLineOptions[i].trim(), commandLineOptions[++i].trim());
+                if((i+1)<commandLineOptions.length)
+                    if(!commandLineOptions[i+1].trim().startsWith("-"))
+                        allOptions.get(className).put(commandLineOptions[i].trim(), commandLineOptions[++i].trim());
+                    else
+                        allOptions.get(className).put(commandLineOptions[i].trim(), "true");
             }
         }
         //In case the separator (for subOptions) has not been added at the end
