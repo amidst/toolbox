@@ -85,11 +85,8 @@ public class ExperimentsParallelSVB {
         //We can open the data stream using the static class DataStreamLoader
         BayesianNetworkGenerator.setNumberOfGaussianVars(nVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(nVars, 2);
-        BayesianNetworkGenerator.setSeed(1);
         BayesianNetwork bn  = BayesianNetworkGenerator.generateBayesianNetwork();
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        sampler.setSeed(1);
-        DataStream<DataInstance> data = sampler.sampleToDataStream(SAMPLES);
+        DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(SAMPLES);
 
         //We create a ParallelSVB object
         ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
