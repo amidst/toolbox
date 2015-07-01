@@ -29,7 +29,6 @@ public final class batchSizeComparisonsML {
     static boolean parallel = true;
     static boolean sampleData = true;
     static int sampleSize = 1000000;
-    static int[] batchSizes = {100, 200, 500, 1000, 2000, 5000, 10000};
     static int numDiscVars = 5000;
     static int numGaussVars = 5000;
     static int numStatesHiddenDiscVars = 10;
@@ -52,13 +51,6 @@ public final class batchSizeComparisonsML {
         batchSizeComparisonsML.sampleSize = sampleSize;
     }
 
-    public static int[] getBatchSizes() {
-        return batchSizes;
-    }
-
-    public static void setBatchSizes(int[] batchSizes) {
-        batchSizeComparisonsML.batchSizes = batchSizes;
-    }
 
     public static int getNumDiscVars() {
         return numDiscVars;
@@ -179,24 +171,20 @@ public final class batchSizeComparisonsML {
         parameterLearningAlgorithm.setDataStream(data);
 
 
-        System.out.println("Available number of processors: "+Runtime.getRuntime().availableProcessors());
-        System.out.println("BatchSize\tAverageTime");
         //We discard the first five experiments and then record the following 10 repetitions
-        for (int i = 0; i < batchSizes.length; i++) {
-            long average = 0L;
-            for (int j = 0; j <16; j++) {
-                parameterLearningAlgorithm.setBatchSize(batchSizes[i]);
-                long start = System.nanoTime();
-                parameterLearningAlgorithm.runLearning();
-                long duration = (System.nanoTime() - start) / 1;
-                double seconds = duration / 1000000000.0;
-                //System.out.println("Iteration ["+j+"] = "+duration + " msecs");
-                if(j>4){
-                    average+=seconds;
-                }
+        long average = 0L;
+        for (int j = 0; j <16; j++) {
+            parameterLearningAlgorithm.setBatchSize(getBatchSize());
+            long start = System.nanoTime();
+            parameterLearningAlgorithm.runLearning();
+            long duration = (System.nanoTime() - start) / 1;
+            double seconds = duration / 1000000000.0;
+            //System.out.println("Iteration ["+j+"] = "+duration + " msecs");
+            if(j>4){
+                average+=seconds;
             }
-            System.out.println(batchSizes[i]+"\t"+average/10.0 + " secs");
         }
+        System.out.println(batchSize+"\t"+average/10.0 + " secs");
     }
 
     private static void createBayesianNetwork(){
