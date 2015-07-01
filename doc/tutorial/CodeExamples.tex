@@ -501,9 +501,39 @@ System.out.println("P(W=0) = "+Math.exp(inferenceAlgorithm.getLogProbabilityOfEv
 
 \section{Learning Algorithms}
 
+\subsection{Maximum Likelihood}
+
+This other example shows how to learn incrementally the parameters of a Bayesian network using data batches,
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+
+//We create a ParameterLearningAlgorithm object with the MaximumLikehood builder
+ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(getNaiveBayesStructure(data,0));
+
+//We should invoke this method before processing any data
+parameterLearningAlgorithm.initLearning();
+
+
+//Then we show how we can perform parameter learnig by a sequential updating of data batches.
+for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)){
+    parameterLearningAlgorithm.updateModel(batch);
+}
+
+//And we get the model
+BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+//We print the model
+System.out.println(bnModel.toString());
+\end{lstlisting}
+
 \subsection{Parallel Maximum Likelihood}
 
 This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum likelihood.
+
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
 DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
@@ -534,57 +564,14 @@ BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
 System.out.println(bnModel.toString());
 \end{lstlisting}
 
+
+
 \subsection{Streaming Variational Bayes}
 
-This examples shows how to learn in the parameters of a Bayesian network from a stream of data with a Bayesian
-approach using the following algorithm
+This example shows how to learn incrementally the parameters of a Bayesian network from a stream of data with a Bayesian approach using the following algorithm,
 
 \textit{Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., \& Jordan, M. I. (2013). Streaming variational Bayes. 
-In Advances in Neural Information Processing Systems (pp. 1727-1735).
-}
-
-\subsubsection*{Version 1}
-
-In this first example we show a simple way to invoke this parallel learning algorithm by using the class \textit{ParallelSVB}.
-
-
-\begin{lstlisting}
-//We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
-
-//We create a ParallelSVB object
-ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
-
-//We fix the number of cores we want to exploit
-parameterLearningAlgorithm.setNCores(4);
-
-//We fix the DAG structure, which is a Naive Bayes with a 
-//global latent binary variable
-parameterLearningAlgorithm.setDAG(StreamingVMPExample.getHiddenNaiveBayesStructure(data));
-
-
-//We fix the size of the window
-parameterLearningAlgorithm.getSVBEngine().setWindowsSize(100);
-
-//We can activate the output
-parameterLearningAlgorithm.setOutput(true);
-
-//We set the data which is going to be used for leaning the parameters
-parameterLearningAlgorithm.setDataStream(data);
-
-//We perform the learning
-parameterLearningAlgorithm.runLearning();
-
-//And we get the model
-BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
-
-//We print the model
-System.out.println(bnModel.toString());
-
-\end{lstlisting}
-
-
-\subsubsection*{Version 2}
+In Advances in Neural Information Processing Systems (pp. 1727-1735).}
 
 In this second example we show a alternative implementation which explicitly updates the model by batches by using the class \textit{SVB}.
 
@@ -624,6 +611,194 @@ BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
 System.out.println(bnModel.toString());
 \end{lstlisting}
 
+
+\subsection{Parallel Streaming Variational Bayes}
+
+This example shows how to learn in the parameters of a Bayesian network from a stream of data with a Bayesian
+approach using the parallel version  of the SVB algorithm, 
+
+\textit{Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., \& Jordan, M. I. (2013). Streaming variational Bayes. 
+In Advances in Neural Information Processing Systems (pp. 1727-1735).
+}
+
+
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+
+//We create a ParallelSVB object
+ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
+
+//We fix the number of cores we want to exploit
+parameterLearningAlgorithm.setNCores(4);
+
+//We fix the DAG structure, which is a Naive Bayes with a 
+//global latent binary variable
+parameterLearningAlgorithm.setDAG(StreamingVMPExample.getHiddenNaiveBayesStructure(data));
+
+
+//We fix the size of the window
+parameterLearningAlgorithm.getSVBEngine().setWindowsSize(100);
+
+//We can activate the output
+parameterLearningAlgorithm.setOutput(true);
+
+//We set the data which is going to be used for leaning the parameters
+parameterLearningAlgorithm.setDataStream(data);
+
+//We perform the learning
+parameterLearningAlgorithm.runLearning();
+
+//And we get the model
+BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+//We print the model
+System.out.println(bnModel.toString());
+
+\end{lstlisting}
+
+
+\section{Concept Drift Methods}
+
+\subsection{Maximum Likelihood with Fading}
+
+This example shows how to adaptively learn the parameters of a Bayesian network from a stream of data using exponential forgetting with a given fading factor, directly inspired by the approach presented in
+
+\textit{Olesen, K. G., Lauritzen, S. L., \& Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal probabilistic networks. In Proceedings of the Eighth international conference on Uncertainty in Artificial Intelligence (pp. 223-229). Morgan Kaufmann Publishers Inc.}
+
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+
+//We create a ParameterLearningAlgorithm object with 
+//the MaximumLikelihoodFading builder
+MaximumLikelihoodFading parameterLearningAlgorithm = new MaximumLikelihoodFading();
+
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(MaximimumLikelihoodByBatchExample.getNaiveBayesStructure(data, 0));
+
+//We fix the fading or forgeting factor
+parameterLearningAlgorithm.setFadingFactor(0.9);
+
+//We set the batch size which will be employed to learn the model
+parameterLearningAlgorithm.setBatchSize(100);
+
+//We set the data which is going to be used for leaning the parameters
+parameterLearningAlgorithm.setDataStream(data);
+
+//We perform the learning
+parameterLearningAlgorithm.runLearning();
+
+//And we get the model
+BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+//We print the model
+System.out.println(bnModel.toString());
+\end{lstlisting}
+
+\subsection{Streaming Variational Bayes with Fading}
+
+This example shows how to adaptively learn in the parameters of a Bayesian network from a stream of data with a Bayesian approach using a combination of the the following two methods,
+
+\textit{Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., \& Jordan, M. I. (2013). Streaming variational Bayes. 
+In Advances in Neural Information Processing Systems (pp. 1727-1735).}
+
+\textit{Olesen, K. G., Lauritzen, S. L., \& Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal probabilistic networks. In Proceedings of the Eighth international conference on Uncertainty in Artificial Intelligence (pp. 223-229). Morgan Kaufmann Publishers Inc.}
+
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+
+//We create a SVB object
+SVBFading parameterLearningAlgorithm = new SVBFading();
+
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(SVBExample.getHiddenNaiveBayesStructure(data));
+
+//We fix the fading or forgeting factor
+parameterLearningAlgorithm.setFadingFactor(0.9);
+
+//We fix the size of the window
+parameterLearningAlgorithm.setWindowsSize(100);
+
+//We can activate the output
+parameterLearningAlgorithm.setOutput(true);
+
+//We set the data which is going to be used for leaning the parameters
+parameterLearningAlgorithm.setDataStream(data);
+
+//We perform the learning
+parameterLearningAlgorithm.runLearning();
+
+//And we get the model
+BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+//We print the model
+System.out.println(bnModel.toString());
+\end{lstlisting}
+
+
+\subsection{Naive Bayes with Virtual Concept Drift Detection}
+
+This example shows how to use the class NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift detector detailed in
+
+\textit{Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.}
+
+\begin{lstlisting}
+//We can open the data stream using the static class DataStreamLoader
+DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/sea.arff");
+
+//We create a NaiveBayesVirtualConceptDriftDetector object
+NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+
+//We set class variable as the last attribute
+virtualDriftDetector.setClassIndex(-1);
+
+//We set the data which is going to be used
+virtualDriftDetector.setData(data);
+
+//We fix the size of the window
+int windowSize = 1000;
+virtualDriftDetector.setWindowsSize(windowSize);
+
+//We fix the so-called transition variance
+virtualDriftDetector.setTransitionVariance(0.1);
+
+//We fix the number of global latent variables
+virtualDriftDetector.setNumberOfGlobalVars(1);
+
+//We should invoke this method before processing any data
+virtualDriftDetector.initLearning();
+
+//Some prints
+System.out.print("Batch");
+for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
+    System.out.print("\t" + hiddenVar.getName());
+}
+System.out.println();
+
+
+//Then we show how we can perform the sequential processing of
+// data batches. They must be of the same value than the window
+// size parameter set above.
+int countBatch = 0;
+for (DataOnMemory<DataInstance> batch : 
+				data.iterableOverBatches(windowSize)){
+
+    //We update the model by invoking this method. The output
+    // is an array with a value associated
+    // to each fo the global hidden variables
+    double[] out = virtualDriftDetector.updateModel(batch);
+
+    //We print the output
+    System.out.print(countBatch + "\t");
+    for (int i = 0; i < out.length; i++) {
+        System.out.print(out[i]+"\t");
+    }
+    System.out.println();
+    countBatch++;
+}
+\end{lstlisting}
 
 % !TEX root = TexMain.tex
 %----------------------------------------------------------------------------------------------------------------------------------------

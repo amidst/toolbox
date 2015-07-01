@@ -14,6 +14,7 @@ package eu.amidst.cim2015.examples;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -87,6 +88,7 @@ public class ExperimentsParallelSVB {
         BayesianNetworkGenerator.setNumberOfMultinomialVars(nVars, 2);
         BayesianNetwork bn  = BayesianNetworkGenerator.generateBayesianNetwork();
         DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(SAMPLES);
+        DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
 
         //We create a ParallelSVB object
         ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
@@ -120,6 +122,8 @@ public class ExperimentsParallelSVB {
     }
 
     public static void main(String[] args) throws Exception {
+
+        args = new String[]{"1", "50", "100"};
 
         int[] nCores = {32,32,16,8,4,2,1};
 

@@ -9,6 +9,7 @@
 package eu.amidst.ida2015;
 
 import com.google.common.base.Stopwatch;
+import eu.amidst.core.conceptdrift.MaximumLikelihoodFading;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
@@ -19,7 +20,7 @@ import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.*;
-import eu.amidst.core.learning.parametric.bayesian.Fading;
+import eu.amidst.core.conceptdrift.utils.Fading;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -74,7 +75,7 @@ public class LearningVMPTests {
 
         SVB svb = new SVB();
         //svb.setSeed(1);
-        //svb.setFading(0.9);
+        //svb.setFadingFactor(0.9);
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
@@ -916,11 +917,11 @@ public class LearningVMPTests {
                 outputPerWindowSize[2][j] = windowsSizes[j] + "\t";
                 outputPerWindowSize[3][j] = windowsSizes[j] + "\t";
                 outputPerWindowSize[4][j] = windowsSizes[j] + "\t";
-                ParallelMaximumLikelihoodFading likelihoodFading = new ParallelMaximumLikelihoodFading();
+                MaximumLikelihoodFading likelihoodFading = new MaximumLikelihoodFading();
 
                 for (int f = 0; f < fadingFactor.length; f++) {
                     likelihoodFading.setFadingFactor(fadingFactor[f]);
-                    likelihoodFading.setWindowSize(windowsSizes[j]);
+                    likelihoodFading.setBatchSize(windowsSizes[j]);
                     LearningEngine.setParameterLearningAlgorithm(likelihoodFading);
 
                     BayesianNetwork MLlearntBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
