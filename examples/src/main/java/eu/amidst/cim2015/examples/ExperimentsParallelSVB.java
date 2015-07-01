@@ -102,7 +102,7 @@ public class ExperimentsParallelSVB {
 
 
         //We can activate the output
-        parameterLearningAlgorithm.setOutput(true);
+        parameterLearningAlgorithm.setOutput(false);
 
 
         //We set the data which is going to be used for leaning the parameters
@@ -121,10 +121,10 @@ public class ExperimentsParallelSVB {
 
     public static void main(String[] args) throws Exception {
 
-        //int[] nCores = {32,32,16,8,4,2,1};
+        int[] nCores = {32,32,16,8,4,2,1};
 
-        //for (int K = 0; K <nCores.length; K++) {
-        //    args[0] = nCores[K] + "";
+        for (int K = 0; K <nCores.length; K++) {
+            args[0] = nCores[K] + "";
 
 
             //for (int i = 0; i < 0; i++) {
@@ -142,9 +142,7 @@ public class ExperimentsParallelSVB {
             currentTime = (System.nanoTime() - currentTime) / 1;
 
             double seconds = currentTime / 1000000000.0;
-            //System.out.println(nCores[K] + "\t" + seconds + "\t" + SAMPLES / seconds);
-            System.out.println(args[0] + "\t" + seconds + "\t" + SAMPLES / seconds);
-
-        //}
+            System.out.println(nCores[K] + "\t" + seconds + "\t" + SAMPLES / seconds);
+        }
     }
 }
