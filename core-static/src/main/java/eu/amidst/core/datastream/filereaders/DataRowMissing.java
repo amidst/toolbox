@@ -49,4 +49,16 @@ public class DataRowMissing implements DataRow{
     public Attributes getAttributes() {
         return null;
     }
+
+    /**
+     * This method should return the values of the data instance in the form of an array of doubles
+     *
+     * @return An exception (for now)
+     */
+    @Override
+    public double[] toArray() {
+        throw new UnsupportedOperationException("To be implemented (#of atts should be kept)");
+    }
+
+
 }

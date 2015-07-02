@@ -190,5 +190,12 @@ public class ARFFDataReader implements DataFileReader {
         public Attributes getAttributes() {
             return atts;
         }
+
+        @Override
+        public double[] toArray() {
+            return data;
+        }
+
+
     }
 }

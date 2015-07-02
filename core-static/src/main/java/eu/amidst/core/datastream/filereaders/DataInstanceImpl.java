@@ -38,4 +38,9 @@ public class DataInstanceImpl implements DataInstance {
         this.dataRow.setValue(att, value);
     }
 
+    @Override
+    public double[] toArray() {
+        return this.dataRow.toArray();
+    }
+
 }

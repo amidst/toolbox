@@ -147,6 +147,11 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                     public void setValue(Attribute att, double value) {
                         this.assignment.setValue(sampler.network.getStaticVariables().getVariableByName(att.getName()), value);
                     }
+
+                    @Override
+                    public double[] toArray() {
+                        throw new UnsupportedOperationException("Operation not supported for an Assignment object");
+                    }
                 }
                 return this.sampler.getSampleStream(this.nSamples).map(a -> new TemporalDataInstance(a));
             }
