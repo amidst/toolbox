@@ -80,4 +80,11 @@ public interface DataInstance extends Assignment {
      * @param val, the assigned value
      */
     void setValue(Attribute att, double val);
+
+    /**
+     * This method returns the values of the data instance in the form of an array of doubles
+     *
+     * @return The array of values
+     */
+    double[] toArray();
 }

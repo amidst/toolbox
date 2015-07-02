@@ -32,4 +32,9 @@ public class DataRowWeka implements DataRow {
     public Attributes getAttributes() {
         return this.attributes;
     }
+
+    @Override
+    public double[] toArray() {
+        return dataRow.toDoubleArray();
+    }
 }

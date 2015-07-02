@@ -69,6 +69,11 @@ class DynamicDataInstanceImpl implements DynamicDataInstance {
     }
 
     @Override
+    public double[] toArray() {
+        return this.dataRowPresent.toArray();
+    }
+
+    @Override
     public int getSequenceID() {
         return sequenceID;
     }

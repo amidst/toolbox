@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 /**
  * Created by ana@cs.aau.dk on 30/06/15.
  */
-public final class batchSizeComparisonsML {
+public final class ExperimentsParallelML {
 
     /*Options for core comparisons*/
     static boolean coreComparison = false;
@@ -40,7 +40,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setParallel(boolean parallel) {
-        batchSizeComparisonsML.parallel = parallel;
+        ExperimentsParallelML.parallel = parallel;
     }
 
     public static int getSampleSize() {
@@ -48,7 +48,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setSampleSize(int sampleSize) {
-        batchSizeComparisonsML.sampleSize = sampleSize;
+        ExperimentsParallelML.sampleSize = sampleSize;
     }
 
 
@@ -57,7 +57,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setNumDiscVars(int numDiscVars) {
-        batchSizeComparisonsML.numDiscVars = numDiscVars;
+        ExperimentsParallelML.numDiscVars = numDiscVars;
     }
 
     public static int getNumGaussVars() {
@@ -65,7 +65,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setNumGaussVars(int numGaussVars) {
-        batchSizeComparisonsML.numGaussVars = numGaussVars;
+        ExperimentsParallelML.numGaussVars = numGaussVars;
     }
 
     public static int getNumStatesHiddenDiscVars() {
@@ -73,7 +73,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setNumStatesHiddenDiscVars(int numStatesHiddenDiscVars) {
-        batchSizeComparisonsML.numStatesHiddenDiscVars = numStatesHiddenDiscVars;
+        ExperimentsParallelML.numStatesHiddenDiscVars = numStatesHiddenDiscVars;
     }
 
     public static int getNumHiddenGaussVars() {
@@ -81,7 +81,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setNumHiddenGaussVars(int numHiddenGaussVars) {
-        batchSizeComparisonsML.numHiddenGaussVars = numHiddenGaussVars;
+        ExperimentsParallelML.numHiddenGaussVars = numHiddenGaussVars;
     }
 
     public static int getNumStates() {
@@ -89,7 +89,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setNumStates(int numStates) {
-        batchSizeComparisonsML.numStates = numStates;
+        ExperimentsParallelML.numStates = numStates;
     }
 
     public static boolean isSampleData() {
@@ -97,7 +97,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setSampleData(boolean sampleData) {
-        batchSizeComparisonsML.sampleData = sampleData;
+        ExperimentsParallelML.sampleData = sampleData;
     }
 
     public static boolean isCoreComparison() {
@@ -105,7 +105,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setCoreComparison(boolean coreComparison) {
-        batchSizeComparisonsML.coreComparison = coreComparison;
+        ExperimentsParallelML.coreComparison = coreComparison;
     }
 
     public static int getBatchSize() {
@@ -113,7 +113,7 @@ public final class batchSizeComparisonsML {
     }
 
     public static void setBatchSize(int batchSize) {
-        batchSizeComparisonsML.batchSize = batchSize;
+        ExperimentsParallelML.batchSize = batchSize;
     }
 
     static DAG dag;
@@ -243,16 +243,6 @@ public final class batchSizeComparisonsML {
         DataStreamWriter.writeDataToFile(dataStream, "datasets/sampleBatchSize.arff");
     }
 
-
-    public static void main(String[] args) throws Exception {
-        OptionParser.setArgsOptions(batchSizeComparisonsML.class, args);
-        batchSizeComparisonsML.loadOptions();
-        if(isCoreComparison())
-            compareNumberOfCores();
-        else
-            compareBatchSizes();
-    }
-
     public static String classNameID(){
         return "eu.amidst.cim2015.examples.batchSizeComparisonsML";
     }
@@ -295,6 +285,15 @@ public final class batchSizeComparisonsML {
         setParallel(getBooleanOption("-parallelMode"));
         setCoreComparison(getBooleanOption("-coreComparison"));
         setBatchSize(getIntOption("-batchSize"));
+    }
+
+    public static void main(String[] args) throws Exception {
+        OptionParser.setArgsOptions(ExperimentsParallelML.class, args);
+        ExperimentsParallelML.loadOptions();
+        if(isCoreComparison())
+            compareNumberOfCores();
+        else
+            compareBatchSizes();
     }
 
 }

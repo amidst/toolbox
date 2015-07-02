@@ -43,6 +43,13 @@ public interface DataRow {
      */
     Attributes getAttributes();
 
+    /**
+     * This method returns the values of the dataRow in the form of an array of doubles
+     *
+     * @return The array of values
+     */
+    double[] toArray();
+
 }
 
 

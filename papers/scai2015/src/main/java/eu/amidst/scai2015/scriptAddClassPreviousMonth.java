@@ -123,6 +123,11 @@ public class scriptAddClassPreviousMonth {
             return this.attributes;
         }
 
+        @Override
+        public double[] toArray() {
+            throw new UnsupportedOperationException("Operation not supported in Assigment object");
+        }
+
 
         // Now you can use the following loop to iterate over all assignments:
         // for (Map.Entry<Variable, Double> entry : assignment.entrySet()) return entry;

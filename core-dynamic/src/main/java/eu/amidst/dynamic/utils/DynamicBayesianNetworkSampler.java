@@ -233,6 +233,11 @@ public class DynamicBayesianNetworkSampler {
         }
 
         @Override
+        public double[] toArray() {
+            throw new UnsupportedOperationException("Method not currently supported for (HashMap)Assigment objects");
+        }
+
+        @Override
         public Set<Variable> getVariables(){
             return Sets.union(dataPresent.getVariables(), dataPast.getVariables());
         }
