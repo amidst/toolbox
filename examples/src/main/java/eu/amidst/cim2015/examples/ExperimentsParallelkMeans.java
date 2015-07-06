@@ -1,9 +1,7 @@
 package eu.amidst.cim2015.examples;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.*;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -11,7 +9,7 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.OptionParser;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.IntStream;
 
 /**
@@ -20,12 +18,16 @@ import java.util.stream.IntStream;
 public class ExperimentsParallelkMeans {
 
     static int k = 2;
-    static int numDiscVars = 5000;
-    static int numGaussVars = 5000;
-    static int numStates = 10;
-    static int sampleSize = 1000000;
+    static int numDiscVars = 5;
+    static int numGaussVars = 5;
+    static int numStates = 2;
+    static int sampleSize = 10000;
     static boolean sampleData = true;
-    static int batchSize = 1000;
+    static int batchSize = 100;
+
+    static Attributes atts;
+    /*Need to store the centroids*/
+    static DataOnMemoryListContainer<DataInstance> centroids;
 
     public static int getNumStates() {
         return numStates;
@@ -77,15 +79,20 @@ public class ExperimentsParallelkMeans {
 
     public static void runParallelKMeans() throws IOException {
 
-        BayesianNetworkGenerator.setNumberOfGaussianVars(getNumGaussVars());
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(getNumDiscVars(), getNumStates());
-        BayesianNetwork bn  = BayesianNetworkGenerator.generateBayesianNetwork();
-        DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(getSampleSize());
-        if(isSampleData())
+        DataStream<DataInstance> data;
+        if(isSampleData()) {
+            BayesianNetworkGenerator.setNumberOfGaussianVars(getNumGaussVars());
+            BayesianNetworkGenerator.setNumberOfMultinomialVars(getNumDiscVars(), getNumStates());
+            BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
+            data = new BayesianNetworkSampler(bn).sampleToDataStream(getSampleSize());
             DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        }
+
+        data = DataStreamLoader.openFromFile("datasets/tmp.arff");
+        atts = data.getAttributes();
 
         /*Need to store the centroids*/
-        final DataOnMemoryListContainer<DataInstance> centroids = new DataOnMemoryListContainer(data.getAttributes());
+        centroids = new DataOnMemoryListContainer(data.getAttributes());
 
         data.stream().limit(getK()).forEach(dataInstance -> centroids.add(dataInstance));
         data.restart();
@@ -93,16 +100,48 @@ public class ExperimentsParallelkMeans {
         boolean change = true;
         while(change){
 
+            /*
+            data.parallelStream(batchSize)
+                    .map(Pair::getMinDistance)
+                    .collect(
+                            Collectors.groupingBy(
+                                    Pair::getCentroid
+                            ))
+                    .entrySet()
+                    .stream()
+                    .flatMap(listEntry->listEntry.getValue().stream().map(pair -> pair.getDataInstance().toArray()))
+                    .collect(Averager::new, Averager::accept, Averager::combine).average();
+            */
+
+            /*
+            Map<DataInstance, DataInstance> oldAndNewCentroids = data.parallelStream(batchSize)
+                    .map(Pair::getMinDistance)
+                    .collect(
+                            Collectors.groupingBy(
+                                    Pair::getCentroid,
+                                    Collectors.reducing(
+                                            new double[atts.getNumberOfAttributes()],
+                                            Pair::getDataInstanceToArray,
+                                            Pair::getAverage)));
+                                            */
+
+            /*
+            Map<DataInstance,List<Pair>> cluster = data.parallelStream(batchSize)
+                    .map(Pair::getMinDistance)
+                    .collect(
+                            Collectors.groupingBy(
+                                    Pair::getCentroid));
+            */
         }
 
 
     }
 
     /*Calculate Euclidean Distance*/
-    public double getED(DataInstance e1, DataInstance e2){
+    public static double getED(DataInstance e1, DataInstance e2){
 
-        double sum = IntStream.rangeClosed(0,e1.getAttributes().getNumberOfAttributes()).mapToDouble(i ->
-        {Attribute att = e1.getAttributes().getList().get(i); return Math.pow(e1.getValue(att)-e2.getValue(att),2);}).sum();
+        double sum = IntStream.rangeClosed(0,atts.getNumberOfAttributes()-1).mapToDouble(i ->
+        {Attribute att = atts.getList().get(i); return Math.pow(e1.getValue(att)-e2.getValue(att),2);}).sum();
 
         return Math.sqrt(sum);
     }
@@ -143,29 +182,50 @@ public class ExperimentsParallelkMeans {
         setSampleData(getBooleanOption("-sampleData"));
     }
 
-    private class pair
+    public static class Pair
     {
+        private DataInstance centroid;
+        private DataInstance dataInstance;
 
-    }
-
-    private class Averager
-    {
-        private double[] total = new double[getNumDiscVars()+getNumGaussVars()+1];
-        private int count = 0;
-
-        public double[] average() {
-            return count > 0? Arrays.stream(total).map(val -> val / count).toArray() : new double[0];
+        public DataInstance getCentroid() {
+            return centroid;
         }
 
-        public void accept(double[] instance) {
-            total = IntStream.rangeClosed(0,instance.length-1).mapToDouble(i -> total[i] + instance[i]).toArray();
-            count++;
+        public void setCentroid(DataInstance centroid) {
+            this.centroid = centroid;
         }
 
-        public void combine(Averager other) {
-            total = IntStream.rangeClosed(0,other.total.length-1).mapToDouble(i->total[i]+other.total[i]).toArray();
-            count += other.count;
+        public DataInstance getDataInstance() {
+            return dataInstance;
         }
+
+        public void setDataInstance(DataInstance dataInstance) {
+            this.dataInstance = dataInstance;
+        }
+
+        public Pair(DataInstance centroid_, DataInstance dataInstance_){
+            centroid = centroid_;
+            dataInstance = dataInstance_;
+        }
+
+        public static Pair getMinDistance(DataInstance dataInstance){
+            DataInstance centroid = centroids.stream().min(Comparator.comparing(c -> getED(c, dataInstance))).get();
+            return new Pair(centroid,dataInstance);
+        }
+
+        public double[] getDataInstanceToArray(){
+            return dataInstance.toArray();
+        }
+
+        public double[] getCentroidToArray(){
+            return centroid.toArray();
+        }
+
+        public double[] getAverage(double[] aux){
+            return new double[atts.getNumberOfAttributes()];
+        }
+
+
     }
 
 
