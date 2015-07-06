@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
  */
 public final class ExperimentsParallelML {
 
+    static int[] batchSizes = {100,200,500,1000,2000,5000,10000};
     /*Options for core comparisons*/
     static boolean coreComparison = false;
     static int batchSize = 1000;
@@ -29,8 +30,8 @@ public final class ExperimentsParallelML {
     static boolean parallel = true;
     static boolean sampleData = true;
     static int sampleSize = 1000000;
-    static int numDiscVars = 5000;
-    static int numGaussVars = 5000;
+    static int numDiscVars = 5;
+    static int numGaussVars = 5;
     static int numStatesHiddenDiscVars = 10;
     static int numHiddenGaussVars = 2;
     static int numStates = 10;
@@ -136,11 +137,11 @@ public final class ExperimentsParallelML {
         parameterLearningAlgorithm.setBatchSize(getBatchSize());
 
 
-        System.out.println("Available number of processors: "+Runtime.getRuntime().availableProcessors());
+        System.out.println("Available number of processors: " + Runtime.getRuntime().availableProcessors());
         System.out.println("AverageTime");
         //We discard the first five experiments and then record the following 10 repetitions
         long average = 0L;
-        for (int j = 0; j <16; j++) {
+        for (int j = 0; j <15; j++) {
             long start = System.nanoTime();
             parameterLearningAlgorithm.runLearning();
             long duration = (System.nanoTime() - start) / 1;
@@ -172,19 +173,21 @@ public final class ExperimentsParallelML {
 
 
         //We discard the first five experiments and then record the following 10 repetitions
-        long average = 0L;
-        for (int j = 0; j <16; j++) {
-            parameterLearningAlgorithm.setBatchSize(getBatchSize());
-            long start = System.nanoTime();
-            parameterLearningAlgorithm.runLearning();
-            long duration = (System.nanoTime() - start) / 1;
-            double seconds = duration / 1000000000.0;
-            //System.out.println("Iteration ["+j+"] = "+duration + " msecs");
-            if(j>4){
-                average+=seconds;
+        for (int i = 0; i < batchSizes.length; i++) {
+            long average = 0L;
+            for (int j = 0; j < 15; j++) {
+                parameterLearningAlgorithm.setBatchSize(batchSizes[i]);
+                long start = System.nanoTime();
+                parameterLearningAlgorithm.runLearning();
+                long duration = (System.nanoTime() - start) / 1;
+                double seconds = duration / 1000000000.0;
+                //System.out.println("Iteration ["+j+"] = "+seconds + " secs");
+                if (j > 4) {
+                    average += seconds;
+                }
             }
+            System.out.println(batchSizes[i]+"\t"+average/10.0 + " secs");
         }
-        System.out.println(batchSize+"\t"+average/10.0 + " secs");
     }
 
     private static void createBayesianNetwork(){
@@ -244,7 +247,7 @@ public final class ExperimentsParallelML {
     }
 
     public static String classNameID(){
-        return "eu.amidst.cim2015.examples.batchSizeComparisonsML";
+        return "eu.amidst.cim2015.examples.ExperimentsParallelML";
     }
 
     public static String getOption(String optionName) {
@@ -264,8 +267,8 @@ public final class ExperimentsParallelML {
         return  classNameID() +",\\"+
                 "-sampleSize, 1000000, Sample size of the dataset\\" +
                 "-numStates, 10, Num states of all disc. variables (including the class)\\"+
-                "-GV, 5000, Num of gaussian variables\\"+
-                "-DV, 5000, Num of discrete variables\\"+
+                "-GV, 5, Num of gaussian variables\\"+
+                "-DV, 5, Num of discrete variables\\"+
                 "-SPGV, 2, Num of gaussian super-parent variables\\"+
                 "-SPDV, 10, Num of states for super-parent discrete variable\\"+
                 "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\"+
