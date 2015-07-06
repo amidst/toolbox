@@ -9,11 +9,12 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package eu.amidst.cim2015.examples;
+package eu.amidst.jmlr2015.examples;
 
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
 import eu.amidst.core.models.BayesianNetwork;
@@ -77,18 +78,23 @@ public class ExperimentsParallelSVB {
         return dag;
     }
 
-    public static void parallelSVB(String[] args) throws Exception {
+    public static double parallelSVB(String[] args) throws Exception {
 
         int nCores = Integer.parseInt(args[0]);
         int nVars = Integer.parseInt(args[1]);
         int windowSize = Integer.parseInt(args[2]);
 
-        //We can open the data stream using the static class DataStreamLoader
+        //We firstly generate de data
         BayesianNetworkGenerator.setNumberOfGaussianVars(nVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(nVars, 2);
         BayesianNetwork bn  = BayesianNetworkGenerator.generateBayesianNetwork();
         DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(SAMPLES);
         DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
+
+        long currentTime = System.nanoTime();
+
+        //We can open the data stream using the static class DataStreamLoader
+        data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
 
         //We create a ParallelSVB object
         ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
@@ -119,6 +125,11 @@ public class ExperimentsParallelSVB {
         //We print the model
         //System.out.println(bnModel.toString());
 
+        currentTime = (System.nanoTime() - currentTime) / 1;
+
+        double seconds = currentTime / 1000000000.0;
+
+        return seconds;
     }
 
     public static void main(String[] args) throws Exception {
@@ -130,22 +141,8 @@ public class ExperimentsParallelSVB {
         for (int K = 0; K <nCores.length; K++) {
             args[0] = nCores[K] + "";
 
+            double seconds = ExperimentsParallelSVB.parallelSVB(args);
 
-            //for (int i = 0; i < 0; i++) {
-                //System.out.println("Discard " + i);
-            //    ExperimentsParallelSVB.parallelSVB(args);
-            //}
-
-            long currentTime = System.nanoTime();
-
-            for (int i = 0; i < 1; i++) {
-                //System.out.println("Test " + i);
-                ExperimentsParallelSVB.parallelSVB(args);
-            }
-
-            currentTime = (System.nanoTime() - currentTime) / 1;
-
-            double seconds = currentTime / 1000000000.0;
             System.out.println(nCores[K] + "\t" + seconds + "\t" + SAMPLES / seconds);
         }
     }
