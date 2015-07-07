@@ -12,9 +12,7 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.OptionParser;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * Created by ana@cs.aau.dk on 01/07/15.
@@ -108,6 +106,7 @@ public class ExperimentsParallelkMeans {
         data.restart();
 
         boolean change = true;
+        /*
         while(change){
 
             Map<DataInstance, Averager> oldAndNewCentroids =
@@ -126,7 +125,7 @@ public class ExperimentsParallelkMeans {
 
             //for()
 
-        }
+        }*/
 
     }
 
