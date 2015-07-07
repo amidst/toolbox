@@ -22,4 +22,11 @@
     <artifactId>caepia2015</artifactId>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core-static</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>
