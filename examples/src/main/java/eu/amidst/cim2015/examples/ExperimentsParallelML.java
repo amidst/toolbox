@@ -128,8 +128,6 @@ public final class ExperimentsParallelML {
             sampleBayesianNetwork();
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/sampleBatchSize.arff");
-
-
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setParallelMode(isParallel());
         parameterLearningAlgorithm.setDAG(dag);
@@ -140,16 +138,17 @@ public final class ExperimentsParallelML {
         System.out.println("Available number of processors: " + Runtime.getRuntime().availableProcessors());
         System.out.println("AverageTime");
         //We discard the first five experiments and then record the following 10 repetitions
-        long average = 0L;
+        double average = 0.0;
         for (int j = 0; j <15; j++) {
             long start = System.nanoTime();
             parameterLearningAlgorithm.runLearning();
             long duration = (System.nanoTime() - start) / 1;
             double seconds = duration / 1000000000.0;
-            //System.out.println("Iteration ["+j+"] = "+duration + " msecs");
+            System.out.println("Iteration ["+j+"] = "+seconds + " secs");
             if(j>4){
                 average+=seconds;
             }
+            data.restart();
         }
         System.out.println(average/10.0 + " secs");
     }

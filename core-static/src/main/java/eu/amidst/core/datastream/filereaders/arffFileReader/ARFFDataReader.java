@@ -37,6 +37,7 @@ public class ARFFDataReader implements DataFileReader {
     private int dataLineCount;
     private Path pathFile;
     private StateSpaceTypeEnum[] stateSpace;
+    private Stream<String> streamString;
 
     private static Attribute createAttributeFromLine(int index, String line){
         String[] parts = line.split(" |\t");
@@ -138,15 +139,20 @@ public class ARFFDataReader implements DataFileReader {
 
     @Override
     public Stream<DataRow> stream() {
-        Stream<String> streamString =null;
-        try{
-            streamString = Files.lines(pathFile);
-        }catch (IOException ex){
-            throw new UncheckedIOException(ex);
+        if (streamString ==null) {
+            try {
+                streamString = Files.lines(pathFile);
+            } catch (IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
         }
         return streamString.filter(w -> !w.isEmpty()).filter(w -> !w.startsWith("%")).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
     }
 
+    @Override
+    public void restart(){
+        streamString = null;
+    }
 
     private static class DataRowWeka implements DataRow{
         double[] data;
