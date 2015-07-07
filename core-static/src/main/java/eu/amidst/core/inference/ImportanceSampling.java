@@ -145,6 +145,10 @@ public class ImportanceSampling implements InferenceAlgorithm {
         return new WeightedAssignment(samplingAssignment,weight);
     }
 
+    public Stream<Assignment> getSamples() {
+        return weightedSampleList.map(wsl -> wsl.assignment);
+    }
+
     private void computeWeightedSampleStream() {
         this.computeWeightedSampleStream(new VMP());
     }
@@ -177,7 +181,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
     public double getExpectedValue(Variable var, Function<Double,Double> function) {
         List<Double> sum = weightedSampleList
                 .map(ws ->Arrays.asList(ws.weight, ws.weight*function.apply(ws.assignment.getValue(var))))
-                .reduce(Arrays.asList(0.0, 0.0), (e1, e2) -> Arrays.asList(e1.get(0) + e2.get(0), e1.get(1) + e2.get(1)));
+                 .reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double>e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
 
         return sum.get(1)/sum.get(0);
     }
@@ -192,7 +196,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
         }
         if (evidence!=null && !Double.isNaN(evidence.getValue(continuousVarInterest))) {
 
-            System.out.println("Error: quering about a variable with evidence");
+            System.out.println("Error: querying about a variable with evidence");
             System.exit(1);
         }
 
@@ -216,7 +220,8 @@ public class ImportanceSampling implements InferenceAlgorithm {
                     else
                         return Arrays.asList(ws.weight , 0.0);
                     }
-            ).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+            //).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+            ).reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double>e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
             sumWeightsSuccess = sum.get(1);
             sumAllWeights=sum.get(0);
         }
@@ -234,7 +239,8 @@ public class ImportanceSampling implements InferenceAlgorithm {
                     else
                         return Arrays.asList(ws.weight , 0.0);
                     }
-            ).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+            //).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+            ).reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double> e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
             sumWeightsSuccess = sum.get(1);
             sumAllWeights=sum.get(0);
         }
