@@ -12,6 +12,9 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.OptionParser;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Created by ana@cs.aau.dk on 01/07/15.
@@ -28,7 +31,8 @@ public class ExperimentsParallelkMeans {
 
     static Attributes atts;
     /*Need to store the centroids*/
-    static DataOnMemoryListContainer<DataInstance> centroids;
+    //static double[][] centroids;
+    public static DataOnMemoryListContainer centroids;
 
     public static int getNumStates() {
         return numStates;
@@ -93,9 +97,13 @@ public class ExperimentsParallelkMeans {
         atts = data.getAttributes();
 
         /*Need to store the centroids*/
-        /*
-        centroids = double[][];//new DataOnMemoryListContainer(data.getAttributes());
 
+
+        //centroids = new double[getK()][atts.getNumberOfAttributes()];
+        centroids = new DataOnMemoryListContainer(data.getAttributes());
+
+                AtomicInteger index = new AtomicInteger();
+        //data.stream().limit(getK()).forEach(dataInstance -> centroids[index.getAndIncrement()]=dataInstance.toArray());
         data.stream().limit(getK()).forEach(dataInstance -> centroids.add(dataInstance));
         data.restart();
 
@@ -104,19 +112,23 @@ public class ExperimentsParallelkMeans {
 
             Map<DataInstance, Averager> oldAndNewCentroids =
                     data.parallelStream(batchSize)
-                    .map(instance -> Pair.newPair(centroids, instance.toArray()))
+                    .map(instance -> Pair.newPair(centroids, instance))
                     .collect(Collectors.groupingBy(pair -> pair.getCentroid(),
-                                Collectors.reducing(new Averager(atts.getNumberOfAttributes()), p -> new Averager(p.getDataInstance()), Averager::combine)));
+                            Collectors.reducing(new Averager(atts.getNumberOfAttributes()), p -> new Averager(p.getDataInstance()), Averager::combine)));
 
-            centroids = oldAndNewCentroids.values().stream().map(averager -> averager.average());
+            //oldAndNewCentroids.values().stream().map(averager -> averager.average());
+            Map<double[], double[]> newCentroids = oldAndNewCentroids.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(
+                                    e -> e.getKey().toArray(),
+                                    e -> e.getValue().average())
+                    );
 
+            //for()
 
         }
-*/
 
     }
-
-
 
     public static String classNameID(){
         return "eu.amidst.cim2015.examples.batchSizeComparisonsML";
