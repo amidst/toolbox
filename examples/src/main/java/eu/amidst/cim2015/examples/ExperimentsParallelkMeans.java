@@ -1,8 +1,6 @@
 package eu.amidst.cim2015.examples;
 
-import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
@@ -12,25 +10,29 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.OptionParser;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
 
 /**
  * Created by ana@cs.aau.dk on 01/07/15.
  */
 public class ExperimentsParallelkMeans {
 
-    static int k = 2;
+
     static int numDiscVars = 5;
     static int numGaussVars = 5;
     static int numStates = 2;
-    static int sampleSize = 10000;
+    static int sampleSize = 100000;
     static boolean sampleData = true;
     static int batchSize = 100;
+    static int k = 3;
 
-    static Attributes atts;
-    /*Need to store the centroids*/
-    //static double[][] centroids;
-    public static DataOnMemoryListContainer centroids;
+    public static int getK() {
+        return k;
+    }
+
+    public static void setK(int k) {
+        ExperimentsParallelkMeans.k = k;
+    }
 
     public static int getNumStates() {
         return numStates;
@@ -72,13 +74,7 @@ public class ExperimentsParallelkMeans {
         ExperimentsParallelML.sampleData = sampleData;
     }
 
-    public static int getK() {
-        return k;
-    }
 
-    public static void setK(int k) {
-        ExperimentsParallelkMeans.k = k;
-    }
 
     public static void runParallelKMeans() throws IOException {
 
@@ -92,42 +88,16 @@ public class ExperimentsParallelkMeans {
         }
 
         data = DataStreamLoader.openFromFile("datasets/tmp.arff");
-        atts = data.getAttributes();
 
-        /*Need to store the centroids*/
-
-
-        //centroids = new double[getK()][atts.getNumberOfAttributes()];
-        centroids = new DataOnMemoryListContainer(data.getAttributes());
-
-                AtomicInteger index = new AtomicInteger();
-        //data.stream().limit(getK()).forEach(dataInstance -> centroids[index.getAndIncrement()]=dataInstance.toArray());
-        data.stream().limit(getK()).forEach(dataInstance -> centroids.add(dataInstance));
-        data.restart();
-
-        boolean change = true;
-        /*
-        while(change){
-
-            Map<DataInstance, Averager> oldAndNewCentroids =
-                    data.parallelStream(batchSize)
-                    .map(instance -> Pair.newPair(centroids, instance))
-                    .collect(Collectors.groupingBy(pair -> pair.getCentroid(),
-                            Collectors.reducing(new Averager(atts.getNumberOfAttributes()), p -> new Averager(p.getDataInstance()), Averager::combine)));
-
-            //oldAndNewCentroids.values().stream().map(averager -> averager.average());
-            Map<double[], double[]> newCentroids = oldAndNewCentroids.entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(
-                                    e -> e.getKey().toArray(),
-                                    e -> e.getValue().average())
-                    );
-
-            //for()
-
-        }*/
+        ParallelKMeans.setBatchSize(batchSize);
+        double[][] centroids = ParallelKMeans.learnKMeans(getK(),data);
+        for (int clusterID = 0; clusterID < centroids.length; clusterID++) {
+            System.out.println("Cluster "+(clusterID+1)+": "+Arrays.toString(centroids[clusterID]));
+        }
 
     }
+
+
 
     public static String classNameID(){
         return "eu.amidst.cim2015.examples.batchSizeComparisonsML";
