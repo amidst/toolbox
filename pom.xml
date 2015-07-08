@@ -7,7 +7,7 @@
     <artifactId>AmidstToolbox</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <!-- <module>huginlink</module>-->
+        <module>huginlink</module>
         <module>moalink</module>
         <module>core-static</module>
         <module>sparklink</module>
@@ -17,7 +17,6 @@
         <module>papers/scai2015</module>
         <module>papers/caepia2015</module>
         <module>moa-customized</module>
-        <module>moaDebug</module>
     </modules>
     <name>Amidst :: Core</name>
     <packaging>pom</packaging>
