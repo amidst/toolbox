@@ -17,6 +17,7 @@
         <module>papers/scai2015</module>
         <module>papers/caepia2015</module>
         <module>moa-customized</module>
+        <module>moaDebug</module>
     </modules>
     <name>Amidst :: Core</name>
     <packaging>pom</packaging>
