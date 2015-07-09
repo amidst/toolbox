@@ -25,7 +25,9 @@ import eu.amidst.core.variables.Variable;
  * This example we show how to perform inference on a general Bayesian network using an importance sampling
  * algorithm detailed in
  *
- * Fung, R., & Chang, K. C. (2013). Weighing and integrating evidence for stochastic simulation in Bayesian networks. arXiv preprint arXiv:1304.1504. *
+ * <i> Fung, R., & Chang, K. C. (2013). Weighing and integrating evidence for
+ * stochastic simulation in Bayesian networks. arXiv preprint arXiv:1304.1504.
+ * </i>
  *
  * Created by andresmasegosa on 18/6/15.
  */

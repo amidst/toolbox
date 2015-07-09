@@ -27,10 +27,10 @@ import eu.amidst.core.models.BayesianNetwork;
  * Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
  * In Advances in Neural Information Processing Systems (pp. 1727-1735).
  *
- *      Olesen, K. G., Lauritzen, S. L., & Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal
+ * <i>     Olesen, K. G., Lauritzen, S. L., & Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal
  *      probabilistic networks. In Proceedings of the Eighth international conference on Uncertainty
  *      in Artificial Intelligence (pp. 223-229). Morgan Kaufmann Publishers Inc.
- *
+ * <\i>
  * Created by andresmasegosa on 18/6/15.
  */
 public class SVBFadingExample {
