@@ -10,14 +10,11 @@ import weka.core.Instance;
  */
 public class DataRowWeka implements DataRow {
 
-    private Attributes attributes;
     private Instance dataRow;
 
-    public DataRowWeka(Instance dataRow, Attributes attributes_){
+    public DataRowWeka(Instance dataRow){
         this.dataRow = dataRow;
-        this.attributes = attributes_;
     }
-
     @Override
     public double getValue(Attribute att) {
         return dataRow.value(att.getIndex());
@@ -30,7 +27,7 @@ public class DataRowWeka implements DataRow {
 
     @Override
     public Attributes getAttributes() {
-        return this.attributes;
+        return Converter.convertAttributes(dataRow.enumerateAttributes(), dataRow.classAttribute());
     }
 
     @Override

@@ -38,6 +38,18 @@ public final class Converter {
 
     }
 
+    public static Attributes convertAttributes(Enumeration<weka.core.Attribute> attributesEnumeration){
+        weka.core.Attribute attrWeka;
+        List<Attribute> attrList = new ArrayList<>();
+        /* Predictive attributes */
+        while (attributesEnumeration.hasMoreElements()) {
+            attrWeka = (weka.core.Attribute) attributesEnumeration.nextElement();
+            convertAttribute(attrWeka,attrList);
+        }
+        return new Attributes(attrList);
+
+    }
+
 
     public static Variable getClassVariable(InstancesHeader modelContext, Attributes atts){
         Variables variables = new Variables(atts);
