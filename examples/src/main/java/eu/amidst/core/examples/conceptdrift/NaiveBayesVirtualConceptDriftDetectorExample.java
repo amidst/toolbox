@@ -23,10 +23,8 @@ import eu.amidst.core.variables.Variable;
  * This example shows how to use the class NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift
  * detector detailed in
  *
- * Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.
+ * <i>Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.</i>
  *
- *
- * Created by andresmasegosa on 1/7/15.
  */
 public class NaiveBayesVirtualConceptDriftDetectorExample {
     public static void main(String[] args) {
