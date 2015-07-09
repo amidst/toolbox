@@ -30,8 +30,10 @@ import java.io.Serializable;
  * represent a column of the matrix. This Attribute contains information such as
  * the name of the column and the type of data (discrete, continuous, etc.) it contains.
  *
+ * <p>For an example of use see the class <br>
+ *
+ *  eu.amidst.core.examples.datastream.DataStreamExample <p>
  */
-
 public final class Attribute implements Serializable {
 
     /** The serial vesion ID for serializing the object */

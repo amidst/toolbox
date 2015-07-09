@@ -18,6 +18,9 @@ import java.util.List;
  *
  * This class acts as a container of for the {@link Attribute} objects of a data set.
  *
+ * <p>For an example of use see the class <br>
+ *
+ *  eu.amidst.core.examples.datastream.DataStreamExample <p>
  */
 public class Attributes implements Serializable, Iterable<Attribute> {
 
