@@ -15,15 +15,19 @@ import eu.amidst.core.variables.Variable;
 import java.util.Set;
 
 /**
- *  Considering that a {@link DataStream} is composed  by a collection of {@link DataInstance} objects.
- *  Then, the {@link DataInstance} interface represents a data sample. It should basically be seen
- *  as a specific assignment to the {@link Attribute} objects defining the DataStream object.<p>
+ *  This interface represents a data sample. A {@link DataStream} object is composed  by a
+ *  collection of {@link DataInstance} objects, which can be seen
+ *  as a specific assignment to the {@link Attribute} objects defining the {@link DataStream} object.<p>
  *
  *  To simplify the use of this class across the toolbox, it also inherits from
  *  {@link Assignment} and can also be interpreted as an assignment to some {@link Variable} objects. This
  *  variable objects have associated an Attribute object.<p>
  *
  *  So a DataInstance object can be queried either using an{@link Attribute} object or a {@link Variable} object.
+ *
+ * <p>For an example of use see the class <br>
+ *
+ *  eu.amidst.core.examples.datastream.DataStreamExample <p>
  *
  */
 public interface DataInstance extends Assignment {

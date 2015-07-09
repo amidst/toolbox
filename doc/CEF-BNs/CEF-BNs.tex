@@ -123,11 +123,37 @@ So, its domain is $\Theta$ and its codomain are the positive real numbers, $ A: 
 \end{itemize}
 
 
+More specific subfamilies inside this broad class of probabilistic models are usually considered in the literature:
+
+\begin{description}
+
+\item[Minimal  Exponential Family:] An exponential family is \textit{minimal} if there is no a non-zero constant vector $\alpha$, such that $\alpha^Ts(\bm x)$ is equal to a constant for all assignments $\bm x$.  In this case, there is a unique parameter vector $\theta$ associated with each probability distribution.
+
+\item[Overcomplete  Exponential Family:] An exponential family is overcomplete if it is not minimal. In this case, there exists an entire affine subset of parameter vectors $\theta$, each one associated with the same probability distribution.
+
+\item[Regular Exponential Family:] An exponential family for which its natural parameter space $\Theta$ is an open set. 
+
+\item[Linear Exponential Family:] An exponential family which is regular and minimal. 
+
+\item[Curved Exponential Family:] Equation \ref{Equation:EFCanonical} describing exponential families can be generalized by writing 
+
+\begin{equation}
+\label{Equation:EFCurved}
+\ln p_\theta(\bm x) = \eta(\theta)^T s(\bm x) - A(\theta) + h(\bm x),
+\end{equation}
+
+\noindent where now $\eta$ is a function that maps the parameters $\theta$ to the canonical parameters $\bm \eta=\eta(\theta)$. A model belongs to the \textit{curved exponential family} if it is described by Equation \ref{Equation:EFCurved} and $dim(\theta)<dim(\eta(\theta))$, which means that the model has more sufficient statistics than parameters. 
+
+\end{description}
+
+
+
 %------------------------------------------------------------------------------------------------------
 \subsection*{Dual Parametrization}
 %------------------------------------------------------------------------------------------------------
-A key property of exponential family models is that they can be alternatively parametrized by a \emph{expectation or moment parameter} vector $\mu \in \mathcal{S}$. More precisely, $\mu$ is defined as the \emph{expected vector of sufficient statistics} with respect to $\theta$:
+A key property of exponential family models is that they can be alternatively parametrized by a so-called \emph{moment parameter} vector $\bm \mu \in \mathcal{S}$. The relevancy of this dual parametrization is that several statistical computations, such as marginalization and maximum likelihood estimation, can be understood as transforming from one parameterization to the other.  
 
+By definition, a vector $\bm \mu$ is defined as the \emph{expected vector of sufficient statistics} with respect to $\theta$ as follows
 \begin{equation}
 \label{Equation:NaturalToMoment}
 \begin{array}{lll}
@@ -135,19 +161,40 @@ A key property of exponential family models is that they can be alternatively pa
 \end{array}
 \end{equation}
 
-The transformation between $\theta$ and $\mu$ is one-to-one: $\mu$ is a dual set of the model parameter $\theta$ \cite{amari1985differential}. That is to say, for each $\theta\in \Theta$ we always have an associated $\mu\in\mathcal{S}$ and both have the same dimension and parameterize the same probability distribution. Therefore, Equation (\ref{Equation:NaturalToMoment}) can be inverted. The \emph{natural parameter} $\theta$ associated to an \emph{moment parameter} $\mu$ is obtained by solving the following optimization problem,
- 
-\begin{eqnarray}
+As can be seen, computing the moment parameter vector requires to perform inference over the probability distribution $p$. When $p$ belongs to the exponential family, the association between $p$ and $\mu$ is one-to-one.
+
+
+The transformation from \emph{natural parameters} to  \emph{moment parameters} can be achieved by solving the following optimization problem,
+ \begin{eqnarray}
 \label{Equation:MomentToNatural}
 \theta(\mu) = arg\max_{\theta\in\Theta}~\theta^T\mu -A(\theta)
 \end{eqnarray}
 
 \noindent where $\theta (\cdot)$ is, by abuse of notation, the transformation function from expectation parameters to natural parameters, i.e. $\theta (\cdot) : \mathcal{S} \rightarrow \Theta$.
 
+The above equation is also known as the \emph{maximum likelihood function}, because $\theta(\frac{1}{n}\sum_{i=1}^n s(x_i))$ gives the maximum likelihood estimation $\theta^\star$ for a data set with $n$ i.i.d. observations $\{x_1,\ldots,x_n\}$.
+
+For the minimal exponential family, the transformation between $\theta$ and $\mu$ is one-to-one: $\mu$ is a dual set of the model parameter $\theta$ \cite{amari1985differential}. That is to say, for each $\theta\in \Theta$ we always have an associated $\mu\in\mathcal{S}$ and both have the same dimension and parameterize the same probability distribution. For overcomplete exponential families,  there is an entire affine subset of parameters $\theta$ associated to the moment parameter vector $\mu$. 
+
+For regular exponential families, the transformation from \emph{natural parameters} to \emph{moment parameters} can be nicely interpreted as the gradient of the log-normalizer function, 
+
+\begin{equation}
+\label{Equation:NaturalToMomentRegular}
+\begin{array}{lll}
+\bm \mu & \triangleq & \e{s(\bm x)|\theta}  = \partial A(\theta)/\partial \theta \\
+\end{array}
+\end{equation}
+
+Regular exponential families with a minimal representation, i.e. linear exponential family, also enjoy a wider a set of nice properties and has been widely studied in the literature. However, they are not relevant for this paper. 
+
+
+
 %The above equation is also known as the \emph{maximum likelihood
 %function}, because $\theta(\frac{1}{n}\sum_{i=1}^n s(y_i,x_i))$
 %gives the maximum likelihood estimation $\theta^\star$ for a data
 %set with $n$ observations $\{(y_1,x_1),\ldots,(y_n,x_n)\}$.
+
+%The transformation between $\theta$ and $\mu$ is one-to-one: $\mu$ is a dual set of the model parameter $\theta$ \cite{amari1985differential}. That is to say, for each $\theta\in \Theta$ we always have an associated $\mu\in\mathcal{S}$ and both have the same dimension and parameterize the same probability distribution. Therefore, Equation (\ref{Equation:NaturalToMoment})
 
 %Given the natural parameters, the inverse step of updating the moment parameters is not trivial in the case of conditional distributions, since as we will see in Section \ref{sec:CondDist}, the transformation requires the joint probability distribution of both children and parents. 
 
@@ -253,41 +300,35 @@ The transformation between $\theta$ and $\mu$ is one-to-one: $\mu$ is a dual set
 \subsection*{Conjugate exponential (CE) models} \label{sec:CondDist}
 %------------------------------------------------------------------------------------------------------
 
-A conditional distribution $p(\bm X | \bm Y)$ is  in the exponential family if, for any assignment $\bm y$ of the variables in $\bm Y$, the probability distribution $p(\bm X|\bm y)$ can be expressed in exponential form. Moreover, $p(\bm X | \bm Y)$ is said to be \textit{conjugate} with respect to the distribution $p(\bm Y)$ if the latter has the same functional form than the posterior $p(\bm Y|\bm X)\propto p(\bm X|\bm Y)p(\bm Y)$. Then, the joint distribution $p(\bm X, \bm Y)= p(\bm X|\bm Y)p(\bm Y)$ is said to be a \textit{conjugate exponential} (CE) model. 
+A conditional distribution $p(\bm X | \bm Y)$ is  in the exponential family if, for any assignment $\bm y$ of the variables in $\bm Y$, the probability distribution $p(\bm X|\bm y)$ can be expressed in exponential form. Moreover, $p(\bm X | \bm Y)$ is said to be \textit{conjugate} with respect to the distribution $p(\bm Y)$ if the latter has the same functional form than the posterior $p(\bm Y|\bm X)\propto p(\bm X|\bm Y)p(\bm Y)$. Then, the joint distribution $p(\bm X, \bm Y)= p(\bm X|\bm Y)p(\bm Y)$ is said to be a \textit{conjugate exponential family} (CE) model. 
 
 % In fact, Equation \ref{eq:CE_F1} usually implies the existence a \textit{conjugate prior} $p(\bm Y)$ for $p(\bm X | \bm Y)$.  
 
-An important property of the CE models, which will be heavily employed in the rest of the paper, is that we can alternatively express the conditional distribution $p(\bm X|\bm Y)$ in any of the three following functional forms, 
+An important property of CE models is that they are a multi-linear function of the sufficient statistic functions of $\bm X$ and $\bm Y$ [?]. This implies that we can alternatively express the conditional distribution $p(\bm X|\bm Y)$ in any of the three following functional forms 
 
 \begin{description}
 
 \item[Conditional form (C-form):]
 \begin{equation}
 \label{Equation:EqCED}
-\ln p(\bm x | \bm y) = \theta_{\bm X}(\bm y)^Ts(\bm x) - A(\theta(\bm x)) + h(\bm x) 
+\ln p(\bm x | \bm y) = \theta_c(\bm y)^Ts(\bm x) - A_c(\theta(\bm x)) + h(\bm x) 
 \end{equation}
 
 \item[Posterior form (P-form):]
 \begin{equation}
 \label{Equation:EqCED}
-\ln p(\bm x | \bm y) = \theta(\bm x)^Ts(\bm y) - A(\theta(\bm y)) + h(\bm x) 
+\ln p(\bm x | \bm y) = \theta_p(\bm x)^Ts(\bm y) - A_p(\theta(\bm y)) + h(\bm x) 
 \end{equation}
 
 \item[Full form (F-form):]
 \begin{equation}
 \label{Equation:EqCED}
-\ln p(\bm x | \bm y) = \theta^Ts(\bm x,\bm y) - A(\theta) + h(\bm x) 
+\ln p(\bm x | \bm y) = \theta_f^Ts(\bm x,\bm y) - A_f(\theta) + h(\bm x) 
 \end{equation}
 
 \end{description}
- 
-In the first and second functional form, $\theta(\bm y)$ and $\theta(\bm x)$ denote that the natural parameters are now a function of $\bm y$ and $\bm x$, respectively, which is not the case for the last functional form. The three functional forms above hold because, in a conjugate-exponential model, the log conditional $\ln p(\bm X| \bm Y )$ must be a multi-linear function of the sufficient statistic functions of $\bm X$ and $\bm Y$. 
 
-
-%$A_1$, $A_2$ and $A_3$ refers to different 
-
-
-
+\noindent where the suffixes for $\theta$ and $A$ denote that both terms vary from one form to another. For example, in the first and second functional form, $\theta_c(\bm y)$ and $\theta_p(\bm x)$ denote that the natural parameters are now a function of $\bm y$ and $\bm x$, respectively, which is not the case for the last functional form. 
 
 %A BN is said to be a conjugate exponential family (CEF) model if all its CPDs belong to the exponential family and are conjugate as well. Importantly enough, the use of conjugate distributions allows that the posterior for each distribution has the same form as the prior, which means that only the parameter values change, but the functional form of the distribution remains the same.
 

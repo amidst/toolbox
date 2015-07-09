@@ -1,5 +1,7 @@
 eu.amidst.core
 eu.amidst.core.classifiers
+eu.amidst.core.conceptdrift
+eu.amidst.core.conceptdrift.utils
 eu.amidst.core.datastream
 eu.amidst.core.datastream.filereaders
 eu.amidst.core.datastream.filereaders.arffFileReader
