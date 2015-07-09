@@ -30,10 +30,10 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
 
     public IntOption timeWindowOption = new IntOption("timeWindow",
-            't', "Rang of the window.", 100);
+            't', "Rang of the window.", 1000);
 
     public IntOption numberClustersOption = new IntOption("numberClusters",
-            'c', "Number of Clusters.", 2);
+            'c', "Number of Clusters.", 5);
 
     public FlagOption parallelModeOption = new FlagOption("parallelMode", 'p',
             "Learn parameters in parallel mode when possible (e.g. ML)");
@@ -61,7 +61,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
     private DataOnMemoryListContainer<DataInstance> batch_;
     private int windowCounter;
-    private Clustering sourceClustering = null;
+    //private Clustering sourceClustering = null;
 
     private DAG dag = null;
     private BayesianNetwork bnModel_;
@@ -83,7 +83,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
             setParallelMode_(parallelModeOption.isSet());
             setNumClusters(numberClustersOption.getValue());
 
-            attributes_ = Converter.convertAttributes(instance.enumerateAttributes(),instance.classAttribute());
+            attributes_ = Converter.convertAttributes(getDataset(instance.numAttributes(), 0).enumerateAttributes());
             Variables modelHeader = new Variables(attributes_);
             clusterVar_ = modelHeader.newMultionomialVariable("clusterVar", getNumClusters());
 
@@ -96,7 +96,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
             /* Set DAG structure */
 
-            /* *.- Add hidden cluster variable as parents of all predictive attributes */
+            /* *.- Add hidden cluster variable as parent of all predictive attributes */
             if (isParallelMode_()) {
                 dag.getParentSets().parallelStream()
                         .filter(w -> w.getMainVar().getVarID() != clusterVar_.getVarID())
@@ -119,14 +119,14 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
             batch_ = new DataOnMemoryListContainer(attributes_);
             windowCounter = 0;
         }
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, attributes_));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
         windowCounter++;
         batch_.add(dataInstance);
     }
 
     @Override
     public Clustering getClusteringResult() {
-        sourceClustering = new Clustering();
+        //sourceClustering = new Clustering();
 
         Instances dataset = getDataset(attributes_.getNumberOfAttributes(), getNumClusters());
         Instances newInstances = new Instances(dataset);
@@ -134,6 +134,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
         if(bnModel_==null) {
             //parameterLearningAlgorithm_.setParallelMode(isParallelMode_());
             parameterLearningAlgorithm_.setDAG(dag);
+            ((SVB)parameterLearningAlgorithm_).setWindowsSize(timeWindowOption.getValue());
             parameterLearningAlgorithm_.initLearning();
             parameterLearningAlgorithm_.updateModel(batch_);
         }else {
@@ -153,7 +154,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
             int cnum = IntStream.rangeClosed(0, getNumClusters() - 1).reduce((a, b) -> (results[a] > results[b])? a: b).getAsInt();
 
-            double[] attValues = dataInstance.getAttributes().getList().stream().mapToDouble(att -> dataInstance.getValue(att)).toArray();
+            double[] attValues = dataInstance.toArray();
             Instance newInst = new DenseInstance(1.0, attValues);
             newInst.insertAttributeAt(attributes_.getNumberOfAttributes());
             newInst.setDataset(dataset);
@@ -162,7 +163,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
         }
         clustering = new Clustering(newInstances);
 
-        return sourceClustering;
+        return clustering;
 
     }
 
@@ -190,7 +191,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
     @Override
     public boolean  keepClassLabel(){
-        return true;
+        return false;
     }
 
 
@@ -213,5 +214,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
     public double[] getVotesForInstance(Instance instance) {
         return null;
     }
+
+
 
 }
