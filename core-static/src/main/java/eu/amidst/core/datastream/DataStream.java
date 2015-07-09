@@ -23,14 +23,14 @@ import java.util.stream.Stream;
  * {@link DataInstance} objects. <p>
  *
  *
- * For further details about the implementation of this class look at the following paper, <br>
+ * For further details about the implementation of this class look at the following paper, <br><br>
  *
- *  "Borchani et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015)"
+ * <i>Borchani et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015)</i>
  *
  *
- * <p> For an example of use see the class <br>
+ * <p> For an example of use see the class <br><br>
  *
- *  eu.amidst.core.examples.datastream.DataStreamExample <p>
+ *  <code>eu.amidst.core.examples.datastream.DataStreamExample </code> <p>
  *
  */
 public interface DataStream<E extends DataInstance> extends Iterable<E> {

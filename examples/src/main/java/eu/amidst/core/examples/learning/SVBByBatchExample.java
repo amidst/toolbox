@@ -26,8 +26,8 @@ import eu.amidst.core.models.BayesianNetwork;
  * This example shows how to learn incrementally the parameters of a Bayesian network from a stream of data with a Bayesian
  * approach using the following algorithm
  *
- * Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
- * In Advances in Neural Information Processing Systems (pp. 1727-1735).
+ * <i> Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
+ * In Advances in Neural Information Processing Systems (pp. 1727-1735). </i>
  *
  *
  * Created by andresmasegosa on 18/6/15.

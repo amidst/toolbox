@@ -27,7 +27,7 @@ import java.util.Set;
  *
  * <p>For an example of use see the class <br>
  *
- *  eu.amidst.core.examples.datastream.DataStreamExample <p>
+ *  <code>eu.amidst.core.examples.datastream.DataStreamExample </code> <p>
  *
  */
 public interface DataInstance extends Assignment {

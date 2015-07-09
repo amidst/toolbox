@@ -20,7 +20,7 @@ import java.util.List;
  *
  * <p>For an example of use see the class <br>
  *
- *  eu.amidst.core.examples.datastream.DataStreamExample <p>
+ *  <code>eu.amidst.core.examples.datastream.DataStreamExample </code> <p>
  */
 public class Attributes implements Serializable, Iterable<Attribute> {
 
