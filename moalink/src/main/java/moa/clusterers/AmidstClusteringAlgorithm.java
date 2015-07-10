@@ -119,7 +119,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
             batch_ = new DataOnMemoryListContainer(attributes_);
             windowCounter = 0;
         }
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance));
+        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, attributes_));
         windowCounter++;
         batch_.add(dataInstance);
     }
