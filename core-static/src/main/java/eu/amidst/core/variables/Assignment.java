@@ -69,8 +69,10 @@ public interface Assignment {
     default String outputString(List<Variable> vars){
         StringBuilder builder = new StringBuilder(vars.size()*2);
         builder.append("{");
-        vars.stream().limit(vars.size()-1).forEach(var -> builder.append( var.getName()+ " = "+ (var.isMultinomial() ? (int)this.getValue(var) : String.format("%1$,.3f", this.getValue(var)) ) + ", "));
-        builder.append(vars.get(vars.size()-1).getName()+ " = "+ (vars.get(vars.size()-1).isMultinomial() ? (int)this.getValue(vars.get(vars.size()-1)) : String.format("%1$,.3f", this.getValue(vars.get(vars.size()-1))) ));
+        vars.stream().limit(vars.size() - 1).filter(var -> !Double.isNaN(this.getValue(var))).forEach(var -> builder.append(var.getName() + " = " + (var.isMultinomial() ? (int) this.getValue(var) : String.format("%1$,.3f", this.getValue(var))) + ", "));
+        if(!Double.isNaN(this.getValue(vars.get(vars.size()-1)))) {
+            builder.append(vars.get(vars.size() - 1).getName() + " = " + (vars.get(vars.size() - 1).isMultinomial() ? (int) this.getValue(vars.get(vars.size() - 1)) : String.format("%1$,.3f", this.getValue(vars.get(vars.size() - 1)))));
+        }
         builder.append("}");
         return builder.toString();
     }
