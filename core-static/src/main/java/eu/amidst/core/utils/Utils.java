@@ -10,11 +10,15 @@ package eu.amidst.core.utils;
 
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by andresmasegosa on 28/08/14.
@@ -245,4 +249,55 @@ public final class Utils {
 
 
 
+
+    public static Assignment randomEvidence(BayesianNetwork bn, long seed, int numVarEvidence, boolean output ) throws UnsupportedOperationException {
+
+
+        int numVariables = bn.getStaticVariables().getNumberOfVars();
+
+        if (numVarEvidence<=0 || numVarEvidence>=numVariables) {
+            throw new UnsupportedOperationException("Error: invalid number of variables in evidence");
+        }
+
+        Random random=new Random(seed);
+
+        double [] evidence = new double[numVarEvidence];
+        Variable aux;
+        HashMapAssignment assignment = new HashMapAssignment(numVarEvidence);
+
+        int[] indexesEvidence = new int[numVarEvidence];
+
+        if(output) {
+            System.out.println("Evidence:");
+        }
+        for( int k=0; k<numVarEvidence; k++ ) {
+            int varIndex=-1;
+            do {
+                varIndex = random.nextInt( bn.getNumberOfVars() );
+                //System.out.println(varIndex);
+                aux = bn.getStaticVariables().getVariableById(varIndex);
+
+                double thisEvidence;
+                if (aux.isMultinomial()) {
+                    thisEvidence = random.nextInt( aux.getNumberOfStates() );
+                }
+                else {
+                    thisEvidence = random.nextGaussian();
+                }
+                evidence[k] = thisEvidence;
+
+            } while (ArrayUtils.contains(indexesEvidence, varIndex) );
+
+            indexesEvidence[k]=varIndex;
+            if(output) {
+                //System.out.println(Arrays.toString(indexesEvidence));
+                System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
+            }
+            assignment.setValue(aux, evidence[k]);
+        }
+        if(output) {
+            System.out.println();
+        }
+        return assignment;
+    }
 }
