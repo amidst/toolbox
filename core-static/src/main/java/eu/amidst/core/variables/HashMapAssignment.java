@@ -24,6 +24,14 @@ public class HashMapAssignment implements Assignment {
         assignment = new ConcurrentHashMap(nOfVars);
     }
 
+    public HashMapAssignment(Assignment assignment1){
+        Set<Variable> variableList = assignment1.getVariables();
+        assignment = new ConcurrentHashMap(variableList.size());
+        for(Variable var: variableList) {
+            this.setValue(var,assignment1.getValue(var));
+        }
+    }
+
     @Override
     public double getValue(Variable key){
         Double val = assignment.get(key);
