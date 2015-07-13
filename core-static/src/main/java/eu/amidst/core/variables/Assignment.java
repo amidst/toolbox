@@ -9,6 +9,7 @@
 package eu.amidst.core.variables;
 
 import java.util.Set;
+import java.util.List;
 
 /**
  * This interface defines a collection of assignments to variables. <p>
@@ -44,7 +45,7 @@ public interface Assignment {
 
     /**
      * This method contains a default implementation of a "toString()" method. It produces
-     * a String detailed all the variable-value assignments stored in the object. E.g., {A=0, B=1.7}.
+     * a String detailed all the variable-value assignments stored in the object. E.g., {A=0, B=2}.
      *
      * @return A String object starting with "{" and endind with "}".
      */
@@ -53,6 +54,23 @@ public interface Assignment {
         StringBuilder builder = new StringBuilder(this.getVariables().size()*2);
         builder.append("{");
         this.getVariables().stream().forEach(var -> builder.append(var.getName()+ " = "+(int)this.getValue(var)+", "));
+        builder.append("}");
+        return builder.toString();
+    }
+
+    /**
+     * This method contains a default implementation of a "toString()" method. It produces
+     * a String detailed all the variable-value assignments stored in the object. E.g., {A=0, B=1.217},
+     * keeping the order given in the argument and displaying 3 decimal places for continuous variables.
+     *
+     * @param vars, the ordered list of Variable to display
+     * @return A String object starting with "{" and endind with "}".
+     */
+    default String outputString(List<Variable> vars){
+        StringBuilder builder = new StringBuilder(vars.size()*2);
+        builder.append("{");
+        vars.stream().limit(vars.size()-1).forEach(var -> builder.append( var.getName()+ " = "+ (var.isMultinomial() ? (int)this.getValue(var) : String.format("%1$,.3f", this.getValue(var)) ) + ", "));
+        builder.append(vars.get(vars.size()-1).getName()+ " = "+ (vars.get(vars.size()-1).isMultinomial() ? (int)this.getValue(vars.get(vars.size()-1)) : String.format("%1$,.3f", this.getValue(vars.get(vars.size()-1))) ));
         builder.append("}");
         return builder.toString();
     }
