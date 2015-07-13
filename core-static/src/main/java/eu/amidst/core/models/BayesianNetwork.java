@@ -6,14 +6,6 @@
  *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-/**
- ******************* ISSUE LIST **************************
- *
- * 1. (Andres) getListOfVariables should return a Set instead of a List.
- *
- * ********************************************************
- */
-
 package eu.amidst.core.models;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
@@ -30,61 +22,109 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by afa on 02/07/14.
+ * The BayesianNetwork class represents a Bayesian network model.
  */
-
-
 public final class BayesianNetwork implements Serializable {
 
-
+    /**
+     * A serialVersionUID value
+     */
     private static final long serialVersionUID = 4107783324901370839L;
+
+    /**
+     * The list of conditional probability distributions defining the Bayesian network parameters
+     */
     private List<ConditionalDistribution> distributions;
 
+    /**
+     * The Directed Acyclic Graph ({@link DAG}) defining the Bayesian network graphical structure
+     */
     private DAG dag;
 
+    /**
+     * Creates a new BayesianNetwork from a dag
+     * @param dag a directed acyclic graph
+     * @return a BayesianNetwork
+     */
     public static BayesianNetwork newBayesianNetwork(DAG dag) {
         return new BayesianNetwork(dag);
     }
 
+    /**
+     * Creates a new BayesianNetwork from a dag and a list of distributions
+     * @param dag a directed acyclic graph
+     * @param dists a list of conditional probability distributions
+     * @return a BayesianNetwork
+     */
     public static BayesianNetwork newBayesianNetwork(DAG dag, List<ConditionalDistribution> dists) {
         return new BayesianNetwork(dag, dists);
     }
 
+    /**
+     * Creates a new BayesianNetwork from a dag
+     * @param dag a directed acyclic graph
+     */
     private BayesianNetwork(DAG dag) {
         this.dag = dag;
         initializeDistributions();
     }
 
+    /**
+     * Creates a new BayesianNetwork from a dag and a list of distributions
+     * @param dag a directed acyclic graph
+     * @param dists a list of conditional probability distributions
+     */
     private BayesianNetwork(DAG dag, List<ConditionalDistribution> dists) {
         this.dag = dag;
         this.distributions = dists;
     }
 
+    /**
+     * Returns the conditional probability distribution of a variable
+     * @param var a variable of type {@link Variable}
+     * @return conditional probability distribution
+     */
     public <E extends ConditionalDistribution> E getConditionalDistribution(Variable var) {
         return (E) distributions.get(var.getVarID());
     }
 
+    /**
+     * Sets the conditional probability distribution of a variable
+     * @param var a variable of type {@link Variable}
+     * @param dist Conditional probability distribution of type {@link ConditionalDistribution}
+     */
     public void setConditionalDistribution(Variable var, ConditionalDistribution dist){
         this.distributions.set(var.getVarID(),dist);
     }
 
+    /**
+     * Returns the total number of variables in this BayesianNetwork
+     * @return number of variables
+     */
     public int getNumberOfVars() {
         return this.getDAG().getStaticVariables().getNumberOfVars();
     }
 
+    /**
+     * Returns the set of variables in this BayesianNetwork
+     * @return set of variables of type {@link Variables}
+     */
     public Variables getStaticVariables() {
         return this.getDAG().getStaticVariables();
     }
 
+    /**
+     * Returns the directed acyclic graph of this BayesianNetwork
+     * @return a directed acyclic graph of type {@link DAG}
+     */
     public DAG getDAG() {
         return dag;
     }
 
-    // public List<Variable> getListOfVariables() {
-    //     return this.getStaticVariables().getListOfVariables();
-    // }
-
-
+    /**
+     * Returns the parameter values of this BayesianNetwork
+     * @return an array containing the parameter values of all distributions
+     */
     public double[] getParameters(){
 
         int size = this.distributions.stream().mapToInt(dist -> dist.getNumberOfParameters()).sum();
@@ -101,19 +141,17 @@ public final class BayesianNetwork implements Serializable {
         return param;
     }
 
-
+    /**
+     * Initializes the distributions of this BayesianNetwork
+     * The initialization is performed for each variable depending on its distribution type
+     * as well as the distribution type of its parent set (if that variable has parents)
+     */
     private void initializeDistributions() {
-
 
         this.distributions = new ArrayList(this.getNumberOfVars());
 
-
-        /* Initialize the distribution for each variable depending on its distribution type
-        as well as the distribution type of its parent set (if that variable has parents)
-         */
         for (Variable var : getStaticVariables()) {
             ParentSet parentSet = this.getDAG().getParentSet(var);
-
             int varID = var.getVarID();
             this.distributions.add(varID, var.newConditionalDistribution(parentSet.getParents()));
             parentSet.blockParents();
@@ -122,6 +160,11 @@ public final class BayesianNetwork implements Serializable {
         this.distributions = Collections.unmodifiableList(this.distributions);
     }
 
+    /**
+     * Returns the log probability of a valid assignment
+     * @param assignment an object of type {@link Assignment}
+     * @return the log probability of an assignment
+     */
     public double getLogProbabiltyOf(Assignment assignment) {
         double logProb = 0;
         for (Variable var : this.getStaticVariables()) {
@@ -134,10 +177,18 @@ public final class BayesianNetwork implements Serializable {
         return logProb;
     }
 
+    /**
+     * Returns the list of the conditional probability distributions of this BayesianNetwork
+     * @return a list of {@link ConditionalDistribution}
+     */
     public List<ConditionalDistribution> getConditionalDistributions() {
         return this.distributions;
     }
 
+    /**
+     * Returns a textual representation of this BayesianNetwork
+     * @return a String description of this BayesianNetwork
+     */
     public String toString() {
 
         StringBuilder str = new StringBuilder();
@@ -167,10 +218,21 @@ public final class BayesianNetwork implements Serializable {
         return str.toString();
     }
 
+    /**
+     * Initializes the distributions of this BayesianNetwork randomly
+     * @param random an object of type {@link java.util.Random}
+     */
     public void randomInitialization(Random random) {
         this.distributions.stream().forEach(w -> w.randomInitialization(random));
     }
 
+    /**
+     * Tests if two Bayesian networks are equals
+     * A two Bayesian networks are considered equals if they have an equal conditional distribution for each variable
+     * @param bnet a given BayesianNetwork to be compared with this BayesianNetwork
+     * @param threshold a threshold value
+     * @return a boolean indicating if the two BNs are equals or not
+     */
     public boolean equalBNs(BayesianNetwork bnet, double threshold) {
         boolean equals = true;
         if (this.getDAG().equals(bnet.getDAG())){
@@ -181,6 +243,10 @@ public final class BayesianNetwork implements Serializable {
         return equals;
     }
 
+    /**
+     * Returns this class name
+     * @return A String representing this class name
+     */
     public static String listOptions() {
         return  classNameID();
     }
