@@ -13,29 +13,21 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;
 
+//TODO: Implement method getLogProbabilityOfEvidence
+
 /**
  * This class provides an interface to perform Bayesian network inference using the Hugin inference engine.
- *
- * TODO: Implment method getLogProbabilityOfEvidence
- * @author Antonio Fernández
- * @version 1.0
- * @since 9/2/15
  */
 public class HuginInference implements InferenceAlgorithm {
 
-    /**
-     * The Bayesian network model in AMIDST format.
-     */
+    /** Represents the Bayesian network model in AMIDST format. */
     BayesianNetwork amidstBN;
 
-    /**
-     * The Bayesian network model in Hugin format.
-     */
+    /** Represents the Bayesian network model in Hugin format. */
     Domain huginBN;
 
     /**
      * Sets an evidence to a Hugin variable.
-     *
      * @param n the AMIDST variable to be evidenced.
      * @param value the evidenced value.
      * @throws ExceptionHugin
@@ -54,7 +46,6 @@ public class HuginInference implements InferenceAlgorithm {
 
     /**
      * Prints the belief of a Hugin node.
-     *
      * @param node the node whose belief is printed.
      * @throws ExceptionHugin
      */
@@ -74,8 +65,7 @@ public class HuginInference implements InferenceAlgorithm {
     }
 
     /**
-     * Prints the beliefs of the Hugin network.
-     *
+     * Prints the beliefs of a Hugin network.
      * @throws ExceptionHugin
      */
     private void printBeliefs () throws ExceptionHugin {
@@ -89,6 +79,9 @@ public class HuginInference implements InferenceAlgorithm {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runInference() {
         try {
@@ -99,6 +92,9 @@ public class HuginInference implements InferenceAlgorithm {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setModel(BayesianNetwork model) {
         this.amidstBN = model;
@@ -109,11 +105,17 @@ public class HuginInference implements InferenceAlgorithm {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BayesianNetwork getOriginalModel() {
         return amidstBN;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setEvidence(Assignment assignment) {
 
@@ -127,6 +129,9 @@ public class HuginInference implements InferenceAlgorithm {
                 });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
 
@@ -155,12 +160,17 @@ public class HuginInference implements InferenceAlgorithm {
         return null;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogProbabilityOfEvidence() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setSeed(int seed) {
 

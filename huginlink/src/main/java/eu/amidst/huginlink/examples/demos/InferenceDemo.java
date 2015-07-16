@@ -24,17 +24,13 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * This class is a demos for making inference in a Dynamic Bayesian network model learnt from Cajamar data using the
- * Hugin inference engine.
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 13/1/15
+ * This class is a demo for making inference in a Dynamic Bayesian network model learnt from the Cajamar data set
+ * using the Hugin inference engine.
  */
 public class InferenceDemo {
 
     /**
-     * Prints the belief of all the nodes in the Hugin domain.
+     * Prints the belief of all the nodes in the Hugin model.
      * @param domainObject the expanded dynamic model.
      * @throws ExceptionHugin
      */
@@ -56,7 +52,7 @@ public class InferenceDemo {
 
 
     /**
-     * The demos for the Cajamar case.
+     * The demo for the Cajamar data set.
      * @throws ExceptionHugin
      * @throws IOException
      */

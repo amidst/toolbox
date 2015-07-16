@@ -5,20 +5,14 @@ import COM.hugin.HAPI.Class;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
 
-
 /**
  * This class is a writer of dynamic Bayesian networks in AMIDST format to Hugin files.
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 16/1/15
  */
 public class DBNWriterToHugin {
 
     /**
-     * Creates a Hugin Bayesian network file from a AMIDST Dynamic Bayesian network model. In order to make
-     * it simpler, we suppose that the Hugin DBN model name is the file name without extension.
-     *
+     * Creates a Hugin Bayesian network file from a AMIDST Dynamic Bayesian network model.
+     * In order to simplify, we assume that the Hugin DBN model name is the file name without extension.
      * @param amidstDBN the <code>DynamicBayesianNetwork</code> in AMIDST format.
      * @param file the name of the Hugin file in which the model is saved.
      * @throws ExceptionHugin

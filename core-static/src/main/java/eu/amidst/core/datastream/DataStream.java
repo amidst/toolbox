@@ -16,101 +16,93 @@ import java.util.stream.Stream;
 //TODO: Which the index of the variables TIME_ID and SEQ_ID
 
 /**
+ * The DataStream class is an interface for dealing with data streams.
+ * <p> The whole AMIDST Toolbox is specially designed to process the data sequentially without loading it into main memory.
+ * In this way, this class can handle very large data sets. A DataStream object is composed as a collection of
+ * {@link DataInstance} objects. </p>
  *
- * This class is an interface for dealing with data streams. The whole AMIDST Toolbox is specially
- * designed to consume the data sequentially without loading it into main memory. In this way,
- * this class can handle very large data sets. A DataStream object is composed as a collection of
- * {@link DataInstance} objects. <p>
+ * For further details about the implementation of this class look at the following paper: <br>
+ * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
  *
- *
- * For further details about the implementation of this class look at the following paper, <br><br>
- *
- * <i>Borchani et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015)</i>
- *
- *
- * <p> For an example of use see the class <br><br>
- *
- *  <code>eu.amidst.core.examples.datastream.DataStreamExample </code> <p>
- *
+ * <p> For an example of use see the class {@code eu.amidst.core.examples.datastream.DataStreamExample}. </p>
  */
 public interface DataStream<E extends DataInstance> extends Iterable<E> {
 
     /**
-     * Return an Attributes object containing the attributes of the loaded data set.
-     * @return an Attributes object associated to the data stream
+     * Returns an Attributes object containing the attributes of this DataStream.
+     * @return an Attributes object associated with this DataStream.
      */
     Attributes getAttributes();
 
     /**
-     * This method should be invoked when the processing of the data stream is finished.
+     * Closes this DataStream.
+     * It should be invoked only when the processing of the data stream is finished.
      */
     void close();
 
     /**
-     * A data streams could be restarted. So, we could iterate over all the data samples again.
-     * @return Whether the data stream can be restarted
+     * Returns whether this DataStream can restart.
+     * A DataStream can restart if is is possible to iterate over all the data samples once again.
+     * @return true if this DataStream can restart.
      */
     boolean isRestartable();
 
     /**
-     * For those data streams can be restarted, this method perform the restarting operation.
+     * Restarts this DataStream.
      */
     void restart();
 
     /**
-     * This method returns a Stream of DataInstance objects. This stream must be consumed sequentially, i.e.
-     * without invoking later on any parallel stream method.
-     *
-     * @return A valid Java stream of DataInstance objects.
+     * Returns a Stream of DataInstance objects to be processed sequentially.
+     * That is, without invoking later on any parallel stream method.
+     * @return a valid Java stream of DataInstance objects to be processed sequentially.
      */
     Stream<E> stream();
 
     /**
-     * This method returns a Stream of DataInstance objects. This stream is specially designed to be consumed
-     * in parallel. Internally, data samples are grouped on batches and all the samples in the same batch are
-     * processed with the same thread.
-     *
-     * @param batchSize, the size of the batches
-     * @return A valid Java stream of DataInstance object to be consumed in parallel.
+     * Returns a Stream of DataInstance objects to be processed in parallel.
+     * Internally, data samples are grouped into batches and all the samples
+     * in the same batch are processed with the same thread.
+     * @param batchSize the size of the batches.
+     * @return a valid Java stream of DataInstance object to be processed in parallel.
      */
     default Stream<E> parallelStream(int batchSize){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), batchSize);
     }
 
     /**
-     * Return an Itertor object to iterate over all the data instances of the data stream.
-     * @return A Iterator over DataInstances
+     * Returns an Iterator object that iterates over all the data instances of this DataStream.
+     * @return an Iterator over DataInstances.
      */
     default Iterator<E> iterator(){
         return this.stream().iterator();
     }
 
     /**
-     * This method returns a stream of DataOnMemory objects. Each DataOnMemory object contains a batch of data.
-     * @param batchSize, the size of the data batches
-     * @return A stream of DataOnMemory objects
+     * Returns an iterator over DataOnMemory objects. Each DataOnMemory object contains a batch of data.
+     * @param batchSize the size of the data batches.
+     * @return an Iterator over DataOnMemory objects.
+     */
+    default Iterable<DataOnMemory<E>> iterableOverBatches(int batchSize) {
+        return BatchesSpliterator.toFixedBatchIterable(this,batchSize);
+    }
+
+    /**
+     * Returns a stream of DataOnMemory objects. Each DataOnMemory object contains a batch of data.
+     * @param batchSize the size of the data batches.
+     * @return a stream of DataOnMemory objects.
      */
     default Stream<DataOnMemory<E>> streamOfBatches(int batchSize){
         return BatchesSpliterator.toFixedBatchStream(this,batchSize).sequential();
     }
 
     /**
-     * This method returns a parallel stream of DataOnMemory objects. Each DataOnMemory object contains a batch of data.
-     * @param batchSize, the size of the data batches
-     * @return A stream of DataOnMemory objects
+     * Returns a parallel stream of DataOnMemory objects. Each DataOnMemory object contains a batch of data.
+     * @param batchSize the size of the data batches.
+     * @return a parallel stream of DataOnMemory objects.
      */
     default Stream<DataOnMemory<E>> parallelStreamOfBatches(int batchSize){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.streamOfBatches(batchSize), 1);
     }
 
-
-    /**
-     * This method returns a iterator over DataOnMemory objects. Each DataOnMemory object contains a batch of data.
-     *
-     * @param batchSize, the size of the data batches
-     * @return A Iterator over DataOnMemory objects
-     */
-    default Iterable<DataOnMemory<E>> iterableOverBatches(int batchSize) {
-        return BatchesSpliterator.toFixedBatchIterable(this,batchSize);
-    }
 }

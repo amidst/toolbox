@@ -15,55 +15,51 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
- * This class acts as a container of for the {@link Attribute} objects of a data set.
- *
- * <p>For an example of use see the class <br>
- *
- *  <code>eu.amidst.core.examples.datastream.DataStreamExample </code> <p>
+ * This class acts as a container of the {@link Attribute} objects of a data set.
+ * <p> See {@code eu.amidst.core.examples.datastream.DataStreamExample} for an example of use. <p>
  */
+
 public class Attributes implements Serializable, Iterable<Attribute> {
 
-    /** The serial vesion ID for serializing the object */
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = -1877629684033612201L;
 
-    /** The name of attribute acting as a TIME_ID*/
+    /** Represents the name of the Attribute acting as a TIME_ID. */
     public static final String TIME_ID_ATT_NAME = "TIME_ID";
 
-    /** The name of attribute acting as a SEQUENCE_ID*/
+    /** Represents the name of the Attribute acting as a SEQUENCE_ID. */
     public static final String SEQUENCE_ID_ATT_NAME = "SEQUENCE_ID";
 
-    /** A list containing the  Attribue objects*/
+    /** Represents a list containing the Attribute objects. */
     private List<Attribute> attributes;
 
     /**
-     * A constructor using a List of Attribute objects
-     * @param attributes, a non-empty list of Attribute objects
+     * Creates a new Attributes from a given List of attribute objects.
+     * @param attributes a non-empty list of Attribute objects.
      */
     public Attributes(List<Attribute> attributes){
         this.attributes = Collections.unmodifiableList(attributes);
     }
 
     /**
-     * Return the list of Attribute objects kept in this object
-     * @return
+     * Returns the list of this Attributes.
+     * @return the list of this Attributes.
      */
     public List<Attribute> getList(){
         return attributes;
     }
 
     /**
-     * Return the number of Attribute objects
-     * @return
+     * Returns the number of this Attributes.
+     * @return the number of this Attributes.
      */
     public int getNumberOfAttributes(){
         return this.attributes.size();
     }
 
     /**
-     * Return a list with the Attribute objects except those which
-     * act as TIME_ID and SEQUENCE_ID
-     * @return
+     * Returns the list of this Attributes, except the TIME_ID and SEQUENCE_ID ones.
+     * @return the list of this Attributes, except the TIME_ID and SEQUENCE_ID ones.
      */
     //TODO This method is not standard?!?
     public List<Attribute> getListExceptTimeAndSeq(){
@@ -78,9 +74,9 @@ public class Attributes implements Serializable, Iterable<Attribute> {
     }
 
     /**
-     * Return the attribute with the given name
-     * @param name, a valid name of an attribute
-     * @return The requested Attribute object. If there is any attribute
+     * Returns the Attribute corresponding to the given name.
+     * @param name a valid name of an Attribute.
+     * @return the requested Attribute object. If there is no Attribute
      * with the requested name, it throws an IllegalArgumentException.
      */
     public Attribute getAttributeByName(String name){
@@ -91,8 +87,8 @@ public class Attributes implements Serializable, Iterable<Attribute> {
     }
 
     /**
-     * Return a iterator over the attributes stored in the object.
-     * @return
+     * Returns an iterator over this Attributes.
+     * @return an iterator over this Attributes.
      */
     @Override
     public Iterator<Attribute> iterator() {

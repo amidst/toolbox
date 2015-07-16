@@ -15,20 +15,16 @@ import eu.amidst.core.variables.Variable;
 import java.util.Set;
 
 /**
- *  This interface represents a data sample. A {@link DataStream} object is composed  by a
- *  collection of {@link DataInstance} objects, which can be seen
- *  as a specific assignment to the {@link Attribute} objects defining the {@link DataStream} object.<p>
+ *  The DataInstance interface represents a data sample.
+ *  A {@link DataStream} object consists of a collection of {@link DataInstance} objects, which can be seen
+ *  as specific assignments of the {@link Attribute} objects.
  *
- *  To simplify the use of this class across the toolbox, it also inherits from
- *  {@link Assignment} and can also be interpreted as an assignment to some {@link Variable} objects. This
- *  variable objects have associated an Attribute object.<p>
+ *  <p> To simplify the use of the DataInstance interface across the toolbox, it inherits from the
+ *  {@link Assignment} interface. Hence, it can be also interpreted as an assignment to some {@link Variable} objects.
+ *  This variable objects have associated an Attribute object.
+ *  So, a DataInstance object can be queried either using an{@link Attribute} object or a {@link Variable} object. </p>
  *
- *  So a DataInstance object can be queried either using an{@link Attribute} object or a {@link Variable} object.
- *
- * <p>For an example of use see the class <br>
- *
- *  <code>eu.amidst.core.examples.datastream.DataStreamExample </code> <p>
- *
+ * <p>For an example of use of this class, see {@code eu.amidst.core.examples.datastream.DataStreamExample}. </p>
  */
 public interface DataInstance extends Assignment {
 
@@ -60,35 +56,31 @@ public interface DataInstance extends Assignment {
         return null;
     }
 
-
     /**
-     * This method return the set of attributes which have an assigned value
-     * stored in this object.
-     * @return A valid Attributes object
+     * Returns the set of attributes that have assigned values stored in this DataInstance.
+     * @return a valid Attributes object.
      */
     Attributes getAttributes();
 
     /**
-     * This method return the value assigned to a given Attribute
-     * @param att, the Attribute object we want to query
-     * @return The assigned value to the given Attribute. Returns a Double.NaN if
+     * Returns the value of a given Attribute stored in this DataInstance.
+     * @param att the Attribute object we want to query and extract its value.
+     * @return the assigned value of the given Attribute. Returns a Double.NaN if
      * the attribute is not observed in this assignment.
      */
     double getValue(Attribute att);
 
     /**
-     * This method set the value assigned to an Attribute. If the value is already include,
-     * then the value is updated accordingly.
-     *
-     * @param att, the Attribute object we want to assign
-     * @param val, the assigned value
+     * Sets the value of a given Attribute in this DataInstance.
+     * If the value is already included, then its value is updated accordingly.
+     * @param att the Attribute object to which the value will be assigned.
+     * @param val the value that will be assigned.
      */
     void setValue(Attribute att, double val);
 
     /**
-     * This method returns the values of the data instance in the form of an array of doubles
-     *
-     * @return The array of values
+     * Returns the values of this DataInstance in the form of an Array of doubles.
+     * @return an array of values.
      */
     double[] toArray();
 }

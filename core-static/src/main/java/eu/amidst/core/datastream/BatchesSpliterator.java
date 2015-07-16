@@ -18,21 +18,34 @@ import static java.util.Spliterators.spliterator;
 import static java.util.stream.StreamSupport.stream;
 
 /**
- * This class implements a {@link Spliterator} for iterating using data batches a given {@link DataStream}.
- * The data batches are explicitly stored in {@link DataOnMemory} objects. <p>
- *
- * It is used by the class {@link DataStream}.
- *
- * @param <T>
+ * The BatchesSpliterator class implements a {@link Spliterator} for iterating over data batches of a {@link DataStream}.
+ * The data batches are explicitly stored in {@link DataOnMemory} objects.
+ * This class is used by the class {@link DataStream}.
+ * @param <T> A generic Type that extends the interface {@link DataInstance}.
  */
 public class BatchesSpliterator<T extends DataInstance> implements Spliterator<DataOnMemory<T>> {
 
+    /** Represents the data stream. */
     private final DataStream<T> dataStream;
+
+    /** Represents the Spliterator. */
     private final Spliterator<T> spliterator;
+
+    /** Represents the batch size. */
     private final int batchSize;
+
+    /** Represents the characteristics. */
     private final int characteristics;
+
+    /** Represents est. */
     private long est;
 
+    /**
+     * Creates a new BatchesSpliterator.
+     * @param dataStream_ the data stream.
+     * @param est est.
+     * @param batchSize the batch size.
+     */
     public BatchesSpliterator(DataStream<T> dataStream_, long est, int batchSize) {
         this.dataStream = dataStream_;
         this.spliterator = this.dataStream.stream().spliterator();
@@ -41,14 +54,55 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
         this.est = est;
         this.batchSize = batchSize;
     }
+
+    /**
+     * Creates a new BatchesSpliterator.
+     * @param dataStream_ the data stream.
+     * @param batchSize the batch size.
+     */
     public BatchesSpliterator(DataStream<T> dataStream_, int batchSize) {
         this(dataStream_, dataStream_.stream().spliterator().estimateSize()/batchSize, batchSize);
     }
 
+    /**
+     * Creates a new parallel {@code Stream} from a given data stream and batch size.
+     * @param dataStream_ the data stream.
+     * @param batchSize the batch size.
+     * @param <T> the type of stream elements.
+     * @return a new parallel {@code Stream}.
+     */
     public static <T extends DataInstance> Stream<DataOnMemory<T>> toFixedBatchStream(DataStream<T> dataStream_, int batchSize) {
         return stream(new BatchesSpliterator<>(dataStream_, batchSize), true);
     }
 
+    /**
+     * This class defines a batch iterator over the stream.
+     * @param <T> the type of stream elements.
+     */
+    static class BatchIterator <T extends DataInstance> implements Iterable<DataOnMemory<T>>{
+
+        Stream<DataOnMemory<T>> stream;
+
+        BatchIterator(Stream<DataOnMemory<T>> stream_){
+            stream=stream_;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public Iterator<DataOnMemory<T>> iterator() {
+            return this.stream.iterator();
+        }
+    }
+
+    /**
+     * Creates a new BatchIterator from a given data stream and batch size.
+     * @param dataStream_ the data stream.
+     * @param batchSize the batch size.
+     * @param <T> the type of stream elements.
+     * @return a new BatchIterator.
+     */
     public static <T extends DataInstance> Iterable<DataOnMemory<T>> toFixedBatchIterable(DataStream<T> dataStream_, int batchSize) {
         return new BatchIterator<T>(toFixedBatchStream(dataStream_, batchSize));
     }
@@ -123,22 +177,5 @@ public class BatchesSpliterator<T extends DataInstance> implements Spliterator<D
          * {@inheritDoc}
          */
         @Override public void accept(T value) { this.value = value; }
-    }
-
-    static class BatchIterator <T extends DataInstance> implements Iterable<DataOnMemory<T>>{
-
-        Stream<DataOnMemory<T>> stream;
-
-        BatchIterator(Stream<DataOnMemory<T>> stream_){
-            stream=stream_;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Iterator<DataOnMemory<T>> iterator() {
-            return this.stream.iterator();
-        }
     }
 }

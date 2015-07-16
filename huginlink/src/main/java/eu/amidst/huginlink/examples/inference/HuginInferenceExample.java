@@ -20,38 +20,35 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.inference.HuginInference;
 
 /**
- *
- * This example we show how to perform inference using Hugin (http://www.hugin.com) inference engine within
- * the AMIDST toolbox
- *
- *
- * Created by andresmasegosa on 18/6/15.
+ * This example shows how to perform inference in AMIDST using the Hugin inference engine.
  */
 public class HuginInferenceExample {
 
     public static void main(String[] args) throws Exception {
 
-        //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
+        //Load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
 
-        //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
+        //Recover the relevant variables.
+        // For this example, we have two variables: Mout which is normally distributed, and W which is multinomial.
         Variable varMout = bn.getStaticVariables().getVariableByName("Mout");
         Variable varW = bn.getStaticVariables().getVariableByName("W");
 
-        //First we create an instance of a inference algorithm. In this case, we use the ImportanceSampling class.
+        //Create an instance of a inference algorithm.
+        // In this case, the ImportanceSampling class is used.
         InferenceAlgorithm inferenceAlgorithm = new HuginInference();
         //Then, we set the BN model
         inferenceAlgorithm.setModel(bn);
 
-        //If exists, we also set the evidence.
+        //If exists, set the evidence.
         Assignment assignment = new HashMapAssignment(1);
         assignment.setValue(varW,0);
         inferenceAlgorithm.setEvidence(assignment);
 
-        //Then we run inference
+        //Run inference.
         inferenceAlgorithm.runInference();
 
-        //Then we query the posterior of
+        //Query the posterior of
         System.out.println("P(Mout|W=0) = " + inferenceAlgorithm.getPosterior(varMout));
 
         //Or some more refined queries

@@ -13,16 +13,33 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 
 /**
- * Created by afa on 02/07/14.
+ * The Classifier interface is defined for Bayesian classification models.
  */
 public interface Classifier {
 
+    /**
+     * Predicts the class membership probabilities for a given instance.
+     * @param instance the data instance to be classified.
+     * @return an array of double containing the estimated membership probabilities of the data instance for each class label.
+     */
     double[] predict(DataInstance instance);
 
+    /**
+     * Returns the ID of the class variable.
+     * @return the ID of the class variable.
+     */
     int getClassVarID();
 
+    /**
+     * Sets the ID of the class variable.
+     * @param varID the ID of the class variable.
+     */
     void setClassVarID(int varID);
 
+    /**
+     * Trains the classifier using the input data streams.
+     * @param dataStream a data stream {@link DataStream}.
+     */
     void learn(DataStream<DataInstance> dataStream);
 
 }

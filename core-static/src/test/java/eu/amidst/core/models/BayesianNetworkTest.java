@@ -8,10 +8,8 @@ import eu.amidst.core.variables.Variable;
 import org.junit.Assert;
 import org.junit.Test;
 
-//import static org.hamcrest.CoreMatchers.containsString;
-
 /**
- * Created by Hanen on 24/11/14.
+ * Testing BayesianNetwork
  */
 public class BayesianNetworkTest {
 
@@ -58,7 +56,6 @@ public class BayesianNetworkTest {
         }
 
         /* testing adding a Gaussian variable as a parent to a Multinomial variable */
-
         try {
             dag.getParentSet(E).addParent(D);
             Assert.fail("Should throw an IllegalArgumentException because No Gaussian Parent is allowed as parent of a Multinomial variable!");
@@ -72,10 +69,10 @@ public class BayesianNetworkTest {
 
         System.out.println(bn.toString());
 
-        /* testing number of variables*/
+        /* testing the number of variables*/
         Assert.assertEquals(8, bn.getNumberOfVars());
 
-        /*testing acyclic structure */
+        /* testing acyclic graphical structure */
         Assert.assertFalse(bn.getDAG().containCycles());
 
         double logProb = 0;

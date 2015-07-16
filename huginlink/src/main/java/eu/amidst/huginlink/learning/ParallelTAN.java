@@ -17,44 +17,28 @@ import eu.amidst.huginlink.converters.BNConverterToHugin;
 
 import java.io.IOException;
 
-
 /**
- * This class implements the parallel structural learning of a TAN model using the Hugin API. Parameter learning is
- * performed using the AMIDST implementation through <code>MaximumLikelihoodForBN</code> class.
- *
- * @author Ana M. Martínez
- * @version 1.0
- * @since 9/12/15
+ * The ParallelTAN class implements the parallel structural learning of a TAN model using the Hugin API.
+ * The parameter learning is performed using the AMIDST implementation through the <code>MaximumLikelihoodForBN</code> class.
  */
 public class ParallelTAN implements AmidstOptionsHandler {
 
-    /**
-     *
-     */
+    /** Represents the number of samples on memory. */
     private int numSamplesOnMemory;
 
-    /**
-     * Number of cores to be exploited during the parallel learning
-     */
+    /** Represents the number of cores to be exploited during the parallel learning. */
     private int numCores;
 
-    /**
-     *
-     */
+    /** Represents the batch size. */
     private int batchSize;
 
-    /**
-     * Name of the variable acting as a root of the tree in the TAN model.
-     */
+    /** Represents the name of the variable acting as a root of the tree in the TAN model. */
     String nameRoot;
 
-    /**
-     * Name of the class variable in the TAN model
-     */
+    /** Represents the name of the class variable in the TAN model */
     String nameTarget;
-    /**
-     * Indicates if the learning is executed in parallel exploiting the cores.
-     */
+
+    /** Indicates if the learning is performed in parallel or not. */
     boolean parallelMode;
 
     /**
@@ -64,9 +48,8 @@ public class ParallelTAN implements AmidstOptionsHandler {
     }
 
     /**
-     * Sets the execution mode: parallel or sequential.
-     *
-     * @param parallelMode a boolean indicating if the execution mode in parallel.
+     * Sets the running mode, i.e., either parallel or sequential.
+     * @param parallelMode true if the running mode is parallel, false otherwise.
      */
     public void setParallelMode(boolean parallelMode) {
         this.parallelMode = parallelMode;
@@ -78,26 +61,39 @@ public class ParallelTAN implements AmidstOptionsHandler {
     }
 
     /**
-     * Gets the batch size to be used during learning.
-     * @return
+     * Returns the batch size to be used during the learning process.
+     * @return the batch size.
      */
     public int getBatchSize() {
         return batchSize;
     }
 
+    /**
+     * Sets the batch size.
+     * @param batchSize the batch size.
+     */
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
+
+    /**
+     * Returns the number of samples on memory.
+     * @return the number of samples on memory.
+     */
     public int getNumSamplesOnMemory() {
         return numSamplesOnMemory;
     }
 
+    /**
+     * Sets the number of samples on memory
+     * @param numSamplesOnMemory_ the number of samples on memory
+     */
     public void setNumSamplesOnMemory(int numSamplesOnMemory_) {
         this.numSamplesOnMemory = numSamplesOnMemory_;
     }
 
     /**
-     * Gets the number of cores used during learning.
+     * Returns the number of cores to be used during the learning process.
      * @return the number of cores.
      */
     public int getNumCores() {
@@ -105,16 +101,16 @@ public class ParallelTAN implements AmidstOptionsHandler {
     }
 
     /**
-     * Sets the number of cores to be used during learning.
-     * @param numCores_
+     * Sets the number of cores to be used during the learning process.
+     * @param numCores_ the number of cores.
      */
     public void setNumCores(int numCores_) {
         this.numCores = numCores_;
     }
 
     /**
-     * Sets the name of the variable acting as a root of the tree in the TAN model
-     * @param nameRoot the name of the variable
+     * Sets the name of the variable acting as a root of the tree in the TAN model.
+     * @param nameRoot the name of the root variable.
      */
     public void setNameRoot(String nameRoot) {
         this.nameRoot = nameRoot;
@@ -122,16 +118,16 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
     /**
      * Sets the name of the class variable in the TAN model.
-     * @param nameTarget the name of the variable
+     * @param nameTarget the name of the class variable.
      */
     public void setNameTarget(String nameTarget) {
         this.nameTarget = nameTarget;
     }
 
     /**
-     * Learns a TAN structure from data using the Chow-Liu algorithm included in the Hugin API. Parallel learning is
-     * used only if the parallel mode is set to true.
-     * @param dataStream a stream of data instances to be processed during learning
+     * Learns a TAN structure from data using the Chow-Liu algorithm included in the Hugin API.
+     * Parallel learning is performed only if the parallel mode was set to true.
+     * @param dataStream a stream of data instances to be processed during the TAN structural learning.
      * @return a <code>DAG</code> structure in AMIDST format.
      * @throws ExceptionHugin
      */
@@ -187,7 +183,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     }
 
     /**
-     * Learns the parameters of a TAN structure by maximum likelihood using the AMIDST implementation.
+     * Learns the parameters of a TAN structure using the {@link eu.amidst.core.learning.parametric.ParallelMaximumLikelihood}.
      * @param dataStream a stream of data instances for learning the parameters.
      * @return a <code>BayesianNetwork</code> object in ADMIST format.
      * @throws ExceptionHugin
@@ -200,6 +196,9 @@ public class ParallelTAN implements AmidstOptionsHandler {
         return LearningEngine.learnParameters(this.learnDAG(dataStream), dataStream);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String listOptions(){
 
@@ -212,6 +211,9 @@ public class ParallelTAN implements AmidstOptionsHandler {
                 "-parallelMode, true, Run in parallel\\";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void loadOptions(){
         this.setNumSamplesOnMemory(this.getIntOption("-numSamplesOnMemory"));
         this.setNumCores(this.getIntOption("-numCores"));
@@ -221,6 +223,9 @@ public class ParallelTAN implements AmidstOptionsHandler {
         this.setParallelMode(this.getBooleanOption("-parallelMode"));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String listOptionsRecursively() {
         return this.listOptions()
@@ -228,11 +233,13 @@ public class ParallelTAN implements AmidstOptionsHandler {
                 + "\n" + AmidstOptionsHandler.listOptionsRecursively(BayesianNetworkSampler.class);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String classNameID() {
         return "ParallelTAN";
     }
-
 
 
     public static void main(String[] args) throws ExceptionHugin, IOException {

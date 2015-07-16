@@ -15,23 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class converts a Dynamic Bayesian network model from AMIDST to Hugin. It works only for multinomial
- * distributions.
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 7/1/15
+ * The DBNConverterToHugin class converts a Dynamic Bayesian network model from AMIDST to Hugin.
+ * It works only for multinomial distributions.
  */
 public class DBNConverterToHugin {
 
-    /**
-     * The Dynamic Bayesian network model in Hugin format.
+    /** Represents the Dynamic Bayesian network model in Hugin format.
      */
     private Class huginDBN;
 
     /**
      * Class constructor.
-     *
      * @throws ExceptionHugin
      */
     public DBNConverterToHugin() throws ExceptionHugin {
@@ -39,8 +33,7 @@ public class DBNConverterToHugin {
     }
 
     /**
-     * Sets the nodes and temporal clones (if exist) in the Hugin network from the AMIDST model.
-     *
+     * Sets the nodes and temporal clones (if exist) in the Hugin model from the AMIDST model.
      * @param amidstDBN the Dynamic Bayesian network model in AMIDST format.
      * @throws ExceptionHugin
      */
@@ -49,7 +42,7 @@ public class DBNConverterToHugin {
         DynamicVariables dynamicVars = amidstDBN.getDynamicVariables();
         int size = dynamicVars.getNumberOfVars();
 
-        //Hugin always inserts variables in position 0, i.e, for an order A,B,C, it stores C,B,A !!!
+        //Hugin always inserts variables in position 0, i.e, for an order A,B,C, it stores C,B,A
         //A reverse order of the variables is used instead.
         for(int i=1;i<=size;i++){
             Variable amidstVar = dynamicVars.getVariableById(size-i);
@@ -72,7 +65,6 @@ public class DBNConverterToHugin {
 
     /**
      * Sets the Hugin model structure from the AMIDST Dynamic DAG.
-     *
      * @param amidstDBN the Dynamic Bayesian network model in AMIDST format.
      * @throws ExceptionHugin
      */
@@ -104,7 +96,6 @@ public class DBNConverterToHugin {
     /**
      * Sets the distributions for all the variables in the Hugin network from the distributions in the AMIDST model.
      * Note that only multinomial distributions are allowed in this conversion.
-     *
      * @param amidstDBN the Dynamic Bayesian network model in AMIDST format.
      * @throws ExceptionHugin
      */
