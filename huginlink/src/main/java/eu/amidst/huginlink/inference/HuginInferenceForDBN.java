@@ -16,45 +16,31 @@ import java.util.List;
 /**
  * This class provides an interface to perform inference over Dynamic Bayesian networks using the Hugin inference
  * engine.
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 23/2/15
  */
 public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
 
-    /**
-     * The Dynamic Bayesian network model in AMIDST format.
-     */
+    /** Represents the Dynamic Bayesian network model in AMIDST format. */
     public DynamicBayesianNetwork amidstDBN;
 
-    /**
-     * The Dynamic Bayesian network model in Hugin format.
-     */
+    /** Represents the Dynamic Bayesian network model in Hugin format. */
     public Class huginDBN;
 
-    /**
-     * The expanded dynamic model in which the inference is performed.
-     */
+    /** Represnts the expanded dynamic model over which the inference is performed. */
     public Domain domainObject;
 
-    /**
-     * The number of time slices in which the model is expanded. For now we assume a <code>timeWindow</code> equals to 1.
+    /** Represnts the number of time slices in which the model is expanded. For now, we assume a <code>timeWindow</code> equals to 1.
      */
     public static final int timeWindow = 1;
 
-    /**
-     * The AMIDST assignment to be evidenced into the Hugin model.
-     */
+    /** Represents the AMIDST assignment to be evidenced into the Hugin model. */
     private DynamicAssignment assignment = new HashMapDynamicAssignment(0);
 
-    /**
-     * The time ID of the current assignment being processed.
-     */
+    /** Represents the time ID of the current assignment being processed. */
     int timeID;
 
     /**
-     * The sequence ID of the current assignment being processed. For the Cajamar case this corresponds to the client ID.
+     * Represents the sequence ID of the current assignment being processed.
+     * For the Cajamar data set, this corresponds to the client ID.
      */
     int sequenceID;
 
@@ -65,11 +51,17 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         this.timeID=-1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DynamicBayesianNetwork getOriginalModel() {
         return this.amidstDBN;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setModel(DynamicBayesianNetwork model) {
 
@@ -88,6 +80,9 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addDynamicEvidence(DynamicAssignment assignment_) {
 
@@ -101,6 +96,10 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         this.assignment = assignment_;
 
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runInference() {
         try {
@@ -143,6 +142,9 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset() {
 
@@ -160,6 +162,9 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         this.sequenceID=-1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
         UnivariateDistribution posteriorDistribution = null;
@@ -182,6 +187,9 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         return ((E) posteriorDistribution);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
 
@@ -204,11 +212,17 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
         return (E)posteriorDistribution;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getTimeIDOfLastEvidence() {
         return this.assignment.getTimeID();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getTimeIDOfPosterior() {
         return this.timeID;

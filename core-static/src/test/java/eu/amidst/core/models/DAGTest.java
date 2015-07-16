@@ -9,13 +9,9 @@ import org.junit.Test;
 
 
 /**
- * Created by Hanen on 14/11/14.
+ * Testing the DAG class
  */
 public class DAGTest {
-
-/* Very simple example to test the DAG class*/
-
-
 
     @Test
     public void testingDAG() {
@@ -33,7 +29,7 @@ public class DAGTest {
         Variable D = variables.getVariableById(3);
         Variable E = variables.getVariableById(4);
 
-        /* test cyclic dag */
+        /* test with a cyclic dag */
 
         dag.getParentSet(A).addParent(C);
         dag.getParentSet(B).addParent(A);
@@ -43,7 +39,7 @@ public class DAGTest {
 
         Assert.assertTrue(dag.containCycles());
 
-        /*remove the cycle and test again */
+        /* remove the cycle and test again */
 
         dag.getParentSet(A).removeParent(C);
         dag.getParentSet(C).addParent(A);
@@ -51,7 +47,7 @@ public class DAGTest {
         Assert.assertFalse(dag.containCycles());
 
 
-        /*test the parent set*/
+        /* test the parent set*/
 
         Assert.assertEquals(2, dag.getParentSet(C).getNumberOfParents());
         Assert.assertEquals(0, dag.getParentSet(A).getNumberOfParents());
@@ -69,7 +65,5 @@ public class DAGTest {
         dag2.getParentSet(C).addParent(A);
 
         Assert.assertTrue(dag.equals(dag2));
-
     }
-
 }

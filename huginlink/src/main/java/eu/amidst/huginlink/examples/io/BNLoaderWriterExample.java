@@ -18,18 +18,16 @@ import eu.amidst.huginlink.io.BNLoaderFromHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;
 
 /**
- *
- * This example shows how to use the class BNLoaderFromHugin and BNWriterToHugin classes to load and
- * write Bayesian networks in Hugin format.
- *
- * Created by andresmasegosa on 19/6/15.
+ * This example shows how to use the BNLoaderFromHugin and BNWriterToHugin classes to load and
+ * write Bayesian networks in Hugin format, respectively.
  */
 public class BNLoaderWriterExample {
     public static void main(String[] args) throws Exception {
-        //We load from Hugin format
+
+        //Load from Hugin format
         Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/asia.net");
 
-        //We save a AMIDST BN to Hugin format
+        //Save a AMIDST BayesianNetwork to Hugin format
         BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
         BNWriterToHugin.saveToHuginFile(amidstBN,"networks/tmp.net");
     }

@@ -13,22 +13,15 @@ import eu.amidst.core.variables.Variable;
 import java.util.List;
 
 /**
- * This class converts a Bayesian network model from AMIDST to Hugin.
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 14/11/14
+ * The BNConverterToHugin class converts a Bayesian network model from AMIDST to Hugin.
  */
 public class BNConverterToHugin {
 
-    /**
-     * The Bayesian network model in Hugin format.
-     */
+    /** Represents the Bayesian network model in Hugin format. */
     private Domain huginBN;
 
     /**
      * Class constructor.
-     *
      * @throws ExceptionHugin
      */
     public BNConverterToHugin() throws ExceptionHugin {
@@ -37,7 +30,6 @@ public class BNConverterToHugin {
 
     /**
      * Sets the Hugin nodes from the AMIDST variables.
-     *
      * @param amidstBN the Bayesian network model in AMIDST format.
      * @throws ExceptionHugin
      */
@@ -46,7 +38,7 @@ public class BNConverterToHugin {
         Variables amidstVars = amidstBN.getStaticVariables();
         int size = amidstVars.getNumberOfVars();
 
-        //Hugin always inserts variables at position 0, i.e, for an order A,B,C, it stores C,B,A !!!
+        //Hugin always inserts variables at position 0, i.e, for an order A,B,C, it stores C,B,A
         //A reverse order of the variables is needed instead.
         for(int i=1;i<=size;i++){
             Variable amidstVar = amidstVars.getVariableById(size-i);
@@ -70,7 +62,6 @@ public class BNConverterToHugin {
 
     /**
      * Sets the Hugin model structure from the AMIDST DAG.
-     *
      * @param amidstBN the Bayesian network model in AMIDST format.
      * @throws ExceptionHugin
      */
@@ -88,9 +79,8 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distribution of a multinomial variable in the Hugin network from the corresponding distribution in the
+     * Sets the distribution of a multinomial variable in the Hugin model from the corresponding distribution in the
      * AMIDST model.
-     *
      * @param dist the AMIDST distribution to be converted.
      * @throws ExceptionHugin
      */
@@ -107,7 +97,7 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distribution of a multinomial variable with multinomial parents in the Hugin network from the
+     * Sets the distribution of a multinomial variable with multinomial parents in the Hugin model from the
      * corresponding distribution in the AMIDST model.
      *
      * @param dist the AMIDST distribution to be converted.
@@ -132,12 +122,11 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distribution of a normal variable with normal parents in the Hugin network from the corresponding
+     * Sets the distribution of a normal variable with normal parents in the Hugin model from the corresponding
      * distribution in the AMIDST model. This method is designed for setting this distribution in a given position in
      * the list of distributions indexed by the multinomial parents assignments.
-     *
      * @param dist the AMIDST distribution to be converted.
-     * @param i position in which the distribution will be located. Note that <code>i</code> is equal to 0 when the
+     * @param i the position in which the distribution will be located. Note that <code>i</code> is equal to 0 when the
      *          variable has no multinomial parents.
      * @throws ExceptionHugin
      */
@@ -165,9 +154,8 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distribution of a normal variable in the Hugin network from the corresponding distribution in the AMIDST
+     * Sets the distribution of a normal variable in the Hugin model from the corresponding distribution in the AMIDST
      * model.
-     *
      * @param dist the AMIDST distribution to be converted.
      * @throws ExceptionHugin
      */
@@ -176,12 +164,12 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distribution of a normal variable in the Hugin network from the corresponding distribution in the AMIDST
+     * Sets the distribution of a normal variable in the Hugin model from the corresponding distribution in the AMIDST
      * model. This method is designed for setting the distribution in a given position in the list of distributions
      * indexed by the multinomial parents assignments.
      *
      * @param dist the AMIDST distribution to be converted.
-     * @param i position in which the distribution will be located. Note that <code>i</code> is equal to 0 when the
+     * @param i the position in which the distribution will be located. Note that <code>i</code> is equal to 0 when the
      *          variable has no multinomial parents.
      * @throws ExceptionHugin
      */
@@ -198,9 +186,8 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distribution of a normal variable with multinomial parents in the Hugin network from the corresponding
+     * Sets the distribution of a normal variable with multinomial parents in the Hugin model from the corresponding
      * distribution in the AMIDST model.
-     *
      * @param dist the AMIDST distribution to be converted.
      * @throws ExceptionHugin
      */
@@ -216,9 +203,8 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distribution of a normal variable with multinomial and normal parents in the Hugin network from the
+     * Sets the distribution of a normal variable with multinomial and normal parents in the Hugin model from the
      * corresponding distribution in the AMIDST model.
-     *
      * @param dist the AMIDST distribution to be converted.
      * @throws ExceptionHugin
      */
@@ -233,9 +219,8 @@ public class BNConverterToHugin {
     }
 
     /**
-     * Sets the distributions for all the variables in the Hugin network from the distributions in the AMIDST model.
+     * Sets the distributions for all the variables in the Hugin model from the distributions in the AMIDST model.
      * For each variable, the distribution type is determined and the corresponding conversion is carried out.
-     *
      * @param amidstBN the Bayesian network model in AMIDST format.
      * @throws ExceptionHugin
      */

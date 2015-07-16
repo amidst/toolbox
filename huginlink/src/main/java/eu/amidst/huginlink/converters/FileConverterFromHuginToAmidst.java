@@ -14,18 +14,13 @@ import eu.amidst.huginlink.io.DBNLoaderFromHugin;
 import java.io.File;
 
 /**
- * This class converts a set of Hugin networks (static and dynamic) into AMIDST networks.
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 3/2/15
+ * The FileConverterFromHuginToAmidst class converts a set of Hugin networks (static and dynamic) into AMIDST networks.
  */
 public class FileConverterFromHuginToAmidst {
 
     /**
-     * Converts a set the Hugin network files (dynamic and static) into AMIDST format.
-     *
-     * @param folderName the path from which the conversion will be carried out (applied recursively in sub-folders too).
+     * Converts a set the Hugin model files (dynamic and static) into AMIDST format.
+     * @param folderName the path from which the conversion will be carried out (applied recursively to sub-folders too).
      * @throws Exception
      */
     public static void convertFilesFromFolder(final String folderName) throws Exception {

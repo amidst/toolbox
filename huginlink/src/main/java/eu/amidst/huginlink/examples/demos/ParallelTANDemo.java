@@ -31,11 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * This class implements the parallel learning of a TAN model.
- *
- * @author Ana M. Martínez
- * @version 1.0
- * @since 16/12/15
+ * This class includes demos for the parallel learning of a TAN model.
  */
 public class ParallelTANDemo {
 
@@ -48,16 +44,12 @@ public class ParallelTANDemo {
     static int batchSize = 1000;
     static int numStates = 2;
 
-
     public static void demoPigs() throws ExceptionHugin, IOException, ClassNotFoundException {
 
-
-        //It needs GBs, so avoid putting this file in a Dropbox folder!!!!
+        //It needs GBs, so avoid putting this file in a Dropbox folder!!
         String dataFile = new String("/Users/afa/Pigs.arff");
 
-
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.bn");
-
 
         //int sampleSize = 100000;
         //BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -94,7 +86,7 @@ public class ParallelTANDemo {
         DataStream data;
         int nOfVars;
 
-        //It may need many GBs, so avoid putting this file in a Dropbox folder!!!
+        //It may need many GBs, so avoid putting this file in a Dropbox folder!!
         dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
         BayesianNetworkGenerator.setNumberOfGaussianVars(numContVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(numDiscVars, 2);
@@ -124,7 +116,6 @@ public class ParallelTANDemo {
         BayesianNetwork model = tan.learnBN(data);
         System.out.println();
 
-
         System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
 
         data = DataStreamLoader.openFromFile(dataFile);
@@ -137,8 +128,6 @@ public class ParallelTANDemo {
         tan.setNumCores(numCores);
         tan.setBatchSize(batchSize);
         model = tan.learnBN(data);
-
-
     }
 
     public static void demoLuxembourg() throws ExceptionHugin, IOException {
@@ -149,7 +138,7 @@ public class ParallelTANDemo {
         DataStream data;
         int nOfVars;
 
-    /* Generate some fake data and write to file */
+        // Generate some fake data and write to file
         dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
         BayesianNetworkGenerator.setNumberOfGaussianVars(numContVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(numDiscVars, 2);
@@ -163,11 +152,11 @@ public class ParallelTANDemo {
         data = DataStreamLoader.openFromFile(dataFile);
         nOfVars = numContVars + numDiscVars;
 
-    /* Get information about the model: Root and Target */
+        // Get information about the model: Root and Target
         nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
         nameTarget = data.getAttributes().getList().get(0).getName();
 
-    /* Setup the TAN object */
+        // Setup the TAN object
         ParallelTAN tan = new ParallelTAN();
         tan.setParallelMode(numCores > 1);
         tan.setNumCores(numCores);
@@ -181,15 +170,13 @@ public class ParallelTANDemo {
         System.out.println("Parameter learning (toolbox) uses " +
                 sampleSize + " samples (batch size " + tan.getBatchSize() + ").");
 
-    /* Learn */
+        /// Learn the BayesianNetwork
         System.out.println("Run-times:");
         BayesianNetwork model = tan.learnBN(data);
         System.out.println();
     }
 
     public static void demoOnServer() throws ExceptionHugin, IOException {
-
-
         String dataFile = "";
         int numContVars = 0;
         String nameRoot = "";
@@ -197,10 +184,7 @@ public class ParallelTANDemo {
         DataStream data;
         int nOfVars;
 
-
-        /**
-         * Sample from NB network with the specified features.
-         */
+        //Sample from NB network with the specified features.
         if (dataFileInput.isEmpty()) {
             //It may need many GBs, so avoid putting this file in a Dropbox folder!!!
             dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
@@ -226,10 +210,7 @@ public class ParallelTANDemo {
         nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
         nameTarget = data.getAttributes().getList().get(0).getName();
 
-
-        /**
-         * Serial mode
-         */
+        // Serial mode
         if (numCores == 1) {
             ParallelTAN tan = new ParallelTAN();
             tan.setParallelMode(false);
@@ -238,9 +219,8 @@ public class ParallelTANDemo {
             tan.setNameTarget(nameTarget);
             BayesianNetwork model = tan.learnBN(data);
         } else {
-            /**
-             * Parallel mode (by default, and also by default all available cores are used)
-             */
+
+            //Parallel mode (by default, and also by default all available cores are used)
             ParallelTAN tan = new ParallelTAN();
             tan.setParallelMode(true);
             tan.setNumSamplesOnMemory(samplesOnMemory);
@@ -249,18 +229,11 @@ public class ParallelTANDemo {
             tan.setNumCores(numCores);
             tan.setBatchSize(batchSize);
 
-
-
-
             BayesianNetwork model = tan.learnBN(data);
         }
-
-
     }
 
     public static void useGnuParser(final String[] commandLineArguments) {
-
-
 
         final CommandLineParser cmdLineGnuParser = new GnuParser();
 
@@ -304,7 +277,7 @@ public class ParallelTANDemo {
 
 
     /**
-     * Write "help" to the provided OutputStream.
+     * Writes "help" to the provided OutputStream.
      */
     public static void printHelp(
             final Options options,
@@ -333,8 +306,7 @@ public class ParallelTANDemo {
 
 
     /**
-     * Construct and provide the Options.
-     *
+     * Constructs and provides the Options.
      * @return Options expected from command-line.
      */
     public static Options constructOptions() {
@@ -352,7 +324,7 @@ public class ParallelTANDemo {
     }
 
 
-    //TODO: Subobtions should be considered in the future
+    //TODO: Sub-options should be considered in the future
     public static void main(String[] args) throws ExceptionHugin, IOException, ClassNotFoundException {
         ParallelTANDemo.demoPigs();
     }

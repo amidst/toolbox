@@ -18,10 +18,8 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 
 /**
- *
- * In this example we show how to use the main features of a DataStream object. More precisely,  we show six different
+ * An example showing how to use the main features of a DataStream object. More precisely, we show six different
  * ways of iterating over the data samples of a DataStream object.
- *
  */
 public class DataStreamsExample {
 

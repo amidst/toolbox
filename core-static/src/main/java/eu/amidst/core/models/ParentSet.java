@@ -14,55 +14,55 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * The ParentSet interface is used for handling the parent sets in a DAG
+ * The ParentSet interface is used for handling the parent sets in a DAG.
  */
 public interface ParentSet extends Iterable<Variable>{
 
     /**
-     * Returns the main variable
-     * @return the main variable
+     * Returns the main variable.
+     * @return the main variable.
      */
     Variable getMainVar();
 
     /**
-     * Adds a given Variable as a new parent of the main variable
-     * @param var the new parent that will be added
+     * Adds a given Variable as a new parent of the main variable.
+     * @param var the new parent that will be added.
      */
     void addParent(Variable var);
 
     /**
-     * Removes a given Variable from the parent set of the main variable
-     * @param var the parent variable that will be removed
+     * Removes a given Variable from the parent set of the main variable.
+     * @param var the parent variable that will be removed.
      */
     void removeParent(Variable var);
 
     /**
-     * Returns a list of parents
-     * @return the list of parents
+     * Returns a list of parents.
+     * @return the list of parents.
      */
     List<Variable> getParents();
 
     /**
-     * Returns the number of parents
-     * @return the number of parents
+     * Returns the number of parents.
+     * @return the number of parents.
      */
     int getNumberOfParents();
 
     /**
-     * Returns a textual representation of the parent set
-     * @return a String description of the parent set
+     * Returns a textual representation of the parent set.
+     * @return a String description of the parent set.
      */
     String toString();
 
     /**
-     * Defines the set of parent as unmodifiable
+     * Defines the set of parent as unmodifiable.
      */
     void blockParents();
 
     /**
-     * Tests if a given variable pertains to this parent set
-     * @param var a variable to be tested
-     * @return a boolean indicating if the variable pertains to this parent set (true) or not (false)
+     * Tests if a given variable pertains to this parent set.
+     * @param var a variable to be tested.
+     * @return a boolean indicating if the variable pertains to this parent set (true) or not (false).
      */
     boolean contains(Variable var);
 
@@ -79,5 +79,4 @@ public interface ParentSet extends Iterable<Variable>{
     default Iterator<Variable> iterator(){
         return this.getParents().iterator();
     }
-
 }

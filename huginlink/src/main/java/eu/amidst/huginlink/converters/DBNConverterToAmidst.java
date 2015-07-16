@@ -18,38 +18,27 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class converts a Dynamic Bayesian network model from Hugin to AMIDST. It works only for multinomial
- * distributions.
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 7/1/15
+ * The DBNConverterToAmidst class converts a Dynamic Bayesian network model from Hugin to AMIDST.
+ * It works only for multinomial distributions.
  */
 public class DBNConverterToAmidst {
 
-    /**
-     * The Dynamic Bayesian network model in AMIDST format.
-     */
+    /** Represents the Dynamic Bayesian network model in AMIDST format. */
     private DynamicBayesianNetwork amidstDBN;
 
-    /**
-     * The Dynamic Bayesian network model in Hugin format.
-     */
+    /** Represents the Dynamic Bayesian network model in Hugin format. */
     private Class huginDBN;
-
 
     /**
      * Class constructor.
-     *
-     * @param huginDBN_ the Hugin network to be converted.
+     * @param huginDBN_ the Hugin model to be converted.
      */
     public DBNConverterToAmidst(Class huginDBN_){
         this.huginDBN = huginDBN_;
     }
 
     /**
-     * Sets the AMIDST model structure (nodes and parents) from the Hugin network.
-     *
+     * Sets the AMIDST model structure (nodes and parents) from the Hugin model.
      * @throws ExceptionHugin
      */
     private void setNodesAndParents() throws ExceptionHugin {
@@ -122,9 +111,8 @@ public class DBNConverterToAmidst {
     }
 
     /**
-     * Sets the distributions for all the variables in the AMIDST network from the distributions in the Hugin model.
+     * Sets the distributions for all the variables in the AMIDST model from the distributions in the Hugin model.
      * Both distributions at time t and time 0 are converted for each variable.
-     *
      * @throws ExceptionHugin
      */
     private void setDistributions() throws ExceptionHugin {
@@ -187,7 +175,6 @@ public class DBNConverterToAmidst {
 
     /**
      * Converts a Dynamic Bayesian network from Hugin to AMIDST format.
-     *
      * @param huginDBN the Hugin Dynamic Bayesian network to be converted.
      * @return the converted AMIDST Dynamic Bayesian network.
      * @throws ExceptionHugin

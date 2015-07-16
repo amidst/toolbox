@@ -25,36 +25,32 @@ import eu.amidst.core.variables.StateSpaceTypeEnum;
 import java.io.Serializable;
 
 /**
- *
- * If we look at a data sets as a data  matrix, an Attribute class would
- * represent a column of the matrix. This Attribute contains information such as
- * the name of the column and the type of data (discrete, continuous, etc.) it contains.
- *
- * <p>For an example of use see the class <br>
- *
- *  <code>eu.amidst.core.examples.datastream.DataStreamExample </code> <p>
+ * If we consider a data sets as a data  matrix, an Attribute class would represent a column of the matrix.
+ * This Attribute contains information such as the column name and the type of data it contains (discrete, continuous, etc.).
+ * <p> See {@code eu.amidst.core.examples.datastream.DataStreamExample} for an example of use. <p>
  */
+
 public final class Attribute implements Serializable {
 
-    /** The serial vesion ID for serializing the object */
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = -2932037991574118651L;
 
-    /** The index of the column**/
+    /** Represents the index of this attribute. */
     private final int index;
 
-    /** The name of the column */
+    /** Represents the name of this attribute. */
     private final String name;
 
-    /** The states values in case the column represent a discrete attribute*/
+    /** Represents the type of the state space of this attribute, that could be either finite or real. */
     private final StateSpaceType stateSpaceType;
 
     /**
-     * A builder for attributes
-     * @param index, the index of column which the Attribute object refers to
-     * @param name, the name of the attribute,
-     * @param unit, the name of the unit of the attribute,
-     * @param stateSpaceTypeEnum1, the state space of the attribute (finite or real).
-     * @param numberOfStates, the number of states of the attribute in case its state space is finite
+     * Creates a new Attribute.
+     * @param index the index of column to which this Attribute refers.
+     * @param name the name of this Attribute.
+     * @param unit the name of the unit of this Attribute.
+     * @param stateSpaceTypeEnum1 the state space type of this Attribute (i.e., finite or real).
+     * @param numberOfStates the number of states of this Attribute in case its state space is finite.
      */
     public Attribute(int index, String name, String unit, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
 
@@ -72,11 +68,11 @@ public final class Attribute implements Serializable {
     }
 
     /**
-     * A builder for attributes
-     * @param index, the index of column which the Attribute object refers to
-     * @param name, the name of the attribute,
-     * @param stateSpaceTypeEnum1, the state space of the attribute (finite or real).
-     * @param numberOfStates, the number of states of the attribute in case its state space is finite
+     * Creates a new Attribute.
+     * @param index the index of column to which this Attribute refers.
+     * @param name the name of this Attribute.
+     * @param stateSpaceTypeEnum1 the state space type of this Attribute (i.e., finite or real).
+     * @param numberOfStates the number of states of this Attribute in case its state space is finite.
      */
     public Attribute(int index, String name, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
 
@@ -92,10 +88,10 @@ public final class Attribute implements Serializable {
     }
 
     /**
-     * A builder for attributes
-     * @param index, the index of column which the Attribute object refers to
-     * @param name, the name of the attribute,
-     * @param stateSpaceType1, an  StateSpaceType object defining the attribute.
+     * Creates a new Attribute.
+     * @param index the index of column to which this Attribute object refers.
+     * @param name the name of this Attribute.
+     * @param stateSpaceType1 a {@link StateSpaceType} object defining this Attribute.
      */
     public Attribute(int index, String name, StateSpaceType stateSpaceType1) {
         this.index = index;
@@ -104,35 +100,34 @@ public final class Attribute implements Serializable {
     }
 
     /**
-     * Return the index of the attribute
-     * @return a integer i>=0
+     * Returns the index of this Attribute.
+     * @return an integer i>=0.
      */
     public int getIndex() {
         return index;
     }
 
     /**
-     * Return the name of the attribute
-     * @return
+     * Returns the name of this Attribute.
+     * @return a String representing the name of this Attribute.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Return an StateSpaceType object describing the attribute
-     * @param <E>
-     * @return
+     * Returns a StateSpaceType object describing this Attribute.
+     * @return a StateSpaceType object describing this Attribute.
      */
     public <E extends StateSpaceType> E getStateSpaceType() {
         return (E) stateSpaceType;
     }
 
     /**
-     * Two attributes are considered to be equal if they have
-     * the same name and the same StateSpaceType
-     * @param o
-     * @return
+     * Test whether two attributes are equal or not.
+     * Two attributes are considered to be equal if they have the same name and the same StateSpaceType.
+     * @param o an Attribute object to be compared with this Attribute.
+     * @return true if the two attributes are equals, false otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -153,8 +148,8 @@ public final class Attribute implements Serializable {
     }
 
     /**
-     * The hasCode of the object.
-     * @return
+     * Returns the hashCode of this Attribute.
+     * @return the hashCode of this Attribute.
      */
     @Override
     public int hashCode() {

@@ -13,22 +13,20 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- *
- * This class implements a {@link DataOnMemory} interface. It stores all the {@link DataInstance} objects
- * in a List.
- *
+ * The DataOnMemoryListContainer class implements the {@link DataOnMemory} interface.
+ * It stores all the {@link DataInstance} objects in a List.
  */
 public class DataOnMemoryListContainer <E extends DataInstance> implements DataOnMemory<E> {
 
-    /** The list containing the data instances*/
+    /** Represents the list containing the data instances. */
     List<E> instanceList;
 
-    /** A pointer to the attributes of the data set*/
+    /** Represents a pointer to the attributes of the data set. */
     Attributes attributes;
 
     /**
-     * A constructor which is initilized with the Attributes object of the data set.
-     * @param attributes_
+     * Creates a new DataOnMemoryListContainer initialized with the Attributes object of the data set.
+     * @param attributes_ a list of attributes
      */
     public DataOnMemoryListContainer(Attributes attributes_){
         this.instanceList=new ArrayList();
@@ -36,17 +34,15 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
     }
 
     /**
-     * A method for adding a new DataInstance
-     * @param data
+     * Adds a new DataInstance.
+     * @param data the data instance to be added.
      */
-    public void add(E data){
-        this.instanceList.add(data);
-    }
+    public void add(E data){ this.instanceList.add(data); }
 
     /**
-     * A method for adding a new DataInstance at a given position
-     * @param id
-     * @param data
+     * Adds a new DataInstance at a given position.
+     * @param id the position where the data instance will be added.
+     * @param data the data instance to be added.
      */
     public void set(int id, E data){
         this.instanceList.set(id,data);
@@ -101,8 +97,8 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
     }
 
     /**
-     * This data stream implementation can be restarted.
-     * @return
+     * Returns whether this DataOnMemoryListContainer can restart.
+     * @return true if this DataOnMemoryListContainer can restart, false otherwise.
      */
     @Override
     public boolean isRestartable() {
@@ -110,7 +106,7 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
     }
 
     /**
-     * This method restarts the data stream
+     * Restarts this DataOnMemoryListContainer.
      */
     @Override
     public void restart() {

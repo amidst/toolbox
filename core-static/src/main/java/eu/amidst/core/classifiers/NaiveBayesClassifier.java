@@ -23,28 +23,51 @@ import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
  */
 public class NaiveBayesClassifier implements Classifier{
 
+    /** Represents the ID of the class variable. */
     int classVarID;
+
+    /** Represents the Naive Bayes Classifier, which is considered as a {@link BayesianNetwork}. */
     BayesianNetwork bnModel;
+
+    /** Represents the parallel mode, which is initialized as true. */
     boolean parallelMode = true;
+
+    /** Represents the inference algorithm. */
     InferenceAlgorithm predictions;
 
+    /**
+     * Creates a new NaiveBayesClassifier.
+     */
     public NaiveBayesClassifier(){
         predictions=new VMP();
         predictions.setSeed(0);
     }
 
+    /**
+     * Returns whether the parallel mode is supported or not.
+     * @return true if the parallel mode is supported.
+     */
     public boolean isParallelMode() {
         return parallelMode;
     }
 
+    /**
+     * Sets the parallel mode for this NaiveBayesClassifier.
+     * @param parallelMode boolean equals to true if the parallel mode is supported, and false otherwise.
+     */
     public void setParallelMode(boolean parallelMode) {
         this.parallelMode = parallelMode;
     }
 
+    /**
+     * Predicts the class membership probabilities for a given instance.
+     * @param instance the data instance to be classified.
+     * @return an array of doubles containing the estimated membership probabilities of the data instance for each class label.
+     */
     @Override
     public double[] predict(DataInstance instance) {
         this.predictions.setEvidence(instance);
@@ -52,20 +75,37 @@ public class NaiveBayesClassifier implements Classifier{
         return multinomial.getParameters();
     }
 
+    /**
+     * Returns the ID of the class variable.
+     * @return the ID of the class variable.
+     */
     @Override
     public int getClassVarID() {
         return classVarID;
     }
 
+    /**
+     * Sets the ID of the class variable.
+     * @param classVarID the ID of the class variable.
+     */
     @Override
     public void setClassVarID(int classVarID) {
         this.classVarID = classVarID;
     }
 
+    /**
+     * Returns this NaiveBayesClassifier considered as a Bayesian network model.
+     * @return a BayesianNetwork.
+     */
     public BayesianNetwork getBNModel() {
         return bnModel;
     }
 
+    /**
+     * Returns the graphical structure for this NaiveBayesClassifier.
+     * @param dataStream a data stream {@link DataStream}.
+     * @return a directed acyclic graph {@link DAG}.
+     */
     private DAG staticNaiveBayesStructure(DataStream<DataInstance> dataStream){
         Variables modelHeader = new Variables(dataStream.getAttributes());
         Variable classVar = modelHeader.getVariableById(this.getClassVarID());
@@ -78,6 +118,10 @@ public class NaiveBayesClassifier implements Classifier{
         return dag;
     }
 
+    /**
+     * Trains this NaiveBayesClassifier using the given data streams.
+     * @param dataStream a data stream {@link DataStream}.
+     */
     @Override
     public void learn(DataStream<DataInstance> dataStream){
         ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
@@ -88,27 +132,5 @@ public class NaiveBayesClassifier implements Classifier{
         parameterLearningAlgorithm.runLearning();
         bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
         predictions.setModel(bnModel);
-    }
-
-
-    public static void main(String[] args){
-
-        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(50000, 10);
-        BayesianNetworkGenerator.setSeed(0);
-
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
-
-        int sampleSize = 100;
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        DataStream<DataInstance> data =  sampler.sampleToDataStream(sampleSize);
-
-        for (int i = 1; i <= 10; i++) {
-            NaiveBayesClassifier model = new NaiveBayesClassifier();
-            model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
-            model.learn(data);
-            BayesianNetwork nbClassifier = model.getBNModel();
-        }
-
     }
 }

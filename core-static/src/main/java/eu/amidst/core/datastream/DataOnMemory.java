@@ -11,31 +11,28 @@ package eu.amidst.core.datastream;
 import java.util.List;
 
 /**
- *
- *  This class is an specialization of the {@link DataStream} class which keeps all the data on main memory. <p>
- *
- *  This class is designed to provide random accessing to {@link DataInstance} composing the data set. It is also
- *  widely used to deal with mini-batches of data.
- *
+ * The DataOnMemory interface is a specialization of the {@link DataStream} interface that keeps all the data on main memory.
+ * <p> This class is designed to provide a random access over the set of {@link DataInstance} in the data set.
+ * It is also used to deal with the mini-batches of the data set.</p>
  */
 public interface DataOnMemory<E extends DataInstance> extends DataStream<E> {
 
     /**
-     * Return the number of data instances of the data set.
-     * @return a positive integer
+     * Returns the number of data instances in the data set.
+     * @return a positive integer that represents the total number of data instances.
      */
     int getNumberOfDataInstances();
 
     /**
-     * Return the data instance in the i-th positon.
-     * @param i, a positive index
-     * @return
+     * Returns the data instance in the i-th position.
+     * @param i a positive index that represents the position of a data instance.
+     * @return a data instance.
      */
     E getDataInstance(int i);
 
     /**
-     * Return a list with all the {@link DataInstance} objects of the data set.
-     * @return
+     * Returns a list with all the {@link DataInstance} objects of the data set.
+     * @return a list of data instances.
      */
     List<E> getList();
 

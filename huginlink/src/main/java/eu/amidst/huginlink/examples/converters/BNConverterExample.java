@@ -19,23 +19,20 @@ import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
 
 /**
- *
- * This example shows how to use the class BNConverterToAMIDST and BNConverterToHugin to convert a Bayesian
- * network models between Hugin and AMIDST formats
- *
- * Created by andresmasegosa on 19/6/15.
+ * This example shows how to use the class BNConverterToAMIDST and BNConverterToHugin
+ * to convert a Bayesian network models from Hugin to AMIDST and vice versa, respectively.
  */
 public class BNConverterExample {
 
     public static void main(String[] args) throws Exception {
 
-        //We load from Hugin format
+        //loads a BN model from Hugin
         Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/asia.net");
 
-        //Then, it is converted to AMIDST BayesianNetwork object
+        //Converts the Hugin model to an AMIDST BayesianNetwork object
         BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
 
-        //Then, it is converted to Hugin Bayesian Network object
+        //Converts the AMIDST BayesianNetwork object to a Hugin Bayesian Network object
         huginBN = BNConverterToHugin.convertToHugin(amidstBN);
 
         System.out.println(amidstBN.toString());
