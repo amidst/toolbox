@@ -111,8 +111,6 @@ public class Variables implements Iterable<Variable>, Serializable {
         return varNew;
     }*/
 
-
-
     public Variable newMultionomialVariable(Attribute att) {
         return this.newVariable(att, DistributionTypeEnum.MULTINOMIAL);
     }

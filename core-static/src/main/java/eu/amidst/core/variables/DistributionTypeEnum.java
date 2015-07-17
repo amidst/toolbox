@@ -12,12 +12,37 @@ import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.distributionTypes.*;
 
 /**
- * Created by Hanen on 05/11/14.
+ * This class defines the different distribution types supported in AMIDST toolbox.
  */
-
 public enum DistributionTypeEnum {
-    MULTINOMIAL, NORMAL, MULTINOMIAL_LOGISTIC, NORMAL_PARAMETER, INV_GAMMA_PARAMETER, GAMMA_PARAMETER, DIRICHLET_PARAMETER;// INDICATOR;
 
+    /** The multinomial distribution. */
+    MULTINOMIAL,
+
+    /** The normal distribution. */
+    NORMAL,
+
+    /** The multinomial logistic distribution. */
+    MULTINOMIAL_LOGISTIC,
+
+    /** The normal parameter distribution. */
+    NORMAL_PARAMETER,
+
+    /** The inverse gamma parameter distribution. */
+    INV_GAMMA_PARAMETER,
+
+    /** The gamma parameter distribution. */
+    GAMMA_PARAMETER,
+
+    /** The dirichlet distribution. */
+    DIRICHLET_PARAMETER;
+
+    /**
+     * Creates a new distribution type for a given variable.
+     * @param var the variable for which the distribution type will be associated.
+     * @param <E> the type of elements.
+     * @return a distribution type for the variable var.
+     */
     public <E extends DistributionType> E newDistributionType(Variable var) {
         switch (this) {
             case MULTINOMIAL:
@@ -39,7 +64,12 @@ public enum DistributionTypeEnum {
         }
     }
 
-
+    /**
+     * Converts a {@link BaseDistribution_MultinomialParents} distribution to a {@link ConditionalDistribution}
+     * @param base a base distribution.
+     * @param <E> the type of elements.
+     * @return a conditional distribution.
+     */
     public static <E extends ConditionalDistribution> E FromBaseDistributionToConditionalDistribution(BaseDistribution_MultinomialParents base) {
 
             if (base.getBaseDistribution(0) instanceof Multinomial) {
@@ -51,7 +81,6 @@ public enum DistributionTypeEnum {
             }else{
                 return (E) base;
             }
-
     }
 
 }

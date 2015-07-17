@@ -17,32 +17,36 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 26/02/15.
+ * This class handles the different distribution types supported in AMIDST.
  */
 public abstract class DistributionType  implements Serializable {
 
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4158293895929418259L;
 
+    /** Represents the variable. */
     protected Variable variable;
 
+    /**
+     * Creates a new DistributionType for the given variable.
+     * @param var_ the variable.
+     */
     public DistributionType(Variable var_){
         this.variable=var_;
     }
 
+    /**
+     * Test whether the given parent is compatible or not.
+     * @param parent the parent variable.
+     * @return true if the parent is compatible, false otherwise.
+     */
     public abstract boolean isParentCompatible(Variable parent);
 
-    public abstract <E extends UnivariateDistribution> E newUnivariateDistribution();
-
-    public <E extends EF_UnivariateDistribution> E newEFUnivariateDistribution(){
-        return this.newUnivariateDistribution().toEFUnivariateDistribution();
-    }
-
-    public abstract <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents);
-
-    public <E extends EF_ConditionalDistribution> E newEFConditionalDistribution(List<Variable> parents){
-        return this.newConditionalDistribution(parents).toEFConditionalDistribution();
-    }
-
+    /**
+     * Tests whether the given parents are compatible or not.
+     * @param parents the list of parent variables.
+     * @return true if all parents are compatible, false otherwise.
+     */
     public boolean areParentsCompatible(List<Variable> parents){
         for(Variable parent: parents){
             if (!isParentCompatible(parent))
@@ -51,12 +55,51 @@ public abstract class DistributionType  implements Serializable {
         return true;
     }
 
+    /**
+     * Creates a new univariate distribution.
+     * @param <E> the type of elements.
+     * @return a univariate distribution.
+     */
+    public abstract <E extends UnivariateDistribution> E newUnivariateDistribution();
+
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @param <E> the type of elements.
+     * @return an exponential family univariate distribution.
+     */
+    public <E extends EF_UnivariateDistribution> E newEFUnivariateDistribution(){
+        return this.newUnivariateDistribution().toEFUnivariateDistribution();
+    }
+
+    /**
+     * Creates a new conditional distribution given the input list of parents.
+     * @param parents the list of parents.
+     * @param <E> the type of elements.
+     * @return a conditional distribution.
+     */
+    public abstract <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents);
+
+    /**
+     * Creates a new exponential family conditional distribution given the input list of parents.
+     * @param parents the list of parents.
+     * @param <E> the type of elements.
+     * @return an exponential family conditional distribution.
+     */
+    public <E extends EF_ConditionalDistribution> E newEFConditionalDistribution(List<Variable> parents){
+        return this.newConditionalDistribution(parents).toEFConditionalDistribution();
+    }
+
+    /**
+     * Tests whether the list of parents contains this DistributionType.
+     * @param parents the list of parent variables.
+     * @param distributionTypeEnum the DistributionType.
+     * @return true if the list of parents contains this DistributionType, false otherwise.
+     */
     public static boolean containsParentsThisDistributionType(List<Variable> parents, DistributionTypeEnum distributionTypeEnum){
         for (Variable var : parents){
             if (var.getDistributionTypeEnum()==distributionTypeEnum)
                 return true;
         }
-
         return false;
     }
 

@@ -20,21 +20,37 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by andresmasegosa on 26/5/15.
+ * This class implements the interface {@link Assignment} and handles the assignments that contain missing values.
  */
 public class MissingAssignment implements Assignment{
 
+    /** Represents an object of type {@link Assignment}. */
     Assignment assignment;
+
+    /** Represents the variables with missing values as a {@link java.util.Map} object that maps variables
+     * to boolean values (equal to true if a variable has missing values and false otherwise).
+     */
     Map<Variable,Boolean> missingVars = new HashMap();
 
+    /**
+     * Creates a new MissingAssignment.
+     * @param assignment_ an assignment.
+     */
     public MissingAssignment(Assignment assignment_){
         this.assignment=assignment_;
     }
 
+    /**
+     * Adds a variable with missing values to this MissingAssignment.
+     * @param var the variable to be added.
+     */
     public void addMissingVariable(Variable var){
         this.missingVars.put(var,true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getValue(Variable var) {
         if (this.missingVars.containsKey(var))
@@ -43,6 +59,9 @@ public class MissingAssignment implements Assignment{
             return assignment.getValue(var);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setValue(Variable var, double value) {
         if (this.missingVars.containsKey(var))
@@ -51,6 +70,9 @@ public class MissingAssignment implements Assignment{
             assignment.setValue(var,value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<Variable> getVariables() {
         return Sets.union(assignment.getVariables(),missingVars.keySet());

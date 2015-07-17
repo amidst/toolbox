@@ -12,45 +12,40 @@ import java.util.Set;
 import java.util.List;
 
 /**
- * This interface defines a collection of assignments to variables. <p>
- *
- * I.e. "(A=0.1, B = True)", assuming A is continuous variable and B a binary variable.
- *
+ * This interface defines a collection of assignments to variables.
+ * For example, "(A=0.1, B = True)" is an assignment with A being a continuous variable and B a binary variable.
  */
 public interface Assignment {
 
     /**
-     * This method return the value assigned to a given variable
-     * @param var, the Variable object we want to query
-     * @return The assigned value to the given variable. Returns a Double.NaN if
-     * the variable is not included in the assignment.
+     * Returns the value assigned to a given variable.
+     * @param var the Variable object we want to query.
+     * @return the assigned value to the given variable. Returns a Double.NaN if
+     * the variable does not exist in the assignment.
      */
     double getValue(Variable var);
 
     /**
-     * This method set the value assigned to a variable. If the value is already include,
-     * then the value is updated accordingly.
-     *
-     * @param var, the Variable object we want to assign
-     * @param value, the assigned value
+     * Sets the value assigned to a variable.
+     * If the value already exists, then the value is updated accordingly.
+     * @param var the Variable object to which the value will be assigned.
+     * @param value the value that will be assigned to the Variable.
      */
     void setValue(Variable var, double value);
 
-
     /**
-     * This method returns the set of variables contained in the assignment.
-     * @return A valide Set object
+     * Returns the set of variables included in the assignment.
+     * @return a valid set of variables.
      */
     Set<Variable> getVariables();
 
     /**
-     * This method contains a default implementation of a "toString()" method. It produces
-     * a String detailed all the variable-value assignments stored in the object. E.g., {A=0, B=2}.
-     *
-     * @return A String object starting with "{" and endind with "}".
+     * Defines a default implementation of the "toString()" method.
+     * It produces a String that details all the variables and their corresponding values stored in this Assignment.
+     * The String starts with "{" and ends with "}". E.g., {A=0, B=2, C=0}.
+     * @return a String object describing this Assignment.
      */
     default String outputString(){
-
         StringBuilder builder = new StringBuilder(this.getVariables().size()*2);
         builder.append("{");
         this.getVariables().stream().forEach(var -> builder.append(var.getName()+ " = "+(int)this.getValue(var)+", "));
@@ -59,12 +54,12 @@ public interface Assignment {
     }
 
     /**
-     * This method contains a default implementation of a "toString()" method. It produces
-     * a String detailed all the variable-value assignments stored in the object. E.g., {A=0, B=1.217},
-     * keeping the order given in the argument and displaying 3 decimal places for continuous variables.
-     *
-     * @param vars, the ordered list of Variable to display
-     * @return A String object starting with "{" and endind with "}".
+     * Contains a default implementation of a "toString()" method.
+     * It produces a String that details the given variables and their corresponding values stored in this Assignment.
+     * The String keeps the order given in the argument and displays 3 decimal places for the continuous variables.
+     * The String starts with "{" and ends with "}" E.g., {A=0, B=1.217}.
+     * @param vars an ordered list of Variables to display.
+     * @return a String object describing a subset of variables in this Assignment.
      */
     default String outputString(List<Variable> vars){
         StringBuilder builder = new StringBuilder(vars.size()*2);
