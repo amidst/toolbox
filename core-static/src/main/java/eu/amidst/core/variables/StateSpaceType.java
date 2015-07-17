@@ -11,31 +11,52 @@ package eu.amidst.core.variables;
 import java.io.Serializable;
 
 /**
- * Created by andresmasegosa on 25/11/14.
+ * This class defines the state space type.
  */
 public abstract class StateSpaceType implements Serializable {
 
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4158293895929418259L;
 
+    /** Represents an enum of type {@link StateSpaceTypeEnum}. */
     private StateSpaceTypeEnum stateSpaceTypeEnum;
+
+    /** Represents a String equal to "NA". */
     private String unit="NA";
 
-    // This empty constructor is required because this class is the first non-serializable superclass in the inheritence
-    // hierarchy for the classes FiniteStateSpace and RealStateSpace (both implements Serializable)
+    /**
+     * An empty constructor.
+     */
     public StateSpaceType(){}
 
+    /**
+     * Creates a new StateSpaceType for a given type.
+     * @param type the state space type.
+     */
     public StateSpaceType(StateSpaceTypeEnum type){
-        this.stateSpaceTypeEnum =type;
+        this.stateSpaceTypeEnum = type;
     }
 
+    /**
+     * Returns the state space type.
+     * @return the state space type.
+     */
     public StateSpaceTypeEnum getStateSpaceTypeEnum(){
         return this.stateSpaceTypeEnum;
     }
 
+    /**
+     * Returns the unit of this StateSpaceType.
+     * @return the unit of this StateSpaceType.
+     */
     public String getUnit() {
         return unit;
     }
 
+    /**
+     * Sets the unit of this StateSpaceType.
+     * @param unit the unit.
+     */
     public void setUnit(String unit) {
         this.unit = unit;
     }

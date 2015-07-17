@@ -19,9 +19,7 @@ import java.util.List;
  */
 public class DAG implements Serializable {
 
-    /**
-     * Represents the serial version ID for serializing the object
-     */
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 2889423026182605212L;
 
     /** Represents the set of variables. */

@@ -9,7 +9,12 @@
 package eu.amidst.core.variables;
 
 /**
- * Created by sigveh on 10/20/14.
+ * This class defines the different state space types supported in AMIDST toolbox.
  */
-public enum StateSpaceTypeEnum {REAL, FINITE_SET;
+public enum StateSpaceTypeEnum {
+    /** The real or continuous state space. */
+    REAL,
+
+    /** The finite set or discrete state space. */
+    FINITE_SET;
 }
