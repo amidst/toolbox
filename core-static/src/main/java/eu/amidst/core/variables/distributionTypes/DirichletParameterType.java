@@ -13,34 +13,49 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.EF_Dirichlet;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
-
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 04/03/15.
+ * This class extends the abstract class {@link DistributionType} and defines the Dirichlet parameter type.
  */
 public class DirichletParameterType extends DistributionType {
 
+    /**
+     * Creates a new DirichletParameterType for the given variable.
+     * @param var_ the Variable to which the Dirichlet distribution will be assigned.
+     */
     public DirichletParameterType(Variable var_) {
         super(var_);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isParentCompatible(Variable parent) {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Normal newUnivariateDistribution() {
         throw new UnsupportedOperationException("Dirichlet Parameter Type does not allow standard distributions");
     }
 
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @return an exponential family Dirichlet distribution.
+     */
     @Override
     public EF_Dirichlet newEFUnivariateDistribution() {
          return new EF_Dirichlet(this.variable,2);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
         throw new UnsupportedOperationException("Dirichlet Parameter Type does not allow conditional distributions");

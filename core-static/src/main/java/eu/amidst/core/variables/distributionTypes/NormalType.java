@@ -16,14 +16,21 @@ import eu.amidst.core.variables.Variable;
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 26/02/15.
+ * This class extends the abstract class {@link DistributionType} and defines the Normal distribution.
  */
 public class NormalType extends DistributionType{
 
+    /**
+     * Creates a new NormalParameterType for the given variable.
+     * @param variable the Variable to which the Normal distribution type will be assigned.
+     */
     public NormalType(Variable variable){
         super(variable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isParentCompatible(Variable parent) {
         if (parent.getDistributionTypeEnum()==DistributionTypeEnum.MULTINOMIAL ||
@@ -34,6 +41,10 @@ public class NormalType extends DistributionType{
             return false;
     }
 
+    /**
+     * Creates a new univariate distribution.
+     * @return a normal distribution for this Variable.
+     */
     @Override
     public Normal newUnivariateDistribution() {
         Normal normal = new Normal(variable);
@@ -43,6 +54,9 @@ public class NormalType extends DistributionType{
         return normal;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
         if (!this.areParentsCompatible(parents))

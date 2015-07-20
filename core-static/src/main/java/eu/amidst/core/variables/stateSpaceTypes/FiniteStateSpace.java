@@ -15,16 +15,24 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by andresmasegosa on 25/11/14.
+ * This class extends the abstract class {@link StateSpaceType} and implements the interface {@code Iterable<String>}.
+ * It defines and handles the state space for discrete variables, i.e., the finite state space.
  */
 public class FiniteStateSpace extends StateSpaceType implements Iterable<String> {
 
+    /** Represents the number of states. */
     private int numberOfStates;
+
+    /** Represents the list of space state names. */
     private final List<String> statesNames;
+
+    /** Represents a {@link java.util.Map} object that maps the state names ({@code String}) to their indices ({@code Integer}). */
     private final Map<String,Integer> mapStatesNames;
 
-
-
+    /**
+     * Creates a new FiniteStateSpace given the number of states.
+     * @param numberOfStates1 the number of states.
+     */
     public FiniteStateSpace(int numberOfStates1) {
         super(StateSpaceTypeEnum.FINITE_SET);
         this.numberOfStates=numberOfStates1;
@@ -38,6 +46,10 @@ public class FiniteStateSpace extends StateSpaceType implements Iterable<String>
         }
     }
 
+    /**
+     * Creates a new FiniteStateSpace given a list of state space names.
+     * @param statesNames1 a list of state space names
+     */
     public FiniteStateSpace(List<String> statesNames1) {
         super(StateSpaceTypeEnum.FINITE_SET);
         this.numberOfStates=statesNames1.size();
@@ -49,21 +61,45 @@ public class FiniteStateSpace extends StateSpaceType implements Iterable<String>
         }
     }
 
+    /**
+     * Returns the number of states.
+     * @return the number of states.
+     */
     public int getNumberOfStates() {
         return numberOfStates;
     }
 
+    /**
+     * Returns the name of the state space given its index.
+     * @param state the index of the state space.
+     * @return the name of the state space.
+     */
     public String getStatesName(int state) {
         return statesNames.get(state);
     }
 
-    public int getIndexOfState(String stateName) { return this.mapStatesNames.get(stateName);}
+    /**
+     * Returns the index of the state space given its name.
+     * @param stateName the name of the state space.
+     * @return the index of the state space.
+     */
+    public int getIndexOfState(String stateName){
+        return this.mapStatesNames.get(stateName);
+    }
 
+    /**
+     * Returns an iterator over elements of type {@code String}, i.e. over the list of state names.
+     * @return an Iterator over the state names.
+     */
     @Override
     public Iterator<String> iterator() {
         return statesNames.iterator();
     }
 
+    /**
+     * Returns the list of the state names.
+     * @return the list of the state names.
+     */
     public List<String> getStatesNames(){
         return this.statesNames;
     }

@@ -13,28 +13,41 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.EF_InverseGamma;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
-
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 04/03/15.
+ * This class extends the abstract class {@link DistributionType} and defines the Inverse Gamma parameter type.
  */
 public class InverseGammaParameterType extends DistributionType {
 
+    /**
+     * Creates a new InverseGammaParameterType for the given variable.
+     * @param var_ the Variable to which the Inverse Gamma distribution will be assigned.
+     */
     public InverseGammaParameterType(Variable var_) {
         super(var_);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isParentCompatible(Variable parent) {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Normal newUnivariateDistribution() {
         throw new UnsupportedOperationException("Inverse Gamma Parameter Type does not allow standard distributions");
     }
 
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @return an exponential family Inverse Gamma distribution.
+     */
     @Override
     public EF_InverseGamma newEFUnivariateDistribution() {
         EF_InverseGamma inverseGamma = new EF_InverseGamma(this.variable);
@@ -44,7 +57,9 @@ public class InverseGammaParameterType extends DistributionType {
         return inverseGamma;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
         throw new UnsupportedOperationException("Inverse Gamma Parameter Type does not allow conditional distributions");

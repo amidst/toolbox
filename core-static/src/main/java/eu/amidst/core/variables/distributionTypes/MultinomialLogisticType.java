@@ -13,28 +13,41 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_LogisticParents;
-
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 26/02/15.
+ * This class extends the abstract class {@link DistributionType} and defines the Multinomial Logistic distribution type.
  */
 public class MultinomialLogisticType extends DistributionType{
 
+    /**
+     * Creates a new MultinomialLogisticType for the given variable.
+     * @param variable the Variable to which the Multinomial Logistic distribution type will be assigned.
+     */
     public MultinomialLogisticType(Variable variable){
         super(variable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isParentCompatible(Variable parent) {
             return true;
     }
 
+    /**
+     * Creates a new univariate distribution.
+     * @return a multinomial distribution for this Variable.
+     */
     @Override
     public Multinomial newUnivariateDistribution() {
         return new Multinomial(variable);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E  newConditionalDistribution(List<Variable> parents) {
         if (!this.areParentsCompatible(parents))
