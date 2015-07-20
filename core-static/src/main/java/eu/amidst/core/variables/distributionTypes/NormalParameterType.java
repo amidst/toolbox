@@ -13,23 +13,33 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
-
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 04/03/15.
+ * This class extends the abstract class {@link DistributionType} and defines the Normal parameter type.
  */
 public class NormalParameterType  extends DistributionType {
 
+    /**
+     * Creates a new NormalParameterType for the given variable.
+     * @param var_ the Variable to which the Normal parameter type will be assigned.
+     */
     public NormalParameterType(Variable var_) {
         super(var_);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isParentCompatible(Variable parent) {
         return false;
     }
 
+    /**
+     * Creates a new univariate distribution.
+     * @return a normal distribution for this Variable.
+     */
     @Override
     public Normal newUnivariateDistribution() {
         Normal normal = new Normal(variable);
@@ -38,6 +48,10 @@ public class NormalParameterType  extends DistributionType {
         return normal;
     }
 
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @return an exponential family normal distribution.
+     */
     @Override
     public EF_Normal newEFUnivariateDistribution() {
         Normal normal = this.newUnivariateDistribution();
@@ -45,6 +59,9 @@ public class NormalParameterType  extends DistributionType {
         return ef_normal;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
         throw new UnsupportedOperationException("Normal Parameter Type does not allow conditional distributions");

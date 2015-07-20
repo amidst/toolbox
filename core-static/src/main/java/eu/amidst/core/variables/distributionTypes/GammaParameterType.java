@@ -13,28 +13,41 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.EF_Gamma;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
-
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 04/03/15.
+ * This class extends the abstract class {@link DistributionType} and defines the Gamma parameter type.
  */
 public class GammaParameterType extends DistributionType {
 
+    /**
+     * Creates a new GammaParameterType for the given variable.
+     * @param var_ the Variable to which the Gamma distribution will be assigned.
+     */
     public GammaParameterType(Variable var_) {
         super(var_);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isParentCompatible(Variable parent) {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Normal newUnivariateDistribution() {
         throw new UnsupportedOperationException("Gamma Parameter Type does not allow standard distributions");
     }
 
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @return an exponential family Gamma distribution.
+     */
     @Override
     public EF_Gamma newEFUnivariateDistribution() {
         EF_Gamma gamma = new EF_Gamma(this.variable);
@@ -46,7 +59,9 @@ public class GammaParameterType extends DistributionType {
         return gamma;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
         throw new UnsupportedOperationException("Inverse Gamma Parameter Type does not allow conditional distributions");
