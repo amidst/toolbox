@@ -13,27 +13,23 @@ import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 /**
- * <h2>This class implements a conditional distribution of a normal variable given a set of multinomial parents.</h2>
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 2014-11-4
+ * This class extends the abstract class {@link ConditionalDistribution}.
+ * It defines the conditional distribution of a variable with a {@link Normal} distribution given a set of Multinomial parents.
  */
 public class Normal_MultinomialParents extends ConditionalDistribution {
 
-
-
-    /**
-     * An array of normal distribution, one for each assignment of the multinomial parents
-     */
+    /** Represents an array of {@link Normal} distributions, one for each assignment of the Multinomial parents. */
     private BaseDistribution_MultinomialParents<Normal> base;
 
+    /**
+     * Creates a new Normal_MultinomialParents distribution for a given BaseDistribution_MultinomialParents<Normal>.
+     * @param base_ an array of {@link Normal} distributions, one for each configuration of the Multinomial parents.
+     */
     public Normal_MultinomialParents(BaseDistribution_MultinomialParents<Normal> base_) {
         this.base=base_;
         this.var=this.base.getVariable();
@@ -42,31 +38,38 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     }
 
     /**
-     * The class constructor.
-     * @param var1 The variable of the distribution.
-     * @param parents1 The set of parent variables.
+     * Creates a new Normal_MultinomialParents distribution for a given Variable and its parents.
+     * @param var1 the continuous variable of the distribution.
+     * @param parents1 the set of Multinomial parents of this variable.
      */
     public Normal_MultinomialParents(Variable var1, List<Variable> parents1) {
         this.var = var1;
         this.parents = parents1;
-
         this.base = new BaseDistribution_MultinomialParents<>(var1,parents1);
-
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
-
     }
 
+    /**
+     * Returns a {@link Normal} distribution given an input position in the array of distributions.
+     * @param position a position in the array of distributions.
+     * @return a {@link Normal} distribution.
+     */
     public Normal getNormal(int position) {
         return base.getBaseDistribution(position);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
         return this.base.getParameters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfParameters() {
         int n=0;
@@ -77,10 +80,9 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     }
 
     /**
-     * Gets the corresponding univariate normal distribution after conditioning the distribution to a multinomial
-     * parent assignment.
-     * @param parentsAssignment An <code>Assignment</code> for the parents.
-     * @return A <code>Normal</code> object with the univariate distribution.
+     * Returns a {@link Normal} distribution given a multinomial parent assignment.
+     * @param parentsAssignment an {@link Assignment} for the Multinomial parents.
+     * @return a {@link Normal} distribution.
      */
      public Normal getNormal(Assignment parentsAssignment) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents, parentsAssignment);
@@ -88,19 +90,19 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     }
 
     /**
-     * Sets a <code>Normal</code> distribution in a given position in the array of distributions.
-     * @param position The position in which the distribution is set.
-     * @param normalDistribution The <code>Normal</code> distribution to be set.
+     * Sets a {@link Normal}distribution in a given position in the array of distributions.
+     * @param position the position in which the distribution is set.
+     * @param normalDistribution the {@link Normal} distribution to be set.
      */
     public void setNormal(int position, Normal normalDistribution) {
         this.base.setBaseDistribution(position,normalDistribution);
     }
 
     /**
-     * Sets a <code>Multinomial</code> distribution in a position in the array of distributions determined by a given
+     * Sets a {@link Normal} distribution in a position in the array of distributions determined by a given
      * parents assignment.
-     * @param parentsAssignment An <code>Assignment</code> for the parents.
-     * @param normalDistribution The <code>Normal</code> distribution to be set.
+     * @param parentsAssignment an {@link Assignment} for the Multinomial parents.
+     * @param normalDistribution the {@link Normal} distribution to be set.
      */
     public void setNormal(Assignment parentsAssignment, Normal normalDistribution) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents, parentsAssignment);
@@ -108,10 +110,10 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     }
 
     /**
-     * Computes the logarithm of the evaluated density function in a point after conditioning the distribution to a
-     * given parent <code>Assignment</code>.
-     * @param assignment An <code>Assignment</code> for the parents.
-     * @return A <code>double</code> with the logarithm of the corresponding density value.
+     * Returns the logarithm of the evaluated density function in a point after conditioning the distribution to a
+     * given parent {@link Assignment}.
+     * @param assignment an {@link Assignment} for the Multinomial parents.
+     * @return a double value corresponding to the logarithm of the density value.
      */
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
@@ -120,11 +122,18 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         return this.getNormal(assignment).getLogProbability(value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
         return this.getNormal(assignment);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String label(){
         //TODO Explain this !!!
         // if (this.getConditioningVariables().size() == 0) {
@@ -137,6 +146,9 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
         for (int i = 0; i < this.getNumberOfParentAssignments(); i++) {
@@ -144,14 +156,25 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         }
     }
 
+    /**
+     * Returns the list of Normal distributions.
+     * @return the list of Normal distributions.
+     */
     public List<Normal> getNormalDistributions() {
         return this.base.getBaseDistributions();
     }
 
+    /**
+     * Returns the number of parent assignments.
+     * @return the number of parent assignments.
+     */
     public int getNumberOfParentAssignments(){
         return getNormalDistributions().size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -163,6 +186,9 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         return str.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist instanceof Normal_MultinomialParents)
@@ -170,6 +196,12 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         return false;
     }
 
+    /**
+     * Tests if a given Normal_MultinomialParents distribution is equal to this Normal_MultinomialParents distribution.
+     * @param dist a given Normal_MultinomialParents distribution.
+     * @param threshold a threshold.
+     * @return true if the two Normal_MultinomialParents distributions are equal, false otherwise.
+     */
     public boolean equalDist(Normal_MultinomialParents dist, double threshold) {
         boolean equals = true;
         for (int i = 0; i < this.getNormalDistributions().size(); i++) {
@@ -178,6 +210,9 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
         return equals;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_BaseDistribution_MultinomialParents<EF_Normal> toEFConditionalDistribution(){
         return (EF_BaseDistribution_MultinomialParents<EF_Normal>)this.base.toEFConditionalDistribution();

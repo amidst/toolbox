@@ -10,19 +10,31 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-
 import java.util.ArrayList;
 import java.util.Random;
 
+//TODO: Check getNumberOfParameters()! I'm not sure about how to compute this!
+//TODO" toString() method!
+
 /**
- * Created by andresmasegosa on 23/11/14.
+ * This class extends the abstract class {@link ConditionalDistribution} and defines the Indicator distribution.
  */
 public class IndicatorDistribution extends ConditionalDistribution {
 
+    /** Represents the conditional distribution {@link ConditionalDistribution}. */
     private ConditionalDistribution conditionalDistribution;
+
+    /** Represents the delta distribution {@link DeltaDistribution}. */
     private DeltaDistribution deltaDist;
+
+    /** Represents the indicator {@link Variable}. */
     private Variable indicatorVar;
 
+    /**
+     * Creates a new IndicatorDistribution for a given indicator variable and a conditional distribution.
+     * @param indicatorVar1 a given indicator variable.
+     * @param conditionalDistribution1 a conditional distribution.
+     */
     public IndicatorDistribution(Variable indicatorVar1, ConditionalDistribution conditionalDistribution1) {
         //if (!indicatorVar1.isIndicator()) {
         //    throw new IllegalArgumentException("IndicatorVar_ should be of indicator type");
@@ -39,34 +51,54 @@ public class IndicatorDistribution extends ConditionalDistribution {
         this.deltaDist = new DeltaDistribution(this.getVariable(), 0.0);
     }
 
+    /**
+     * Returns the {@link ConditionalDistribution} of this IndicatorDistribution.
+     * @return a {@link ConditionalDistribution} object.
+     */
     public ConditionalDistribution getConditionalDistribution() {
         return conditionalDistribution;
     }
 
+    /**
+     * Returns the indicator variable of this IndicatorDistribution.
+     * @return the indicator variable of this IndicatorDistribution.
+     */
     public Variable getIndicatorVar() {
         return indicatorVar;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
         return new double[this.getNumberOfParameters()];
     }
 
-    //TODO: I'm not sure about how to compute this
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfParameters() {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
         if (assignment.getValue(this.indicatorVar)==0.0) {
-            return 0.0; //this.deltaDist.getLogProbability(assignment.getValue(this.var)); //Both the indicator and main var has, by definition, the same value.
+            // Both the indicator and main var have, by definition, the same value.
+            return 0.0;
         }else {
             return this.conditionalDistribution.getLogConditionalProbability(assignment);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
         if (assignment.getValue(this.indicatorVar)==0.0) {
@@ -76,15 +108,24 @@ public class IndicatorDistribution extends ConditionalDistribution {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String label(){
         return "IndicatorDistribution of "+this.getConditionalDistribution().label();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
         this.conditionalDistribution.randomInitialization(random);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist instanceof IndicatorDistribution)
@@ -92,12 +133,20 @@ public class IndicatorDistribution extends ConditionalDistribution {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    //TODO
     public String toString() {
         return null;
     }
 
+    /**
+     * Tests if a given indicator distribution is equal to this IndicatorDistribution.
+     * @param dist a given indicator distribution.
+     * @param threshold a threshold.
+     * @return true if the two delta distributions are equal, false otherwise.
+     */
     public boolean equalDist(IndicatorDistribution dist, double threshold) {
         return this.getConditionalDistribution().equalDist(dist.getConditionalDistribution(),threshold);
     }

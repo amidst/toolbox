@@ -26,27 +26,26 @@ import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 /**
- * <h2>This class implements a conditional distribution of a multinomial variable given a set of multinomial parents.</h2>
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 2014-11-4
+ * This class extends the abstract class {@link ConditionalDistribution}.
+ * It defines the conditional distribution of a variable with a {@link Multinomial} distribution given a set of Multinomial parents.
  */
 public class Multinomial_MultinomialParents extends ConditionalDistribution {
 
     /**
-     * An array of <code>Multinomial</code> objects, one for each configuration of the parents. These objects are ordered
-     * according to the criteria implemented in class utils.MultinomialIndex
+     * Represents an array of {@link Multinomial} objects, one for each configuration of the parents.
+     * These objects are ordered according to the criteria implemented in class {@link eu.amidst.core.utils.MultinomialIndex}.
      */
     private BaseDistribution_MultinomialParents<Multinomial> base;
 
-
+    /**
+     * Creates a new Multinomial_MultinomialParents distribution for a given BaseDistribution_MultinomialParents<Multinomial>.
+     * @param base_ an array of {@link Multinomial} objects, one for each configuration of the parents.
+     */
     public Multinomial_MultinomialParents(BaseDistribution_MultinomialParents<Multinomial> base_) {
         this.base=base_;
         this.var=this.base.getVariable();
@@ -55,11 +54,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     }
 
     /**
-         * The class constructor.
-         *
-         * @param var1     The variable of the distribution.
-         * @param parents1 The set of parents of the variable.
-         */
+     * Creates a new Multinomial_MultinomialParents distribution for a given Variable and its parents.
+     * @param var1 the variable of the distribution.
+     * @param parents1 the set of parents of this variable.
+     */
     public Multinomial_MultinomialParents(Variable var1, List<Variable> parents1) {
 
         this.base = new BaseDistribution_MultinomialParents<>(var1, parents1);
@@ -69,50 +67,53 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
+    /**
+     * Returns the list of {@link Multinomial} distributions.
+     * @return the list of {@link Multinomial} distributions.
+     */
     public List<Multinomial> getMultinomialDistributions() {
         return this.base.getBaseDistributions();
     }
 
     /**
-     * Sets a <code>Multinomial</code> distribution in a given position in the array of probabilities.
-     *
-     * @param position                The position in which the distribution is set.
-     * @param multinomialDistribution A <code>Multinomial</code> object.
+     * Returns the {@link Multinomial} distribution for a given position.
+     * @param position the position in which the multinomial distribution is extracted.
+     * @return a {@link Multinomial} distribution.
+     */
+    public Multinomial getMultinomial(int position) {
+        return this.base.getBaseDistribution(position);
+    }
+
+    /**
+     * Returns the {@link Multinomial} distribution for a given parents assignment.
+     * @param parentAssignment an {@link Assignment} for the set of parents.
+     * @return a {@link Multinomial} distribution.
+     */
+    public Multinomial getMultinomial(Assignment parentAssignment) {
+        return this.base.getBaseDistribution(parentAssignment);
+    }
+
+    /**
+     * Sets a {@link Multinomial} distribution in a given position in the array of probabilities.
+     * @param position the position in which the multinomial distribution is set.
+     * @param multinomialDistribution a {@link Multinomial} distribution.
      */
     public void setMultinomial(int position, Multinomial multinomialDistribution) {
         this.base.setBaseDistribution(position, multinomialDistribution);
     }
 
     /**
-     * Sets a <code>Multinomial</code> distribution in a position in the array of probabilities determined by a given
-     * parents assignment.
-     *
-     * @param parentAssignment        An <code>Assignment</code> for the parents.
-     * @param multinomialDistribution A <code>Multinomial</code> object.
+     * Sets a {@link Multinomial} distribution in a position in the array of probabilities
+     * determined by a given parents assignment.
+     * @param parentAssignment an {@link Assignment} for the set of parents.
+     * @param multinomialDistribution a {@link Multinomial} distribution.
      */
     public void setMultinomial(Assignment parentAssignment, Multinomial multinomialDistribution) {
         this.base.setBaseDistribution(parentAssignment, multinomialDistribution);
     }
 
     /**
-     * Gets the <code>Multinomial</code> distribution for given a parents assignment.
-     *
-     * @param parentAssignment An <code>Assignment</code> for the parents.
-     * @return A <code>Multinomial</code> object.
-     */
-    public Multinomial getMultinomial(Assignment parentAssignment) {
-        return this.base.getBaseDistribution(parentAssignment);
-    }
-
-    public Multinomial getMultinomial(int position) {
-        return this.base.getBaseDistribution(position);
-    }
-
-    /**
-     * Computes the logarithm of the probability of the variable for a given state and a parent assignment.
-     *
-     * @param parentAssignment An <code>Assignment</code> for the parents.
-     * @return A <code>double</code> value with the logarithm of the probability.
+     * {@inheritDoc}
      */
     @Override
     public double getLogConditionalProbability(Assignment parentAssignment) {
@@ -120,17 +121,25 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return this.getMultinomial(parentAssignment).getLogProbability(value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
         return this.getMultinomial(assignment);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
         return this.base.getParameters();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfParameters() {
         int n = 0;
@@ -140,6 +149,10 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return n;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String label() {
         //TODO Explain this !!!
         // if (this.getConditioningVariables().size() == 0) {
@@ -151,6 +164,9 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
         for (Multinomial multinomial : this.getMultinomialDistributions()) {
@@ -158,10 +174,17 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         }
     }
 
+    /**
+     * Returns the number of parent assignments.
+     * @return the number of parent assignments.
+     */
     public int getNumberOfParentAssignments() {
         return this.getMultinomialDistributions().size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -177,6 +200,9 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return str.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist instanceof Multinomial_MultinomialParents)
@@ -184,6 +210,12 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return false;
     }
 
+    /**
+     * Tests if a given Multinomial_MultinomialParents distribution is equal to this Multinomial_MultinomialParents distribution.
+     * @param dist a given Multinomial_MultinomialParents distribution.
+     * @param threshold a threshold.
+     * @return true if the two Multinomial_MultinomialParents distributions are equal, false otherwise.
+     */
     public boolean equalDist(Multinomial_MultinomialParents dist, double threshold) {
         boolean equals = true;
         for (int i = 0; i < this.getNumberOfParentAssignments(); i++) {
@@ -192,6 +224,9 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
         return equals;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_BaseDistribution_MultinomialParents<EF_Multinomial> toEFConditionalDistribution() {
         return (EF_BaseDistribution_MultinomialParents<EF_Multinomial>)this.base.toEFConditionalDistribution();

@@ -12,58 +12,84 @@ import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 /**
- * <h2>This interface generalizes the set of univariate distributions.</h2>
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 2014-11-3
+ * This class extends the abstract class {@link ConditionalDistribution}.
+ * It defines and handles the set of univariate distributions.
  */
 public abstract class UnivariateDistribution extends ConditionalDistribution {
 
     /**
-     * Evaluates the distribution in a given point.
-     *
-     * @param value The point to be evaluated.
-     * @return A <code>double</code> value with the logarithm of the evaluated distribution.
+     * Returns the log probability for a given input value.
+     * @param value a double value.
+     * @return the log probability for this value.
      */
     public abstract double getLogProbability(double value);
 
+    /**
+     * Returns the probability for a given input value.
+     * @param value a double value.
+     * @return the probability for this value.
+     */
+    public double getProbability(double value) {
+        return Math.exp(this.getLogProbability(value));
+    }
+
+    /**
+     * Returns a randomly sampled double value.
+     * @param rand a {@link java.util.Random} object.
+     * @return a randomly sampled double value.
+     */
     public abstract double sample(Random rand);
 
+    /**
+     * Converts this UnivariateDistribution to an Exponential Family (EF) univariate distribution.
+     * @return an {@link EF_UnivariateDistribution} object.
+     * @exception UnsupportedOperationException if this distribution is not convertible to the EF form.
+     */
     public abstract <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Variable> getConditioningVariables() {
         return Arrays.asList();
     }
 
+    /**
+     * Converts this UnivariateDistribution to an Exponential Family (EF) conditional distribution.
+     * @return an {@link EF_ConditionalDistribution} object.
+     * @exception UnsupportedOperationException if this distribution is not convertible to the EF form.
+     */
     public <E extends EF_ConditionalDistribution> E toEFConditionalDistribution(){
         return (E)this.toEFUnivariateDistribution();
     }
 
-    public double getProbability(double value) {
-        return Math.exp(this.getLogProbability(value));
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
         return this.getLogProbability(assignment.getValue(this.var));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogProbability(Assignment assignment) {
         return this.getLogProbability(assignment.getValue(this.var));
     }
-
 }

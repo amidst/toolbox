@@ -30,37 +30,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+//TODO Re-implement the management of coffParents using a Map<Variale,Double>
+
 /**
- * <h2>This class implements a Conditional Linear Gaussian distribution, i.e. a distribution of a normal variable with
- * continuous normal parents.</h2>
- *
- * TODO Reimplement the management of coffParents using a Map<Variale,Double>
- * @author Antonio Fernández
- * @version 1.0
- * @since 2014-11-4
+ * This class extends the abstract class {@link ConditionalDistribution}.
+ * It defines the Conditional Linear Gaussian distribution, i.e.,
+ * the conditional distribution of a normal variable given a set of normal parents.
  */
 public class ConditionalLinearGaussian extends ConditionalDistribution {
 
 
-    /**
-     * The "intercept" parameter of the distribution
-     */
+    /** Represents the intercept parameter of this ConditionalLinearGaussian distribution. */
     private double intercept;
 
-    /**
-     * The set of coefficients, one for each parent
-     */
+    /** Represents the set of coefficients, one for each parent. */
     private double[] coeffParents;
 
-    /**
-     * The standard deviation of the variable (it does not depends on the parents)
-     */
+    /** Represents the standard deviation of the variable (it does not depends on the parents). */
     private double variance;
 
     /**
-     * The class constructor.
-     * @param var1 The variable of the distribution.
-     * @param parents1 The set of parents of the variable.
+     * Creates a new ConditionalLinearGaussian distribution for a given variable and the list of its parents.
+     * @param var1 the variable of this distribution.
+     * @param parents1 the set of parents of this variable.
      */
     public ConditionalLinearGaussian(Variable var1, List<Variable> parents1) {
 
@@ -78,33 +70,44 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
     }
 
     /**
-     * Gets the intercept of the distribution.
-     * @return A <code>double</code> value with the intercept.
+     * Returns the intercept of this ConditionalLinearGaussian distribution.
+     * @return a double value representing the intercept.
      */
     public double getIntercept() {
         return intercept;
     }
 
     /**
-     * Sets the intercept of the distribution.
-     * @param intercept1 A <code>double</code> value with the intercept.
+     * Sets the intercept of this ConditionalLinearGaussian distribution.
+     * @param intercept1 a double value representing the intercept.
      */
     public void setIntercept(double intercept1) {
         this.intercept = intercept1;
     }
 
     /**
-     * Gets the coefficients for the parent variables.
-     * @return An array of <code>double</code> with the coefficients.
+     * Returns the set of coefficients of the parent variables.
+     * @return A array of doubles containing the set of coefficients of the parent variables.
      */
     public double[] getCoeffParents() {
         return coeffParents;
     }
 
+    /**
+     * Sets the set of coefficients of this ConditionalLinearGaussian distribution.
+     * @param coeffParents1 an array of doubles containing the set of coefficients (i.e. Beta values), one for each parent.
+     */
+    public void setCoeffParents(double[] coeffParents1) {
+        if(coeffParents1.length != this.coeffParents.length)
+            throw new UnsupportedOperationException("The number of beta parametersParentVariables for the Normal_Normal distribution" +
+                    " does not match with the number of parents");
+        this.coeffParents = coeffParents1;
+    }
 
     /**
-     * Get the coefficient for the variable parentVar.
-     * @return An <code>double</code> with the coefficient for variable parentVar.
+     * Returns the coefficient of a given parent variable.
+     * @param parentVar the parent variable.
+     * @return the coefficient corresponding to this parent variable.
      */
     public double getCoeffForParent(Variable parentVar){
 
@@ -122,20 +125,9 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
     }
 
     /**
-     * Sets the coefficients of the distribution
-     * @param coeffParents1 An array of <code>double</code> with the coefficients, one for each parent.
-     */
-    public void setCoeffParents(double[] coeffParents1) {
-        if(coeffParents1.length != this.coeffParents.length)
-            throw new UnsupportedOperationException("The number of beta parametersParentVariables for the Normal_Normal distribution" +
-                    " does not match with the number of parents");
-        this.coeffParents = coeffParents1;
-    }
-
-    /**
-     * Sets the coefficients of the distribution for a particular variable
-     * @param parentVar A parent variable.
-     * @param coeff Beta value for the parent variable.
+     * Sets the coefficient for a given parent variable.
+     * @param parentVar the parent variable.
+     * @param coeff the Beta value for this parent variable.
      */
     public void setCoeffForParent(Variable parentVar, double coeff) {
 
@@ -153,16 +145,16 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
     }
 
     /**
-     * Gets the standard deviation of the variable.
-     * @return A <code>double</code> value with the standard deviation.
+     * Returns the standard deviation of the variable.
+     * @return a double value representing the standard deviation of the variable.
      */
     public double getSd() {
         return Math.sqrt(this.variance);
     }
 
     /**
-     * Gets the variance of the variable.
-     * @return A <code>double</code> value with the variance.
+     * Returns the variance of the variable.
+     * @return a double value representing the variance of the variable.
      */
     public double getVariance() {
         return this.variance;
@@ -170,16 +162,16 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
 
     /**
      * Sets the variance of the variable.
-     * @param variance_ A <code>double</code> value with the variance.
+     * @param variance_ a  double value representing the variance of the variable.
      */
     public void setVariance(double variance_) {
         this.variance = variance_;
     }
 
     /**
-     * Gets the corresponding univariate normal distribution after conditioning the distribution to a parent assignment.
-     * @param parentsAssignment An <code>Assignment</code> for the parents.
-     * @return A <code>Normal</code> object with the univariate distribution.
+     * Returns the univariate {@link Normal} distribution after conditioning this distribution to a given parent assignment.
+     * @param parentsAssignment an {@link Assignment} for the parents.
+     * @return a {@link Normal} univariate distribution.
      */
     public Normal getNormal(Assignment parentsAssignment) {
 
@@ -198,7 +190,9 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         return (univariateNormal);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
         double[] param = new double[this.getNumberOfParameters()];
@@ -211,18 +205,17 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         return param;
     }
 
+    /**
+     * {@inheritDoc}
+     * Note that the intercept has not been included as a free parameter.
+     */
     @Override
-    //Note that the intercept has not been included as a free parameter.
     public int getNumberOfParameters() {
         return(coeffParents.length + 2);
     }
 
-
     /**
-     * Computes the logarithm of the evaluated density function in a point after conditioning the distribution to a
-     * given parent <code>Assignment</code>.
-     * @param assignment An <code>Assignment</code>
-     * @return A <code>double</code> with the logarithm of the corresponding density value.
+     * {@inheritDoc}
      */
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
@@ -230,15 +223,24 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         return (getNormal(assignment).getLogProbability(value));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
         return this.getNormal(assignment);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String label(){
         return "Normal|Normal";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
         this.intercept = random.nextGaussian()*5+1;
@@ -249,6 +251,9 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         this.variance = random.nextDouble()+0.5;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString(){
         StringBuilder str = new StringBuilder();
@@ -262,6 +267,9 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         return str.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist instanceof ConditionalLinearGaussian)
@@ -269,6 +277,9 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean equalDist(ConditionalLinearGaussian dist, double threshold) {
         boolean equals = false;
         if (Math.abs(this.getIntercept() - dist.getIntercept()) <= threshold && Math.abs(this.getSd() - dist.getSd()) <= threshold) {
@@ -280,6 +291,9 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         return equals;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_Normal_NormalParents toEFConditionalDistribution() {
 
@@ -292,33 +306,25 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         double sd = this.getSd();
 
         double variance = sd*sd;
-        /*
-         * 1) theta_0
-         */
+
+        /* 1) theta_0  */
         double theta_0 = beta_0 / variance;
         naturalParameters.setThetaBeta0_NatParam(theta_0);
 
-        /*
-         * 2) theta_0Theta
-         */
+        /* 2) theta_0Theta */
         double variance2Inv =  1.0/(2*variance);
         //IntStream.range(0,coeffParents.length).forEach(i-> coeffParents[i]*=(beta_0*variance2Inv));
         double[] theta0_beta = Arrays.stream(coeffParents).map(w->-w*beta_0/variance).toArray();
         naturalParameters.setThetaBeta0Beta_NatParam(theta0_beta);
 
-        /*
-         * 3) theta_Minus1
-         */
+        /* 3) theta_Minus1 */
         double theta_Minus1 = -variance2Inv;
 
-        /*
-         * 4) theta_beta & 5) theta_betaBeta
-         */
+        /* 4) theta_beta & 5) theta_betaBeta */
         naturalParameters.setThetaCov_NatParam(theta_Minus1,coeffParents, variance2Inv);
 
         ef_normal_normalParents.setNaturalParameters(naturalParameters);
         return ef_normal_normalParents;
 
     }
-
 }
