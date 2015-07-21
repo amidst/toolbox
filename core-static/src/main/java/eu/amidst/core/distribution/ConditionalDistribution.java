@@ -8,62 +8,64 @@
 
 package eu.amidst.core.distribution;
 
-
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-
 import java.util.List;
 
 /**
- * <h2>This interface generalizes the set of possible conditional distributions.</h2>
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 2014-11-3
+ * This class extends the abstract class {@link Distribution}.
+ * It defines the conditional distribution of a node (i.e., {@link Variable}) given the set of its parents.
  */
 public abstract class ConditionalDistribution extends Distribution {
 
-    /**
-     * The list of parents of the variable
-     */
+    /** Represents the list of parents of this Variable. */
     protected List<Variable> parents;
 
     /**
-     * Gets the set of conditioning variables
-     *
-     * @return An <code>unmodifiable List</code> object with the set of conditioning variables.
+     * Returns the set of conditioning variables, i.e., the list of parents in this ConditionalDistribution.
+     * @return a {@code List} object containing the set of parents.
      */
     public List<Variable> getConditioningVariables() {
         return this.parents;
     }
 
     /**
-     * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
-     *
-     * @param assignment An <code>Assignment</code> for the parents.
-     * @return A <code>double</code> value with the evaluated distribution.
+     * Returns the conditional probability of an {@link Assignment} given this ConditionalDistribution.
+     * @param assignment an {@link Assignment} object.
+     * @return a double representing the probability of an assignment.
      */
     public double getConditionalProbability(Assignment assignment) {
         return Math.exp(this.getLogConditionalProbability(assignment));
     }
 
     /**
-     * Evaluates the conditional distribution given a value of the variable and an assignment of the parents.
-     *
-     * @param assignment An <code>Assignment</code> for the parents.
-     * @return A <code>double</code> value with the logarithm of the evaluated distribution.
+     * Returns the log conditional probability of an {@link Assignment} given this ConditionalDistribution.
+     * @param assignment an {@link Assignment} object.
+     * @return a double representing the log probability of an assignment.
      */
     public abstract double getLogConditionalProbability(Assignment assignment);
 
+    /**
+     * Returns the univariate distribution of an {@link Assignment} given this ConditionalDistribution.
+     * @param assignment an {@link Assignment} object.
+     * @return an {@link UnivariateDistribution} object.
+     */
     public abstract UnivariateDistribution getUnivariateDistribution(Assignment assignment);
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogProbability(Assignment assignment){
         return this.getLogConditionalProbability(assignment);
     }
 
+    /**
+     * Converts this ConditionalDistribution to an Exponential Family (EF) conditional distribution.
+     * @return an {@link EF_ConditionalDistribution} object.
+     * @exception UnsupportedOperationException if this distribution is not convertible to EF form.
+     */
     public <E extends EF_ConditionalDistribution> E toEFConditionalDistribution(){
         throw new UnsupportedOperationException("This distribution is not convertible to EF form");
     }

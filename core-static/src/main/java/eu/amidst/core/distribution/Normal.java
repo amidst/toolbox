@@ -20,32 +20,22 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.variables.Variable;
-
 import java.util.Random;
 
 /**
- * <h2>This class implements a univariate Normal distribution.</h2>
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 2014-11-3
+ * This class extends the abstract class {@link UnivariateDistribution} and defines the univariate Normal distribution.
  */
 public class Normal extends UnivariateDistribution {
 
-
-    /**
-     * The mean of the Normal distribution.
-     */
+    /** Represents the mean of the Normal distribution. */
     private double mean;
 
-    /**
-     * The standard deviation of the Normal distribution.
-     */
+    /** represents the standard deviation of the Normal distribution. */
     private double variance;
 
     /**
-     * The class constructor.
-     * @param var1 The variable of the distribution.
+     * Creates a new Normal distribution for a given variable.
+     * @param var1 a continuous {@link Variable} object.
      */
     public Normal(Variable var1) {
         this.var = var1;
@@ -54,86 +44,105 @@ public class Normal extends UnivariateDistribution {
     }
 
     /**
-     * Gets the mean of the distribution.
-     * @return A <code>double</code> value with the mean.
+     * Returns the mean of this Normal distribution.
+     * @return a double value corresponding to the mean.
      */
     public double getMean() {
         return mean;
     }
 
     /**
-     * Sets the mean of the distribution.
-     * @param mean1 A value for the mean.
+     * Sets the mean of this Normal distribution.
+     * @param mean1 a value for the mean.
      */
     public void setMean(double mean1) {
         this.mean = mean1;
     }
 
     /**
-     * Gets the standard deviation of the distribution.
-     * @return A <code>double</code> value with the standar deviation.
+     * Returns the variance of this Normal distribution.
+     * @return a double value corresponding to the variance.
+     */
+    public double getVariance(){
+        return this.variance;
+    }
+
+    /**
+     * Sets the variance of this Normal distribution.
+     * @param var a value for the variance.
+     */
+    public void setVariance(double var){
+        this.variance=var;
+    }
+
+    /**
+     * Returns the standard deviation of this Normal distribution.
+     * @return a double value corresponding to the standard deviation.
      */
     public double getSd() {
         return Math.sqrt(variance);
     }
 
-
-    public void setVariance(double var){
-        this.variance=var;
-    }
-
-    public double getVariance(){
-        return this.variance;
-    }
-
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
         return new double[]{this.mean, this.getVariance()};
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfParameters() {
         return 2;
     }
 
     /**
-     * Evaluates the density function in a given point.
-     * @param value An value for the variable.
-     * @return A <code>double</code> with the value of the density.
+     * {@inheritDoc}
      */
-
-
     @Override
     public double getProbability(double value) {
         return Math.exp(getLogProbability(value));
     }
 
     /**
-     * Computes the logarithm of the density function in a given point.
-     * @param value An value for the variable.
-     * @return A <code>double</code> with the logarithm of the density value.
+     * {@inheritDoc}
      */
     @Override
     public double getLogProbability(double value) {
         return (-0.5*Math.log(variance) - 0.5 * Math.log(2 * Math.PI) - 0.5 * Math.pow(value - mean, 2)/variance);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double sample(Random rand) {
         return rand.nextGaussian()*this.getSd()+this.getMean();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String label(){
         return "Normal";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
         this.setMean(random.nextGaussian()*10);
         this.setVariance(random.nextDouble()*10+0.5);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist instanceof Normal)
@@ -141,16 +150,28 @@ public class Normal extends UnivariateDistribution {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         //return "Normal ("+this.getVariable().getName()+") [ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
         return "Normal [ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
     }
 
+    /**
+     * Tests if a given Normal distribution is equal to this Normal distribution.
+     * @param dist a given Normal distribution.
+     * @param threshold a threshold.
+     * @return true if the two Normal distributions are equal, false otherwise.
+     */
     public boolean equalDist(Normal dist, double threshold){
         return Math.abs(this.getMean() - dist.getMean()) <= threshold && Math.abs(this.getVariance() - dist.getVariance()) <= threshold;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_Normal toEFUnivariateDistribution() {
 

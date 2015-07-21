@@ -11,32 +11,22 @@ import java.util.*;
 import java.util.stream.DoubleStream;
 
 /**
- * <h2>This class implements an univariate mixture of Gaussian distributions.</h2>
- *
- * @author Darío Ramos
- * @version 0.3
- * @since 2015-05-12
+ * This class extends the abstract class {@link UnivariateDistribution} and defines the Gaussian Mixture distribution.
  */
 public abstract class GaussianMixture extends UnivariateDistribution {
 
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 3362372347079403247L;
 
-    /**
-     * List of Normal distributions in the linear combination
-     */
+    /** Represents the list of {@link Normal} distributions in the linear combination. */
     private List<Normal> terms;
 
-    /**
-     * List of coefficients in the linear combination
-     */
+    /** Represents the set of coefficients in the linear combination. */
     private double[] coefficients;
 
-
-
-
     /**
-     * The class constructor.
-     * @param var1 The variable of the distribution.
+     * Creates a new GaussianMixture distribution for a given variable.
+     * @param var1 a {@link Variable} object.
      */
     public GaussianMixture(Variable var1) {
         this.var=var1;
@@ -52,9 +42,9 @@ public abstract class GaussianMixture extends UnivariateDistribution {
     }
 
     /**
-     * The class constructor.
-     * @param list A list of Normal distributions
-     * @param coeffs A list of coefficients (weights) in the mixture
+     * Creates a new GaussianMixture distribution given a list of {@link Normal} distributions and a set of coefficients.
+     * @param list a list of {@link Normal} distributions.
+     * @param coeffs a set of coefficients (i.e., weights).
      */
     public GaussianMixture(List<Normal> list, double[] coeffs) {
         this.var=list.get(0).getVariable();
@@ -62,16 +52,19 @@ public abstract class GaussianMixture extends UnivariateDistribution {
         this.coefficients=coeffs;
     }
 
-
     /**
-     * The class constructor.
-     * @param params The list of parameters (must be of length multiple of 3)
+     * Creates a new GaussianMixture distribution given a set of parameters.
+     * @param params a list of parameters (must be of length multiple of 3).
      */
     public GaussianMixture(double[] params) {
 
         this.setParameters(params);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double getLogProbability(double value) {
         double prob=0;
 
@@ -83,6 +76,10 @@ public abstract class GaussianMixture extends UnivariateDistribution {
         return Math.log(prob);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double sample(Random rand) {
 
         //int term = rand.nextInt(this.coefficients.length);
@@ -106,7 +103,10 @@ public abstract class GaussianMixture extends UnivariateDistribution {
         return Double.NaN;*/
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double[] getParameters() {
 
         int numParameters=3*coefficients.length;
@@ -117,12 +117,15 @@ public abstract class GaussianMixture extends UnivariateDistribution {
             parameters[3*index]=this.coefficients[index];
             parameters[3*index+1]=normal.getMean();
             parameters[3*index+2]=normal.getVariance();
-
             index++;
         }
         return parameters;
     }
 
+    /**
+     * Sets the parameters of this GaussianMixture.
+     * @param params an Array of doubles containing the GaussianMixture parameters.
+     */
     public void setParameters(double[] params) {
         if (params.length % 3!=0) {
             throw new UnsupportedOperationException("The number of parameters for the Gaussian mixture is not valid");
@@ -145,18 +148,35 @@ public abstract class GaussianMixture extends UnivariateDistribution {
         }
     };
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getNumberOfParameters() {
         return 3*coefficients.length;
     };
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Variable getVariable() {
         return this.var;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String label(){
         return "Gaussian Mixture";
     }
 
+    /**
+     * Randomly initializes this GaussianMixture for a given number of terms.
+     * @param random a {@link java.util.Random} object.
+     * @param numTerms a number of terms.
+     */
     public void randomInitialization(Random random,int numTerms) {
 
         this.coefficients= new double[numTerms];
@@ -181,21 +201,36 @@ public abstract class GaussianMixture extends UnivariateDistribution {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void randomInitialization(Random random) {
         int numTerms = random.nextInt(5);
         this.randomInitialization(random,numTerms);
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist.getClass().getName().equals("eu.amidst.core.distribution.GaussianMixture"))
             return this.equalDist((Normal)dist,threshold);
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public abstract <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution();
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String toString() {
         String text = "";
         for(int k=0; k<coefficients.length; k++) {

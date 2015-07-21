@@ -10,60 +10,95 @@ package eu.amidst.core.distribution;
 
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.Variable;
-
 import java.util.Random;
 
+//TODO finish the toString() method
+
 /**
- * Created by andresmasegosa on 13/01/15.
+ * This class extends the abstract class {@link UnivariateDistribution} and defines the Delta distribution.
  */
 public class DeltaDistribution extends UnivariateDistribution {
 
+    /** Represents the delta value of this DeltaDistribution. */
     double deltaValue;
 
+    /**
+     * Creates a new DeltaDistribution for a given variable and delta value.
+     * @param var1 a {@link Variable} object.
+     * @param deltaValue1 a delta value.
+     */
     public DeltaDistribution(Variable var1, double deltaValue1){
         this.var=var1;
         this.deltaValue=deltaValue1;
     }
 
+    /**
+     * Returns the delta value of this DeltaDistribution.
+     * @return the delta value of this DeltaDistribution.
+     */
     public double getDeltaValue() {
         return deltaValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogProbability(double value) {
         return (deltaValue==value)? 1.0 : 0.0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double sample(Random rand) {
         return deltaValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution() {
         throw new UnsupportedOperationException("This distribution is not supported yet in exponential form");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
         return new double[1];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfParameters() {
         return 1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String label() {
         return "Delta of " + this.deltaValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist instanceof DeltaDistribution)
@@ -71,13 +106,21 @@ public class DeltaDistribution extends UnivariateDistribution {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    //TODO
     public String toString() {
         return null;
     }
 
-    public boolean equalDist(DeltaDistribution dist, double threshold) {
+    /**
+     * Tests if a given delta distribution is equal to this DeltaDistribution.
+     * Two delta distributions are equal if they are defined for the same variable and have the same delta values.
+     * @param dist a given delta distribution.
+     * @return true if the two delta distributions are equal, false otherwise.
+     */
+    public boolean equalDist(DeltaDistribution dist) {
         if (dist.getVariable()!=dist.getVariable())
             return false;
 

@@ -15,28 +15,34 @@ import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 /**
- * Created by andresmasegosa on 24/02/15.
+ * This class extends the abstract class {@link ConditionalDistribution}.
+ * It defines the conditional distribution of a variable with a base distribution given a set of Multinomial parents.
  */
 public class BaseDistribution_MultinomialParents<E extends Distribution> extends ConditionalDistribution {
 
-    /**
-     * The list of multinomial parents
-     */
+    /** Represents the list of multinomial parents. */
     private List<Variable> multinomialParents;
 
+    /** Represents the list of non-multinomial parents. */
     private List<Variable> nonMultinomialParents;
 
+    /** Represents the list of base distributions. */
     private List<E> baseDistributions;
 
+    /** Indicates if this distribution is a base conditional distribution or not. */
     private boolean isBaseConditionalDistribution;
 
+    /**
+     * Creates a new BaseDistribution_MultinomialParents given the lists of multinomial parents and distributions.
+     * @param multinomialParents1 the list of multinomial parents.
+     * @param distributions1 the list of distributions.
+     */
     public BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
 
         if (distributions1.size() == 0) throw new IllegalArgumentException("Size of base distributions is zero");
@@ -51,7 +57,6 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         this.multinomialParents = multinomialParents1;
         this.nonMultinomialParents = new ArrayList<>();
         this.baseDistributions = distributions1;
-
 
         if (!(baseDistributions.get(0) instanceof UnivariateDistribution)){
             this.isBaseConditionalDistribution=true;
@@ -68,13 +73,17 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         this.parents.addAll(this.multinomialParents);
         this.parents.addAll(this.nonMultinomialParents);
 
-
         //Make them unmodifiable
         this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
         this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
+    /**
+     * Creates a new BaseDistribution_MultinomialParents given a variable and the list of its parents.
+     * @param var_ a {@link Variable} object.
+     * @param parents_ the list of parents that may include both multinomial and non-multinomial parents.
+     */
     public BaseDistribution_MultinomialParents(Variable var_, List<Variable> parents_) {
 
         this.var = var_;
@@ -106,63 +115,119 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
             }
         }
 
-
         //Make them unmodifiable
         this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
         this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
         this.parents = Collections.unmodifiableList(this.parents);
     }
 
+    /**
+     * Returns the list of the multinomial parents.
+     * @return the list of the multinomial parents.
+     */
     public List<Variable> getMultinomialParents() {
         return multinomialParents;
     }
 
+    /**
+     * Returns the list of the multinomial parents.
+     * @return the list of the non-multinomial parents.
+     */
     public List<Variable> getNonMultinomialParents() {
         return nonMultinomialParents;
     }
 
+    /**
+     * Tests if this distribution is a base conditional distribution or not.
+     * @return true if this distribution is a base conditional distribution, false otherwise.
+     */
     public boolean isBaseConditionalDistribution() {
         return isBaseConditionalDistribution;
     }
 
+    /**
+     * Returns the total number of base distributions.
+     * @return the total number of base distributions.
+     */
     public int getNumberOfBaseDistributions(){
         return this.baseDistributions.size();
     }
+
+    /**
+     * Returns a base distribution given a parent assignment.
+     * @param parentAssignment an {@link Assignment} for the parent set of this variable.
+     * @return a base distribution.
+     */
     public E getBaseDistribution(Assignment parentAssignment){
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, parentAssignment);
         return baseDistributions.get(position);
     }
 
+    /**
+     * Sets a base distribution given a parent assignment and an input base distribution.
+     * @param parentAssignment an {@link Assignment} for the parent set of this variable.
+     * @param baseDistribution a base distribution.
+     */
     public void setBaseDistribution(Assignment parentAssignment, E baseDistribution) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.parents, parentAssignment);
         this.setBaseDistribution(position,baseDistribution);
     }
 
+    /**
+     * Sets a base distribution given a position and an input base distribution.
+     * @param position the position of the base distribution.
+     * @param baseDistribution a base distribution.
+     */
     public void setBaseDistribution(int position, E baseDistribution){
         this.baseDistributions.set(position, baseDistribution);
     }
 
+    /**
+     * Returns a base distribution given its position.
+     * @param position the position of the base distribution.
+     * @return a base distribution.
+     */
     public E getBaseDistribution(int position){
         return this.baseDistributions.get(position);
     }
 
+    /**
+     * Returns the list of base distributions.
+     * @return the list of base distributions.
+     */
     public List<E> getBaseDistributions() {
         return baseDistributions;
     }
 
+    /**
+     * Returns a base conditional distribution given its position.
+     * @param position the position of the base conditional distribution.
+     * @return a {@link ConditionalDistribution} object.
+     */
     public ConditionalDistribution getBaseConditionalDistribution(int position) {
         return (ConditionalDistribution)this.getBaseDistribution(position);
     }
 
+    /**
+     * Returns a base univariate distribution given its position.
+     * @param position the position of the base univariate distribution.
+     * @return a {@link UnivariateDistribution} object.
+     */
     public UnivariateDistribution getBaseUnivariateDistribution(int position) {
         return (UnivariateDistribution)this.getBaseDistribution(position);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogConditionalProbability(Assignment assignment) {
         return this.getBaseDistribution(assignment).getLogProbability(assignment);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UnivariateDistribution getUnivariateDistribution(Assignment assignment) {
         if (this.isBaseConditionalDistribution)
@@ -171,6 +236,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
             return (UnivariateDistribution)this.getBaseDistribution(assignment);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
 
@@ -181,15 +249,20 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
             System.arraycopy(this.getBaseDistribution(i).getParameters(), 0, param, count, this.getBaseDistribution(i).getNumberOfParameters());
             count+=this.getBaseDistribution(i).getNumberOfParameters();
         }
-
         return param;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfParameters() {
         return this.baseDistributions.stream().mapToInt(dist -> dist.getNumberOfParameters()).sum();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String label() {
         if (this.getConditioningVariables().size() == 0 || this.multinomialParents.size() == 0) {
@@ -201,11 +274,17 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
         this.baseDistributions.stream().forEach(dist -> dist.randomInitialization(random));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         BaseDistribution_MultinomialParents<E> newdist = (BaseDistribution_MultinomialParents<E>)dist;
@@ -223,6 +302,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -238,6 +320,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         return str.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_BaseDistribution_MultinomialParents<? extends EF_Distribution> toEFConditionalDistribution(){
 

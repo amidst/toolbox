@@ -14,44 +14,69 @@ import eu.amidst.core.variables.Variable;
 import java.util.Random;
 
 /**
- * Created by andresmasegosa on 23/11/14.
+ * This class extends the abstract class {@link UnivariateDistribution} and defines the Uniform distribution.
  */
 public class Uniform extends UnivariateDistribution {
 
-
+    /**
+     * Creates a new Uniform distribution for a given variable.
+     * @param var1 a {@link Variable} object.
+     */
     public Uniform(Variable var1) {
         this.var = var1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogProbability(double value) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double sample(Random rand) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getParameters() {
         return new double[this.getNumberOfParameters()];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfParameters() {
         //Discrete uniform needs 1 parameter (number of states of the variable)
         //Continuous uniform needs 2 parameters (minimum and maximum interval)
-        return 0; //????
+        return 0; //TODO Check????
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String label(){ return "Uniform"; }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void randomInitialization(Random random) {
-
+          //TODO Empty? Check!
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equalDist(Distribution dist, double threshold) {
         if (dist instanceof Uniform)
@@ -59,11 +84,20 @@ public class Uniform extends UnivariateDistribution {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return null;
     }
 
+    /**
+     * Tests if a given Uniform distribution is equal to this Uniform distribution.
+     * @param dist a given Uniform distribution.
+     * @param threshold a threshold.
+     * @return true if the two Uniform distributions are equal, false otherwise.
+     */
     public boolean equalDist(Uniform dist, double threshold) {
         if (dist.getVariable()!=dist.getVariable())
             return false;
@@ -71,6 +105,9 @@ public class Uniform extends UnivariateDistribution {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution() {
         throw new UnsupportedOperationException("This distribution is not supported yet in exponential form");
