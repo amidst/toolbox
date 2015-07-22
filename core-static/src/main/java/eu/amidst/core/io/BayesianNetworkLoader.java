@@ -13,10 +13,17 @@ import eu.amidst.core.models.BayesianNetwork;
 import java.io.*;
 
 /**
- * Created by afa on 11/12/14.
+ * This class allows to load a {@link BayesianNetwork} model from a file.
  */
 public final class BayesianNetworkLoader {
 
+    /**
+     * Loads a {@link BayesianNetwork} from a file.
+     * @param fileName a name of the file from which the Bayesian network will be loaded.
+     * @return a {@link BayesianNetwork} model.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
     public static BayesianNetwork loadFromFile(String fileName) throws IOException, ClassNotFoundException {
 
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));

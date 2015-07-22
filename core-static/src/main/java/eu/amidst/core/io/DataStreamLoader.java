@@ -15,15 +15,26 @@ import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
 /**
- * Created by andresmasegosa on 23/02/15.
+ * This class allows to load a {@link DataStream} from a file.
  */
 public final class DataStreamLoader {
+
+    /** Represents the data file reader. */
     private static DataFileReader dataFileReader = new ARFFDataReader();
 
+    /**
+     * Sets the data file reader.
+     * @param dataFileReader a {@link DataFileReader} object.
+     */
     public static void setDataFileReader(DataFileReader dataFileReader) {
         dataFileReader = dataFileReader;
     }
 
+    /**
+     * Loads a {@link DataStream} from a file.
+     * @param path the path of the file from which the data stream will be loaded.
+     * @return a {@link DataStream}.
+     */
     public static DataStream<DataInstance> openFromFile(String path){
         dataFileReader.loadFromFile(path);
         return new DataStreamFromFile(dataFileReader);

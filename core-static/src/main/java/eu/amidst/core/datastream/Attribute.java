@@ -124,7 +124,7 @@ public final class Attribute implements Serializable {
     }
 
     /**
-     * Test whether two attributes are equal or not.
+     * Tests whether two attributes are equal or not.
      * Two attributes are considered to be equal if they have the same name and the same StateSpaceType.
      * @param o an Attribute object to be compared with this Attribute.
      * @return true if the two attributes are equals, false otherwise.

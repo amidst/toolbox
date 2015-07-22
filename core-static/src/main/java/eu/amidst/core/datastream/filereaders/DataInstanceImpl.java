@@ -13,31 +13,48 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 
 /**
- * Created by andresmasegosa on 11/11/14.
+ * This class implements the {@link DataInstance} interface and handles the operations related to the data instances.
  */
 public class DataInstanceImpl implements DataInstance {
 
+    /** Represents a {@link DataRow} object. */
     private DataRow dataRow;
 
+    /**
+     * Creates a new DataInstanceImpl from a given {@link DataRow} object.
+     * @param dataRow1 a {@link DataRow} object.
+     */
     public DataInstanceImpl(DataRow dataRow1){
         dataRow=dataRow1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Attributes getAttributes() {
         return dataRow.getAttributes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getValue(Attribute att) {
         return dataRow.getValue(att);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setValue(Attribute att, double value) {
         this.dataRow.setValue(att, value);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] toArray() {
         return this.dataRow.toArray();

@@ -16,16 +16,27 @@ import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import java.io.IOException;
 
 /**
- * Created by andresmasegosa on 07/04/15.
+ * This class allows to save a {@link DataStream} in a file.
  */
 public final class DataStreamWriter {
 
+    /** Represents the data file writer. */
     private static DataFileWriter dataFileWriter = new ARFFDataWriter();
 
+    /**
+     * Sets the data file writer.
+     * @param dataFileWriter_ an {@link DataFileWriter} object.
+     */
     public static void setDataFileWriter(DataFileWriter dataFileWriter_) {
         dataFileWriter = dataFileWriter_;
     }
 
+    /**
+     * Saves a {@link DataStream} in a file.
+     * @param data the {@link DataStream} to ba saved.
+     * @param path the path of the file where the data stream will be saved.
+     * @throws IOException
+     */
     public static void writeDataToFile(DataStream<? extends DataInstance> data, String path) throws IOException {
         dataFileWriter.writeToFile(data, path);
     }

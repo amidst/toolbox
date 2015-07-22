@@ -14,12 +14,22 @@ import eu.amidst.core.datastream.DataInstance;
 import java.io.IOException;
 
 /**
- * Created by andresmasegosa on 23/02/15.
+ * This interface defines a data file writer.
  */
 public interface DataFileWriter {
 
+    /**
+     * Returns the filename extension.
+     * @return the filename extension.
+     */
     String getFileExtension();
 
+    /**
+     * Saves a {@link DataStream} in a given file.
+     * @param dataStream the {@link DataStream} to be written in the file.
+     * @param file a String that represents the name of the file where the data will be written.
+     * @throws IOException
+     */
     void writeToFile(DataStream<? extends DataInstance> dataStream, String file) throws IOException;
 
 }

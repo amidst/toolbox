@@ -15,34 +15,73 @@ import java.util.Iterator;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 11/11/14.
+ * This interface defines a data file reader.
  */
 public interface DataFileReader extends Iterable<DataRow> {
 
+    /**
+     * Loads this DataFileReader from a given file.
+     * @param path the path of the file from which the DataFileReader will be loaded.
+     */
     void loadFromFile(String path);
 
+    /**
+     * Returns the set of {@link Attributes} in this DataFileReader.
+     * @return a valid {@link Attributes} object.
+     */
     Attributes getAttributes();
 
+    /**
+     * Tests if this DataFileReader could read the given filename extension.
+     * @param fileExtension the filename extension.
+     * @return true if the filename extension could be read.
+     */
     boolean doesItReadThisFileExtension(String fileExtension);
 
+    /**
+     * Returns a Stream of {@DataRow} objects to be processed sequentially.
+     * @return a valid Java stream of {@DataRow} objects.
+     */
     Stream<DataRow> stream();
 
+    /**
+     * Restarts this DataFileReader.
+     * This method is only needed if the iterator is not based on streams.
+     */
     default void restart(){
-        //Only needed if iterator is not based on streams.
+
     }
 
+    /**
+     * Closes this DataFileReader.
+     * This method is only needed if the iterator is not based on streams.
+     */
     default void close(){
-        //Only needed if iterator is not based on streams.
+
     }
 
+    /**
+     * Returns a fixed batch Stream of {@DataRow} objects to be processed in parallel.
+     * @param batchSize the batch size.
+     * @return a fixed batch stream to be processed in parallel.
+     * @see eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper
+     */
     default Stream<DataRow> parallelStream(int batchSize) {
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.stream(), batchSize);
     }
 
+    /**
+     * Returns a Stream of {@DataRow} objects to be processed in parallel.
+     * @return a stream to be processed in parallel.
+     */
     default Stream<DataRow> parallelStream(){
         return this.stream().parallel();
     }
 
+    /**
+     * Returns an {@link Iterator} over the stream of {@DataRow} objects.
+     * @return an {@link Iterator} over the stream of {@DataRow} objects.
+     */
     default Iterator<DataRow> iterator() {
         return this.stream().iterator();
     }

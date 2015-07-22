@@ -15,16 +15,16 @@ import eu.amidst.core.datastream.DataStream;
 import java.util.stream.Stream;
 
 /**
- * This class produces {@link DataStream} objects which consumes data which is placed on a file.
+ * This class implements the {@link DataStream} interface and produces {@link DataStream} objects from a given file.
  */
 public class DataStreamFromFile implements DataStream<DataInstance> {
 
-    /** The DataFileReader object providing access the the data on the text file */
+    /** Represents the {@link DataFileReader} object providing access to the data stored in a file. */
     DataFileReader reader;
 
     /**
-     * A constructor initialized with a DataFileReader object.
-     * @param reader1
+     * Creates a new DataStreamFromFile from a given {@link DataFileReader} object.
+     * @param reader1 a {@link DataFileReader} object.
      */
     public DataStreamFromFile(DataFileReader reader1) {
         this.reader = reader1;
