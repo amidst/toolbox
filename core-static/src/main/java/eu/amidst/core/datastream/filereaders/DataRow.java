@@ -12,41 +12,36 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 
 /**
- *
- * This interface represents a row of the data matrix containing the data. It can also
- * be seen as a specific assignment to the attributes of a data set.
- *
+ * This interface defines a row of the data matrix.
+ * It represents a specific assignment to all the attributes in the data.
  */
 public interface DataRow {
 
     /**
-     * This method return the value assigned to a given Attribute
-     * @param att, the Attribute object we want to query
-     * @return The assigned value to the given Attribute. Returns a Double.NaN if
-     * the attribute is not observed in this assignment.
+     * Returns the value assigned to a given {@link Attribute} in this DataRow.
+     * @param att an {@link Attribute} object.
+     * @return the assigned value to the given {@link Attribute}.
+     * If the attribute is not observed, then returns a Double.NaN value.
      */
     double getValue(Attribute att);
 
     /**
-     * This method set the value assigned to an Attribute. If the value is already include,
-     * then the value is updated accordingly.
-     *
-     * @param att, the Attribute object we want to assign
-     * @param value, the assigned value
+     * Sets the value of an {@link Attribute} in this DataRow.
+     * If the value is already included in the data, then the value will be updated accordingly.
+     * @param att an {@link Attribute} object.
+     * @param value a double value to be assigned to the given {@link Attribute}.
      */
     void setValue(Attribute att, double value);
 
     /**
-     * This method return the set of attributes which have an assigned value
-     * stored in this object.
-     * @return A valid Attributes object
+     * Returns the set of {@link Attributes} that have observed values in this DataRow.
+     * @return a valid {@link Attributes} object.
      */
     Attributes getAttributes();
 
     /**
-     * This method returns the values of the dataRow in the form of an array of doubles
-     *
-     * @return The array of values
+     * Returns all the values of this DataRow as an array of doubles.
+     * @return an array of doubles.
      */
     double[] toArray();
 

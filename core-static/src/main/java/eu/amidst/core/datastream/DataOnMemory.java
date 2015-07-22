@@ -31,7 +31,7 @@ public interface DataOnMemory<E extends DataInstance> extends DataStream<E> {
     E getDataInstance(int i);
 
     /**
-     * Returns a list with all the {@link DataInstance} objects of the data set.
+     * Returns a list with all the {@link DataInstance} objects in the data set.
      * @return a list of data instances.
      */
     List<E> getList();

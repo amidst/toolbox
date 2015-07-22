@@ -24,24 +24,39 @@ import eu.amidst.core.variables.Variable;
  */
 public class NaiveBayesStructure implements StructuralLearningAlgorithm {
 
+    /** Represents the {@link DataStream} used to learn this NaiveBayesStructure. */
     DataStream<DataInstance> dataStream;
+
+    /** Represents a {@link DAG} object, i.e., the graphical structure of the Naive Bayes model. */
     DAG dag;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initLearning() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDataStream(DataStream<DataInstance> data) {
         dataStream=data;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runLearning() {
         Variables modelHeader = new Variables(dataStream.getAttributes());
@@ -50,11 +65,17 @@ public class NaiveBayesStructure implements StructuralLearningAlgorithm {
         dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DAG getDAG() {
         return dag;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setParallelMode(boolean parallelMode) {
 

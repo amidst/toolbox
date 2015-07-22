@@ -18,20 +18,25 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 11/11/14.
+ * This class implements the interface {@link DataOnMemory} and produces {@link DataOnMemory} objects from a given file.
  */
 public class DataOnMemoryFromFile implements DataOnMemory<DataInstance> {
 
+    /** Represents the {@link DataFileReader} object providing access to the data stored in a file. */
     private DataFileReader reader;
 
     /**
-     * We assume that the dataset here is going to be relatively small and that it is going to be read multiple times
-     * so it is better to store it in an array, otherwise it might be just better to keep it in the ArrayList and avoid
-     * the extra pass in the constructor.
+     * Represents an Array of data instances.
+     * <p>The data is assumed here to be relatively small, and thus it would be possible to be read multiple times.
+     * In this case, it is possible to store all the data instances in an Array. Otherwise, it might be better to store all
+     * the data instances in an ArrayList and avoid therefore the extra pass in the constructor.</p>
      */
     private DataInstanceImpl[] dataInstances;
 
-
+    /**
+     * Creates a new DataOnMemoryFromFile from a given {@link DataFileReader} object.
+     * @param reader a {@link DataFileReader} object.
+     */
     public DataOnMemoryFromFile(DataFileReader reader) {
         this.reader = reader;
 
@@ -48,45 +53,67 @@ public class DataOnMemoryFromFile implements DataOnMemory<DataInstance> {
             dataInstances[counter] = inst;
             counter++;
         }
-
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfDataInstances() {
         return dataInstances.length;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataInstance getDataInstance(int i) {
         return dataInstances[i];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<DataInstance> getList() {
         return Arrays.asList(this.dataInstances);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Attributes getAttributes() {
         return this.reader.getAttributes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Stream<DataInstance> stream() {
         return Arrays.stream(this.dataInstances);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         this.reader.close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRestartable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void restart() {
 

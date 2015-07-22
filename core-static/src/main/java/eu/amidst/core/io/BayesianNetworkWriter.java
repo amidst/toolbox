@@ -13,10 +13,16 @@ import eu.amidst.core.models.BayesianNetwork;
 import java.io.*;
 
 /**
- * Created by afa on 11/12/14.
+ * This class allows to save a {@link BayesianNetwork} model in a file.
  */
 public final class BayesianNetworkWriter {
 
+    /**
+     * Saves a {@link BayesianNetwork} model in a file.
+     * @param bn a {@link BayesianNetwork} model.
+     * @param fileName a name of a file where the Bayesian network will be saved.
+     * @throws IOException
+     */
     public static void saveToFile (BayesianNetwork bn, String fileName) throws IOException {
 
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName));
