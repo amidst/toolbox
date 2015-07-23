@@ -16,10 +16,11 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.DAG;
 
-// TODO Add a method for updating a model with one data instance: public BayesianNetwork updateModel(BayesianNetwork model, DataInstance instance);
+// TODO Add a method for updating a model with one data instance:
+// TODO public BayesianNetwork updateModel(BayesianNetwork model, DataInstance instance);
 
  /**
- * This class defines the {@link eu.amidst.core.models.BayesianNetwork} structural learning Engine.
+ * This class defines the {@link eu.amidst.core.models.BayesianNetwork} structural learning engine.
  */
 public final class StructuralLearningEngine {
 

@@ -21,83 +21,155 @@ import eu.amidst.core.utils.Vector;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+
+// TODO By iterating several times over the data we can get better approximations.
+// TODO Trick. Initialize the Q's of the parameters variables with the final posteriors in the previous iterations.
+
 /**
- *
- * TODO By iterating several times over the data we can get better approximations. Trick. Initialize the Q's of the parameters variables with the final posterios in the previous iterations.
- *
- *
- * Created by ana@cs.aau.dk on 04/03/15.
+ * This class implements the {@link BayesianParameterLearningAlgorithm} interface.
+ * It defines the Streaming Variational Bayes (SVB) algorithm.
  */
 public class SVB implements BayesianParameterLearningAlgorithm {
 
+    /** Represents the transition method {@link TransitionMethod}. */
     TransitionMethod transitionMethod = null;
+
+    /** Represents a {@link EF_LearningBayesianNetwork} object. */
     EF_LearningBayesianNetwork ef_extendedBN;
+
+    /** Represents the plateu structure {@link PlateuStructure}*/
     PlateuStructure plateuStructure = new PlateuIIDReplication();
+
+    /** Represents a directed acyclic graph {@link DAG}. */
     DAG dag;
+
+    /** Represents the data stream to be used for parameter learning. */
     DataStream<DataInstance> dataStream;
+
+    /** Represents the Evidence Lower BOund (elbo). */
     double elbo;
+
+    /** Indicates if the model is non sequential, initialized to {@code false}. */
     boolean nonSequentialModel=false;
+
+    /** Indicates if this SVB can random restarted, initialized to {@code false}. */
     boolean randomRestart=false;
+
+    /** Represents the window size, initialized to 100. */
     int windowsSize=100;
+
+    /** Represents the seed, initialized to 0. */
     int seed = 0;
+
+    /** Represents the total number of batches. */
     int nBatches = 0;
+
+    /** Represents the total number of iterations, initialized to 0. */
     int nIterTotal = 0;
 
+    /** Represents the natural vector prior. */
     CompoundVector naturalVectorPrior = null;
 
+    /** Represents the natural vector posterior. */
     BatchOutput naturalVectorPosterior = null;
 
-
+    /**
+     * Returns the window size.
+     * @return the window size.
+     */
     public int getWindowsSize() {
         return windowsSize;
     }
 
+    /**
+     * Sets a random restart for this SVB.
+     * @param randomRestart {@code true} if a random restart is to be set, {@code false} otherwise.
+     */
     public void setRandomRestart(boolean randomRestart) {
         this.randomRestart = randomRestart;
     }
 
+    /**
+     * Returns the plateu structure of this SVB.
+     * @return a {@link PlateuStructure} object.
+     */
     public PlateuStructure getPlateuStructure() {
         return plateuStructure;
     }
 
+    /**
+     * Sets the plateu structure of this SVB.
+     * @param plateuStructure a valid {@link PlateuStructure} object.
+     */
     public void setPlateuStructure(PlateuStructure plateuStructure) {
         this.plateuStructure = plateuStructure;
     }
 
+    /**
+     * Returns the seed.
+     * @return the seed.
+     */
     public int getSeed() {
         return seed;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setSeed(int seed) {
         this.seed = seed;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogMarginalProbability() {
         return elbo;
     }
 
+    /**
+     * Sets the window size.
+     * @param windowsSize the window size.
+     */
     public void setWindowsSize(int windowsSize) {
         this.windowsSize = windowsSize;
     }
 
+    /**
+     * Sets the transition method of this SVB.
+     * @param transitionMethod a valid {@link TransitionMethod} object.
+     */
     public void setTransitionMethod(TransitionMethod transitionMethod) {
         this.transitionMethod = transitionMethod;
     }
 
+    /**
+     * Returns the transition method of this SVB.
+     * @param <E> the type of elements.
+     * @return a valid {@link TransitionMethod} object.
+     */
     public <E extends TransitionMethod> E getTransitionMethod() {
         return (E)this.transitionMethod;
     }
 
-
+    /**
+     * Returns the natural parameter priors.
+     * @return a {@link CompoundVector} including the natural parameter priors.
+     */
     protected CompoundVector getNaturalParameterPrior(){
         if (naturalVectorPrior==null){
             naturalVectorPrior = this.computeNaturalParameterVectorPrior();
         }
-
         return naturalVectorPrior;
     }
 
+    /**
+     * Returns the natural parameter posterior.
+     * @return a {@link BatchOutput} object including the natural parameter posterior.
+     */
     protected BatchOutput getNaturalParameterPosterior() {
         if (this.naturalVectorPosterior==null){
             naturalVectorPosterior = new BatchOutput(this.computeNaturalParameterVectorPrior(), 0);
@@ -105,6 +177,10 @@ public class SVB implements BayesianParameterLearningAlgorithm {
         return naturalVectorPosterior;
     }
 
+    /**
+     * Computes the natural parameter priors.
+     * @return a {@link CompoundVector} including the natural parameter priors.
+     */
     protected CompoundVector computeNaturalParameterVectorPrior(){
         List<Vector> naturalParametersPriors =  this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
                 .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
@@ -120,6 +196,9 @@ public class SVB implements BayesianParameterLearningAlgorithm {
         return compoundVectorPrior;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runLearning() {
         this.initLearning();
@@ -130,15 +209,25 @@ public class SVB implements BayesianParameterLearningAlgorithm {
        }
     }
 
+    /**
+     * Sets the model as a non sequential.
+     * @param nonSequentialModel_ {@code true} if the model is to be set as a non sequential, {@code false} otherwise.
+     */
     public void setNonSequentialModel(boolean nonSequentialModel_) {
         this.nonSequentialModel = nonSequentialModel_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setOutput(boolean activateOutput) {
         this.getPlateuStructure().getVMP().setOutput(activateOutput);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
         double elboBatch = 0;
@@ -156,6 +245,11 @@ public class SVB implements BayesianParameterLearningAlgorithm {
         return elboBatch;
     }
 
+    /**
+     * Updates the model sequentially using a given {@link DataOnMemory} object.
+     * @param batch a {@link DataOnMemory} object.
+     * @return a double value representing the log probability of an evidence.
+     */
     private double updateModelSequential(DataOnMemory<DataInstance> batch) {
         nBatches++;
         //System.out.println("\n Batch:");
@@ -173,6 +267,11 @@ public class SVB implements BayesianParameterLearningAlgorithm {
         return this.plateuStructure.getLogProbabilityOfEvidence();
     }
 
+    /**
+     * Updates the model on batch in parallel using a given {@link DataOnMemory} object.
+     * @param batch a {@link DataOnMemory} object.
+     * @return a {@link BatchOutput} object.
+     */
     protected BatchOutput updateModelOnBatchParallel(DataOnMemory<DataInstance> batch) {
 
         nBatches++;
@@ -193,6 +292,11 @@ public class SVB implements BayesianParameterLearningAlgorithm {
 
     }
 
+    /**
+     * Updates the model in parallel using a given {@link DataOnMemory} object.
+     * @param batch a {@link DataOnMemory} object.
+     * @return a double value.
+     */
     private double updateModelParallel(DataOnMemory<DataInstance> batch) {
 
         nBatches++;
@@ -203,7 +307,6 @@ public class SVB implements BayesianParameterLearningAlgorithm {
         List<Vector> naturalParametersPosterior =  this.ef_extendedBN.getParametersVariables().getListOfVariables().stream()
                 .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
                 .map(var -> plateuStructure.getEFParameterPosterior(var).deepCopy().getNaturalParameters()).collect(Collectors.toList());
-
 
         CompoundVector compoundVectorEnd = new CompoundVector(naturalParametersPosterior);
 
@@ -216,19 +319,34 @@ public class SVB implements BayesianParameterLearningAlgorithm {
         return out.getElbo();
     }
 
+    /**
+     * Returns the number of batches.
+     * @return the number of batches.
+     */
     public int getNumberOfBatches() {
         return nBatches;
     }
 
+    /**
+     * Returns the average number of iterations.
+     * @return the average number of iterations.
+     */
     public double getAverageNumOfIterations(){
         return ((double)nIterTotal)/nBatches;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDAG(DAG dag) {
         this.dag = dag;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void initLearning(){
 
         plateuStructure.setNRepetitions(windowsSize);
@@ -248,15 +366,27 @@ public class SVB implements BayesianParameterLearningAlgorithm {
            this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN, plateuStructure);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDataStream(DataStream<DataInstance> data) {
         this.dataStream=data;
     }
 
+    /**
+     * Converts a {@link DAG} to an extended Exponential Family (EF) Bayesian network (BN).
+     * @param dag a directed acyclic graph {@link DAG}.
+     * @return an {@link EF_BayesianNetwork} object.
+     */
     private static EF_BayesianNetwork convertDAGToExtendedEFBN(DAG dag){
         return null;
     }
 
+    /**
+     * Updates the Natural Parameter Prior from a given parameter vector.
+     * @param parameterVector a {@link CompoundVector} object.
+     */
     protected void updateNaturalParameterPrior(CompoundVector parameterVector){
         final int[] count = new int[1];
         ef_extendedBN.getParametersVariables().getListOfVariables().stream()
@@ -271,6 +401,9 @@ public class SVB implements BayesianParameterLearningAlgorithm {
                 });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
         if(!nonSequentialModel)
@@ -291,7 +424,6 @@ public class SVB implements BayesianParameterLearningAlgorithm {
 
             BayesianNetwork learntBN =  BayesianNetwork.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
 
-
             CompoundVector priors = this.getNaturalParameterPrior();
             count[0] = 0;
             ef_extendedBN.getParametersVariables().getListOfVariables().stream()
@@ -303,17 +435,21 @@ public class SVB implements BayesianParameterLearningAlgorithm {
                         ef_extendedBN.setDistribution(var, uni);
                         count[0]++;
                     });
-
-
             return learntBN;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setParallelMode(boolean parallelMode) {
         throw new UnsupportedOperationException("Non Parallel Mode Supported. Use class ParallelSVB");
     }
 
+    /**
+     * Defines the batch Output.
+     */
     static class BatchOutput{
         CompoundVector vector;
         double elbo;

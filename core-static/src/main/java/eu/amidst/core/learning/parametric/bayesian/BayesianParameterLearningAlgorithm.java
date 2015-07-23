@@ -13,10 +13,16 @@ import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.variables.Variable;
 
 /**
- * Created by ana@cs.aau.dk on 04/03/15.
+ * This interface extends {@link ParameterLearningAlgorithm} and defines the Bayesian parameter learning algorithm.
  */
 public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlgorithm {
 
+    /**
+     * Returns the parameter posterior.
+     * @param parameter a {@link Variable} object.
+     * @param <E> the type of elements.
+     * @return the parameter posterior.
+     */
     default <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter){
         if (!parameter.isParameterVariable())
             throw new IllegalArgumentException("Non a parameter variable");

@@ -25,35 +25,70 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
- * Created by andresmasegosa on 30/06/15.
+ * This class implements the {@link BayesianParameterLearningAlgorithm} interface.
+ * It defines the Parallel implementation of the Streaming Variational Bayes (SVB) algorithm.
  */
 public class ParallelSVB implements BayesianParameterLearningAlgorithm{
 
+    /** Represents the data stream to be used for parameter learning. */
     DataStream<DataInstance> data;
+
+    /** Represents the set of SVB engines. */
     SVB[] svbEngines;
+
+    /** Represents a directed acyclic graph {@link DAG}. */
     DAG dag;
+
+    /** Represents the number of used CPU cores. */
     int nCores = -1;
+
+    /** Represents a {@link SVB} object. */
     SVB SVBEngine = new SVB();
+
+    /** Represents the log likelihood. */
     double logLikelihood;
+
+    /** Represents the seed, initialized to 0. */
     int seed = 0;
+
+    /** Indicates if the Output is activated or not, initialized to {@code false}. */
     boolean activateOutput=false;
 
+    /**
+     * Sets the seed using a single {@code int} seed.
+     * @param seed_ the initial seed.
+     */
     public void setSeed(int seed_){
         seed = seed_;
     }
 
+    /**
+     * Sets the number of CPU cores.
+     * @param nCores the number of CPU cores.
+     */
     public void setNCores(int nCores) {
         this.nCores = nCores;
     }
 
+    /**
+     * Returns the SVB engine.
+     * @return the SVB engine.
+     */
     public SVB getSVBEngine() {
         return SVBEngine;
     }
 
+    /**
+     * Sets the SVB engine.
+     * @param SVBEngine the SVB engine.
+     */
     public void setSVBEngine(SVB SVBEngine) {
         this.SVBEngine = SVBEngine;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initLearning() {
         if (this.nCores==-1)
@@ -74,28 +109,37 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
             svbEngines[i].getPlateuStructure().getVMP().setTestELBO(this.SVBEngine.getPlateuStructure().getVMP().isTestELBO());
             svbEngines[i].getPlateuStructure().getVMP().setMaxIter(this.SVBEngine.getPlateuStructure().getVMP().getMaxIter());
             svbEngines[i].getPlateuStructure().getVMP().setThreshold(this.SVBEngine.getPlateuStructure().getVMP().getThreshold());
-
             svbEngines[i].initLearning();
         }
-
-
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
         throw new UnsupportedOperationException("Use standard StreamingSVB for sequential updating");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDataStream(DataStream<DataInstance> data_) {
         this.data=data_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogMarginalProbability() {
         return this.logLikelihood;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runLearning() {
         this.initLearning();
@@ -135,21 +179,33 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDAG(DAG dag_) {
         this.dag = dag_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
         return this.svbEngines[0].getLearntBayesianNetwork();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setParallelMode(boolean parallelMode) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setOutput(boolean activateOutput_) {
         activateOutput = activateOutput_;

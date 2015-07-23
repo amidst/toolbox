@@ -18,27 +18,66 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 
 /**
- * Created by ana@cs.aau.dk on 04/03/15.
+ * This interface defines the Algorithm for learning the {@link eu.amidst.core.models.BayesianNetwork} parameters.
  */
 public interface ParameterLearningAlgorithm {
 
+    /**
+     * Initializes the parameter learning process.
+     */
     void initLearning();
 
+    /**
+     * Updates the model using a given {@link DataOnMemory} object.
+     * @param batch a {@link DataOnMemory} object.
+     * @return a double value.
+     */
     double updateModel(DataOnMemory<DataInstance> batch);
 
+    /**
+     * Sets the {@link DataStream} to be used by this ParameterLearningAlgorithm.
+     * @param data a {@link DataStream} object.
+     */
     void setDataStream(DataStream<DataInstance> data);
 
+    /**
+     * Returns the log marginal probability.
+     * @returnthe log marginal probability.
+     */
     double getLogMarginalProbability();
 
+    /**
+     * Runs the parameter learning process.
+     */
     void runLearning();
 
+    /**
+     * Sets the {@link DAG} structure.
+     * @param dag a directed acyclic graph {@link DAG}.
+     */
     void setDAG(DAG dag);
 
+    /**
+     * Sets the seed using a single {@code int} seed.
+     * @param seed the initial seed.
+     */
     void setSeed(int seed);
 
+    /**
+     * Returns the learnt {@link BayesianNetwork} model.
+     * @return the learnt {@link BayesianNetwork} model.
+     */
     BayesianNetwork getLearntBayesianNetwork();
 
+    /**
+     * Sets the parallel processing mode.
+     * @param parallelMode {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
     void setParallelMode(boolean parallelMode);
 
+    /**
+     * Sets the Output.
+     * @param activateOutput {@code true} if the output is activated, {@code false} otherwise.
+     */
     void setOutput(boolean activateOutput);
 }
