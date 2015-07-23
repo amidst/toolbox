@@ -22,29 +22,48 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ * This class implements the {@link ParameterLearningAlgorithm} interface, and defines the parallel Maximum Likelihood algorithm.
  */
 public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
 
+    /** Represents the batch size used for learning the parameters. */
     protected int batchSize = 1000;
+
+    /** Indicates the parallel processing mode, initialized here as {@code true}. */
     protected boolean parallelMode = true;
+
+    /** Represents the {@link DataStream} used for learning the parameters. */
     protected DataStream<DataInstance> dataStream;
+
+    /** Represents the directed acyclic graph {@link DAG}.*/
     protected DAG dag;
+
+    /** Represents the data instance count. */
     protected AtomicDouble dataInstanceCount;
+
+    /** Represents the sufficient statistics used for parameter learning. */
     protected SufficientStatistics sumSS;
+
+    /** Represents a {@link EF_BayesianNetwork} object */
     protected EF_BayesianNetwork efBayesianNetwork;
 
+    /**
+     * Sets the batch size.
+     * @param batchSize_ the batch size.
+     */
     public void setBatchSize(int batchSize_) {
         batchSize = batchSize_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initLearning() {
         dataInstanceCount = new AtomicDouble(0);
@@ -52,6 +71,9 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
         sumSS = efBayesianNetwork.createZeroedSufficientStatistics();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
 
@@ -65,23 +87,31 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
         return Double.NaN;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDataStream(DataStream<DataInstance> data) {
         this.dataStream=data;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogMarginalProbability() {
         throw new UnsupportedOperationException("Method not implemented yet");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runLearning() {
 
         this.initLearning();
 
         efBayesianNetwork = new EF_BayesianNetwork(dag);
-
 
         Stream<DataInstance> stream = null;
         if (parallelMode){
@@ -100,16 +130,25 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
                 .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumVector);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDAG(DAG dag_) {
         this.dag = dag_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setSeed(int seed) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
         //Normalize the sufficient statistics
@@ -121,15 +160,21 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
         return efBayesianNetwork.toBayesianNetwork(dag);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setParallelMode(boolean parallelMode_) {
         parallelMode = parallelMode_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setOutput(boolean activateOutput) {
 
     }
-
 
     public static void main(String[] args){
 

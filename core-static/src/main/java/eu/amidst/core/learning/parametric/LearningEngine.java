@@ -13,30 +13,42 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 
+// TODO Add a method for updating a model with one data instance:
+// TODO public BayesianNetwork updateModel(BayesianNetwork model, DataInstance instance);
+
 /**
- *
- * TODO Add a method for updating a model with one data instance:
- *
- * public BayesianNetwork updateModel(BayesianNetwork model, DataInstance instance);
- *
- * Created by andresmasegosa on 06/01/15.
+ * This class defines the {@link eu.amidst.core.models.BayesianNetwork} parameter learning engine.
  */
 public final class LearningEngine {
 
+    /** Indicates the parallel processing mode, initialized as {@code false}. */
     private static boolean parallelMode = false;
 
-
+    /** Represents the used parameter learning Algorithm, initialized to the {@link ParallelMaximumLikelihood} algorithm. */
     private static ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
 
-
+    /**
+     * Sets theparameter learning Algorithm.
+     * @param parameterLearningAlgorithm the parameter learning Algorithm.
+     */
     public static void setParameterLearningAlgorithm(ParameterLearningAlgorithm parameterLearningAlgorithm) {
         LearningEngine.parameterLearningAlgorithm = parameterLearningAlgorithm;
     }
 
+    /**
+     * Sets the parallel processing mode.
+     * @param parallelMode {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
     public static void setParallelMode(boolean parallelMode) {
         LearningEngine.parallelMode = parallelMode;
     }
 
+    /**
+     * Learns the {@link eu.amidst.core.models.BayesianNetwork} parameters from a given {@link DataStream}.
+     * @param dag a directed acyclic graph {@link DAG}.
+     * @param dataStream a {@link DataStream}.
+     * @return the learnt {@link eu.amidst.core.models.BayesianNetwork}.
+     */
     public static BayesianNetwork learnParameters(DAG dag, DataStream<DataInstance> dataStream){
         parameterLearningAlgorithm.setParallelMode(parallelMode);
         parameterLearningAlgorithm.setDAG(dag);
