@@ -8,14 +8,13 @@
 
 package eu.amidst.core.utils;
 
+//TODO Check! Is this class should be removed?
+
 /**
- * Created by ana@cs.aau.dk on 17/02/15.
- *
- * This class is just meant to serve as temporary example to fill in options in STATIC CLASSES, that should
- * "overwrite" the methods below, it will be removed in the future.
+ * This class is just meant to serve as a temporary example to fill in options in STATIC CLASSES, that should
+ * "overwrites" the methods below, it will be removed in the future.
  */
 public final class AmidstOptionsHandlerStatic {
-
 
     /*
     public static String listOptions(){

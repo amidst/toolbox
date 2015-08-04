@@ -11,7 +11,8 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.utils.Vector;
 
 /**
- * Created by andresmasegosa on 12/11/14.
+ * This interface extends the interface {@link eu.amidst.core.utils.Vector}.
+ * It handles utility methods related to Sufficient Statistics.
  */
 public interface SufficientStatistics extends Vector {
     // TODO: This is not stateless operation!!!!. However it works if we accumulate in the second argument!!! TEST!!!

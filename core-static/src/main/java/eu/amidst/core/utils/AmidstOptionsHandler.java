@@ -8,31 +8,49 @@
 
 package eu.amidst.core.utils;
 
-
 /**
- * Created by ana@cs.aau.dk on 17/02/15.
+ * This interface handles the different possible options or parameters.
  */
 public interface AmidstOptionsHandler {
 
+    /**
+     * Returns the list of options.
+     * @return a {@code String} containing le list of options.
+     */
     public String listOptions();
 
+    /**
+     * Returns the list of options recursively.
+     * @return a {@code String} containing le list of options.
+     */
     public String listOptionsRecursively();
 
+    /**
+     * Loads the options.
+     */
     public void loadOptions();
 
+    /**
+     * Returns the name of this class.
+     * @return a {@code String} containing the name of this class.
+     */
     public default String classNameID(){
         return this.getClass().getName();
     }
 
-    public default String getOption(String optionName) {
-        return OptionParser.parse(classNameID(), listOptions(), optionName);
-    }
-
+    /**
+     * Sets the option list.
+     * @param args the option list.
+     */
     public default void setOptions(String[] args){
         OptionParser.setArgsOptions(classNameID(),args);
         this.loadOptions();
     }
 
+    /**
+     * Loads the list of options from a given file name.
+     * @param fileName a {@code String} containing the file name.
+     */
     public default void loadOptionsFromFile(String fileName){
         OptionParser.setConfFileName(fileName);
         OptionParser.loadFileOptions();
@@ -40,26 +58,47 @@ public interface AmidstOptionsHandler {
         this.loadOptions();
     }
 
+    /**
+     * Returns the {@code String} value of an option given its name.
+     * @param optionName the option name.
+     * @return an {@code String} containing the value of the option.
+     */
+    public default String getOption(String optionName) {
+        return OptionParser.parse(classNameID(), listOptions(), optionName);
+    }
+
+    /**
+     * Returns the {@code int} value of an option given its name.
+     * @param optionName the option name.
+     * @return an {@code int} containing the value of the option.
+     */
     public default int getIntOption(String optionName){
         return Integer.parseInt(this.getOption(optionName));
     }
 
+    /**
+     * Returns the {@code double} value of an option given its name.
+     * @param optionName the option name.
+     * @return a {@code double} containing the value of the option.
+     */
     public default double getDoubleOption(String optionName){
         return Double.parseDouble(this.getOption(optionName));
     }
 
+    /**
+     * Returns the {@code boolean} value of an option given its name.
+     * @param optionName the option name.
+     * @return a {@code boolean} containing the value of the option.
+     */
     public default boolean getBooleanOption(String optionName){
         return this.getOption(optionName).equalsIgnoreCase("true") || this.getOption(optionName).equalsIgnoreCase("T");
     }
 
-    public static String listOptions(Class obj){
-        try {
-            return ((AmidstOptionsHandler) obj.newInstance()).listOptionsRecursively();
-        }catch (Exception e){
-            throw new IllegalArgumentException("The class " +obj+ " does not exist");
-        }
-    }
-
+    /**
+     * Returns recursively the list of options of a given a {@code Class} instance.
+     * @param obj a {@code Class} instance.
+     * @return a {@code String} containing le list of options.
+     */
     public static String listOptionsRecursively(Class obj){
         try {
             return ((AmidstOptionsHandler) obj.newInstance()).listOptionsRecursively();
@@ -67,6 +106,5 @@ public interface AmidstOptionsHandler {
             throw new IllegalArgumentException("The class "+ obj +" does not exist");
         }
     }
-
 
 }

@@ -11,7 +11,8 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.utils.Vector;
 
 /**
- * Created by andresmasegosa on 12/11/14.
+ * This interface extends the interface {@link eu.amidst.core.utils.Vector}.
+ * It handles utility methods related to Moment Parameters.
  */
 public interface MomentParameters extends Vector {
 

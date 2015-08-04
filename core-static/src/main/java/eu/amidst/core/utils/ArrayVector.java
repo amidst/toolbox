@@ -13,35 +13,76 @@ import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 
 /**
- * Created by andresmasegosa on 12/11/14.
+ * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
+ * It handles some array vector utility methods.
  */
 public class ArrayVector implements MomentParameters, NaturalParameters, SufficientStatistics{
 
+    /** Represents an array of {@code double}. */
     private double[] array;
 
+    /**
+     * Creates a new array vector given an {@code int} size.
+     * @param size the size of the array vector.
+     */
     public ArrayVector(int size){
         this.array = new double[size];
     }
 
+    /**
+     * Creates a new array vector given an array of {@code double}.
+     * @param vec an array of {@code double}.
+     */
     public ArrayVector(double[] vec){
         this.array=vec;
     }
 
+
+    /**
+     * Converts this ArrayVector to an array of {@code double}.
+     * @return an array of {@code double}.
+     */
+    public double[] toArray(){
+        return this.array;
+    }
+
+    /**
+     * Copies the input source vector to this ArrayVector.
+     * @param vector an input source ArrayVector object.
+     */
+    public void copy(ArrayVector vector){
+        if (vector.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors with different sizes");
+        System.arraycopy(vector.toArray(),0,this.array,0,vector.toArray().length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double get(int i){
         return this.array[i];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void set(int i, double val){
         this.array[i]=val;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int size(){
         return this.array.length;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void sum(Vector vector) {
         for (int i = 0; i < vector.size(); i++) {
@@ -49,6 +90,9 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void substract(Vector vector) {
         for (int i = 0; i < vector.size(); i++) {
@@ -56,21 +100,17 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void copy(Vector vector){
         this.copy((ArrayVector)vector);
     }
 
-    public double[] toArray(){
-        return this.array;
-    }
-
-    public void copy(ArrayVector vector){
-        if (vector.size()!=vector.size())
-            throw new IllegalArgumentException("Vectors with different sizes");
-        System.arraycopy(vector.toArray(),0,this.array,0,vector.toArray().length);
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void divideBy(double val){
         for (int i = 0; i < this.array.length ; i++) {
@@ -78,11 +118,20 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
         }
     }
 
+    /**
+     /**
+     * {@inheritDoc}
+     */
+    @Override
     public void multiplyBy(double val){
         for (int i = 0; i < this.array.length ; i++) {
             this.array[i]*=val;
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double dotProduct(Vector vector) {
         double sum=0;

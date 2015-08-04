@@ -21,13 +21,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by andresmasegosa on 28/08/14.
+ * This class offers some AMIDST util methods.
  */
 public final class Utils {
-
-    private Utils(){
-        //Not called
-    }
 
     public static <E extends Vector> E normalize(E vector){
 
