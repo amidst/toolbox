@@ -23,20 +23,37 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Created by andresmasegosa on 09/01/15.
+ * This class defines a random {@link BayesianNetwork} generator.
  */
 public final class BayesianNetworkGenerator{
 
+    /** Represents the number of links in the {@link BayesianNetwork} to be generated. */
     private static int numberOfLinks;
+
+    /** Represents the number of Multinomial variables in the {@link BayesianNetwork} to be generated. */
     private static int numberOfMultinomialVars;
+
+    /** Represents the number of Gaussian variables in the {@link BayesianNetwork} to be generated. */
     private static int numberOfGaussianVars;
+
+    /** Represents the number of states for the multinomial variables in the {@link BayesianNetwork} to be generated. */
     private static int numberOfStates;
+
+    /** Represents the seed for random generation. */
     private static int seed=0;
 
+    /**
+     * Sets the seed for this BayesianNetworkGenerator.
+     * @param seed an {@code Integer} that represents the seed.
+     */
     public static void setSeed(int seed) {
         BayesianNetworkGenerator.seed = seed;
     }
 
+    /**
+     * Sets the number of links for this BayesianNetworkGenerator.
+     * @param numberOfLinks an {@code int} that represents the number of links.
+     */
     public static void setNumberOfLinks(int numberOfLinks) {
         int numberOfVars = numberOfMultinomialVars + numberOfGaussianVars;
         if (numberOfLinks<(numberOfVars-1) || numberOfLinks>numberOfVars*(numberOfVars-1)/2)
@@ -44,19 +61,35 @@ public final class BayesianNetworkGenerator{
         BayesianNetworkGenerator.numberOfLinks = numberOfLinks;
     }
 
+    /**
+     * Sets the number of Multinomial variables and their corresponding states for this BayesianNetworkGenerator.
+     * @param numberOfMultinomialVars_ an {@code int} that represents the number of Multinmail variables.
+     * @param numberOfStates_ an {@code int} that represents the number of states.
+     */
     public static void setNumberOfMultinomialVars(int numberOfMultinomialVars_, int numberOfStates_) {
         BayesianNetworkGenerator.numberOfMultinomialVars = numberOfMultinomialVars_;
         BayesianNetworkGenerator.numberOfStates = numberOfStates_;
     }
 
+    /**
+     * Sets the number of Gaussian variables for this BayesianNetworkGenerator.
+     * @param numberOfGaussianVars an {@code int} that represents the number of Gaussian variables.
+     */
     public static void setNumberOfGaussianVars(int numberOfGaussianVars) {
         BayesianNetworkGenerator.numberOfGaussianVars = numberOfGaussianVars;
     }
 
+    //TODO Check this method!! Maybe also moved to ida2015 package
+    /**
+     * Generates a {@link eu.amidst.core.classifiers.NaiveBayesClassifier} with a global Gaussian hidden variable.
+     * The global Gaussian hidden variable is a child of the class variable and a parent of all the remaining variables.
+     * @param nClassLabels the number of states for the class variable.
+     * @param nameGlobalHiddenVar a {@code String} that represents the name of the global hidden variable.
+     * @return a {@link BayesianNetwork} object.
+     */
     public static BayesianNetwork generateNaiveBayesWithGlobalHiddenVar(int nClassLabels, String nameGlobalHiddenVar){
 
         Variables variables = new Variables();
-
 
         IntStream.range(0, numberOfMultinomialVars -1)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
@@ -81,7 +114,11 @@ public final class BayesianNetworkGenerator{
         return network;
     }
 
-
+    /**
+     * Generates a {@link eu.amidst.core.classifiers.NaiveBayesClassifier}.
+     * @param nClassLabels the number of states for the class variable.
+     * @return a {@link BayesianNetwork} object.
+     */
     public static BayesianNetwork generateNaiveBayes(int nClassLabels){
 
         Variables variables = new Variables();
@@ -108,6 +145,11 @@ public final class BayesianNetworkGenerator{
         return network;
     }
 
+    /**
+     * Generates a tree {@link DAG} given a set of variables.
+     * @param variables a set of {@link Variables}.
+     * @return a {@link DAG} object.
+     */
     public static DAG generateTreeDAG(Variables variables) {
         DAG dag = new DAG(variables);
 
@@ -138,10 +180,13 @@ public final class BayesianNetworkGenerator{
         return dag;
     }
 
+    /**
+     * Generates a {@link BayesianNetwork} randomly.
+     * @return a {@link BayesianNetwork} object.
+     */
     public static BayesianNetwork generateBayesianNetwork(){
 
         Variables variables = new Variables();
-
 
         IntStream.range(0, numberOfMultinomialVars)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
@@ -179,6 +224,10 @@ public final class BayesianNetworkGenerator{
         return network;
     }
 
+    /**
+     * Returns the list of options used by this BayesianNetworkGenerator.
+     * @return a {@code String} that represents the list of options.
+     */
     public static String listOptions(){
         return  classNameID() +", "+
                 "-numberOfVars, 10, Total number of variables\\" +
@@ -189,6 +238,9 @@ public final class BayesianNetworkGenerator{
                 "-seed, 0, seed for random number generator\\";
     }
 
+    /**
+     * Loads the list of options to be used by this BayesianNetworkGenerator.
+     */
     public static void loadOptions(){
         numberOfLinks = getIntOption("-numberOfLinks");
         numberOfMultinomialVars = getIntOption("-numberOfMultinomialVars");
@@ -197,15 +249,27 @@ public final class BayesianNetworkGenerator{
         seed = getIntOption("-seed");
     }
 
+    /**
+     * Returns the name of this class.
+     * @return the name of this class.
+     */
     public static String classNameID(){
         return "BayesianNetworkGenerator";
     }
 
+    /**
+     * Sets the list of options to be used by this BayesianNetworkGenerator.
+     * @param args the list of options given as an array of Strings.
+     */
     public static void setOptions(String[] args) {
         OptionParser.setArgsOptions(classNameID(),args);
         loadOptions();
     }
 
+    /**
+     * Loads the list of options to be used by this BayesianNetworkGenerator from a given file name.
+     * @param fileName a {@code String} that represents the file name.
+     */
     public static void loadOptionsFromFile(String fileName){
         OptionParser.setConfFileName(fileName);
         OptionParser.loadFileOptions();
@@ -213,16 +277,35 @@ public final class BayesianNetworkGenerator{
         loadOptions();
     }
 
+    /**
+     * Returns the {@code String} value of an option given its name.
+     * @param optionName the option name.
+     * @return an {@code String} containing the value of the option.
+     */
     public static String getOption(String optionName) {
         return OptionParser.parse(classNameID(), listOptions(), optionName);
     }
 
+    /**
+     * Returns the {@code int} value of an option given its name.
+     * @param optionName the option name.
+     * @return an {@code int} containing the value of the option.
+     */
     public static int getIntOption(String optionName){
         return Integer.parseInt(getOption(optionName));
     }
 
+    /**
+     * Generates a {@link eu.amidst.core.models.BayesianNetwork} then saves it in a file.
+     * @param nDiscrete an {@code int} that represents the number of Multinomial variables.
+     * @param nStates an {@code int} that represents the number of states.
+     * @param nContin an {@code int} that represents the number of Gaussian variables.
+     * @param nLinks an {@code int} that represents the number of links.
+     * @param seed_ an {@code int} that represents the seed.
+     * @param filename an {@code String} that represents the name of the file where the generated BN will be saved.
+     * @throws IOException signals that an I/O exception has occurred.
+     */
     public static void generateBNtoFile(int nDiscrete, int nStates, int nContin, int nLinks, int seed_, String filename) throws IOException {
-
 
         numberOfLinks=nLinks;
         numberOfMultinomialVars =nDiscrete;
@@ -234,21 +317,19 @@ public final class BayesianNetworkGenerator{
         BayesianNetworkWriter.saveToFile(bayesianNetwork, filename);
     }
 
+
     public static void main(String[] agrs) throws IOException, ClassNotFoundException {
 
         BayesianNetworkGenerator.loadOptions();
-
         BayesianNetworkGenerator.setNumberOfGaussianVars(5);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(5, 2);
         BayesianNetworkGenerator.setNumberOfLinks(15);
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
-
         BayesianNetworkWriter.saveToFile(bayesianNetwork, "networks/Bayesian10Vars15Links.bn");
 
         BayesianNetwork bayesianNetwork2 = BayesianNetworkLoader.loadFromFile("networks/Bayesian10Vars15Links.bn");
-
         System.out.println(bayesianNetwork2.getDAG().toString());
     }
 

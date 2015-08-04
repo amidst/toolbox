@@ -20,7 +20,6 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,27 +27,43 @@ import java.util.stream.Stream;
 
 
 /**
- * Created by andresmasegosa on 11/12/14.
+ * This class implements the interface {@link eu.amidst.core.utils.AmidstOptionsHandler}.
+ * It defines a sampler of data from a {@link BayesianNetwork}.
  */
 public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
+    /** Represents the {@link BayesianNetwork} object from which the data will be sampled. */
     private BayesianNetwork network;
 
+    /** Represents the list of variables given in a causal order. */
     private List<Variable> causalOrder;
 
+    /** Represents the initial seed for random sampling. */
     private int seed = 0;
 
+    /** Represents a {@link java.util.Random} object. */
     private Random random = new Random(seed);
 
+    /** Represents a {@code Map} containing the hidden variables. */
     private Map<Variable, Boolean> hiddenVars = new HashMap();
 
+    /** Represents a {@code Map} containing the noisy variables. */
     private Map<Variable, Double> marNoise = new HashMap();
 
+    /**
+     * Creates a new BayesianNetworkSampler given an input {@link BayesianNetwork} object.
+     * @param network1 an input {@link BayesianNetwork} object.
+     */
     public BayesianNetworkSampler(BayesianNetwork network1){
         network=network1;
         this.causalOrder=Utils.getCausalOrder(network.getDAG());
     }
 
+    /**
+     * Returns a {@code Stream} of randomly sampled {@link Assignment}s for an input number of samples.
+     * @param nSamples an input number of samples.
+     * @return a {@code Stream} of randomly sampled {@link Assignment}s.
+     */
     private Stream<Assignment> getSampleStream(int nSamples) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         return IntStream.range(0, nSamples)
@@ -56,12 +71,26 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                 .map(this::filter);
     }
 
+    /**
+     * Sets a given {@link Variable} object as hidden.
+     * @param var a given {@link Variable} object.
+     */
     public void setHiddenVar(Variable var) {
         this.hiddenVars.put(var,true);
     }
 
+    /**
+     * Sets a given {@link Variable} object as noisy.
+     * @param var a given {@link Variable} object.
+     * @param noiseProb a {@double} that represents the noise probability.
+     */
     public void setMARVar(Variable var, double noiseProb){ this.marNoise.put(var,noiseProb);}
 
+    /**
+     * Filters a given {@link Assignment} object, i.e., sets the values assigned to either missing or noisy variables to Double.NaN.
+     * @param assignment a given {@link Assignment} object.
+     * @return a filtered {@link Assignment}.
+     */
     private Assignment filter(Assignment assignment){
         hiddenVars.keySet().stream().forEach(var -> assignment.setValue(var,Utils.missingValue()));
         marNoise.entrySet().forEach(e -> {
@@ -72,10 +101,20 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         return assignment;
     }
 
+    /**
+     * Returns a {@code List} of randomly sampled {@link Assignment}s of size nSamples.
+     * @param nSamples an {@code int} that represents the number of samples.
+     * @return a {@code List} of randomly sampled {@link Assignment}s.
+     */
     private List<Assignment> getSampleList(int nSamples){
         return this.getSampleStream(nSamples).collect(Collectors.toList());
     }
 
+    /**
+     * Returns an iterator over randomly sampled {@link Assignment}s of size nSamples.
+     * @param nSamples an {@code int} that represents the number of samples.
+     * @return an iterator over randomly sampled {@link Assignment}s.
+     */
     private Iterable<Assignment> getSampleIterator(int nSamples){
         class I implements Iterable<Assignment>{
             public Iterator<Assignment> iterator(){
@@ -85,11 +124,20 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         return new I();
     }
 
+    /**
+     * Sets the seed.
+     * @param seed an {@code int} that represents the seed value.
+     */
     public void setSeed(int seed) {
         this.seed = seed;
         random = new Random(seed);
     }
 
+    /**
+     * Samples randomly a data stream of size nSamples from this BayesianNetworkSampler.
+     * @param nSamples an {@code int} that represents the number of samples in the data stream.
+     * @return a {@link DataStream} of {@link DataInstance}s.
+     */
     public DataStream<DataInstance> sampleToDataStream(int nSamples){
         class TemporalDataStream implements DataStream<DataInstance> {
             Attributes atts;
@@ -175,9 +223,15 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         random = new Random(seed);
 
         return new TemporalDataStream(this,nSamples);
-
     }
 
+    /**
+     * Samples an {@link Assignment} randomly from a {@link BayesianNetwork}.
+     * @param network a {@link BayesianNetwork} object.
+     * @param causalOrder a list of variables given in a causal order.
+     * @param random a {@link Random} object.
+     * @return the sampled {@link Assignment}.
+     */
     private static Assignment sample(BayesianNetwork network, List<Variable> causalOrder, Random random) {
 
         HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
@@ -188,25 +242,39 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         return assignment;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String listOptions(){
         return  classNameID() +",\\"+
                 "-seed, 0, seed for random number generator\\";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String listOptionsRecursively() {
         return this.listOptions()
                 + "\n" + network.listOptionsRecursively();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void loadOptions(){
         seed = getIntOption("-seed");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String classNameID(){
         return "BayesianNetworkSampler";
     }
-
 
     public static void main(String[] args) throws Exception{
 
@@ -217,12 +285,12 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(0);
 
-        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(10);
+        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(100);
         DataStreamWriter.writeDataToFile(dataStream,"datasets/asisa-samples.arff");
 
         System.out.println(watch.stop());
 
-        for (Assignment assignment : sampler.getSampleIterator(2)){
+        for (Assignment assignment : sampler.getSampleIterator(10)){
             System.out.println(assignment.outputString());
         }
         System.out.println();

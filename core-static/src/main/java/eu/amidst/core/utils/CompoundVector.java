@@ -16,9 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
+/**
+ * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
+ * It handles some compound vector utility methods.
+ */
+public class CompoundVector implements MomentParameters, NaturalParameters, SufficientStatistics {
 
     int size;
+
     List<IndexedVector> baseVectors;
 
     public CompoundVector(int nVectors, int size1){
@@ -49,6 +54,9 @@ public class CompoundVector implements SufficientStatistics, MomentParameters, N
         return this.baseVectors.get(position).getVector();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double get(int i) {
         int total = 0;
@@ -62,6 +70,9 @@ public class CompoundVector implements SufficientStatistics, MomentParameters, N
         return Double.NaN;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void set(int i, double val) {
         int total = 0;
@@ -75,16 +86,25 @@ public class CompoundVector implements SufficientStatistics, MomentParameters, N
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int size() {
         return size;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void sum(Vector vector) {
         this.sum((CompoundVector) vector);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void copy(Vector vector) {
         this.copy((CompoundVector) vector);
@@ -95,6 +115,9 @@ public class CompoundVector implements SufficientStatistics, MomentParameters, N
         this.baseVectors.stream().forEach(w -> w.getVector().divideBy(val));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double dotProduct(Vector vec) {
         return this.dotProduct((CompoundVector) vec);

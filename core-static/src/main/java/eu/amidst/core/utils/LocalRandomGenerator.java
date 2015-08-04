@@ -11,16 +11,25 @@ package eu.amidst.core.utils;
 import java.util.Random;
 
 /**
- * Created by andresmasegosa on 15/12/14.
+ * This class defines a local random generator.
  */
 public class LocalRandomGenerator {
 
+    /** Represents a object of type {@link java.util.Random}. */
     final Random random;
 
+    /**
+     * Creates a new random number generator using a single {@code int} seed.
+     * @param seed the initial seed.
+     */
     public LocalRandomGenerator(int seed){
         random = new Random(seed);
     }
 
+    /**
+     * Returns a new random number generator using the next pseudorandom integer.
+     * @return a new random number generator.
+     */
     public Random current(){
         return new Random(random.nextInt());
     }

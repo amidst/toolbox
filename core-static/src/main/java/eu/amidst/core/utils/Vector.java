@@ -9,16 +9,34 @@
 package eu.amidst.core.utils;
 
 /**
- * Created by andresmasegosa on 12/11/14.
+ * This interface defines some Vector utility methods.
  */
 public interface Vector {
 
+    /**
+     * Returns the value of the element in a given position i.
+     * @param i an {@code int} that represents the position.
+     * @return a {@code double} that represents the extracted value.
+     */
     public double get(int i);
 
+    /**
+     * Sets the value of the element in a given position i to the input {@code double} value.
+     * @param i an {@code int} that represents the position.
+     * @param val an {@code double} value.
+     */
     public void set(int i, double val);
 
+    /**
+     * Returns the size.
+     * @return an {@code int} that represents the size.
+     */
     public int size();
 
+    /**
+     * Returns the sum of all elements.
+     * @return a {@code double} that represents the sum of all elements.
+     */
     public default double sum() {
         double sum=0;
         for (int i = 0; i < size(); i++) {
@@ -27,6 +45,10 @@ public interface Vector {
         return sum;
     }
 
+    /**
+     * Updates the values of this Vector as a sum of its initial values and the input vector values.
+     * @param vector an input Vector.
+     */
     public default void sum(Vector vector){
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors do not have same size.");
@@ -36,7 +58,10 @@ public interface Vector {
         }
     }
 
-
+    /**
+     * Updates the values of this Vector as a subtraction of the input vector values from its initial values.
+     * @param vector an input Vector.
+     */
     public default void substract(Vector vector){
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors do not have same size.");
@@ -46,6 +71,10 @@ public interface Vector {
         }
     }
 
+    /**
+     * Copies the input source Vector to this Vector.
+     * @param vector an input Vector.
+     */
     public default void copy(Vector vector){
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors do not have same size.");
@@ -55,18 +84,32 @@ public interface Vector {
         }
     }
 
+    /**
+     * Updates the values of this Vector via dividing its initial values by an input {@code double} value.
+     * @param val an input {@code double} value.
+     */
     public default void divideBy(double val){
         for (int i = 0; i < this.size(); i++) {
             this.set(i,this.get(i)/val);
         }
     }
 
+    /**
+     * Updates the values of this Vector via multiplying its initial values by an input {@code double} value.
+     * @param val an input {@code double} value.
+     */
     public default void multiplyBy(double val){
         for (int i = 0; i < this.size(); i++) {
             this.set(i,this.get(i)*val);
         }
     }
 
+    /**
+     * Returns the dot product of this Vector and an input vector, defined as
+     * the sum of the pairwise products of the values of the two vectors.
+     * @param vector an input vector.
+     * @return a {@double }the dot product of teh two vectors.
+     */
     public default double dotProduct(Vector vector){
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors do not have same size.");
@@ -79,6 +122,12 @@ public interface Vector {
         return sum;
     }
 
+    /**
+     * Tests if this Vector is equal to an input vector given a threshold.
+     * @param vector an input vector.
+     * @param threshold a threshold.
+     * @return {@code true} if the two vectors ae equal, {@code false} otherwise.
+     */
     public default boolean equalsVector(Vector vector, double threshold){
 
         if (this.size()!=vector.size())
@@ -92,6 +141,12 @@ public interface Vector {
         return true;
     }
 
+    /**
+     * Sums two vectors.
+     * @param vec1 an input Vector.
+     * @param vec2 a destination Vector.
+     * @return the destination vector containing the sum of the two vectors.
+     */
     public static Vector sumVector(Vector vec1, Vector vec2){
         vec2.sum(vec1);
         return vec2;

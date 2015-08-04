@@ -15,18 +15,12 @@ import eu.amidst.core.variables.Variable;
 import java.util.List;
 
 /**
- * <h2>This class implements various static methods useful when indexing arrays of distributions involving multinomial
- * variables.</h2>
- *
- * @author Antonio Fernández
- * @version 1.0
- * @since 2014-11-4
+ * This class implements various useful methods for indexing arrays of distributions involving multinomial variables.
  */
 public final class MultinomialIndex {
 
     /**
-     * Computes the order of an assignment when indexing the set of possible values for a set of multinomial variables.
-     * <p>
+     * Returns the index of an assignment given a set of multinomial variables and a corresponding assignment.
      * Example: Let X, Y and Z three multinomial variables with states {0,1}, {0,1} and {0,1,2} respectively. Then, they
      * are indexed as:
      *
@@ -46,9 +40,9 @@ public final class MultinomialIndex {
      *
      * So, for instance Index(0,0,2) = 8.
      *
-     * @param vars A <code>List</code> of variables.
-     * @param assignment A <code>Assignment</code> for a set of variables.
-     * @return The index of the corresponding assignment among the possible ones.
+     * @param vars a {@code List} of {@link Variable}.
+     * @param assignment an {@link Assignment} for a set of variables.
+     * @return the index of the corresponding input assignment.
      */
     public static int getIndexFromVariableAssignment (List<Variable> vars, Assignment assignment) {
 
@@ -63,10 +57,10 @@ public final class MultinomialIndex {
     }
 
     /**
-     * Computes the order of an assignment when indexing the set of possible values for a set of multinomial variables.
-     * @param vars A <code>List</code> of variables.
-     * @param assignment A <code>List</code> of double values for the variables in the same order.
-     * @return The index of the corresponding assignment among the possible ones.
+     * Returns the index of an assignment given the set of multinomial variables and their corresponding values.
+     * @param vars a {@code List} of {@link Variable}.
+     * @param assignment a {@code List} of double values for the variables in the same order.
+     * @return the index of the corresponding input assignment.
      */
     public static int getIndexFromVariableAssignment (List<Variable> vars, List<Double> assignment) {
 
@@ -81,6 +75,12 @@ public final class MultinomialIndex {
         return index;
     }
 
+    /**
+     * Returns the index of an assignment given a set of multinomial variables and a {@link DataInstance}.
+     * @param vars a {@code List} of {@link Variable}.
+     * @param dataInstance a {@link DataInstance} including values for the input set of variables.
+     * @return the index of the corresponding input dataInstance.
+     */
     public static int getIndexFromDataInstance (List<Variable> vars, DataInstance dataInstance) {
 
         int lastPhiStride = 1;
@@ -94,10 +94,10 @@ public final class MultinomialIndex {
     }
 
     /**
-     * Computes the order of an assignment when indexing the set of possible values for a set of multinomial variables.
-     * @param vars A <code>List</code> of variables.
-     * @param assignment An array of <code>double</code> with the values of variables in the same order.
-     * @return The index of the corresponding assignment among the possible ones.
+     * Returns the index of an assignment given a set of multinomial variables and their corresponding values.
+     * @param vars a {@code List} of {@link Variable}.
+     * @param assignment an array of double including the values of variables in the same order.
+     * @return the index of the corresponding input assignment.
      */
     public static int getIndexFromVariableAssignment (List<Variable> vars, double[] assignment) {
 
@@ -113,10 +113,10 @@ public final class MultinomialIndex {
     }
 
     /**
-     * Computes the variable assignment located in a given position.
-     * @param vars A <code>List</code> of variables.
-     * @param index The position of the <code>Assignment</code>.
-     * @return An array of <code>double</code> with the values of the variables representing the assignment.
+     * Returns an assignment given a list of variables and an input index.
+     * @param vars a {@code List} of {@link Variable}.
+     * @param index the index of the {@link Assignment}.
+     * @return an array of {@code double} with the values of the input variables, i.e., the assignment.
      */
     public static double[] getVariableArrayAssignmentFromIndex(List<Variable> vars, int index) {
 
@@ -131,6 +131,12 @@ public final class MultinomialIndex {
         return assignment;
     }
 
+    /**
+     * Returns an assignment given a list of variables and an input index.
+     * @param vars a {@code List} of {@link Variable}.
+     * @param index the index of the {@link Assignment}.
+     * @return an {@link Assignment}.
+     */
     public static Assignment getVariableAssignmentFromIndex(List<Variable> vars, int index) {
 
         HashMapAssignment assignment = new HashMapAssignment(vars.size());
@@ -144,9 +150,9 @@ public final class MultinomialIndex {
         return assignment;
     }
     /**
-     * Computes the number of possible assignments for a list of variables
-     * @param vars The <code>List</code> of variables.
-     * @return A <code>integer</code> indicating the number of possible assignments.
+     * Returns the number of possible assignments for a list of variables.
+     * @param vars a {@code List} of {@link Variable}.
+     * @return an {@code integer} representing the number of possible assignments.
      */
     public static int getNumberOfPossibleAssignments (List<Variable> vars) {
 
@@ -155,9 +161,5 @@ public final class MultinomialIndex {
             n = n * v.getNumberOfStates();
         }
         return n;
-    }
-
-    private MultinomialIndex(){
-        //Not called
     }
 }
