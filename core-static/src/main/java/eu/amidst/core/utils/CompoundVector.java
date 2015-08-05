@@ -22,10 +22,17 @@ import java.util.Map;
  */
 public class CompoundVector implements MomentParameters, NaturalParameters, SufficientStatistics {
 
+    /** Represents the total size of the CompoundVector, defined as the sum of its baseVector sizes. */
     int size;
 
+    /** Represents the list of base vectors. */
     List<IndexedVector> baseVectors;
 
+    /**
+     * Creates a new CompoundVector for a given size and number of vectors.
+     * @param nVectors an {@code int} that represents the number of vectors in this CompoundVector.
+     * @param size1 an {@code int} that represents the size of this CompoundVector.
+     */
     public CompoundVector(int nVectors, int size1){
         baseVectors = new ArrayList(nVectors);
         this.size = size1;
@@ -34,6 +41,10 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
         }
     }
 
+    /**
+     * Creates a new CompoundVector from a given list of vectors.
+     * @param vectors a {@code List} of {@link eu.amidst.core.utils.Vector}s.
+     */
     public CompoundVector(List<Vector> vectors) {
         baseVectors = new ArrayList(vectors.size());
 
@@ -43,13 +54,30 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
         }
     }
 
+    /**
+     * Creates a new CompoundVector from a given list of {@link Map.Entry} objects.
+     * @param vectors a {@code List} of {@link Map.Entry} objects.
+     * @param <T> a type parameter.
+     * @return a CompoundVector.
+     */
     public static <T> CompoundVector newCompoundVector(List<Map.Entry<Integer,T>> vectors){
         return null;
     }
+
+    /**
+     * Sets a vector at a given position in this CompoundVector.
+     * @param position an {@code int} that represents the position of the vector to be set.
+     * @param vec the {@link Vector} object to be set.
+     */
     public void setVectorByPosition(int position, Vector vec) {
         baseVectors.get(position).setVector(vec);
     }
 
+    /**
+     * Returns a vector located at a given position in this CompoundVector.
+     * @param position an {@code int} that represents the position of the vector to be extracted.
+     * @return the extracted {@link Vector} object.
+     */
     public Vector getVectorByPosition(int position) {
         return this.baseVectors.get(position).getVector();
     }
@@ -110,6 +138,9 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
         this.copy((CompoundVector) vector);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void divideBy(double val) {
         this.baseVectors.stream().forEach(w -> w.getVector().divideBy(val));
@@ -123,48 +154,79 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
         return this.dotProduct((CompoundVector) vec);
     }
 
+    /**
+     * Returns the dot product of this CompoundVector and an input CompoundVector, defined as
+     * the sum of the pairwise products of the values of the two CompoundVectors.
+     * @param vec an input CompoundVector.
+     * @return a {@double} that represents the dot product of the two CompoundVectors.
+     */
     public double dotProduct(CompoundVector vec) {
         return this.baseVectors.stream().mapToDouble(w -> w.getVector().dotProduct(vec.getVectorByPosition(w.getIndex()))).sum();
     }
 
+     /**
+     * Copies the input source CompoundVector object to this CompoundVector.
+     * @param vector an input CompoundVector object.
+     */
     public void copy(CompoundVector vector) {
         if (vector.size() != this.size())
-            throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+            throw new IllegalArgumentException("Error in variable Vector. Method copy. The input parameter vector has a different size.");
 
         this.baseVectors.stream().forEach(w -> w.getVector().copy(vector.getVectorByPosition(w.getIndex())));
-
     }
 
+    /**
+     * Updates the values of this CompoundVector as a sum of its initial values and the input CompoundVector values.
+     * @param vector an input CompoundVector.
+     */
     public void sum(CompoundVector vector) {
         this.baseVectors.stream().forEach(w -> w.getVector().sum(vector.getVectorByPosition(w.getIndex())));
     }
 
-
+    /**
+     * This class handles some utils for an Indexed Vector.
+     */
     static class IndexedVector {
+
+        /** Represents a {@link Vector} object. */
         Vector vector;
+
+        /** Represents the {@code int} index of this Vector. */
         int index;
 
+        /**
+         * Creates a new IndexedVector for a given vector and index.
+         * @param index1 an input index.
+         * @param vec1 an input  vector.
+         */
         IndexedVector(int index1, Vector vec1) {
             this.vector = vec1;
             this.index = index1;
         }
 
+        /**
+         * Returns the vector of this IndexedVector.
+         * @return a {@link Vector}.
+         */
         public Vector getVector() {
             return vector;
         }
 
+        /**
+         * Returns the index of this IndexedVector.
+         * @return an {@code int} that represents the index.
+         */
         public int getIndex() {
             return index;
         }
 
+        /**
+         * Sets a vector in this IndexedVector.
+         * @param vector the {@link Vector} object to be set.
+         */
         public void setVector(Vector vector) {
             this.vector = vector;
         }
-    }
-
-    @FunctionalInterface
-    public interface VectorBuilder {
-        public Vector createZeroedVector();
     }
 
 }
