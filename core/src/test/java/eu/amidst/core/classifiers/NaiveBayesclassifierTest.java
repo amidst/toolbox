@@ -11,7 +11,7 @@ import org.junit.Test;
 /**
  * Testing NaiveBayesClassifier
  */
-public class NaiveBayesClassifierTest {
+public class NaiveBayesclassifierTest {
 
     @Test
     public void testingNBC(){
