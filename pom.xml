@@ -9,7 +9,7 @@
     <modules>
         <module>huginlink</module>
         <module>moalink</module>
-        <module>core-static</module>
+        <module>core</module>
         <module>sparklink</module>
         <module>core-dynamic</module>
         <module>examples</module>

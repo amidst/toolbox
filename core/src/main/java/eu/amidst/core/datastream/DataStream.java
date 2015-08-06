@@ -21,10 +21,13 @@ import java.util.stream.Stream;
  * In this way, this class can handle very large data sets. A DataStream object is composed as a collection of
  * {@link DataInstance} objects. </p>
  *
- * For further details about the implementation of this class look at the following paper: <br>
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#datastreamsexample"> http://amidst.github.io/toolbox/#datastreamsexample </a>  </p>
+ *
+ * <p> For further details about the implementation of this class look at the following paper: </p>
+ *
  * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
  *
- * <p> For an example of use see the class {@code eu.amidst.core.examples.datastream.DataStreamExample}. </p>
  */
 public interface DataStream<E extends DataInstance> extends Iterable<E> {
 
