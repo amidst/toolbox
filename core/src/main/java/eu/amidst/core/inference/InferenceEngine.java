@@ -20,7 +20,10 @@ import eu.amidst.core.variables.Variable;
 import java.util.function.Function;
 
 /**
- * Created by andresmasegosa on 30/01/15.
+ *
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#inferenceengingeexample"> http://amidst.github.io/toolbox/#inferenceengingeexample </a>  </p>
  */
 public final class InferenceEngine {
 

@@ -29,6 +29,10 @@ import java.util.stream.Stream;
 
 /**
  * This class implements the {@link ParameterLearningAlgorithm} interface, and defines the parallel Maximum Likelihood algorithm.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#pmlexample"> http://amidst.github.io/toolbox/#pmlexample </a>  </p>
+ *
  */
 public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
 

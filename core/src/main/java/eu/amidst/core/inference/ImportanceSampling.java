@@ -35,7 +35,11 @@ import java.util.stream.Stream;
 
 
 /**
- * Created by afa on 10/2/15.
+ *
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#isexample"> http://amidst.github.io/toolbox/#isexample </a>  </p>
+ *
  */
 
 public class ImportanceSampling implements InferenceAlgorithm {

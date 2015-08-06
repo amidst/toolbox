@@ -16,6 +16,14 @@ import java.util.List;
 
 /**
  * The DAG class represents the Directed Acyclic Graph of a {@link BayesianNetwork}.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnexample"> http://amidst.github.io/toolbox/#bnexample </a>  </p>
+ *
+ * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
+ *
+ * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
+ *
  */
 public class DAG implements Serializable {
 

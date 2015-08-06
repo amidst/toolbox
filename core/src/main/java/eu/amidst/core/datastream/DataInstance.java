@@ -21,10 +21,16 @@ import java.util.Set;
  *
  *  <p> To simplify the use of the DataInstance interface across the toolbox, it inherits from the
  *  {@link Assignment} interface. Hence, it can be also interpreted as an assignment to some {@link Variable} objects.
- *  This variable objects have associated an Attribute object.
- *  So, a DataInstance object can be queried either using an{@link Attribute} object or a {@link Variable} object. </p>
+ *  This variable objects have associated an Attribute object. So, a DataInstance object can be queried either
+ *  using an{@link Attribute} object or a {@link Variable} object. </p>
  *
- * <p>For an example of use of this class, see {@code eu.amidst.core.examples.datastream.DataStreamExample}. </p>
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#datastreamsexample"> http://amidst.github.io/toolbox/#datastreamsexample </a>  </p>
+ *
+ * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
+ *
+ * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
+ *
  */
 public interface DataInstance extends Assignment {
 

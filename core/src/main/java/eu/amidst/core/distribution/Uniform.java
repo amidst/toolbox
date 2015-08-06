@@ -15,6 +15,10 @@ import java.util.Random;
 
 /**
  * This class extends the abstract class {@link UnivariateDistribution} and defines the Uniform distribution.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ *
  */
 public class Uniform extends UnivariateDistribution {
 

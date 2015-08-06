@@ -20,7 +20,12 @@ import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 
 /**
- * Created by andresmasegosa on 9/6/15.
+ *
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#mlfadingexample"> http://amidst.github.io/toolbox/#mlfadingexample </a>  </p>
+ *
+ *
  */
 public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implements FadingLearner {
 

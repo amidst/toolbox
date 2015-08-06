@@ -28,6 +28,10 @@ import java.util.Random;
 
 /**
  * This class extends the abstract class {@link UnivariateDistribution} and defines the univariate multinomial distribution.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ *
  */
 public class Multinomial extends UnivariateDistribution  {
 

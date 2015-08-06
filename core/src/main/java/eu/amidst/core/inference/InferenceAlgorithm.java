@@ -18,7 +18,9 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 
 /**
- * Created by andresmasegosa on 30/01/15.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#inferenceexample"> http://amidst.github.io/toolbox/#inferenceexample </a>  </p>
  */
 public interface InferenceAlgorithm {
 

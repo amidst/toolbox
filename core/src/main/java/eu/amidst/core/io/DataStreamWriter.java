@@ -17,6 +17,10 @@ import java.io.IOException;
 
 /**
  * This class allows to save a {@link DataStream} in a file.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#iodatastreamsexample"> http://amidst.github.io/toolbox/#iodatastreamsexample </a>  </p>
+ *
  */
 public final class DataStreamWriter {
 

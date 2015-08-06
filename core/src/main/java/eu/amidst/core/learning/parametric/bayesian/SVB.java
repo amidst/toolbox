@@ -29,6 +29,10 @@ import java.util.stream.Collectors;
 /**
  * This class implements the {@link BayesianParameterLearningAlgorithm} interface.
  * It defines the Streaming Variational Bayes (SVB) algorithm.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#svbexample"> http://amidst.github.io/toolbox/#svbexample </a>  </p>
+ *
  */
 public class SVB implements BayesianParameterLearningAlgorithm {
 

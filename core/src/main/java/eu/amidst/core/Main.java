@@ -39,10 +39,6 @@ public class Main {
         Variable multiVar = bn.getStaticVariables().getVariableByName("DiscreteVar0");
         Multinomial multinomial = bn.getConditionalDistribution(multiVar);
         multinomial.setProbabilities(new double[]{0.2, 0.8});
-
-
-
-
     }
 
 }
