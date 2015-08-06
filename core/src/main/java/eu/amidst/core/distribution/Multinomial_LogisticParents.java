@@ -20,6 +20,10 @@ import java.util.Random;
 /**
  * This class extends the abstract class {@link ConditionalDistribution}.
  * It defines the conditional distribution of a variable with a {@link Multinomial} distribution given a set of Logistic parents.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ *
  */
 public class Multinomial_LogisticParents extends ConditionalDistribution {
 

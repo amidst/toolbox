@@ -21,7 +21,9 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 
 /**
- * Created by andresmasegosa on 1/7/15.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#svbfadingexample"> http://amidst.github.io/toolbox/#svbfadingexample </a>  </p>
  */
 public class SVBFading implements BayesianParameterLearningAlgorithm, FadingLearner{
     SVB svb;

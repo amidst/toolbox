@@ -16,6 +16,10 @@ import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
 /**
  * This class allows to load a {@link DataStream} from a file.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#iodatastreamsexample"> http://amidst.github.io/toolbox/#iodatastreamsexample </a>  </p>
+ *
  */
 public final class DataStreamLoader {
 

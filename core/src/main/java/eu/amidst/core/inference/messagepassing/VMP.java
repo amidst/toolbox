@@ -28,7 +28,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Created by andresmasegosa on 03/02/15.
+ *
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#vmpexample"> http://amidst.github.io/toolbox/#vmpexample </a>  </p>
  */
 public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithm, Sampler {
 

@@ -29,7 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 21/4/15.
+ *
+ *
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#nbconceptdriftexample"> http://amidst.github.io/toolbox/#nbconceptdriftexample </a>  </p>
+ *
  */
 public class NaiveBayesVirtualConceptDriftDetector implements FadingLearner{
 

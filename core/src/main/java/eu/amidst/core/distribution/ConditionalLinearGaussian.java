@@ -36,6 +36,10 @@ import java.util.Random;
  * This class extends the abstract class {@link ConditionalDistribution}.
  * It defines the Conditional Linear Gaussian distribution, i.e.,
  * the conditional distribution of a normal variable given a set of normal parents.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ *
  */
 public class ConditionalLinearGaussian extends ConditionalDistribution {
 

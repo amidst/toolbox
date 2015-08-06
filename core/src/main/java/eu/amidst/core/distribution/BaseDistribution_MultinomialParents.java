@@ -23,6 +23,9 @@ import java.util.Random;
 /**
  * This class extends the abstract class {@link ConditionalDistribution}.
  * It defines the conditional distribution of a variable with a base distribution given a set of Multinomial parents.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
  */
 public class BaseDistribution_MultinomialParents<E extends Distribution> extends ConditionalDistribution {
 

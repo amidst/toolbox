@@ -23,6 +23,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class implements the interface Iterable<Variable>.
  * It handles and defines an {@code Iterator} over a collection of {@link Variable}.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#variablesexample"> http://amidst.github.io/toolbox/#variablesexample </a>  </p>
+ *
  */
 public class Variables implements Iterable<Variable>, Serializable {
 

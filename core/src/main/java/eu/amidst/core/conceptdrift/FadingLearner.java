@@ -13,7 +13,12 @@ package eu.amidst.core.conceptdrift;
 
 
 /**
- * Created by andresmasegosa on 1/7/15.
+ *
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#conceptdriftexample"> http://amidst.github.io/toolbox/#conceptdriftexample </a>  </p>
+ *
+ *
  */
 public interface FadingLearner {
 

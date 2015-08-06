@@ -12,6 +12,10 @@ import java.util.stream.DoubleStream;
 
 /**
  * This class extends the abstract class {@link UnivariateDistribution} and defines the Gaussian Mixture distribution.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ *
  */
 public abstract class GaussianMixture extends UnivariateDistribution {
 

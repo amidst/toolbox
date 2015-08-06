@@ -14,6 +14,10 @@ import java.io.*;
 
 /**
  * This class allows to load a {@link BayesianNetwork} model from a file.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#iobnsexample"> http://amidst.github.io/toolbox/#iobnsexample </a>  </p>
+ *
  */
 public final class BayesianNetworkLoader {
 

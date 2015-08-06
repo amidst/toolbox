@@ -32,6 +32,10 @@ import java.util.Random;
 /**
  * This class extends the abstract class {@link ConditionalDistribution}.
  * It defines the conditional distribution of a variable with a {@link Normal} distribution given a set of Multinomial and Normal parents.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ *
  */
 public class Normal_MultinomialNormalParents extends ConditionalDistribution {
 
