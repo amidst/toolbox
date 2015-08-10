@@ -11,15 +11,31 @@ package eu.amidst.core.potential;
 import java.util.List;
 
 /**
- * Created by afa on 03/07/14.
+ * This interface defines and handles the basic operations for a potential.
  */
 public interface Potential {
 
+    /**
+     * Sets the variables in this Potential.
+     * @param variables a list of variables to set the potential with
+     */
     void setVariables(List variables);
 
+    /**
+     * Returns the list of variables in this Potential.
+     * @return the {@code List} of variables in the potential.
+     */
     List getVariables();
 
+    /**
+     * Combines this Potential with an input given potential.
+     * @param pot an input potential.
+     */
     void combine(Potential pot);
 
+    /**
+     * Computes the marginalization of this Potential.
+     * @param variables a list of variables.
+     */
     void marginalize(List variables);
 }

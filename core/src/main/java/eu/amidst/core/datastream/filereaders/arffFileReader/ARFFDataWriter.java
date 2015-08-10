@@ -16,22 +16,23 @@ import eu.amidst.core.datastream.filereaders.DataFileWriter;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
+// TODO Write a quickARFFReader and quickARFFSaver
+
 /**
- * TODO Write a quickARFFReader and quickARFFSaver
- * Created by andresmasegosa on 23/02/15.
+ * This class implements the interface {@link DataFileWriter} and defines an ARFF (Weka Attribute-Relation File Format) data writer.
  */
 public class ARFFDataWriter implements DataFileWriter {
 
-    @Override
-    public String getFileExtension() {
-        return "arff";
-    }
-
+    /**
+     * Saves a given data stream to an ARFF file.
+     * @param dataStream an input {@link DataStream}.
+     * @param path the path of the ARFF file where the data stream will be saved.
+     * @throws IOException
+     */
     public static void writeToARFFFile(DataStream<? extends DataInstance> dataStream, String path) throws IOException {
         FileWriter fw = new FileWriter(path);
         fw.write("@relation dataset\n\n");
@@ -41,7 +42,6 @@ public class ARFFDataWriter implements DataFileWriter {
         }
 
         fw.write("\n\n@data\n\n");
-
 
         dataStream.stream().forEach(e -> {
             try {
@@ -54,12 +54,21 @@ public class ARFFDataWriter implements DataFileWriter {
         fw.close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getFileExtension() {
+        return "arff";
+    }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeToFile(DataStream<? extends DataInstance> dataStream, String path) throws IOException {
        ARFFDataWriter.writeToARFFFile(dataStream, path);
     }
-
 
     public static String attributeToARFFString(Attribute att){
         if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.REAL) {
@@ -75,6 +84,12 @@ public class ARFFDataWriter implements DataFileWriter {
         }
     }
 
+    /**
+     * Converts a {@link DataInstance} object to an ARFF format {@code String}.
+     * @param atts an input list of the list of {@link Attributes}.
+     * @param assignment a {@link DataInstance} object.
+     * @return an ARFF format {@code String}.
+     */
     public static String dataInstanceToARFFString(Attributes atts, DataInstance assignment){
         StringBuilder builder = new StringBuilder(atts.getNumberOfAttributes()*2);
 
