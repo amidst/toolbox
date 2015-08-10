@@ -25,6 +25,11 @@ import java.util.Random;
  */
 public final class Utils {
 
+    /**
+     * Normalizes a given vector.
+     * @param vector the vector to be normalized.
+     * @return a normalized vector.
+     */
     public static <E extends Vector> E normalize(E vector){
 
         double sum = Utils.sum(vector);
@@ -35,7 +40,11 @@ public final class Utils {
         return vector;
     }
 
-
+    /**
+     * Normalizes a given vector.
+     * @param vector the vector to be normalized.
+     * @return a normalized vector.
+     */
     public static <E extends Vector> E logNormalize(E vector){
 
         int maxIndex = Utils.maxIndex(vector);
@@ -47,6 +56,11 @@ public final class Utils {
         return vector;
     }
 
+    /**
+     * Returns the sum of the elements in a given vector.
+     * @param vector a {@link Vector} object.
+     * @return a {@code double} that represents the sum of the vector elements.
+     */
     public static double sum(Vector vector){
         double sum = 0;
         for (int i=0; i<vector.size(); i++){
@@ -55,6 +69,11 @@ public final class Utils {
         return sum;
     }
 
+    /**
+     * Returns the index of the maximum element in a given vector.
+     * @param vector a {@link Vector} object.
+     * @return an {@code int} that represents the index of the maximum element in the vector.
+     */
     public static int maxIndex(Vector vector){
         double max = Double.NEGATIVE_INFINITY;
         int index = -1;
@@ -67,10 +86,19 @@ public final class Utils {
         return index;
     }
 
+    /**
+     * Sets a missing value as a Double.NaN.
+     * @return a Double.NaN.
+     */
     public static double missingValue(){
         return Double.NaN;
     }
 
+    /**
+     * Tests if a given value is missing or not.
+     * @param val a {@code double} value.
+     * @return {@code true} is the value is missing, {@code false} otherwise.
+     */
     public static boolean isMissingValue(double val){
         return Double.isNaN(val);
     }
@@ -81,6 +109,11 @@ public final class Utils {
         }
     }
 
+    /**
+     * Returns the index of the maximum element in a given array of doubles.
+     * @param vals an {@code array} of {@code double}.
+     * @return an {@code int} that represents the index of the maximum element in the array.
+     */
     public static int maxIndex(double[] vals){
         double max = Double.NEGATIVE_INFINITY;
         int index = -1;
@@ -93,6 +126,11 @@ public final class Utils {
         return index;
     }
 
+    /**
+     * Normalizes an array of doubles.
+     * @param vals an {@code array} of {@code double}.
+     * @return a normalized array of doubles.
+     */
     public static double[] normalize(double[] vals) {
         double sum = 0;
         for (int i=0; i<vals.length; i++) {
@@ -102,27 +140,14 @@ public final class Utils {
         for (int i=0; i<vals.length; i++) {
             vals[i] /= sum;
         }
-
         return vals;
-
     }
 
-    public static double[] newNormalize(double[] vals) {
-        double sum = 0;
-        for (int i=0; i<vals.length; i++) {
-            sum+=vals[i];
-        }
-
-        double[] normalizedVals = new double[vals.length];
-
-        for (int i=0; i<vals.length; i++) {
-            normalizedVals[i] = vals[i]/sum;
-        }
-
-        return normalizedVals;
-
-    }
-
+    /**
+     * Normalizes an array of doubles.
+     * @param vals an {@code array} of {@code double}.
+     * @return a normalized array of doubles.
+     */
     public static double[] logs2probs(double[] vals){
         double max = vals[Utils.maxIndex(vals)];
         double[] normalizedVals = new double[vals.length];
@@ -132,6 +157,11 @@ public final class Utils {
         return Utils.normalize(normalizedVals);
     }
 
+    /**
+     * Returns the causal order of {@link Variables} of a given {@link DAG}.
+     * @param dag a given {@link DAG}.
+     * @return a causal ordered list of {@link Variables}.
+     */
     public static List<Variable> getCausalOrder(DAG dag){
         Variables variables = dag.getStaticVariables();
         int nNrOfAtts = variables.getNumberOfVars();
@@ -161,7 +191,12 @@ public final class Utils {
         return order;
     }
 
-
+    /**
+     * Returns the conditional distribution type for a given {@link Variable} in a given {@link BayesianNetwork}.
+     * @param amidstVar a given {@link Variable}.
+     * @param amidstBN a given {@link BayesianNetwork}.
+     * @return an {@code int} that represents the conditional distribution type.
+     */
     public static int getConditionalDistributionType(Variable amidstVar, BayesianNetwork amidstBN) {
 
         int type = -1;
@@ -201,17 +236,14 @@ public final class Utils {
     }
 
     /**
-     *
-     * Inverse digamma function.  The digamma function is the
-     * derivative of the log gamma function.  This calculates the value
-     * Y > 0 for a value X such that digamma(Y) = X.
-     *
+     * Returns the Inverse digamma of a given {@code double} value.
+     * <p> The digamma function is the derivative of the log gamma function.
+     * It calculates the value Y > 0 for a value X such that digamma(Y) = X.
      * This algorithm is from Paul Fackler & Harvard Univesity:
      * http://www4.ncsu.edu/~pfackler/
-     * http://hips.seas.harvard.edu/content/inverse-digamma-function-matlab
-     *
-     * @param X
-     * @return Y value such as Digamma(Y) = X
+     * http://hips.seas.harvard.edu/content/inverse-digamma-function-matlab </p>
+     * @param X a {@code double} value.
+     * @return a {@code double} value Y, such as Digamma(Y) = X.
      */
     public static double invDigamma(double X){
         double L = 1;
@@ -223,77 +255,4 @@ public final class Utils {
         return Y;
     }
 
-    //*********************************************************************************
-//            //Simulate a sample from a Hugin network
-//            int nsamples = 100;
-//            for (int j=0;j< nodeList.size();j++) {
-//                System.out.print(((Node)nodeList.get(j)).getName());
-//                if(j<nodeList.size()-1)
-//                    System.out.print(",");
-//            }
-//            System.out.println();
-//            for (int i=0;i<nsamples;i++){
-//                domain.simulate();
-//                for (int j=0;j<nodeList.size();j++){
-//                    System.out.print(((ContinuousChanceNode)nodeList.get(j)).getSampledValue());
-//                    if(j<nodeList.size()-1)
-//                        System.out.print(",");
-//                }
-//                System.out.println();
-//            }
-//            //*********************************************************************************
-
-
-
-
-    public static Assignment randomEvidence(BayesianNetwork bn, long seed, int numVarEvidence, boolean output ) throws UnsupportedOperationException {
-
-
-        int numVariables = bn.getStaticVariables().getNumberOfVars();
-
-        if (numVarEvidence<=0 || numVarEvidence>=numVariables) {
-            throw new UnsupportedOperationException("Error: invalid number of variables in evidence");
-        }
-
-        Random random=new Random(seed);
-
-        double [] evidence = new double[numVarEvidence];
-        Variable aux;
-        HashMapAssignment assignment = new HashMapAssignment(numVarEvidence);
-
-        int[] indexesEvidence = new int[numVarEvidence];
-
-        if(output) {
-            System.out.println("Evidence:");
-        }
-        for( int k=0; k<numVarEvidence; k++ ) {
-            int varIndex=-1;
-            do {
-                varIndex = random.nextInt( bn.getNumberOfVars() );
-                //System.out.println(varIndex);
-                aux = bn.getStaticVariables().getVariableById(varIndex);
-
-                double thisEvidence;
-                if (aux.isMultinomial()) {
-                    thisEvidence = random.nextInt( aux.getNumberOfStates() );
-                }
-                else {
-                    thisEvidence = random.nextGaussian();
-                }
-                evidence[k] = thisEvidence;
-
-            } while (ArrayUtils.contains(indexesEvidence, varIndex) );
-
-            indexesEvidence[k]=varIndex;
-            if(output) {
-                //System.out.println(Arrays.toString(indexesEvidence));
-                System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
-            }
-            assignment.setValue(aux, evidence[k]);
-        }
-        if(output) {
-            System.out.println();
-        }
-        return assignment;
-    }
 }
