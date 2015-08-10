@@ -23,7 +23,13 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 /**
- * Created by ana@cs.aau.dk on 08/12/14.
+ *
+ * This class represents a conditional linear Gaussian distribution in exponential canonical form.
+ *
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
  */
 public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 

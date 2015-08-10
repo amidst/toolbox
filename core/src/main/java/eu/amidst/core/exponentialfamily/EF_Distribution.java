@@ -12,9 +12,8 @@
 
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Assignment;
 
 import java.util.List;
 
@@ -24,29 +23,17 @@ import java.util.List;
  * This class represents an exponential family (EF) distribution in canonical form.
  *
  * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
  * </p>
  */
 public abstract class EF_Distribution {
 
-    //The variable of the distribution
-    protected Variable var = null;
-
-    //The vector of natural parameters
+    /** The vector of natural parameters */
     protected NaturalParameters naturalParameters;
 
-    //The vector of moment parameters
+    /** The vector of moment parameters */
     protected MomentParameters momentParameters;
-
-    /**
-     * Gets the variable of the distribution
-     *
-     * @return A <code>Variable</code> object.
-     */
-    public Variable getVariable() {
-        return this.var;
-    }
 
     /**
      * Gets the vector of natural parameters of the distribution
@@ -157,13 +144,13 @@ public abstract class EF_Distribution {
     }
 
     /**
-     * Creates a zero vector (i.e. a vector fills with zeros).
+     * Creates a zero vector (ie a vector fills with zeros).
      * @return A <code>Vector</code> object
      */
     public abstract Vector createZeroVector();
 
     /**
-     * Creates a zero moment parameter vector (i.e. a vector fills with zeros).
+     * Creates a zero moment parameter vector (ie a vector fills with zeros).
      * @return A <code>MomentParameters</code> object
      */
     public MomentParameters createZeroMomentParameters() {
@@ -171,7 +158,7 @@ public abstract class EF_Distribution {
     }
 
     /**
-     * Creates a zero sufficient statistics vector (i.e. a vector fills with zeros).
+     * Creates a zero sufficient statistics vector (ie a vector fills with zeros).
      * @return A <code>SufficientStatistics</code> object
      */
     public SufficientStatistics createZeroSufficientStatistics() {
@@ -179,7 +166,7 @@ public abstract class EF_Distribution {
     }
 
     /**
-     * Creates a zero natural parameter vector (i.e. a vector fills with zeros).
+     * Creates a zero natural parameter vector (ie a vector fills with zeros).
      * @return A <code>NaturalParameters</code> object
      */
     public NaturalParameters createZeroNaturalParameters() {

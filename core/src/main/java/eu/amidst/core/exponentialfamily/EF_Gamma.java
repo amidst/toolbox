@@ -19,7 +19,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Created by ana@cs.aau.dk on 23/02/15.
+ *
+ * This class represents a Gamma distribution in exponential canonical form.
+ *
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
  */
 public class EF_Gamma extends EF_UnivariateDistribution {
 
@@ -27,6 +33,10 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     public static final int INVX = 1;
     public static final double DELTA = 0.0001;
 
+    /**
+     * Builds a Gamma distribution, Gamma(1,1).
+     * @param var1, a <code>Variable</code> object whose distribution type is Gamma.
+     */
     public EF_Gamma(Variable var1) {
 
         if (!var1.isGammaParameter())
@@ -44,11 +54,18 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         this.setNaturalParameters(naturalParameters);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogBaseMeasure(double val) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics vec = this.createZeroSufficientStatistics();
@@ -57,6 +74,9 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         return vec;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_UnivariateDistribution deepCopy(Variable var) {
         EF_Gamma copy = new EF_Gamma(var);
@@ -66,6 +86,9 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         return copy;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_UnivariateDistribution randomInitialization(Random random) {
 
@@ -82,16 +105,25 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E toUnivariateDistribution() {
         throw new UnsupportedOperationException("Gamma is not included yet in the Distributions package.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateNaturalFromMomentParameters() {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMomentFromNaturalParameters() {
         double alpha = this.naturalParameters.get(0) + 1;
@@ -100,18 +132,25 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         this.momentParameters.set(1, alpha / beta);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(Assignment data) {
         return this.getSufficientStatistics(data.getValue(this.var));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int sizeOfSufficientStatistics() {
         return 2;
     }
 
-
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogNormalizer() {
         double alpha = this.naturalParameters.get(0) + 1;
@@ -119,12 +158,17 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         return Gamma.logGamma(alpha) - alpha * Math.log(beta);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector createZeroVector() {
         return new ArrayVector(2);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector getExpectedParameters() {
 
@@ -133,10 +177,10 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         return vec;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void fixNumericalInstability() {
-
     }
-
-
 }

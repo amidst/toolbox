@@ -19,7 +19,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Created by ana@cs.aau.dk on 23/02/15.
+ *
+ * This class represents an inverse Gamma distribution in exponential canonical form.
+ *
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
  */
 public class EF_InverseGamma extends EF_UnivariateDistribution {
 
@@ -27,6 +33,10 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     public static final int INVX = 1;
     public static final double DELTA = 0.0001;
 
+    /**
+     * Builds an inverse Gamma distribution.
+     * @param var1, a <code>Variable</code> object whose distribution type is Gamma.
+     */
     public EF_InverseGamma(Variable var1) {
 
         if (!var1.isInverseGammaParameter())
@@ -43,11 +53,17 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         this.setNaturalParameters(naturalParameters);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogBaseMeasure(double val) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics vec = this.createZeroSufficientStatistics();
@@ -56,6 +72,9 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         return vec;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_UnivariateDistribution deepCopy(Variable var) {
         EF_InverseGamma copy = new EF_InverseGamma(var);
@@ -65,6 +84,9 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         return copy;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_UnivariateDistribution randomInitialization(Random random) {
         double alpha = random.nextGaussian() * 2 + 1;
@@ -78,11 +100,17 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E toUnivariateDistribution() {
         throw new UnsupportedOperationException("Inverse Gamma is not included yet in the Distributions package.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateNaturalFromMomentParameters() {
         double m0 = this.getMomentParameters().get(0);
@@ -99,6 +127,9 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         this.naturalParameters.set(1, newbeta);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMomentFromNaturalParameters() {
         double alpha = -this.naturalParameters.get(0) - 1;
@@ -107,11 +138,17 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         this.momentParameters.set(1, alpha / beta);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int sizeOfSufficientStatistics() {
         return 2;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogNormalizer() {
         double alpha = -this.naturalParameters.get(0) - 1;
@@ -119,12 +156,17 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         return Gamma.logGamma(alpha) - alpha * Math.log(beta);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector createZeroVector() {
         return new ArrayVector(2);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector getExpectedParameters() {
         //if ((-this.naturalParameters.get(0)-2)<=0){
@@ -134,10 +176,12 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         vec.set(0, -this.naturalParameters.get(1)/(-this.naturalParameters.get(0)-1));
         return vec;
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void fixNumericalInstability() {
 
     }
-
-
 }

@@ -5,6 +5,7 @@
  *
  *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
+//TODO suff. stats for first form to be implemented (if required)
 
 package eu.amidst.core.exponentialfamily;
 
@@ -20,15 +21,27 @@ import java.util.Map;
 
 /**
  *
- * //TODO suff. stats for first form to be implemented (if required)
- * Created by ana@cs.aau.dk on 27/02/15.
+ * This class represents a conditional distribution of the type Multinomial variable given a Dirichlet parameter
+ * variable in exponential canonical form. It used for Bayesian learning tasks.
+ *
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
  */
 public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
 
-
+    /** The conditioninig Dirichlet variable*/
     Variable dirichletVariable;
+
+    /** The number of states of the main multinomial variable*/
     int nOfStates;
 
+    /**
+     * Builds a Multinomial given Dirichlet conditional distribution.
+     * @param var, a <code>Variable</code> object whose distribution type is Multinomial.
+     * @param dirichletVariable, a <code>Variable</code> object whose distribution type is Dirichlet.
+     */
     public EF_Multinomial_Dirichlet(Variable var, Variable dirichletVariable) {
 
         if (!var.isMultinomial()) {
@@ -46,26 +59,26 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
 
     }
 
+    /**
+     * Returns the Dirichlet conditioning variable
+     * @return A <code>Variable</code> object.
+     */
     public Variable getDirichletVariable() {
         return dirichletVariable;
     }
 
+
     /**
-     * Of the second form (message from all parents to X variable). Needed to calculate the lower bound.
-     *
-     * @param momentParents
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
-
         return 0.0;
     }
 
+
     /**
-     * Of the second form (message from all parents to X variable).
-     * @param momentParents
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
@@ -77,13 +90,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
     }
 
     /**
-     * It is the message to one node to its parent @param parent, taking into account the suff. stat. if it is observed
-     * or the moment parameters if not, and incorporating the message (with moment param.) received from all co-parents.
-     * (Third form EF equations).
-     *
-     * @param parent
-     * @param momentChildCoParents
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
@@ -95,52 +102,82 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
         return naturalParameters;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E toConditionalDistribution() {
         throw new UnsupportedOperationException("This method does not make sense. Parameter variables can not be converted. Use instead" +
                 "public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables);");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         throw new UnsupportedOperationException("No Implemented. This method is no really needed");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateNaturalFromMomentParameters() {
         throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMomentFromNaturalParameters() {
         throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(Assignment data) {
         throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int sizeOfSufficientStatistics() {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogNormalizer() {
         throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector createZeroVector() {
         throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
         Multinomial multinomial = new Multinomial(this.getVariable());
@@ -153,7 +190,4 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
         }
         return multinomial;
     }
-
-
-
 }

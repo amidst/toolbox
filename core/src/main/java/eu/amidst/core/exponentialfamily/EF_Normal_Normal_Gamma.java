@@ -20,15 +20,31 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by ana@cs.aau.dk on 25/02/15.
+ *
+ * This class represents, in exponential canonical form, a conditional distribution of the type Normal variable
+ * given Normal parents (or CLG distribution) and given, as a parents too, a set of of Normal and Gamma
+ * parameter variables. It used for Bayesian learning tasks.
+ *
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
  */
 public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
 
+    /** The number of parents*/
     int nOfParents;
 
+    /** List of the conditioning non-parameter Normal variables*/
     List<Variable> realYVariables;
+
+    /** List of parameter Normal variables associated to the beta coefficient values*/
     List<Variable> betasVariables;
+
+    /** The parameter Normal variable associated to the beta0 coefficient value*/
     Variable beta0Variable;
+
+    /** The parameter Gamma variable associated to the variance of the CLG distribution*/
     Variable gammaVariable;
 
 
