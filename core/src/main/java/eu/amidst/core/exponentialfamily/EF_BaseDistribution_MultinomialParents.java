@@ -26,36 +26,62 @@
 package eu.amidst.core.exponentialfamily;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.BaseDistribution_MultinomialParents;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.utils.MultinomialIndex;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This class represents conditional distributions with a set of multinomial parents. It aims to exploit some underlying
+ * structure when representing them in exponential family.
+ *
+ * <p> For further details about how these models are considered in this toolbox look at the following paper </p>
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
+ *
+ * @param <E>, the type of EF_ConditionalDistribution of the base distribution.
+ */
+public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDistribution> extends EF_ConditionalDistribution {
 
-public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalDistribution {
-
-
+    /** The list of base distributions */
     private final List<E> distributions;
+
+    /** The list of multinomial parents*/
     private final List<Variable> multinomialParents;
 
+    /** Whether the base distributions are conditional or univariate*/
     private boolean isBaseConditionalDistribution;
 
-    public List<Variable> getMultinomialParents() {
-        return multinomialParents;
-    }
-
+    /**
+     * Builds a new object from a list of multinomial parents and base distributions.
+     * @param multinomialParents1, a list of <code>Variable</code> objects.
+     * @param distributions1, a list of <code>EF_ConditionalDistribution</code> objects.
+     */
     public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
         this(multinomialParents1,distributions1,true);
     }
 
+    /**
+     * Builds a new object from a list of multinomial parents and base distributions.
+     *
+     * @param multinomialParents1, a list of <code>Variable</code> objects.
+     * @param distributions1, a list of <code>EF_ConditionalDistribution</code> objects.
+     * @param initializeMomentNaturalParameters, a boolean value indicating whether the moment and natural parameters
+     *                                           of the base distributions should be initialized.
+     */
     public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1, boolean initializeMomentNaturalParameters) {
 
         //if (multinomialParents1.size()==0) throw new IllegalArgumentException("Size of multinomial parents is zero");
@@ -104,32 +130,77 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     }
 
+    /**
+     * Return the list of multinomial parents.
+     * @return A list of <code>Variable</code> objects.
+     */
+    public List<Variable> getMultinomialParents() {
+        return multinomialParents;
+    }
+
+    /**
+     * Returns whether the base distributions are conditional or univariate.
+     * @return A boolean value.
+     */
     public boolean isBaseConditionalDistribution() {
         return isBaseConditionalDistribution;
     }
 
+    /**
+     * Gets the base distribution for a given indexed configuration of the multinomial parents.
+     * @param multinomialIndex, a positive integer.
+     * @return A <code>EF_ConditionalDistribution</code> object.
+     */
     public EF_ConditionalDistribution getBaseEFConditionalDistribution(int multinomialIndex) {
         return (EF_ConditionalDistribution)this.getBaseEFDistribution(multinomialIndex);
     }
 
+    /**
+     * Gets the base distribution for a given indexed configuration of the multinomial parents.
+     * @param multinomialIndex, a positive integer.
+     * @return A <code>EF_UnivariateDistribution</code> object.
+     */
     public EF_UnivariateDistribution getBaseEFUnivariateDistribution(int multinomialIndex) {
         return (EF_UnivariateDistribution)this.getBaseEFDistribution(multinomialIndex);
     }
 
+    /**
+     * Sets a base distribution for a given indexed configuration of the multinomial parents.
+     * @param indexMultinomial, a positive integer.
+     * @param baseDist, a <code>EF_ConditionalDistribution</code> object.
+     */
     public void setBaseEFDistribution(int indexMultinomial, E baseDist) {
         this.distributions.set(indexMultinomial, baseDist);
     }
 
+    /**
+     * Gets a base distribution for a given indexed configuration of the multinomial parents.
+     * @param indexMultinomial, a positive integer.
+     * @return A <code>EF_ConditionalDistribution</code> object.
+     */
     public E getBaseEFDistribution(int indexMultinomial) {
-
         return distributions.get(indexMultinomial);
     }
 
-    public E getBaseEFDistribution(DataInstance dataInstance) {
-        int position = MultinomialIndex.getIndexFromDataInstance(this.multinomialParents, dataInstance);
-        return getBaseEFDistribution(position);
+    /**
+     * The number of configurations of the multinomial parents.
+     * @return An integer value.
+     */
+    public int numberOfConfigurations() {
+        return this.distributions.size();
     }
 
+    /**
+     * The size of the sufficient statistics of the base distributions.
+     * @return An integer value.
+     */
+    public int sizeOfBaseSufficientStatistics() {
+        return this.getBaseEFDistribution(0).sizeOfSufficientStatistics();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(Assignment instance) {
 
@@ -147,19 +218,17 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
     }
 
-    public int numberOfConfigurations() {
-        return this.distributions.size();
-    }
-
-    public int sizeOfBaseSufficientStatistics() {
-        return this.getBaseEFDistribution(0).sizeOfSufficientStatistics();
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int sizeOfSufficientStatistics() {
         return numberOfConfigurations() + numberOfConfigurations() * sizeOfBaseSufficientStatistics();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateNaturalFromMomentParameters() {
 
@@ -184,34 +253,52 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMomentFromNaturalParameters() {
         throw new UnsupportedOperationException("Method not implemented yet!");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
         int position = MultinomialIndex.getIndexFromVariableAssignment(this.multinomialParents, dataInstance);
         return this.getBaseEFDistribution(position).computeLogBaseMeasure(dataInstance);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogNormalizer() {
         return 0;
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector createZeroVector() {
         return this.createCompoundVector();
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
 
@@ -242,6 +329,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return expectedLogNormalizer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
 
@@ -275,6 +365,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return expectedNaturalFromParents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         NaturalParameters expectedNaturalToParents = null;
@@ -376,6 +469,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         return expectedNaturalToParents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables parameters) {
 
@@ -402,6 +498,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E toConditionalDistribution() {
         BaseDistribution_MultinomialParents<Distribution> base = new BaseDistribution_MultinomialParents(this.var,this.getConditioningVariables());
@@ -419,9 +518,12 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
     }
 
     private CompoundVector createCompoundVector() {
-        return new CompoundVector((EF_Distribution)this.getBaseEFDistribution(0), this.numberOfConfigurations());
+        return new CompoundVector(this.getBaseEFDistribution(0), this.numberOfConfigurations());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
 

@@ -18,13 +18,23 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Created by ana@cs.aau.dk on 26/02/15.
+ *
+ * This class represents a Dirichlet distribution in exponential canonical form.
+ *
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
+ * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
  */
 public class EF_Dirichlet extends EF_UnivariateDistribution {
 
+    /** The number of parameter of the Dirichlet distribution*/
     int nOfStates;
 
-
+    /**
+     * Builds an uniform Dirichlet distribution, Dir(1,1,...,1).
+     * @param var1, a <code>Variable</code> object whose distribution type is Dirichlet.
+     */
     public EF_Dirichlet(Variable var1) {
         if (!var1.isDirichletParameter())
             throw new IllegalArgumentException("Non Dirichlet var");
@@ -40,10 +50,13 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         }
 
         updateMomentFromNaturalParameters();
-
-        //this.setMomentParameters(momentParameters);
     }
 
+    /**
+     * Builds an uniform Dirichlet distribution with a given scale.
+     * @param var1, a <code>Variable</code> object whose distribution type is Dirichlet.
+     * @param scale, a positive double value defining the scale of the Dirichlet.
+     */
     public EF_Dirichlet(Variable var1, double scale) {
         if (!var1.isDirichletParameter())
             throw new IllegalArgumentException("Non Dirichlet var");
@@ -61,12 +74,17 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         updateMomentFromNaturalParameters();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogBaseMeasure(double val) {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics vec = this.createZeroSufficientStatistics();
@@ -74,6 +92,9 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         return vec;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector getExpectedParameters() {
 
@@ -91,11 +112,17 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         return vector;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void fixNumericalInstability() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_UnivariateDistribution deepCopy(Variable var) {
         EF_Dirichlet copy = new EF_Dirichlet(var);
@@ -104,6 +131,9 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         return copy;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EF_UnivariateDistribution randomInitialization(Random random) {
 
@@ -115,16 +145,25 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E toUnivariateDistribution() {
         throw new UnsupportedOperationException("Dirichlet is not included yet in the Distributions package.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateNaturalFromMomentParameters() {
         throw new UnsupportedOperationException("No Implemented. EF_Dirichlet distribution should (right now) only be used for learning.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMomentFromNaturalParameters() {
 
@@ -138,12 +177,17 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int sizeOfSufficientStatistics() {
         return nOfStates;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogNormalizer() {
 
@@ -157,9 +201,11 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         return sumLogGammaOfU_i - Gamma.logGamma(sumOfU_i);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector createZeroVector() {
         return new ArrayVector(nOfStates);
     }
-
 }

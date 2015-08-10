@@ -14,6 +14,8 @@ import java.util.List;
 /**
  * This interface defines a collection of assignments to variables.
  * For example, "(A=0.1, B = True)" is an assignment with A being a continuous variable and B a binary variable.
+ * The assignment values are always encoded as double values. In case of finite state space distribution, the
+ * double value can be seen as an integer indexing the different states.
  */
 public interface Assignment {
 
