@@ -18,6 +18,7 @@ public class PotentialTable implements Potential {
     public PotentialTable(int nstates){
 
     }
+    
     public void setValues(double[] values) {
     }
 
@@ -25,21 +26,33 @@ public class PotentialTable implements Potential {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setVariables(List variables) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List getVariables() {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void combine(Potential pot) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void marginalize(List variables) {
 

@@ -14,26 +14,40 @@ import java.util.List;
  * Created by andresmasegosa on 28/08/14.
  */
 public class ConstantPotential implements Potential {
+
     private double val;
 
     public ConstantPotential(double val){
         this.val=val;
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setVariables(List variables) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List getVariables() {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void combine(Potential pot) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void marginalize(List variables) {
 

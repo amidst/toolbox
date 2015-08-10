@@ -44,6 +44,9 @@ public class ConsecutiveSpliterator<T> implements Spliterator<List<T>> {
         return StreamSupport.stream(wrapper, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean tryAdvance(Consumer<? super List<T>> action) {
         deque.pollFirst();
@@ -62,16 +65,25 @@ public class ConsecutiveSpliterator<T> implements Spliterator<List<T>> {
             ;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Spliterator<List<T>> trySplit() {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long estimateSize() {
         return wrappedSpliterator.estimateSize();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int characteristics() {
         return wrappedSpliterator.characteristics();
