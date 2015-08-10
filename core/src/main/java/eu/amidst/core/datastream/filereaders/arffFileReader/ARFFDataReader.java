@@ -29,16 +29,34 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 17/12/14.
+ * This class implements the interface {@link DataFileReader} and defines an ARFF (Weka Attribute-Relation File Format) data reader.
  */
 public class ARFFDataReader implements DataFileReader {
+
+    /** Represents the relation name. */
     String relationName;
+
+    /** Represents the list of {@link Attributes}. */
     private Attributes attributes;
+
+    /** Represents the data line count. */
     private int dataLineCount;
+
+    /** Represents the path of the ARFF file to be read. */
     private Path pathFile;
+
+    /** Represents an array of {@link StateSpaceTypeEnum} for the corresponding list of {@link Attributes}. */
     private StateSpaceTypeEnum[] stateSpace;
+
+    /** Represents a {@code Stream} of {@code String}. */
     private Stream<String> streamString;
 
+    /**
+     * Creates an {@link Attribute} from a given index and line.
+     * @param index an {@code int} that represents the index of column to which the Attribute refers.
+     * @param line a {@code String} starting with "@attribute" and including the name of the Attribute and its state space type.
+     * @return an {@link Attribute} object.
+     */
     private static Attribute createAttributeFromLine(int index, String line){
         String[] parts = line.split(" |\t");
 
@@ -69,6 +87,9 @@ public class ARFFDataReader implements DataFileReader {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void loadFromFile(String pathString) {
         pathFile = Paths.get(pathString);
@@ -114,7 +135,6 @@ public class ARFFDataReader implements DataFileReader {
 
             this.attributes = new Attributes(atts);
 
-
             //
             stateSpace=new StateSpaceTypeEnum[atts.size()];
 
@@ -126,17 +146,25 @@ public class ARFFDataReader implements DataFileReader {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Attributes getAttributes() {
         return this.attributes;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean doesItReadThisFileExtension(String fileExtension) {
         return fileExtension.equals(".arff");
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Stream<DataRow> stream() {
         if (streamString ==null) {
@@ -149,15 +177,30 @@ public class ARFFDataReader implements DataFileReader {
         return streamString.filter(w -> !w.isEmpty()).filter(w -> !w.startsWith("%")).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void restart(){
         streamString = null;
     }
 
+    /**
+     * This class implements the interface {@link DataRow} and defines a Weka data row.
+     */
     private static class DataRowWeka implements DataRow{
+
+        /** Represents an {@code array} of double. */
         double[] data;
+
+        /** Represents the list of {@link Attributes}. */
         Attributes atts;
 
+        /**
+         * Creates a new DataRowWeka from a given line and list of attributes.
+         * @param atts_ an input list of the list of {@link Attributes}.
+         * @param line a {@code String} including the values of the corresponding input attributes.
+         */
         public DataRowWeka(Attributes atts_, String line){
             atts = atts_;
             data = new double[atts.getNumberOfAttributes()];
@@ -182,21 +225,33 @@ public class ARFFDataReader implements DataFileReader {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public double getValue(Attribute att) {
             return data[att.getIndex()];
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void setValue(Attribute att, double value) {
             this.data[att.getIndex()]=value;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Attributes getAttributes() {
             return atts;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public double[] toArray() {
             return data;
