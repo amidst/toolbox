@@ -37,6 +37,9 @@ public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
         return stream(new FixedBatchParallelSpliteratorWrapper<>(in.spliterator(), batchSize), true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public Spliterator<T> trySplit() {
         final HoldingConsumer<T> holder = new HoldingConsumer<>();
         if (!spliterator.tryAdvance(holder)) return null;
@@ -46,17 +49,37 @@ public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
         if (est != Long.MAX_VALUE) est -= j;
         return Spliterators.spliterator(a, 0, j, characteristics());
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public boolean tryAdvance(Consumer<? super T> action) {
         return spliterator.tryAdvance(action);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public void forEachRemaining(Consumer<? super T> action) {
         spliterator.forEachRemaining(action);
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public Comparator<? super T> getComparator() {
         if (hasCharacteristics(SORTED)) return null;
         throw new IllegalStateException();
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public long estimateSize() { return est; }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public int characteristics() { return characteristics; }
 
     static final class HoldingConsumer<T> implements Consumer<T> {

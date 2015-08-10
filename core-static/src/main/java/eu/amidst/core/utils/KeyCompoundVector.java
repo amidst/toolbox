@@ -19,7 +19,6 @@ import java.util.Map;
  * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
  * It handles some key compound vector utility methods.
  */
-
 public class KeyCompoundVector<E> implements MomentParameters, NaturalParameters, SufficientStatistics {
 
     /** Represents the total size of this KeyCompoundVector. */
@@ -194,7 +193,6 @@ public class KeyCompoundVector<E> implements MomentParameters, NaturalParameters
             return vector;
         }
 
-        /**
          /**
          * Returns the index of this IndexedVector.
          * @return the index of generic element E.

@@ -34,21 +34,33 @@ public class MultivariateGaussianCF implements Potential {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setVariables(List variables) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List getVariables() {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void combine(Potential pot) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void marginalize(List variables) {
 
