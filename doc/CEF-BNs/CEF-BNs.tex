@@ -20,7 +20,9 @@
 \usepackage{multirow}
 \usepackage[titletoc,title]{appendix}
 \usepackage{amsthm}
+\usepackage{framed}
 
+\newtheorem{mydef}{Definition}
 \newtheorem{theorem}{Theorem}
 
 \parskip 6pt % 1pt = 0.351 mm
@@ -90,7 +92,7 @@ Moreover, we describe previously proposed learning and inference algorithms than
 %------------------------------------------------------------------------------------------------------
 
 %------------------------------------------------------------------------------------------------------
-\subsection*{Definition}
+\subsection{Definition}
 %------------------------------------------------------------------------------------------------------
 
 Let $\bm X = \{X_1,\ldots,X_N\}$ denote the set of stochastic random variables defining our domain problem and $\bm x$ an observation vector.  We say that the joint probability distribution $p(\cdot|\theta)$ parametrized by a parameter vector $\theta$ is an \textit{exponential family model} with a natural (or canonical) parametrization if the logarithm of $p$ can be functionally expressed as follows
@@ -146,10 +148,8 @@ More specific subfamilies inside this broad class of probabilistic models are us
 
 \end{description}
 
-
-
 %------------------------------------------------------------------------------------------------------
-\subsection*{Dual Parametrization}
+\subsection{Dual Parametrization}
 %------------------------------------------------------------------------------------------------------
 A key property of exponential family models is that they can be alternatively parametrized by a so-called \emph{moment parameter} vector $\bm \mu \in \mathcal{S}$. The relevancy of this dual parametrization is that several statistical computations, such as marginalization and maximum likelihood estimation, can be understood as transforming from one parameterization to the other.  
 
@@ -297,11 +297,10 @@ Regular exponential families with a minimal representation, i.e. linear exponent
 
 
 %------------------------------------------------------------------------------------------------------
-\subsection*{Conjugate exponential (CE) models} \label{sec:CondDist}
+\subsection{Conjugate exponential (CE) models} \label{sec:CondDist}
 %------------------------------------------------------------------------------------------------------
 
-A conditional distribution $p(\bm X | \bm Y)$ is  in the exponential family if, for any assignment $\bm y$ of the variables in $\bm Y$, the probability distribution $p(\bm X|\bm y)$ can be expressed in exponential form. Moreover, $p(\bm X | \bm Y)$ is said to be \textit{conjugate} with respect to the distribution $p(\bm Y)$ if the latter has the same functional form than the posterior $p(\bm Y|\bm X)\propto p(\bm X|\bm Y)p(\bm Y)$. Then, the joint distribution $p(\bm X, \bm Y)= p(\bm X|\bm Y)p(\bm Y)$ is said to be a \textit{conjugate exponential family} (CE) model. 
-
+A conditional distribution $p(\bm X | \bm Y)$ is  in the exponential family if, for any assignment $\bm y$ of the variables in $\bm Y$, the probability distribution $p(\bm X|\bm y)$ can be expressed in exponential form. Moreover,  $p(\bm X | \bm Y)$ is said to be \textit{conjugate} with respect to the distribution $p(\bm Y)$ if the latter has the same functional form than the posterior $p(\bm Y|\bm X)\propto p(\bm X|\bm Y)p(\bm Y)$. Then, the joint distribution $p(\bm X, \bm Y)= p(\bm X|\bm Y)p(\bm Y)$ is said to be a \textit{conjugate exponential family} (CE) model. 
 % In fact, Equation \ref{eq:CE_F1} usually implies the existence a \textit{conjugate prior} $p(\bm Y)$ for $p(\bm X | \bm Y)$.  
 
 An important property of CE models is that they are a multi-linear function of the sufficient statistic functions of $\bm X$ and $\bm Y$ [?]. This implies that we can alternatively express the conditional distribution $p(\bm X|\bm Y)$ in any of the three following functional forms 
@@ -330,10 +329,13 @@ An important property of CE models is that they are a multi-linear function of t
 
 \noindent where the suffixes for $\theta$ and $A$ denote that both terms vary from one form to another. For example, in the first and second functional form, $\theta_c(\bm y)$ and $\theta_p(\bm x)$ denote that the natural parameters are now a function of $\bm y$ and $\bm x$, respectively, which is not the case for the last functional form. 
 
+In Table ? we list the main conjugate exponential distributions. We point out that many of these pairs are usually omitted in the literature because they are usually consider under Bayesian learning settings. For example, as can be seen this table, every distribution conditioned to a set of multinomial variables defined a conjugate exponential pair. 
+
+
 %A BN is said to be a conjugate exponential family (CEF) model if all its CPDs belong to the exponential family and are conjugate as well. Importantly enough, the use of conjugate distributions allows that the posterior for each distribution has the same form as the prior, which means that only the parameter values change, but the functional form of the distribution remains the same.
 
 %------------------------------------------------------------------------------------------------------
-\section{Representing Bayesian networks as CEF models}\label{Section:CEFBN}
+\section{Representing Bayesian networks as conjugate exponential models}\label{Section:CEFBN}
 %------------------------------------------------------------------------------------------------------
 
 A Bayesian network (BN) defines a joint distribution $P(\bm X)$ in the following form:
@@ -342,7 +344,6 @@ $$ p(\bm X) = \prod_{i=1}^N p(X_i|Pa(X_i))$$
 
 \noindent where $Pa(X_i)\subset \bm X\setminus X_i$ represents the so-called \emph{parent variables} of $X_i$. BNs can be graphically represented by a directed acyclic graph (DAG). Each node, labelled $X_i$ in the graph, is associated with a factor or conditional probability $p(X_i|Pa(X_i))$. Additionally, for each parent $X_j \in Pa(X_i)$, the graph contains one directed edge pointing from $X_j$ to the \emph{child} variable $X_i$.
 
-A BN is said to be a conjugate exponential model if all its conditional probability distributions belong to the exponential family and are conjugate as well. 
 
 %Importantly enough, the use of conjugate distributions allows that the posterior for each distribution has the same form as the prior, which means that only the parameter values change, but the functional form of the distribution remains the same.
 
@@ -350,25 +351,32 @@ A BN is said to be a conjugate exponential model if all its conditional probabil
 \subsection{Representation} \label{Section:CEFBN:Representation}
 %------------------------------------------------------------------------------------------------------
 
-In this section, we show why conjugate exponential family Bayesian networks (CE-BNs) are quite amenable to be represented (and coded) as exponential family models. 
+
+We start this section defining conjugate exponential Bayesian networks (ce-BN) . 
+
+\begin{mydef}
+A BN is said to be a conjugate exponential model if the probability distribution of $X_i$ given its parents, $p(X_i|Pa(X_i))$, is conjugate with respect to the distribution of their parents, for all the variables in the model.  
+\end{mydef}
+
+As we show in the next theorem, we can exploit the \textit{F-form} of a conjugate model to obtain a compact representation of a Bayesian network as an exponential family model. 
 
 \begin{theorem}
-A CEF-BN can be represented as an exponential family model by composing the F-form representations of its conditional probability distributions as follows, 
+A ce-BN can be represented as an exponential family model, by composing the F-form representations of its conditional probability distributions, as follows 
 
 \begin{itemize}
-\item the natural parameters  $\theta$ of a CEF-BN are formed by the composition of the local natural parameters of each conditional distribution, 
+\item the natural parameters  $\theta$ of a ce-BN are formed by the composition of the local natural parameters of each conditional distribution, 
 
 $$\theta = (\theta_1, \ldots, \theta_n)$$
 
 \noindent where $\theta_i$ corresponds to natural parameters of the conditional distribution of $X_i$ expressed in F-form.
 
-\item the sufficient statistics $s(X_1,\ldots,X_n)$ of a CEF-BN are formed the composition of the local sufficient statistics of each conditional distribution, 
+\item the sufficient statistics $s(X_1,\ldots,X_n)$ of a ce-BN are formed the composition of the local sufficient statistics of each conditional distribution, 
 
 $$s(X_1,\ldots,X_n) = (s(X_1,Pa(X_1)), \ldots, s(X_n,Pa(X_n))$$
 
 \noindent where $s(X_i,Pa(X_i))$ corresponds to sufficient statistics of the conditional distribution of $X_i$ expressed in F-form.
 
-\item the log-normalizer $A(\theta)$ of a CEF-BN is the sum of the local conditional log-normalizer of each conditional distribution,
+\item the log-normalizer $A(\theta)$ of a ce-BN is the sum of the local conditional log-normalizer of each conditional distribution,
 
 
 $$ A(\theta) = \sum_{i=1}^n B_i(\theta_i) $$
@@ -379,7 +387,7 @@ $$ A(\theta) = \sum_{i=1}^n B_i(\theta_i) $$
 
 \end{theorem}
 \begin{proof}
-By using Equation \ref{Equation:EqCED}, a CEF-BN can be represented in the following way: 
+By using Equation \ref{Equation:EqCED}, a ce-BN can be represented in the following way: 
 
 \begin{eqnarray}
 \label{Equation:CEFSS}
@@ -401,15 +409,19 @@ s_n\big(X_n,Pa(X_n)\big) \\
 \end{eqnarray}
 \end{proof}
 
-Hence, in order to represent a BN as a CEF model, we only have to worry about the local representation of each CPD as in Equation \ref{Equation:CEFSS}. The global representation is then just obtained by composing all these local representations. 
+Hence, in order to represent a BN as a CEF model, we only have to worry about the local representation of each CPD as in Equation \ref{Equation:CEFSS}. The global representation is then just obtained by composing all these local representations. Let us notice that without the assumption of conjugacy  for the conditional exponential distributions, the above representation would have not been possible. 
 
-Let us notice that without the assumption of conjugacy  for the conditional exponential distributions, the above representation would have not been possible. 
 
 %------------------------------------------------------------------------------------------------------
 \subsection{From natural to moment parameters} \label{Section:CEFBN:NaturalToMoment}
 %------------------------------------------------------------------------------------------------------
 
-In this section, we examine the transformation from natural to moment parameters in a CEF-BN. Taking Equation \ref{Equation:NaturalToMoment} into account, the vector of moment parameters in a CEF-BN decomposes as follows:
+In this section, we examine the transformation from natural to moment parameters in a ce-BN, which is stated in the following theorem. 
+
+
+
+
+Starting from Equation \ref{Equation:NaturalToMoment} and applying Theorem \ref{Equation:CEFSS}, the vector of moment parameters in a ce-BN decomposes as follows:
 
 \begin{equation}
 \begin{array}{lll}
@@ -419,7 +431,7 @@ In this section, we examine the transformation from natural to moment parameters
 \end{array}
 \end{equation}
 
-\noindent where $\mu_i= \int s(X_i,Pa(X_i))~p(X_i,Pa(X_i))d\bm X$. I.e., the global moment parameter of a CEF-BN locally decomposes into local moment parameters associated to local marginal probabilities. Note here that in order to compute the local marginal probability $p(X_i,Pa(X_i))$ we need to perform inference over the whole BN.
+\noindent where $\mu_i= \int s(X_i,Pa(X_i))~p(X_i,Pa(X_i))d\bm X$. I.e., the global moment parameter of a ce-BN locally decomposes into local moment parameters associated to local marginal probabilities. Note here that in order to compute the local marginal probability $p(X_i,Pa(X_i))$ we need to perform inference over the whole BN.
 
 %------------------------------------------------------------------------------------------------------
 \subsection{From moment to natural Parameters} \label{Section:CEFBN:MomentToNatural}
@@ -447,8 +459,14 @@ $$ \theta(\mu) = \big(\theta_1(\mu_1), \ldots, \theta_n(\mu_n)\big)$$
 
 Let us note that, as opposed to the previous case, the transformation from moment to natural parameters can be performed locally at each conditional distribution, and as stated above, the global solution is just an aggregation of the local solutions.
 
+
 %------------------------------------------------------------------------------------------------------
-\section{Conditional distributions with multinomial parents in exponential form}\label{Section:CD_With_MParents}
+\subsection{Coding ce-BNs} \label{Section:CEFBN:Coding}
+%------------------------------------------------------------------------------------------------------
+
+
+%------------------------------------------------------------------------------------------------------
+\section{Conditional distributions with multinomial parents in ce-BNs}\label{Section:CD_With_MParents}
 %------------------------------------------------------------------------------------------------------
 
 In this section, we try to exploit the commonalities in terms of structure that are present in many CPDs in order to ease its representation in the exponential form, and thereby in the associated parameter transformations.  
@@ -554,7 +572,7 @@ The above problem simply corresponds to the transformation of the moment paramet
 \section{Maximum likelihood}
 %------------------------------------------------------------------------------------------------------
 
-In this section we look at the maximum likelihood problem in CEF-BNs. Our aim is to show how the solution to this multi-dimensional optimization problem has a common characterization in terms of exponential family representation and, moreover, boils down to smaller local problems for each conditional distribution\footnote{We point out that the following derivation is made without assuming that our models belongs to the regular exponential family and, in consequence, not using the equality of Equation \ref{Equation:RegularEFEquality}.}.
+In this section we look at the maximum likelihood problem in ce-BNs. Our aim is to show how the solution to this multi-dimensional optimization problem has a common characterization in terms of exponential family representation and, moreover, boils down to smaller local problems for each conditional distribution\footnote{We point out that the following derivation is made without assuming that our models belongs to the regular exponential family and, in consequence, not using the equality of Equation \ref{Equation:RegularEFEquality}.}.
 
 Let us assume that we are given a set of $m$ i.i.d. data samples $D=\{\bm x^{(1)}, \ldots, \bm x^{(m)}\}$ indexed by $j$. The maximum likelihood problem can be stated as follows:
 
@@ -602,16 +620,16 @@ For those conditional distributions with multinomial parents, the problem furthe
 %\end{enumerate}
 
 %------------------------------------------------------------------------------------------------------
-\section{EM algorithms in CEF-BNs}
+\section{EM algorithms in ce-BNs}
 %------------------------------------------------------------------------------------------------------
 
 
 %------------------------------------------------------------------------------------------------------
-\section{Variational inference in CEF-BNs}
+\section{Variational inference in ce-BNs}
 %------------------------------------------------------------------------------------------------------
 
 %------------------------------------------------------------------------------------------------------
-\section{Expectation propagation inference in CEF-BNs}
+\section{Expectation propagation inference in ce-BNs}
 %------------------------------------------------------------------------------------------------------
 
 
