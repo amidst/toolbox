@@ -80,7 +80,7 @@ public abstract class EF_UnivariateDistribution extends EF_ConditionalDistributi
 
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
-        NaturalParameters out = this.createZeroedNaturalParameters();
+        NaturalParameters out = this.createZeroNaturalParameters();
         out.copy(this.getNaturalParameters());
         return out;
     }

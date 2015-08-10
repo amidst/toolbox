@@ -34,8 +34,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
         this.parents = new ArrayList();
 
         this.var=var1;
-        this.naturalParameters = this.createZeroedNaturalParameters();
-        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroNaturalParameters();
+        this.momentParameters = this.createZeroMomentParameters();
 
         this.momentParameters.set(EXPECTED_MEAN,0);
         this.momentParameters.set(EXPECTED_SQUARE,1);
@@ -65,13 +65,13 @@ public class EF_Normal extends EF_UnivariateDistribution {
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return new ArrayVector(2);
     }
 
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        SufficientStatistics vec = this.createZeroedSufficientStatistics();
+        SufficientStatistics vec = this.createZeroSufficientStatistics();
         vec.set(EXPECTED_MEAN, val);
         vec.set(EXPECTED_SQUARE, val * val);
         return vec;

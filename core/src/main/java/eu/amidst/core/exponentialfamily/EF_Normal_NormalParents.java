@@ -173,7 +173,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
     @Override
-    public CompoundVector createZeroedVector() {
+    public CompoundVector createZeroVector() {
         return new CompoundVector(nOfParents);
     }
 

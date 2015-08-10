@@ -72,7 +72,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
     public void initLearning() {
         dataInstanceCount = new AtomicDouble(0);
         efBayesianNetwork = new EF_BayesianNetwork(dag);
-        sumSS = efBayesianNetwork.createZeroedSufficientStatistics();
+        sumSS = efBayesianNetwork.createZeroSufficientStatistics();
     }
 
     /**
@@ -131,7 +131,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
                     dataInstanceCount.getAndAdd(1.0);
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(efBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumVector);
+                .reduce(efBayesianNetwork.createZeroSufficientStatistics(), SufficientStatistics::sumVector);
     }
 
     /**
@@ -156,7 +156,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
         //Normalize the sufficient statistics
-        SufficientStatistics normalizedSS = efBayesianNetwork.createZeroedSufficientStatistics();
+        SufficientStatistics normalizedSS = efBayesianNetwork.createZeroSufficientStatistics();
         normalizedSS.copy(sumSS);
         normalizedSS.divideBy(dataInstanceCount.get());
 

@@ -137,7 +137,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         throw new UnsupportedOperationException("No Implemented. EF_Multinomial_Dirichlet distribution should only be used for learning, use EF_Multinomial for inference.");
     }
 

@@ -180,7 +180,7 @@ public class Normal extends UnivariateDistribution {
     public EF_Normal toEFUnivariateDistribution() {
 
         EF_Normal efNormal = new EF_Normal(this.getVariable());
-        MomentParameters momentParameters = efNormal.createZeroedMomentParameters();
+        MomentParameters momentParameters = efNormal.createZeroMomentParameters();
         momentParameters.set(EF_Normal.EXPECTED_MEAN, this.getMean());
         momentParameters.set(EF_Normal.EXPECTED_SQUARE, this.getMean() * this.getMean() + this.getSd() * this.getSd());
         efNormal.setMomentParameters(momentParameters);

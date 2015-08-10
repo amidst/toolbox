@@ -39,8 +39,8 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
         this.var=var;
         int nstates= var.getNumberOfStates();
-        this.naturalParameters = this.createZeroedNaturalParameters();
-        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroNaturalParameters();
+        this.momentParameters = this.createZeroMomentParameters();
 
         for (int i=0; i<nstates; i++){
             this.naturalParameters.set(i,-Math.log(nstates));
@@ -65,13 +65,13 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return new ArrayVector(this.var.getNumberOfStates());
     }
 
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        SufficientStatistics vec = this.createZeroedSufficientStatistics();
+        SufficientStatistics vec = this.createZeroSufficientStatistics();
         vec.set((int) val, 1);
         return vec;
     }
