@@ -35,8 +35,8 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
         this.parents = new ArrayList();
 
         this.var = var1;
-        this.naturalParameters = this.createZeroedNaturalParameters();
-        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroNaturalParameters();
+        this.momentParameters = this.createZeroMomentParameters();
 
         this.naturalParameters.set(0, -2.1); //alpha = 1.1
         this.naturalParameters.set(1, -1);   //beta = 1
@@ -50,7 +50,7 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
 
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        SufficientStatistics vec = this.createZeroedSufficientStatistics();
+        SufficientStatistics vec = this.createZeroSufficientStatistics();
         vec.set(LOGX, Math.log(val));
         vec.set(INVX, 1.0 / val);
         return vec;
@@ -120,7 +120,7 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return new ArrayVector(2);
     }
 

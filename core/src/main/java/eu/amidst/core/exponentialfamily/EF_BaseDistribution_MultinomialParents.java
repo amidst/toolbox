@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> extends EF_ConditionalDistribution {
 
 
@@ -201,7 +202,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return this.createCompoundVector();
     }
 
@@ -259,7 +260,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             if (this.isBaseConditionalDistribution) {
                 paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalFromParents(momentParents);
             }else{
-                paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroedNaturalParameters();
+                paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroNaturalParameters();
                 paritalExpectedNatural.copy(this.getBaseEFUnivariateDistribution(i).getNaturalParameters());
             }
 
@@ -285,7 +286,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
 
 
         if (indexOfMultinomialParent!=-1) {
-            expectedNaturalToParents =  new EF_Multinomial(parent).createZeroedNaturalParameters();//  new ArrayVector(parent.getNumberOfStates());
+            expectedNaturalToParents =  new EF_Multinomial(parent).createZeroNaturalParameters();//  new ArrayVector(parent.getNumberOfStates());
 
             int nConf = MultinomialIndex.getNumberOfPossibleAssignments(this.multinomialParents);
 
@@ -311,7 +312,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                         localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
                         localSum -= this.getBaseEFConditionalDistribution(i).getExpectedLogNormalizer(momentChildCoParents);
                     } else {
-                        paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroedNaturalParameters();
+                        paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroNaturalParameters();
                         paritalExpectedNatural.copy(this.getBaseEFUnivariateDistribution(i).getNaturalParameters());
                         localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
                         localSum -= this.getBaseEFUnivariateDistribution(i).computeLogNormalizer();
@@ -358,7 +359,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
                 if (this.isBaseConditionalDistribution) {
                     paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalToParent(parent, momentChildCoParents);
                 } else {
-                    paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroedNaturalParameters();
+                    paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroNaturalParameters();
                     paritalExpectedNatural.copy(this.getBaseEFUnivariateDistribution(i).getNaturalParameters());
                 }
 
@@ -453,7 +454,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
             nConf = nConf1;
             this.baseConf = new double[nConf];
             baseDist = baseDist1;
-            baseVectors = new SparseVector(baseDist1::createZeroedVector,nConf);
+            baseVectors = new SparseVector(baseDist1::createZeroVector,nConf);
             baseSSLength = baseDist.sizeOfSufficientStatistics();
 
         }
@@ -465,7 +466,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_Distribution> e
         public Vector getVectorByPosition(int position) {
             Vector vector =  this.baseVectors.getVectorByPosition(position);
             if (vector==null){
-                return this.baseDist.createZeroedVector();
+                return this.baseDist.createZeroVector();
             }else {
                 return vector;
             }

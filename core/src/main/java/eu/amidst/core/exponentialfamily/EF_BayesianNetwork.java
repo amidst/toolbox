@@ -23,7 +23,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ *
+ * This class represents a Bayesian network as a conjugate exponential family model. It inherits from the
+ * {@link EF_Distribution} class, because the Bayesian network model defines an exponential family distribution in canonical form.
+ *
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
+ * <p> Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
+ * </p>
+ *
  */
 public class EF_BayesianNetwork extends EF_Distribution {
 
@@ -165,12 +173,12 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return createCompoundVector();
     }
 
     private CompoundVector createCompoundVector(){
-        return new CompoundVector(this.distributionList.stream().map(w-> w.createZeroedVector()).collect(Collectors.toList()));
+        return new CompoundVector(this.distributionList.stream().map(w-> w.createZeroVector()).collect(Collectors.toList()));
     }
 
     private CompoundVector createEmtpyCompoundVector() {

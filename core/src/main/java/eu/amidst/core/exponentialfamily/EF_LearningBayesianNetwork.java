@@ -143,7 +143,7 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         throw new UnsupportedOperationException("Method not implemented yet!");
     }
 

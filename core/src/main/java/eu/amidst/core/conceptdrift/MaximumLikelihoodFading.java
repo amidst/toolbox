@@ -63,7 +63,7 @@ public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implement
         efBayesianNetwork = new EF_BayesianNetwork(dag);
 
         dataInstanceCount = new AtomicDouble(0);
-        sumSS = efBayesianNetwork.createZeroedSufficientStatistics();
+        sumSS = efBayesianNetwork.createZeroSufficientStatistics();
         for (DataOnMemory<DataInstance> batch : dataStream.iterableOverBatches(batchSize)){
             SufficientStatistics batchSS = batch.stream()
                     .map(efBayesianNetwork::getSufficientStatistics)

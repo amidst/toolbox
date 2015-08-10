@@ -127,7 +127,7 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
     }
 
     private CompoundVector createCompoundVector() {
-        return new CompoundVector(this.bayesianNetworkTime0.createZeroedVector(), this.bayesianNetworkTimeT.createZeroedVector());
+        return new CompoundVector(this.bayesianNetworkTime0.createZeroVector(), this.bayesianNetworkTimeT.createZeroVector());
     }
 
     public EF_BayesianNetwork getBayesianNetworkTime0() {

@@ -30,8 +30,8 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
             throw new IllegalArgumentException("Non Dirichlet var");
         this.var=var1;
         this.nOfStates = var.getNumberOfStates();
-        this.naturalParameters = this.createZeroedNaturalParameters();
-        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroNaturalParameters();
+        this.momentParameters = this.createZeroMomentParameters();
 
         this.parents = new ArrayList();
 
@@ -49,8 +49,8 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
             throw new IllegalArgumentException("Non Dirichlet var");
         this.var=var1;
         this.nOfStates = var.getNumberOfStates();
-        this.naturalParameters = this.createZeroedNaturalParameters();
-        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroNaturalParameters();
+        this.momentParameters = this.createZeroMomentParameters();
 
         this.parents = new ArrayList();
 
@@ -69,7 +69,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
 
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        SufficientStatistics vec = this.createZeroedSufficientStatistics();
+        SufficientStatistics vec = this.createZeroSufficientStatistics();
         vec.set((int)val, Math.log(val));
         return vec;
     }
@@ -158,7 +158,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return new ArrayVector(nOfStates);
     }
 

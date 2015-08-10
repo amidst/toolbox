@@ -170,7 +170,7 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal for inference.");
     }
 

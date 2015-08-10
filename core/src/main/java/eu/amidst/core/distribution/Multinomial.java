@@ -194,7 +194,7 @@ public class Multinomial extends UnivariateDistribution  {
     public EF_Multinomial toEFUnivariateDistribution() {
         EF_Multinomial efMultinomial = new EF_Multinomial(this.getVariable());
 
-        MomentParameters momentParameters = efMultinomial.createZeroedMomentParameters();
+        MomentParameters momentParameters = efMultinomial.createZeroMomentParameters();
 
         for (int i = 0; i < this.getVariable().getNumberOfStates(); i++) {
             momentParameters.set(i, this.getProbabilityOfState(i));

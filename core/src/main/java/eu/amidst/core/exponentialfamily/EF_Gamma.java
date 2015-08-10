@@ -35,8 +35,8 @@ public class EF_Gamma extends EF_UnivariateDistribution {
         this.parents = new ArrayList();
 
         this.var = var1;
-        this.naturalParameters = this.createZeroedNaturalParameters();
-        this.momentParameters = this.createZeroedMomentParameters();
+        this.naturalParameters = this.createZeroNaturalParameters();
+        this.momentParameters = this.createZeroMomentParameters();
         double alpha = 1;
         double beta = 1;
         this.naturalParameters.set(0, alpha -1 );
@@ -51,7 +51,7 @@ public class EF_Gamma extends EF_UnivariateDistribution {
 
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        SufficientStatistics vec = this.createZeroedSufficientStatistics();
+        SufficientStatistics vec = this.createZeroSufficientStatistics();
         vec.set(LOGX, Math.log(val));
         vec.set(INVX, val);
         return vec;
@@ -120,7 +120,7 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     }
 
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return new ArrayVector(2);
     }
 

@@ -68,7 +68,7 @@ public final class MaximumLikelihoodForDBN {
                 })
                 .map(efDynamicBayesianNetwork::getSufficientStatistics)
                 .reduce(SufficientStatistics::sumVector).get();
-                //.reduce(efDynamicBayesianNetwork.createZeroedSufficientStatistics(), SufficientStatistics::sumVector);
+                //.reduce(efDynamicBayesianNetwork.createZeroSufficientStatistics(), SufficientStatistics::sumVector);
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
