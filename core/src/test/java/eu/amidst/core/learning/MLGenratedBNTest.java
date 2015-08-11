@@ -44,7 +44,7 @@ public class MLGenratedBNTest {
         BayesianNetwork bnet = LearningEngine.learnParameters(naiveBayes.getDAG(), data);
 
         //Check the probability distributions of each node
-        for (Variable var : naiveBayes.getStaticVariables()) {
+        for (Variable var : naiveBayes.getVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ naiveBayes.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));

@@ -185,10 +185,10 @@ public class HuginInference implements InferenceAlgorithm {
 
         BNWriterToHugin.saveToHuginFile(bn,"networks/inference.net");
 
-        Variable DiscreteVar0 = bn.getStaticVariables().getVariableById(0);
-        Variable GaussianVar0 = bn.getStaticVariables().getVariableById(1);
-        Variable GaussianVar1 = bn.getStaticVariables().getVariableById(2);
-        Variable ClassVar = bn.getStaticVariables().getVariableById(3);
+        Variable DiscreteVar0 = bn.getVariables().getVariableById(0);
+        Variable GaussianVar0 = bn.getVariables().getVariableById(1);
+        Variable GaussianVar1 = bn.getVariables().getVariableById(2);
+        Variable ClassVar = bn.getVariables().getVariableById(3);
 
         //---------------------------------------------------------------------------
 

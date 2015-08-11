@@ -67,8 +67,8 @@ public class ParallelTANDemo {
                 ParallelTAN tan = new ParallelTAN();
                 tan.setNumCores(numCores);
                 tan.setNumSamplesOnMemory(samplesOnMemory);
-                tan.setNameRoot(bn.getStaticVariables().getListOfVariables().get(0).getName());
-                tan.setNameTarget(bn.getStaticVariables().getListOfVariables().get(1).getName());
+                tan.setNameRoot(bn.getVariables().getListOfVariables().get(0).getName());
+                tan.setNameTarget(bn.getVariables().getListOfVariables().get(1).getName());
                 Stopwatch watch = Stopwatch.createStarted();
                 BayesianNetwork model = tan.learnBN(data);
                 System.out.println(watch.stop());

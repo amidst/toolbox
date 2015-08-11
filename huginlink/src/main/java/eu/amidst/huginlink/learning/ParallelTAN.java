@@ -134,7 +134,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     public DAG learnDAG(DataStream dataStream) throws ExceptionHugin {
         Variables modelHeader = new Variables(dataStream.getAttributes());
         DAG dag = new DAG(modelHeader);
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Domain huginNetwork = null;
 
@@ -151,7 +151,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
             // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
             for (int i = 0; i < nodeList.size(); i++) {
-                Variable var = bn.getDAG().getStaticVariables().getVariableById(i);
+                Variable var = bn.getDAG().getVariables().getVariableById(i);
                 Node n = nodeList.get(i);
                 if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                     ((DiscreteChanceNode) n).getExperienceTable();
@@ -270,8 +270,8 @@ public class ParallelTAN implements AmidstOptionsHandler {
             //tan.loadOptionsFromFile("configurationFiles/conf.txt");
             tan.setNumCores(numCores);
             tan.setNumSamplesOnMemory(samplesOnMemory);
-            tan.setNameRoot(bn.getStaticVariables().getListOfVariables().get(0).getName());
-            tan.setNameTarget(bn.getStaticVariables().getListOfVariables().get(1).getName());
+            tan.setNameRoot(bn.getVariables().getListOfVariables().get(0).getName());
+            tan.setNameTarget(bn.getVariables().getListOfVariables().get(1).getName());
             Stopwatch watch = Stopwatch.createStarted();
             BayesianNetwork model = tan.learnBN(data);
             System.out.println(watch.stop());

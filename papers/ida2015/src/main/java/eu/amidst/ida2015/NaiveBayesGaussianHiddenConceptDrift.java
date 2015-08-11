@@ -47,7 +47,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     boolean globalHidden = true;
 
     public Variable getClassVariable(){
-        return this.svb.getLearntBayesianNetwork().getStaticVariables().getVariableById(this.classIndex);
+        return this.svb.getLearntBayesianNetwork().getVariables().getVariableById(this.classIndex);
     }
     public void setNumberOfGlobalVars(int numberOfGlobalVars) {
         this.numberOfGlobalVars = numberOfGlobalVars;
@@ -298,7 +298,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
     public double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data){
 
-        Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
+        Variable classVariable = bn.getVariables().getVariableById(classIndex);
         double predictions = 0;
         VMP vmp = new VMP();
         vmp.setModel(bn);
@@ -322,7 +322,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
         double[] output = new double[4];
         int TP = 0, TN = 0, FP  = 0, FN = 0;
-        Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
+        Variable classVariable = bn.getVariables().getVariableById(classIndex);
         double predictions = 0;
         VMP vmp = new VMP();
         vmp.setModel(bn);

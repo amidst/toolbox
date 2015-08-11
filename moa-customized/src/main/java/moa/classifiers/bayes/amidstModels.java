@@ -414,7 +414,7 @@ public class amidstModels extends AbstractClassifier implements SemiSupervisedLe
 
 
         double correctPredictions = 0;
-        Variable classVariable = bn.getStaticVariables().getVariableById(nb_.getClassIndex());
+        Variable classVariable = bn.getVariables().getVariableById(nb_.getClassIndex());
 
         VMP vmp = new VMP();
         vmp.setModel(bn);

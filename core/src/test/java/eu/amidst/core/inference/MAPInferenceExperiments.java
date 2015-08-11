@@ -1,7 +1,6 @@
 package eu.amidst.core.inference;
 
 
-import eu.amidst.core.inference.MAPInference;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -26,7 +25,7 @@ public class MAPInferenceExperiments {
             throw new UnsupportedOperationException("Error: invalid ratio");
         }
 
-        int numVariables = bn.getStaticVariables().getNumberOfVars();
+        int numVariables = bn.getVariables().getNumberOfVars();
 
         Random random=new Random(seed); //1823716125
         int numVarEvidence = (int) Math.ceil(numVariables*evidenceRatio); // Evidence on 20% of variables
@@ -46,7 +45,7 @@ public class MAPInferenceExperiments {
             do {
                 varIndex = random.nextInt( bn.getNumberOfVars() );
                 //System.out.println(varIndex);
-                aux = bn.getStaticVariables().getVariableById(varIndex);
+                aux = bn.getVariables().getVariableById(varIndex);
 
                 double thisEvidence;
                 if (aux.isMultinomial()) {
@@ -119,13 +118,13 @@ public class MAPInferenceExperiments {
         mapInference.runInference(1);
 
         Assignment mapEstimate1 = mapInference.getMAPestimate();
-        List<Variable> modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        List<Variable> modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
         System.out.println("MAP estimate: " + mapEstimate1.toString()); //toString(modelVariables);
         System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate1)));
         long timeStop = System.nanoTime();
         double execTime = (double) (timeStop - timeStart) / 1000000000.0;
         System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        //System.out.println(.toString(mapInference.getOriginalModel().getVariables().iterator().));
 
 
 
@@ -136,7 +135,7 @@ public class MAPInferenceExperiments {
         mapInference.runInference(-1);
 
         Assignment mapEstimate2 = mapInference.getMAPestimate();
-        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
         System.out.println("MAP estimate (huge sample): " + mapEstimate2.toString());
         System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate2)));
         timeStop = System.nanoTime();
@@ -150,7 +149,7 @@ public class MAPInferenceExperiments {
         mapInference.runInference(-2);
 
         Assignment mapEstimate3 = mapInference.getMAPestimate();
-        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
         System.out.println("MAP estimate (sequential): " + mapEstimate3.toString());
         System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate3)));
         timeStop = System.nanoTime();
@@ -165,13 +164,13 @@ public class MAPInferenceExperiments {
         mapInference.changeCausalOrder(bn,evidence);
 
         /*// AD-HOC MAP
-        mapEstimate.setValue(bn.getStaticVariables().getVariableByName("GaussianVar0"),-0.11819702417804305);
-        mapEstimate.setValue(bn.getStaticVariables().getVariableByName("GaussianVar1"),-1.706);
-        mapEstimate.setValue(bn.getStaticVariables().getVariableByName("GaussianVar2"),4.95);
-        mapEstimate.setValue(bn.getStaticVariables().getVariableByName("GaussianVar3"),14.33);
-        mapEstimate.setValue(bn.getStaticVariables().getVariableByName("GaussianVar4"),11.355);
+        mapEstimate.setValue(bn.getVariables().getVariableByName("GaussianVar0"),-0.11819702417804305);
+        mapEstimate.setValue(bn.getVariables().getVariableByName("GaussianVar1"),-1.706);
+        mapEstimate.setValue(bn.getVariables().getVariableByName("GaussianVar2"),4.95);
+        mapEstimate.setValue(bn.getVariables().getVariableByName("GaussianVar3"),14.33);
+        mapEstimate.setValue(bn.getVariables().getVariableByName("GaussianVar4"),11.355);
 
-        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        modelVariables = mapInference.getOriginalModel().getVariables().getListOfParamaterVariables();
         System.out.println("Other estimate: " + mapEstimate.toString(modelVariables));
         System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
         */

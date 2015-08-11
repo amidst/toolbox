@@ -10,15 +10,11 @@ package eu.amidst.core.utils;
 
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * This class offers some AMIDST util methods.
@@ -163,7 +159,7 @@ public final class Utils {
      * @return a causal ordered list of {@link Variables}.
      */
     public static List<Variable> getCausalOrder(DAG dag){
-        Variables variables = dag.getStaticVariables();
+        Variables variables = dag.getVariables();
         int nNrOfAtts = variables.getNumberOfVars();
         List<Variable> order = new ArrayList();
         boolean[] bDone = new boolean[variables.getNumberOfVars()];

@@ -45,7 +45,7 @@ public class MLMultinomialsTest {
         BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
 
         //Check if the probability distributions of each node
-        for (Variable var : asianet.getStaticVariables()) {
+        for (Variable var : asianet.getVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
@@ -84,7 +84,7 @@ public class MLMultinomialsTest {
         BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
 
         //Check if the probability distributions of each node
-        for (Variable var : asianet.getStaticVariables()) {
+        for (Variable var : asianet.getVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
@@ -126,7 +126,7 @@ public class MLMultinomialsTest {
         BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node
-        for (Variable var : asianet.getStaticVariables()) {
+        for (Variable var : asianet.getVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));

@@ -36,8 +36,8 @@ public class GlobalHiddenConceptDrift {
 
     private static double getRealMeanRandomConceptDrift(BayesianNetwork bn) {
 
-        Variable classVariable = bn.getStaticVariables().getVariableByName("ClassVar");
-        Variable gaussianVar0 = bn.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable classVariable = bn.getVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = bn.getVariables().getVariableByName("GaussianVar0");
 
         Multinomial distClass = bn.getConditionalDistribution(classVariable);
         Normal_MultinomialNormalParents distGV0 = bn.getConditionalDistribution(gaussianVar0);
@@ -54,9 +54,9 @@ public class GlobalHiddenConceptDrift {
 
     private static double getRealMeanSmoothConceptDrift(BayesianNetwork bn) {
 
-        Variable classVariable = bn.getStaticVariables().getVariableByName("ClassVar");
-        Variable gaussianVar0 = bn.getStaticVariables().getVariableByName("GaussianVar0");
-        Variable globalHidden = bn.getStaticVariables().getVariableByName("Global");
+        Variable classVariable = bn.getVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = bn.getVariables().getVariableByName("GaussianVar0");
+        Variable globalHidden = bn.getVariables().getVariableByName("Global");
 
         Multinomial distClass = bn.getConditionalDistribution(classVariable);
         Normal_MultinomialNormalParents distGV0 = bn.getConditionalDistribution(gaussianVar0);
@@ -77,9 +77,9 @@ public class GlobalHiddenConceptDrift {
 
     private static double getLearntMean(BayesianNetwork bn, double globalMean) {
 
-        Variable globalHidden = bn.getStaticVariables().getVariableByName("Global");
-        Variable classVariable = bn.getStaticVariables().getVariableByName("ClassVar");
-        Variable gaussianVar0 = bn.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable globalHidden = bn.getVariables().getVariableByName("Global");
+        Variable classVariable = bn.getVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = bn.getVariables().getVariableByName("GaussianVar0");
 
 
         Normal distGlobal = bn.getConditionalDistribution(globalHidden);
@@ -106,9 +106,9 @@ public class GlobalHiddenConceptDrift {
 
         naiveBayes.randomInitialization(new Random(0));
 
-        Variable globalHidden = naiveBayes.getStaticVariables().getVariableByName("Global");
-        Variable classVariable = naiveBayes.getStaticVariables().getVariableByName("ClassVar");
-        Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable globalHidden = naiveBayes.getVariables().getVariableByName("Global");
+        Variable classVariable = naiveBayes.getVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = naiveBayes.getVariables().getVariableByName("GaussianVar0");
 
         for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
@@ -230,9 +230,9 @@ public class GlobalHiddenConceptDrift {
 
         naiveBayes.randomInitialization(new Random(0));
 
-        Variable globalHidden = naiveBayes.getStaticVariables().getVariableByName("Global");
-        Variable classVariable = naiveBayes.getStaticVariables().getVariableByName("ClassVar");
-        Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable globalHidden = naiveBayes.getVariables().getVariableByName("Global");
+        Variable classVariable = naiveBayes.getVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = naiveBayes.getVariables().getVariableByName("GaussianVar0");
 
         for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))
@@ -343,9 +343,9 @@ public class GlobalHiddenConceptDrift {
 
         naiveBayes.randomInitialization(new Random(1));
 
-        Variable globalHidden = naiveBayes.getStaticVariables().getVariableByName("Global");
-        Variable classVariable = naiveBayes.getStaticVariables().getVariableByName("ClassVar");
-        Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable globalHidden = naiveBayes.getVariables().getVariableByName("Global");
+        Variable classVariable = naiveBayes.getVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = naiveBayes.getVariables().getVariableByName("GaussianVar0");
 
 
         naiveBayes.getConditionalDistribution(globalHidden).randomInitialization(new Random(1));
@@ -537,9 +537,9 @@ public class GlobalHiddenConceptDrift {
 
         naiveBayes.randomInitialization(new Random(0));
 
-        Variable globalHidden = naiveBayes.getStaticVariables().getVariableByName("Global");
-        Variable classVariable = naiveBayes.getStaticVariables().getVariableByName("ClassVar");
-        Variable gaussianVar0 = naiveBayes.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable globalHidden = naiveBayes.getVariables().getVariableByName("Global");
+        Variable classVariable = naiveBayes.getVariables().getVariableByName("ClassVar");
+        Variable gaussianVar0 = naiveBayes.getVariables().getVariableByName("GaussianVar0");
 
         for (ConditionalDistribution dist : naiveBayes.getConditionalDistributions()) {
             if (dist.getVariable().equals(classVariable) || dist.getVariable().equals(globalHidden))

@@ -26,7 +26,7 @@ public class ImportanceSamplingExperiments {
             throw new UnsupportedOperationException("Error: invalid ratio");
         }
 
-        int numVariables = bn.getStaticVariables().getNumberOfVars();
+        int numVariables = bn.getVariables().getNumberOfVars();
 
         Random random=new Random(seed); //1823716125
         int numVarEvidence = (int) Math.ceil(numVariables*evidenceRatio); // Evidence on 20% of variables
@@ -46,7 +46,7 @@ public class ImportanceSamplingExperiments {
             do {
                 varIndex = random.nextInt( bn.getNumberOfVars() );
                 //System.out.println(varIndex);
-                aux = bn.getStaticVariables().getVariableById(varIndex);
+                aux = bn.getVariables().getVariableById(varIndex);
 
                 double thisEvidence;
                 if (aux.isMultinomial()) {
@@ -180,10 +180,10 @@ public class ImportanceSamplingExperiments {
             //*****************************************************************
 
             Variable varInterest;
-            int varIndex = random.nextInt(bn.getStaticVariables().getNumberOfVars());
+            int varIndex = random.nextInt(bn.getVariables().getNumberOfVars());
             do {
-                varInterest = bn.getStaticVariables().getVariableById(varIndex);
-                varIndex = random.nextInt(bn.getStaticVariables().getNumberOfVars());
+                varInterest = bn.getVariables().getVariableById(varIndex);
+                varIndex = random.nextInt(bn.getVariables().getNumberOfVars());
                 //System.out.println(varInterest.getName());
             } while (varInterest.isNormal() == false);
 

@@ -22,7 +22,7 @@ public class ImportanceSamplingExperiments {
             throw new UnsupportedOperationException("Error: invalid ratio");
         }
 
-        int numVariables = bn.getStaticVariables().getNumberOfVars();
+        int numVariables = bn.getVariables().getNumberOfVars();
 
         Random random=new Random(seed); //1823716125
         int numVarEvidence = (int) Math.ceil(numVariables*evidenceRatio); // Evidence on 20% of variables
@@ -42,7 +42,7 @@ public class ImportanceSamplingExperiments {
             do {
                 varIndex = random.nextInt( bn.getNumberOfVars() );
                 //System.out.println(varIndex);
-                aux = bn.getStaticVariables().getVariableById(varIndex);
+                aux = bn.getVariables().getVariableById(varIndex);
 
                 double thisEvidence;
                 if (aux.isMultinomial()) {
@@ -139,7 +139,7 @@ public class ImportanceSamplingExperiments {
 
             bn = BayesianNetworkLoader.loadFromFile(filename);
             System.out.println(bn.toString());
-            Variable varInterest = bn.getStaticVariables().getVariableByName(varname);
+            Variable varInterest = bn.getVariables().getVariableByName(varname);
 
 
             vmp.setModel(bn);
@@ -189,7 +189,7 @@ public class ImportanceSamplingExperiments {
 
             varname = "DiscreteVar2";
             System.out.println();
-            Variable discreteVarInterest = bn.getStaticVariables().getVariableByName(varname);
+            Variable discreteVarInterest = bn.getVariables().getVariableByName(varname);
             System.out.println("Variable of interest: " + discreteVarInterest.getName());
 
             importanceSampling.runInference();

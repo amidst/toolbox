@@ -39,14 +39,14 @@ public class ModifiyingBayesianNetworks {
         System.out.println(bn.toString());
 
         //We first access the variable we are interested in
-        Variable multiVar = bn.getStaticVariables().getVariableByName("DiscreteVar0");
+        Variable multiVar = bn.getVariables().getVariableByName("DiscreteVar0");
 
         //Using the above variable we can get the associated distribution and modify it
         Multinomial multinomial = bn.getConditionalDistribution(multiVar);
         multinomial.setProbabilities(new double[]{0.2, 0.8});
 
         //Same than before but accessing the another variable
-        Variable normalVar = bn.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable normalVar = bn.getVariables().getVariableByName("GaussianVar0");
 
         //In this case, the conditional distribtuion is of the type "Normal given Multinomial Parents"
         Normal_MultinomialParents normalMultiDist = bn.getConditionalDistribution(normalVar);

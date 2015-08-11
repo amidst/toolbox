@@ -110,7 +110,7 @@ public class BayesianNetworkWithHiddenVars {
          *
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object.
          */
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
         System.out.println(bn.toString());
 
         /**

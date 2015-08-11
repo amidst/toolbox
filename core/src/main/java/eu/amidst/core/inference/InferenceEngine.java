@@ -62,11 +62,11 @@ public final class InferenceEngine {
 
         HashMapAssignment assignment = new HashMapAssignment(1);
 
-        Variable varB = bn.getStaticVariables().getVariableById(0);
+        Variable varB = bn.getVariables().getVariableById(0);
 
         assignment.setValue(varB, 0.7);
 
-        Variable varA = bn.getStaticVariables().getVariableById(1);
+        Variable varA = bn.getVariables().getVariableById(1);
 
         Normal posteriorOfA = InferenceEngine.getPosterior(varA, bn, assignment);
 

@@ -147,7 +147,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
             TemporalDataStream(BayesianNetworkSampler sampler1, int nSamples1){
                 this.sampler=sampler1;
                 this.nSamples = nSamples1;
-                List<Attribute> list = this.sampler.network.getStaticVariables().getListOfVariables().stream()
+                List<Attribute> list = this.sampler.network.getVariables().getListOfVariables().stream()
                         .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpaceType())).collect(Collectors.toList());
                 this.atts= new Attributes(list);
             }
@@ -188,12 +188,12 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
                     @Override
                     public double getValue(Attribute att) {
-                        return this.assignment.getValue(sampler.network.getStaticVariables().getVariableByName(att.getName()));
+                        return this.assignment.getValue(sampler.network.getVariables().getVariableByName(att.getName()));
                     }
 
                     @Override
                     public void setValue(Attribute att, double value) {
-                        this.assignment.setValue(sampler.network.getStaticVariables().getVariableByName(att.getName()), value);
+                        this.assignment.setValue(sampler.network.getVariables().getVariableByName(att.getName()), value);
                     }
 
                     @Override

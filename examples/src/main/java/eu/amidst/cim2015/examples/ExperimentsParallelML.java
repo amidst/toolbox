@@ -233,7 +233,7 @@ public final class ExperimentsParallelML {
     private static void sampleBayesianNetwork()  throws IOException {
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(0);

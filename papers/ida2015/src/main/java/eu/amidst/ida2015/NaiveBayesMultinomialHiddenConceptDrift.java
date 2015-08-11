@@ -178,7 +178,7 @@ public class NaiveBayesMultinomialHiddenConceptDrift {
 
     private double computeAccuracy(BayesianNetwork bn, DataOnMemory<DataInstance> data){
 
-        Variable classVariable = bn.getStaticVariables().getVariableById(classIndex);
+        Variable classVariable = bn.getVariables().getVariableById(classIndex);
         double predictions = 0;
         VMP vmp = new VMP();
         vmp.setModel(bn);

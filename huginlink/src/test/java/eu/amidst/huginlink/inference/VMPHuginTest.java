@@ -23,7 +23,7 @@ public class VMPHuginTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        Variables variables = bn.getDAG().getStaticVariables();
+        Variables variables = bn.getDAG().getVariables();
 
         Variable varX = variables.getVariableByName("X");
         Variable varB = variables.getVariableByName("B");
@@ -72,7 +72,7 @@ public class VMPHuginTest extends TestCase {
 
         System.out.println(bn.toString());
 
-        Variables variables = bn.getDAG().getStaticVariables();
+        Variables variables = bn.getDAG().getVariables();
 
         Variable varB = variables.getVariableByName("B");
         Variable varF = variables.getVariableByName("F");

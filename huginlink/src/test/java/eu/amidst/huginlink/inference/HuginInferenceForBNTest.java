@@ -29,7 +29,7 @@ public class HuginInferenceForBNTest {
         BayesianNetwork bn = BNConverterToAMIDST.convertToAmidst(huginBN);
         System.out.println(bn.toString());
 
-        Variables variables = bn.getDAG().getStaticVariables();
+        Variables variables = bn.getDAG().getVariables();
 
         Variable varA = variables.getVariableByName("A");
         Variable varB = variables.getVariableByName("B");

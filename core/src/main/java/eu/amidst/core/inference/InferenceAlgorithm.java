@@ -55,7 +55,7 @@ public interface InferenceAlgorithm {
     <E extends UnivariateDistribution> E getPosterior(Variable var);
 
     default <E extends UnivariateDistribution> E getPosterior(int varID){
-        return this.getPosterior(this.getOriginalModel().getStaticVariables().getVariableById(varID));
+        return this.getPosterior(this.getOriginalModel().getVariables().getVariableById(varID));
     }
 
     double getLogProbabilityOfEvidence();

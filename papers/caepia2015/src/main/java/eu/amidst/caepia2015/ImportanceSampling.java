@@ -107,7 +107,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         for (Variable samplingVar : causalOrder) {
 
-            Variable modelVar = this.model.getStaticVariables().getVariableById(samplingVar.getVarID());
+            Variable modelVar = this.model.getVariables().getVariableById(samplingVar.getVarID());
             double simulatedValue;
 
             if( evidence!=null && !Double.isNaN(evidence.getValue(samplingVar))) {
@@ -315,7 +315,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
     //TODO For continuous variables, instead of returning a Gaussian distributions, we should return a Mixture of Gaussians instead!!!
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
 
-        Variable samplingVar = this.samplingModel.getStaticVariables().getVariableById(var.getVarID());
+        Variable samplingVar = this.samplingModel.getVariables().getVariableById(var.getVarID());
         // TODO Could we build this object in a general way for Multinomial and Normal?
         EF_UnivariateDistribution ef_univariateDistribution = samplingVar.newUnivariateDistribution().toEFUnivariateDistribution();
 
@@ -377,7 +377,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
         importanceSampling.setSampleSize(1000);
 
 
-        for (Variable var: bn.getStaticVariables()){
+        for (Variable var: bn.getVariables()){
             importanceSampling.runInference();
             System.out.println("Posterior of " + var.getName() + ":" + importanceSampling.getPosterior(var).toString());
             System.out.println("Posterior (VMP) of " + var.getName() + ":" + vmp.getPosterior(var).toString());
@@ -407,7 +407,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         importanceSampling2.setEvidence(assignment);
 
-        for (Variable var: bn.getStaticVariables()) {
+        for (Variable var: bn.getVariables()) {
             importanceSampling.runInference(vmp);
             importanceSampling2.runInference();
             System.out.println("Posterior of " + var.getName() + "  (IS w/o Evidence) :" + importanceSampling.getPosterior(var).toString());

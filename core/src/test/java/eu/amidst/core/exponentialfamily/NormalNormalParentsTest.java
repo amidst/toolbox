@@ -43,8 +43,8 @@ public class NormalNormalParentsTest {
 
         EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
         HashMapAssignment dataTmp = new HashMapAssignment(2);
-        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("A"), 1.0);
-        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
+        dataTmp.setValue(testnet.getVariables().getVariableByName("A"), 1.0);
+        dataTmp.setValue(testnet.getVariables().getVariableByName("B"), 1.0);
 
 
         System.out.println(testnet.getConditionalDistributions().get(1).getLogConditionalProbability(dataTmp));
@@ -82,9 +82,9 @@ public class NormalNormalParentsTest {
         EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
 
         HashMapAssignment dataTmp = new HashMapAssignment(3);
-        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("A"), 1.0);
-        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("B"), 1.0);
-        dataTmp.setValue(testnet.getStaticVariables().getVariableByName("C"), 1.0);
+        dataTmp.setValue(testnet.getVariables().getVariableByName("A"), 1.0);
+        dataTmp.setValue(testnet.getVariables().getVariableByName("B"), 1.0);
+        dataTmp.setValue(testnet.getVariables().getVariableByName("C"), 1.0);
 
         System.out.println(testnet.getConditionalDistributions().get(2).getLogConditionalProbability(dataTmp));
         System.out.println(ef_testnet.getDistributionList().get(2).computeLogProbabilityOf(dataTmp));

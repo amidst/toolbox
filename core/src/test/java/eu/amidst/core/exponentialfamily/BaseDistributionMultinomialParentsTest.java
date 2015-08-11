@@ -24,7 +24,7 @@ public class BaseDistributionMultinomialParentsTest {
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
 
         //Here we had to modify the CPT of the variable E because no smoothing is considered yet
-        //Multinomial_MultinomialParents distE = testnet.getConditionalDistribution(testnet.getStaticVariables().getVariableByName("E"));
+        //Multinomial_MultinomialParents distE = testnet.getConditionalDistribution(testnet.getVariables().getVariableByName("E"));
         //distE.getMultinomial(0).setProbabilities(new double[]{0.9, 0.1});
         //distE.getMultinomial(1).setProbabilities(new double[]{0.9, 0.1});
         //distE.getMultinomial(2).setProbabilities(new double[]{0.9, 0.1});

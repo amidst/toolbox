@@ -35,7 +35,7 @@ public class BNConverterToHugin {
      */
     private void setNodes(BayesianNetwork amidstBN) throws ExceptionHugin {
 
-        Variables amidstVars = amidstBN.getStaticVariables();
+        Variables amidstVars = amidstBN.getVariables();
         int size = amidstVars.getNumberOfVars();
 
         //Hugin always inserts variables at position 0, i.e, for an order A,B,C, it stores C,B,A
@@ -69,7 +69,7 @@ public class BNConverterToHugin {
 
         DAG dag = amidstBN.getDAG();
 
-        for (Variable amidstChild: amidstBN.getStaticVariables()) {
+        for (Variable amidstChild: amidstBN.getVariables()) {
             for (Variable amidstParent: dag.getParentSet(amidstChild)) {
                 Node huginChild = this.huginBN.getNodeByName(amidstChild.getName());
                 Node huginParent = this.huginBN.getNodeByName(amidstParent.getName());
@@ -226,7 +226,7 @@ public class BNConverterToHugin {
      */
     private void setDistributions(BayesianNetwork amidstBN) throws ExceptionHugin {
 
-        for (Variable amidstVar : amidstBN.getStaticVariables()) {
+        for (Variable amidstVar : amidstBN.getVariables()) {
 
             switch (Utils.getConditionalDistributionType(amidstVar, amidstBN)) {
                 case 0:

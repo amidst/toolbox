@@ -59,7 +59,7 @@ public class DataGeneration {
                 dag.getParentSet(vars.getVariableById(connected[M][i])).addParent(vars.getVariableByName("Class"));
             }
 
-            BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+            BayesianNetwork bn = new BayesianNetwork(dag);
 
             bn.randomInitialization(new Random(0));
 
