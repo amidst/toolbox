@@ -12,7 +12,7 @@ import eu.amidst.core.utils.Vector;
 
 /**
  * This interface extends the interface {@link eu.amidst.core.utils.Vector}.
- * It handles classes for representing the moment parameter vector of an exponential
+ * It handles classes for representing the moment parameter vector of an exponential family
  * distribution in canonical form.
  *
  * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>

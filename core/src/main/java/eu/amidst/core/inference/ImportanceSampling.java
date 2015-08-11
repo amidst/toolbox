@@ -35,13 +35,12 @@ import java.util.stream.Stream;
 
 
 /**
+ * This class implements the interface {@link InferenceAlgorithm} and defines the Importance Sampling algorithm.
+ * J.M. Hammersley and D.C. Handscomb. Monte Carlo Methods. Methuen & Co, London, UK, 1964.
  *
- *
- * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#isexample"> http://amidst.github.io/toolbox/#isexample </a>  </p>
- *
+ * <p> For an example of use follow this link
+ * <a href="http://amidst.github.io/toolbox/#isexample"> http://amidst.github.io/toolbox/#isexample </a>  </p>
  */
-
 public class ImportanceSampling implements InferenceAlgorithm {
 
     private BayesianNetwork model;
@@ -53,7 +52,6 @@ public class ImportanceSampling implements InferenceAlgorithm {
     //TODO The sampling distributions must be restricted to the evidence
     private Assignment evidence;
     private boolean parallelMode = true;
-
 
     private class WeightedAssignment {
         private HashMapAssignment assignment;
@@ -81,9 +79,6 @@ public class ImportanceSampling implements InferenceAlgorithm {
         this.parallelMode = parallelMode_;
     }
 
-    public ImportanceSampling() {
-
-    }
     public void setSamplingModel(BayesianNetwork samplingModel_) {
         this.samplingModel = samplingModel_;
         this.causalOrder = Utils.getCausalOrder(samplingModel.getDAG());
@@ -181,15 +176,6 @@ public class ImportanceSampling implements InferenceAlgorithm {
         }
     }
 
-    @Override
-    public double getExpectedValue(Variable var, Function<Double,Double> function) {
-        List<Double> sum = weightedSampleList
-                .map(ws ->Arrays.asList(ws.weight, ws.weight*function.apply(ws.assignment.getValue(var))))
-                 .reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double>e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
-
-        return sum.get(1)/sum.get(0);
-    }
-
     public double runQuery(Variable continuousVarInterest, double a, double b) {
 
         double probInterest;
@@ -244,7 +230,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
                         return Arrays.asList(ws.weight , 0.0);
                     }
             //).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
-            ).reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double> e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+            ).reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double> e1, List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
             sumWeightsSuccess = sum.get(1);
             sumAllWeights=sum.get(0);
         }
@@ -270,7 +256,6 @@ public class ImportanceSampling implements InferenceAlgorithm {
             System.out.println("Error: quering about a Variable with evidence");
             System.exit(1);
         }
-
 
         //double sumWeights;
         double sumWeightsSuccess;
@@ -301,30 +286,57 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
     }
 
+    public void runInference(VMP vmp) {
+        this.computeWeightedSampleStream(vmp);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runInference() {
        this.computeWeightedSampleStream();
     }
 
-    public void runInference(VMP vmp) {
-        this.computeWeightedSampleStream(vmp);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getExpectedValue(Variable var, Function<Double,Double> function) {
+        List<Double> sum = weightedSampleList
+                .map(ws ->Arrays.asList(ws.weight, ws.weight*function.apply(ws.assignment.getValue(var))))
+                .reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double>e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+
+        return sum.get(1)/sum.get(0);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setModel(BayesianNetwork model_) {
         this.model = model_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BayesianNetwork getOriginalModel() {
         return this.model;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setEvidence(Assignment evidence_) {
         this.evidence = evidence_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     //TODO For continuous variables, instead of returning a Gaussian distributions, we should return a Mixture of Gaussians instead!!!
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
@@ -361,11 +373,17 @@ public class ImportanceSampling implements InferenceAlgorithm {
         return (E)posteriorDistribution;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getLogProbabilityOfEvidence() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setSeed(int seed) {
         this.seed=seed;

@@ -23,42 +23,65 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by andresmasegosa on 03/02/15.
+ * This class defines and handles a Node used for inference.
  */
 public class Node {
 
+    /** Represents the list of parents of this Node. */
     List<Node> parents;
 
+    /** Represents the list of children of this Node. */
     List<Node> children;
 
+    /** Represents the {@link Assignment} associated with this Node. */
     Assignment assignment;
 
+    /** Represents the exponential family univariate distribution of this Node. */
     EF_UnivariateDistribution QDist;
 
+    /** Represents the exponential family conditional distribution of this Node. */
     EF_ConditionalDistribution PDist;
 
+    /** Indicates if this Node is observed or not. */
     boolean observed=false;
 
+    /** Represents the {@link SufficientStatistics}. */
     SufficientStatistics sufficientStatistics;
 
+    /** Indicates whether this Node is done or not, initialized to {@code false}. */
     boolean isDone = false;
 
+    /** Indicates whether this Node is active or not, initialized to {@code true}. */
     boolean active = true;
 
+    /** Represents the main variable. */
     Variable mainVar;
 
+    /** Indicates if the parallel mode is activated, initialized to {@code true}. */
     boolean parallelActivated = true;
 
+    /** Represents a {@code Map} object that maps variables to parent nodes. */
     Map<Variable, Node> variableToParentsNodeMap;
 
+    /** Represents a {@code Map} object that maps parent nodes to variables. */
     Map<Node, Variable> nodeParentsToVariableMap;
 
+    /** Represents the name of this Node. */
     String name;
 
+    /**
+     * Creates a new Node given an input {@link EF_ConditionalDistribution}.
+     * @param PDist an input {@link EF_ConditionalDistribution}.
+     */
     public Node(EF_ConditionalDistribution PDist) {
          this(PDist, PDist.getVariable().getName());
     }
 
+    /**
+     * Creates a new Node given an input {@link EF_ConditionalDistribution} and name.
+     * @param PDist an input {@link EF_ConditionalDistribution}.
+     * @param name_ a {@code String} that represents the name of the node.
+     */
     public Node(EF_ConditionalDistribution PDist, String name_) {
         this.PDist = PDist;
         this.mainVar = this.PDist.getVariable();
@@ -70,46 +93,90 @@ public class Node {
         this.name = name_;
     }
 
+    /**
+     * Returns the name of this Node.
+     * @return the name of this Node.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the main {@link Variable}.
+     * @return the main {@link Variable}.
+     */
+    public Variable getMainVariable(){
+        return this.mainVar;
+    }
+
+    /**
+     * Tests whether the parallel mode is activated for this Node or not.
+     * @return {@code true} if the parallel mode is activated, {@code false} otherwise.
+     */
     public boolean isParallelActivated() {
         return parallelActivated;
     }
 
+    /**
+     * Sets the parallel mode for this Node.
+     * @param parallelActivated the parallel mode value to be set.
+     */
     public void setParallelActivated(boolean parallelActivated) {
         this.parallelActivated = parallelActivated;
     }
 
+    /**
+     * Resets the exponential family univariate distribution of this Node.
+     * @param random a {@link Random} object.
+     */
     public void resetQDist(Random random){
         this.QDist= this.mainVar.getDistributionType().newEFUnivariateDistribution().randomInitialization(random);
     }
 
-    public void setPDist(EF_ConditionalDistribution PDist) {
-        this.PDist = PDist;
-    }
-
+    /**
+     * Tests whether this Node is active or not.
+     * @return {@code true} if this Node is active, {@code false} otherwise.
+     */
     public boolean isActive() {
         return active;
     }
 
+    /**
+     * Sets this Node as either active or not active.
+     * @param active a {@boolean} value to be set.
+     */
     public void setActive(boolean active) {
         this.active = active;
     }
 
+    /**
+     * Returns the list of children nodes of this Node.
+     * @return the list of children nodes.
+     */
     public List<Node> getChildren() {
         return children;
     }
 
+    /**
+     * Sets the list of children nodes for this Node.
+     * @param children the list of children nodes to be set.
+     */
     public void setChildren(List<Node> children) {
         this.children = children;
     }
 
+    /**
+     * Returns the list of parent nodes of this Node.
+     * @return the list of parent nodes.
+     */
     public List<Node> getParents() {
         return parents;
     }
 
+    /**
+     * Sets the list of parent nodes for this Node.
+     * @param parents the list of parent nodes to be set.
+     */
     public void setParents(List<Node> parents) {
         this.parents = parents;
         variableToParentsNodeMap = new ConcurrentHashMap();
@@ -122,14 +189,18 @@ public class Node {
 
     }
 
+    /**
+     * Returns the {@link Assignment} associated with this Node.
+     * @return the {@link Assignment} associated with this Node.
+     */
     public Assignment getAssignment() {
         return assignment;
     }
 
-    public boolean isObserved() {
-        return observed;
-    }
-
+    /**
+     * Sets the {@link Assignment} for this Node.
+     * @param assignment the {@link Assignment} to be set.
+     */
     public void setAssignment(Assignment assignment) {
         this.assignment = assignment;
         if (this.assignment==null || Utils.isMissingValue(this.assignment.getValue(this.getMainVariable()))){
@@ -142,34 +213,68 @@ public class Node {
         }
     }
 
+    /**
+     * Tests whether this Node is observed or not.
+     * @return {@code true} if this Node is observed, {@code false} otherwise.
+     */
+    public boolean isObserved() {
+        return observed;
+    }
+
+    /**
+     * Returns the {@link SufficientStatistics} for this Node.
+     * @return a {@link SufficientStatistics} object.
+     */
     public SufficientStatistics getSufficientStatistics() {
         return sufficientStatistics;
     }
 
-    public EF_UnivariateDistribution getQDist() {
-        return (isObserved())? null: QDist;
-    }
-
-    public void setQDist(EF_UnivariateDistribution QDist) {
-        this.QDist = QDist;
-    }
-
-    public MomentParameters getQMomentParameters(){
-        return (isObserved())? (MomentParameters) this.sufficientStatistics: QDist.getMomentParameters();
-    }
-
+    /**
+     * Returns the exponential family conditional distribution of this Node.
+     * @return the exponential family conditional distribution of this Node.
+     */
     public EF_ConditionalDistribution getPDist() {
         return PDist;
     }
 
-    public Variable getMainVariable(){
-        return this.mainVar;
+    /**
+     * Sets the exponential family conditional distribution of this Node.
+     * @param PDist the exponential family conditional distribution to be set.
+     */
+    public void setPDist(EF_ConditionalDistribution PDist) {
+        this.PDist = PDist;
     }
 
+    /**
+     * Returns the exponential family univariate distribution of this Node.
+     * @return the exponential family univariate distribution of this Node.
+     */
+    public EF_UnivariateDistribution getQDist() {
+        return (isObserved())? null: QDist;
+    }
+
+    /**
+     * Sets the exponential family univariate distribution for this Node.
+     * @param QDist the exponential family univariate distribution to be set.
+     */
+    public void setQDist(EF_UnivariateDistribution QDist) {
+        this.QDist = QDist;
+    }
+
+    /**
+     * Returns the {@link MomentParameters} of the univariate exponential family distribution of this Node.
+     * @return a {@link MomentParameters} object.
+     */
+    public MomentParameters getQMomentParameters(){
+        return (isObserved())? (MomentParameters) this.sufficientStatistics: QDist.getMomentParameters();
+    }
+
+    /**
+     * Returns the {@link MomentParameters} of the exponential family distributions of the parents of this Node.
+     * @return a {@code Map} object that maps parent variables to their corresponding {@link MomentParameters}.
+     */
     public Map<Variable, MomentParameters> getMomentParents(){
         Map<Variable, MomentParameters> momentParents = new ConcurrentHashMap<>();
-
-        //this.getParents().stream().forEach(parent -> momentParents.put(parent.getMainVariable(), parent.getQMomentParameters()));
 
         this.getPDist().getConditioningVariables().stream().forEach(var -> momentParents.put(var,this.variableToNodeParent(var).getQMomentParameters()));
 
@@ -178,19 +283,39 @@ public class Node {
         return momentParents;
     }
 
+    /**
+     * Converts a given node parent of this Node to a {@link Variable}.
+     * @param parent a given node parent.
+     * @return the parent {@link Variable}.
+     */
     public Variable nodeParentToVariable(Node parent){
         return this.nodeParentsToVariableMap.get(parent);
     }
 
+    /**
+     * Converts a given variable parent of this Node to a {@link Node}.
+     * @param var a given {@link Variable} parent.
+     * @return the parent {@link Node}.
+     */
     public Node variableToNodeParent(Variable var){
         return this.variableToParentsNodeMap.get(var);
     }
 
+    /**
+     * Sets a given {@link Variable} as a parent node for this Node.
+     * @param var a given {@link Variable}.
+     * @param parent a given parent {@link Node}.
+     */
     public void setVariableToNodeParent(Variable var, Node parent){
         this.variableToParentsNodeMap.put(var, parent);
         this.nodeParentsToVariableMap.put(parent, var);
     }
 
+    /**
+     * Tests whether the message is sent or done from this Node to a given parent variable.
+     * @param parent a given parent variable.
+     * @return {@code true} if the message is done, {@code false} otherwise.
+     */
     public boolean messageDoneToParent(Variable parent){
 
         if (!this.isObserved())
@@ -204,6 +329,10 @@ public class Node {
         return true;
     }
 
+    /**
+     * Tests whether the message is received or done from the parents of this Node.
+     * @return {@code true} if the message is done, {@code false} otherwise.
+     */
     public boolean messageDoneFromParents(){
 
         for (Node node : this.getParents()){
@@ -214,10 +343,18 @@ public class Node {
         return true;
     }
 
+    /**
+     * Test whether this Node is done.
+     * @return {@code true} if this Node is done, {@code false} otherwise.
+     */
     public boolean isDone(){
         return isDone || this.observed;
     }
 
+    /**
+     * Sets this Node as either done or not.
+     * @param isDone a {@boolean} value to be set.
+     */
     public void setIsDone(boolean isDone) {
         this.isDone = isDone;
     }

@@ -11,8 +11,6 @@
 
 package eu.amidst.core.inference.messagepassing;
 
-
-
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
@@ -118,6 +116,9 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
         return maxIter;
     }
 
+    /**
+     * Resets the exponential family distributions of all nodes.
+     */
     public void resetQs(){
         this.nodes.stream().forEach(node -> {node.resetQDist(random);});
     }
@@ -131,7 +132,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     }
 
     /**
-     *Sets the parallel mode for this MessagePassingAlgorithm.
+     * Sets the parallel mode for this MessagePassingAlgorithm.
      * @param parallelMode a {@code boolean} that represents the parallel mode value to be set.
      */
     public void setParallelMode(boolean parallelMode) {
@@ -171,8 +172,8 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
                 //if (childrenMessage.isPresent())
                 //    selfMessage = Message.combine(childrenMessage.get(), selfMessage);
 
-                for (Node children: node.getChildren()){
-                    selfMessage = Message.combine(newMessageToParent(children, node), selfMessage);
+                for (Node child: node.getChildren()){
+                    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);
                 }
 
                 updateCombinedMessage(node, selfMessage);
@@ -211,7 +212,10 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
         this.setEFModel(new EF_BayesianNetwork(this.model));
     }
 
-
+    /**
+     * Sets the {@link EF_BayesianNetwork} model for this MessagePassing Algorithm.
+     * @param model the {@link EF_BayesianNetwork} model to be set.
+     */
     public void setEFModel(EF_BayesianNetwork model){
         ef_model = model;
 
@@ -231,24 +235,44 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
         }
     }
 
+    /**
+     * Returns the {@link EF_BayesianNetwork} model.
+     * @return the {@link EF_BayesianNetwork} model.
+     */
     public EF_BayesianNetwork getEFModel() {
         return ef_model;
     }
 
+    /**
+     * Returns the {@link Node} associated with a given {@link Variable}.
+     * @param variable a given {@link Variable} object
+     * @return a {@link Node} object.
+     */
     public Node getNodeOfVar(Variable variable){
         return this.variablesToNode.get(variable);
     }
 
+    /**
+     * Returns the list of nodes.
+     * @return a {@code List} of {@link Node}s.
+     */
     public List<Node> getNodes() {
         return nodes;
     }
 
+    /**
+     * Sets the list of nodes.
+     * @param nodes a {@code List} of {@link Node}s to be set.
+     */
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
         variablesToNode = new ConcurrentHashMap();
         nodes.stream().forEach( node -> variablesToNode.put(node.getMainVariable(),node));
     }
 
+    /**
+     * Updates the set of children and parents for each node.
+     */
     public void updateChildrenAndParents(){
         for (Node node : nodes){
             node.setParents(
@@ -297,18 +321,47 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
         return this.probOfEvidence;
     }
 
+    /**
+     * Returns the exponential family posterior of a given {@link Variable}.
+     * @param var a {@link Variable} object.
+     * @return an {@link EF_UnivariateDistribution} object.
+     */
     public <E extends EF_UnivariateDistribution> E getEFPosterior(Variable var) {
         return (E)this.getNodeOfVar(var).getQDist();
     }
 
+    /**
+     * Creates a new self message for a given {@link Node}.
+     * @param node a {@link Node} object.
+     * @return a {@link Message} object.
+     */
     public abstract Message<E> newSelfMessage(Node node);
 
-    public abstract Message<E> newMessageToParent(Node childrenNode, Node parentNode);
+    /**
+     * Creates a new message from  a given child {@link Node} to its parent.
+     * @param child a child {@link Node}.
+     * @param parent a parent {@link Node}.
+     * @return a {@link Message} object.
+     */
+    public abstract Message<E> newMessageToParent(Node child, Node parent);
 
+    /**
+     * Updates the combined message for a given {@link Node}.
+     * @param node a {@link Node} object.
+     * @param message a {@link Message} object.
+     */
     public abstract void updateCombinedMessage(Node node, Message<E> message);
 
+    /**
+     * Tests if the convergence is reached or not.
+     * @return {@code true} if the convergence is reached, {@code false} otherwise.
+     */
     public abstract boolean testConvergence();
 
+    /**
+     * Returns the log probability of the evidence.
+     * @return the log probability of the evidence
+     */
     public abstract double computeLogProbabilityOfEvidence();
 
 }
