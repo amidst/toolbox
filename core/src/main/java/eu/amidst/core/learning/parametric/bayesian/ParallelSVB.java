@@ -110,7 +110,7 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
             //svbEngines[i].setTransitionMethod(this.SVBEngine.getTransitionMethod());
 
             svbEngines[i].getPlateuStructure().getVMP().setOutput(activateOutput);
-            svbEngines[i].getPlateuStructure().getVMP().setTestELBO(this.SVBEngine.getPlateuStructure().getVMP().isTestELBO());
+            svbEngines[i].getPlateuStructure().getVMP().setTestELBO(this.SVBEngine.getPlateuStructure().getVMP().getTestELBO());
             svbEngines[i].getPlateuStructure().getVMP().setMaxIter(this.SVBEngine.getPlateuStructure().getVMP().getMaxIter());
             svbEngines[i].getPlateuStructure().getVMP().setThreshold(this.SVBEngine.getPlateuStructure().getVMP().getThreshold());
             svbEngines[i].initLearning();

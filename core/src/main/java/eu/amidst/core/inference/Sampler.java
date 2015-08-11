@@ -11,10 +11,14 @@ package eu.amidst.core.inference;
 import eu.amidst.core.models.BayesianNetwork;
 
 /**
- * Created by andresmasegosa on 4/5/15.
+ * This interface defines the Sampler.
  */
 public interface Sampler {
 
+    /**
+     * Returns the sampling model used by the inference algorithm.
+     * @return a {@link BayesianNetwork} model.
+     */
     BayesianNetwork getSamplingModel();
     
 }

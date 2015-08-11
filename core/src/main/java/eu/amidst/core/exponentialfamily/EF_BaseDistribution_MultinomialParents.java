@@ -56,30 +56,29 @@ import java.util.stream.Stream;
  */
 public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDistribution> extends EF_ConditionalDistribution {
 
-    /** The list of base distributions */
+    /** Represents the list of base distributions. */
     private final List<E> distributions;
 
-    /** The list of multinomial parents*/
+    /** Represents the list of the multinomial parents. */
     private final List<Variable> multinomialParents;
 
-    /** Whether the base distributions are conditional or univariate*/
+    /** Indicates whether the base distributions are conditional or univariate. */
     private boolean isBaseConditionalDistribution;
 
     /**
-     * Builds a new object from a list of multinomial parents and base distributions.
-     * @param multinomialParents1, a list of <code>Variable</code> objects.
-     * @param distributions1, a list of <code>EF_ConditionalDistribution</code> objects.
+     * Creates a new EF_BaseDistribution_MultinomialParents object from a list of multinomial parents and base distributions.
+     * @param multinomialParents1 a list of {@code Variable} objects.
+     * @param distributions1 a list of {@code EF_ConditionalDistribution} objects.
      */
     public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1) {
         this(multinomialParents1,distributions1,true);
     }
 
     /**
-     * Builds a new object from a list of multinomial parents and base distributions.
-     *
-     * @param multinomialParents1, a list of <code>Variable</code> objects.
-     * @param distributions1, a list of <code>EF_ConditionalDistribution</code> objects.
-     * @param initializeMomentNaturalParameters, a boolean value indicating whether the moment and natural parameters
+     * Creates a new EF_BaseDistribution_MultinomialParents object from a list of multinomial parents and base distributions.
+     * @param multinomialParents1 a list of {@code Variable} objects.
+     * @param distributions1 a list of {@code EF_ConditionalDistribution} objects.
+     * @param initializeMomentNaturalParameters a boolean value indicating whether the moment and natural parameters
      *                                           of the base distributions should be initialized.
      */
     public EF_BaseDistribution_MultinomialParents(List<Variable> multinomialParents1, List<E> distributions1, boolean initializeMomentNaturalParameters) {
@@ -127,72 +126,71 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
         //Make them unmodifiable
         this.parents = Collections.unmodifiableList(this.parents);
-
     }
 
     /**
-     * Return the list of multinomial parents.
-     * @return A list of <code>Variable</code> objects.
+     * Returns the list of multinomial parents.
+     * @return a list of {@code Variable} objects.
      */
     public List<Variable> getMultinomialParents() {
         return multinomialParents;
     }
 
     /**
-     * Returns whether the base distributions are conditional or univariate.
-     * @return A boolean value.
+     * Returns whether the base distributions are conditional or not.
+     * @return {@code true} if the base distributions are conditional, {@code false} otherwise.
      */
     public boolean isBaseConditionalDistribution() {
         return isBaseConditionalDistribution;
     }
 
     /**
-     * Gets the base distribution for a given indexed configuration of the multinomial parents.
-     * @param multinomialIndex, a positive integer.
-     * @return A <code>EF_ConditionalDistribution</code> object.
+     * Returns the base EF conditional distribution for a given indexed configuration of the multinomial parents.
+     * @param multinomialIndex a positive integer.
+     * @return a {@code EF_ConditionalDistribution} object.
      */
     public EF_ConditionalDistribution getBaseEFConditionalDistribution(int multinomialIndex) {
         return (EF_ConditionalDistribution)this.getBaseEFDistribution(multinomialIndex);
     }
 
     /**
-     * Gets the base distribution for a given indexed configuration of the multinomial parents.
+     * Gets the base EF univariate distribution for a given indexed configuration of the multinomial parents.
      * @param multinomialIndex, a positive integer.
-     * @return A <code>EF_UnivariateDistribution</code> object.
+     * @return a {@code EF_UnivariateDistribution} object.
      */
     public EF_UnivariateDistribution getBaseEFUnivariateDistribution(int multinomialIndex) {
         return (EF_UnivariateDistribution)this.getBaseEFDistribution(multinomialIndex);
     }
 
     /**
-     * Sets a base distribution for a given indexed configuration of the multinomial parents.
-     * @param indexMultinomial, a positive integer.
-     * @param baseDist, a <code>EF_ConditionalDistribution</code> object.
+     * Sets the base EF conditional distribution for a given indexed configuration of the multinomial parents.
+     * @param indexMultinomial a positive integer.
+     * @param baseDist a {@code EF_ConditionalDistribution} object.
      */
     public void setBaseEFDistribution(int indexMultinomial, E baseDist) {
         this.distributions.set(indexMultinomial, baseDist);
     }
 
     /**
-     * Gets a base distribution for a given indexed configuration of the multinomial parents.
-     * @param indexMultinomial, a positive integer.
-     * @return A <code>EF_ConditionalDistribution</code> object.
+     * Returns a base EF distribution for a given indexed configuration of the multinomial parents.
+     * @param indexMultinomial a positive integer.
+     * @return a {@code EF_ConditionalDistribution} object.
      */
     public E getBaseEFDistribution(int indexMultinomial) {
         return distributions.get(indexMultinomial);
     }
 
     /**
-     * The number of configurations of the multinomial parents.
-     * @return An integer value.
+     * Returns the number of configurations of the multinomial parents.
+     * @return an {@code int} value that represents the number of configurations of the multinomial parents.
      */
     public int numberOfConfigurations() {
         return this.distributions.size();
     }
 
     /**
-     * The size of the sufficient statistics of the base distributions.
-     * @return An integer value.
+     * Returns the size of the sufficient statistics of the base EF distributions.
+     * @return an {@code int} value that represents the size of the sufficient statistics of the base EF distributions..
      */
     public int sizeOfBaseSufficientStatistics() {
         return this.getBaseEFDistribution(0).sizeOfSufficientStatistics();
@@ -423,8 +421,6 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
             if (!this.isBaseConditionalDistribution())
                 throw new IllegalArgumentException("Parent Variable is no multinomial and based distribution has no parents");
-
-
 
             //int indexOfNonMultinomialParent = this..getBaseEFConditionalDistribution(0).getConditioningVariables().indexOf(parent);
             //if (indexOfMultinomialParent==-1)

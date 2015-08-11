@@ -31,7 +31,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 /**
- * Created by dario on 01/06/15.
+ * This class implements the interface {@link InferenceAlgorithm} and defines the MAP Inference algorithm.
  */
 public class MAPInference implements InferenceAlgorithm {
 
@@ -45,94 +45,66 @@ public class MAPInference implements InferenceAlgorithm {
     private Assignment MAPestimate;
     private boolean parallelMode = true;
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setParallelMode(boolean parallelMode_) {
         this.parallelMode = parallelMode_;
     }
 
-    public MAPInference() {
-
-    }
-
-    public void setSampleSize(int sampleSize) {
-        this.sampleSize = sampleSize;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setSeed(int seed) {
         this.seed=seed;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setModel(BayesianNetwork model_) {
         this.model = model_;
         this.causalOrder = Utils.getCausalOrder(this.model.getDAG());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BayesianNetwork getOriginalModel() {
         return this.model;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setEvidence(Assignment evidence_) {
         this.evidence = evidence_;
-/*
-        // MODIFY THE CAUSAL ORDER, VARIABLES WITH EVIDENCE FIRST
-        List<Variable> newCausalOrder = new ArrayList<>();
-
-        for(Variable variable : causalOrder) {
-            if ( variable.isMultinomial() && !Double.isNaN(evidence.getValue(variable)) ) {
-                newCausalOrder.add(variable);
-            }
-        }
-
-        for(Variable variable : causalOrder) {
-            if ( variable.isMultinomial() && Double.isNaN(evidence.getValue(variable)) ) {
-                newCausalOrder.add(variable);
-            }
-        }
-
-        for(Variable variable : causalOrder) {
-            if ( variable.isNormal() && !Double.isNaN(evidence.getValue(variable)) ) {
-                newCausalOrder.add(variable);
-            }
-        }
-
-        for(Variable variable : causalOrder) {
-            if ( variable.isNormal() && Double.isNaN(evidence.getValue(variable)) ) {
-                newCausalOrder.add(variable);
-            }
-        }
-        causalOrder = newCausalOrder;*/
     }
 
-    public Assignment getMAPestimate() {
-        return MAPestimate;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getLogProbabilityOfEvidence() {
+        throw new UnsupportedOperationException();
     }
 
-/*    private class AssignmentWithProbability {
-        private HashMapAssignment assignment;
-        private double probability;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <E extends UnivariateDistribution> E getPosterior(Variable var) {
+        throw new UnsupportedOperationException();
+    }
 
-        public AssignmentWithProbability(HashMapAssignment assignment_, double weight_){
-            this.assignment = assignment_;
-            this.probability = weight_;
-        }
-
-        public String toString() {
-            StringBuilder str = new StringBuilder();
-            str.append("[ ");
-
-            for (Map.Entry<Variable, Double> entry : this.assignment.entrySet()) {
-                str.append(entry.getKey().getName() + " = " + entry.getValue());
-                str.append(", ");
-            }
-            str.append("Probability = " + probability + " ]");
-            return str.toString();
-        }
-    }*/
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runInference() {
         this.runInference(1);
@@ -171,6 +143,14 @@ public class MAPInference implements InferenceAlgorithm {
         }
     }
 
+    public void setSampleSize(int sampleSize) {
+        this.sampleSize = sampleSize;
+    }
+
+    public Assignment getMAPestimate() {
+        return MAPestimate;
+    }
+
     private void CLGmode(Assignment values, Variable currentVariable, Variable children) {
 
         if (!Double.isNaN(evidence.getValue(currentVariable))) {
@@ -202,7 +182,6 @@ public class MAPInference implements InferenceAlgorithm {
         }
     }
 
-
     private Assignment improvedSimulatedAnnealing2(Assignment initialGuess) {
         Assignment result = this.evidence;
 
@@ -218,8 +197,6 @@ public class MAPInference implements InferenceAlgorithm {
         double selectedVariableNewValue;
         ConditionalDistribution conDist;
 
-
-        //Random random = new Random(this.seed+initialGuess.hashCode());
         Random random = new Random();
         while (R>eps) {
             result = initialGuess;
@@ -319,9 +296,7 @@ public class MAPInference implements InferenceAlgorithm {
         }
 
         return result;
-
     }
-
 
     public BayesianNetwork changeCausalOrder(BayesianNetwork bn, Assignment evidence) {
 
@@ -330,12 +305,8 @@ public class MAPInference implements InferenceAlgorithm {
 
         causalOrder = Utils.getCausalOrder(bn.getDAG());
 
-        // while(!acabado) .......
-        boolean acabado=false;
         for( int i=0; i<numberOfVariables; i++ ) {
             Variable var = causalOrder.get(i);
-
-
 
             if( var.isNormal() && !Double.isNaN(evidence.getValue(var))) {
 
@@ -343,8 +314,6 @@ public class MAPInference implements InferenceAlgorithm {
 
                 System.out.println(condChildren.toString());
                 System.out.println(Arrays.toString(condChildren.getParameters()));
-
-
 
                 if (condChildren instanceof Normal_MultinomialParents) {
                     // DO NOTHING
@@ -364,11 +333,7 @@ public class MAPInference implements InferenceAlgorithm {
 
                 for(Variable parent : listParents) {
                     if(parent.isNormal()) {
-                        acabado=false;
-
                         System.out.println(bn.getConditionalDistribution(parent).toString());
-
-
                         List<Variable> listGrandParents = bn.getDAG().getParentSet(parent).getParents();
                     }
 
@@ -377,7 +342,6 @@ public class MAPInference implements InferenceAlgorithm {
         }
         return result;
     }
-
 
     private Assignment improvedSimulatedAnnealing(Assignment initialGuess) {
         Assignment result = this.evidence;
@@ -393,7 +357,6 @@ public class MAPInference implements InferenceAlgorithm {
         Variable selectedVariable;
         double selectedVariableNewValue;
         ConditionalDistribution conDist;
-
 
         //Random random = new Random(this.seed+initialGuess.hashCode());
         Random random = new Random();
@@ -412,8 +375,6 @@ public class MAPInference implements InferenceAlgorithm {
                     selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random); // ??? Is this correct?
                     result.setValue(selectedVariable, selectedVariableNewValue);
                 }
-
-
             }
 
             // NOW ALL DISCRETE VARIABLES HAVE VALUES, SET VALUES FOR GAUSSIANS, STARTING WITH ANCESTORS OF OBSERVED VARS
@@ -423,12 +384,7 @@ public class MAPInference implements InferenceAlgorithm {
                 selectedVariable = causalOrder.get(i);
                 conDist = this.model.getConditionalDistributions().get(i);
 
-
-
                 if ( selectedVariable.isNormal() && !Double.isNaN(this.evidence.getValue(selectedVariable))) {
-
-
-
 
                     ParentSet parents = model.getDAG().getParentSet(selectedVariable);
 
@@ -446,7 +402,6 @@ public class MAPInference implements InferenceAlgorithm {
                             System.out.println(model.getConditionalDistribution(parent).getUnivariateDistribution(result).toString());
                         }*/
                     }
-
 
                     /*if (selectedVariable.isMultinomial()) {
                         selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random); // ??? Is this correct?
@@ -485,9 +440,6 @@ public class MAPInference implements InferenceAlgorithm {
                     result.setValue(selectedVariable, selectedVariableNewValue);
                 }
             }*/
-
-
-
 
             /*
             result = initialGuess;
@@ -646,7 +598,6 @@ public class MAPInference implements InferenceAlgorithm {
         return bestConfig(currentEstimator,0);
     }
 
-
     private Assignment simulatedAnnealing(Assignment initialGuess) {
         Assignment result = initialGuess;
 
@@ -666,7 +617,6 @@ public class MAPInference implements InferenceAlgorithm {
             // Choose a new value for ONE of the variables and check whether the probability grows or not
             Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
 
-
             //if (selectedVariable.isMultinomial()) {
             //selectedVariableNewValue = selectedVariable
 
@@ -675,8 +625,6 @@ public class MAPInference implements InferenceAlgorithm {
 
             //}
             //else if (selectedVariable.isNormal()) {
-
-
 
             //}
 
@@ -703,18 +651,6 @@ public class MAPInference implements InferenceAlgorithm {
         return result;
 
     }
-
-    public <E extends UnivariateDistribution> E getPosterior(Variable var) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getLogProbabilityOfEvidence() {
-        throw new UnsupportedOperationException();
-    }
-
-
-
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
