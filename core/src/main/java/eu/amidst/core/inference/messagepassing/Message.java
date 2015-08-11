@@ -11,42 +11,77 @@ package eu.amidst.core.inference.messagepassing;
 import eu.amidst.core.utils.Vector;
 
 /**
- * Created by andresmasegosa on 03/02/15.
+ * This class handles and defines the message passed between the {@link Node}s.
  */
 public class Message<E extends Vector> {
+
+    /** Represents a {@link Node} object. */
     Node node;
+
+    /** Represents a vector. */
     E vector;
+
+    /** Represents a {@code boolean} that indicates if this Message is performed or done. */
     boolean done=false;
 
+    /**
+     * Creates a new Message for a given {@link Node} object.
+     * @param node_ a given {@link Node} object.
+     */
     public Message(Node node_) {
         this.node = node_;
     }
 
+    /**
+     * Tests is this Message is done.
+     * @return {@code true} if the Message is done, {@code false} otherwise.
+     */
     public boolean isDone() {
         return done;
     }
 
+    /**
+     * Sets the state of this Message, i.e., done or not.
+     * @param done a {@code boolean} to which the state of this Message will be set.
+     */
     public void setDone(boolean done) {
         this.done = done;
     }
 
+    /**
+     * Returns the {@link Node} object of this Message.
+     * @return the {@link Node} object of this Message.
+     */
     public Node getNode() {
         return node;
     }
 
+    /**
+     * Sets the vector of this Message.
+     * @param vector the vector to which tis Message will be set.
+     */
     public void setVector(E vector) {
         this.vector = vector;
     }
 
+    /**
+     * Returns the vector of this Message.
+     * @return the vector of this Message
+     */
     public E getVector() {
         return vector;
     }
 
+    /**
+     * Combines two given Messages.
+     * @param m1 a first given message.
+     * @param m2 a second given message.
+     * @return the message that represents the result of the combination of the two input messages.
+     */
     public static <E extends Vector> Message<E> combine(Message<E> m1, Message<E> m2){
         if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
             throw new IllegalArgumentException();
         }
-
         m2.getVector().sum(m1.vector);
         m2.setDone(m2.isDone() && m1.isDone());
         return m2;
