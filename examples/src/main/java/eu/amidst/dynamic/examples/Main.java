@@ -144,7 +144,7 @@ public class Main {
 
         long nlinks = dag.getParentSets().stream().mapToInt(p -> p.getParents().size()).count();
 
-        Variable var = bn.getStaticVariables().getVariableByName("A");
+        Variable var = bn.getVariables().getVariableByName("A");
         dag.getParentSets().stream().filter(parentSet -> parentSet.getParents().contains(var))
                 .map(parentSet -> parentSet.getMainVar())
                 .collect(Collectors.toList());
@@ -157,8 +157,8 @@ public class Main {
         DAG dag = bn.getDAG();
         System.out.println(dag.toString());
 
-        Variable var1 = dag.getStaticVariables().getVariableByName("D");
-        Variable var2 = dag.getStaticVariables().getVariableByName("A");
+        Variable var1 = dag.getVariables().getVariableByName("D");
+        Variable var2 = dag.getVariables().getVariableByName("A");
 
 
         Map<Variable, Long> map = dag.getParentSet(var1).getParents().stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
@@ -197,8 +197,8 @@ public class Main {
         DAG dag = bn.getDAG();
         System.out.println(dag.toString());
 
-        Variable var1 = dag.getStaticVariables().getVariableByName("D");
-        Variable var2 = dag.getStaticVariables().getVariableByName("A");
+        Variable var1 = dag.getVariables().getVariableByName("D");
+        Variable var2 = dag.getVariables().getVariableByName("A");
 
 
         Map<Variable, Long> map = dag.getParentSet(var1).getParents().stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));

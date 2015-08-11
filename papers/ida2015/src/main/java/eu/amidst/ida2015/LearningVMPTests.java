@@ -51,7 +51,7 @@ public class LearningVMPTests {
         dag.getParentSet(varA).addParent(varB);
         dag.getParentSet(varA).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -116,7 +116,7 @@ public class LearningVMPTests {
         dag.getParentSet(varA).addParent(varB);
         dag.getParentSet(varA).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -203,7 +203,7 @@ public class LearningVMPTests {
         dag.getParentSet(varB).addParent(varC);
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -338,7 +338,7 @@ public class LearningVMPTests {
         dag.getParentSet(varA).addParent(varB);
         dag.getParentSet(varA).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -444,7 +444,7 @@ public class LearningVMPTests {
         dag.getParentSet(varA).addParent(varB);
         dag.getParentSet(varA).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -563,8 +563,8 @@ public class LearningVMPTests {
             Attribute attVarA = data.getAttributes().getAttributeByName("A");
             Attribute attVarB = data.getAttributes().getAttributeByName("B");
 
-            Variable varA = normalVarBN.getStaticVariables().getVariableByName("A");
-            Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
+            Variable varA = normalVarBN.getVariables().getVariableByName("A");
+            Variable varB = normalVarBN.getVariables().getVariableByName("B");
 
 
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
@@ -649,8 +649,8 @@ public class LearningVMPTests {
             Attribute attVarA = data.getAttributes().getAttributeByName("A");
             Attribute attVarB = data.getAttributes().getAttributeByName("B");
 
-            Variable varA = normalVarBN.getStaticVariables().getVariableByName("A");
-            Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
+            Variable varA = normalVarBN.getVariables().getVariableByName("A");
+            Variable varB = normalVarBN.getVariables().getVariableByName("B");
 
 
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
@@ -787,8 +787,8 @@ public class LearningVMPTests {
             normalVarBN.randomInitialization(new Random(i));
 
 
-            Variable varA = normalVarBN.getStaticVariables().getVariableByName("A");
-            Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
+            Variable varA = normalVarBN.getVariables().getVariableByName("A");
+            Variable varB = normalVarBN.getVariables().getVariableByName("B");
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
@@ -893,8 +893,8 @@ public class LearningVMPTests {
             normalVarBN.randomInitialization(new Random(i));
 
 
-            Variable varA = normalVarBN.getStaticVariables().getVariableByName("A");
-            Variable varB = normalVarBN.getStaticVariables().getVariableByName("B");
+            Variable varA = normalVarBN.getVariables().getVariableByName("A");
+            Variable varB = normalVarBN.getVariables().getVariableByName("B");
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
@@ -1034,8 +1034,8 @@ public class LearningVMPTests {
 
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-        sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("Mout"));
-        //sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("D"));
+        sampler.setHiddenVar(normalVarBN.getVariables().getVariableByName("Mout"));
+        //sampler.setHiddenVar(normalVarBN.getVariables().getVariableByName("D"));
         sampler.setSeed(0);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
@@ -1134,7 +1134,7 @@ public class LearningVMPTests {
 
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-        sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("A"));
+        sampler.setHiddenVar(normalVarBN.getVariables().getVariableByName("A"));
         sampler.setSeed(0);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
@@ -1201,8 +1201,8 @@ public class LearningVMPTests {
 
         normalVarBN.randomInitialization(new Random(0));
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-        //sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("D"));
-        sampler.setHiddenVar(normalVarBN.getStaticVariables().getVariableByName("E"));
+        //sampler.setHiddenVar(normalVarBN.getVariables().getVariableByName("D"));
+        sampler.setHiddenVar(normalVarBN.getVariables().getVariableByName("E"));
         sampler.setSeed(0);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
@@ -1239,7 +1239,7 @@ public class LearningVMPTests {
             sampler.setSeed(j);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            Variable varMout = normalVarBN.getStaticVariables().getVariableByName("Mout");
+            Variable varMout = normalVarBN.getVariables().getVariableByName("Mout");
 
             //BayesianNetwork MLlearntBN = LearningEngineForBN.learnParameters(normalVarBN.getDAG(), data);
 

@@ -31,8 +31,8 @@ public class HuginInferenceExample {
 
         //Recover the relevant variables.
         // For this example, we have two variables: Mout which is normally distributed, and W which is multinomial.
-        Variable varMout = bn.getStaticVariables().getVariableByName("Mout");
-        Variable varW = bn.getStaticVariables().getVariableByName("W");
+        Variable varMout = bn.getVariables().getVariableByName("Mout");
+        Variable varW = bn.getVariables().getVariableByName("W");
 
         //Create an instance of a inference algorithm.
         // In this case, the ImportanceSampling class is used.

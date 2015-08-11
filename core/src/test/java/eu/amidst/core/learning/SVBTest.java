@@ -32,7 +32,7 @@ public class SVBTest extends TestCase {
         DAG dag = new DAG(variables);
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
 
@@ -76,7 +76,7 @@ public class SVBTest extends TestCase {
 
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -123,7 +123,7 @@ public class SVBTest extends TestCase {
         dag.getParentSet(varC).addParent(varA);
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(6));
 
@@ -165,7 +165,7 @@ public class SVBTest extends TestCase {
 
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(5));
 
@@ -209,7 +209,7 @@ public class SVBTest extends TestCase {
 
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(5));
 
@@ -249,7 +249,7 @@ public class SVBTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
 
-            BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+            BayesianNetwork bn = new BayesianNetwork(dag);
             bn.randomInitialization(new Random(0));
 
 
@@ -321,11 +321,11 @@ public class SVBTest extends TestCase {
         System.out.println("\nAsia network \n ");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
-        sampler.setHiddenVar(asianet.getStaticVariables().getVariableByName("E"));
-        sampler.setHiddenVar(asianet.getStaticVariables().getVariableByName("L"));
+        sampler.setHiddenVar(asianet.getVariables().getVariableByName("E"));
+        sampler.setHiddenVar(asianet.getVariables().getVariableByName("L"));
 
-        //sampler.setMARVar(asianet.getStaticVariables().getVariableByName("E"),0.5);
-        //sampler.setMARVar(asianet.getStaticVariables().getVariableByName("L"),0.5);
+        //sampler.setMARVar(asianet.getVariables().getVariableByName("E"),0.5);
+        //sampler.setMARVar(asianet.getVariables().getVariableByName("L"),0.5);
 
         sampler.setSeed(0);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
@@ -358,7 +358,7 @@ public class SVBTest extends TestCase {
 
         for (int i = 0; i < 1; i++) {
 
-            Variable varA = oneNormalVarBN.getStaticVariables().getVariableByName("A");
+            Variable varA = oneNormalVarBN.getVariables().getVariableByName("A");
             Normal dist = oneNormalVarBN.getConditionalDistribution(varA);
 
             dist.setMean(2000);
@@ -625,7 +625,7 @@ public class SVBTest extends TestCase {
         dag.getParentSet(varC).addParent(varA);
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
 
         System.out.println(bn.toString());
@@ -668,7 +668,7 @@ public class SVBTest extends TestCase {
         for (int i = 0; i < 1; i++) {
 
 
-            BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+            BayesianNetwork bn = new BayesianNetwork(dag);
 
             bn.randomInitialization(new Random(i));
 
@@ -711,7 +711,7 @@ public class SVBTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
 
-            BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+            BayesianNetwork bn = new BayesianNetwork(dag);
             bn.randomInitialization(new Random(0));
 
 
@@ -760,7 +760,7 @@ public class SVBTest extends TestCase {
         for (int i = 1; i < 2; i++) {
 
 
-            BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+            BayesianNetwork bn = new BayesianNetwork(dag);
             bn.randomInitialization(new Random(0));
 
             bn.randomInitialization(new Random(i));

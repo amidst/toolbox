@@ -9,9 +9,6 @@
 package eu.amidst.core.inference;
 
 //import cern.jet.random.engine.RandomGenerator;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.SufficientStatistics;
-import eu.amidst.core.inference.messagepassing.VMP;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.*;
@@ -20,12 +17,10 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.ParentSet;
 
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.utils.LocalRandomGenerator;
 
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -233,7 +228,7 @@ public class MAPInference implements InferenceAlgorithm {
             // ASSIGN FIRSTLY VALUES FOR DISCRETE VARIABLES
             for( int i=0; i<numberOfVariables; i++ ) {
 
-                //selectedVariable = this.model.getStaticVariables().getVariableById(i);
+                //selectedVariable = this.model.getVariables().getVariableById(i);
                 selectedVariable = causalOrder.get(i);
                 conDist = this.model.getConditionalDistributions().get(i);
 
@@ -291,7 +286,7 @@ public class MAPInference implements InferenceAlgorithm {
 
             for( int i=0; i<numberOfVariables; i++ ) {
 
-                //selectedVariable = this.model.getStaticVariables().getVariableById(i);
+                //selectedVariable = this.model.getVariables().getVariableById(i);
                 selectedVariable = causalOrder.get(i);
                 conDist = this.model.getConditionalDistributions().get(i);
 
@@ -330,7 +325,7 @@ public class MAPInference implements InferenceAlgorithm {
 
     public BayesianNetwork changeCausalOrder(BayesianNetwork bn, Assignment evidence) {
 
-        BayesianNetwork result = BayesianNetwork.newBayesianNetwork(bn.getDAG(),bn.getConditionalDistributions());
+        BayesianNetwork result = new BayesianNetwork(bn.getDAG(),bn.getConditionalDistributions());
         int numberOfVariables = bn.getNumberOfVars();
 
         causalOrder = Utils.getCausalOrder(bn.getDAG());
@@ -408,7 +403,7 @@ public class MAPInference implements InferenceAlgorithm {
             // ASSIGN FIRSTLY VALUES FOR DISCRETE VARIABLES
             for( int i=0; i<numberOfVariables; i++ ) {
 
-                //selectedVariable = this.model.getStaticVariables().getVariableById(i);
+                //selectedVariable = this.model.getVariables().getVariableById(i);
                 selectedVariable = causalOrder.get(i);
                 conDist = this.model.getConditionalDistributions().get(i);
 
@@ -424,7 +419,7 @@ public class MAPInference implements InferenceAlgorithm {
             // NOW ALL DISCRETE VARIABLES HAVE VALUES, SET VALUES FOR GAUSSIANS, STARTING WITH ANCESTORS OF OBSERVED VARS
             for( int i=0; i<numberOfVariables; i++ ) {
 
-                //selectedVariable = this.model.getStaticVariables().getVariableById(i);
+                //selectedVariable = this.model.getVariables().getVariableById(i);
                 selectedVariable = causalOrder.get(i);
                 conDist = this.model.getConditionalDistributions().get(i);
 
@@ -466,7 +461,7 @@ public class MAPInference implements InferenceAlgorithm {
 
             /*for( int i=0; i<numberOfVariables; i++ ) {
 
-                //selectedVariable = this.model.getStaticVariables().getVariableById(i);
+                //selectedVariable = this.model.getVariables().getVariableById(i);
                 selectedVariable = causalOrder.get(i);
                 conDist = this.model.getConditionalDistributions().get(i);
                 if (R==5000) {
@@ -499,13 +494,13 @@ public class MAPInference implements InferenceAlgorithm {
 
             int indexSelectedVariable; // = random.nextInt(this.model.getNumberOfVars());
 
-            //selectedVariable = this.model.getStaticVariables().getVariableById(indexSelectedVariable);
+            //selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
             //conDist = this.model.getConditionalDistributions().get(indexSelectedVariable);
 
             do {
                 indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
 
-                selectedVariable = this.model.getStaticVariables().getVariableById(indexSelectedVariable);
+                selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
                 conDist = this.model.getConditionalDistributions().get(indexSelectedVariable);
 
             } while( !selectedVariable.isMultinomial() );
@@ -518,7 +513,7 @@ public class MAPInference implements InferenceAlgorithm {
             for( int i=0; i<numberOfVariables; i++ ) {
 
 
-                selectedVariable = this.model.getStaticVariables().getVariableById(i);
+                selectedVariable = this.model.getVariables().getVariableById(i);
 
                 if ( Double.isNaN(this.evidence.getValue(selectedVariable))) {
                     conDist = this.model.getConditionalDistributions().get(i);
@@ -566,7 +561,7 @@ public class MAPInference implements InferenceAlgorithm {
             return current;
         }
 
-        Variable currentVariable = this.model.getStaticVariables().getVariableById(varIndex);
+        Variable currentVariable = this.model.getVariables().getVariableById(varIndex);
 
         if (Double.isNaN(this.evidence.getValue(currentVariable))) {
 
@@ -574,7 +569,7 @@ public class MAPInference implements InferenceAlgorithm {
             Assignment config0 = new HashMapAssignment(numVars);
             Assignment config1 = new HashMapAssignment(numVars);
 
-            for(Variable var: model.getStaticVariables()) {
+            for(Variable var: model.getVariables()) {
 
                 if ( Double.isNaN(this.evidence.getValue(var))) {
                     config0.setValue(var,current.getValue(var));
@@ -631,7 +626,7 @@ public class MAPInference implements InferenceAlgorithm {
         // INITIALIZE THE ESTIMATOR
         for( int i=0; i<numberOfVariables; i++ ) {
 
-            selectedVariable = this.model.getStaticVariables().getVariableById(i);
+            selectedVariable = this.model.getVariables().getVariableById(i);
             conDist = this.model.getConditionalDistributions().get(i);
 
             if ( Double.isNaN(this.evidence.getValue(selectedVariable))) {
@@ -669,7 +664,7 @@ public class MAPInference implements InferenceAlgorithm {
             double selectedVariableNewValue;
 
             // Choose a new value for ONE of the variables and check whether the probability grows or not
-            Variable selectedVariable = this.model.getStaticVariables().getVariableById(indexSelectedVariable);
+            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
 
 
             //if (selectedVariable.isMultinomial()) {
@@ -763,14 +758,14 @@ public class MAPInference implements InferenceAlgorithm {
 
 
         Assignment mapEstimate = mapInference.getMAPestimate();
-        List<Variable> modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        List<Variable> modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
         System.out.println("MAP estimate: " + mapEstimate.toString());   //toString(modelVariables)
 
         System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
         long timeStop = System.nanoTime();
         double execTime = (double) (timeStop - timeStart) / 1000000000.0;
         System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        //System.out.println(.toString(mapInference.getOriginalModel().getVariables().iterator().));
 
 
 
@@ -780,7 +775,7 @@ public class MAPInference implements InferenceAlgorithm {
         mapInference.runInference(0);
 
         mapEstimate = mapInference.getMAPestimate();
-        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
         System.out.println("MAP estimate: " + mapEstimate.toString());
         System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
         timeStop = System.nanoTime();

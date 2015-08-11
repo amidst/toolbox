@@ -129,14 +129,14 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
     @Override
     public BayesianNetwork getSamplingModel() {
 
-        DAG dag = new DAG(this.model.getStaticVariables());
+        DAG dag = new DAG(this.model.getVariables());
 
         List<ConditionalDistribution> distributionList =
-                this.model.getStaticVariables().getListOfVariables().stream()
+                this.model.getVariables().getListOfVariables().stream()
                         .map(var -> (ConditionalDistribution)this.getPosterior(var))
                         .collect(Collectors.toList());
 
-        return BayesianNetwork.newBayesianNetwork(dag, distributionList);
+        return new BayesianNetwork(dag, distributionList);
     }
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
@@ -148,7 +148,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
 
         VMP vmp = new VMP();
         InferenceEngine.setInferenceAlgorithm(vmp);
-        Variable var = bn.getStaticVariables().getVariableById(0);
+        Variable var = bn.getVariables().getVariableById(0);
         UnivariateDistribution uni = null;
         double avg  = 0;
         for (int i = 0; i < 20; i++)

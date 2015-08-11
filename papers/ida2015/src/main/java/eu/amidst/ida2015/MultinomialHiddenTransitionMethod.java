@@ -107,7 +107,7 @@ public class MultinomialHiddenTransitionMethod implements TransitionMethod{
         /*
         double fading = 0.9;
 
-        bayesianNetwork.getParametersVariables().getListOfVariables().stream().forEach(var -> {
+        bayesianNetwork.getParametersVariables().getListOfParamaterVariables().stream().forEach(var -> {
             EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) bayesianNetwork.getDistribution(var);
             EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
             NaturalParameters naturalParameters = prior.getNaturalParameters();

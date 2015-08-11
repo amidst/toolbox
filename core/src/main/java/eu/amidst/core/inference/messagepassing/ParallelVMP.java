@@ -329,14 +329,14 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
     @Override
     public BayesianNetwork getSamplingModel() {
 
-        DAG dag = new DAG(this.model.getStaticVariables());
+        DAG dag = new DAG(this.model.getVariables());
 
         List<ConditionalDistribution> distributionList =
-                this.model.getStaticVariables().getListOfVariables().stream()
+                this.model.getVariables().getListOfVariables().stream()
                         .map(var -> (ConditionalDistribution)this.getPosterior(var))
                         .collect(Collectors.toList());
 
-        return BayesianNetwork.newBayesianNetwork(dag, distributionList);
+        return new BayesianNetwork(dag, distributionList);
     }
 
 
@@ -349,7 +349,7 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
         ParallelVMP vmp = new ParallelVMP();
 
         InferenceEngine.setInferenceAlgorithm(vmp);
-        Variable var = bn.getStaticVariables().getVariableById(0);
+        Variable var = bn.getVariables().getVariableById(0);
         UnivariateDistribution uni = null;
 
         double avg  = 0;

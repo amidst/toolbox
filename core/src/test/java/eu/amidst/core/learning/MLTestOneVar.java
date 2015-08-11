@@ -56,7 +56,7 @@ public class MLTestOneVar {
 
 
         //Check if the probability distributions of the true and learned networks are equals
-        for (Variable var : net.getStaticVariables()) {
+        for (Variable var : net.getVariables()) {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             Distribution trueCD = net.getConditionalDistribution(var);
             System.out.println("\nThe true distribution:\n"+ trueCD);

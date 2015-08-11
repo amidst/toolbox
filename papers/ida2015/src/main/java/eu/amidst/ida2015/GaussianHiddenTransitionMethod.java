@@ -44,7 +44,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
     public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
 
 
-        for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfVariables()){
+        for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfParamaterVariables()){
 
             if (!paramVariable.isNormalParameter())
                 continue;
@@ -136,7 +136,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
 
         if (fading<1.0) {
-            bayesianNetwork.getParametersVariables().getListOfVariables().stream().forEach(var -> {
+            bayesianNetwork.getParametersVariables().getListOfParamaterVariables().stream().forEach(var -> {
                 EF_BaseDistribution_MultinomialParents dist = (EF_BaseDistribution_MultinomialParents) bayesianNetwork.getDistribution(var);
                 EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
                 NaturalParameters naturalParameters = prior.getNaturalParameters();

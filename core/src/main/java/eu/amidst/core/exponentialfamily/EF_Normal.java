@@ -20,7 +20,7 @@ import java.util.Random;
 
 /**
  *
- * This class represents an inverse Gamma distribution in exponential canonical form.
+ * This class represents a Normal distribution in exponential canonical form.
  *
  * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
  * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>

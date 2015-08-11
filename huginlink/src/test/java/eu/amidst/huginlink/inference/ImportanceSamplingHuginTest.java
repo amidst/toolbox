@@ -37,7 +37,7 @@ public class ImportanceSamplingHuginTest {
         //     System.out.println(e);
         //});
 
-        Variables variables = model.getStaticVariables();
+        Variables variables = model.getVariables();
         Variable varA = variables.getVariableByName("A");
         Variable varB = variables.getVariableByName("B");
         Variable varC = variables.getVariableByName("C");
@@ -90,7 +90,7 @@ public class ImportanceSamplingHuginTest {
     private static BayesianNetwork getNoisyModel() throws IOException, ClassNotFoundException {
 
         BayesianNetwork samplingBN = BayesianNetworkLoader.loadFromFile("networks/IS.bn");
-        Variables variables = samplingBN.getStaticVariables();
+        Variables variables = samplingBN.getVariables();
         Variable A = variables.getVariableByName("A");
         Variable B = variables.getVariableByName("B");
         Variable C = variables.getVariableByName("C");

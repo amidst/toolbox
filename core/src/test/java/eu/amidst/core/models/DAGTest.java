@@ -22,7 +22,7 @@ public class DAGTest {
         DAG dag = new DAG(variables);
         DAG dag2 = new DAG(variables);
 
-        variables = dag.getStaticVariables();
+        variables = dag.getVariables();
         Variable A = variables.getVariableById(0);
         Variable B = variables.getVariableById(1);
         Variable C = variables.getVariableById(2);

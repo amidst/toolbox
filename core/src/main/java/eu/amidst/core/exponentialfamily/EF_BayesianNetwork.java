@@ -112,7 +112,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
      * @return
      */
     public BayesianNetwork toBayesianNetwork(DAG dag){
-        return BayesianNetwork.newBayesianNetwork(dag, toConditionalDistribution(this.distributionList));
+        return new BayesianNetwork(dag, toConditionalDistribution(this.distributionList));
     }
 
     /**

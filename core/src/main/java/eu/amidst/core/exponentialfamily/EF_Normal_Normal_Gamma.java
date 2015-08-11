@@ -49,12 +49,13 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
 
 
     /**
+     * A constructor method.
      *
-     * @param var_ X variable
-     * @param parents_ Y real parent variables
-     * @param beta0 Beta0 parameter variable
-     * @param betas_ Beta parameter variables
-     * @param gamma Inverse-gamma parameter variable
+     * @param var_ X, a the main variable.
+     * @param parents_ Y, the real parent variables.
+     * @param beta0,  the Beta0 parameter variable.
+     * @param betas_, the Beta parameter variables.
+     * @param gamma, the Inverse-gamma parameter variable.
      */
     public EF_Normal_Normal_Gamma(Variable var_, List<Variable> parents_, Variable beta0, List<Variable> betas_, Variable gamma){
         this.var = var_;
@@ -94,10 +95,7 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
     }
 
     /**
-     * Of the second form (message from all parents to X variable). Needed to calculate the lower bound.
-     *
-     * @param momentParents
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
@@ -131,9 +129,7 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
 
 
     /**
-     * Of the second form (message from all parents to X variable).
-     * @param momentParents
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
@@ -162,13 +158,7 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
     }
 
     /**
-     * It is the message to one node to its parent @param parent, taking into account the suff. stat. if it is observed
-     * or the moment parameters if not, and incorporating the message (with moment param.) received from all co-parents.
-     * (Third form EF equations).
-     *
-     * @param parent
-     * @param momentChildCoParents
-     * @return
+     * {@inheritDoc}
      */
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
@@ -252,51 +242,81 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
         return naturalParameters;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         throw new UnsupportedOperationException("No Implemented. This method is no really needed");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E toConditionalDistribution() {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateNaturalFromMomentParameters() {
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMomentFromNaturalParameters() {
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(Assignment data) {
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int sizeOfSufficientStatistics() {
         return 0;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogBaseMeasure(Assignment dataInstance) {
         return -0.5*Math.log(2*Math.PI);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogNormalizer() {
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector createZeroVector() {
         throw new UnsupportedOperationException("No Implemented. NormalInverseGamma distribution should only be used for learning, use EF_Normal_NormalParents for inference.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
 

@@ -31,12 +31,12 @@ public class Main {
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
 
-        Variable normalVar = bn.getStaticVariables().getVariableByName("GaussianVar0");
+        Variable normalVar = bn.getVariables().getVariableByName("GaussianVar0");
         Normal normalDist = bn.getConditionalDistribution(normalVar);
         normalDist.setMean(1.0);
         normalDist.setVariance(1.0);
 
-        Variable multiVar = bn.getStaticVariables().getVariableByName("DiscreteVar0");
+        Variable multiVar = bn.getVariables().getVariableByName("DiscreteVar0");
         Multinomial multinomial = bn.getConditionalDistribution(multiVar);
         multinomial.setProbabilities(new double[]{0.2, 0.8});
     }

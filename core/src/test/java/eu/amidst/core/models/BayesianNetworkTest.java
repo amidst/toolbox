@@ -65,7 +65,7 @@ public class BayesianNetworkTest {
             Assert.assertTrue(false);
         }
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         System.out.println(bn.toString());
 

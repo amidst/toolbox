@@ -32,7 +32,7 @@ public class VMPTest extends TestCase {
 
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -122,7 +122,7 @@ public class VMPTest extends TestCase {
 
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -169,7 +169,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial distB = bn.getConditionalDistribution(varB);
@@ -274,7 +274,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial distB = bn.getConditionalDistribution(varB);
@@ -371,7 +371,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varC).addParent(varB);
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
 
         bn.randomInitialization(new Random(0));
@@ -446,7 +446,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -522,7 +522,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varB).addParent(varA);
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -595,7 +595,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
 
 
@@ -663,7 +663,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -729,7 +729,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial_MultinomialParents distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -780,7 +780,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varC).addParent(varB);
 
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -854,7 +854,7 @@ public class VMPTest extends TestCase {
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial distB = bn.getConditionalDistribution(varB);
@@ -965,7 +965,7 @@ public class VMPTest extends TestCase {
 
         }
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
 
         VMP vmp = new VMP();

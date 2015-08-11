@@ -21,12 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 //TODO Does the best way to implement hashcode?
 
 /**
- * This class implements the interface Iterable<Variable>.
- * It handles and defines an {@code Iterator} over a collection of {@link Variable}.
+ * This class is used to store and to handle the creation of all the variables of
+ * a Bayesian network model.
  *
  * <p> For an example of use follow this link </p>
  * <p> <a href="http://amidst.github.io/toolbox/#variablesexample"> http://amidst.github.io/toolbox/#variablesexample </a>  </p>
- *
  */
 public class Variables implements Iterable<Variable>, Serializable {
 
@@ -173,7 +172,7 @@ public class Variables implements Iterable<Variable>, Serializable {
     }
 
     /**
-     * Creates a new gaussian Variable from a given name.
+     * Creates a new Gaussian Variable from a given name.
      * @param name a given name.
      * @return a new gaussian Variable.
      */

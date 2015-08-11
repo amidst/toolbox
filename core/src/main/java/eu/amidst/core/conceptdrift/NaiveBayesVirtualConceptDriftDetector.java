@@ -54,7 +54,7 @@ public class NaiveBayesVirtualConceptDriftDetector implements FadingLearner{
     boolean globalHidden = true;
 
     public Variable getClassVariable(){
-        return this.svb.getLearntBayesianNetwork().getStaticVariables().getVariableById(this.classIndex);
+        return this.svb.getLearntBayesianNetwork().getVariables().getVariableById(this.classIndex);
     }
     public void setNumberOfGlobalVars(int numberOfGlobalVars) {
         this.numberOfGlobalVars = numberOfGlobalVars;

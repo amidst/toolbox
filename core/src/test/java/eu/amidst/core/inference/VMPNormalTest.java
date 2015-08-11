@@ -41,7 +41,7 @@ public class VMPNormalTest extends TestCase {
             vmp.runInference();
             System.out.println(watch.stop());
 
-            //bn.getStaticVariables().getListOfVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getStaticVariables().getVariableByName(var.getName())).outputString()));
+            //bn.getVariables().getListOfParamaterVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getVariables().getVariableByName(var.getName())).outputString()));
         }
     }
 
@@ -55,7 +55,7 @@ public class VMPNormalTest extends TestCase {
         DAG dag = new DAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -139,7 +139,7 @@ public class VMPNormalTest extends TestCase {
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         Normal distB = bn.getConditionalDistribution(varB);
@@ -249,7 +249,7 @@ public class VMPNormalTest extends TestCase {
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         Normal distB = bn.getConditionalDistribution(varB);
@@ -351,7 +351,7 @@ public class VMPNormalTest extends TestCase {
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -459,7 +459,7 @@ public class VMPNormalTest extends TestCase {
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -552,7 +552,7 @@ public class VMPNormalTest extends TestCase {
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -662,7 +662,7 @@ public class VMPNormalTest extends TestCase {
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = BayesianNetwork.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
