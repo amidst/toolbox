@@ -25,11 +25,10 @@ import static java.util.stream.StreamSupport.stream;
  * are quite suitable for parallelizing data processing algorithms.
  *
  * <p> For further details about the implementation of this class using Java 8
- * functional-style programming look at the following paper: </p>
+ * functional-style programming look at the following paper:
+ * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i></p>
  *
- * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
- *
- * @param <T> The class of the elements of the underlying transversed stream.
+ * @param <T> the type of the elements of the underlying transversed stream.
  */
 public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
     private final Spliterator<T> spliterator;
@@ -38,12 +37,11 @@ public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
     private long est;
 
     /**
-     * Creates a FixedBatchParallelSpliteratorWrapper object.
-     *
-     * @param toWrap, a <code>Spliterator</code> object to be wrapped and transformed in a
-     *                fixed batch size spliterator.
-     * @param est, the estimated length of the underlying stream.
-     * @param batchSize, the desired size of the batches.
+     * Creates a new FixedBatchParallelSpliteratorWrapper object.
+     * @param toWrap a {@link Spliterator} object to be wrapped and transformed into
+     *               a fixed batch size spliterator.
+     * @param est the estimated length of the underlying stream.
+     * @param batchSize the desired size of the batches.
      */
     public FixedBatchParallelSpliteratorWrapper(Spliterator<T> toWrap, long est, int batchSize) {
         final int c = toWrap.characteristics();
@@ -54,11 +52,10 @@ public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
     }
 
     /**
-     * Creates a FixedBatchParallelSpliteratorWrapper object.
-     *
-     * @param toWrap, a <code>Spliterator</code> object to be wrapped and transformed in a
-     *                fixed batch size spliterator.
-     * @param batchSize, the desired size of the batches.
+     * Creates a new FixedBatchParallelSpliteratorWrapper object.
+     * @param toWrap a {@link Spliterator} object to be wrapped and transformed into
+     *               a fixed batch size spliterator.
+     * @param batchSize the desired size of the batches.
      */
     public FixedBatchParallelSpliteratorWrapper(Spliterator<T> toWrap, int batchSize) {
         this(toWrap, toWrap.estimateSize(), batchSize);
@@ -66,11 +63,11 @@ public class FixedBatchParallelSpliteratorWrapper<T> implements Spliterator<T> {
 
     /**
      * Static method for creating the spliterator.
-     * @param in, a <code>Spliterator</code> object to be wrapped and transformed in a
+     * @param in, a {@link Spliterator} object to be wrapped and transformed in a
      *                fixed batch size spliterator.
-     * @param batchSize, the desired size of the batches.
-     * @param <T> The class of the elements of the underlying transversed stream.
-     * @return A <code>Stream</code> object.
+     * @param batchSize the desired size of the batches.
+     * @param <T> the type of the elements of the underlying transversed stream.
+     * @return a {@link Stream} object.
      */
     public static <T> Stream<T> toFixedBatchStream(Stream<T> in, int batchSize) {
         return stream(new FixedBatchParallelSpliteratorWrapper<>(in.spliterator(), batchSize), true);
