@@ -21,41 +21,39 @@ import java.util.Map;
 
 /**
  *
- * This class represents, in exponential canonical form, a conditional distribution of the type Normal variable
- * given Normal parents (or CLG distribution) and given, as a parents too, a set of of Normal and Gamma
+ * This class extends the abstract class {@link EF_ConditionalDistribution} and defines, in exponential family canonical form,
+ * a conditional Normal distribution given Normal parents (or CLG distribution) and given, as a parents too, a set of of Normal and Gamma
  * parameter variables. It used for Bayesian learning tasks.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
 
-    /** The number of parents*/
+    /** Represents the number of parents. */
     int nOfParents;
 
-    /** List of the conditioning non-parameter Normal variables*/
+    /** Represents the list of the conditioning non-parameter Normal variables. */
     List<Variable> realYVariables;
 
-    /** List of parameter Normal variables associated to the beta coefficient values*/
+    /** Represents the list of parameter Normal variables associated to the beta coefficient values. */
     List<Variable> betasVariables;
 
-    /** The parameter Normal variable associated to the beta0 coefficient value*/
+    /** Represents the parameter Normal variable associated to the beta0 coefficient value. */
     Variable beta0Variable;
 
-    /** The parameter Gamma variable associated to the variance of the CLG distribution*/
+    /** Represents the parameter Gamma variable associated to the variance of the CLG distribution. */
     Variable gammaVariable;
 
 
     /**
-     * A constructor method.
-     *
-     * @param var_ X, a the main variable.
-     * @param parents_ Y, the real parent variables.
-     * @param beta0,  the Beta0 parameter variable.
-     * @param betas_, the Beta parameter variables.
-     * @param gamma, the Inverse-gamma parameter variable.
+     * Creates a new EF_Normal_Normal_Gamma distribution.
+     * @param var_ the main variable.
+     * @param parents_ the Normal parent variables.
+     * @param beta0 the Beta0 parameter variable.
+     * @param betas_ the Beta parameter variables.
+     * @param gamma the Inverse-gamma parameter variable.
      */
     public EF_Normal_Normal_Gamma(Variable var_, List<Variable> parents_, Variable beta0, List<Variable> betas_, Variable gamma){
         this.var = var_;

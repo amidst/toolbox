@@ -20,12 +20,11 @@ import java.util.Random;
 
 /**
  *
- * This class represents an inverse Gamma distribution in exponential canonical form.
+ * This class extends the abstract class {@link EF_UnivariateDistribution} and defines an inverse Gamma distribution in exponential family canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox take a look at the following paper:
+ *  <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public class EF_InverseGamma extends EF_UnivariateDistribution {
 
@@ -34,8 +33,8 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
     public static final double DELTA = 0.0001;
 
     /**
-     * Builds an inverse Gamma distribution.
-     * @param var1, a <code>Variable</code> object whose distribution type is Gamma.
+     * Creates a new EF_InverseGamma distribution for a given {@link Variable} object.
+     * @param var1 a {@link Variable} object.
      */
     public EF_InverseGamma(Variable var1) {
 

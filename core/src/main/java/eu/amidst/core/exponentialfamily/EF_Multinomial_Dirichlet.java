@@ -21,26 +21,25 @@ import java.util.Map;
 
 /**
  *
- * This class represents a conditional distribution of the type Multinomial variable given a Dirichlet parameter
+ * This class extends the abstract class {@link EF_ConditionalDistribution} and defines a conditional Multinomial Dirichlet distribution.
  * variable in exponential canonical form. It used for Bayesian learning tasks.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
 
-    /** The conditioninig Dirichlet variable*/
+    /** Represents the conditioninig Dirichlet variable of this EF_Multinomial_Dirichlet distribution. */
     Variable dirichletVariable;
 
-    /** The number of states of the main multinomial variable*/
+    /** Represents the number of states of the main multinomial variable. */
     int nOfStates;
 
     /**
-     * Builds a Multinomial given Dirichlet conditional distribution.
-     * @param var, a <code>Variable</code> object whose distribution type is Multinomial.
-     * @param dirichletVariable, a <code>Variable</code> object whose distribution type is Dirichlet.
+     * Creates a new EF_Multinomial_Dirichlet distribution for given Multinomial and Dirichlet variables.
+     * @param var a {@link Variable} object with a Multinomial distribution type.
+     * @param dirichletVariable a {@link Variable} object with a Dirichlet distribution type.
      */
     public EF_Multinomial_Dirichlet(Variable var, Variable dirichletVariable) {
 
@@ -56,12 +55,11 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
         this.dirichletVariable = dirichletVariable;
         this.parents = new ArrayList<>();
         this.parents.add(dirichletVariable);
-
     }
 
     /**
-     * Returns the Dirichlet conditioning variable
-     * @return A <code>Variable</code> object.
+     * Returns the Dirichlet conditioning variable of this EF_Multinomial_Dirichlet distribution.
+     * @return a {@link Variable} object.
      */
     public Variable getDirichletVariable() {
         return dirichletVariable;

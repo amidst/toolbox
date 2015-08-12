@@ -21,20 +21,19 @@ import java.util.Random;
 
 /**
  *
- * This class represents a Multinomial distribution in exponential canonical form.
+ * This class extends the abstract class {@link EF_UnivariateDistribution} and defines a Multinomial distribution in exponential family canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public class EF_Multinomial extends EF_UnivariateDistribution {
 
     static double THRESHOLD = 1e-10;
 
     /**
-     * Builds a Multinomial distribution.
-     * @param var, a <code>Variable</code> object whose distribution type is Multinomial.
+     * Creates a new EF_Multinomial distribution for a given {@link Variable} object.
+     * @param var a {@link Variable} object with a Multinomial distribution type.
      */
     public EF_Multinomial(Variable var) {
 

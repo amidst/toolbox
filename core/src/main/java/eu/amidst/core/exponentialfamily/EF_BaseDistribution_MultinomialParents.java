@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This class represents conditional distributions with a set of multinomial parents. It aims to exploit some underlying
+ * This class defines conditional distributions with a set of multinomial parents. It aims to exploit some underlying
  * structure when representing them in exponential family.
  *
  * <p> For further details about how these models are considered in this toolbox look at the following paper </p>
@@ -256,7 +256,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
      */
     @Override
     public void updateMomentFromNaturalParameters() {
-        throw new UnsupportedOperationException("Method not implemented yet!");
+        throw new UnsupportedOperationException("This method does not apply in this case!");
     }
 
     /**
@@ -614,7 +614,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
         public void sum(CompoundVector vector) {
             if (vector.size() != this.size())
-                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size.");
 
             for (int i = 0; i < baseConf.length; i++) {
                 baseConf[i] += vector.getBaseConf(i);
@@ -630,7 +630,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
         public void copy(CompoundVector vector) {
             if (vector.size() != this.size())
-                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size.");
 
             System.arraycopy(vector.baseConf, 0, this.baseConf, 0, this.nConf);
             this.baseVectors.copy(vector.getBaseVectors());
@@ -651,7 +651,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
         public double dotProduct(CompoundVector vector) {
             if (vector.size() != this.size())
-                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size.");
 
             double sum = 0;
 
@@ -739,7 +739,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
         public void sum(SparseVector vector) {
             if (vector.size() != this.size())
-                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
+                throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size.");
 
             vector.nonZeroEntries().forEach(entry -> {
                     Vector localVector = this.getVectorByPosition(entry.getKey());

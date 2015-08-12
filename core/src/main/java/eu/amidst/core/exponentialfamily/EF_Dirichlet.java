@@ -19,21 +19,21 @@ import java.util.Random;
 
 /**
  *
- * This class represents a Dirichlet distribution in exponential canonical form.
+ * This class extends the abstract class {@link EF_UnivariateDistribution} and defines a Dirichlet distribution in Exponential Family (EF) canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ *  <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
  * </p>
  */
 public class EF_Dirichlet extends EF_UnivariateDistribution {
 
-    /** The number of parameter of the Dirichlet distribution*/
+    /** Represents the number of parameter of this EF_Dirichlet distribution. */
     int nOfStates;
 
     /**
-     * Builds an uniform Dirichlet distribution, Dir(1,1,...,1).
-     * @param var1, a <code>Variable</code> object whose distribution type is Dirichlet.
+     * Creates a new uniform EF_Dirichlet distribution for a given {@link Variable} object.
+     * @param var1 a {@link Variable} object.
      */
     public EF_Dirichlet(Variable var1) {
         if (!var1.isDirichletParameter())
@@ -48,18 +48,17 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         for (int i = 0; i < nOfStates; i++) {
             this.naturalParameters.set(i,1.0);
         }
-
         updateMomentFromNaturalParameters();
     }
 
     /**
-     * Builds an uniform Dirichlet distribution with a given scale.
-     * @param var1, a <code>Variable</code> object whose distribution type is Dirichlet.
-     * @param scale, a positive double value defining the scale of the Dirichlet.
+     * Creates a new uniform EF_Dirichlet distribution for a given {@link Variable} object with a given scale.
+     * @param var1 a {@link Variable} object with a Dirichlet distribution type
+     * @param scale a positive double value defining the scale of the EF_Dirichlet.
      */
     public EF_Dirichlet(Variable var1, double scale) {
         if (!var1.isDirichletParameter())
-            throw new IllegalArgumentException("Non Dirichlet var");
+            throw new IllegalArgumentException("The variable is not a Dirichlet parameter!");
         this.var=var1;
         this.nOfStates = var.getNumberOfStates();
         this.naturalParameters = this.createZeroNaturalParameters();

@@ -20,78 +20,75 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * This class represents univariate distributions in exponential form. It is inherits form EF_ConditionalDistribution
- * because it is assumed to be a special case of a conditional distribution with empty list of conditioning variables.
+ * This class extends the abstract class {@link EF_ConditionalDistribution} and defines the univariate distribution in exponential family form.
+ * It is considered as a special case of a conditional distribution with an empty list of conditioning variables.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public abstract class EF_UnivariateDistribution extends EF_ConditionalDistribution{
 
     /**
-     * Computes the logarithm of the base measure function of a given assignment for the associated exponential
-     * family distribution.
-     *
-     * @param val, a double value
-     * @return A double value.
+     * Computes the logarithm of the base measure function for a given value.
+     * @param val a {@code double} value.
+     * @return a {@code double} value.
      */
     public abstract double computeLogBaseMeasure(double val);
 
     /**
-     * Gets the vector of sufficient statistics for a given assignment.
-     * @param val, a double value
-     * @return A <code>SufficientStatistics</code> object
+     * Returns the vector of sufficient statistics for a given value.
+     * @param val a {@code double} value.
+     * @return a {@link SufficientStatistics} object.
      */
     public abstract SufficientStatistics getSufficientStatistics(double val);
 
     /**
-     * Gets the vector of expected parameters of the univariate distribution.
-     * @return A <code>Vector</code> object.
+     * Returns the vector of expected parameters of this EF_UnivariateDistribution.
+     * @return a {@code Vector} object.
      */
     public abstract Vector getExpectedParameters();
 
     /**
-     * This method helps to fix numerical instability problems when invoked.
+     * Fixes the numerical instability problems when invoked in this EF_UnivariateDistribution.
      */
     public abstract void fixNumericalInstability();
 
     /**
-     * Returns a deep copy the univariate distribution but changing the main variable to the
-     * one given as parameter.
-     * @param variable, a <code>Variable</code> object.
-     * @return A <code>EF_UnivariateDistribution</code> object.
+     * Returns a deep copy of this EF_UnivariateDistribution and changes the current main variable to the
+     * one given as input parameter.
+     * @param variable a {@link Variable} object.
+     * @return a {@link EF_UnivariateDistribution} object.
      */
     public abstract EF_UnivariateDistribution deepCopy(Variable variable);
 
     /**
-     * This method randomly initializes a univariate distribution.
-     * @param rand, a <code>Random</code> object.
-     * @return A <code>EF_UnivariateDistribution</code> object.
+     * Randomly initializes this EF_UnivariateDistribution.
+     * @param rand a {@link Random} object.
+     * @return A {@link EF_UnivariateDistribution} object.
      */
     public abstract EF_UnivariateDistribution randomInitialization(Random rand);
 
     /**
-     * This method converts the *this* object to its equivalent UnivariateDistribution object.
-     * @param <E> The subtype of distribution of the final created object.
-     * @return A <code>UnivariateDistribution</code> object.
+     * Converts this EF_UnivariateDistribution to its equivalent {@link UnivariateDistribution} object.
+     * @param <E> the subtype of distribution of the final created object.
+     * @return a {@link UnivariateDistribution} object.
      */
     public abstract <E extends UnivariateDistribution> E toUnivariateDistribution();
 
     /**
-     * This method creates a deep copy of the object.
-     * @return A <code>EF_UnivariateDistribution</code> object.
+     * Creates a deep copy of this this EF_UnivariateDistribution.
+     * @return a {@link EF_UnivariateDistribution} object.
      */
     public EF_UnivariateDistribution deepCopy(){
         return this.deepCopy(this.var);
     }
 
     /**
-     * Returns the log probability of a given value according to the associated exponential family distribution.
-     * @param val, a double value. In case of finite state space distribution, the double value can be seen as an
+     * Returns the log probability of a given value according to this EF_UnivariateDistribution.
+     * @param val a {@code double} value. In case of finite state space distribution, the double value can be seen as an
      *             integer indexing the different states.
-     * @return A positive double value.
+     * @return a positive {@code double} that represents the log probability value.
      */
     public double computeLogProbabilityOf(double val){
         return this.naturalParameters.dotProduct(this.getSufficientStatistics(val)) + this.computeLogBaseMeasure(val) - this.computeLogNormalizer();
