@@ -23,7 +23,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This class defines and handles a Node used for inference.
+ * This class defines and handles a Node used for message passing inference algorithms.
  */
 public class Node {
 

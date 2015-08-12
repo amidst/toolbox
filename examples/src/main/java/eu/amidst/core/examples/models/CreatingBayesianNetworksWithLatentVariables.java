@@ -25,13 +25,13 @@ import java.util.Arrays;
 
 
 /**
- * In this example, we simply show how to create a BN model with hidden variables. We simply
- * create a BN for clustering, i.e.,  a naive-Bayes like structure with a single common hidden variable
+ * In this example, we simply show how to create a BN model with latent variables. We simply
+ * create a BN for clustering, i.e.,  a naive-Bayes like structure with a single common latent or hidden variable
  * acting as parant of all the observable variables.
  *
  * Created by andresmasegosa on 18/6/15.
  */
-public class BayesianNetworkWithHiddenVars {
+public class CreatingBayesianNetworksWithLatentVariables {
 
     public static void main(String[] args) throws Exception {
 
@@ -42,8 +42,8 @@ public class BayesianNetworkWithHiddenVars {
          * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
          * in our data.
          *
-         * 2. StaticVariables is the class for doing that. It takes a list of Attributes and internally creates
-         * all the variables. We create the variables using StaticVariables class to guarantee that each variable
+         * 2. {@link Variables} is the class for doing that. It takes a list of Attributes and internally creates
+         * all the variables. We create the variables using Variables class to guarantee that each variable
          * has a different ID number and make it transparent for the user.
          *
          * 3. We can extract the Variable objects by using the method getVariableByName();
@@ -60,14 +60,14 @@ public class BayesianNetworkWithHiddenVars {
         Variable i = variables.getVariableByName("I");
 
         /**
-         * 1. We create the hidden variable. For doing that we make use of the class VariableBuilder. When
+         * 1. We create the hidden variable. For doing that we make use of the method "newMultionomialVariable". When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
-         * and, for this reason, we use now this VariableBuilder to provide this information to
-         * StaticVariables object.
+         * and, for this reason, we use now this to provide this information.
          *
-         * 2. Using VariableBuilder, we define a variable called HiddenVar, which is not observable (i.e. hidden), its state
-         * space is a finite set with two elements, and its distribution type is multinomial.
+         * 2. Using the "newMultionomialVariable" method, we define a variable called HiddenVar, which is
+         * not associated to any attribute and, then, it is a latent variable, its state space is a finite set with two elements, and its
+         * distribution type is multinomial.
          *
          * 3. We finally create the hidden variable using the method "newVariable".
          */
@@ -75,7 +75,7 @@ public class BayesianNetworkWithHiddenVars {
         Variable hidden = variables.newMultionomialVariable("HiddenVar", Arrays.asList("TRUE", "FALSE"));
 
         /**
-         * 1. Once we have defined your StaticVariables object, including the hidden variable,
+         * 1. Once we have defined your {@link Variables} object, including the latent variable,
          * the next step is to create a DAG structure over this set of variables.
          *
          * 2. To add parents to each variable, we first recover the ParentSet object by the method
@@ -116,7 +116,7 @@ public class BayesianNetworkWithHiddenVars {
         /**
          * Finally teh Bayesian network is saved to a file.
          */
-        BayesianNetworkWriter.saveToFile(bn, "networks/huginStaticBNHiddenExample.bn");
+        BayesianNetworkWriter.saveToFile(bn, "networks/BNHiddenExample.bn");
 
     }
 }
