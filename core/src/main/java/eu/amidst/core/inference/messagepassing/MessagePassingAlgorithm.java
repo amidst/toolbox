@@ -46,9 +46,6 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     /** Represents a {@code Map} object that maps variables to nodes. */
     protected Map<Variable,Node> variablesToNode;
 
-    /** Represents the algorithm running mode, parallel or not. */
-    protected boolean parallelMode = false;
-
     /** Represents the probability of evidence. */
     protected double probOfEvidence = Double.NaN;
 
@@ -121,22 +118,6 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
      */
     public void resetQs(){
         this.nodes.stream().forEach(node -> {node.resetQDist(random);});
-    }
-
-    /**
-     * Tests whether this MessagePassingAlgorithm runs in parallel or not.
-     * @return {@code true} if the algorithm runs in parallel, {@code false} otherwise.
-     */
-    public boolean isParallelMode() {
-        return parallelMode;
-    }
-
-    /**
-     * Sets the parallel mode for this MessagePassingAlgorithm.
-     * @param parallelMode a {@code boolean} that represents the parallel mode value to be set.
-     */
-    public void setParallelMode(boolean parallelMode) {
-        this.parallelMode = parallelMode;
     }
 
     /**
