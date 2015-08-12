@@ -21,8 +21,6 @@ import eu.amidst.core.utils.Vector;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-
 // TODO By iterating several times over the data we can get better approximations.
 // TODO Trick. Initialize the Q's of the parameters variables with the final posteriors in the previous iterations.
 

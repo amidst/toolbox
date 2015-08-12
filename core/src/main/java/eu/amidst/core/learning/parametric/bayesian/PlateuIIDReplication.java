@@ -18,10 +18,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Created by andresmasegosa on 10/03/15.
+ * This class extends the abstract class {@link PlateuStructure} and defines Plateu IID Replication.
  */
 public class PlateuIIDReplication extends PlateuStructure{
 
+    /**
+     * Replicates this model.
+     */
     public void replicateModel(){
         parametersNode = new ArrayList();
         plateuNodes = new ArrayList<>(nReplications);
@@ -51,7 +54,6 @@ public class PlateuIIDReplication extends PlateuStructure{
             this.variablesToNode.add(map);
             plateuNodes.add(tmpNodes);
         }
-
 
         for (int i = 0; i < nReplications; i++) {
             for (Node node : plateuNodes.get(i)) {

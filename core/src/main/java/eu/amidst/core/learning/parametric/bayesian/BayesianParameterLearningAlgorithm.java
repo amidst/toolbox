@@ -20,7 +20,7 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
     /**
      * Returns the parameter posterior.
      * @param parameter a {@link Variable} object.
-     * @param <E> the type of elements.
+     * @param <E> a subtype of {@link UnivariateDistribution}.
      * @return the parameter posterior.
      */
     default <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter){

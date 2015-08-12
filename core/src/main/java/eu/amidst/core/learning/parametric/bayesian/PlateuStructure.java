@@ -19,55 +19,107 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by andresmasegosa on 10/03/15.
+ * This class defines a Plateu Structure.
  */
 public abstract class PlateuStructure {
+
+    /** Represents the list of {@link Node}s. */
     protected List<Node> parametersNode;
+
+    /** Represents the list of plateu {@link Node}s. */
     protected List<List<Node>> plateuNodes;
+
+    /** Represents the {@link EF_LearningBayesianNetwork} model. */
     protected EF_LearningBayesianNetwork ef_learningmodel;
+
+    /** Represents the number of replications. */
     protected int nReplications = 100;
+
+    /** Represents the {@link VMP} object. */
     protected VMP vmp = new VMP();
 
+    /** Represents a {@code Map} object that maps {@link Variable} parameters to the corresponding {@link Node}s. */
     protected Map<Variable, Node> parametersToNode;
 
+    /** Represents the list of {@code Map} objects that map {@link Variable}s to the corresponding {@link Node}s. */
     protected List<Map<Variable, Node>> variablesToNode;
 
+    /**
+     * Returns the number of replications of this PlateuStructure.
+     * @return the number of replications.
+     */
     public int getNumberOfReplications() {
         return nReplications;
     }
 
+    /**
+     * Returns the {@link VMP} object of this PlateuStructure.
+     * @return the {@link VMP} object.
+     */
     public VMP getVMP() {
         return vmp;
     }
 
+    /**
+     * Resets the exponential family distributions of all nodes for the {@link VMP} object of this PlateuStructure.
+     */
     public void resetQs() {
         this.vmp.resetQs();
     }
 
+    /**
+     * Sets the seed for the {@link VMP} object of this PlateuStructure.
+     * @param seed an {@code int} that represents the seed value.
+     */
     public void setSeed(int seed) {
         this.vmp.setSeed(seed);
     }
 
+    /**
+     * Returns the {@link EF_LearningBayesianNetwork} of this PlateuStructure.
+     * @return an {@link EF_LearningBayesianNetwork} object.
+     */
     public EF_LearningBayesianNetwork getEFLearningBN() {
         return ef_learningmodel;
     }
 
-    public void setNRepetitions(int nRepetitions_) {
-        this.nReplications = nRepetitions_;
-    }
-
-    public void runInference() {
-        this.vmp.runInference();
-    }
-
-    public double getLogProbabilityOfEvidence() {
-        return this.vmp.getLogProbabilityOfEvidence();
-    }
-
+    /**
+     * Sets the {@link EF_LearningBayesianNetwork} of this PlateuStructure.
+     * @param model the {@link EF_LearningBayesianNetwork} model to be set.
+     */
     public void setEFBayesianNetwork(EF_LearningBayesianNetwork model) {
         ef_learningmodel = model;
     }
 
+    /**
+     * Sets the number of repetitions for this PlateuStructure.
+     * @param nRepetitions_ an {@code int} that represents the number of repetitions to be set.
+     */
+    public void setNRepetitions(int nRepetitions_) {
+        this.nReplications = nRepetitions_;
+    }
+
+    /**
+     * Runs inference.
+     */
+    public void runInference() {
+        this.vmp.runInference();
+    }
+
+    /**
+     * Returns the log probability of the evidence.
+     * @return the log probability of the evidence.
+     */
+    public double getLogProbabilityOfEvidence() {
+        return this.vmp.getLogProbabilityOfEvidence();
+    }
+
+    /**
+     * Returns the {@link Node} for a given variable and slice.
+     * @param variable a {@link Variable} object.
+     * @param slice an {@code int} that represents the slice value.
+     * @return a {@link Node} object.
+     */
     public Node getNodeOfVar(Variable variable, int slice) {
         if (variable.isParameterVariable())
             return this.parametersToNode.get(variable);
@@ -75,6 +127,12 @@ public abstract class PlateuStructure {
             return this.variablesToNode.get(slice).get(variable);
     }
 
+    /**
+     * Returns the exponential family parameter posterior for a given {@link Variable} object.
+     * @param var a given {@link Variable} object.
+     * @param <E> a subtype distribution of {@link EF_UnivariateDistribution}.
+     * @return an {@link EF_UnivariateDistribution} object.
+     */
     public <E extends EF_UnivariateDistribution> E getEFParameterPosterior(Variable var) {
         if (!var.isParameterVariable())
             throw new IllegalArgumentException("Only parameter variables can be queried");
@@ -82,6 +140,13 @@ public abstract class PlateuStructure {
         return (E)this.parametersToNode.get(var).getQDist();
     }
 
+    /**
+     * Returns the exponential family variable posterior for a given {@link Variable} object and a slice value.
+     * @param var a given {@link Variable} object.
+     * @param slice an {@code int} that represents the slice value.
+     * @param <E> a subtype distribution of {@link EF_UnivariateDistribution}.
+     * @return an {@link EF_UnivariateDistribution} object.
+     */
     public <E extends EF_UnivariateDistribution> E getEFVariablePosterior(Variable var, int slice) {
         if (var.isParameterVariable())
             throw new IllegalArgumentException("Only non parameter variables can be queried");
@@ -89,8 +154,15 @@ public abstract class PlateuStructure {
         return (E) this.getNodeOfVar(var, slice).getQDist();
     }
 
+    /**
+     * Replicates the model of this PlateuStructure.
+     */
     public abstract void replicateModel();
 
+    /**
+     * Sets the evidence for this PlateuStructure.
+     * @param data a {@code List} of {@link DataInstance}.
+     */
     public void setEvidence(List<DataInstance> data) {
         if (data.size()> nReplications)
             throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");

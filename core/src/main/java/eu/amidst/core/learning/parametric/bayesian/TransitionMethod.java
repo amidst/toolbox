@@ -11,13 +11,25 @@ package eu.amidst.core.learning.parametric.bayesian;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 
 /**
- * Created by andresmasegosa on 13/4/15.
+ * THis interface defines the transition method.
  */
 public interface TransitionMethod {
 
+    /**
+     * Initializes the model.
+     * @param bayesianNetwork an {@link EF_LearningBayesianNetwork} object.
+     * @param plateuStructure a {@link PlateuStructure} object.
+     * @return an {@link EF_LearningBayesianNetwork} object.
+     */
     default EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure){
         return bayesianNetwork;
     }
 
+    /**
+     * Transits the model.
+     * @param bayesianNetwork an {@link EF_LearningBayesianNetwork} object.
+     * @param plateuStructure a {@link PlateuStructure} object.
+     * @return an {@link EF_LearningBayesianNetwork} object.
+     */
     EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure);
 }
