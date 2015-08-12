@@ -49,17 +49,8 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     public DynamicVMP(){
         this.vmpTime0 = new VMP();
         this.vmpTimeT = new VMP();
-        this.setParallelMode(false);
         this.setSeed(0);
         this.timeID=-1;
-    }
-    public boolean isParallelMode() {
-        return this.vmpTimeT.isParallelMode();
-    }
-
-    public void setParallelMode(boolean parallelMode) {
-        this.vmpTime0.setParallelMode(parallelMode);
-        this.vmpTimeT.setParallelMode(parallelMode);
     }
 
     public void setSeed(int seed) {

@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 
 /**
  * This interface handles and defines the algorithm used to run inference in {@link BayesianNetwork} models.
+ *
  * For an example, {@see eu.amidst.core.examples.inference}.
  */
 public interface InferenceAlgorithm {

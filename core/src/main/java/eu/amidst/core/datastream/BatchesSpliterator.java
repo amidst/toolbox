@@ -21,6 +21,11 @@ import static java.util.stream.StreamSupport.stream;
  * The BatchesSpliterator class implements a {@link Spliterator} for iterating over data batches of a {@link DataStream}.
  * The data batches are explicitly stored in {@link DataOnMemory} objects.
  * This class is used by the class {@link DataStream}.
+ *
+ * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
+ *
+ * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
+ *
  * @param <T> A generic Type that extends the interface {@link DataInstance}.
  */
 public class BatchesSpliterator<T extends DataInstance> implements Spliterator<DataOnMemory<T>> {
