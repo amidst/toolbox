@@ -24,25 +24,24 @@ import java.util.stream.IntStream;
 
 /**
  *
- * This class represents a conditional linear Gaussian distribution in exponential canonical form.
+ * This class extends the abstract class {@link EF_ConditionalDistribution} and defines a Conditional Linear Gaussian (CLG) distribution in exponential family canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
-    /** The size of the sufficient statistics in F-form for this distribution*/
+    /** Represents the size of the sufficient statistics in this EF_Normal_NormalParents distribution. */
     int sizeSS;
 
-    /** The number of parents*/
+    /** Represents the number of parents. */
     int nOfParents;
 
     /**
-     * A constructor for the EF_Normal_NormalParents distribution.
-     * @param var_, the main variable,
-     * @param parents_, the Normal parent variables.
+     * Creates a new EF_Normal_NormalParents distribution.
+     * @param var_ the main variable.
+     * @param parents_ the list of Normal parent variables.
      */
     public EF_Normal_NormalParents(Variable var_, List<Variable> parents_) {
 
@@ -94,7 +93,6 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         double beta_0 = mean_X - beta.dotProduct(mean_Y);
         double variance = cov_XX - beta.dotProduct(cov_XY);
-
 
         /*
          * Third step: natural parameters (5 in total)
@@ -324,8 +322,8 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
     /**
-     * Returns the variance of the CLG distribution
-     * @return A positive double value.
+     * Returns the variance of this EF_Normal_NormalParents distribution.
+     * @return a positive {@code double} value that represents the variance.
      */
     public double getVariance(){
         double theta_Minus1 = ((CompoundVector)this.naturalParameters).getcovbaseMatrix().getEntry(0,0);
@@ -333,8 +331,8 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     }
 
     /**
-     * Returns an array with all the beta coefficient values, including beta0, of the CLG distribution.
-     * @return An array of double values.
+     * Returns an array with all the beta coefficient values, including beta0, of this EF_Normal_NormalParents distribution.
+     * @return an {@code array} of {@code double} values that represents beta coefficient values.
      */
     public double[] getAllBetaValues(){
         CompoundVector globalNaturalParameters = (CompoundVector)this.naturalParameters;
@@ -349,12 +347,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
     /**
      * Creates an empty compound parameter vector.
-     * @return A <code>CompoundVector</code> object
+     * @return a {@link CompoundVector} object.
      */
     public CompoundVector createEmtpyCompoundVector() {
         return new CompoundVector(nOfParents);
     }
-
 
     /**
      * {@inheritDoc}
@@ -531,8 +528,6 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         public RealMatrix getTheta_BetaBetaRM(){
             return getcovbaseMatrix().getSubMatrix(1, nOfParents, 1, nOfParents);
         }
-
-
 
         @Override
         public int size() {

@@ -11,14 +11,12 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.utils.Vector;
 
 /**
- * This interface extends the interface {@link eu.amidst.core.utils.Vector}.
- * It handles classes for representing the moment parameter vector of an exponential family
- * distribution in canonical form.
+ * This interface extends the interface {@link Vector} and handles classes for representing the moment parameter vector
+ * of an exponential family distribution in canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public interface MomentParameters extends Vector {
 

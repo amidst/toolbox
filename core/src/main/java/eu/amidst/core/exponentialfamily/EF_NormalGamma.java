@@ -20,27 +20,26 @@ import java.util.Map;
 
 /**
  *
- * This class represents a conditional distribution of the type Normal variable given a Normal and Gamma parameter
- * variables in exponential canonical form. It used for Bayesian learning tasks.
+ * This class extends the abstract class {@link EF_ConditionalDistribution} and defines a conditional Normal distribution given a Normal and Gamma parameter
+ * variables in exponential family canonical form. It used for Bayesian learning tasks.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public class EF_NormalGamma extends EF_ConditionalDistribution{
 
-    /** The Normal parameter variable for the mean value*/
+    /** Represents the Normal parameter variable for the mean value. */
     Variable meanParameterVariable;
 
-    /** The Gamma parameter variable for the variance value*/
+    /** Represents the Gamma parameter variable for the variance value. */
     Variable gammaParameterVariable;
 
     /**
-     * A builder of the EF_NormalGamma distribution.
-     * @param var_, the main variable.
-     * @param mean, the Normal parameter variable for the mean value
-     * @param gamma, the Gamma parameter variable for the variance value
+     * Creates a new EF_NormalGamma distribution.
+     * @param var_ the main variable.
+     * @param mean the Normal parameter variable for the mean value.
+     * @param gamma the Gamma parameter variable for the variance value.
      */
     public EF_NormalGamma(Variable var_, Variable mean, Variable gamma){
         this.var = var_;
@@ -66,7 +65,7 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
 
     /**
      * Returns the Normal parameter variable of the mean value.
-     * @return A <code>Variable</code> objec.t
+     * @return a {@link Variable} object.
      */
     public Variable getMeanParameterVariable() {
         return meanParameterVariable;
@@ -74,7 +73,7 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
 
     /**
      * Returns the Gamma parameter variable of the variance value.
-     * @return A <code>Variable</code> objec.t
+     * @return A <code>Variable</code> object.
      */
     public Variable getGammaParameterVariable() {
         return gammaParameterVariable;

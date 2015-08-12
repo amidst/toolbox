@@ -23,26 +23,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * This class extends the abstract class {@link EF_Distribution} and defines a {@link BayesianNetwork} as a
+ * conjugate exponential family (EF) model, consisting of EF distributions in canonical form.
  *
- * This class represents a Bayesian network as a conjugate exponential family model. It inherits from the
- * {@link EF_Distribution} class, because the Bayesian network model defines an exponential family distribution in canonical form.
- *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * <p> For further details about how exponential family models are considered in this toolbox look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
  * </p>
- *
  */
 public class EF_BayesianNetwork extends EF_Distribution {
 
-    /** A list of {@link EF_ConditionalDistribution} objects defining the Bayesian network. */
+    /** Represents the list of {@link EF_ConditionalDistribution} objects in this EF_BayesianNetwork. */
     List<EF_ConditionalDistribution> distributionList;
 
-    /** A field storing the size of the sufficient statistics of the exponential family distributioned defined by the BN model. */
+    /** Represents the size of the sufficient statistics of the EF distributions. */
     int sizeSS;
 
     /**
-     * A empty builder.
+     * Creates a new EF_BayesianNetwork object.
      */
     public EF_BayesianNetwork() {
         distributionList = new ArrayList<>();
@@ -52,8 +50,8 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     /**
-     * Create a new EF_BayesianNetwork object from a {@link BayesianNetwork} object.
-     * @param network, a <code>BayesianNetwork</code> object
+     * Creates a new EF_BayesianNetwork object from a {@link BayesianNetwork} object.
+     * @param network a {@link BayesianNetwork} object.
      */
     public EF_BayesianNetwork(BayesianNetwork network){
         distributionList = new ArrayList(network.getNumberOfVars());
@@ -75,18 +73,18 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     /**
-     * Create a new EF_BayesianNetwork object from a {@link DAG} object.
-     * @param dag, a <code>DAG</code> object
+     * Creates a new EF_BayesianNetwork object from a {@link DAG} object.
+     * @param dag a {@link DAG} object.
      */
     public EF_BayesianNetwork(DAG  dag){
         this(dag.getParentSets());
     }
 
     /**
-     * Create a new EF_BayesianNetwork object from a list of {@link ParentSet} objects.
-     * @param parentSets, a list of <code>ParentSet</code> objects
+     * Creates a new EF_BayesianNetwork object from a list of {@link ParentSet} objects.
+     * @param parentSets a list of {@link ParentSet} objects.
      */
-    public EF_BayesianNetwork(List<ParentSet>  parentSets){
+    public EF_BayesianNetwork(List<ParentSet> parentSets){
         distributionList = new ArrayList(parentSets.size());
 
         sizeSS=0;
@@ -105,22 +103,19 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     /**
-     * Gets a new {@link BayesianNetwork} equivalent to the current {@link EF_BayesianNetwork} object (ie both
-     * objects represent the same Bayesian network model). A {@link DAG} object
-     * defining the graphical structure must be supplied.
-     * @param dag
-     * @return
+     * Converts this EF_BayesianNetwork to an equivalent {@link BayesianNetwork} object.
+     * @param dag a {@link DAG} object defining the graphical structure.
+     * @return a {@link BayesianNetwork} object.
      */
     public BayesianNetwork toBayesianNetwork(DAG dag){
         return new BayesianNetwork(dag, toConditionalDistribution(this.distributionList));
     }
 
     /**
-     * This static method converts a list of {@link EF_ConditionalDistribution} to a list of equivalent
-     * {@link ConditionalDistribution} objects  (ie both represent the same conditional probability distributions).
-     *
-     * @param ef_dists, a list of <code>EF_ConditionalDistribution</code> objects.
-     * @return A list of <code>ConditionalDistribution</code> objects.
+     * Converts a given list of {@link EF_ConditionalDistribution} to a list of equivalent {@link ConditionalDistribution} objects.
+     * I.e., both represent the same conditional probability distributions.
+     * @param ef_dists a list of {@link EF_ConditionalDistribution} objects.
+     * @return a list of {@link ConditionalDistribution}objects.
      */
     public static List<ConditionalDistribution> toConditionalDistribution(List<EF_ConditionalDistribution> ef_dists){
         ConditionalDistribution[] dists = new ConditionalDistribution[ef_dists.size()];
@@ -129,8 +124,8 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     /**
-     * Set the EF_Distribution objects defining the EF_BayesianNetwork.
-     * @param distributionList_, a list of <code>EF_ConditionalDistribution</code> objects
+     * Sets the list of EF_ConditionalDistribution objects for this EF_BayesianNetwork.
+     * @param distributionList_ a list of {@link EF_ConditionalDistribution} objects.
      */
     public void setDistributionList(List<EF_ConditionalDistribution> distributionList_) {
 
@@ -151,18 +146,17 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     /**
-     * Get the list of EF_Distribution objects defining the EF_BayesianNetwork.
-     * @return A list of <code>EF_ConditionalDistribution</code> objects
+     * Returns the list of EF_Distribution objects of this EF_BayesianNetwork.
+     * @return a list of {@link EF_ConditionalDistribution} objects.
      */
     public List<EF_ConditionalDistribution> getDistributionList() {
         return distributionList;
     }
 
-
     /**
-     * Get the EF_Distribution object associated to a given variable.
-     * @param var, a <code>Variable</code> object.
-     * @return A <code>EF_Distribution</code> object.
+     * Returns the EF Conditional Distribution associated to a given variable.
+     * @param var a {@link Variable} object.
+     * @return an {@link EF_ConditionalDistribution} object.
      */
     public EF_ConditionalDistribution getDistribution(Variable var) {
         return distributionList.get(var.getVarID());
@@ -191,7 +185,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
      */
     @Override
     public void updateMomentFromNaturalParameters() {
-        throw new UnsupportedOperationException("Method not implemented yet!");
+        throw new UnsupportedOperationException("This method does not apply in this case!");
     }
 
     /**
@@ -241,8 +235,8 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     /**
-     * Creates a zero compound parameter vector (ie a vector fills with zeros).
-     * @return A <code>CompoundVector</code> object
+     * Creates a zero compound parameter vector (i.e., a vector filled with zeros).
+     * @return a {@link CompoundVector} object.
      */
     private CompoundVector createZeroCompoundVector(){
         return new CompoundVector(this.distributionList.stream().map(w-> w.createZeroVector()).collect(Collectors.toList()));
@@ -250,20 +244,19 @@ public class EF_BayesianNetwork extends EF_Distribution {
 
     /**
      * Creates an empty compound parameter vector.
-     * @return A <code>CompoundVector</code> object
+     * @return a {@link CompoundVector} object.
      */
     private CompoundVector createEmtpyCompoundVector() {
         return new CompoundVector(this.distributionList.size(), this.sizeOfSufficientStatistics());
     }
 
     /**
-     * Test whether a given EF-BN model is equal to the **this** EF-BN model.
-     * @param ef_bayesianNetwork, a <code>EF_BayesianNetwork</code> object.
-     * @param threshold, a double value which defines the maximum difference that makes to parameter values to be equal.
-     * @return A true/false value indicating whether the models are equal or not.
+     * Tests whether a given EF_BayesianNetwork model is equal to this EF_BayesianNetwork model.
+     * @param ef_bayesianNetwork a given input EF_BayesianNetwork object.
+     * @param threshold a {@code double} value that represents the threshold or maximum allowed difference.
+     * @return {@code true} if the two models are equal, {@code false} otherwise.
      */
     public boolean equal_efBN(EF_BayesianNetwork ef_bayesianNetwork, double threshold){
-
         for (EF_ConditionalDistribution this_dist: this.getDistributionList()){
             EF_ConditionalDistribution ef_dist = ef_bayesianNetwork.getDistribution(this_dist.getVariable());
             if(!this_dist.getClass().getName().equals(ef_dist.getClass().getName()))

@@ -17,28 +17,26 @@ import eu.amidst.core.variables.Assignment;
 
 import java.util.List;
 
-
 /**
  *
- * This class represents an exponential family (EF) distribution in canonical form.
+ * This class defines an Exponential Family (EF) distribution in canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * <p> For further details about how exponential family models are considered in this toolbox take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
  * </p>
  */
 public abstract class EF_Distribution {
 
-    /** The vector of natural parameters */
+    /** Represents the vector of natural parameters. */
     protected NaturalParameters naturalParameters;
 
-    /** The vector of moment parameters */
+    /** Represents the vector of moment parameters. */
     protected MomentParameters momentParameters;
 
     /**
-     * Gets the vector of natural parameters of the distribution
-     *
-     * @return A <code>NaturalParameters</code> object.
+     * Returns the vector of natural parameters of this EF_Distribution.
+     * @return a {@link NaturalParameters} object.
      */
     public NaturalParameters getNaturalParameters() {
 
@@ -46,19 +44,17 @@ public abstract class EF_Distribution {
     }
 
     /**
-     * Gets the vector of moment parameters of the distribution
-     *
-     * @return A <code>MomentParameters</code> object.
+     * Returns the vector of moment parameters of this EF_Distribution.
+     * @return a {@link MomentParameters} object.
      */
     public MomentParameters getMomentParameters() {
-
         return this.momentParameters;
     }
 
     /**
-     * Set the vector of natural parameters of the distribution. Automatically updates accordingly
-     * the vector of moment parameters.
-     * @param parameters, a <code>NaturalParameters</code> object
+     * Sets the vector of natural parameters for this EF_Distribution.
+     * Note that this automatically and accordingly updates also the vector of moment parameters.
+     * @param parameters a given {@link NaturalParameters} object.
      */
     public void setNaturalParameters(NaturalParameters parameters) {
         this.naturalParameters = parameters;//.copy(parameters);
@@ -66,9 +62,9 @@ public abstract class EF_Distribution {
     }
 
     /**
-     * Set the vector of moment parameters of the distribution from a vector with sufficient statistics.
-     * Automatically updates accordingly the vector of natural parameters.
-     * @param parameters, a <code>SufficientStatistics</code> object
+     * Sets the vector of moment parameters for this EF_Distribution for given {@link SufficientStatistics} parameters.
+     * Note that this automatically and accordingly updates also the vector of natural parameters.
+     * @param parameters a given {@link SufficientStatistics} object.
      */
     public void setMomentParameters(SufficientStatistics parameters) {
         this.momentParameters = (MomentParameters) parameters;
@@ -76,9 +72,9 @@ public abstract class EF_Distribution {
     }
 
     /**
-     * Set the vector of moment parameters of the distribution.
-     * Automatically updates accordingly the vector of natural parameters.
-     * @param parameters, a <code>MomentParameters</code> object
+     * Sets the vector of moment parameters for this EF_Distribution.
+     * Note that this automatically and accordingly updates also the vector of natural parameters.
+     * @param parameters  a given {@link MomentParameters} object.
      */
     public void setMomentParameters(MomentParameters parameters) {
         this.momentParameters = parameters;// .copy(parameters);
@@ -86,107 +82,94 @@ public abstract class EF_Distribution {
     }
 
     /**
-     * Update the vector of natural parameter from the current vector of moment parameters.
-     *
-     * <p> For further details about this procedure look at the following paper </p>
-     * <p> Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.
-     * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
-     * </p>
+     * Updates the vector of natural parameter from the current vector of moment parameters.
      */
     public abstract void updateNaturalFromMomentParameters();
 
     /**
-     * Update the vector of moment parameter from the current vector of natural parameters.
-     *
-     * <p> For further details about this procedure look at the following paper </p>
-     * <p> Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.
-     * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
-     * </p>
+     * Updates the vector of moment parameter from the current vector of natural parameters.
      */
     public abstract void updateMomentFromNaturalParameters();
 
     /**
-     * Gets the vector of sufficient statistics for a given assignment.
-     * @param data, an <code>Assignment</code> object
-     * @return A <code>SufficientStatistics</code> object
+     * Returns the vector of sufficient statistics for a given {@link Assignment} object.
+     * @param assignment an {@link Assignment} object.
+     * @return a {@link SufficientStatistics} object.
      */
-    public abstract SufficientStatistics getSufficientStatistics(Assignment data);
+    public abstract SufficientStatistics getSufficientStatistics(Assignment assignment);
 
     /**
-     * Return the size of the sufficient statistics vector of the distribution of the associated exponential family distribution.
-     * @return A positive integer value.
+     * Returns the size of the sufficient statistics vector of this EF_Distribution.
+     * @return an {@code int} that represents the size of the sufficient statistics vector.
      */
     public abstract int sizeOfSufficientStatistics();
 
     /**
-     * Computes the logarithm of the base measure function of a given assignment for the associated exponential
-     * family distribution.
-     *
-     * @param dataInstance, an <code>Assignment</code> object
-     * @return A double value.
+     * Computes the logarithm of the base measure function for a given assignment.
+     * @param assignment an {@link Assignment} object.
+     * @return a {@code double} that represents the logarithm of the base measure.
      */
-    public abstract double computeLogBaseMeasure(Assignment dataInstance);
+    public abstract double computeLogBaseMeasure(Assignment assignment);
 
     /**
-     * Computes the log-normalizer function of the associated exponential family distribution.
-     *
-     * @return A double value.
+     * Computes the log-normalizer function of this EF_Distribution.
+     * @return a {@code double} that represents the log-normalizer value.
      */
     public abstract double computeLogNormalizer();
 
     /**
-     * Returns the log probability of a given assignment according to the associated exponential family distribution.
-     * @param dataInstance, an <code>Assignment</code> object
-     * @return A positive double value.
+     * Computes the log probability for a given assignment.
+     * @param assignment an {@link Assignment} object.
+     * @return a {@code double} that represents the log probability value.
      */
-    public double computeLogProbabilityOf(Assignment dataInstance) {
-        return this.naturalParameters.dotProduct(this.getSufficientStatistics(dataInstance)) + this.computeLogBaseMeasure(dataInstance) - this.computeLogNormalizer();
+    public double computeLogProbabilityOf(Assignment assignment) {
+        return this.naturalParameters.dotProduct(this.getSufficientStatistics(assignment)) + this.computeLogBaseMeasure(assignment) - this.computeLogNormalizer();
     }
 
     /**
-     * Creates a zero vector (ie a vector fills with zeros).
-     * @return A <code>Vector</code> object
+     * Creates a zero vector (i.e., a vector filled with zeros).
+     * @return a {@link Vector} object.
      */
     public abstract Vector createZeroVector();
 
     /**
-     * Creates a zero moment parameter vector (ie a vector fills with zeros).
-     * @return A <code>MomentParameters</code> object
+     * Creates a zero moment parameter vector (i.e., a vector filled with zeros).
+     * @return a {@link MomentParameters} object.
      */
     public MomentParameters createZeroMomentParameters() {
         return (MomentParameters) this.createZeroVector();
     }
 
     /**
-     * Creates a zero sufficient statistics vector (ie a vector fills with zeros).
-     * @return A <code>SufficientStatistics</code> object
+     * Creates a zero sufficient statistics vector (i.e., a vector filled with zeros).
+     * @return a {@link SufficientStatistics} object.
      */
     public SufficientStatistics createZeroSufficientStatistics() {
         return (SufficientStatistics) this.createZeroVector();
     }
 
     /**
-     * Creates a zero natural parameter vector (ie a vector fills with zeros).
-     * @return A <code>NaturalParameters</code> object
+     * Creates a zero natural parameter vector (i.e., a vector filled with zeros).
+     * @return a {@link NaturalParameters} object.
      */
     public NaturalParameters createZeroNaturalParameters() {
         return (NaturalParameters) this.createZeroVector();
     }
 
-
     /**
-     * Returns a new conditional distribution which is part of a extended Bayesian network. This extended model
-     * is the result of adding variables modelling the Bayesian prior probabilities for each of the parameters of
-     * the distribution. This method can be seen as a part of the model pre-processing for performing Bayesian learning.
+     * Converts this EF_ConditionalDistribution to an extended learning distribution.
+     * This new extended conditional distribution is a part of an extended Bayesian network, which is the result of adding
+     * extra variables modelling the Bayesian prior probabilities for each of the parameters of the distribution.
+     * This method can be then seen as a part of the model pre-processing for performing Bayesian learning.
      *
-     * <p> For example, if applied to a Multinomial distribution, it will return a new conditional distribution with a
-     * Dirichlet parent variable and an unconditional Dirichlet distribution. It applied to a Normal distribution, it
+     * <p> For example, if applied to a Multinomial distribution, this method will return a new conditional distribution with a
+     * Dirichlet parent variable and an unconditional Dirichlet distribution. If applied to a Normal distribution, it
      * will return a new conditional distribution with Normal and Gamma parent variables and the associated Normal and
      * Gamma unconditional distributions.</p>
      *
-     * @param variables, a <code>ParameterVariables</code> object which allow to access to all the parameter prior variables
+     * @param variables a {@link ParameterVariables} object which allow to access to all the parameter prior variables
      *                   of the newly created model.
-     * @return A non-empty list of <code>EF_ConditionalDistribution</code> objects.
+     * @return a non-empty {@code List} of {@link EF_ConditionalDistribution} objects.
      */
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables){
         throw new UnsupportedOperationException("Not convertible to Learning distribution");

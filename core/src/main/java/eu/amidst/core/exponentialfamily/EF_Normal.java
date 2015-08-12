@@ -20,12 +20,11 @@ import java.util.Random;
 
 /**
  *
- * This class represents a Normal distribution in exponential canonical form.
+ * This class extends the abstract class {@link EF_UnivariateDistribution} and defines a Normal distribution in exponential family canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public class EF_Normal extends EF_UnivariateDistribution {
 
@@ -33,8 +32,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public static final int EXPECTED_SQUARE = 1;
 
     /**
-     * Builds a Normal distribution.
-     * @param var1, a <code>Variable</code> object whose distribution type is Normal.
+     * Creates a new EF_Normal distribution for a given variable.
+     * @param var1 a {@link Variable} object with a Normal distribution type.
      */
     public EF_Normal(Variable var1) {
         if (!var1.isNormal() && !var1.isParameterVariable()) {

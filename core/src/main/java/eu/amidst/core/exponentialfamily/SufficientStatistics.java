@@ -10,18 +10,30 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.utils.Vector;
 
+
+// TODO: This is not stateless operation!!!!. However it works if we accumulate in the second argument!!! TEST!!!
+
 /**
- * This interface extends the interface {@link eu.amidst.core.utils.Vector}.
- * It handles classes for representing the sufficient statistics vector of an exponential
- * distribution in canonical form.
+ * This interface extends the interface {@link Vector} and handles classes for representing the sufficient statistics vector
+ * of an exponential family distribution in canonical form.
  *
- * <p> For further details about how exponential family models are considered in this toolbox look at the following paper </p>
- * <p> <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
- * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>)
- * </p>
+ * <p> For further details about how exponential family models are considered in this toolbox, take a look at the following paper:
+ * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
+ * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
 public interface SufficientStatistics extends Vector {
-    // TODO: This is not stateless operation!!!!. However it works if we accumulate in the second argument!!! TEST!!!
+
+    /**
+     * Sums two sufficient statistics vectors having the same size.
+     * @param vec1 a first input {@link SufficientStatistics} object.
+     * @param vec2 a second input {@link SufficientStatistics} object.
+     * @return a {@link SufficientStatistics} object including the sum of the two input vectors.
+     */
+    static SufficientStatistics sumVector(SufficientStatistics vec1, SufficientStatistics vec2){
+        vec2.sum(vec1);
+        return vec2;
+    }
+
     // Look at the code below
     /*
              List<ArrayVector> vectorList = IntStream.range(0,10).mapToObj(i -> {
@@ -31,14 +43,12 @@ public interface SufficientStatistics extends Vector {
             return vec;
         }).collect(Collectors.toList());
 
-
         Vector out1 = vectorList.parallelStream()
                 .reduce(new ArrayVector(2), (u, v) -> {
                     ArrayVector outvec = new ArrayVector(2);
                     outvec.sum(v);
                     outvec.sum(u);
                     return outvec;});
-
 
         Vector out2 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sum(v); return u;});
         Vector out3 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sum(u); return v;});
@@ -47,16 +57,4 @@ public interface SufficientStatistics extends Vector {
         System.out.println(out2.get(0) + ", " + out2.get(1));
         System.out.println(out3.get(0) + ", " + out3.get(1));
      */
-
-    /**
-     * A method for summing to sufficient statistics vectors with the same size.
-     * @param vec1, a <code>SufficientStatistics</code> object.
-     * @param vec2, a <code>SufficientStatistics</code> object. This object is modified with
-     *              the operation.
-     * @return A <code>SufficientStatistics</code> object with the result of the sum operation.
-     */
-    static SufficientStatistics sumVector(SufficientStatistics vec1, SufficientStatistics vec2){
-        vec2.sum(vec1);
-        return vec2;
-    }
 }
