@@ -26,7 +26,7 @@ import eu.amidst.core.variables.Variables;
  *
  *  Created by andresmasegosa on 18/6/15.
  */
-public class BayesianNetworkWithNoHiddenVars {
+public class CreatingBayesianNetworks {
 
 
     public static void main(String[] args) throws Exception {
@@ -39,8 +39,8 @@ public class BayesianNetworkWithNoHiddenVars {
          * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
          * in our data.
          *
-         * 2. StaticVariables is the class for doing that. It takes a list of Attributes and internally creates
-         * all the variables. We create the variables using StaticVariables class to guarantee that each variable
+         * 2. {@link Variables} is the class for doing that. It takes a list of Attributes and internally creates
+         * all the variables. We create the variables using Variables class to guarantee that each variable
          * has a different ID number and make it transparent for the user.
          *
          * 3. We can extract the Variable objects by using the method getVariableByName();
@@ -57,7 +57,7 @@ public class BayesianNetworkWithNoHiddenVars {
         Variable i = variables.getVariableByName("I");
 
         /**
-         * 1. Once you have defined your StaticVariables object, the next step is to create
+         * 1. Once you have defined your {@link Variables} object, the next step is to create
          * a DAG structure over this set of variables.
          *
          * 2. To add parents to each variable, we first recover the ParentSet object by the method
@@ -122,6 +122,6 @@ public class BayesianNetworkWithNoHiddenVars {
         }
         System.out.println(logProb);
 
-        BayesianNetworkWriter.saveToFile(bn, "networks/huginStaticBNExample.bn");
+        BayesianNetworkWriter.saveToFile(bn, "networks/BNExample.bn");
     }
 }
