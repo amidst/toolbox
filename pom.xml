@@ -13,9 +13,9 @@
         <module>sparklink</module>
         <module>core-dynamic</module>
         <module>examples</module>
-        <module>papers/ida2015</module>
-        <module>papers/scai2015</module>
-        <module>papers/caepia2015</module>
+        <module>extensions/ida2015</module>
+        <module>extensions/scai2015</module>
+        <module>extensions/caepia2015</module>
         <module>moa-customized</module>
     </modules>
     <name>Amidst :: Core</name>
