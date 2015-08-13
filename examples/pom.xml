@@ -19,10 +19,6 @@
 
     <groupId>eu.amidst</groupId>
     <artifactId>examples</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>../extensions</module>
-    </modules>
 
     <dependencies>
 
