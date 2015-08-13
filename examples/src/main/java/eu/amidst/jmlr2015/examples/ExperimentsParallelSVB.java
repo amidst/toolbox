@@ -30,6 +30,7 @@ import eu.amidst.core.variables.Variables;
 public class ExperimentsParallelSVB {
 
     public static int SAMPLES = 200000;
+
     /**
      * This method creates a DAG object with a naive Bayes structure for the attributes of the passed data stream.
      * The main variable is defined as a latent binary variable which is a parent of all the observed variables.
