@@ -11,7 +11,7 @@ package eu.amidst.core.learning.parametric.bayesian;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 
 /**
- * THis interface defines the transition method.
+ * This interface defines the transition method.
  */
 public interface TransitionMethod {
 
