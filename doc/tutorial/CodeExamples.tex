@@ -862,15 +862,60 @@ System.out.println("P(0.7<Mout<3.5 | W=0) = " + inferenceAlgorithm.getExpectedVa
 
 \end{lstlisting}
 
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "TexMain"
-%%% End:
+
+\section{Invoking Hugin's Parallel TAN}
+
+This example shows how to use \href{https://www.hugin.com}{Hugin}'s functionality to learn in parallel a TAN model. An important remark is that Hugin only allows to learn the TAN model for a data set completely loaded into RAM memory. The case where our data set does not fit into memory, it solved in AMIDST in the following way. We learn the structure using a smaller data set produced by \href{https://en.wikipedia.org/wiki/Reservoir_sampling}{Reservoir sampling} and, then, we use AMIDST's ParallelMaximumLikelihood to learn the parameters of the TAN over the whole data set.
+
+For further details about the implementation of the parallel TAN algorithm look at the following paper:
+
+\textit{Madsen, A.L. et al. A New Method for Vertical Parallelisation of TAN Learning Based on Balanced Incomplete 
+Block Designs. Probabilistic Graphical Models. Lecture Notes in Computer Science Volume 8754, 2014, pp 302-317.}
 
 \begin{lstlisting}
+//We load a Bayesian network to generate a data stream
+//using BayesianNewtorkSampler class.
+int sampleSize = 100000;
+BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.bn");
+BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
+//We fix the number of samples in memory used for performing the structural learning.
+//They are randomly sub-sampled using Reservoir sampling.
+int samplesOnMemory = 5000;
 
+//We make different trials with different number of cores
+ArrayList<Integer> vNumCores = new ArrayList(Arrays.asList(1, 2, 3, 4));
+
+for (Integer numCores : vNumCores) {
+    System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + " core/s ...");
+    DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
+
+    //The class ParallelTAN is created
+    ParallelTAN tan = new ParallelTAN();
+    //We activate the parallel mode.
+    tan.setParallelMode(true);
+
+    //We set the number of cores to be used for the structural learning
+    tan.setNumCores(numCores);
+
+    //We set the number of samples to be used for the learning the structure
+    tan.setNumSamplesOnMemory(samplesOnMemory);
+
+    //We set the root variable to be first variable
+    tan.setNameRoot(bn.getVariables().getListOfVariables().get(0).getName());
+
+    //We set the class variable to be the last variable
+    tan.setNameTarget(bn.getVariables().getListOfVariables().get(bn.getVariables().getListOfVariables().size()-1).getName());
+
+    Stopwatch watch = Stopwatch.createStarted();
+
+    //We just invoke this mode to learn the TAN model for the data stream
+    BayesianNetwork model = tan.learn(data);
+
+    System.out.println(watch.stop());
+}
 \end{lstlisting}
+
 
 % !TEX root = TexMain.tex
 %----------------------------------------------------------------------------------------------------------------------------------------
@@ -925,3 +970,15 @@ moa.DoTask EvaluatePrequentialRegression -l bayes.AmidstRegressor
 Note that the simpler the dataset the less complex the model should be. In this case, \texttt{quake.arff} is a very simple and small dataset that should probably be learn with a more simple classifier, that is, a high-bias-low-variance classifier, in order to avoid overfitting. This aims at providing a simple running example.
 
 %\section{AMIDST Clustering from MOA}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "TexMain"
+%%% End:
+
+
+\begin{lstlisting}
+
+\end{lstlisting}

@@ -10,16 +10,24 @@ import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.*;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 
 import java.io.IOException;
 
 /**
- * The ParallelTAN class implements the parallel structural learning of a TAN model using the Hugin API.
- * The parameter learning is performed using the AMIDST implementation through the <code>MaximumLikelihoodForBN</code> class.
+ * This class provides a link to the <a href="https://www.hugin.com">Hugin</a>'s functionality to learn in parallel a TAN model.
+ * An important remark is that Hugin only allows to learn the TAN model for a data set completely loaded into RAM
+ * memory. The case where our data set does not fit into memory, it solved in AMIDST in the following way. We learn
+ * the structure using a smaller data set produced by <a href="https://en.wikipedia.org/wiki/Reservoir_sampling">Reservoir sampling</a>
+ * and, then, we use AMIDST's {@link ParallelMaximumLikelihood} to learn the parameters of the TAN over the whole data set.
+ *
+ * <p> For further details about the implementation of the parallel TAN algorithm look at the following paper: </p>
+ *
+ * <i> Madsen, A.L. et al. A New Method for Vertical Parallelisation of TAN Learning Based on Balanced Incomplete
+ * Block Designs. Probabilistic Graphical Models. Lecture Notes in Computer Science Volume 8754, 2014, pp 302-317. </i>
  */
 public class ParallelTAN implements AmidstOptionsHandler {
 
@@ -188,11 +196,9 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @return a <code>BayesianNetwork</code> object in ADMIST format.
      * @throws ExceptionHugin
      */
-    public BayesianNetwork learnBN(DataStream<DataInstance> dataStream) throws ExceptionHugin {
-
+    public BayesianNetwork learn(DataStream<DataInstance> dataStream) throws ExceptionHugin {
         LearningEngine.setParallelMode(this.parallelMode);
         LearningEngine.setParameterLearningAlgorithm(new ParallelMaximumLikelihood());
-
         return LearningEngine.learnParameters(this.learnDAG(dataStream), dataStream);
     }
 
@@ -273,7 +279,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
             tan.setNameRoot(bn.getVariables().getListOfVariables().get(0).getName());
             tan.setNameTarget(bn.getVariables().getListOfVariables().get(1).getName());
             Stopwatch watch = Stopwatch.createStarted();
-            BayesianNetwork model = tan.learnBN(data);
+            BayesianNetwork model = tan.learn(data);
             System.out.println(watch.stop());
         }
     }

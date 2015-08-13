@@ -47,22 +47,20 @@ public class ParallelTANDemo {
     public static void demoPigs() throws ExceptionHugin, IOException, ClassNotFoundException {
 
         //It needs GBs, so avoid putting this file in a Dropbox folder!!
-        String dataFile = new String("/Users/afa/Pigs.arff");
+        //String dataFile = new String("/Users/afa/Pigs.arff");
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.bn");
 
-        //int sampleSize = 100000;
-        //BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        //sampler.setParallelMode(true);
-        //sampler.sampleToAnARFFFile(dataFile, sampleSize);
+        int sampleSize = 10000;
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
         ArrayList<Integer> vSamplesOnMemory = new ArrayList(Arrays.asList(5000));
         ArrayList<Integer> vNumCores = new ArrayList(Arrays.asList(1, 2, 3, 4));
 
         for (Integer samplesOnMemory : vSamplesOnMemory) {
             for (Integer numCores : vNumCores) {
-                System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
-                DataStream<DataInstance> data = DataStreamLoader.openFromFile(dataFile);
+                System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + " core/s ...");
+                DataStream<DataInstance> data = sampler.sampleToDataStream(sampleSize);
 
                 ParallelTAN tan = new ParallelTAN();
                 tan.setNumCores(numCores);
@@ -70,7 +68,7 @@ public class ParallelTANDemo {
                 tan.setNameRoot(bn.getVariables().getListOfVariables().get(0).getName());
                 tan.setNameTarget(bn.getVariables().getListOfVariables().get(1).getName());
                 Stopwatch watch = Stopwatch.createStarted();
-                BayesianNetwork model = tan.learnBN(data);
+                BayesianNetwork model = tan.learn(data);
                 System.out.println(watch.stop());
             }
         }
@@ -113,7 +111,7 @@ public class ParallelTANDemo {
         tan.setNumSamplesOnMemory(samplesOnMemory);
         tan.setNameRoot(nameRoot);
         tan.setNameTarget(nameTarget);
-        BayesianNetwork model = tan.learnBN(data);
+        BayesianNetwork model = tan.learn(data);
         System.out.println();
 
         System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
@@ -127,7 +125,7 @@ public class ParallelTANDemo {
         tan.setNameTarget(nameTarget);
         tan.setNumCores(numCores);
         tan.setBatchSize(batchSize);
-        model = tan.learnBN(data);
+        model = tan.learn(data);
     }
 
     public static void demoLuxembourg() throws ExceptionHugin, IOException {
@@ -172,7 +170,7 @@ public class ParallelTANDemo {
 
         /// Learn the BayesianNetwork
         System.out.println("Run-times:");
-        BayesianNetwork model = tan.learnBN(data);
+        BayesianNetwork model = tan.learn(data);
         System.out.println();
     }
 
@@ -217,7 +215,7 @@ public class ParallelTANDemo {
             tan.setNumSamplesOnMemory(samplesOnMemory);
             tan.setNameRoot(nameRoot);
             tan.setNameTarget(nameTarget);
-            BayesianNetwork model = tan.learnBN(data);
+            BayesianNetwork model = tan.learn(data);
         } else {
 
             //Parallel mode (by default, and also by default all available cores are used)
@@ -229,7 +227,7 @@ public class ParallelTANDemo {
             tan.setNumCores(numCores);
             tan.setBatchSize(batchSize);
 
-            BayesianNetwork model = tan.learnBN(data);
+            BayesianNetwork model = tan.learn(data);
         }
     }
 

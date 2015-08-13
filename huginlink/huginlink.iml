@@ -18,7 +18,7 @@
     <orderEntry type="module-library">
       <library name="Maven: com.hugin:hugin:8.2">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/huginlib/hgapi82_amidst-64.jar!/" />
+          <root url="jar://$MODULE_DIR$/huginlib/hapi82-64.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
