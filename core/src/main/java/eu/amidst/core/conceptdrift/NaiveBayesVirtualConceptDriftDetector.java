@@ -10,8 +10,6 @@
  */
 package eu.amidst.core.conceptdrift;
 
-
-
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.conceptdrift.utils.PlateuHiddenVariableConceptDrift;
 import eu.amidst.core.datastream.Attribute;
@@ -29,68 +27,127 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class contains the functionality for using the concept drift apporoach based on probabilitic graphical models
+ * detailed in the following paper,
  *
- *
+ * <i> Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015. </i>
  *
  * <p> For an example of use follow this link </p>
  * <p> <a href="http://amidst.github.io/toolbox/#nbconceptdriftexample"> http://amidst.github.io/toolbox/#nbconceptdriftexample </a>  </p>
  *
  */
-public class NaiveBayesVirtualConceptDriftDetector implements FadingLearner{
+public class NaiveBayesVirtualConceptDriftDetector{
 
+    /** Represents the drift detection mode. Only the global mode is currently provided.*/
     public enum DriftDetector {GLOBAL};
 
+    /** Represents the data stream used for detecting the concepts drifts*/
     DataStream<DataInstance> data;
+
+    /** Represents the size of the window used by the {@link SVB} class*/
     int windowsSize;
+
+    /** Represents the variance added when making a transition*/
     double transitionVariance;
+
+    /** Represents the index of the class variable of the classifier*/
     int classIndex = -1;
+
+    /** Represents the drift detection mode. Only the global mode is currently provided.*/
     DriftDetector conceptDriftDetector = DriftDetector.GLOBAL;
+
+    /** Represents the seed of the class*/
     int seed = 0;
+
+    /** Represents the underlying learning engine*/
     SVB svb;
+
+    /** Represents the list of hidden vars modelling concept drift*/
     List<Variable> hiddenVars;
+
+    /** Represents the fading factor.*/
     double fading = 1.0;
+
+    /** Represents the number of global hidden variables*/
     int numberOfGlobalVars = 1;
 
+    /** Represents whether there is or not a global hidden variable modelling concept drift*/
     boolean globalHidden = true;
 
+    /**
+     * Returns the class variable of the classifier
+     * @return A <code>Variable</code> object
+     */
     public Variable getClassVariable(){
         return this.svb.getLearntBayesianNetwork().getVariables().getVariableById(this.classIndex);
     }
+
+    /**
+     * Sets the number of global hidden variables modelling concept drift
+     * @param numberOfGlobalVars A positive integer value.
+     */
     public void setNumberOfGlobalVars(int numberOfGlobalVars) {
         this.numberOfGlobalVars = numberOfGlobalVars;
     }
 
-    @Override
-    public void setFadingFactor(double fading) {
-        this.fading = fading;
-    }
 
+    /**
+     * Sets which is class variable of the model,
+     * @param classIndex, a positive integer defining the index of the class variable.
+     */
     public void setClassIndex(int classIndex) {
         this.classIndex = classIndex;
     }
 
+    /**
+     * Gets the index of the class variable of the model
+     * @return A positive integer value.
+     */
     public int getClassIndex(){return classIndex;}
 
+    /**
+     * Sets the data stream where the concept drift will be detected
+     * @param data, a <code>DataStream</code> object
+     */
     public void setData(DataStream<DataInstance> data) {
         this.data = data;
     }
 
+    /**
+     * Sets the window size of the concept drift detection model
+     * @param windowsSize, a positive integer value
+     */
     public void setWindowsSize(int windowsSize) {
         this.windowsSize = windowsSize;
     }
 
+    /**
+     * Sets the transition variance of the concept drift detection model
+     * @param transitionVariance, a positive double value
+     */
     public void setTransitionVariance(double transitionVariance) {
         this.transitionVariance = transitionVariance;
     }
 
+    /**
+     * Set the seed of the class
+     * @param seed, an integer value
+     */
     public void setSeed(int seed) {
         this.seed = seed;
     }
 
+    /**
+     * Retuns the SVB learningn engine
+     * @return A <code>SVB</code> object.
+     */
     public SVB getSvb() {
         return svb;
     }
 
+    /**
+     * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
+     */
     private void buildGlobalDAG(){
         Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getList().get(classIndex).getName();
@@ -130,6 +187,9 @@ public class NaiveBayesVirtualConceptDriftDetector implements FadingLearner{
         svb.initLearning();
     }
 
+    /**
+     * Initialises the class for concept drift detection.
+     */
     public void initLearning() {
         if (classIndex == -1)
             classIndex = data.getAttributes().getNumberOfAttributes()-1;
@@ -142,6 +202,12 @@ public class NaiveBayesVirtualConceptDriftDetector implements FadingLearner{
         }
     }
 
+    /**
+     * Update the model with a new batch of instances. The size of the batch should be equal
+     * to the size of the window of the class
+     * @param batch, a <code>DataOnMemory</code> object containing a batch of data instances.
+     * @return An array of double values containing the expected value of the global hidden variables.
+     */
     public double[] updateModel(DataOnMemory<DataInstance> batch){
         svb.updateModel(batch);
         double[] out = new double[hiddenVars.size()];
@@ -153,10 +219,18 @@ public class NaiveBayesVirtualConceptDriftDetector implements FadingLearner{
         return out;
     }
 
+    /**
+     * Returns the list of global hidden variables
+     * @return A list of <code>Variable</code> objects
+     */
     public List<Variable> getHiddenVars() {
         return hiddenVars;
     }
 
+    /**
+     * Returns the Bayesian network learnt with the concept drift adaptation method.
+     * @return A <code>BayesianNetwork</code> object.
+     */
     public BayesianNetwork getLearntBayesianNetwork(){
         return svb.getLearntBayesianNetwork();
     }
