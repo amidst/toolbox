@@ -48,8 +48,8 @@ public class ARFFDataReader implements DataFileReader {
     /** Represents an array of {@link StateSpaceTypeEnum} for the corresponding list of {@link Attributes}. */
     private StateSpaceTypeEnum[] stateSpace;
 
-    /** Represents a {@code Stream} of {@code String}. */
-    private Stream<String> streamString;
+    /** Represents a {@code Stream} of {@code DataRow}. */
+    private Stream<DataRow> streamString;
 
     /**
      * Creates an {@link Attribute} from a given index and line.
@@ -165,16 +165,17 @@ public class ARFFDataReader implements DataFileReader {
     /**
      * {@inheritDoc}
      */
+    //TODO: In principle the "if" should be there to enforce a reset of the stream. But there is a bug.
     @Override
     public Stream<DataRow> stream() {
-        if (streamString ==null) {
+        //if (streamString ==null) {
             try {
-                streamString = Files.lines(pathFile);
+                streamString = Files.lines(pathFile).filter(w -> !w.isEmpty()).filter(w -> !w.startsWith("%")).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }
-        }
-        return streamString.filter(w -> !w.isEmpty()).filter(w -> !w.startsWith("%")).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
+        //}
+        return streamString;
     }
 
     /**
