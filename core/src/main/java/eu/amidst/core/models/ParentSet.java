@@ -17,7 +17,7 @@ import java.util.List;
  * The ParentSet interface is used for handling the parent sets in a DAG.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#bnexample"> http://amidst.github.io/toolbox/#bnexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#bnexample"> http://amidst.github.io/toolbox/CodeExamples.html#bnexample </a>  </p>
  *
  * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
  *

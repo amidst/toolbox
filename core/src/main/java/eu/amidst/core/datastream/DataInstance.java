@@ -25,7 +25,7 @@ import java.util.Set;
  *  using an{@link Attribute} object or a {@link Variable} object. </p>
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#datastreamsexample"> http://amidst.github.io/toolbox/#datastreamsexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#datastreamsexample"> http://amidst.github.io/toolbox/CodeExamples.html#datastreamsexample </a>  </p>
  *
  * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
  *

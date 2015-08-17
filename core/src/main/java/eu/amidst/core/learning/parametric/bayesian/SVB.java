@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * It defines the Streaming Variational Bayes (SVB) algorithm.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#svbexample"> http://amidst.github.io/toolbox/#svbexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#svbexample"> http://amidst.github.io/toolbox/CodeExamples.html#svbexample </a>  </p>
  *
  */
 public class SVB implements BayesianParameterLearningAlgorithm {

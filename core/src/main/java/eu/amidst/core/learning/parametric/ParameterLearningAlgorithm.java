@@ -21,7 +21,7 @@ import eu.amidst.core.models.DAG;
  * This interface defines the Algorithm for learning the {@link eu.amidst.core.models.BayesianNetwork} parameters.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#learningexample"> http://amidst.github.io/toolbox/#learningexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#learningexample"> http://amidst.github.io/toolbox/CodeExamples.html#learningexample </a>  </p>
  */
 public interface ParameterLearningAlgorithm {
 

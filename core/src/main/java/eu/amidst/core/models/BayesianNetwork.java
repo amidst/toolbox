@@ -25,7 +25,7 @@ import java.util.Random;
  * The BayesianNetwork class represents a Bayesian network model.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#bnexample"> http://amidst.github.io/toolbox/#bnexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#bnexample"> http://amidst.github.io/toolbox/CodeExamples.html#bnexample </a>  </p>
  *
  * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
  *

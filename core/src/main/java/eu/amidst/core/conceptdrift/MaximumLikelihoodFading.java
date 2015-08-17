@@ -25,7 +25,7 @@ import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
  *
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#mlfadingexample"> http://amidst.github.io/toolbox/#mlfadingexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#mlfadingexample"> http://amidst.github.io/toolbox/CodeExamples.html#mlfadingexample </a>  </p>
  */
 public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implements FadingLearner {
 

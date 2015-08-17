@@ -35,7 +35,7 @@ import java.util.Random;
  * It defines the conditional distribution of a variable with a {@link Multinomial} distribution given a set of Multinomial parents.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample"> http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample </a>  </p>
  *
  */
 public class Multinomial_MultinomialParents extends ConditionalDistribution {

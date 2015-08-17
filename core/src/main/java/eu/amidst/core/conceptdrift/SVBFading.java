@@ -23,7 +23,7 @@ import eu.amidst.core.models.DAG;
 /**
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#svbfadingexample"> http://amidst.github.io/toolbox/#svbfadingexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#svbfadingexample"> http://amidst.github.io/toolbox/CodeExamples.html#svbfadingexample </a>  </p>
  */
 public class SVBFading implements BayesianParameterLearningAlgorithm, FadingLearner{
     SVB svb;

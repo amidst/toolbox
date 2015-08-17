@@ -23,7 +23,7 @@ import java.util.function.Function;
  * This class defines the Inference Engine for Bayesian Network models.
  *
  * <p> For an example of use follow this link
- * <a href="http://amidst.github.io/toolbox/#inferenceengingeexample"> http://amidst.github.io/toolbox/#inferenceengingeexample </a>  </p>
+ * <a href="http://amidst.github.io/toolbox/CodeExamples.html#inferenceengingeexample"> http://amidst.github.io/toolbox/CodeExamples.html#inferenceengingeexample </a>  </p>
  */
 public final class InferenceEngine {
 

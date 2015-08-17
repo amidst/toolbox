@@ -17,7 +17,7 @@ import java.util.Random;
  * This class defines and handles Distribution.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#bnmodifyexample"> http://amidst.github.io/toolbox/#bnmodifyexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample"> http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample </a>  </p>
  *
  */
 public abstract class Distribution implements Serializable {

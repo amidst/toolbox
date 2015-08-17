@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * J.M. Hammersley and D.C. Handscomb. Monte Carlo Methods. Methuen & Co, London, UK, 1964.
  *
  * <p> For an example of use follow this link
- * <a href="http://amidst.github.io/toolbox/#isexample"> http://amidst.github.io/toolbox/#isexample </a>  </p>
+ * <a href="http://amidst.github.io/toolbox/CodeExamples.html#isexample"> http://amidst.github.io/toolbox/CodeExamples.html#isexample </a>  </p>
  */
 public class ImportanceSampling implements InferenceAlgorithm {
 

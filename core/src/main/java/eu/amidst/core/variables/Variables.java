@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * a Bayesian network model.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#variablesexample"> http://amidst.github.io/toolbox/#variablesexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#variablesexample"> http://amidst.github.io/toolbox/CodeExamples.html#variablesexample </a>  </p>
  */
 public class Variables implements Iterable<Variable>, Serializable {
 
