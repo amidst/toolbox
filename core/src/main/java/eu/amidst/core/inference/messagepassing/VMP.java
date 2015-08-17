@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Winn, J.M., Bishop, C.M.: Variational message passing. Journal of Machine Learning Research 6 (2005) 661–694.
  *
  * <p> For an example of use follow this link
- * <a href="http://amidst.github.io/toolbox/#vmpexample"> http://amidst.github.io/toolbox/#vmpexample </a>  </p>
+ * <a href="http://amidst.github.io/toolbox/CodeExamples.html#vmpexample"> http://amidst.github.io/toolbox/CodeExamples.html#vmpexample </a>  </p>
  */
 public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements InferenceAlgorithm, Sampler {
 

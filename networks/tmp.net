@@ -1,0 +1,108 @@
+net
+{
+    node_size = (0 0);
+}
+
+node X
+{
+    label = "X";
+    states = ("0.0" "1.0");
+}
+
+node B
+{
+    label = "B";
+    states = ("0.0" "1.0");
+}
+
+node D
+{
+    label = "D";
+    states = ("0.0" "1.0");
+}
+
+node A
+{
+    label = "A";
+    states = ("0.0" "1.0");
+}
+
+node S
+{
+    label = "S";
+    states = ("0.0" "1.0");
+}
+
+node L
+{
+    label = "L";
+    states = ("0.0" "1.0");
+}
+
+node T
+{
+    label = "T";
+    states = ("0.0" "1.0");
+}
+
+node E
+{
+    label = "E";
+    states = ("0.0" "1.0");
+}
+
+potential (X | E)
+{
+    data
+     = (( 0.98 0.02 )	%  E=0.0
+	( 0.05 0.95 ));	%  E=1.0
+}
+
+potential (B | S)
+{
+    data
+     = (( 0.6 0.4 )	%  S=0.0
+	( 0.3 0.7 ));	%  S=1.0
+}
+
+potential (D | B E)
+{
+    data
+     = ((( 0.9 0.1 )	%  B=0.0  E=0.0
+	 ( 0.8 0.2 ))	%  B=0.0  E=1.0
+	(( 0.7 0.3 )	%  B=1.0  E=0.0
+	 ( 0.1 0.9 )));	%  B=1.0  E=1.0
+}
+
+potential (A)
+{
+    data = ( 0.01 0.99 );
+}
+
+potential (S)
+{
+    data = ( 0.5 0.5 );
+}
+
+potential (L | S)
+{
+    data
+     = (( 0.1 0.9 )	%  S=0.0
+	( 0.01 0.99 ));	%  S=1.0
+}
+
+potential (T | A)
+{
+    data
+     = (( 0.05 0.95 )	%  A=0.0
+	( 0.01 0.99 ));	%  A=1.0
+}
+
+potential (E | T L)
+{
+    data
+     = ((( 1 0 )	%  T=0.0  L=0.0
+	 ( 1 0 ))	%  T=0.0  L=1.0
+	(( 1 0 )	%  T=1.0  L=0.0
+	 ( 0 1 )));	%  T=1.0  L=1.0
+}

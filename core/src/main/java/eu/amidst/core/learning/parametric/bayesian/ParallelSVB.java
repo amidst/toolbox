@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
  * It defines the parallel implementation of the Streaming Variational Bayes (SVB) algorithm.
  *
  * <p> For an example of use follow this link
- * <a href="http://amidst.github.io/toolbox/#psvbexample"> http://amidst.github.io/toolbox/#psvbexample </a>  </p>
+ * <a href="http://amidst.github.io/toolbox/CodeExamples.html#psvbexample"> http://amidst.github.io/toolbox/CodeExamples.html#psvbexample </a>  </p>
  */
 public class ParallelSVB implements BayesianParameterLearningAlgorithm{
 

@@ -33,7 +33,7 @@ import java.util.List;
  * <i> Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015. </i>
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#nbconceptdriftexample"> http://amidst.github.io/toolbox/#nbconceptdriftexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#nbconceptdriftexample"> http://amidst.github.io/toolbox/CodeExamples.html#nbconceptdriftexample </a>  </p>
  *
  */
 public class NaiveBayesVirtualConceptDriftDetector{

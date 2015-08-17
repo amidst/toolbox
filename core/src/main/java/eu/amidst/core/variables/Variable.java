@@ -21,7 +21,7 @@ import java.util.List;
  * The Variable contains information such as observable or not, the state space type and the distribution type.
  *
  * <p> For an example of use follow this link </p>
- * <p> <a href="http://amidst.github.io/toolbox/#bnexample"> http://amidst.github.io/toolbox/#bnexample </a>  </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#bnexample"> http://amidst.github.io/toolbox/CodeExamples.html#bnexample </a>  </p>
  *
  */
 public interface Variable {
