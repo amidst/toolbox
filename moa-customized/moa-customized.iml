@@ -20,7 +20,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.3.2" level="project" />
     <orderEntry type="module" module-name="moalink" />
     <orderEntry type="library" name="Maven: nz.ac.waikato.cms.moa:moa:2013.11" level="project" />
-    <orderEntry type="module" module-name="ida2015" />
+    <orderEntry type="library" name="Maven: eu.amidst:ida2015:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: eu.amidst:core-static:1.0-SNAPSHOT" level="project" />
   </component>
 </module>
-
