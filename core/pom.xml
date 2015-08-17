@@ -20,6 +20,21 @@
     <groupId>eu.amidst</groupId>
     <artifactId>core</artifactId>
 
+    <url>http://amidst.github.io/toolbox/</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>http://github.com/amidst/core</url>
+    </scm>
+
+
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
