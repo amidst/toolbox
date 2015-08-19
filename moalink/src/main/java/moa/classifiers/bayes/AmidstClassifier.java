@@ -26,80 +26,150 @@ import weka.core.Instance;
 import java.util.stream.IntStream;
 
 /**
- * Created by ana@cs.aau.dk on 18/06/15.
+ * This class extends the {@link moa.classifiers.AbstractClassifier} and defines the AMIDST Classifier that could be run using the MOA’s graphical user interface.
+ * MOA (Massive Online Analysis) is an open source software available at http://moa.cms.waikato.ac.nz
  */
 public class AmidstClassifier extends AbstractClassifier {
 
+    /** Represents the batch size. */
+    protected  int batchSize_ = 100;
+
+    /** Represents the number of Gaussian hidden variables in this AmidstClassifier. */
+    protected  int nOfGaussianHiddenVars_ = 0;
+
+    /** Represents the number of Multinomial hidden variables in this AmidstClassifier. */
+    protected  int nOfStatesMultHiddenVar_ = 0;
+
+    /** Represents the parallel mode. */
+    protected boolean parallelMode_ = false;
+
+    /** Represents a {@link DAG} object. */
+    private DAG dag = null;
+
+    /** Represents the class variable in this AmidstClassifier. */
+    private Variable classVar_;
+
+    /** Represents the data stream batch. */
+    private DataOnMemoryListContainer<DataInstance> batch_;
+
+    /** Represents the used {@link ParameterLearningAlgorithm}. */
+    private ParameterLearningAlgorithm parameterLearningAlgorithm_;
+
+    /** Represents a {@code BayesianNetwork} object. */
+    private BayesianNetwork bnModel_;
+
+    /** Represents the used {@link InferenceAlgorithm}. */
+    InferenceAlgorithm predictions_;
+
+    /** Represents the set of {@link Attributes}. */
+    Attributes attributes_;
+
+    /**
+     * Creates a new object of the class {@link moa.options.IntOption}.
+     * Specifies the size of the batch used for learning this AmidstClassifier.
+     */
     public IntOption batchSizeOption = new IntOption("batchSize",
-            'w', "Size of the batch in which to perform learning (significant if hidden variables)",
+            'w', "Size of the batch in which to perform learning (significant if hidden variables are used)",
             100);
 
+    /**
+     * Returns the batch size.
+     * @return an {@code int} that represents the batch size.
+     */
     public int getBatchSize_() {
         return batchSize_;
     }
 
+    /**
+     * Sets the batch size.
+     * @param batchSize_ an {@code int} that represents the batch size to be set.
+     */
     public void setBatchSize_(int batchSize_) {
         this.batchSize_ = batchSize_;
     }
 
+    /**
+     * Creates a new object of the class {@link moa.options.IntOption}.
+     * Specifies the number of Gaussian hidden variables in this AmidstClassifier.
+     */
     public IntOption nOfGaussianHiddenVarsOption = new IntOption("nOfGaussHiddenVars",
             'g', "Number of Gaussian hidden super-parent variables",
             0);
 
+    /**
+     * Returns the number of Gaussian hidden variables in this AmidstClassifier.
+     * @return an {@code int} that represents the number of Gaussian hidden variables in this AmidstClassifier.
+     */
     public int getnOfGaussianHiddenVars_() {
         return nOfGaussianHiddenVars_;
     }
 
+    /**
+     * Sets the number of Gaussian hidden variables in this AmidstClassifier.
+     * @param nOfGaussianHiddenVars_ an {@code int} that represents the number of Gaussian hidden variables to be set.
+     */
     public void setnOfGaussianHiddenVars_(int nOfGaussianHiddenVars_) {
         this.nOfGaussianHiddenVars_ = nOfGaussianHiddenVars_;
     }
 
+    /**
+     * Creates a new object of the class {@link moa.options.IntOption}.
+     * Specifies the number of states of the Multinomial hidden variable in this AmidstClassifier.
+     */
     public IntOption nOfStatesMultHiddenVarOption = new IntOption("nOfStatesMultHiddenVar",
-            'm', "Number of states for the multinomial hidden super-parent variable",
+            'm', "Number of states of the multinomial hidden super-parent variable",
             0);
 
+    /**
+     * Returns the number of states of the Multinomial hidden variables in this AmidstClassifier.
+     * @return an {@code int} that represents the number of states of the Multinomial hidden variables in this AmidstClassifier.
+     */
     public int getnOfStatesMultHiddenVar_() {
         return nOfStatesMultHiddenVar_;
     }
 
+    /**
+     * Sets the number of states of the Multinomial hidden variables in this AmidstClassifier.
+     * @param nOfStatesMultHiddenVar_ an {@code int} that represents the number of states of the Multinomial hidden variables to be set.
+     */
     public void setnOfStatesMultHiddenVar_(int nOfStatesMultHiddenVar_) {
         this.nOfStatesMultHiddenVar_ = nOfStatesMultHiddenVar_;
     }
 
+    /**
+     * Creates a new object of the class {@link moa.options.FlagOption}.
+     * Specifies whether the parallel mode is used for this AmidstClassifier learning process.
+     */
     public FlagOption parallelModeOption = new FlagOption("parallelMode", 'p',
             "Learn parameters in parallel mode when possible (e.g. ML)");
 
+    /**
+     * Tests whether the learning of this AmidstClassifier is performed in parallel.
+     * @return {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
     public boolean isParallelMode_() {
         return parallelMode_;
     }
 
+    /**
+     * Sets the parallel mode.
+     * @param parallelMode_ a {@code boolean} that represents the parallel mode value to be set.
+     */
     public void setParallelMode_(boolean parallelMode_) {
         this.parallelMode_ = parallelMode_;
     }
 
-    protected  int batchSize_ = 100;
-
-    protected  int nOfGaussianHiddenVars_ = 0;
-
-    protected  int nOfStatesMultHiddenVar_ = 0;
-
-    protected boolean parallelMode_ = false;
-
-
-    private DAG dag = null;
-    private Variable classVar_;
-    private DataOnMemoryListContainer<DataInstance> batch_;
-    private ParameterLearningAlgorithm parameterLearningAlgorithm_;
-    private BayesianNetwork bnModel_;
-    InferenceAlgorithm predictions_;
-    Attributes attributes_;
-
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void resetLearningImpl() {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setModelContext(InstancesHeader ih) {
         super.setModelContext(ih);
@@ -117,7 +187,7 @@ public class AmidstClassifier extends AbstractClassifier {
         predictions_ = new VMP();
         predictions_.setSeed(this.randomSeed);
 
-        /* Create hidden variables*/
+        /* Create both Gaussian and Multinomial hidden variables. */
 
         if(getnOfGaussianHiddenVars_() > 0)
             IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1).forEach(i -> modelHeader.newGaussianVariable("HiddenG_" + i));
@@ -126,16 +196,16 @@ public class AmidstClassifier extends AbstractClassifier {
 
         dag = new DAG(modelHeader);
 
-        /* Set DAG structure */
-        /* 1.- Add classVar as parent of all hidden variables*/
+        /* Set DAG structure. */
+        /* 1. Add classVar as parent of all Gaussian and Multinomial hidden variables. */
         if(getnOfGaussianHiddenVars_() > 0)
             IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1).parallel()
                     .forEach(hv -> dag.getParentSet(modelHeader.getVariableByName("HiddenG_" + hv)).addParent(classVar_));
         if(getnOfStatesMultHiddenVar_() > 0)
             dag.getParentSet(modelHeader.getVariableByName("HiddenM")).addParent(classVar_);
 
-        /* 2.- Add classVar and all hidden variables as parents of all predictive attributes */
-        /*     Note however that Gaussian hidden variables are only parents of Gaussian predictive attributes*/
+        /* 2. Add classVar and all hidden variables as parents of all predictive attributes. */
+        /* Note however that Gaussian hidden variables can be only parents of Gaussian predictive attributes. */
         if (isParallelMode_()) {
             dag.getParentSets().parallelStream()
                     .filter(w -> w.getMainVar().getVarID() != classVar_.getVarID())
@@ -174,6 +244,9 @@ public class AmidstClassifier extends AbstractClassifier {
         parameterLearningAlgorithm_ = new SVB();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trainOnInstanceImpl(Instance instance) {
         DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, this.attributes_));
@@ -195,6 +268,9 @@ public class AmidstClassifier extends AbstractClassifier {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getVotesForInstance(Instance instance) {
 
@@ -212,15 +288,24 @@ public class AmidstClassifier extends AbstractClassifier {
         return multinomial.getProbabilities();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRandomizable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
         return null;
