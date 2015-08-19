@@ -24,59 +24,133 @@ import weka.core.*;
 import java.util.stream.IntStream;
 
 /**
- * Created by ana@cs.aau.dk on 18/06/15.
+ * This class extends the {@link moa.clusterers.AbstractClusterer} and defines the AMIDST Clustering algorithm that could be run using the MOA’s graphical user interface.
+ * MOA (Massive Online Analysis) is an open source software available at http://moa.cms.waikato.ac.nz
  */
 public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
+    /** Represents the cluster variable in this AmidstClusteringAlgorithm. */
+    Variable clusterVar_;
 
+    /** Represents the set of {@link Attributes}. */
+    Attributes attributes_;
+
+    /** Represents the number of clusters desired in this AmidstClusteringAlgorithm. **/
+    protected int numClusters = 2;
+
+    /** Represents the parallel mode. */
+    protected boolean parallelMode_ = false;
+
+    /** Represents the data stream batch. */
+    private DataOnMemoryListContainer<DataInstance> batch_;
+
+    /** Represents the window counter. */
+    private int windowCounter;
+
+    /** Represents a {@link DAG} object. */
+    private DAG dag = null;
+
+    /** Represents a {@code BayesianNetwork} object. */
+    private BayesianNetwork bnModel_;
+
+    /** Represents the used {@link ParameterLearningAlgorithm}. */
+    private ParameterLearningAlgorithm parameterLearningAlgorithm_;
+
+    /** Represents the used {@link InferenceAlgorithm}. */
+    InferenceAlgorithm predictions_;
+
+    /**
+     * Creates a new object of the class {@link moa.options.IntOption}.
+     * Specifies the window size for this AmidstClusteringAlgorithm.
+     */
     public IntOption timeWindowOption = new IntOption("timeWindow",
-            't', "Rang of the window.", 1000);
+            't', "Range of the window.", 1000);
 
+    /**
+     * Creates a new object of the class {@link moa.options.IntOption}.
+     * Specifies the number of clusters for this AmidstClusteringAlgorithm.
+     */
     public IntOption numberClustersOption = new IntOption("numberClusters",
             'c', "Number of Clusters.", 5);
 
-    public FlagOption parallelModeOption = new FlagOption("parallelMode", 'p',
-            "Learn parameters in parallel mode when possible (e.g. ML)");
-
-    public boolean isParallelMode_() {
-        return parallelMode_;
-    }
-
-    public void setParallelMode_(boolean parallelMode_) {
-        this.parallelMode_ = parallelMode_;
-    }
-
+    /**
+     * Returns the number of clusters in this AmidstClusteringAlgorithm.
+     * @return an {@code int} that represents the number of clusters in this AmidstClusteringAlgorithm.
+     */
     public int getNumClusters() {
         return numClusters;
     }
 
+    /**
+     * Sets the number of clusters for this AmidstClusteringAlgorithm.
+     * @param numClusters an {@code int} value that represents the number of clusters to be set.
+     */
     public void setNumClusters(int numClusters) {
         this.numClusters = numClusters;
     }
 
-    protected boolean parallelMode_ = false;
+    /**
+     * Creates a new object of the class {@link moa.options.FlagOption}.
+     * Specifies whether the parallel mode is used for this AmidstClusteringAlgorithm learning process.
+     */
+    public FlagOption parallelModeOption = new FlagOption("parallelMode", 'p',
+            "Learn parameters in parallel mode when possible (e.g. ML)");
 
-    /** number of clusters desired in clustering **/
-    protected int numClusters = 2;
+    /**
+     * Tests whether the learning of this AmidstClusteringAlgorithm is performed in parallel.
+     * @return {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
+    public boolean isParallelMode_() {
+        return parallelMode_;
+    }
 
-    private DataOnMemoryListContainer<DataInstance> batch_;
-    private int windowCounter;
-    //private Clustering sourceClustering = null;
+    /**
+     * Sets the parallel mode.
+     * @param parallelMode_ a {@code boolean} that represents the parallel mode value to be set.
+     */
+    public void setParallelMode_(boolean parallelMode_) {
+        this.parallelMode_ = parallelMode_;
+    }
 
-    private DAG dag = null;
-    private BayesianNetwork bnModel_;
-    private ParameterLearningAlgorithm parameterLearningAlgorithm_;
-    InferenceAlgorithm predictions_;
-    Attributes attributes_;
-    Variable clusterVar_;
+    /**
+     * Returns the data set.
+     * @param numatt an {@code int} that represents the number of attributes.
+     * @param numclus an {@code int} that represents the number of clusters.
+     * @return {@link Instances} object that represents the data set.
+     */
+    private Instances getDataset(int numatt, int numclus) {
+        FastVector attributes = new FastVector();
+        for (int i = 0; i < numatt; i++) {
+            attributes.addElement(new Attribute("att" + (i + 1)));
+        }
 
+        if(numclus > 0){
+            FastVector classLabels = new FastVector();
+            for (int i = 0; i < numclus; i++) {
+                classLabels.addElement("class" + (i + 1));
+            }
+            attributes.addElement(new Attribute("class", classLabels));
+        }
+
+        Instances myDataset = new Instances("horizon", attributes, 0);
+        if(numclus > 0){
+            myDataset.setClassIndex(myDataset.numAttributes() - 1);
+        }
+        return myDataset;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void resetLearningImpl() {
         batch_ = null;
         windowCounter = 0;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trainOnInstanceImpl(Instance instance) {
         if(batch_ == null){
@@ -94,14 +168,12 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
             dag = new DAG(modelHeader);
 
-            /* Set DAG structure */
-
-            /* *.- Add hidden cluster variable as parent of all predictive attributes */
+            /* Set DAG structure. */
+            /* Add the hidden cluster variable as a parent of all the predictive attributes. */
             if (isParallelMode_()) {
                 dag.getParentSets().parallelStream()
                         .filter(w -> w.getMainVar().getVarID() != clusterVar_.getVarID())
                         .forEach(w -> w.addParent(clusterVar_));
-
             }
             else {
                 dag.getParentSets().stream()
@@ -124,6 +196,9 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
         batch_.add(dataInstance);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Clustering getClusteringResult() {
         //sourceClustering = new Clustering();
@@ -144,7 +219,6 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
         bnModel_ = parameterLearningAlgorithm_.getLearntBayesianNetwork();
         predictions_.setModel(bnModel_);
 
-
         for (DataInstance dataInstance: batch_) {
             this.predictions_.setEvidence(dataInstance);
             this.predictions_.runInference();
@@ -164,57 +238,46 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
         clustering = new Clustering(newInstances);
 
         return clustering;
-
     }
 
-    private Instances getDataset(int numdim, int numclass) {
-        FastVector attributes = new FastVector();
-        for (int i = 0; i < numdim; i++) {
-            attributes.addElement(new Attribute("att" + (i + 1)));
-        }
-
-        if(numclass > 0){
-            FastVector classLabels = new FastVector();
-            for (int i = 0; i < numclass; i++) {
-                classLabels.addElement("class" + (i + 1));
-            }
-            attributes.addElement(new Attribute("class", classLabels));
-        }
-
-        Instances myDataset = new Instances("horizion", attributes, 0);
-        if(numclass > 0){
-            myDataset.setClassIndex(myDataset.numAttributes() - 1);
-        }
-
-        return myDataset;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean  keepClassLabel(){
         return false;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void getModelDescription(StringBuilder stringBuilder, int i) {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRandomizable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] getVotesForInstance(Instance instance) {
         return null;
     }
-
-
 
 }
