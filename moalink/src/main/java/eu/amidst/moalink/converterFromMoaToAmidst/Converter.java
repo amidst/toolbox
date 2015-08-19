@@ -14,16 +14,27 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- * Created by ana@cs.aau.dk on 18/06/15.
+ * This class converts attributes from MOA to AMIDST format∂.
  */
 public final class Converter {
 
+    /**
+     * Creates a set of {@link Attributes} from a given {@link moa.core.InstancesHeader} object.
+     * @param modelContext a {@link moa.core.InstancesHeader} object.
+     * @return a set of {@link Attributes}.
+     */
     public static Attributes convertAttributes(InstancesHeader modelContext){
         Enumeration attributesWeka = modelContext.enumerateAttributes();
         return convertAttributes(attributesWeka, modelContext.classAttribute());
-
     }
 
+    /**
+     * Creates a set of {@link Attributes}, including the class, from a given {@code Enumeration}
+     * of {@link weka.core.Attribute}s and a {@link weka.core.Attribute}.
+     * @param attributesEnumeration an {@code Enumeration} of {@link weka.core.Attribute}s
+     * @param classAtt a {@link weka.core.Attribute} object that represents the class variable.
+     * @return a set of {@link Attributes}.
+     */
     public static Attributes convertAttributes(Enumeration<weka.core.Attribute> attributesEnumeration,
                                                weka.core.Attribute classAtt){
         weka.core.Attribute attrWeka;
@@ -35,9 +46,13 @@ public final class Converter {
         }
         convertAttribute(classAtt, attrList);
         return new Attributes(attrList);
-
     }
 
+    /**
+     * Creates a set of {@link Attributes} from a given {@code Enumeration} of {@link weka.core.Attribute}s.
+     * @param attributesEnumeration an {@code Enumeration} of {@link weka.core.Attribute}s
+     * @return a set of {@link Attributes}.
+     */
     public static Attributes convertAttributes(Enumeration<weka.core.Attribute> attributesEnumeration){
         weka.core.Attribute attrWeka;
         List<Attribute> attrList = new ArrayList<>();
@@ -47,16 +62,25 @@ public final class Converter {
             convertAttribute(attrWeka,attrList);
         }
         return new Attributes(attrList);
-
     }
 
-
+    /**
+     * Returns the class variable.
+     * @param modelContext a {@link moa.core.InstancesHeader} object.
+     * @param atts a set of of {@link Attributes}.
+     * @return a {@link Variable} object that represents the class variable.
+     */
     public static Variable getClassVariable(InstancesHeader modelContext, Attributes atts){
         Variables variables = new Variables(atts);
         String className = modelContext.classAttribute().name();
         return variables.getVariableByName(className);
     }
 
+    /**
+     * Converts a {@link weka.core.Attribute} object to an amidst {@link Attribute} and add it to the current list of attributes.
+     * @param attrWeka a {@link weka.core.Attribute} object.
+     * @param attrList a {@code List} of {@link Attributes}.
+     */
     private static void convertAttribute(weka.core.Attribute attrWeka, List<Attribute> attrList){
         StateSpaceType stateSpaceTypeAtt;
         if(attrWeka.isNominal()){

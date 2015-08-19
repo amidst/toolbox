@@ -25,35 +25,40 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
 /**
- * Created by andresmasegosa on 30/06/15.
+ * This class presents the experiment included in the submitted manuscript
+ * to the JMLR Machine Learning Open Source Software.
  */
 public class ExperimentsParallelSVB {
 
-    public static int SAMPLES = 200000;
+    /**
+     * Represents the number of samples.
+     */
+    public static int nbrSamples = 200000;
 
     /**
-     * This method creates a DAG object with a naive Bayes structure for the attributes of the passed data stream.
-     * The main variable is defined as a latent binary variable which is a parent of all the observed variables.
-     *
-     * @param dataStream
-     * @return
+     * Creates a {@link DAG} object with a naive Bayes structure from a given {@link DataStream}.
+     * The main variable is defined as a latent binary variable which is set as a parent of all the observed variables.
+     * @param dataStream a {@link DataStream} object.
+     * @return a {@link DAG} object.
      */
     public static DAG getHiddenNaiveBayesStructure(DataStream<DataInstance> dataStream) {
-        //We create a Variables object from the attributes of the data stream
+
+        // Create a Variables object from the attributes of the input data stream.
         Variables modelHeader = new Variables(dataStream.getAttributes());
 
-        //We define the global latent binary variable
+        // Define the global latent binary variable.
         Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
 
-        //We define the global latent binary variable
+        // Define the global Gaussian latent binary variable.
         Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");
 
+        // Define the class variable.
         Variable classVar = modelHeader.getVariableById(0);
 
-        //Then, we create a DAG object with the defined model header
+        // Create a DAG object with the defined model header.
         DAG dag = new DAG(modelHeader);
 
-        //We set the linkds of the DAG.
+        // Define the structure of the DAG, i.e., set the links between the variables.
         dag.getParentSets()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
@@ -62,7 +67,6 @@ public class ExperimentsParallelSVB {
                 .filter(w -> w.getMainVar().isMultinomial())
                 .forEach(w -> w.addParent(globalHiddenVar));
 
-        //We set the linkds of the DAG.
         dag.getParentSets()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
@@ -76,61 +80,67 @@ public class ExperimentsParallelSVB {
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
 
+        // Return the DAG.
         return dag;
     }
 
+    /**
+     * Runs the parallel Streaming Variational Bayes (SVB) algorithm, see {@link ParallelSVB}.
+     * @param args an {@code array} of input arguments.
+     * @return a {@code double} value that represents the running time of parallel SVB in seconds.
+     * @throws Exception
+     */
     public static double parallelSVB(String[] args) throws Exception {
 
         int nCores = Integer.parseInt(args[0]);
         int nVars = Integer.parseInt(args[1]);
         int windowSize = Integer.parseInt(args[2]);
 
-        //We firstly generate de data
+        // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
         BayesianNetworkGenerator.setNumberOfGaussianVars(nVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(nVars, 2);
         BayesianNetwork bn  = BayesianNetworkGenerator.generateBayesianNetwork();
-        DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(SAMPLES);
+        DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(nbrSamples);
+
+        // Save the generated data stream into a file.
         DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
 
         long currentTime = System.nanoTime();
 
-        //We can open the data stream using the static class DataStreamLoader
+        // Load the data stream using {@link DataStreamLoader}.
         data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
 
-        //We create a ParallelSVB object
+        // Create a {@link ParallelSVB} object.
         ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
 
-        //We fix the number of cores we want to exploit
+        // Set the number of cores to be used.
         parameterLearningAlgorithm.setNCores(nCores);
 
-        //We fix the DAG structure
+        // Set the {@link DAG} structure.
         parameterLearningAlgorithm.setDAG(ExperimentsParallelSVB.getHiddenNaiveBayesStructure(data));
 
-        //We fix the size of the window, which must be equal to the size of the data batches we use for learning
+        // Set the window size, that must be equal to the size of the data batches used for learning.
         parameterLearningAlgorithm.getSVBEngine().setWindowsSize(windowSize);
 
-
-        //We can activate the output
+        // Activate the output.
         parameterLearningAlgorithm.setOutput(false);
 
-
-        //We set the data which is going to be used for leaning the parameters
+        // Set the data to be used for leaning the model parameters.
         parameterLearningAlgorithm.setDataStream(data);
 
-        //We perform the learning
+        // Run the learning algorithm.
         parameterLearningAlgorithm.runLearning();
 
-        //And we get the model
+        // Get the learned model.
         BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
 
-        //We print the model
+        // Print the learned model.
         //System.out.println(bnModel.toString());
 
         currentTime = (System.nanoTime() - currentTime) / 1;
 
-        double seconds = currentTime / 1000000000.0;
-
-        return seconds;
+        // Return the running time in seconds.
+        return currentTime / 1000000000.0;
     }
 
     public static void main(String[] args) throws Exception {
@@ -144,7 +154,7 @@ public class ExperimentsParallelSVB {
 
             double seconds = ExperimentsParallelSVB.parallelSVB(args);
 
-            System.out.println(nCores[K] + "\t" + seconds + "\t" + SAMPLES / seconds);
+            System.out.println(nCores[K] + "\t" + seconds + "\t" + nbrSamples / seconds);
         }
     }
 }
