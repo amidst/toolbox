@@ -62,8 +62,10 @@ public class ImportanceSamplingExperiments {
             assignment.setValue(aux,evidence[k]);
         }
         System.out.println();
+
         return assignment;
     }
+
 
 
     /**
@@ -154,17 +156,17 @@ public class ImportanceSamplingExperiments {
 
 
             // Including evidence:
-            Assignment assignment = randomEvidence(1823716125,0.2, bn, varInterest);
+            Assignment assignment = randomEvidence(1823716125,0.05, bn, varInterest);
             importanceSampling.setEvidence(assignment);
 
 
-            importanceSampling.setSamplingModel(vmp.getSamplingModel());
-            importanceSampling.runInference(vmp);
-            System.out.println("Posterior of " + varInterest.getName() + "  (IS w. Evidence VMP) :" + importanceSampling.getPosterior(varInterest).toString());
+            //importanceSampling.setSamplingModel(vmp.getSamplingModel());
+            //importanceSampling.runInference(vmp);
+            //System.out.println("Posterior of " + varInterest.getName() + "  (IS w. Evidence VMP) :" + importanceSampling.getPosterior(varInterest).toString());
 
 
 
-            importanceSampling.setSamplingModel(bn);
+            //importanceSampling.setSamplingModel(bn);
             importanceSampling.runInference();
             System.out.println("Posterior of " + varInterest.getName() + "  (IS w. Evidence) :" + importanceSampling.getPosterior(varInterest).toString());
 
@@ -176,10 +178,13 @@ public class ImportanceSamplingExperiments {
             System.out.println("Variable of interest: " + varInterest.getName());
             System.out.println();
 
-            a = 0.88; // Lower endpoint of the interval
+            a = 1.5; // Lower endpoint of the interval
             b = 10000; // Upper endpoint of the interval
 
-            double result = importanceSampling.runQuery(varInterest, a, b);
+            final double finalA=a;
+            final double finalB=b;
+
+            double result = importanceSampling.getExpectedValue(varInterest, v -> (finalA < v && v < finalB) ? 1.0 : 0.0);
             System.out.println("Query: P(" + Double.toString(a) + " < " + varInterest.getName() + " < " + Double.toString(b) + ")");
             System.out.println("Probability result: " + result);
 
