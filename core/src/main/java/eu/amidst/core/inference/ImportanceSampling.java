@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -45,11 +46,10 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
     private BayesianNetwork model;
     private BayesianNetwork samplingModel;
-    private int sampleSize;
+    private int sampleSize = 100;
     private List<Variable> causalOrder;
-    public Stream<ImportanceSampling.WeightedAssignment> weightedSampleList;
+    public List<ImportanceSampling.WeightedAssignment> weightedSampleList;
     private int seed = 0;
-    //TODO The sampling distributions must be restricted to the evidence
     private Assignment evidence;
     private boolean parallelMode = true;
 
@@ -75,25 +75,84 @@ public class ImportanceSampling implements InferenceAlgorithm {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setParallelMode(boolean parallelMode_) {
         this.parallelMode = parallelMode_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setSeed(int seed) {
+        this.seed=seed;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setModel(BayesianNetwork model_) {
+        this.model = model_;
+        this.setSamplingModel(model_);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setEvidence(Assignment evidence_) {
+        this.evidence = evidence_;
+    }
+
+    /**
+     * Sets the sampling model for this ImportanceSampling.
+     * @param samplingModel_ a {@link BayesianNetwork} model according to which samples will be taken.
+     */
     public void setSamplingModel(BayesianNetwork samplingModel_) {
         this.samplingModel = samplingModel_;
         this.causalOrder = Utils.getCausalOrder(samplingModel.getDAG());
     }
 
+    /**
+     * Sets the number of samples to be drawn from the sampling model.
+     * @param sampleSize an {@code int} that represents the number of samples.
+     */
     public void setSampleSize(int sampleSize) {
         this.sampleSize = sampleSize;
     }
 
 
-    private WeightedAssignment getWeightedAssignment(Random random) {
-        return getWeightedAssignment(random, new VMP());
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BayesianNetwork getOriginalModel() {
+        return this.model;
     }
 
-    private WeightedAssignment getWeightedAssignment(Random random, VMP vmp) {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getLogProbabilityOfEvidence() {
+        return Math.log(weightedSampleList.stream().mapToDouble(ws -> ws.weight).average().getAsDouble());
+    }
+
+    /**
+     * Returns a {@link Stream} containing the drawn samples after running the inference.
+     * @return a {@link Stream} of {@link HashMapAssignment} objects.
+     */
+    public Stream<Assignment> getSamples() {
+        return weightedSampleList.stream().map(wsl -> wsl.assignment);
+    }
+
+
+    private WeightedAssignment getWeightedAssignment(Random random) {
 
         HashMapAssignment samplingAssignment = new HashMapAssignment(1);
         HashMapAssignment modelAssignment = new HashMapAssignment(1);
@@ -106,25 +165,14 @@ public class ImportanceSampling implements InferenceAlgorithm {
             double simulatedValue;
 
             if( evidence!=null && !Double.isNaN(evidence.getValue(samplingVar))) {
-                //System.out.println("Evidence: " + samplingVar.getName () + " = " + this.evidence.getValue(samplingVar) );
                 simulatedValue=evidence.getValue(samplingVar);
 
-                //UnivariateDistribution univariateModelDistribution = this.model.getConditionalDistribution(modelVar).getUnivariateDistribution(modelAssignment);
-                //numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
+                UnivariateDistribution univariateModelDistribution = this.model.getConditionalDistribution(modelVar).getUnivariateDistribution(modelAssignment);
+                numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
             }
             else {
-
                 ConditionalDistribution samplingDistribution = this.samplingModel.getConditionalDistribution(samplingVar);
-                UnivariateDistribution univariateSamplingDistribution;
-
-                if (vmp.getNumberOfIterations()==0 ) {
-                    univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(samplingAssignment);
-                }
-                else {
-
-                    univariateSamplingDistribution = vmp.getPosterior(samplingVar);
-                    //System.out.println(univariateSamplingDistribution.outputString());
-                }
+                UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(samplingAssignment);
 
                 simulatedValue = univariateSamplingDistribution.sample(random);
                 denominator = denominator / univariateSamplingDistribution.getProbability(simulatedValue);
@@ -133,10 +181,6 @@ public class ImportanceSampling implements InferenceAlgorithm {
                 numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
 
             }
-
-            //ConditionalDistribution samplingDistribution = this.samplingModel.getConditionalDistribution(samplingVar);
-            //UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(samplingAssignment);
-
             modelAssignment.setValue(modelVar,simulatedValue);
             samplingAssignment.setValue(samplingVar, simulatedValue);
         }
@@ -144,168 +188,15 @@ public class ImportanceSampling implements InferenceAlgorithm {
         return new WeightedAssignment(samplingAssignment,weight);
     }
 
-    public Stream<Assignment> getSamples() {
-        return weightedSampleList.map(wsl -> wsl.assignment);
-    }
-
-    private void computeWeightedSampleStream() {
-        this.computeWeightedSampleStream(new VMP());
-    }
-
-    private void computeWeightedSampleStream(VMP vmp) {
-
-        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-
-        IntStream auxIntStream = IntStream.range(0, sampleSize);
-        if (parallelMode) {
-            auxIntStream.parallel();
-        }
-        else {
-            auxIntStream.sequential();
-        }
-
-        if(vmp.getNumberOfIterations()==0) {
-            //weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
-            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
-            //weightedSampleList =  IntStream.range(0, sampleSize).mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
-
-        }
-        else {
-            //weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp)).collect(Collectors.toList());
-            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp));
-        }
-    }
-
-    public double runQuery(Variable continuousVarInterest, double a, double b) {
-
-        double probInterest;
-
-        if ( a >=b ) {
-            System.out.println("Error: a must be less than b");
-            System.exit(1);
-        }
-        if (evidence!=null && !Double.isNaN(evidence.getValue(continuousVarInterest))) {
-
-            System.out.println("Error: querying about a variable with evidence");
-            System.exit(1);
-        }
-
-
-        //double sumWeights;
-        double sumWeightsSuccess;
-        double sumAllWeights;
-
-        if (parallelMode) {
-            //sumWeights = weightedSampleList.stream().parallel()
-            //        .mapToDouble(ws -> ws.weight).sum();
-            //sumWeightsSuccess = weightedSampleList.stream().parallel()
-            /*sumWeightsSuccess = weightedSampleList
-                    .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a) && (ws.assignment.getValue(continuousVarInterest)<b))
-                    .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.parallel()
-                    .mapToDouble(ws -> ws.weight).sum();*/
-            List<Double> sum = weightedSampleList.map(ws ->
-                    { if ((ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
-                        return Arrays.asList(ws.weight, ws.weight);
-                    else
-                        return Arrays.asList(ws.weight , 0.0);
-                    }
-            //).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
-            ).reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double> e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
-            sumWeightsSuccess = sum.get(1);
-            sumAllWeights=sum.get(0);
-        }
-        else {
-            //sumWeights = weightedSampleList.stream().sequential()
-            //        .mapToDouble(ws -> ws.weight).sum();
-            /*sumWeightsSuccess = weightedSampleList.sequential()
-                    .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
-                    .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.sequential()
-                    .mapToDouble(ws -> ws.weight).sum();*/
-            List<Double> sum = weightedSampleList.map(ws ->
-                    { if ((ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
-                        return Arrays.asList(ws.weight, ws.weight);
-                    else
-                        return Arrays.asList(ws.weight , 0.0);
-                    }
-            //).reduce(Arrays.asList(0.0,0.0), (e1,e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
-            ).reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double> e1, List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
-            sumWeightsSuccess = sum.get(1);
-            sumAllWeights=sum.get(0);
-        }
-
-        //System.out.println(sumWeights);
-        //System.out.println(meanWeightsSuccess);
-        //System.out.println(meanAllWeights);
-
-        probInterest = sumWeightsSuccess/sumAllWeights;
-
-        return probInterest;
-    }
-
-    public double runQuery(Variable discreteVarInterest, int w) {
-
-        double probInterest;
-
-        if( w<0 || w>= discreteVarInterest.getNumberOfStates()) {
-            return 0;
-        }
-        if (evidence!=null && !Double.isNaN(evidence.getValue(discreteVarInterest))) {
-
-            System.out.println("Error: quering about a Variable with evidence");
-            System.exit(1);
-        }
-
-        //double sumWeights;
-        double sumWeightsSuccess;
-        double sumAllWeights;
-
-        if (parallelMode) {
-            //sumWeights = weightedSampleList.stream().parallel()
-            //        .mapToDouble(ws -> ws.weight).sum();
-            sumWeightsSuccess = weightedSampleList.parallel()
-                    .filter(ws -> new Double(ws.assignment.getValue(discreteVarInterest)).compareTo((double)w)==0)
-                    .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.parallel()
-                    .mapToDouble(ws -> ws.weight).sum();
-        }
-        else {
-            //sumWeights = weightedSampleList.stream().sequential()
-            //        .mapToDouble(ws -> ws.weight).sum();
-            sumWeightsSuccess = weightedSampleList.sequential()
-                    .filter(ws -> new Double(ws.assignment.getValue(discreteVarInterest)).compareTo((double)w)==0)
-                    .mapToDouble(ws -> ws.weight).sum();
-            sumAllWeights = weightedSampleList.sequential()
-                    .mapToDouble(ws -> ws.weight).sum();
-        }
-
-        probInterest = sumWeightsSuccess/sumAllWeights;
-
-        return probInterest;
-
-    }
-
-    public void runInference(VMP vmp) {
-        this.computeWeightedSampleStream(vmp);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runInference() {
-       this.computeWeightedSampleStream();
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public double getExpectedValue(Variable var, Function<Double,Double> function) {
-        List<Double> sum = weightedSampleList
-                .map(ws ->Arrays.asList(ws.weight, ws.weight*function.apply(ws.assignment.getValue(var))))
-                .reduce(Arrays.asList(new Double(0.0),new Double(0.0)), (List<Double>e1,List<Double> e2) -> Arrays.asList(e1.get(0)+e2.get(0),e1.get(1)+e2.get(1)));
+        List<Double> sum = weightedSampleList.stream()
+                .map(ws -> Arrays.asList(ws.weight, ws.weight * function.apply(ws.assignment.getValue(var))))
+                .reduce(Arrays.asList(new Double(0.0), new Double(0.0)), (List<Double> e1, List<Double> e2) -> Arrays.asList(e1.get(0) + e2.get(0), e1.get(1) + e2.get(1)));
 
         return sum.get(1)/sum.get(0);
     }
@@ -314,31 +205,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
      * {@inheritDoc}
      */
     @Override
-    public void setModel(BayesianNetwork model_) {
-        this.model = model_;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BayesianNetwork getOriginalModel() {
-        return this.model;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setEvidence(Assignment evidence_) {
-        this.evidence = evidence_;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    //TODO For continuous variables, instead of returning a Gaussian distributions, we should return a Mixture of Gaussians instead!!!
+    //TODO For continuous variables, instead of returning a Gaussian distributions, we should return a Mixture of Gaussians!!
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
 
         Variable samplingVar = this.samplingModel.getVariables().getVariableById(var.getVarID());
@@ -347,7 +214,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);
 
-        SufficientStatistics sumSS = weightedSampleList
+        SufficientStatistics sumSS = weightedSampleList.stream()
                 .peek(w -> {
                     dataInstanceCount.getAndIncrement();
                 })
@@ -373,22 +240,24 @@ public class ImportanceSampling implements InferenceAlgorithm {
         return (E)posteriorDistribution;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getLogProbabilityOfEvidence() {
-        throw new UnsupportedOperationException();
+    private void computeWeightedSampleStream() {
+
+        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+
+        IntStream auxIntStream = IntStream.range(0, sampleSize).sequential();
+        if (parallelMode) {
+            auxIntStream.parallel();
+        }
+        weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setSeed(int seed) {
-        this.seed=seed;
+    public void runInference() {
+       this.computeWeightedSampleStream();
     }
-
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -404,31 +273,30 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         ImportanceSampling importanceSampling = new ImportanceSampling();
         importanceSampling.setModel(bn);
-        importanceSampling.setSamplingModel(vmp.getSamplingModel());
+        //importanceSampling.setSamplingModel(vmp.getSamplingModel());
+
         importanceSampling.setParallelMode(true);
-        importanceSampling.setSampleSize(1000);
+        importanceSampling.setSampleSize(100);
+        importanceSampling.setSeed(57457);
+        importanceSampling.runInference();
 
+        List<Variable> causalOrder = importanceSampling.causalOrder;
 
-        for (Variable var: bn.getVariables()){
-            importanceSampling.runInference();
-            System.out.println("Posterior of " + var.getName() + ":" + importanceSampling.getPosterior(var).toString());
+        for (Variable var: causalOrder) {
+            System.out.println("Posterior (IS) of " + var.getName() + ":" + importanceSampling.getPosterior(var).toString());
             System.out.println("Posterior (VMP) of " + var.getName() + ":" + vmp.getPosterior(var).toString());
         }
 
-        ImportanceSampling importanceSampling2 = new ImportanceSampling();
-        importanceSampling2.setModel(bn);
-        importanceSampling2.setSamplingModel(vmp.getSamplingModel());
-        importanceSampling2.setParallelMode(true);
-        importanceSampling2.setSampleSize(100);
 
 
         // Including evidence:
-        Variable variable1 = importanceSampling2.causalOrder.get(1);  // causalOrder: X,B,D,A,S,L,T,E
-        Variable variable2 = importanceSampling2.causalOrder.get(2);
+        Variable variable1 = causalOrder.get(1);  // causalOrder: A,S,L,T,E,X,B,D
+        Variable variable2 = causalOrder.get(2);
 
         int var1value=0;
-        int var2value=1;
+        int var2value=0;
 
+        System.out.println();
         System.out.println("Evidence: Variable " + variable1.getName() + " = " + var1value + " and Variable " + variable2.getName() + " = " + var2value);
         System.out.println();
 
@@ -437,16 +305,15 @@ public class ImportanceSampling implements InferenceAlgorithm {
         assignment.setValue(variable1,var1value);
         assignment.setValue(variable2,var2value);
 
-        importanceSampling2.setEvidence(assignment);
+        importanceSampling.setEvidence(assignment);
+        importanceSampling.runInference();
 
-        for (Variable var: bn.getVariables()) {
-            importanceSampling.runInference(vmp);
-            importanceSampling2.runInference();
-            System.out.println("Posterior of " + var.getName() + "  (IS w/o Evidence) :" + importanceSampling.getPosterior(var).toString());
-            System.out.println("Posterior of " + var.getName() + "  (IS w. Evidence) :" + importanceSampling2.getPosterior(var).toString());
-            System.out.println("Posterior of " + var.getName() + " (VMP) :" + vmp.getPosterior(var).toString());
+        for (Variable var: causalOrder) {
+            System.out.println("Posterior of " + var.getName() + " (IS with Evidence) :" + importanceSampling.getPosterior(var).toString());
+            //System.out.println("Posterior of " + var.getName() + " (VMP) :" + vmp.getPosterior(var).toString());
         }
 
+        System.out.printf("Prob. of Evidence: " + Math.exp(importanceSampling.getLogProbabilityOfEvidence()));
     }
 
 }
