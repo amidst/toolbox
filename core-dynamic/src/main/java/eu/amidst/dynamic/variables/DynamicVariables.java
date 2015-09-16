@@ -58,7 +58,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.interfaceVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
 
-        for (Attribute att : atts.getListExceptTimeAndSeq()) {
+        for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             if (mapping.containsKey(var.getName())) {
@@ -83,7 +83,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.allVariables = new ArrayList<>();
         this.interfaceVariables = new ArrayList<>();
 
-        for (Attribute att : atts.getListExceptTimeAndSeq()) {
+        for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             VariableBuilder builder;
             if (typeDists.containsKey(att)) {
                 builder = new VariableBuilder(att, typeDists.get(att));

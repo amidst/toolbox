@@ -15,6 +15,7 @@ package eu.amidst.core.variables;
 import com.google.common.collect.Sets;
 import eu.amidst.core.utils.Utils;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +23,10 @@ import java.util.Set;
 /**
  * This class implements the interface {@link Assignment} and handles the assignments that contain missing values.
  */
-public class MissingAssignment implements Assignment{
+public class MissingAssignment implements Assignment, Serializable{
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
 
     /** Represents an object of type {@link Assignment}. */
     Assignment assignment;

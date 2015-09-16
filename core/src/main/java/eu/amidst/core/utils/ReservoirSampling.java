@@ -55,7 +55,7 @@ public class ReservoirSampling {
      * @return a {@link DataOnMemory} object.
      */
     public static DataOnMemory samplingNumberOfGBs(double numberOfGB, DataStream<? extends DataInstance> dataStream) {
-        double numberOfBytesPerSample = dataStream.getAttributes().getList().size()*8.0;
+        double numberOfBytesPerSample = dataStream.getAttributes().getFullListOfAttributes().size()*8.0;
 
         //We assume an overhead of 10%.
         int numberOfSamples = (int) ((1-0.1)*numberOfGB*1073741824.0/numberOfBytesPerSample);

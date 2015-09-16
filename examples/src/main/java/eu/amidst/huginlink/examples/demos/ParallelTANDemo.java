@@ -102,8 +102,8 @@ public class ParallelTANDemo {
         System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, 1 core(s) ...");
 
 
-        nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
-        nameTarget = data.getAttributes().getList().get(0).getName();
+        nameRoot = data.getAttributes().getFullListOfAttributes().get(numDiscVars - 1).getName();
+        nameTarget = data.getAttributes().getFullListOfAttributes().get(0).getName();
 
 
         ParallelTAN tan = new ParallelTAN();
@@ -151,8 +151,8 @@ public class ParallelTANDemo {
         nOfVars = numContVars + numDiscVars;
 
         // Get information about the model: Root and Target
-        nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
-        nameTarget = data.getAttributes().getList().get(0).getName();
+        nameRoot = data.getAttributes().getFullListOfAttributes().get(numDiscVars - 1).getName();
+        nameTarget = data.getAttributes().getFullListOfAttributes().get(0).getName();
 
         // Setup the TAN object
         ParallelTAN tan = new ParallelTAN();
@@ -205,8 +205,8 @@ public class ParallelTANDemo {
             System.out.println("Learning TAN: " + nOfVars + " variables, " + " samples on file " + dataFileInput + "," + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
         }
 
-        nameRoot = data.getAttributes().getList().get(numDiscVars - 1).getName();
-        nameTarget = data.getAttributes().getList().get(0).getName();
+        nameRoot = data.getAttributes().getFullListOfAttributes().get(numDiscVars - 1).getName();
+        nameTarget = data.getAttributes().getFullListOfAttributes().get(0).getName();
 
         // Serial mode
         if (numCores == 1) {

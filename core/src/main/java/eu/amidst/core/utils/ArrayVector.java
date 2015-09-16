@@ -12,11 +12,16 @@ import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 
+import java.io.Serializable;
+
 /**
  * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
  * It handles some array vector utility methods.
  */
-public class ArrayVector implements MomentParameters, NaturalParameters, SufficientStatistics{
+public class ArrayVector implements MomentParameters, NaturalParameters, SufficientStatistics, Serializable{
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = -3436599636425587512L;
 
     /** Represents an array of {@code double}. */
     private double[] array;

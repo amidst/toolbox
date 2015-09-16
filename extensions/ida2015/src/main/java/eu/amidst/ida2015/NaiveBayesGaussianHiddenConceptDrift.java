@@ -93,7 +93,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
     private void buildGlobalDAG(){
         Variables variables = new Variables(data.getAttributes());
-        String className = data.getAttributes().getList().get(classIndex).getName();
+        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
         for (int i = 0; i < this.numberOfGlobalVars ; i++) {
@@ -134,7 +134,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     private void buildLocalDAG(){
 
         Variables variables = new Variables(data.getAttributes());
-        String className = data.getAttributes().getList().get(classIndex).getName();
+        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
         for (Attribute att : data.getAttributes()){
@@ -170,7 +170,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     private void buildGlobalLocalDAG(){
 
         Variables variables = new Variables(data.getAttributes());
-        String className = data.getAttributes().getList().get(classIndex).getName();
+        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
         Variable globalHidden  = variables.newGaussianVariable("GlobalHidden");

@@ -53,6 +53,7 @@ public class InverseGammaParameterType extends DistributionType {
         EF_InverseGamma inverseGamma = new EF_InverseGamma(this.variable);
         inverseGamma.getNaturalParameters().set(0, -1 - 1); //alpha = 0.1
         inverseGamma.getNaturalParameters().set(1, -1);   //beta = 1
+        inverseGamma.fixNumericalInstability();
         inverseGamma.updateMomentFromNaturalParameters();
         return inverseGamma;
     }

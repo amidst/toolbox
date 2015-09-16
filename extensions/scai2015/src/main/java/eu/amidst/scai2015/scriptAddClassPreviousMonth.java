@@ -11,7 +11,7 @@ package eu.amidst.scai2015;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
 import eu.amidst.core.datastream.filereaders.DataRow;
 import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
@@ -39,7 +39,7 @@ public class scriptAddClassPreviousMonth {
 
         Attributes atts = reader.getAttributes();
         List<Attribute> newAtts= new ArrayList<>();
-        for(Attribute att: reader.getAttributes().getList()){
+        for(Attribute att: reader.getAttributes().getFullListOfAttributes()){
             newAtts.add(att);
         }
         Attribute classAtt = newAtts.get(newAtts.size()-1);
@@ -80,7 +80,7 @@ public class scriptAddClassPreviousMonth {
             }
             dataRow.setValue(attDefaulting,e.getValue(classAtt));
             defaulting_PM[(int)e.getValue(seqID)] = e.getValue(classAtt);
-            DataInstance assignment = new DataInstanceImpl(dataRow);
+            DataInstance assignment = new DataInstanceFromDataRow(dataRow);
             try {
                 fw.write(ARFFDataWriter.dataInstanceToARFFString(new Attributes(newAtts), assignment) + "\n");
             } catch (IOException ex) {

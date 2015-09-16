@@ -11,6 +11,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <parent>
+        <artifactId>AmidstToolbox</artifactId>
+        <groupId>eu.amidst</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>scai2015</artifactId>
@@ -34,7 +40,6 @@
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <systemPath>${basedir}/lib/core-1.0-SNAPSHOT-jar-with-dependencies.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>

@@ -35,8 +35,8 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -125,7 +125,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
         }
 
         //Make them unmodifiable
-        this.parents = Collections.unmodifiableList(this.parents);
+        //this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**
@@ -539,7 +539,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
     }
 
     //TODO: Replace this CompoundVector by the compoundvector of indicator
-    private static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
+    private static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters, Serializable {
+        /** Represents the serial version ID for serializing the object. */
+        private static final long serialVersionUID = -3436599636425587512L;
 
         int nConf;
         int baseSSLength;
@@ -552,7 +554,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
             nConf = nConf1;
             this.baseConf = new double[nConf];
             baseDist = baseDist1;
-            baseVectors = new SparseVector(baseDist1::createZeroVector,nConf);
+            baseVectors = new SparseVector(baseDist1,nConf);
             baseSSLength = baseDist.sizeOfSufficientStatistics();
 
         }
@@ -667,9 +669,12 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
     }
 
-    private static class SparseVector implements Vector {
+    private static class SparseVector implements Vector, Serializable {
 
-        VectorBuilder vectorBuilder;
+        /** Represents the serial version ID for serializing the object. */
+        private static final long serialVersionUID = -3436599636425587512L;
+
+        EF_Distribution vectorBuilder;
 
         Map<Integer, Vector> vectorMap;
 
@@ -679,9 +684,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
         int nonZeroEntries;
 
-        public SparseVector(VectorBuilder vectorBuilder1, int numVectors1) {
+        public SparseVector(EF_Distribution vectorBuilder1, int numVectors1) {
             this.vectorBuilder = vectorBuilder1;
-            Vector baseVector = this.vectorBuilder.createZeroedVector();
+            Vector baseVector = this.vectorBuilder.createZeroVector();
             this.baseSize = baseVector.size();
             this.numVectors = numVectors1;
             nonZeroEntries=0;
@@ -720,7 +725,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
             if (vectorMap.containsKey(baseIndex)) {
                 vectorMap.get(baseIndex).set(i % baseSize, val);
             } else {
-                Vector baseVector = this.vectorBuilder.createZeroedVector();
+                Vector baseVector = this.vectorBuilder.createZeroVector();
                 baseVector.set(i % baseSize, val);
                 vectorMap.put(baseIndex, baseVector);
                 nonZeroEntries++;
@@ -747,7 +752,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
                     if (localVector != null) {
                         localVector.sum(outerVector);
                     }else{
-                        Vector newVector = this.vectorBuilder.createZeroedVector();
+                        Vector newVector = this.vectorBuilder.createZeroVector();
                         newVector.sum(outerVector);
                         this.setVectorByPosition(entry.getKey(),newVector);
                     }
@@ -766,7 +771,7 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
             vectorMap = new ConcurrentHashMap<Integer,Vector>();
 
             vector.nonZeroEntries().forEach(entry -> {
-                Vector newVector = this.vectorBuilder.createZeroedVector();
+                Vector newVector = this.vectorBuilder.createZeroVector();
                 newVector.copy(entry.getValue());
                 this.setVectorByPosition(entry.getKey(),newVector);
             });
@@ -806,8 +811,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
         }
     }
 
-    @FunctionalInterface
+    //@FunctionalInterface
     private interface VectorBuilder {
-            public Vector createZeroedVector();
+            Vector createZeroedVector();
     }
 }

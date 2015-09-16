@@ -12,6 +12,7 @@ import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,10 @@ import java.util.Map;
  * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
  * It handles some compound vector utility methods.
  */
-public class CompoundVector implements MomentParameters, NaturalParameters, SufficientStatistics {
+public class CompoundVector implements MomentParameters, NaturalParameters, SufficientStatistics, Serializable {
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = -3436599636425587512L;
 
     /** Represents the total size of the CompoundVector, defined as the sum of its baseVector sizes. */
     int size;
@@ -186,7 +190,10 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
     /**
      * This class handles some utils for an Indexed Vector.
      */
-    static class IndexedVector {
+    static class IndexedVector implements Serializable{
+
+        /** Represents the serial version ID for serializing the object. */
+        private static final long serialVersionUID = -3436599636425587512L;
 
         /** Represents a {@link Vector} object. */
         Vector vector;

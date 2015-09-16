@@ -54,7 +54,7 @@ public class TestReaderStatic {
 
         attributes = reader.getAttributes();
 
-        Assert.assertEquals(17, attributes.getList().size());
+        Assert.assertEquals(17, attributes.getFullListOfAttributes().size());
     }
 
     @Test

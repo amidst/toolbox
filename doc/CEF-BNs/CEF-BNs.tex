@@ -364,7 +364,7 @@ So, the following developments applies to ce-BNs which satisfy the \emph{global 
 As we show in the next theorem, we can exploit the \textit{F-form} of a conjugate model to obtain a compact representation of a Bayesian network as an exponential family model. 
 
 \begin{theorem}\label{thm:representation}
-A ce-BN can be represented as an exponential family model, by composing the F-form representations of its conditional probability distributions, as follows 
+A ce-BN can be represented in exponential form in the following structured way, by composing the F-form representations of its conditional probability distributions, as follows 
 
 \begin{itemize}
 \item the natural parameters  $\theta$ of a ce-BN are formed by the composition of the local natural parameters of each conditional distribution, 
@@ -482,9 +482,10 @@ According to the \emph{global independence parameter} assumption, the $\theta_i$
 \theta_i(\mu_i) = \arg\max_{\theta_i\in\Theta_i} \theta_i^T\mu_i - B(\theta_i)
 \end{eqnarray*}
 
-\noindent and the global solution is just the aggregation of the local solutions as follows: 
+\noindent and the global solution is just the aggregation of the local solutions.
 
-$$ \theta(\mu) = \big(\theta_1(\mu_1), \ldots, \theta_n(\mu_n)\big)$$
+% as follows: 
+%$$ \theta(\mu) = \big(\theta_1(\mu_1), \ldots, \theta_n(\mu_n)\big)$$
 
 \end{proof}
 
@@ -610,7 +611,7 @@ $$
 \lambda_{i,q}
 \end{pmatrix}
 $$
-\noindent where  $\lambda_{i,l}$ is the $l$-th component (i.e., a scalar) of the moment vector associated to the marginal distribution $p_\theta(\bm Y)$,  $\lambda_{i,q} = \int I(\bm Y = \bm y_l) p_\theta(\bm Y) d\bm Y= p_\theta(\bm y_l)$, and $\mu_{i,l}$  is the ``local'' moment parameter associated to the marginal distribution $p(X,\bm Z| \bm y = l)$, $\mu_{i,l}= \int s_l(X, \bm Z)p_\theta(X,\bm Z|\bm y = l) dX\bm Z$. 
+\noindent where  $\lambda_{i,l}$ is the $l$-th component (i.e., a scalar) of the moment vector associated to the marginal distribution $p_\theta(\bm Y)$,  $\lambda_{i,l} = \int I(\bm Y = \bm y_l) p_\theta(\bm Y) d\bm Y= p_\theta(\bm y_l)$, and $\mu_{i,l}$  is the ``local'' moment parameter associated to the marginal distribution $p(X,\bm Z| \bm y = l)$, $\mu_{i,l}= \int s_l(X, \bm Z)p_\theta(X,\bm Z|\bm y = l) dX\bm Z$. 
 
 \end{theorem}
 \begin{proof}
@@ -627,16 +628,18 @@ Again, we can see that the moment parameters of this conditional distribution ca
 In Theorem \ref{thm:MomentToNatural}, we saw that transforming moment to natural parameters reduces to local transformations between the local moment parameters $\mu_i$ and the local natural parameters $\theta_i$ by solving the following optimization problem: $\theta_i(\mu_i) = \arg\max_{\theta_i\in\Theta_i} \theta_i^T\mu_i - B(\theta_i)$. Next theorem shows how this optimization problem further simplifies when $X_i$ is conditioned to a set of multinomial parents. 
 
 \begin{theorem}
-\label{thm:MomentToNatural}
+\label{thm:MomentToNatural:multiparents}
 Given a local moment parameter vector $\bm \mu_i$ associated to a variable $X_i$ with multinomial parents $\bm Y$ and non-multinomial parents $\bm Z$, the associated natural parameter vector $\theta_i(\bm \mu_i)$ decomposes as follows,
-$$ \theta_i(\mu_i) = \big(\theta_{i,1}, \ldots, \theta_{i,q}, -A_i(\theta_{i,1}), \ldots,-A_i(\theta_{i,q})\big)$$
+$$ \theta_i(\mu_i) = \big(\theta_{i,1}(\mu'_{i,1}), \ldots, \theta_{i,q}(\mu'_{i,q}), -A_i(\theta_{i,1}(\mu'_{i,1})), \ldots,-A_i(\theta_{i,q}(\mu'_{i,q}))\big)$$
 
-\noindent where, as a mentioned earlier, $\theta_{i,l}$ denotes the parameter sub-vector associated to the F-form representation of the conditional distribution $p_{\theta_{i,l}(X|\bm Z,\bm Y  =\bm y_l}$. The $\theta_{i,l}$ parameter is obtained by solving the following optimization problem, 
+\noindent where, as a mentioned earlier, $\theta_{i,l}$ denotes the parameter sub-vector associated to the F-form representation of the conditional distribution $p(X|\bm Z,\bm Y  =\bm y_l)$ and where $\mu'_{i,l} =\frac{1}{\lambda_{i,l}}\mu_{i,l}$, i.e. the element-wise division of the vector $\mu_{i,l}$ by the scalar $\lambda_{i,l}$, which was defined in Theorem \ref{thm:naturalToMoment:multiparents}. 
+
+Similarly, the $\theta_{i,l}(\mu'_{i,l})$ parameter is obtained by solving the following optimization problem, 
 \begin{eqnarray*}
-\theta_{i,l} = \arg\max_{\theta_{i,l} \in \Theta_{i,l}} \theta_{i,l}^T \mu'_{i,l}- A_i(\theta_{i,l})
+\theta_{i,l}(\mu'_{i,l}) = \arg\max_{\theta_{i,l} \in \Theta_{i,l}} \theta_{i,l}^T \mu'_{i,l}- A_i(\theta_{i,l})
 \end{eqnarray*}
 
-\noindent where $\mu'_l =\frac{1}{\lambda_{i,l}}\mu_{i,l}$, i.e. the element-wise division of the vector $\mu_{i,l}$ by the scalar $\lambda_{i,l}$. So, this optimization problem simply corresponds to the transformation of a moment parameter vector $\mu'_{i,l}$ to their corresponding natural parameters for the conditional distribution $p(X|\bm Z, \bm y_l)$.
+\noindent  So, this optimization problem simply corresponds to the transformation of a moment parameter vector $\mu'_{i,l}$ to their corresponding natural parameters for the conditional distribution $p(X|\bm Z, \bm y_l)$.
 \end{theorem}
 \begin{proof}
 The optimization problem to solve can be stated as follows by using the decomposition of the natural parameters, of the sufficient statistics, and of the log-normalizer as stated in Theorem \ref{thm:representation:multiparents}, 
@@ -661,79 +664,58 @@ The solution of each of above optimization problem is not affected if the optimi
 \subsection{Variational Message Passing}
 %------------------------------------------------------------------------------------------------------
 
-
-
-
-
 %------------------------------------------------------------------------------------------------------
 \subsection{Expectation propagation}
 %------------------------------------------------------------------------------------------------------
 
 
+
 %------------------------------------------------------------------------------------------------------
-\section{Maximum likelihood}
+\section{Learning from data with conjugate exponential Bayesian networks}
+%------------------------------------------------------------------------------------------------------
+
+%-----------------------------------------------------------------------------------------------------
+\subsection{Maximum likelihood}
 %------------------------------------------------------------------------------------------------------
 
 In this section we look at the maximum likelihood problem in ce-BNs. Our aim is to show how the solution to this multi-dimensional optimization problem has a common characterization in terms of exponential family representation and, moreover, boils down to smaller local problems for each conditional distribution by relying on the results presented in the previous sections. 
 
-%\footnote{We point out that the following derivation is made without assuming that our models belongs to the regular exponential family and, in consequence, not using the equality of Equation \ref{Equation:RegularEFEquality}.}.
+\begin{theorem}
 
-Let us assume that we are given a set of $m$ i.i.d. data samples $D=\{\bm x^{(1)}, \ldots, \bm x^{(m)}\}$ indexed by $j$. The maximum likelihood problem can be stated as follows:
+Given a set of fully observed i.i.d. data samples $D=\{\bm x^{(1)}, \ldots, \bm x^{(m)}\}$ indexed by $j$, the maximum likelihood estimator of ce-BN is defined as follows $\theta^\star=\Big(\theta^\star_1,\ldots,\theta^\star_n\Big)$, where each $\theta^\star_i$ is computed according to following moment to natural parameter transformation, 
 
+$$\theta^\star_i= \theta_i\big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i)\big)$$
+
+\noindent where $\theta_i\big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i)\big)$ is defined as shown in Theorem \ref{thm:MomentToNatural}.  
+
+If the variable $X_i$ has a non-empty set of multinomial parents $\bf Y$ and a set of non-multinomial parents $\bf Z$, then  $\theta_i^\star$ would also decomposes according to Theorem \ref{thm:MomentToNatural:multiparents} and using the following equality,
+
+
+$$\mu'_{i,l} = \frac{\sum_{j=1}^m s_l(X, \bm Z)}{\sum_{j=1}^m  I(\mathbf{Y} =\mathbf{y}^l)} $$
+
+\end{theorem}
+%%%%%%%%%%%%%%%%%
+\begin{proof}
+Given a set of fully observed data samples $D=\{\bm x^{(1)}, \ldots, \bm x^{(m)}\}$ indexed by $j$. The maximum likelihood problem can be stated as follows by using the F-form of the ce-BN, 
 \begin{eqnarray*}
 \theta^\star  &=& \arg\max_{\theta \in \Theta} \sum_{j=1}^m \ln p(\bm x^{(j)}|\theta) \\
 &=& \arg\max_{\theta \in \Theta} \sum_{j=1}^m \theta^Ts(\bm x^{(j)})  - A(\theta) \\
 &=& \arg\max_{\theta \in \Theta} \theta^T\Big(\sum_{j=1}^m s(\bm x^{(j)})\Big)  - m A(\theta) \\
 &=& \arg\max_{\theta \in \Theta} \theta^T\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)  - A(\theta) \\
 \end{eqnarray*}
-
 \noindent where the last part is achieved by dividing the optimized equation by the number of samples $m$, what does not affect the result of the optimization. 
-
-As widely known, the maximum likelihood is equivalent to a transformation form moment to natural parameters as stated in Equation \ref{Equation:MomentToNatural}: 
-
-$$\theta^\star = \theta (\mu) = \theta\Big(\frac{1}{m}\sum_{j=1}^m s(\bm x^{(j)})\Big)$$
-
-As shown in Section \ref{Section:CEFBN:MomentToNatural}, this problem decomposes for each CPD. The above formation can be expressed in terms of local transformations defined in Equation \ref{Equation:CEFBN_MomentToNaturalLocal}:
-
-$$\theta_i^\star = \theta_i\Big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i)\Big)$$
-
-To better understand the above decomposition, we should notice that $\theta_i(\mu_i)$ is directly related to maximum likelihood estimation of the conditional distribution $p(X_i|Pa(X_i))$:
-
-\begin{eqnarray*}
-\theta^\star  &=& \arg\max_{\theta_i \in \Theta_i} \sum_{j=1}^m \ln p(x_i^{(j)}|\bm{pa}^{(j)}_i,\theta) \\
-&=& \arg\max_{\theta_i \in \Theta_i} \sum_{j=1}^m \Big(\theta_i^Ts(x_i^{(j)},\bm{pa}^{(j)}_i)  - B_i(\theta_i) \Big)\\
-&=& \arg\max_{\theta_i \in \Theta_i} \theta_i^T\Big(\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i) \Big)  - m B_i(\theta) \\
-&=& \arg\max_{\theta_i \in \Theta_i} \theta_i^T\Big(\frac{1}{m}\sum_{j=1}^m s(x_i^{(j)},\bm{pa}^{(j)}_i) \Big)  - B_i(\theta) \\
-\end{eqnarray*}
-
-\noindent where $\bm{pa}^{(j)}_i$ corresponds to the $X_i$ parents values in the $j$-th data sample $\bm x^{(j)}$.
-
-For those conditional distributions with multinomial parents, the problem further decomposes as previously shown in Section \ref{Section:CD_With_MParents:MomentToNatural}. 
-
-
-%
-%The maximum likelihood computation can be addressed using the following steps:
-%
-%\begin{enumerate}
-%
-%\item  Compute the sufficient statistics of a given data sample $\bm x^{(j)}$, which is the composition of the sufficient statistics of each conditional distribution (see Equation \ref{Equation:CEFSS}). If the conditional distribution has multinomial parents then we can use Equation \ref{Equation:CD_With_MParents:Representation} to compose the sufficient statistics of the conditional distribution. 
-%
-%\item Sum all the sufficient statistics and divide the sum vector by the total number of samples. 
-%
-%\item Obtain the natural parameters associated to this normalized sufficient statistics. According to Equation \ref{Equation:CEFBN_MomentToNatural}, this natural parameters can be obtain by aggregating the the natural parameters of the conditional distributions, which can be computed locally. If a conditional distribution has multinomial parents then we can use Equation \ref{Equation:CD_With_MParents:MomentToNatural} to compose the natural parameter of this conditional distribution. 
-%\end{enumerate}
+As widely known, it can be seen that the maximum likelihood is equivalent to a transformation form moment to natural parameters as stated in Equation \ref{Equation:MomentToNatural}. Then, the first claim of this theorem directly derive from the application of Theorem \ref{thm:MomentToNatural}. 
+When there are variables with multinomial parents, the second claim easily follows by the application of Theorem \ref{thm:representation:multiparents} and \ref{thm:naturalToMoment:multiparents}.
+\end{proof}
+%%%%%%%%%%%%%%%%%
 
 %------------------------------------------------------------------------------------------------------
-\section{EM algorithms in ce-BNs}
+\subsection{EM algorithm}
 %------------------------------------------------------------------------------------------------------
 
 
 %------------------------------------------------------------------------------------------------------
-\section{Variational inference in ce-BNs}
-%------------------------------------------------------------------------------------------------------
-
-%------------------------------------------------------------------------------------------------------
-\section{Expectation propagation inference in ce-BNs}
+\subsection{Bayesian Learning}
 %------------------------------------------------------------------------------------------------------
 
 

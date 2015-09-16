@@ -66,7 +66,7 @@ public class InferenceDemo {
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         //System.out.println("ATTRIBUTES:");
-        //data.getAttributes().getList().stream().forEach(a -> System.out.println(a.getName()));
+        //data.getAttributes().getFullListOfAttributes().stream().forEach(a -> System.out.println(a.getName()));
 
         System.out.println("Learning a Dynamic Naive Bayes Classifier.");
         System.out.println("Traning Data: 4000 clients, 1000 days of records for each client, 10 profile variables.");

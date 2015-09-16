@@ -13,10 +13,15 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.datastream.filereaders.DataRow;
 
+import java.io.Serializable;
+
 /**
  * Created by andresmasegosa on 11/11/14.
  */
-class DynamicDataInstanceImpl implements DynamicDataInstance {
+class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
 
     private DataRow dataRowPresent;
     private DataRow dataRowPast;

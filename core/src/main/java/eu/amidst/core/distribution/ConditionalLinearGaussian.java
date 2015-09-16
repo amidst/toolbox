@@ -26,7 +26,6 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -70,7 +69,7 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
         this.variance = 1;
 
         //Make them unmodifiable
-        this.parents = Collections.unmodifiableList(this.parents);
+        //this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**

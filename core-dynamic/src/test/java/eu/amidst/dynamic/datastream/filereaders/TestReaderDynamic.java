@@ -52,7 +52,7 @@ public class TestReaderDynamic {
     public void nOfVars_NoTimeID_NoSeq(){
         loadFileAndInitialize("datasets/dataWeka/labor.arff");
 
-        Assert.assertEquals(17, attributes.getList().size());
+        Assert.assertEquals(17, attributes.getFullListOfAttributes().size());
         Assert.assertEquals(17, obsVars.size());
         //assertEquals(17, temporalClones.size());
         Assert.assertEquals(17, dynamicVariables.getNumberOfVars());
@@ -117,7 +117,7 @@ public class TestReaderDynamic {
     public void nOfVars_TimeID(){
         loadFileAndInitialize("datasets/dataWeka/laborTimeID.arff");
 
-        Assert.assertEquals(18, attributes.getList().size());
+        Assert.assertEquals(18, attributes.getFullListOfAttributes().size());
         Assert.assertEquals(17, obsVars.size());
         //assertEquals(17, temporalClones.size());
         Assert.assertEquals(17, dynamicVariables.getNumberOfVars());
@@ -282,7 +282,7 @@ public class TestReaderDynamic {
     public void nOfVars_seqID(){
         loadFileAndInitialize("datasets/dataWeka/laborSeqID.arff");
 
-        Assert.assertEquals(18, attributes.getList().size());
+        Assert.assertEquals(18, attributes.getFullListOfAttributes().size());
         Assert.assertEquals(17, obsVars.size());
         //assertEquals(17, temporalClones.size());
         Assert.assertEquals(17, dynamicVariables.getNumberOfVars());
@@ -386,7 +386,7 @@ public class TestReaderDynamic {
     public void nOfVars_TimeID_SeqID(){
         loadFileAndInitialize("datasets/dataWeka/laborTimeIDSeqID.arff");
 
-        Assert.assertEquals(19, attributes.getList().size());
+        Assert.assertEquals(19, attributes.getFullListOfAttributes().size());
         Assert.assertEquals(17, obsVars.size());
         //assertEquals(17, temporalClones.size());
         Assert.assertEquals(17, dynamicVariables.getNumberOfVars());

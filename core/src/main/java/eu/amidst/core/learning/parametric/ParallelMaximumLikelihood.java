@@ -1,5 +1,3 @@
-package eu.amidst.core.learning.parametric;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -10,6 +8,10 @@ package eu.amidst.core.learning.parametric;
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
+
+package eu.amidst.core.learning.parametric;
+
+
 
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
@@ -82,11 +84,10 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
     public double updateModel(DataOnMemory<DataInstance> batch) {
 
         this.sumSS = batch.stream()
-                    .peek(w -> {
-                        dataInstanceCount.addAndGet(1.0);
-                    })
                     .map(efBayesianNetwork::getSufficientStatistics)
                     .reduce(this.sumSS, SufficientStatistics::sumVector);
+
+        dataInstanceCount.addAndGet(batch.getNumberOfDataInstances());
 
         return Double.NaN;
     }
@@ -115,22 +116,25 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
 
         this.initLearning();
 
-        efBayesianNetwork = new EF_BayesianNetwork(dag);
-
-        Stream<DataInstance> stream = null;
+        Stream<DataOnMemory<DataInstance>> stream = null;
         if (parallelMode){
-            stream = dataStream.parallelStream(batchSize);
+            stream = dataStream.parallelStreamOfBatches(batchSize);
         }else{
-            stream = dataStream.stream();
+            stream = dataStream.streamOfBatches(batchSize);
         }
 
         dataInstanceCount = new AtomicDouble(0);
 
         sumSS = stream
-                .peek(w -> {
-                    dataInstanceCount.getAndAdd(1.0);
+                .peek(batch -> {
+                    dataInstanceCount.getAndAdd(batch.getNumberOfDataInstances());
                 })
-                .map(efBayesianNetwork::getSufficientStatistics)
+                .map(batch -> {
+                    SufficientStatistics ss = efBayesianNetwork.createZeroSufficientStatistics();
+                    return batch.stream()
+                            .map(efBayesianNetwork::getSufficientStatistics)
+                            .reduce(ss, SufficientStatistics::sumVector);
+                })
                 .reduce(efBayesianNetwork.createZeroSufficientStatistics(), SufficientStatistics::sumVector);
     }
 

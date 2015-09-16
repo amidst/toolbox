@@ -60,4 +60,12 @@ public abstract class StateSpaceType implements Serializable {
     public void setUnit(String unit) {
         this.unit = unit;
     }
+
+    /**
+     * Returns an string representation of the associated value.
+     * @param value, a valid value of the state space.
+     * @return a string object representing the value.
+     */
+    public abstract String stringValue(double value);
+
 }

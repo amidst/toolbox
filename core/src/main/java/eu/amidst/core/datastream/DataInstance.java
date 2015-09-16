@@ -63,6 +63,18 @@ public interface DataInstance extends Assignment {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    default String outputString(){
+        StringBuilder builder = new StringBuilder(this.getAttributes().getFullListOfAttributes().size()*2);
+        builder.append("{");
+        this.getAttributes().getFullListOfAttributes().stream().forEach(att -> builder.append(att.getName()+ " = "+ att.stringValue(this.getValue(att))+", "));
+        builder.append("}");
+        return builder.toString();
+    }
+
+    /**
      * Returns the set of attributes that have assigned values stored in this DataInstance.
      * @return a valid Attributes object.
      */

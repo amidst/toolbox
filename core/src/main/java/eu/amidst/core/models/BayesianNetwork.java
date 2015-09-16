@@ -12,12 +12,11 @@ import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -43,6 +42,9 @@ public final class BayesianNetwork implements Serializable {
     /** Represents the Directed Acyclic Graph ({@link DAG}) defining the Bayesian network graphical structure. */
     private DAG dag;
 
+    /** Represents the name of the BN **/
+    private String name;
+
     /**
      * Creates a new BayesianNetwork from a dag.
      * @param dag a directed acyclic graph.
@@ -60,6 +62,22 @@ public final class BayesianNetwork implements Serializable {
     public BayesianNetwork(DAG dag, List<ConditionalDistribution> dists) {
         this.dag = dag;
         this.distributions = dists;
+    }
+
+    /**
+     * Returns the name of the BN
+     * @return a String object
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the BN
+     * @param name, a String object
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -140,7 +158,7 @@ public final class BayesianNetwork implements Serializable {
             parentSet.blockParents();
         }
 
-        this.distributions = Collections.unmodifiableList(this.distributions);
+        //this.distributions = Collections.unmodifiableList(this.distributions);
     }
 
     /**

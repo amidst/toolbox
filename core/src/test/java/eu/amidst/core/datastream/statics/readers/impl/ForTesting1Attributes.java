@@ -34,7 +34,7 @@ public class ForTesting1Attributes extends Attributes {
     }
 
     @Override
-    public List<Attribute> getList(){
+    public List<Attribute> getFullListOfAttributes(){
         return attributesTesting1;
     }
 

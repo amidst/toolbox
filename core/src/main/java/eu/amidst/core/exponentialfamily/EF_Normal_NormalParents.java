@@ -16,6 +16,7 @@ import eu.amidst.core.variables.Variable;
 
 import org.apache.commons.math.linear.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -384,7 +385,10 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return conditionalDistributions;
     }
 
-    public static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
+    public static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters, Serializable {
+
+        /** Represents the serial version ID for serializing the object. */
+        private static final long serialVersionUID = -3436599636425587512L;
 
         int size;
         int nOfParents;

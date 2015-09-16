@@ -12,6 +12,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -136,7 +137,10 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
         @Override public void accept(T value) { this.value = value; }
     }
 
-    static class DataSequenceImpl extends DataOnMemoryListContainer<DynamicDataInstance> implements DataSequence{
+    static class DataSequenceImpl extends DataOnMemoryListContainer<DynamicDataInstance> implements DataSequence, Serializable{
+
+        /** Represents the serial version ID for serializing the object. */
+        private static final long serialVersionUID = 4107783324901370839L;
 
         int seqId=0;
 

@@ -31,7 +31,7 @@ public class DataOnMemoryFromFile implements DataOnMemory<DataInstance> {
      * In this case, it is possible to store all the data instances in an Array. Otherwise, it might be better to store all
      * the data instances in an ArrayList and avoid therefore the extra pass in the constructor.</p>
      */
-    private DataInstanceImpl[] dataInstances;
+    private DataInstanceFromDataRow[] dataInstances;
 
     /**
      * Creates a new DataOnMemoryFromFile from a given {@link DataFileReader} object.
@@ -40,16 +40,16 @@ public class DataOnMemoryFromFile implements DataOnMemory<DataInstance> {
     public DataOnMemoryFromFile(DataFileReader reader) {
         this.reader = reader;
 
-        List<DataInstanceImpl> dataInstancesList = new ArrayList<>();
+        List<DataInstanceFromDataRow> dataInstancesList = new ArrayList<>();
 
         for (DataRow row: reader){
-            dataInstancesList.add(new DataInstanceImpl(row));
+            dataInstancesList.add(new DataInstanceFromDataRow(row));
         }
         reader.restart();
 
-        dataInstances = new DataInstanceImpl[dataInstancesList.size()];
+        dataInstances = new DataInstanceFromDataRow[dataInstancesList.size()];
         int counter = 0;
-        for (DataInstanceImpl inst : dataInstancesList) {
+        for (DataInstanceFromDataRow inst : dataInstancesList) {
             dataInstances[counter] = inst;
             counter++;
         }

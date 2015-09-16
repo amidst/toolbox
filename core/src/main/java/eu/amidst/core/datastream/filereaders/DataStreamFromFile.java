@@ -43,7 +43,7 @@ public class DataStreamFromFile implements DataStream<DataInstance> {
      */
     @Override
     public Stream<DataInstance> stream() {
-        return this.reader.stream().map( dataRow -> new DataInstanceImpl(dataRow));
+        return this.reader.stream().map( dataRow -> new DataInstanceFromDataRow(dataRow));
     }
 
     /**

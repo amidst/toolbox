@@ -148,6 +148,15 @@ public final class Attribute implements Serializable {
     }
 
     /**
+     * Returns an string representation of the associated value of the attribute.
+     * @param value, a valid value of the state space of the attribute.
+     * @return a string object representing the value.
+     */
+    public String stringValue(double value){
+        return this.getStateSpaceType().stringValue(value);
+    }
+
+    /**
      * Returns the hashCode of this Attribute.
      * @return the hashCode of this Attribute.
      */
@@ -156,5 +165,16 @@ public final class Attribute implements Serializable {
         int result = name.hashCode();
         result = 31 * result + stateSpaceType.hashCode();
         return result;
+    }
+
+    /**
+     * Returns the number of states of this attribute, in case it has a finite state space. Otherwise it returns -1.
+     * @return the number of states of this attribute.
+     */
+    public int getNumberOfStates(){
+        if (this.getStateSpaceType().getStateSpaceTypeEnum()==StateSpaceTypeEnum.FINITE_SET)
+            return ((FiniteStateSpace)this.getStateSpaceType()).getNumberOfStates();
+        else
+            return -1;
     }
 }
