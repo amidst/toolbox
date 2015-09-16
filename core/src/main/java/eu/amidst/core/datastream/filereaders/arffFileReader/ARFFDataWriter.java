@@ -95,29 +95,29 @@ public class ARFFDataWriter implements DataFileWriter {
 
         //MEJORAR PONER CUANDO REAL
         for(int i=0; i<atts.getNumberOfAttributes()-1;i++) {
-            if (Utils.isMissingValue(assignment.getValue(atts.getList().get(i)))){
+            if (Utils.isMissingValue(assignment.getValue(atts.getFullListOfAttributes().get(i)))){
                 builder.append("?,");
-            }else if (atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
-                FiniteStateSpace stateSpace = atts.getList().get(i).getStateSpaceType();
-                String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getList().get(i)));
+            }else if (atts.getFullListOfAttributes().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
+                FiniteStateSpace stateSpace = atts.getFullListOfAttributes().get(i).getStateSpaceType();
+                String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getFullListOfAttributes().get(i)));
                 builder.append(nameState + ",");
-            }else if (atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.REAL) {
-                builder.append(assignment.getValue(atts.getList().get(i))+ ",");
+            }else if (atts.getFullListOfAttributes().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.REAL) {
+                builder.append(assignment.getValue(atts.getFullListOfAttributes().get(i))+ ",");
             }else{
-                throw new IllegalArgumentException("Illegal State Space Type: " + atts.getList().get(i).getStateSpaceType().getStateSpaceTypeEnum());
+                throw new IllegalArgumentException("Illegal State Space Type: " + atts.getFullListOfAttributes().get(i).getStateSpaceType().getStateSpaceTypeEnum());
             }
         }
 
-        if (Utils.isMissingValue(assignment.getValue(atts.getList().get(atts.getNumberOfAttributes()-1)))) {
+        if (Utils.isMissingValue(assignment.getValue(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1)))) {
             builder.append("?,");
-        }else if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.FINITE_SET) {
-            FiniteStateSpace stateSpace = atts.getList().get(atts.getNumberOfAttributes() - 1).getStateSpaceType();
-            String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getList().get(atts.getNumberOfAttributes() - 1)));
+        }else if(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.FINITE_SET) {
+            FiniteStateSpace stateSpace = atts.getFullListOfAttributes().get(atts.getNumberOfAttributes() - 1).getStateSpaceType();
+            String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes() - 1)));
             builder.append(nameState);
-        }else if(atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.REAL) {
-            builder.append(assignment.getValue(atts.getList().get(atts.getNumberOfAttributes() - 1)));
+        }else if(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.REAL) {
+            builder.append(assignment.getValue(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes() - 1)));
         }else{
-            throw new IllegalArgumentException("Illegal State Space Type: " + atts.getList().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum());
+            throw new IllegalArgumentException("Illegal State Space Type: " + atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum());
         }
         return builder.toString();
     }

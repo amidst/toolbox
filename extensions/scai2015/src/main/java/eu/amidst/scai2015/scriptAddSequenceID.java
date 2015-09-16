@@ -11,7 +11,7 @@ package eu.amidst.scai2015;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
 import eu.amidst.core.datastream.filereaders.DataRow;
 import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
@@ -43,7 +43,7 @@ public class scriptAddSequenceID {
         List<Attribute> newAttsList= new ArrayList<>();
         int cont=0;
         newAttsList.add(new Attribute (cont++, "SEQUENCE_ID", new RealStateSpace()));
-        for(Attribute att: reader.getAttributes().getList()){
+        for(Attribute att: reader.getAttributes().getFullListOfAttributes()){
             newAttsList.add(new Attribute(cont++,att.getName(), att.getStateSpaceType()));
         }
 
@@ -81,7 +81,7 @@ public class scriptAddSequenceID {
 
             dataRow.setValue(newAtts.getAttributeByName("SEQUENCE_ID"), auxValues[1]);
 
-            DataInstance assignment = new DataInstanceImpl(dataRow);
+            DataInstance assignment = new DataInstanceFromDataRow(dataRow);
             try {
                 fw.write(ARFFDataWriter.dataInstanceToARFFString(newAtts, assignment) + "\n");
             } catch (IOException ex) {

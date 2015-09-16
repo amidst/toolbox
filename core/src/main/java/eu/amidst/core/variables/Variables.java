@@ -55,11 +55,11 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param atts a list of Attributes.
      */
     public Variables(Attributes atts) {
-        this.attributes= new Attributes(atts.getList());
+        this.attributes= new Attributes(atts.getFullListOfAttributes());
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
 
-        for (Attribute att : atts.getListExceptTimeAndSeq()) {
+        for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             VariableBuilder builder = new VariableBuilder(att);
             VariableImplementation var = new VariableImplementation(builder, allVariables.size());
             if (mapping.containsKey(var.getName())) {
@@ -79,7 +79,7 @@ public class Variables implements Iterable<Variable>, Serializable {
 
         this.allVariables = new ArrayList<>();
 
-        for (Attribute att : atts.getListExceptTimeAndSeq()) {
+        for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             Variable var;
             if (typeDists.containsKey(att)) {
                 var = this.newVariable(att, typeDists.get(att));
@@ -292,7 +292,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * Defines the list of Variables as an unmodifiable list.
      */
     public void block(){
-        this.allVariables = Collections.unmodifiableList(this.allVariables);
+        //this.allVariables = Collections.unmodifiableList(this.allVariables);
     }
 
     /**

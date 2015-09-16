@@ -55,6 +55,7 @@ public class GammaParameterType extends DistributionType {
         double beta = 1;
         gamma.getNaturalParameters().set(0, alpha - 1);
         gamma.getNaturalParameters().set(1, -beta);
+        gamma.fixNumericalInstability();
         gamma.updateMomentFromNaturalParameters();
         return gamma;
     }

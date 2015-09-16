@@ -15,13 +15,17 @@ import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This class defines a Plateu Structure.
  */
-public abstract class PlateuStructure {
+public abstract class PlateuStructure implements Serializable {
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
 
     /** Represents the list of {@link Node}s. */
     protected List<Node> parametersNode;
@@ -169,11 +173,11 @@ public abstract class PlateuStructure {
 
         for (int i = 0; i < nReplications && i<data.size(); i++) {
             final int slice = i;
-            this.plateuNodes.get(i).forEach(node -> node.setAssignment(data.get(slice)));
+            this.plateuNodes.get(i).forEach(node -> {node.setAssignment(data.get(slice)); node.setActive(true);});
         }
 
         for (int i = data.size(); i < nReplications; i++) {
-            this.plateuNodes.get(i).forEach(node -> node.setAssignment(null));
+            this.plateuNodes.get(i).forEach(node -> {node.setAssignment(null); node.setActive(false);});
         }
     }
 

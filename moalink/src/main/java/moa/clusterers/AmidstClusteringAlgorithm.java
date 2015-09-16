@@ -3,7 +3,7 @@ package moa.clusterers;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
@@ -191,7 +191,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
             batch_ = new DataOnMemoryListContainer(attributes_);
             windowCounter = 0;
         }
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(instance, attributes_));
+        DataInstance dataInstance = new DataInstanceFromDataRow(new DataRowWeka(instance, attributes_));
         windowCounter++;
         batch_.add(dataInstance);
     }

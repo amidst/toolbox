@@ -9,7 +9,7 @@
 package moa.classifiers.bayes;
 
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.datastream.filereaders.DataInstanceImpl;
+import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.InferenceAlgorithm;
@@ -228,7 +228,7 @@ public class amidstModels extends AbstractClassifier{// implements SemiSupervise
 
         nb_.initLearning();
 
-        List<Attribute> attributesExtendedList = new ArrayList<>(attributes_.getList());
+        List<Attribute> attributesExtendedList = new ArrayList<>(attributes_.getFullListOfAttributes());
         if(TIME_ID != null) {
             attributesExtendedList.add(TIME_ID);
             attributesExtendedList.add(SEQUENCE_ID);
@@ -309,7 +309,7 @@ public class amidstModels extends AbstractClassifier{// implements SemiSupervise
             firstInstanceForBatch = null;
         }
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst, this.attributes_));
+        DataInstance dataInstance = new DataInstanceFromDataRow(new DataRowWeka(inst, this.attributes_));
         if(count_ < windowSize_){
                 batch_.add(dataInstance);
                 count_++;
@@ -349,7 +349,7 @@ public class amidstModels extends AbstractClassifier{// implements SemiSupervise
             firstInstanceForBatch = null;
         }
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst, this.attributes_));
+        DataInstance dataInstance = new DataInstanceFromDataRow(new DataRowWeka(inst, this.attributes_));
         if(count_ < windowSize_ && (int)dataInstance.getValue(TIME_ID) == currentTimeID) {
                 batch_.add(dataInstance);
                 count_++;
@@ -453,7 +453,7 @@ public class amidstModels extends AbstractClassifier{// implements SemiSupervise
         InferenceAlgorithm vmp = new VMP();
         vmp.setModel(learntBN_);
 
-        DataInstance dataInstance = new DataInstanceImpl(new DataRowWeka(inst, this.attributes_));
+        DataInstance dataInstance = new DataInstanceFromDataRow(new DataRowWeka(inst, this.attributes_));
 
         double realValue = dataInstance.getValue(classVar_);
         dataInstance.setValue(classVar_, Utils.missingValue());

@@ -7,11 +7,11 @@
  */
 
 package eu.amidst.core.models;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,6 +36,9 @@ public class DAG implements Serializable {
     /** Represents the list of parents for each variable. */
     private List<ParentSet> parents;
 
+    /** Represents the name of the DAG **/
+    private String name;
+
     /**
      * Creates a new DAG from a set of variables.
      * @param variables the set of variables of type {@link Variables}.
@@ -47,8 +50,24 @@ public class DAG implements Serializable {
         for (Variable var : variables) {
             parents.add(var.getVarID(), new ParentSetImpl(var));
         }
-        this.parents = Collections.unmodifiableList(parents);
+        //this.parents = Collections.unmodifiableList(parents);
         this.variables.block();
+    }
+
+    /**
+     * Returns the name of the DAG
+     * @return a String object
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the DAG
+     * @param name, a String object
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -278,7 +297,7 @@ public class DAG implements Serializable {
          * Defines the set of parent as unmodifiable, i.e., no add or remove operations are allowed.
          */
         public void blockParents() {
-            vars = Collections.unmodifiableList(vars);
+            //vars = Collections.unmodifiableList(vars);
         }
 
         /**

@@ -151,6 +151,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         this.getNaturalParameters().set(0,mean/(var));
         this.getNaturalParameters().set(1,-1/(2*var));
+        this.fixNumericalInstability();
 
         this.updateMomentFromNaturalParameters();
 

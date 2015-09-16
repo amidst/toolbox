@@ -589,7 +589,7 @@ public class VMPNormalTest extends TestCase {
 
         VMP vmp = new VMP();
         vmp.setTestELBO(true);
-        vmp.setMaxIter(100);
+        vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
         vmp.setModel(bn);
 
@@ -639,12 +639,12 @@ public class VMPNormalTest extends TestCase {
         System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
         System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
 
-        Assert.assertEquals(postA.getMean(),meanQA,0.01);
-        Assert.assertEquals(postA.getSd(),sdQA,0.01);
-        Assert.assertEquals(postB.getMean(),meanQB,0.01);
-        Assert.assertEquals(postB.getSd(),sdQB,0.01);
-        Assert.assertEquals(postC.getMean(),meanQC,0.01);
-        Assert.assertEquals(postC.getSd(),sdQC,0.01);
+        Assert.assertEquals(postA.getMean(),meanQA,0.02);
+        Assert.assertEquals(postA.getSd(),sdQA,0.02);
+        Assert.assertEquals(postB.getMean(),meanQB,0.02);
+        Assert.assertEquals(postB.getSd(),sdQB,0.02);
+        Assert.assertEquals(postC.getMean(),meanQC,0.02);
+        Assert.assertEquals(postC.getSd(),sdQC,0.02);
     }
 
 

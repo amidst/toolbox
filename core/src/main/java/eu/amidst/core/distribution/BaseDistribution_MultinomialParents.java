@@ -15,8 +15,8 @@ import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -77,9 +77,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         this.parents.addAll(this.nonMultinomialParents);
 
         //Make them unmodifiable
-        this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
-        this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
-        this.parents = Collections.unmodifiableList(this.parents);
+        //this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
+        //this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
+        //this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**
@@ -119,9 +119,9 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         }
 
         //Make them unmodifiable
-        this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
-        this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
-        this.parents = Collections.unmodifiableList(this.parents);
+        //this.multinomialParents = Collections.unmodifiableList(this.multinomialParents);
+        //this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
+        //this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**

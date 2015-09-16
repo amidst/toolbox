@@ -11,7 +11,7 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.Random;
 
@@ -57,7 +57,7 @@ public class Multinomial_LogisticParents extends ConditionalDistribution {
             }
         }
         //Make them unmodifiable
-        this.parents = Collections.unmodifiableList(this.parents);
+        //this.parents = Collections.unmodifiableList(this.parents);
     }
 
     /**

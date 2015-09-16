@@ -48,6 +48,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         for (int i = 0; i < nOfStates; i++) {
             this.naturalParameters.set(i,1.0);
         }
+        this.fixNumericalInstability();
         updateMomentFromNaturalParameters();
     }
 
@@ -69,7 +70,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         for (int i = 0; i < nOfStates; i++) {
             this.naturalParameters.set(i,scale - 1);
         }
-
+        fixNumericalInstability();
         updateMomentFromNaturalParameters();
     }
 
@@ -139,6 +140,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         for (int i = 0; i < this.nOfStates; i++) {
             this.getNaturalParameters().set(i, 5*random.nextDouble() + 1 + 1e-5);
         }
+        fixNumericalInstability();
         this.updateMomentFromNaturalParameters();
 
         return this;

@@ -11,15 +11,17 @@ package eu.amidst.core.utils;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.io.DataStreamWriter;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DataStreamWriter;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
+import eu.amidst.core.variables.Variable;
+
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -159,7 +161,10 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
             @Override
             public Stream<DataInstance> stream() {
-                class TemporalDataInstance implements DataInstance{
+                class TemporalDataInstance implements DataInstance, Serializable {
+
+                    /** Represents the serial version ID for serializing the object. */
+                    private static final long serialVersionUID = -3436599636425587512L;
 
                     Assignment assignment;
                     TemporalDataInstance(Assignment assignment1){

@@ -150,9 +150,9 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
 
         Iterator<DataOnMemory<DataInstance>> iterator = this.data.iterableOverBatches(this.SVBEngine.getWindowsSize()).iterator();
 
-        CompoundVector posterior =  this.svbEngines[0].getNaturalParameterPrior();
         logLikelihood = 0;
         while(iterator.hasNext()){
+            CompoundVector posterior =  this.svbEngines[0].getNaturalParameterPrior();
 
             //Load Data
             List<DataOnMemory<DataInstance>> dataBatches = new ArrayList();

@@ -59,4 +59,11 @@ public class RealStateSpace extends StateSpaceType {
         return maxInterval;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String stringValue(double value) {
+        return value+"";
+    }
 }

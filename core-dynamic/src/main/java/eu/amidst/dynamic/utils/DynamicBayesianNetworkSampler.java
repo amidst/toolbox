@@ -23,6 +23,7 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -183,7 +184,7 @@ public class DynamicBayesianNetworkSampler {
         }
     }
 
-    static class DynamicDataInstanceImpl implements DynamicDataInstance {
+    static class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
 
         DynamicBayesianNetwork dbn;
         private HashMapAssignment dataPresent;

@@ -11,6 +11,8 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +60,8 @@ public class BNConverterToAMIDST {
         Variables variables = new Variables(new Attributes(attributes));
         DAG dag = new DAG(variables);
 
+        dag.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
+
         Variables amidstVariables = variables;
 
         for(int i=0;i<numNodes;i++){
@@ -94,6 +98,7 @@ public class BNConverterToAMIDST {
             }
         }
         this.amidstBN = new BayesianNetwork(dag);
+        amidstBN.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
     }
 
     /**

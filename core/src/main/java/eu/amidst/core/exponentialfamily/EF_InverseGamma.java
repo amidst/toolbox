@@ -93,7 +93,7 @@ public class EF_InverseGamma extends EF_UnivariateDistribution {
 
         this.getNaturalParameters().set(0, -alpha - 1);
         this.getNaturalParameters().set(1, -beta);
-
+        this.fixNumericalInstability();
         this.updateMomentFromNaturalParameters();
 
         return this;

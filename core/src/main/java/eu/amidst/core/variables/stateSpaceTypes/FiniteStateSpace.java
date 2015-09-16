@@ -103,4 +103,12 @@ public class FiniteStateSpace extends StateSpaceType implements Iterable<String>
     public List<String> getStatesNames(){
         return this.statesNames;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String stringValue(double value) {
+        return statesNames.get((int)value);
+    }
 }

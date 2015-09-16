@@ -8,14 +8,27 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.variables.Variable;
+
+import java.util.List;
 
 /**
  * This interface extends {@link ParameterLearningAlgorithm} and defines the Bayesian parameter learning algorithm.
  */
 public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlgorithm {
+
+
+    /**
+     * Compute the posterior over a set of latent variables for a given set of data instances
+     * @param batch, a batch of data instances.
+     * @param latentVariables, a list of Variable objects.
+     * @return A list of {@link DataPosterior} objects.
+     */
+    List<DataPosterior> computePosteriorOverLatentVariables(DataOnMemory<DataInstance> batch, List<Variable> latentVariables);
 
     /**
      * Returns the parameter posterior.

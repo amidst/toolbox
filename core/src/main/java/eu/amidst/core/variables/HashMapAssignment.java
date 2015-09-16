@@ -9,6 +9,8 @@
 package eu.amidst.core.variables;
 
 import eu.amidst.core.utils.Utils;
+
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class implements the interface {@link Assignment} and handles the assignments using a HashMap.
  */
-public class HashMapAssignment implements Assignment {
+public class HashMapAssignment implements Assignment, Serializable {
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = -3436599636425587512L;
 
     /** Represents an assignment as a {@link java.util.Map} object that maps variables to values. */
     private Map<Variable,Double> assignment;

@@ -60,7 +60,7 @@ public interface Variable {
     }
 
     /**
-     * Returns the number of states of this Variable.
+     * Returns the number of states of this Variable, in case it has a finite state space. Otherwise it returns -1.
      * @return the number of states of this Variable.
      */
     int getNumberOfStates();

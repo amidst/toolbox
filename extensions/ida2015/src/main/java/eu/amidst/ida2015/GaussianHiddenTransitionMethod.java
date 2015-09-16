@@ -61,6 +61,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             prior.getNaturalParameters().set(0, precisionPrior*meanPrior);
             prior.getNaturalParameters().set(1, -0.5*precisionPrior);
+            prior.fixNumericalInstability();
             prior.updateMomentFromNaturalParameters();
 
         }
@@ -81,6 +82,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             gamma.getNaturalParameters().set(0, alpha - 1);
             gamma.getNaturalParameters().set(1, -beta);
+            gamma.fixNumericalInstability();
             gamma.updateMomentFromNaturalParameters();
 
             Variable meanVar = normal.getMeanParameterVariable();
@@ -91,6 +93,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             meanDist.getNaturalParameters().set(0, mean / (var));
             meanDist.getNaturalParameters().set(1, -1 / (2 * var));
+            meanDist.fixNumericalInstability();
             meanDist.updateMomentFromNaturalParameters();
 
         }
@@ -120,7 +123,9 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             gamma.getNaturalParameters().set(0, alpha - 1);
             gamma.getNaturalParameters().set(1, -beta);
+            gamma.fixNumericalInstability();
             gamma.updateMomentFromNaturalParameters();
+
 
             Variable meanVar = normal.getMeanParameterVariable();
             EF_Normal meanDist = ((EF_BaseDistribution_MultinomialParents<EF_Normal>) bayesianNetwork.getDistribution(meanVar)).getBaseEFDistribution(0);
@@ -129,6 +134,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             meanDist.getNaturalParameters().set(0, mean / (variance));
             meanDist.getNaturalParameters().set(1, -1 / (2 * variance));
+            gamma.fixNumericalInstability();
             meanDist.updateMomentFromNaturalParameters();
         }
 

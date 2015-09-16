@@ -27,7 +27,7 @@ public class ForTesting4Attributes extends Attributes {
     }
 
     @Override
-    public List<Attribute> getList(){
+    public List<Attribute> getFullListOfAttributes(){
         return attributesTesting4;
     }
 

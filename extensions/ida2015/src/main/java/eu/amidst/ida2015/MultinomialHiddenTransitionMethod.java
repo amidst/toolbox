@@ -47,6 +47,7 @@ public class MultinomialHiddenTransitionMethod implements TransitionMethod{
                 dirichlet.getNaturalParameters().set(i,1);
             }
 
+            dirichlet.fixNumericalInstability();
             dirichlet.updateMomentFromNaturalParameters();
 
             //

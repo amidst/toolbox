@@ -18,12 +18,15 @@ import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by andresmasegosa on 13/4/15.
  */
-public class GaussianHiddenTransitionMethod implements TransitionMethod{
+public class GaussianHiddenTransitionMethod implements TransitionMethod, Serializable{
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
 
     List<Variable> localHiddenVars;
     double meanStart;
@@ -65,6 +68,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             prior.getNaturalParameters().set(0, precisionPrior*meanPrior);
             prior.getNaturalParameters().set(1, -0.5* precisionPrior);
+            prior.fixNumericalInstability();
             prior.updateMomentFromNaturalParameters();
 
         }
@@ -85,6 +89,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             gamma.getNaturalParameters().set(0, alpha - 1);
             gamma.getNaturalParameters().set(1, -beta);
+            gamma.fixNumericalInstability();
             gamma.updateMomentFromNaturalParameters();
 
             Variable meanVar = normal.getMeanParameterVariable();
@@ -95,6 +100,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             meanDist.getNaturalParameters().set(0, mean / (var));
             meanDist.getNaturalParameters().set(1, -1 / (2 * var));
+            meanDist.fixNumericalInstability();
             meanDist.updateMomentFromNaturalParameters();
 
         }
@@ -124,6 +130,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             gamma.getNaturalParameters().set(0, alpha - 1);
             gamma.getNaturalParameters().set(1, -beta);
+            gamma.fixNumericalInstability();
             gamma.updateMomentFromNaturalParameters();
 
             Variable meanVar = normal.getMeanParameterVariable();
@@ -133,6 +140,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             meanDist.getNaturalParameters().set(0, mean / (variance));
             meanDist.getNaturalParameters().set(1, -1 / (2 * variance));
+            meanDist.fixNumericalInstability();
             meanDist.updateMomentFromNaturalParameters();
         }
 

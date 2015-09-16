@@ -14,10 +14,14 @@ import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
 
+import java.io.Serializable;
+
 /**
  * Created by andresmasegosa on 13/4/15.
  */
-public class Fading implements TransitionMethod {
+public class Fading implements TransitionMethod, Serializable {
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
 
     double fadingFactor = 1.0;
 
