@@ -64,7 +64,7 @@ public class SVBFading implements BayesianParameterLearningAlgorithm, FadingLear
     public List<DataPosterior> computePosteriorOverLatentVariables(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-    
+
     @Override
     public void initLearning() {
         svb.initLearning();

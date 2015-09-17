@@ -12,29 +12,66 @@
 package eu.amidst.core.learning.parametric.bayesian;
 
 
-
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 16/9/15.
+ * This class stores the posterior probabilities over a set of latent variables for an
+ * item with a given id. It can be used to store the result of an inference/learning operation.
  */
 public class DataPosterior implements Serializable {
-    final int id;
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
+
+    /** Represents the id of item */
+    final long id;
+
+    /** Represent the list of posterior probabilities */
     final List<UnivariateDistribution> posteriors;
 
-    public DataPosterior(int id_, List<UnivariateDistribution> posteriors_){
+    /** Represent the list of latent variables*/
+    final List<Variable> latentVariables;
+
+    /**
+     * Creates a new object using a given id_ and a list of univariate posteriors.
+     * @param id_, a unique id.
+     * @param posteriors_, a list of {@link UnivariateDistribution} distributions.
+     */
+    public DataPosterior(long id_, List<UnivariateDistribution> posteriors_){
         this.id=id_;
         this.posteriors = posteriors_;
+        latentVariables = new ArrayList<>();
+        for (UnivariateDistribution univariateDistribution : posteriors_) {
+            latentVariables.add(univariateDistribution.getVariable());
+        }
     }
-    public int getId() {
+
+    /**
+     * Returns the id of the item
+     * @return a long value
+     */
+    public long getId() {
         return id;
     }
 
+    /**
+     * Returns the list of posterior probabilities distributions.
+     * @return, a list of {@link UnivariateDistribution} objects
+     */
     public List<UnivariateDistribution> getPosteriors() {
         return posteriors;
     }
 
+    /**
+     * Returns the list of latent variables.
+     * @return, a list of {@link Variable} objects
+     */
+    public List<Variable> getLatentVariables() {
+        return latentVariables;
+    }
 }
