@@ -18,6 +18,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -180,6 +181,14 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
             }
         }
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DataPosterior> computePosteriorOverLatentVariables(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
+        throw new UnsupportedOperationException("Method not implemented");
     }
 
     /**
