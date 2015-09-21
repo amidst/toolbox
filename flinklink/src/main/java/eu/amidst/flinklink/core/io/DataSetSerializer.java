@@ -21,7 +21,7 @@ import org.apache.flink.core.fs.FileSystem;
 /**
  * Created by andresmasegosa on 16/9/15.
  */
-public class DataSetWriter {
+public class DataSetSerializer {
 
     public static <T> void serializeDataSet(DataSet<T> dataSet, String pathFile){
         dataSet.write(new SerializedOutputFormat(), pathFile, FileSystem.WriteMode.OVERWRITE);
