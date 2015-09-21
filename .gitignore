@@ -31,7 +31,7 @@ hgapi82_amidst-64.jar
 # pdf noise
 doc/REproccess.pdf
 
-#*.iml
+*.iml
 #*/*.iml
 #papers/*/*.iml
 target/maven-archiver*
