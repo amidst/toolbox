@@ -8,42 +8,65 @@
 
 package eu.amidst.core.inference;
 
-//import cern.jet.random.engine.RandomGenerator;
-
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
-
 import eu.amidst.core.utils.Utils;
-
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+
 /**
- * This class implements the interface {@link InferenceAlgorithm} and defines the MAP Inference algorithm.
+ * This class implements the interface {@link PointEstimator} and defines the MAP Inference algorithm.
  */
-public class MAPInference implements InferenceAlgorithm {
+public class MAPInference implements PointEstimator {
 
     private BayesianNetwork model;
     private List<Variable> causalOrder;
 
     private int sampleSize;
     private int seed = 0;
-    //TODO The sampling distributions must be restricted to the evidence
+
     private Assignment evidence;
-    private Assignment MAPestimate;
+
     private boolean parallelMode = true;
+
+
+    private List<Variable> MAPvariables;
+    private Assignment MAPestimate;
+    private double MAPestimateLogProbability;
+
+
+
+    private class WeightedAssignment {
+        private Assignment assignment;
+        private double weight;
+
+        public WeightedAssignment(Assignment assignment_, double weight_){
+            this.assignment = assignment_;
+            this.weight = weight_;
+        }
+
+        public String toString() {
+            StringBuilder str = new StringBuilder();
+            str.append("[ ");
+
+            str.append(this.assignment.outputString());
+            str.append("Weight = " + weight + " ]");
+            return str.toString();
+        }
+    }
+
 
     /**
      * {@inheritDoc}
@@ -52,6 +75,7 @@ public class MAPInference implements InferenceAlgorithm {
     public void setParallelMode(boolean parallelMode_) {
         this.parallelMode = parallelMode_;
     }
+
 
     /**
      * {@inheritDoc}
@@ -74,32 +98,134 @@ public class MAPInference implements InferenceAlgorithm {
      * {@inheritDoc}
      */
     @Override
+    public void setEvidence(Assignment evidence_) {
+        this.evidence = evidence_;
+/*
+        // MODIFY THE CAUSAL ORDER, VARIABLES WITH EVIDENCE FIRST
+        List<Variable> newCausalOrder = new ArrayList<>();
+
+        for(Variable variable : causalOrder) {
+            if ( variable.isMultinomial() && !Double.isNaN(evidence.getValue(variable)) ) {
+                newCausalOrder.add(variable);
+            }
+        }
+
+        for(Variable variable : causalOrder) {
+            if ( variable.isMultinomial() && Double.isNaN(evidence.getValue(variable)) ) {
+                newCausalOrder.add(variable);
+            }
+        }
+
+        for(Variable variable : causalOrder) {
+            if ( variable.isNormal() && !Double.isNaN(evidence.getValue(variable)) ) {
+                newCausalOrder.add(variable);
+            }
+        }
+
+        for(Variable variable : causalOrder) {
+            if ( variable.isNormal() && Double.isNaN(evidence.getValue(variable)) ) {
+                newCausalOrder.add(variable);
+            }
+        }
+        causalOrder = newCausalOrder;*/
+    }
+
+    public void setSampleSize(int sampleSize) {
+        this.sampleSize = sampleSize;
+    }
+
+    public void setMAPVariables(List<Variable> varsOfInterest1) {
+        this.MAPvariables = varsOfInterest1;
+    }
+
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public BayesianNetwork getOriginalModel() {
         return this.model;
     }
 
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setEvidence(Assignment evidence_) {
-        this.evidence = evidence_;
+    public Assignment getEstimate() {
+
+        /*if(MAPvariables!=null) {
+            Assignment auxMAPEstimate = new HashMapAssignment(MAPestimate);
+
+            for(Variable var : this.causalOrder) {
+                if( !MAPvariables.contains(var) ) {
+                    auxMAPEstimate.setValue(var,Double.NaN);
+                }
+            }
+            return auxMAPEstimate;
+        }
+        else {*/
+            return MAPestimate;
+        //}
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public double getLogProbabilityOfEvidence() {
-        throw new UnsupportedOperationException();
+    public double getLogProbabilityOfEstimate() {
+        return MAPestimateLogProbability;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public <E extends UnivariateDistribution> E getPosterior(Variable var) {
-        throw new UnsupportedOperationException();
+    /*    private class AssignmentWithProbability {
+        private HashMapAssignment assignment;
+        private double probability;
+
+        public AssignmentWithProbability(HashMapAssignment assignment_, double weight_){
+            this.assignment = assignment_;
+            this.probability = weight_;
+        }
+
+        public String toString() {
+            StringBuilder str = new StringBuilder();
+            str.append("[ ");
+
+            for (Map.Entry<Variable, Double> entry : this.assignment.entrySet()) {
+                str.append(entry.getKey().getName() + " = " + entry.getValue());
+                str.append(", ");
+            }
+            str.append("Probability = " + probability + " ]");
+            return str.toString();
+        }
+    }*/
+
+
+
+    private double getProbabilityOf(Assignment as1) {
+        return Math.exp(this.model.getLogProbabiltyOf(as1));
+    }
+
+
+
+    private String getMAPVariablesFromAssignment(Assignment assignment) {
+        if (this.MAPvariables!=null) {
+            Assignment MAPVarsValues = new HashMapAssignment(MAPvariables.size());
+            for(Variable var : MAPvariables) {
+                MAPVarsValues.setValue(var,assignment.getValue(var));
+            }
+            return MAPVarsValues.outputString();
+        }
+        else {
+            return assignment.outputString();
+        }
+    }
+
+    private Assignment fullAssignmentToMAPassignment(Assignment fullAssignment) {
+        Assignment MAPassignment = new HashMapAssignment(MAPvariables.size());
+        MAPvariables.stream().forEach(MAPvar -> MAPassignment.setValue(MAPvar, fullAssignment.getValue(MAPvar)));
+        return MAPassignment;
     }
 
     /**
@@ -107,10 +233,13 @@ public class MAPInference implements InferenceAlgorithm {
      */
     @Override
     public void runInference() {
-        this.runInference(1);
+        this.runInference(2); // Uses Hill climbing with local search, by default
     }
 
-
+    /**
+     * Runs inference with an specific method.
+     * @param inferenceAlgorithm an {@code int} that represents the search algorithm to use (-1: Sampling;  0: Simulated annealing, local; 1: Simulated annealing, global; 2: Hill climbing, local (default); 3: Hill climbing, global)
+     */
     public void runInference(int inferenceAlgorithm) {
 
         ImportanceSampling ISaux = new ImportanceSampling();
@@ -121,167 +250,438 @@ public class MAPInference implements InferenceAlgorithm {
         ISaux.setEvidence(this.evidence);
 
         Random random = new Random();
-        //random.setSeed(this.seed);
+        random.setSeed(this.seed);
         ISaux.setSeed(random.nextInt());
         ISaux.runInference();
 
         Stream<Assignment> sample = ISaux.getSamples();
+        WeightedAssignment weightedAssignment;
+
+        /*
+        if(this.MAPvariables==null) {
+            // MPE: MAP WITH ALL NON-OBSERVED VARIABLES
+            MAPvariables=new HashSet<Variable>(this.model.getStaticVariables().getListOfVariables());
+        }*/
 
         switch(inferenceAlgorithm) {
-            case -1:    // NO OPTIMIZATION ALGORITHM, JUST PICKING THE SAMPLE WITH HIGHEST PROBABILITY
-                MAPestimate = sample.reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+            case -1:
+
+                //Map<String, Double> groupedSample = sample.collect(Collectors.groupingBy(this::getMAPVariablesFromAssignment, HashMap::new, Collectors.averagingDouble(this::getProbabilityOf)));
+                //groupedSample.forEach((smp,values) -> System.out.println(smp + Double.toString(values)));
+
+                ISaux.runInference();
+                sample = ISaux.getSamples();
+
+
+
+                Map<Assignment, List<Assignment>> groupedSamples =
+                        sample.collect(Collectors.groupingBy(this::getMAPVariablesFromAssignment))
+                                .values().stream()
+                                .collect(Collectors.toMap(lst -> lst.get(0), lst->lst));
+
+                Map<Assignment, Double> newMap = new HashMap<>();
+
+                for(Map.Entry<Assignment, List<Assignment>> entry : groupedSamples.entrySet()) {
+                    newMap.put(fullAssignmentToMAPassignment(entry.getKey()), entry.getValue().stream().mapToDouble(this::getProbabilityOf).average().getAsDouble());
+                }
+
+                double normalizationFactor = newMap.values().stream().mapToDouble(a->a).sum();
+                //System.out.println(normalizationFactor);
+
+                //groupedSample.forEach((smp,values) -> System.out.println(smp + Double.toString(values)));
+
+                Map.Entry<Assignment, Double> MAPentry = newMap.entrySet().stream().reduce((e1, e2) -> (e1.getValue() > e2.getValue() ? e1 : e2)).get();
+
+                MAPestimate = MAPentry.getKey();
+                MAPestimateLogProbability = Math.log(MAPentry.getValue()/normalizationFactor);
                 break;
-            case -2:   // DETERMINISTIC, MAY BE VERY SLOW ON BIG NETWORKS
-                MAPestimate = this.sequentialSearch();
+
+
+
+//            case -1:    // NO OPTIMIZATION ALGORITHM, JUST PICKING THE SAMPLE WITH HIGHEST PROBABILITY
+//                MAPestimate = sample.reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+//                break;
+//            case -2:   // DETERMINISTIC, MAY BE VERY SLOW ON BIG NETWORKS
+//                MAPestimate = this.sequentialSearch();
+//                break;
+
+
+            case 0:     // "SIMULATED ANNEALING", MOVING SOME VARIABLES AT EACH ITERATION
+                //MAPestimate = sample.map(this::simulatedAnnealingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+                //weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                //MAPestimate = weightedAssignment.assignment;
+                MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
+                MAPestimateLogProbability = Math.log(weightedAssignment.weight);
                 break;
-            case 0:     // ORIGINAL SIMULATED ANNEALING
-                MAPestimate = sample.map(this::simulatedAnnealing).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+
+            case 1:
+                // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
+                //MAPestimate = sample.map(this::simulatedAnnealingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+                //weightedAssignment = sample.map(this::simulatedAnnealingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                //MAPestimate = weightedAssignment.assignment;
+                MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
+                MAPestimateLogProbability = Math.log(weightedAssignment.weight);
                 break;
-            default:    // IMPROVED SIMULATED ANNEALING
-                MAPestimate = sample.map(this::improvedSimulatedAnnealing2).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+
+            case 3:     // HILL CLIMBING, MOVING ALL VARIABLES AT EACH ITERATION
+                //MAPestimate = sample.map(this::hillClimbingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+                //weightedAssignment = sample.map(this::hillClimbingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                //MAPestimate = weightedAssignment.assignment;
+                MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
+                MAPestimateLogProbability = Math.log(weightedAssignment.weight);
                 break;
+
+            case 2:     // HILL CLIMBING, MOVING SOME VARIABLES AT EACH ITERATION
+            default:
+                //MAPestimate = sample.map(this::hillClimbingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
+                //weightedAssignment = sample.map(this::hillClimbingOneVar).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                //MAPestimate = weightedAssignment.assignment;
+                MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
+                MAPestimateLogProbability = Math.log(weightedAssignment.weight);
+                break;
+
         }
     }
 
-    public void setSampleSize(int sampleSize) {
-        this.sampleSize = sampleSize;
-    }
+    /*
+    private Assignment obtainValues(Assignment initialGuess, Assignment evidence, Assignment varsInterest, Random random) {
 
-    public Assignment getMAPestimate() {
-        return MAPestimate;
-    }
+    }*/
 
-    private void CLGmode(Assignment values, Variable currentVariable, Variable children) {
+    private Assignment obtainValues(Assignment initialGuess, Assignment evidence, Random random) {
 
-        if (!Double.isNaN(evidence.getValue(currentVariable))) {
-            return;
-        }
-
-        if (!Double.isNaN(values.getValue(currentVariable))) {
-            return;
-        }
-
-        if (currentVariable.isMultinomial()) {
-            return;
-        }
-
-        ParentSet parents = model.getDAG().getParentSet(currentVariable);
-
-        boolean allParentsAreDiscrete=true;
-        for( int j=0; j<parents.getNumberOfParents(); j++) {
-
-            Variable parent = parents.getParents().get(j);
-
-            if(parent.isNormal()) {
-                CLGmode(values, parent, currentVariable);
-                allParentsAreDiscrete=false;
-                UnivariateDistribution distParent = model.getConditionalDistribution(currentVariable).getUnivariateDistribution(values);
-
-                System.out.println(distParent.toString());
-            }
-        }
-    }
-
-    private Assignment improvedSimulatedAnnealing2(Assignment initialGuess) {
-        Assignment result = this.evidence;
-
-        double R=0.5; // Temperature
-        double eps=0.1;
-        double alpha=0.00008;
-
-        double currentProbability;
-        double nextProbability;
         int numberOfVariables = this.model.getNumberOfVars();
+        Assignment result = new HashMapAssignment(initialGuess);
+        List<Variable> contVarEvidence = new ArrayList<>();
 
         Variable selectedVariable;
-        double selectedVariableNewValue;
         ConditionalDistribution conDist;
+        double selectedVariableNewValue;
 
-        Random random = new Random();
-        while (R>eps) {
-            result = initialGuess;
-            List<Variable> contVarEvidence = new ArrayList<>();
 
-            // ASSIGN FIRSTLY VALUES FOR DISCRETE VARIABLES
-            for( int i=0; i<numberOfVariables; i++ ) {
 
-                //selectedVariable = this.model.getVariables().getVariableById(i);
-                selectedVariable = causalOrder.get(i);
-                conDist = this.model.getConditionalDistributions().get(i);
+        // FIRST, ASSIGN VALUES FOR ALL DISCRETE VARIABLES
+        for( int i=0; i<numberOfVariables; i++ ) {
 
-                if (selectedVariable.isMultinomial() && Double.isNaN(this.evidence.getValue(selectedVariable))) {
+            //selectedVariable = this.model.getStaticVariables().getVariableById(i);
+            selectedVariable = causalOrder.get(i);
+            conDist = this.model.getConditionalDistributions().get(i);
 
-                    selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random); // ??? Is this correct?
-                    result.setValue(selectedVariable, selectedVariableNewValue);
-                }
+            if (selectedVariable.isMultinomial() && Double.isNaN(evidence.getValue(selectedVariable))) {
 
-                if ( selectedVariable.isNormal() && !Double.isNaN(this.evidence.getValue(selectedVariable))) {
-                    contVarEvidence.add(selectedVariable);
-                }
+                selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random);
+                result.setValue(selectedVariable, selectedVariableNewValue);
+                //System.out.println(selectedVariableNewValue);
+            }
+        }
+
+
+        //List<Variable> modelVariables = model.getVariables().getListOfVariables();
+
+        //System.out.println(initialGuess.outputString(modelVariables));
+        //System.out.println(result.outputString(modelVariables));
+
+
+
+
+
+
+        // NOW SET VALUES FOR GAUSSIANS, STARTING WITH CONT. ANCESTORS OF CONT. VARS IN EVIDENCE (WITH SIMULATION)
+
+        DAG graph = model.getDAG();
+
+        for( int i=0; i<numberOfVariables; i++ ) {
+
+            selectedVariable = causalOrder.get(i);
+
+            if (selectedVariable.isNormal() && !Double.isNaN(evidence.getValue(selectedVariable))) {
+
+                contVarEvidence.add(selectedVariable);
 
             }
+        }
 
-            // NOW THAT ALL DISCRETE VARIABLES HAVE VALUES, SET VALUES FOR GAUSSIANS, STARTING WITH ANCESTORS OF OBSERVED VARS
-            boolean ended=false;
-            int indexCV=0;
-            int indexMAX=contVarEvidence.size();
-            while(!ended) {
-                ended=true;
 
-                for(;indexCV<indexMAX; indexCV++) {
+        boolean ended=false;
+        int indexCheckedVars=0;
 
-                    indexMAX=contVarEvidence.size();
-                    Variable currentVariable = contVarEvidence.get(indexCV);
-                    ParentSet parents = model.getDAG().getParentSet(currentVariable);
+        while(!ended) {
+            ended=true;
 
-                    //System.out.println("Children: " + currentVariable.getName() + model.getConditionalDistribution(currentVariable).toString());
-                    for (Variable currentParent : parents.getParents()) {
-                        if (currentParent.isNormal()) {
-                            ended = false;
-                            contVarEvidence.add(currentParent);
-                            //double currentParentNewValue=0;
-                            //System.out.println("Parent: " + currentParent.getName() + model.getConditionalDistribution(currentParent).toString());
-                            //System.out.println(model.getConditionalDistribution(currentParent).getUnivariateDistribution(result).toString());
-                        }
+            for(;indexCheckedVars<contVarEvidence.size(); indexCheckedVars++) {
+
+                Variable currentVariable = contVarEvidence.get(indexCheckedVars);
+                ParentSet parents = graph.getParentSet(currentVariable);
+
+                for (Variable currentParent : parents.getParents()) {
+                    if (currentParent.isNormal() && !contVarEvidence.contains(currentParent)) {
+                        ended = false;
+                        contVarEvidence.add(currentParent);
+
                     }
                 }
             }
+        }
 
-            for(Variable current : contVarEvidence) {
-                System.out.println(current.getName());
-            }
+        Collections.reverse(contVarEvidence);
 
-            Collections.reverse(contVarEvidence);
+        //contVarEvidence.forEach(var -> System.out.println(var.getName() + " = " + evidence.getValue(var)));
 
-            for(Variable current : contVarEvidence) {
-                System.out.println(current.getName());
-                System.out.println(model.getConditionalDistribution(current).getUnivariateDistribution(result).toString());
+        for(Variable current : contVarEvidence) {
+
+            if(Double.isNaN(evidence.getValue(current))) {
                 UnivariateDistribution univariateDistribution = model.getConditionalDistribution(current).getUnivariateDistribution(result);
                 double newValue = univariateDistribution.sample(random);
-                result.setValue(current,newValue);
+                result.setValue(current, newValue);
+            }
+        }
+
+
+        //System.out.println(initialGuess.outputString(modelVariables));
+        //System.out.println(result.outputString(modelVariables));
+
+
+
+        // FINALLY, ASSIGN CONT. VARS. THAT ARE DESCENDANTS OF CONT. VARS. IN EVIDENCE (WITH THEIR MODE=MEAN VALUE)
+
+        for( int i=0; i<numberOfVariables; i++ ) {
+
+            selectedVariable = causalOrder.get(i);
+
+            if ( selectedVariable.isNormal() && Double.isNaN(result.getValue(selectedVariable))) {
+                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(selectedVariable).getUnivariateDistribution(result);
+                double newValue = univariateDistribution.getParameters()[0];
+                result.setValue(selectedVariable, newValue);
             }
 
-            for( int i=0; i<numberOfVariables; i++ ) {
+        }
 
-                //selectedVariable = this.model.getVariables().getVariableById(i);
-                selectedVariable = causalOrder.get(i);
-                conDist = this.model.getConditionalDistributions().get(i);
+        //System.out.println(initialGuess.outputString(modelVariables));
+        //System.out.println(result.outputString(modelVariables));
+
+        return result;
+    }
 
 
-                if ( selectedVariable.isNormal() && Double.isNaN(this.evidence.getValue(selectedVariable))) {
-                    UnivariateDistribution univariateDistribution = model.getConditionalDistribution(selectedVariable).getUnivariateDistribution(result);
-                    double newValue = univariateDistribution.sample(random);
-                    result.setValue(selectedVariable, newValue);
+
+    private Assignment obtainValuesRandomly(Assignment initialGuess, Assignment evidence, Random random) {
+
+        int numberOfVariables = this.model.getNumberOfVars();
+        Assignment result = new HashMapAssignment(initialGuess);
+        List<Variable> contVarEvidence = new ArrayList<>();
+
+        Variable selectedVariable;
+        ConditionalDistribution conDist;
+        double selectedVariableNewValue;
+
+
+
+        // FIRST, ASSIGN VALUES FOR ALL DISCRETE VARIABLES
+
+        evidence.getVariables().stream()
+                .filter(Variable::isMultinomial)
+                .forEach(va -> result.setValue(va, evidence.getValue(va)));
+
+        causalOrder.stream().filter(va -> va.isMultinomial() && Double.isNaN(evidence.getValue(va))).forEach(va -> result.setValue(va,random.nextInt(va.getNumberOfStates())));
+
+
+
+
+
+        // NOW SET VALUES FOR GAUSSIANS, STARTING WITH CONT. ANCESTORS OF CONT. VARS IN EVIDENCE (WITH SIMULATION)
+
+        DAG graph = model.getDAG();
+
+        for( int i=0; i<numberOfVariables; i++ ) {
+
+            selectedVariable = causalOrder.get(i);
+
+            if (selectedVariable.isNormal() && !Double.isNaN(evidence.getValue(selectedVariable))) {
+
+                contVarEvidence.add(selectedVariable);
+
+            }
+        }
+
+
+        boolean ended=false;
+        int indexCheckedVars=0;
+
+        while(!ended) {
+            ended=true;
+
+            for(;indexCheckedVars<contVarEvidence.size(); indexCheckedVars++) {
+
+                Variable currentVariable = contVarEvidence.get(indexCheckedVars);
+                ParentSet parents = graph.getParentSet(currentVariable);
+
+                for (Variable currentParent : parents.getParents()) {
+                    if (currentParent.isNormal() && !contVarEvidence.contains(currentParent)) {
+                        ended = false;
+                        contVarEvidence.add(currentParent);
+
+                    }
                 }
+            }
+        }
 
+        Collections.reverse(contVarEvidence);
+
+        //contVarEvidence.forEach(var -> System.out.println(var.getName() + " = " + evidence.getValue(var)));
+
+        for(Variable current : contVarEvidence) {
+
+            if(Double.isNaN(evidence.getValue(current))) {
+                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(current).getUnivariateDistribution(result);
+                //double newValue = univariateDistribution.sample(random);
+
+                double univDistMean = univariateDistribution.getParameters()[0];
+                double univDistStDev = univariateDistribution.getParameters()[1];
+
+
+                double newValue = univDistMean - 3*univDistStDev + random.nextDouble()*6*univDistStDev;
+                result.setValue(current, newValue);
+            }
+        }
+
+
+        //System.out.println(initialGuess.outputString(modelVariables));
+        //System.out.println(result.outputString(modelVariables));
+
+
+
+        // FINALLY, ASSIGN CONT. VARS. THAT ARE DESCENDANTS OF CONT. VARS. IN EVIDENCE (WITH THEIR MODE=MEAN VALUE)
+
+        for( int i=0; i<numberOfVariables; i++ ) {
+
+            selectedVariable = causalOrder.get(i);
+
+            if ( selectedVariable.isNormal() && Double.isNaN(result.getValue(selectedVariable))) {
+                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(selectedVariable).getUnivariateDistribution(result);
+                //double newValue = univariateDistribution.getParameters()[0];
+
+
+                double univDistMean = univariateDistribution.getParameters()[0];
+                double univDistStDev = univariateDistribution.getParameters()[1];
+
+
+                double newValue = univDistMean - 3*univDistStDev + random.nextDouble()*6*univDistStDev;
+                result.setValue(selectedVariable, newValue);
             }
 
+        }
 
-            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-            nextProbability=this.model.getLogProbabiltyOf(result);
+        //System.out.println(initialGuess.outputString(modelVariables));
+        //System.out.println(result.outputString(modelVariables));
 
-            if (nextProbability>currentProbability) {
-                initialGuess=result;
+        return result;
+    }
+
+
+    /*
+
+    private double getLogProbabiltyOf(Assignment assignment) {
+        if(this.MAPvariables==null) {
+            return this.model.getLogProbabiltyOf(assignment);
+        }
+        else {
+            MAPvariables.stream().
+        }
+    }*/
+
+
+    public double estimateProbabilityOfPartialAssignment(Assignment MAPassignment) {
+
+        double probabilityEstimate = 0;
+        final int numSamplesAverage = 100;
+
+        Assignment evidenceAugmented=new HashMapAssignment(evidence);
+        MAPvariables.forEach(voi -> evidenceAugmented.setValue(voi, MAPassignment.getValue(voi)));
+
+        final Assignment finalAssignment=new HashMapAssignment(MAPassignment);
+
+        IntStream auxIntStream = IntStream.range(0, numSamplesAverage);
+        //probabilityEstimate = auxIntStream.mapToObj(i -> obtainValuesRandomly(finalAssignment,evidenceAugmented,new Random())).mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as))).average().getAsDouble();
+        probabilityEstimate = auxIntStream.mapToObj(i -> obtainValues(finalAssignment, evidenceAugmented, new Random())).mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as))).average().getAsDouble();
+
+        return probabilityEstimate;
+
+    }
+
+
+    public double estimateRandomlyProbabilityOfPartialAssignment(Assignment MAPassignment) {
+
+        double probabilityEstimate = 0;
+        final int numSamplesAverage = 100;
+
+        Assignment evidenceAugmented=new HashMapAssignment(evidence);
+        MAPvariables.forEach(voi -> evidenceAugmented.setValue(voi, MAPassignment.getValue(voi)));
+
+        final Assignment finalAssignment=new HashMapAssignment(MAPassignment);
+
+        IntStream auxIntStream = IntStream.range(0, numSamplesAverage);
+        probabilityEstimate = auxIntStream.mapToObj(i -> obtainValuesRandomly(finalAssignment, evidenceAugmented, new Random())).mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as))).average().getAsDouble();
+        //probabilityEstimate = auxIntStream.mapToObj(i -> obtainValues(finalAssignment, evidenceAugmented, new Random())).mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as))).average().getAsDouble();
+
+        return probabilityEstimate;
+
+    }
+
+
+    /*
+    * "Simulated annealing": changes All variables at each iteration. If improves, accept, if not, sometimes accept.
+     */
+    private WeightedAssignment simulatedAnnealingAllVars(Assignment initialGuess) {
+        Assignment nextAssignment;
+
+        double R=10; // Temperature
+        double eps=0.01;
+        double alpha=0.90;
+
+        double currentProbability;
+        double nextProbability;
+
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
+
+        Random random = new Random(this.seed);
+        while (R>eps) {
+
+
+//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+//            double selectedVariableNewValue;
+//
+//            // Choose a new value for ONE of the variables and check whether the probability grows or not
+//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//
+//
+//            //if (selectedVariable.isMultinomial()) {
+//            //selectedVariableNewValue = selectedVariable
+//
+//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
+//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
+//
+//            //}
+//            //else if (selectedVariable.isNormal()) {
+//
+//
+//
+//            //}
+//
+//            result.setValue(selectedVariable,selectedVariableNewValue);
+
+            nextAssignment = obtainValuesRandomly(currentAssignment, evidence, random);
+
+            //currentProbability=this.model.getLogProbabiltyOf(currentAssignment);
+            nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment);
+
+            if (nextProbability > currentProbability) {
+                currentAssignment=nextAssignment;
+                currentProbability = nextProbability;
             }
             else {
                 double diff = currentProbability - nextProbability;
@@ -289,434 +689,867 @@ public class MAPInference implements InferenceAlgorithm {
                 double aux = random.nextDouble();
 
                 if (aux < Math.exp( -diff/R )) {
-                    initialGuess = result;
+                    currentAssignment = nextAssignment;
+                    currentProbability = nextProbability;
                 }
             }
             R = alpha * R;
         }
 
-        return result;
+        return new WeightedAssignment(currentAssignment,currentProbability);
+
     }
 
-    public BayesianNetwork changeCausalOrder(BayesianNetwork bn, Assignment evidence) {
+//    private WeightedAssignment simulatedAnnealingAllVars(Assignment initialGuessAllVars) {
+//
+//
+//        Assignment initialGuessMAPvars = new HashMapAssignment(MAPvariables.size());
+//        Assignment newGuessMAPvars;
+//
+//        for(Variable var : MAPvariables) {
+//            initialGuessMAPvars.setValue(var, initialGuessAllVars.getValue(var));
+//        }
+//
+//
+//        double R=10; // Temperature
+//        double eps=0.01;
+//        double alpha=0.90;
+//
+//        double initialProbability=0;
+//        double newProbability=0;
+//
+//
+//        Random random = new Random();
+//        while (R>eps) {
+//
+//            //System.out.println(Double.toString(R));
+//
+//            // GIVE VALUES
+//            //newGuessMAPvars=obtainValues(initialGuessMAPvars, evidence, new Random());
+//            newGuessMAPvars = new HashMapAssignment(initialGuessMAPvars);
+//
+//            //Randomly change 1 map variable value
+//
+//            int randomIndex = random.nextInt(MAPvariables.size());
+//
+//            final int numberOfSteps=2;
+//            Variable MAPchangingVariable;
+//            double MAPchangingVariableValue;
+//
+//            for (int i = 0; i < numberOfSteps; i++) {
+//                MAPchangingVariable = (Variable) MAPvariables.toArray()[randomIndex];
+//                MAPchangingVariableValue = random.nextInt(MAPchangingVariable.getNumberOfStates());
+//
+//                //System.out.println(randomIndex + ", " + MAPchangingVariableValue);
+//                newGuessMAPvars.setValue(MAPchangingVariable,MAPchangingVariableValue);
+//            }
+//
+//
+//
+//
+//
+//
+//
+//
+//            initialProbability = estimateProbabilityOfPartialAssignment(initialGuessMAPvars);
+//            newProbability = estimateProbabilityOfPartialAssignment(newGuessMAPvars);
+//
+//
+////            System.out.println("Initial guess");
+////            System.out.println(initialGuessMAPvars.outputString());
+////            System.out.println("with probability:" + Double.toString(initialProbability));
+////
+////            System.out.println("New guess");
+////            System.out.println(newGuessMAPvars.outputString());
+////            System.out.println("with probability:" + Double.toString(newProbability));
+//
+//
+//            if (newProbability>initialProbability) {
+//                initialGuessMAPvars=newGuessMAPvars;
+//                initialProbability=newProbability;
+//            }
+//            /*else {
+//                double diff = initialProbability - newProbability;
+//
+//                double aux = random.nextDouble();
+//
+//                if (aux < Math.exp( -diff/R )) {
+//                    initialGuessMAPvars = newGuessMAPvars;
+//                    initialProbability=newProbability;
+//                }
+//            }
+//            */
+//
+//
+////            System.out.println("Final guess");
+////            System.out.println(initialGuessMAPvars.outputString());
+//
+//            R = alpha * R;
+//        }
+//
+//        WeightedAssignment finalResult = new WeightedAssignment(initialGuessMAPvars,initialProbability);
+//        return finalResult;
+//
+//    }
 
-        BayesianNetwork result = new BayesianNetwork(bn.getDAG(),bn.getConditionalDistributions());
-        int numberOfVariables = bn.getNumberOfVars();
 
-        causalOrder = Utils.getCausalOrder(bn.getDAG());
 
-        for( int i=0; i<numberOfVariables; i++ ) {
-            Variable var = causalOrder.get(i);
+    /*
+    * "Simulated annealing": changes ONE variable at each iteration. If improves, accept, if not, sometimes accept.
+     */
+    private WeightedAssignment simulatedAnnealingOneVar(Assignment initialGuess) {
+        Assignment nextAssignment;
 
-            if( var.isNormal() && !Double.isNaN(evidence.getValue(var))) {
-
-                ConditionalDistribution condChildren = bn.getConditionalDistribution(var);
-
-                System.out.println(condChildren.toString());
-                System.out.println(Arrays.toString(condChildren.getParameters()));
-
-                if (condChildren instanceof Normal_MultinomialParents) {
-                    // DO NOTHING
-                    System.out.println("1");
-                }
-
-                if (condChildren instanceof Normal_MultinomialNormalParents) {
-                    System.out.println("2");
-                }
-
-                if (condChildren instanceof ConditionalLinearGaussian) {
-                    System.out.println("3");
-                }
-
-                ParentSet parentSet = bn.getDAG().getParentSet(var);
-                List<Variable> listParents = parentSet.getParents();
-
-                for(Variable parent : listParents) {
-                    if(parent.isNormal()) {
-                        System.out.println(bn.getConditionalDistribution(parent).toString());
-                        List<Variable> listGrandParents = bn.getDAG().getParentSet(parent).getParents();
-                    }
-
-                }
-            }
-        }
-        return result;
-    }
-
-    private Assignment improvedSimulatedAnnealing(Assignment initialGuess) {
-        Assignment result = this.evidence;
-
-        double R=0.5; // Temperature
-        double eps=0.1;
-        double alpha=0.00008;
+        double R=10; // Temperature
+        double eps=0.01;
+        double alpha=0.90;
 
         double currentProbability;
         double nextProbability;
-        int numberOfVariables = this.model.getNumberOfVars();
 
-        Variable selectedVariable;
-        double selectedVariableNewValue;
-        ConditionalDistribution conDist;
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
+
+        Random random = new Random(this.seed);
+        while (R>eps) {
+
+
+//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+//            double selectedVariableNewValue;
+//
+//            // Choose a new value for ONE of the variables and check whether the probability grows or not
+//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//
+//
+//            //if (selectedVariable.isMultinomial()) {
+//            //selectedVariableNewValue = selectedVariable
+//
+//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
+//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
+//
+//            //}
+//            //else if (selectedVariable.isNormal()) {
+//
+//
+//
+//            //}
+//
+//            result.setValue(selectedVariable,selectedVariableNewValue);
+
+            nextAssignment = moveDiscreteVariables(currentAssignment, 3);
+            nextAssignment = assignContinuousVariables(nextAssignment);
+
+
+            //currentProbability=this.model.getLogProbabiltyOf(currentAssignment);
+            nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment);
+
+            if (nextProbability > currentProbability) {
+                currentAssignment=nextAssignment;
+                currentProbability = nextProbability;
+            }
+            else {
+                double diff = currentProbability - nextProbability;
+
+                double aux = random.nextDouble();
+
+                if (aux < Math.exp( -diff/R )) {
+                    currentAssignment = nextAssignment;
+                    currentProbability = nextProbability;
+                }
+            }
+            R = alpha * R;
+        }
+
+        return new WeightedAssignment(currentAssignment,currentProbability);
+
+    }
+
+//    /*
+//    * "Simulated annealing": changes ONE variable at each iteration. If improves, accept, if not, sometimes accept.
+//     */
+//    private Assignment simulatedAnnealingOneVar(Assignment initialGuess) {
+//        Assignment result = new HashMapAssignment(initialGuess);
+//
+//        double R=1000; // Temperature
+//        double eps=0.01;
+//        double alpha=0.7;
+//
+//        double currentProbability;
+//        double nextProbability;
+//
+//        while (R>eps) {
+//
+//            Random random = new Random(this.seed);
+//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+//            double selectedVariableNewValue;
+//
+//            // Choose a new value for ONE of the variables and check whether the probability grows or not
+//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//
+//
+//            //if (selectedVariable.isMultinomial()) {
+//            //selectedVariableNewValue = selectedVariable
+//
+//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
+//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
+//
+//            //}
+//            //else if (selectedVariable.isNormal()) {
+//
+//
+//
+//            //}
+//
+//            result.setValue(selectedVariable,selectedVariableNewValue);
+//
+//            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
+//            nextProbability=this.model.getLogProbabiltyOf(result);
+//
+//            if (nextProbability>currentProbability) {
+//                initialGuess=result;
+//            }
+//            else {
+//                double diff = currentProbability - nextProbability;
+//
+//                double aux = random.nextDouble();
+//
+//                if (aux < Math.exp( -diff/R )) {
+//                    initialGuess = result;
+//                }
+//            }
+//            R = alpha * R;
+//        }
+//
+//        return result;
+//
+//    }
+
+
+
+
+
+    private WeightedAssignment hillClimbingAllVars(Assignment initialGuess) {
+        Assignment nextAssignment;
+
+        double R=50;
+        double eps=0;
+
+        double currentProbability=0;
+        double nextProbability;
+
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
 
         //Random random = new Random(this.seed+initialGuess.hashCode());
         Random random = new Random();
         while (R>eps) {
-            result = initialGuess;
 
-            // ASSIGN FIRSTLY VALUES FOR DISCRETE VARIABLES
-            for( int i=0; i<numberOfVariables; i++ ) {
+            // GIVE VALUES
+            //result=obtainValues(currentAssignment, evidence, random);
+            nextAssignment=obtainValuesRandomly(currentAssignment, evidence, random);
 
-                //selectedVariable = this.model.getVariables().getVariableById(i);
-                selectedVariable = causalOrder.get(i);
-                conDist = this.model.getConditionalDistributions().get(i);
+            nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment);
 
-                if (selectedVariable.isMultinomial() && Double.isNaN(this.evidence.getValue(selectedVariable))) {
+//            final Assignment finalResult=new HashMapAssignment(result);
+//            final Assignment finalInitialGuess=new HashMapAssignment(currentAssignment);
+//
+//            Assignment evidenceAugmented=new HashMapAssignment(evidence);
+//
+//            if(MAPvariables!=null) {
+//                MAPvariables.forEach(voi -> evidenceAugmented.setValue(voi, finalResult.getValue(voi)));
+//
+//                final int numSamplesAverage = 50;
+//
+//                IntStream auxIntStream = IntStream.range(0, numSamplesAverage);
+//                currentProbability = auxIntStream.mapToObj(i -> obtainValues(finalInitialGuess,evidenceAugmented,new Random())).mapToDouble(this.model::getLogProbabiltyOf).average().getAsDouble();
+//
+//                auxIntStream = IntStream.range(0, numSamplesAverage);
+//                nextProbability = auxIntStream.mapToObj(i -> obtainValues(finalResult,evidenceAugmented,new Random())).mapToDouble(this.model::getLogProbabiltyOf).average().getAsDouble();
+//            }
+//            else {
+//                currentProbability=this.model.getLogProbabiltyOf(initialGuess);
+//                nextProbability=this.model.getLogProbabiltyOf(result);
+//            }
 
-                    selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random); // ??? Is this correct?
-                    result.setValue(selectedVariable, selectedVariableNewValue);
-                }
+
+            if (nextProbability > currentProbability) {
+                currentAssignment=nextAssignment;
+                currentProbability=nextProbability;
             }
 
-            // NOW ALL DISCRETE VARIABLES HAVE VALUES, SET VALUES FOR GAUSSIANS, STARTING WITH ANCESTORS OF OBSERVED VARS
-            for( int i=0; i<numberOfVariables; i++ ) {
+            R = R - 1;
+        }
 
-                //selectedVariable = this.model.getVariables().getVariableById(i);
-                selectedVariable = causalOrder.get(i);
-                conDist = this.model.getConditionalDistributions().get(i);
+        return new WeightedAssignment(currentAssignment, currentProbability);
 
-                if ( selectedVariable.isNormal() && !Double.isNaN(this.evidence.getValue(selectedVariable))) {
+    }
 
-                    ParentSet parents = model.getDAG().getParentSet(selectedVariable);
 
-                    for( int j=0; j<parents.getNumberOfParents(); j++) {
+    private Assignment moveDiscreteVariables(Assignment initialGuess, int numberOfMovements) {
 
-                        //System.out.println(i + "," + j);
-                        Variable parent = parents.getParents().get(j);
-                        //System.out.println(parent.getName());
+        Assignment result = new HashMapAssignment(initialGuess);
+        Random random = new Random();
+        ArrayList<Integer> indicesVariablesMoved = new ArrayList<>();
 
-                        CLGmode(result, parent, selectedVariable);
+        int indexSelectedVariable;
+        Variable selectedVariable;
+        int newValue;
 
-                                /*
-                        if(parent.isNormal()) {
-                            System.out.println(model.getConditionalDistribution(parent).toString());
-                            System.out.println(model.getConditionalDistribution(parent).getUnivariateDistribution(result).toString());
-                        }*/
-                    }
+        while(indicesVariablesMoved.size()<numberOfMovements) {
 
-                    /*if (selectedVariable.isMultinomial()) {
-                        selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random); // ??? Is this correct?
+            indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+            selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
 
-                    } else {
-
-                        selectedVariableNewValue = conDist.getUnivariateDistribution(result).getParameters()[0];
-                    }
-                    result.setValue(selectedVariable, selectedVariableNewValue);*/
-                }
+            if(indicesVariablesMoved.contains(indexSelectedVariable) || selectedVariable.isNormal() || !Double.isNaN(evidence.getValue(selectedVariable))) {
+                continue;
             }
-
-            /*for( int i=0; i<numberOfVariables; i++ ) {
-
-                //selectedVariable = this.model.getVariables().getVariableById(i);
-                selectedVariable = causalOrder.get(i);
-                conDist = this.model.getConditionalDistributions().get(i);
-                if (R==5000) {
-                    System.out.println(selectedVariable.getName());
-                    if(selectedVariable.getName().equals("GaussianVar0")) {
-                        System.out.println(conDist.toString());
-                        System.out.println(conDist.getUnivariateDistribution(result).toString());
-                    }
-                    if(selectedVariable.getName().equals("GaussianVar9")) {
-                        System.out.println(model.getDAG().getParentSet(selectedVariable).toString());
-                    }
-                }
-                if ( Double.isNaN(this.evidence.getValue(selectedVariable))) {
-                    if (selectedVariable.isMultinomial()) {
-                        selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random); // ??? Is this correct?
-
-                    } else {
-
-                        selectedVariableNewValue = conDist.getUnivariateDistribution(result).getParameters()[0];
-                    }
-                    result.setValue(selectedVariable, selectedVariableNewValue);
-                }
-            }*/
-
-            /*
-            result = initialGuess;
-
-            int indexSelectedVariable; // = random.nextInt(this.model.getNumberOfVars());
-
-            //selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
-            //conDist = this.model.getConditionalDistributions().get(indexSelectedVariable);
-
-            do {
-                indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
-
-                selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
-                conDist = this.model.getConditionalDistributions().get(indexSelectedVariable);
-
-            } while( !selectedVariable.isMultinomial() );
-
-            selectedVariableNewValue = conDist.getUnivariateDistribution(result).sample(random); // ??? Is this correct?
-
-            result.setValue(selectedVariable,selectedVariableNewValue);
-
-
-            for( int i=0; i<numberOfVariables; i++ ) {
-
-
-                selectedVariable = this.model.getVariables().getVariableById(i);
-
-                if ( Double.isNaN(this.evidence.getValue(selectedVariable))) {
-                    conDist = this.model.getConditionalDistributions().get(i);
-
-                    if (selectedVariable.isNormal()) {
-                        selectedVariableNewValue = conDist.getUnivariateDistribution(result).getParameters()[0];
-                        result.setValue(selectedVariable, selectedVariableNewValue);
-                    }
-                    //System.out.println("variable not in evidence");
-
-                }
-                //else {
-                    //System.out.println("Variable in evidence");
-                //}
-            }
-            */
-
-            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-            nextProbability=this.model.getLogProbabiltyOf(result);
-
-            if (nextProbability>currentProbability) {
-                initialGuess=result;
-            }
-            else {
-                double diff = currentProbability - nextProbability;
-
-                double aux = random.nextDouble();
-
-                if (aux < Math.exp( -diff/R )) {
-                    initialGuess = result;
-                }
-            }
-            R = alpha * R;
+            indicesVariablesMoved.add(indexSelectedVariable);
+            newValue=random.nextInt(selectedVariable.getNumberOfStates());
+            result.setValue(selectedVariable,newValue);
         }
 
         return result;
-
     }
 
-    private Assignment bestConfig(Assignment current, int varIndex) {
+    private Assignment assignContinuousVariables(Assignment initialGuess) {
 
-        int numVars=this.model.getNumberOfVars();
-
-        if (varIndex>(numVars-1)) {
-            return current;
-        }
-
-        Variable currentVariable = this.model.getVariables().getVariableById(varIndex);
-
-        if (Double.isNaN(this.evidence.getValue(currentVariable))) {
-
-            // DUPLICATE CURRENT ASSIGNMENT
-            Assignment config0 = new HashMapAssignment(numVars);
-            Assignment config1 = new HashMapAssignment(numVars);
-
-            for(Variable var: model.getVariables()) {
-
-                if ( Double.isNaN(this.evidence.getValue(var))) {
-                    config0.setValue(var,current.getValue(var));
-                    config1.setValue(var,current.getValue(var));
-                }
-                else {
-                    config0.setValue(var,evidence.getValue(var));
-                    config1.setValue(var,evidence.getValue(var));
-                }
-            }
-
-            if (currentVariable.isMultinomial()) {
-
-                config0.setValue(currentVariable, 0);
-                config1.setValue(currentVariable, 1);
-
-                if (varIndex < (numVars - 1)) {
-                    config0 = bestConfig(config0, varIndex + 1);
-                    config1 = bestConfig(config1, varIndex + 1);
-                }
-                return (model.getLogProbabiltyOf(config0) > model.getLogProbabiltyOf(config1) ? config0 : config1);
-            }
-            else {
-                double newValue;
-
-                newValue = model.getConditionalDistributions().get(varIndex).getUnivariateDistribution(config0).getParameters()[0];
-
-                config0.setValue(currentVariable, newValue);
-                if (varIndex < (numVars - 1)) {
-                    config0 = bestConfig(config0, varIndex + 1);
-                }
-                return config0;
-            }
-        }
-        else {
-            if (varIndex < (numVars - 1)) {
-                return bestConfig(current, varIndex + 1);
-            }
-            else {
-                return current;
-            }
-        }
-    }
-
-    private Assignment sequentialSearch() {
-
+        Assignment result = new HashMapAssignment(initialGuess);
         int numberOfVariables = this.model.getNumberOfVars();
-        Assignment currentEstimator = new HashMapAssignment(numberOfVariables);
-
+        Random random = new Random();
         Variable selectedVariable;
-        double selectedVariableNewValue;
-        ConditionalDistribution conDist;
+        List<Variable> contVarEvidence = new ArrayList<>();
 
-        // INITIALIZE THE ESTIMATOR
+        DAG graph = model.getDAG();
+
         for( int i=0; i<numberOfVariables; i++ ) {
 
-            selectedVariable = this.model.getVariables().getVariableById(i);
-            conDist = this.model.getConditionalDistributions().get(i);
-
-            if ( Double.isNaN(this.evidence.getValue(selectedVariable))) {
-                if (selectedVariable.isMultinomial()) {
-                    selectedVariableNewValue = 0;
-
-                } else {
-
-                    selectedVariableNewValue = conDist.getUnivariateDistribution(currentEstimator).getParameters()[0];
-                }
-                currentEstimator.setValue(selectedVariable, selectedVariableNewValue);
-            }
-            else {
-                currentEstimator.setValue(selectedVariable,evidence.getValue(selectedVariable));
+            selectedVariable = causalOrder.get(i);
+            if (selectedVariable.isNormal() && !Double.isNaN(evidence.getValue(selectedVariable))) {
+                contVarEvidence.add(selectedVariable);
             }
         }
-        return bestConfig(currentEstimator,0);
+
+        boolean ended=false;
+        int indexCheckedVars=0;
+
+        while(!ended) {
+            ended=true;
+
+            for(;indexCheckedVars<contVarEvidence.size(); indexCheckedVars++) {
+
+                Variable currentVariable = contVarEvidence.get(indexCheckedVars);
+                ParentSet parents = graph.getParentSet(currentVariable);
+
+                for (Variable currentParent : parents.getParents()) {
+                    if (currentParent.isNormal() && !contVarEvidence.contains(currentParent)) {
+                        ended = false;
+                        contVarEvidence.add(currentParent);
+
+                    }
+                }
+            }
+        }
+
+        Collections.reverse(contVarEvidence);
+
+        //contVarEvidence.forEach(var -> System.out.println(var.getName() + " = " + evidence.getValue(var)));
+
+        for(Variable current : contVarEvidence) {
+
+            if(Double.isNaN(evidence.getValue(current))) {
+                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(current).getUnivariateDistribution(result);
+                double newValue = univariateDistribution.sample(random);
+                result.setValue(current, newValue);
+            }
+        }
+
+
+        //System.out.println(initialGuess.outputString(modelVariables));
+        //System.out.println(result.outputString(modelVariables));
+
+
+
+        // FINALLY, ASSIGN CONT. VARS. THAT ARE DESCENDANTS OF CONT. VARS. IN EVIDENCE (WITH THEIR MODE=MEAN VALUE)
+
+        for( int i=0; i<numberOfVariables; i++ ) {
+
+            selectedVariable = causalOrder.get(i);
+
+            if ( selectedVariable.isNormal() && Double.isNaN(this.evidence.getValue(selectedVariable))) {
+                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(selectedVariable).getUnivariateDistribution(result);
+                double newValue = univariateDistribution.getParameters()[0];
+                result.setValue(selectedVariable, newValue);
+            }
+
+        }
+
+        return result;
     }
 
-    private Assignment simulatedAnnealing(Assignment initialGuess) {
-        Assignment result = initialGuess;
+    /*
+* "Hill climbing": changes ONE variable at each iteration. If improves, accept.
+*/
+    private WeightedAssignment hillClimbingOneVar(Assignment initialGuess) {
+        Assignment result = new HashMapAssignment(initialGuess);
 
-        double R=1000; // Temperature
-        double eps=0.01;
-        double alpha=0.7;
+        double R=50;
+        double eps=0;
 
         double currentProbability;
         double nextProbability;
 
+        //Random random = new Random();
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
+
         while (R>eps) {
 
-            Random random = new Random(this.seed);
-            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
-            double selectedVariableNewValue;
+            result = moveDiscreteVariables(currentAssignment, 3);
+            result = assignContinuousVariables(result);
 
-            // Choose a new value for ONE of the variables and check whether the probability grows or not
-            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+//            double selectedVariableNewValue;
+//
+//            // Choose a new value for ONE of the variables and check whether the probability grows or not
+//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//
+//            if (!Double.isNaN(this.evidence.getValue(selectedVariable)) || selectedVariable.isNormal()) {
+//                continue;
+//            }
+//
+//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
+//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
+//
+//
+//            result.setValue(selectedVariable,selectedVariableNewValue);
 
-            //if (selectedVariable.isMultinomial()) {
-            //selectedVariableNewValue = selectedVariable
+            //currentProbability=this.model.getLogProbabiltyOf(initialGuess);
+            //nextProbability=this.model.getLogProbabiltyOf(result);
 
-            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
-            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random); // ??? Is this correct?
+            nextProbability=estimateProbabilityOfPartialAssignment(result);
 
-            //}
-            //else if (selectedVariable.isNormal()) {
 
-            //}
-
-            result.setValue(selectedVariable,selectedVariableNewValue);
-
-            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-            nextProbability=this.model.getLogProbabiltyOf(result);
-
-            if (nextProbability>currentProbability) {
-                initialGuess=result;
+            if (nextProbability > currentProbability) {
+                currentAssignment=result;
+                currentProbability=nextProbability;
             }
-            else {
-                double diff = currentProbability - nextProbability;
 
-                double aux = random.nextDouble();
+            //System.out.println(currentAssignment.outputString(this.MAPvariables));
 
-                if (aux < Math.exp( -diff/R )) {
-                    initialGuess = result;
-                }
-            }
-            R = alpha * R;
+            R = R - 1;
         }
 
-        return result;
+        return new WeightedAssignment(currentAssignment,currentProbability);
 
     }
+//
+//    /*
+//    * "Hill climbing": changes ONE variable at each iteration. If improves, accept.
+//    */
+//    private Assignment hillClimbingOneVar(Assignment initialGuess) {
+//        Assignment result = new HashMapAssignment(initialGuess);
+//
+//        double R=50;
+//        double eps=0;
+//
+//        double currentProbability;
+//        double nextProbability;
+//
+//        while (R>eps) {
+//
+//            Random random = new Random(this.seed);
+//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+//            double selectedVariableNewValue;
+//
+//            // Choose a new value for ONE of the variables and check whether the probability grows or not
+//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//
+//
+//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
+//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
+//
+//
+//            result.setValue(selectedVariable,selectedVariableNewValue);
+//
+//            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
+//            nextProbability=this.model.getLogProbabiltyOf(result);
+//
+//            if (nextProbability>currentProbability) {
+//                initialGuess=result;
+//            }
+//
+//            R = R - 1;
+//        }
+//
+//        return result;
+//
+//    }
+
+
+
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
+
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/asia.bn");
-        System.out.println(bn.getDAG());
 
         System.out.println(bn.toString());
-
 
         MAPInference mapInference = new MAPInference();
         mapInference.setModel(bn);
         mapInference.setParallelMode(true);
-        mapInference.setSampleSize(100);
 
         System.out.println("CausalOrder: " + Arrays.toString(mapInference.causalOrder.stream().map(v -> v.getName()).toArray()));
         System.out.println();
 
-        // Including evidence:
-        Variable variable1 = mapInference.causalOrder.get(1);  // causalOrder: A, S, L, T, E, X, B, D
+
+        int parallelSamples=20;
+        int samplingMethodSize=1000;
+        mapInference.setSampleSize(parallelSamples);
+
+
+        /***********************************************
+         *        INCLUDING EVIDENCE
+         ************************************************/
+
+        Variable variable1 = mapInference.causalOrder.get(1);   // causalOrder: A, S, L, T, E, X, B, D
         Variable variable2 = mapInference.causalOrder.get(2);
         Variable variable3 = mapInference.causalOrder.get(4);
 
         int var1value=0;
         int var2value=1;
-        int var3value=0;
+        int var3value=1;
 
-        System.out.println("Evidence: Variable " + variable1.getName() + " = " + var1value + ", Variable " + variable2.getName() + " = " + var2value + " and Variable " + variable3.getName() + " = " + var3value);
+        System.out.println("Evidence: Variable " + variable1.getName() + " = " + var1value + ", Variable " + variable2.getName() + " = " + var2value + ", " + " and Variable " + variable3.getName() + " = " + var3value);
         System.out.println();
 
-        HashMapAssignment assignment = new HashMapAssignment(3);
+        HashMapAssignment evidenceAssignment = new HashMapAssignment(3);
 
-        assignment.setValue(variable1,var1value);
-        assignment.setValue(variable2,var2value);
-        assignment.setValue(variable3,var3value);
+        evidenceAssignment.setValue(variable1, var1value);
+        evidenceAssignment.setValue(variable2, var2value);
+        evidenceAssignment.setValue(variable3, var3value);
 
-        mapInference.setEvidence(assignment);
+        mapInference.setEvidence(evidenceAssignment);
 
-        long timeStart = System.nanoTime();
-        mapInference.runInference(0);
+        //List<Variable> modelVariables = Utils.getCausalOrder(bn.getDAG());
+
+
+//
+//        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/asia.bn");
+//        System.out.println(bn.getDAG());
+//
+//        System.out.println(bn.toString());
+//
+//
+//        MAPInference mapInference = new MAPInference();
+//        mapInference.setModel(bn);
+//        mapInference.setParallelMode(true);
+//
+//
+//        System.out.println("CausalOrder: " + Arrays.toString(mapInference.causalOrder.stream().map(v -> v.getName()).toArray()));
+//        System.out.println();
+//
+//        // Including evidence:
+//        Variable variable1 = mapInference.causalOrder.get(1);  // causalOrder: A, S, L, T, E, X, B, D
+//        Variable variable2 = mapInference.causalOrder.get(2);
+//        //Variable variable3 = mapInference.causalOrder.get(11);
+//        Variable variable3 = mapInference.causalOrder.get(4);
+//
+//        int var1value=0;
+//        int var2value=1;
+//        //double var3value=1.27;
+//        int var3value=1;
+//
+//        System.out.println("Evidence: Variable " + variable1.getName() + " = " + var1value + ", Variable " + variable2.getName() + " = " + var2value + " and Variable " + variable3.getName() + " = " + var3value);
+//        System.out.println();
+//
+//        HashMapAssignment evidenceAssignment = new HashMapAssignment(3);
+//
+//        evidenceAssignment.setValue(variable1,var1value);
+//        evidenceAssignment.setValue(variable2,var2value);
+//        evidenceAssignment.setValue(variable3,var3value);
+//
+//        mapInference.setEvidence(evidenceAssignment);
+//
+//        List<Variable> modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
+//        //System.out.println(evidenceAssignment.outputString(modelVariables));
+
+
+
+        long timeStart;
+        long timeStop;
+        double execTime;
+        Assignment mapEstimate;
+
+
+        /*
+        // MAP INFERENCE WITH A SMALL SAMPLE AND SIMULATED ANNEALING
+        mapInference.setSampleSize(100);
+        timeStart = System.nanoTime();
+        mapInference.runInference(1);
 
 
         Assignment mapEstimate = mapInference.getMAPestimate();
-        List<Variable> modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
-        System.out.println("MAP estimate: " + mapEstimate.toString());   //toString(modelVariables)
-
-        System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
-        long timeStop = System.nanoTime();
-        double execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        //System.out.println(.toString(mapInference.getOriginalModel().getVariables().iterator().));
-
-
-
-        // MAP INFERENCE WITH A BIG SAMPLE TO CHECK
-        mapInference.setSampleSize(1000000);
-        timeStart = System.nanoTime();
-        mapInference.runInference(0);
-
-        mapEstimate = mapInference.getMAPestimate();
-        modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
-        System.out.println("MAP estimate: " + mapEstimate.toString());
+        System.out.println("MAP estimate (SA): " + mapEstimate.outputString(modelVariables));   //toString(modelVariables)
         System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
         timeStop = System.nanoTime();
         execTime = (double) (timeStop - timeStart) / 1000000000.0;
         System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        System.out.println();
+
+
+        // MAP INFERENCE WITH A BIG SAMPLE  AND SIMULATED ANNEALING
+        mapInference.setSampleSize(100);
+        timeStart = System.nanoTime();
+        mapInference.runInference(1);
+
+        mapEstimate = mapInference.getMAPestimate();
+        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        System.out.println("MAP estimate (SA): " + mapEstimate.outputString(modelVariables));
+        System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+
+
+        // MAP INFERENCE WITH A BIG SAMPLE AND SIMULATED ANNEALING ON ONE VARIABLE EACH TIME
+        mapInference.setSampleSize(100);
+        timeStart = System.nanoTime();
+        mapInference.runInference(0);
+
+
+        mapEstimate = mapInference.getMAPestimate();
+        System.out.println("MAP estimate  (SA.1V): " + mapEstimate.outputString(modelVariables));   //toString(modelVariables)
+        System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        System.out.println();
+
+
+
+
+        // MAP INFERENCE WITH A BIG SAMPLE  AND HILL CLIMBING
+        mapInference.setSampleSize(100);
+        timeStart = System.nanoTime();
+        mapInference.runInference(3);
+
+        mapEstimate = mapInference.getMAPestimate();
+        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        System.out.println("MAP estimate (HC): " + mapEstimate.outputString(modelVariables));
+        System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+
+
+        // MAP INFERENCE WITH A BIG SAMPLE AND HILL CLIMBING ON ONE VARIABLE EACH TIME
+        mapInference.setSampleSize(100);
+        timeStart = System.nanoTime();
+        mapInference.runInference(2);
+
+
+        mapEstimate = mapInference.getMAPestimate();
+        System.out.println("MAP estimate  (HC.1V): " + mapEstimate.outputString(modelVariables));   //toString(modelVariables)
+        System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        System.out.println();
+
+
+
+
+
+        // MAP INFERENCE WITH SIMULATION AND PICKING MAX
+        mapInference.setSampleSize(100);
+        timeStart = System.nanoTime();
+        mapInference.runInference(-1);
+
+        mapEstimate = mapInference.getMAPestimate();
+        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(modelVariables));
+        System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+
+        // MAP INFERENCE, DETERMINISTIC
+        mapInference.setSampleSize(1);
+        timeStart = System.nanoTime();
+        mapInference.runInference(-2);
+
+        mapEstimate = mapInference.getMAPestimate();
+        modelVariables = mapInference.getOriginalModel().getStaticVariables().getListOfVariables();
+        System.out.println("MAP estimate (DETERM.): " + mapEstimate.outputString(modelVariables));
+        System.out.println("with probability: " + Math.exp(mapInference.getOriginalModel().getLogProbabiltyOf(mapEstimate)));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+        */
+
+
+
+        /***********************************************
+         *        VARIABLES OF INTEREST
+         ************************************************/
+
+        Variable varInterest1 = mapInference.causalOrder.get(6);  // causalOrder: A, S, L, T, E, X, B, D
+        Variable varInterest2 = mapInference.causalOrder.get(7);
+
+
+        List<Variable> varsInterest = new ArrayList<>();
+        varsInterest.add(varInterest1);
+        varsInterest.add(varInterest2);
+        mapInference.setMAPVariables(varsInterest);
+
+        System.out.println("MAP Variables of Interest: " + Arrays.toString(mapInference.MAPvariables.stream().map(Variable::getName).toArray()));
+        System.out.println();
+
+
+
+//        // MAP INFERENCE
+//        mapInference.setSampleSize(1);
+//        timeStart = System.nanoTime();
+//        mapInference.runInference(1);
+//
+//        mapEstimate = mapInference.getMAPestimate();
+//        System.out.println("MAP estimate: " + mapEstimate.outputString(varsInterest));
+//        System.out.println("with probability: " +  + mapInference.getMAPestimateProbability());
+//        timeStop = System.nanoTime();
+//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+//        System.out.println();
+
+
+        /***********************************************
+         *        SIMULATED ANNEALING
+         ************************************************/
+
+
+        // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(1);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (SA.All): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        System.out.println();
+
+
+        // MAP INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(0);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (SA.Some): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        System.out.println();
+
+
+        /***********************************************
+         *        HILL CLIMBING
+         ************************************************/
+
+        //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(3);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (HC.All): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+
+        //  MAP INFERENCE WITH HILL CLIMBING, SOME VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(2);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (HC.Some): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+        /***********************************************
+         *        SAMPLING
+         ************************************************/
+
+        // MAP INFERENCE WITH SIMULATION AND PICKING MAX
+        mapInference.setSampleSize(samplingMethodSize);
+        timeStart = System.nanoTime();
+        mapInference.runInference(-1);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+
+
+
+
+
+        // PROBABILITIES OF INDIVIDUAL CONFIGURATIONS
+        Variable varB=bn.getVariables().getVariableByName("B");
+        Variable varD=bn.getVariables().getVariableByName("D");
+
+        double s1 = mapInference.estimateRandomlyProbabilityOfPartialAssignment(mapEstimate);
+        System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s1);
+
+        mapEstimate.setValue(varD, 1);
+        double s2 = mapInference.estimateRandomlyProbabilityOfPartialAssignment(mapEstimate);
+        System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s2);
+
+        mapEstimate.setValue(varB, 1);
+        mapEstimate.setValue(varD, 0);
+        double s3 = mapInference.estimateRandomlyProbabilityOfPartialAssignment(mapEstimate);
+        System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s3);
+
+        mapEstimate.setValue(varD, 1);
+        double s4 = mapInference.estimateRandomlyProbabilityOfPartialAssignment(mapEstimate);
+        System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s4);
+
+        double sum = s1+s2+s3+s4;
+
+        System.out.println();
+        System.out.println("Sum = " + sum + "; Normalized probs: [B=0,D=0]=" + s1/sum + ", [B=0,D=1]=" + s2/sum + ", [B=1,D=0]=" + s3/sum + ", [B=1,D=1]=" + s4/sum );
+        System.out.println("Exact probs: 0.48, 0.12, 0.04, 0.36");
+
+
     }
 
 }
