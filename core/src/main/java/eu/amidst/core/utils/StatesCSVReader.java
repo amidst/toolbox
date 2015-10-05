@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -57,24 +58,17 @@ public class StatesCSVReader {
         int numberOfVariables = variableNames.size();
         System.out.println("File " + firstCSV.getFileName() + " has " + numberOfVariables + " variables");
 
+        source1.close();
+        reader1.close();
 
         boolean[] isVariableContinuous = new boolean[numberOfVariables];
-        int[] minStateFound = new int[numberOfVariables];
-        int[] maxStateFound = new int[numberOfVariables];
 
-        String newLine1 = reader1.readLine();
-        String[] values1 = newLine1.split(SEPARATOR);
+        List<HashSet<String>> varStates = new ArrayList<>(numberOfVariables);
 
-        IntStream.range(0,values1.length).forEach(k -> {
-            if (!values1[k].contains(".")) {
-                int value = Integer.parseInt(values1[k]);
-                minStateFound[k] = value;
-                maxStateFound[k] = value;
-            }
+
+        IntStream.range(0,numberOfVariables).forEach(k -> {
+            varStates.add(new HashSet<>(1));
         });
-
-        reader1.close();
-        source1.close();
 
         /*
          *  READS EACH LINE OF EACH FILE, AND DETERMINES THE NUMBER OF STATES OF DISCRETE VARIABLES
@@ -87,7 +81,6 @@ public class StatesCSVReader {
                 BufferedReader reader = new BufferedReader(source);
 
                 String newLine;
-                //int value;
                 int lineNumber = 1;
 
                 newLine = reader.readLine(); // DISCARD FIRST ROW (HEADER)
@@ -97,19 +90,11 @@ public class StatesCSVReader {
                     String[] values = newLine.split(SEPARATOR);
 
                     IntStream.range(0, values.length).forEach(k -> {
-                        //for (int k = 0; k < values.length; k++) {
+
                         if (values[k].contains(".")) {
                             isVariableContinuous[k] = true;
                         } else {
-                            int value = Integer.parseInt(values[k]);
-
-                            if (value < minStateFound[k]) {
-                                minStateFound[k] = value;
-                            }
-
-                            if (value > maxStateFound[k]) {
-                                maxStateFound[k] = value;
-                            }
+                            varStates.get(k).add(values[k]);
                         }
                     });
                     newLine = reader.readLine();
@@ -140,13 +125,15 @@ public class StatesCSVReader {
             if (isVariableContinuous[i]) {
                 varValues = "real";
             } else {
-                int[] valuesArray = IntStream.range(minStateFound[i], maxStateFound[i] + 1).toArray();
-                varValues = "{";
 
-                for (int j = 0; j < valuesArray.length - 1; j++) {
-                    varValues = varValues + valuesArray[j] + ",";
-                }
-                varValues = varValues + valuesArray[valuesArray.length - 1] + "}";
+                StringBuilder builder = new StringBuilder(2+varStates.get(i).size()*2);
+                builder.append("{");
+                varStates.get(i).stream().forEach(str -> builder.append(str + ","));
+                builder.deleteCharAt(builder.lastIndexOf(","));
+                builder.append("}");
+
+                varValues = builder.toString();
+
             }
             System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
         });
@@ -156,7 +143,7 @@ public class StatesCSVReader {
     public static void getNumberOfStatesFromCSVFile(String folder, String file) throws IOException {
 
         System.out.println("Reading file " + file);
-        Path path = Paths.get(folder, file); //"./datasets/", "syntheticData.csv");
+        Path path = Paths.get(folder, file);
         Reader source = Files.newBufferedReader(
                 path, Charset.forName("UTF-8"));
         String SEPARATOR = ",";
@@ -170,14 +157,19 @@ public class StatesCSVReader {
                 .findFirst()
                 .map(line -> Arrays.asList(line.split(SEPARATOR)))
                 .get();
-        //variableNames.stream().forEach(st -> System.out.println(st));
 
         int numberOfVariables = variableNames.size();
         System.out.println("File " + path.getFileName() + " has " + numberOfVariables + " variables");
 
         boolean[] isVariableContinuous = new boolean[numberOfVariables];
-        int[] minStateFound = new int[numberOfVariables];
-        int[] maxStateFound = new int[numberOfVariables];
+
+        List<HashSet<String>> varStates = new ArrayList<>(numberOfVariables);
+
+
+        IntStream.range(0,numberOfVariables).forEach(k -> {
+            varStates.add(new HashSet<>(1));
+        });
+
 
         /*
          *  READS EACH LINE AND DETERMINES THE NUMBER OF STATES OF DISCRETE VARIABLES
@@ -190,58 +182,47 @@ public class StatesCSVReader {
 
             String [] values = newLine.split(SEPARATOR);
 
-            for(int k=0; k<values.length; k++) {
-                if(values[k].contains(".")) {
-                    isVariableContinuous[k]=true;
-                }
-                else {
-                    int value = Integer.parseInt(values[k]);
+            IntStream.range(0, values.length).forEach(k -> {
 
-                    if (lineNumber == 1) {
-                        minStateFound[k] = value;
-                        maxStateFound[k] = value;
-                    }
-                    else {
-                        if (value < minStateFound[k]) {
-                            minStateFound[k] = value;
-                        }
-
-                        if (value > maxStateFound[k]) {
-                            maxStateFound[k] = value;
-                        }
-                    }
+                if (values[k].contains(".")) {
+                    isVariableContinuous[k] = true;
+                } else {
+                    varStates.get(k).add(values[k]);
                 }
-            }
+            });
+
             newLine = reader.readLine();
             lineNumber++;
         }
 
         System.out.println("Read " + (lineNumber-1) + " lines");
-        //System.out.println(Arrays.toString(isVariableContinuous));
-        //System.out.println(Arrays.toString(minStateFound));
-        //System.out.println(Arrays.toString(maxStateFound));
 
-        // variableNames.forEach(vn -> System.out.println("@attribute " + vn + isVariableContinuous
+        /*
+         * DISPLAYS THE .ARFF FILE HEADER:
+         */
+
         System.out.println();
         System.out.println("ARFF Header:");
         System.out.println();
 
-        for(int i=0; i<variableNames.size(); i++) {
+        //for(int i=0; i<variableNames.size(); i++) {
+        IntStream.range(0, variableNames.size()).forEach(i -> {
             String varValues;
-            if(isVariableContinuous[i]) {
+            if (isVariableContinuous[i]) {
                 varValues = "real";
-            }
-            else {
-                int[] valuesArray = IntStream.range(minStateFound[i], maxStateFound[i]+1).toArray();
-                varValues = "{";
+            } else {
 
-                for(int j=0; j<valuesArray.length-1; j++) {
-                    varValues = varValues + valuesArray[j] + ",";
-                }
-                varValues = varValues + valuesArray[valuesArray.length-1] + "}";
+                StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
+                builder.append("{");
+                varStates.get(i).stream().forEach(str -> builder.append(str + ","));
+                builder.deleteCharAt(builder.lastIndexOf(","));
+                builder.append("}");
+
+                varValues = builder.toString();
+
             }
             System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
-        }
+        });
 
 
         reader.close();
@@ -252,7 +233,7 @@ public class StatesCSVReader {
 
     public static void main(String[] args) throws IOException {
 
-        getNumberOfStatesFromCSVFile("./datasets/", "syntheticData.csv");
+        //getNumberOfStatesFromCSVFile("./datasets/", "syntheticData.csv");
 
 //      RESULT SHOULD BE:
 //        @attribute A {1,2}
@@ -264,9 +245,15 @@ public class StatesCSVReader {
 //        @attribute H real
 //        @attribute I real
 
+        if(args.length!=1) {
+            System.out.println("Incorrect number of arguments. Please use \"StatesCSVReader CSVFolderPath\"");
+        }
+        else {
+            String dirName = args[0];
+            getNumberOfStatesFromCSVFolder(dirName);
+        }
 
-
-        getNumberOfStatesFromCSVFolder("./datasets/CSVfolder");
+        //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder");
 
 //      RESULT SHOULD BE:
 //        @attribute A {-1,0,1,2}
