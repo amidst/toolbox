@@ -43,8 +43,8 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     VMP vmpTime0;
     VMP vmpTimeT;
 
-    int timeID;
-    int sequenceID;
+    long timeID;
+    long sequenceID;
 
     public DynamicVMP(){
         this.vmpTime0 = new VMP();
@@ -158,12 +158,12 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
     }
 
     @Override
-    public int getTimeIDOfPosterior() {
+    public long getTimeIDOfPosterior() {
         return this.timeID;
     }
 
     @Override
-    public int getTimeIDOfLastEvidence(){
+    public long getTimeIDOfLastEvidence(){
         return this.assignment.getTimeID();
     }
 
@@ -194,7 +194,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         }else{
 
             if ((this.assignment.getTimeID() - this.timeID)>1)
-                this.moveWindow(this.assignment.getTimeID() - this.timeID - 1);
+                this.moveWindow((int)(this.assignment.getTimeID() - this.timeID - 1));
 
             this.timeID=this.assignment.getTimeID();
             this.vmpTimeT.setEvidence(this.assignment);

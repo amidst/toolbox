@@ -18,7 +18,7 @@ import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public final class scriptAddIndicators{
             for (int s = 0; s < indicatorVars.length; s++) {
                 if(name.equalsIgnoreCase(indicatorVars[s])){
                     //Add an indicator variable
-                    Attribute attIndicator = new Attribute(newAtts.size(), "INDICATOR_"+name, StateSpaceTypeEnum.FINITE_SET, 2);
+                    Attribute attIndicator = new Attribute(newAtts.size(), "INDICATOR_"+name, new FiniteStateSpace(2));
                     newAtts.add(attIndicator);
                 }
             }

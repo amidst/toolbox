@@ -174,7 +174,7 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
 
     @Override
     public DynamicBayesianNetwork getLearntDBN() {
-        return DynamicBayesianNetwork.newDynamicBayesianNetwork(this.dag, this.ef_extendedBNTime0.toConditionalDistribution(), this.ef_extendedBNTimeT.toConditionalDistribution());
+        return new DynamicBayesianNetwork(this.dag, this.ef_extendedBNTime0.toConditionalDistribution(), this.ef_extendedBNTimeT.toConditionalDistribution());
     }
 
 

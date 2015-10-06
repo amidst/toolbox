@@ -15,8 +15,8 @@ import eu.amidst.core.variables.Assignment;
  */
 public interface DynamicAssignment extends Assignment {
 
-    int getSequenceID();
+    long getSequenceID();
 
-    int getTimeID();
+    long getTimeID();
 
 }

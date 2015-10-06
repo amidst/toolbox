@@ -8,32 +8,26 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package eu.amidst.flinklink.core.converter;
 
+package eu.amidst.flinklink.core.io;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.flinklink.core.data.DataFlink;
 import junit.framework.TestCase;
-import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
- * Created by andresmasegosa on 2/9/15.
+ * Created by andresmasegosa on 23/9/15.
  */
-public class DataStreamToDataSetTest extends TestCase {
+public class DataFlinkWriterTest extends TestCase {
 
-    public void test1() throws Exception{
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
-        sampler.setSeed(0);
-        //Load the sampled data
-        DataStream<DataInstance> data = sampler.sampleToDataStream(10);
 
-        DataSet<DataInstance> dataSet = DataStreamToDataSet.toDataSet(data);
+    public static void test1() throws Exception {
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        dataSet.print();
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/dataFlink/test_not_modify/SmallDataSet.arff");
+
+        DataFlinkWriter.writeDataToARFFFolder(dataFlink, "./datasets/dataFlink/tmp.arff");
+
     }
-
 }

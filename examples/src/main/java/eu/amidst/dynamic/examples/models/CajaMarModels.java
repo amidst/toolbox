@@ -99,6 +99,8 @@ public final class CajaMarModels {
          */
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
+        dynamicDAG.setName("CajarMarModel");
+
         dynamicDAG.getParentSetTimeT(defaulter).addParent(dynamicVariables.getInterfaceVariable(defaulter));
 
         dynamicDAG.getParentSetTimeT(sex).addParent(defaulter);
@@ -149,7 +151,7 @@ public final class CajaMarModels {
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
 
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dynamicBayesianNetwork = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
 

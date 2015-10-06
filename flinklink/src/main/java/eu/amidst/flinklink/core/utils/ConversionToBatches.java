@@ -16,6 +16,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.flinklink.core.data.DataFlink;
 import org.apache.flink.api.common.functions.RichMapPartitionFunction;
 import org.apache.flink.api.java.DataSet;
@@ -51,7 +52,7 @@ public class ConversionToBatches {
             config.setInteger(BATCH_SIZE, batchSize);
             config.setBytes(ATTRIBUTES, Serialization.serializeObject(data.getAttributes()));
 
-            return data.getDataSet().mapPartition(new DataBatch()).withParameters(config);
+            return data.getDataSet().mapPartition(new DataBatch<T>()).withParameters(config);
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);
         }
@@ -77,13 +78,16 @@ public class ConversionToBatches {
             for (T value : values) {
                 if (count < batchSize){
                     batch.add(value);
+                    count++;
                 }else {
                     out.collect(batch);
                     batch = new ArrayList<>();
                     batch.add(value);
+                    count = 1;
                 }
-
             }
+            if (batch.size()>0)
+                out.collect(batch);
         }
     }
 

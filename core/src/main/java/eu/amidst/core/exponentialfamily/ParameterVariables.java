@@ -246,6 +246,11 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
         }
 
         @Override
+        public VariableBuilder getVariableBuilder() {
+            return null;
+        }
+
+        @Override
         public boolean isDynamicVariable() {
             return false;
         }

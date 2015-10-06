@@ -15,13 +15,14 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
+import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.utils.Serialization;
+import eu.amidst.core.utils.Serialization;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -34,6 +35,7 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.types.DoubleValue;
 import org.apache.flink.util.Collector;
 
+import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
 import java.util.List;
@@ -45,8 +47,12 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class ParallelVB implements ParameterLearningAlgorithm {
+public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
+
+    public static String PRIOR="PRIOR";
     public static String SVB="SVB";
     public static String LATENT_VARS="LATENT_VARS";
 
@@ -112,8 +118,30 @@ public class ParallelVB implements ParameterLearningAlgorithm {
         throw new UnsupportedOperationException("Method not implemented yet");
     }
 
+    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(List<Variable> latentVariables){
 
-    public DataSet<DataPosterior> computePosteriorOverLatentVariables(List<Variable> latentVariables){
+        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        if (seq_id==null)
+            throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
+
+        try{
+            Configuration config = new Configuration();
+            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setBytes(SVB, Serialization.serializeObject(svb));
+            config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
+
+            return this.dataFlink
+                    .getBatchedDataSet(this.batchSize)
+                    .flatMap(new ParallelVBMapInferenceAssignment())
+                    .withParameters(config);
+
+        }catch(Exception ex){
+            throw new UndeclaredThrowableException(ex);
+        }
+
+    }
+
+    public DataSet<DataPosterior> computePosterior(List<Variable> latentVariables){
 
         Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
@@ -136,31 +164,48 @@ public class ParallelVB implements ParameterLearningAlgorithm {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
+    public DataSet<DataPosterior> computePosterior(){
+
+        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        if (seq_id==null)
+            throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
         try{
-
-            this.initLearning();
-
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
-            // get input data
-            CompoundVector param = this.svb.getNaturalParameterPrior();
-            DataSet<CompoundVector> paramSet = env.fromElements(param);
-
-            // set number of bulk iterations for KMeans algorithm
-            IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
-                                                    .registerAggregationConvergenceCriterion("ELBO_" + this.dag.getName(), new DoubleSumAggregator(), new ConvergenceELBO(this.globalThreshold));
-
             Configuration config = new Configuration();
             config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
 
-            DataSet<CompoundVector> newparamSet = this.dataFlink
+            return this.dataFlink
+                    .getBatchedDataSet(this.batchSize)
+                    .flatMap(new ParallelVBMapInference())
+                    .withParameters(config);
+
+        }catch(Exception ex){
+            throw new UndeclaredThrowableException(ex);
+        }
+
+    }
+    public void updateModel(DataFlink<DataInstance> dataUpdate){
+
+        try{
+            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+            // get input data
+            CompoundVector parameterPrior = this.svb.getNaturalParameterPrior();
+            CompoundVector zeroedVector = CompoundVector.newZeroedVector(parameterPrior);
+
+            DataSet<CompoundVector> paramSet = env.fromElements(zeroedVector);
+
+            // set number of bulk iterations for KMeans algorithm
+            IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
+                    .registerAggregationConvergenceCriterion("ELBO_" + this.dag.getName(), new DoubleSumAggregator(), new ConvergenceELBO(this.globalThreshold));
+
+            Configuration config = new Configuration();
+            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setBytes(SVB, Serialization.serializeObject(svb));
+            config.setBytes(PRIOR, Serialization.serializeObject(parameterPrior));
+
+            DataSet<CompoundVector> newparamSet = dataUpdate
                     .getBatchedDataSet(this.batchSize)
                     .map(new ParallelVBMap())
                     .withParameters(config)
@@ -170,11 +215,21 @@ public class ParallelVB implements ParameterLearningAlgorithm {
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
-            param.sum(finlparamSet.collect().get(0));
-            this.svb.updateNaturalParameterPrior(param);
+            parameterPrior.sum(finlparamSet.collect().get(0));
+            this.svb.updateNaturalParameterPrior(parameterPrior);
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);
         }
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void runLearning() {
+        this.initLearning();
+        this.updateModel(this.dataFlink);
     }
 
     /**
@@ -210,7 +265,7 @@ public class ParallelVB implements ParameterLearningAlgorithm {
     }
 
 
-    static class ParallelVBMap extends RichMapFunction<DataOnMemory<DataInstance>, CompoundVector> {
+    public static class ParallelVBMap extends RichMapFunction<DataOnMemory<DataInstance>, CompoundVector> {
 
         DoubleSumAggregator elbo;
 
@@ -219,35 +274,53 @@ public class ParallelVB implements ParameterLearningAlgorithm {
         @Override
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
             SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
-            elbo.aggregate(out.getElbo());
+/*
+            double sum = svb.getPlateuStructure()
+                    .getVMP()
+                    .getNodes()
+                    .stream()
+                    .filter(node -> node.isActive())
+                    .filter(node -> !node.getMainVariable().isParameterVariable())
+                    .mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node))
+                    .sum();
+
+            elbo.aggregate(sum);
+            out.setElbo(sum);
+            return out.getVector();
+*/
+            elbo.aggregate(out.getElbo()/svb.getPlateuStructure().getVMP().getNodes().size());
             return out.getVector();
         }
+
 
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
             String bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
+            CompoundVector parameterPrior = Serialization.deserializeObject(parameters.getBytes(PRIOR, null));
+
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
-            svb.updateNaturalParameterPrior(updatedPrior);
+            parameterPrior.sum(updatedPrior);
+
+            svb.updateNaturalParameterPrior(parameterPrior);
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
         }
     }
 
-
-    static class ParallelVBMapInference extends RichFlatMapFunction<DataOnMemory<DataInstance>, DataPosterior> {
+    public static class ParallelVBMapInferenceAssignment extends RichFlatMapFunction<DataOnMemory<DataInstance>, DataPosteriorAssignment> {
 
         List<Variable> latentVariables;
         SVB svb;
 
         @Override
-        public void flatMap(DataOnMemory<DataInstance> dataBatch, Collector<DataPosterior> out) {
-            svb.computePosteriorOverLatentVariables(dataBatch, latentVariables)
-                    .stream()
-                    .forEach(record -> out.collect(record));
+        public void flatMap(DataOnMemory<DataInstance> dataBatch, Collector<DataPosteriorAssignment> out) {
+            for (DataPosteriorAssignment posterior: svb.computePosteriorAssignment(dataBatch, latentVariables)){
+                out.collect(posterior);
+            }
         }
 
         @Override
@@ -258,7 +331,34 @@ public class ParallelVB implements ParameterLearningAlgorithm {
         }
     }
 
-    static class ParallelVBReduce extends RichReduceFunction<CompoundVector> {
+    public static class ParallelVBMapInference extends RichFlatMapFunction<DataOnMemory<DataInstance>, DataPosterior> {
+
+        List<Variable> latentVariables;
+        SVB svb;
+
+        @Override
+        public void flatMap(DataOnMemory<DataInstance> dataBatch, Collector<DataPosterior> out) {
+            if (latentVariables==null){
+                for (DataPosterior posterior: svb.computePosterior(dataBatch)){
+                    out.collect(posterior);
+                }
+
+            }else {
+                for (DataPosterior posterior: svb.computePosterior(dataBatch, latentVariables)){
+                    out.collect(posterior);
+                }
+            }
+        }
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            super.open(parameters);
+            svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
+            latentVariables = Serialization.deserializeObject(parameters.getBytes(LATENT_VARS, null));
+        }
+    }
+
+    public static class ParallelVBReduce extends RichReduceFunction<CompoundVector> {
         @Override
         public CompoundVector reduce(CompoundVector value1, CompoundVector value2) throws Exception {
             value2.sum(value1);
@@ -267,7 +367,7 @@ public class ParallelVB implements ParameterLearningAlgorithm {
     }
 
 
-    static class ConvergenceELBO implements ConvergenceCriterion<DoubleValue>{
+    public static class ConvergenceELBO implements ConvergenceCriterion<DoubleValue>{
 
         final double threshold;
         double previousELBO = Double.NaN;
@@ -280,10 +380,17 @@ public class ParallelVB implements ParameterLearningAlgorithm {
             if (iteration==1) {
                 previousELBO=value.getValue();
                 return false;
-            }else if (Math.abs(value.getValue() - previousELBO)>threshold) {
+            }else if ((value.getValue() < previousELBO)){
+                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", " + value.getValue() +" < " + previousELBO);
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +", " + (value.getValue() -previousELBO));
+                this.previousELBO=value.getValue();
+                return false;
+            }else if (value.getValue()>(previousELBO+threshold)) {
+                System.out.println("Global bound is monotonically increasing: "+ iteration +", " + (value.getValue() -previousELBO));
                 this.previousELBO=value.getValue();
                 return false;
             }else {
+                System.out.println("Global Convergence: "+ iteration +", " + (value.getValue() -previousELBO));
                 return true;
             }
         }

@@ -32,8 +32,8 @@ public interface InferenceAlgorithmForDBN {
 
     <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead);
 
-    int getTimeIDOfLastEvidence();
+    long getTimeIDOfLastEvidence();
 
-    int getTimeIDOfPosterior();
+    long getTimeIDOfPosterior();
 
 }

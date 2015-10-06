@@ -155,7 +155,7 @@ public final class VerdandeModels {
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object. Similarly
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
-        DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOSKF.dbn");
@@ -237,7 +237,7 @@ public final class VerdandeModels {
 
         Variable hidden = dynamicVariables.newGaussianDynamicVariable("HiddenVar");
 
-        Variable mixture = dynamicVariables.newMultinomialDynamicVariable("Mixture",2);
+        Variable mixture = dynamicVariables.newMultinomialLogisticDynamicVariable("Mixture",2);
 
         /**
          * 1. Once we have defined your DynamicVariables object the next step is to create a dynamic DAG
@@ -324,7 +324,7 @@ public final class VerdandeModels {
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKFwithMG.dbn");
@@ -345,7 +345,7 @@ public final class VerdandeModels {
         Variable observedDepth = dynamicVariables.newDynamicVariable(attDepth);
         Variable observedGammaDiff = dynamicVariables.newDynamicVariable(attGammaDiff);
 
-        Variable formationNo = dynamicVariables.newMultinomialDynamicVariable("FormationNo", 2);
+        Variable formationNo = dynamicVariables.newMultinomialLogisticDynamicVariable("FormationNo", 2);
 
         Variable shift = dynamicVariables.newMultinomialDynamicVariable("Shift",2);
 
@@ -367,7 +367,7 @@ public final class VerdandeModels {
         System.out.println(dynamicDAG.toString());
 
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
 

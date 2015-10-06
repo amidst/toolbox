@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HashMapDynamicAssignment implements DynamicAssignment {
     private Map<Variable,Double> assignment;
-    int sequenceID;
-    int timeID;
+    long sequenceID;
+    long timeID;
 
     public HashMapDynamicAssignment(int nOfVars){
         assignment = new ConcurrentHashMap(nOfVars);
@@ -49,7 +49,7 @@ public class HashMapDynamicAssignment implements DynamicAssignment {
     }
 
     @Override
-    public int getSequenceID() {
+    public long getSequenceID() {
         return sequenceID;
     }
 
@@ -58,7 +58,7 @@ public class HashMapDynamicAssignment implements DynamicAssignment {
     }
 
     @Override
-    public int getTimeID() {
+    public long getTimeID() {
         return timeID;
     }
 

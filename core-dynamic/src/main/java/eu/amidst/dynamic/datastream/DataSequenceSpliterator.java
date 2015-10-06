@@ -142,18 +142,18 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
         /** Represents the serial version ID for serializing the object. */
         private static final long serialVersionUID = 4107783324901370839L;
 
-        int seqId=0;
+        long seqId=0;
 
         public DataSequenceImpl(Attributes attributes_) {
             super(attributes_);
         }
 
-        public void setSeqId(int seqId) {
+        public void setSeqId(long seqId) {
             this.seqId = seqId;
         }
 
         @Override
-        public int getSequenceID() {
+        public long getSequenceID() {
             return seqId;
         }
     }

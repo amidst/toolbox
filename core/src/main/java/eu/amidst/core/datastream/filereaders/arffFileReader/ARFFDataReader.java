@@ -158,8 +158,9 @@ public class ARFFDataReader implements DataFileReader {
      * {@inheritDoc}
      */
     @Override
-    public boolean doesItReadThisFileExtension(String fileExtension) {
-        return fileExtension.equals(".arff");
+    public boolean doesItReadThisFile(String fileName) {
+        String[] parts = fileName.split(".");
+        return parts[parts.length-1].equals(".arff");
     }
 
     /**
@@ -170,7 +171,12 @@ public class ARFFDataReader implements DataFileReader {
     public Stream<DataRow> stream() {
         //if (streamString ==null) {
             try {
-                streamString = Files.lines(pathFile).filter(w -> !w.isEmpty()).filter(w -> !w.startsWith("%")).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
+                streamString = Files.lines(pathFile)
+                                .filter(w -> !w.isEmpty())
+                                .filter(w -> !w.startsWith("%"))
+                                .skip(this.dataLineCount)
+                                .filter(w -> !w.isEmpty())
+                                .map(line -> new DataRowWeka(this.attributes, line));
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }

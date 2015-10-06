@@ -102,7 +102,7 @@ public class InferenceDemo {
          Iterator<DynamicDataInstance> iterator = data.iterator();
          LabelledDCNode lastDefault =null;
 
-         int currentSequenceID = 0;
+        long currentSequenceID = 0;
         DynamicDataInstance dataInstance = iterator.next();
 
         Domain domainObject = huginDBN.createDBNDomain(timeSlices);

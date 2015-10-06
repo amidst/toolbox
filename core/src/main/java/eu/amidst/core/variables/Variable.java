@@ -129,6 +129,13 @@ public interface Variable {
         return this.getDistributionType().newConditionalDistribution(parents);
     }
 
+
+    /**
+     * Returns the associated, properly created, VariableBuilder object.
+     * @return A {@link VariableBuilder} object.
+     */
+    VariableBuilder getVariableBuilder();
+
     /**
      * {@inheritDoc}
      */

@@ -173,6 +173,24 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
      * {@inheritDoc}
      */
     @Override
+    public void setVar(Variable var) {
+        this.var= var;
+        this.base.setVar(var);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setConditioningVariables(List<Variable> parents) {
+        this.parents = parents;
+        this.base.setConditioningVariables(parents);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String label(){
         return "Normal|Multinomial,Normal";
     }

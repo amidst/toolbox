@@ -8,44 +8,61 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package eu.amidst.flinklink.core.utils;
+package eu.amidst.core.utils;
 
 
 import java.io.*;
 import java.lang.reflect.UndeclaredThrowableException;
 
 /**
- * Created by andresmasegosa on 3/9/15.
+ * Utility class for object serialization/deserialization and deep copies.
  */
 public class Serialization {
 
-    public static byte[] serializeObject(Object object) throws Exception{
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out = null;
-        try {
-            out = new ObjectOutputStream(bos);
-            out.writeObject(object);
-            return bos.toByteArray();
-        } catch (Exception ex) {
-            throw new UndeclaredThrowableException(ex);
-        } finally {
+    /**
+     * Serializes a given object
+     * @param object, any serializable object.
+     * @return An array of bytes
+     * @throws Exception
+     */
+    public static byte[] serializeObject(Object object){
+
+        try{
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutput out = null;
             try {
-                if (out != null) {
-                    out.close();
+                out = new ObjectOutputStream(bos);
+                out.writeObject(object);
+                return bos.toByteArray();
+            } catch (Exception ex) {
+                throw new UndeclaredThrowableException(ex);
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException ex) {
+                    // ignore close exception
+                    return null;
                 }
-            } catch (IOException ex) {
-                // ignore close exception
-                return null;
+                try {
+                    bos.close();
+                } catch (IOException ex) {
+                    // ignore close exception
+                    return null;
+                }
             }
-            try {
-                bos.close();
-            } catch (IOException ex) {
-                // ignore close exception
-                return null;
-            }
+        }catch(Exception ex){
+            throw new UndeclaredThrowableException(ex);
         }
     }
 
+    /**
+     * Deserilizes an object from an array of bytes.
+     * @param bytes, an array of bytes
+     * @param <T> The type of the deserialized object.
+     * @return A properly deseralized object
+     */
     public static <T> T deserializeObject(byte[] bytes) {
 
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
@@ -74,5 +91,14 @@ public class Serialization {
     }
 
 
+    /**
+     * Performs a deep copy of a given object by serialization.
+     * @param object, the object to be copied.
+     * @param <T>, the type of the object to be copied
+     * @return A valid deep copied object.
+     */
+    public static <T> T deepCopy(T object){
+        return deserializeObject(serializeObject(object));
+    }
 
 }

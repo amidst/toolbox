@@ -97,6 +97,19 @@ public class Variables implements Iterable<Variable>, Serializable {
     }
 
     /**
+     * Sets a new set of attributes. Links current variables with this new set by matching
+     * variable names with attributes names.
+     * @param attributes
+     */
+    public void setAttributes(Attributes attributes){
+        this.attributes=attributes;
+        for (Attribute attribute : attributes) {
+            VariableImplementation variableImplementation = (VariableImplementation)this.getVariableByName(attribute.getName());
+            variableImplementation.setAttribute(attribute);
+        }
+    }
+
+    /**
      * Returns the list of Attributes associated with these Variables.
      * @return the list of Attributes associated with these Variables.
      */
@@ -236,7 +249,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param builder a {@link VariableBuilder} object.
      * @return a new {@link Variable}.
      */
-    private Variable newVariable(VariableBuilder builder) {
+    public Variable newVariable(VariableBuilder builder) {
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names: " + var.getName());
@@ -355,6 +368,10 @@ public class Variables implements Iterable<Variable>, Serializable {
             this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 
+        public void setAttribute(Attribute attribute) {
+            this.attribute = attribute;
+        }
+
         /**
          * {@inheritDoc}
          */
@@ -408,7 +425,8 @@ public class Variables implements Iterable<Variable>, Serializable {
          */
         @Override
         public boolean isInterfaceVariable() {
-            throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
+            //throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
+            return false;
         }
 
         /**
@@ -433,6 +451,21 @@ public class Variables implements Iterable<Variable>, Serializable {
         @Override
         public boolean isParameterVariable() {
             return false;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VariableBuilder getVariableBuilder(){
+            VariableBuilder variableBuilder = new VariableBuilder();
+            variableBuilder.setAttribute(this.getAttribute());
+            variableBuilder.setDistributionType(this.getDistributionTypeEnum());
+            variableBuilder.setName(this.getName());
+            variableBuilder.setObservable(this.observable);
+            variableBuilder.setStateSpaceType(this.getStateSpaceType());
+
+            return variableBuilder;
         }
 
         /**
