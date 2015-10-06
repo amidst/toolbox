@@ -16,8 +16,9 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class stores the posterior probabilities over a set of latent variables for an
@@ -31,12 +32,8 @@ public class DataPosterior implements Serializable {
     /** Represents the id of item */
     final long id;
 
-    /** Represent the list of posterior probabilities */
-    final List<UnivariateDistribution> posteriors;
-
-    /** Represent the list of latent variables*/
-    final List<Variable> latentVariables;
-
+    /** Represent a map between variables and UnivariateDistributions*/
+    final Map<Variable,UnivariateDistribution> map;
     /**
      * Creates a new object using a given id_ and a list of univariate posteriors.
      * @param id_, a unique id.
@@ -44,34 +41,52 @@ public class DataPosterior implements Serializable {
      */
     public DataPosterior(long id_, List<UnivariateDistribution> posteriors_){
         this.id=id_;
-        this.posteriors = posteriors_;
-        latentVariables = new ArrayList<>();
+        map = new HashMap<>();
         for (UnivariateDistribution univariateDistribution : posteriors_) {
-            latentVariables.add(univariateDistribution.getVariable());
+            map.put(univariateDistribution.getVariable(), univariateDistribution);
         }
     }
 
     /**
      * Returns the id of the item
-     * @return a long value
+     * @return a integer value
      */
     public long getId() {
         return id;
     }
 
     /**
-     * Returns the list of posterior probabilities distributions.
-     * @return, a list of {@link UnivariateDistribution} objects
+     * Returns the posterior of a given variable.
+     * @param var, a {@link Variable} object
+     * @return A {@link UnivariateDistribution} object
      */
-    public List<UnivariateDistribution> getPosteriors() {
-        return posteriors;
+    public UnivariateDistribution getPosterior(Variable var) {
+        return map.get(var);
     }
 
     /**
-     * Returns the list of latent variables.
-     * @return, a list of {@link Variable} objects
+     * {@inheritDoc}
      */
-    public List<Variable> getLatentVariables() {
-        return latentVariables;
+    @Override
+    public String toString(){
+        StringBuilder string = new StringBuilder();
+        string.append("ID: "+ id + " | ");
+        for (Map.Entry<Variable, UnivariateDistribution> entry : map.entrySet()) {
+            string.append(entry.getKey().getName()+", ");
+            string.append(" |  ");
+            string.append(entry.getValue().toString()+", ");
+        }
+
+        return string.toString();
     }
+
+    /**
+     * Returns whethers a given variable is present in the object.
+     * @param var, a {@Variable} object.
+     * @return A boolean value.
+     */
+    public boolean isPresent(Variable var){
+        return this.map.containsKey(var);
+    }
+
 }

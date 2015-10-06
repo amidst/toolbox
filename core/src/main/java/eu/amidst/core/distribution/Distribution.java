@@ -49,6 +49,16 @@ public abstract class Distribution implements Serializable {
     }
 
     /**
+     * Sets the variable of the distribution.
+     * WARNING: This method should only be used in exceptional cases.
+     * It may affect the coherence of the graphical model.
+     * @param var, A variable object.
+     */
+    public void setVar(Variable var) {
+        this.var = var;
+    }
+
+    /**
      * Returns the name of this Distribution.
      * @return a String representing the name of this Distribution.
      */

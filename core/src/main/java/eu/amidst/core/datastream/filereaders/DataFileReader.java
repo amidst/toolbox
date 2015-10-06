@@ -32,11 +32,11 @@ public interface DataFileReader extends Iterable<DataRow> {
     Attributes getAttributes();
 
     /**
-     * Tests if this DataFileReader could read the given filename extension.
-     * @param fileExtension the filename extension.
-     * @return true if the filename extension could be read.
+     * Tests if this DataFileReader could read the given filename.
+     * @param fileName the filename.
+     * @return true if the filename could be read.
      */
-    boolean doesItReadThisFileExtension(String fileExtension);
+    boolean doesItReadThisFile(String fileName);
 
     /**
      * Returns a Stream of {@DataRow} objects to be processed sequentially.

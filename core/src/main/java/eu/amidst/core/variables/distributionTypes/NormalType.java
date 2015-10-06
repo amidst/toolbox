@@ -11,6 +11,7 @@ package eu.amidst.core.variables.distributionTypes;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.DistributionTypeEnum;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
@@ -66,7 +67,7 @@ public class NormalType extends DistributionType{
         boolean normalParents = false;
         for (Variable v : parents) {
             //TODO MultinomialLogist as parent
-            if (v.isMultinomial() || (v.isMultinomialLogistic())) {
+            if (v.getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
                 multinomialParents = true;
             } else if (v.isNormal()) {
                 normalParents = true;

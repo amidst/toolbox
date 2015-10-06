@@ -20,6 +20,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.DAGGenerator;
 
 /**
  *
@@ -44,7 +45,7 @@ public class SVBByBatchExample {
         SVB parameterLearningAlgorithm = new SVB();
 
         //We fix the DAG structure
-        parameterLearningAlgorithm.setDAG(SVBExample.getHiddenNaiveBayesStructure(data));
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getHiddenNaiveBayesStructure(data.getAttributes(),"H",2));
 
         //We fix the size of the window, which must be equal to the size of the data batches we use for learning
         parameterLearningAlgorithm.setWindowsSize(5);

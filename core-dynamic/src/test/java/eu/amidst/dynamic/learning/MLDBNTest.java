@@ -281,7 +281,7 @@ public class MLDBNTest {
             dynamicDAG.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB =  new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 
@@ -362,7 +362,7 @@ public class MLDBNTest {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 

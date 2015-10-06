@@ -16,13 +16,14 @@
 
 package eu.amidst.dynamic.models;
 
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
-import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +48,7 @@ public class DynamicDAG implements Serializable {
      * It contains the ParentSets for all variables at time T.
      */
     private List<ParentSet> parentSetTimeT;
+    private String name;
 
 
     public DynamicDAG(DynamicVariables dynamicVariables1) {
@@ -59,8 +61,8 @@ public class DynamicDAG implements Serializable {
             parentSetTimeT.add(var.getVarID(), new ParentSetImpl(var));
         }
 
-        this.parentSetTime0 = Collections.unmodifiableList(this.parentSetTime0);
-        this.parentSetTimeT = Collections.unmodifiableList(this.parentSetTimeT);
+        //this.parentSetTime0 = Collections.unmodifiableList(this.parentSetTime0);
+        //this.parentSetTimeT = Collections.unmodifiableList(this.parentSetTimeT);
         this.dynamicVariables.block();
     }
 
@@ -83,6 +85,33 @@ public class DynamicDAG implements Serializable {
                     "of its dynamic counterpart.");
         }
         return this.parentSetTime0.get(var.getVarID());
+    }
+
+    public DAG toDAGTimeT(){
+        Variables staticVariables = this.getDynamicVariables().toVariablesTimeT();
+        DAG dag = new DAG(staticVariables);
+        dag.setName(this.getName());
+        for (Variable dynamicVariable : dynamicVariables) {
+            for (Variable parent : this.getParentSetTimeT(dynamicVariable)) {
+                dag.getParentSet(staticVariables.getVariableByName(dynamicVariable.getName())).addParent(staticVariables.getVariableByName(parent.getName()));
+            }
+        }
+
+        return dag;
+    }
+
+    public DAG toDAGTime0(){
+        Variables staticVariables = this.getDynamicVariables().toVariablesTime0();
+        DAG dag = new DAG(staticVariables);
+        dag.setName(this.getName());
+
+        for (Variable dynamicVariable : dynamicVariables) {
+            for (Variable parent : this.getParentSetTime0(dynamicVariable)) {
+                dag.getParentSet(staticVariables.getVariableByName(dynamicVariable.getName())).addParent(staticVariables.getVariableByName(parent.getName()));
+            }
+        }
+
+        return dag;
     }
 
     public boolean containCycles() {
@@ -147,6 +176,14 @@ public class DynamicDAG implements Serializable {
         return str.toString();
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     private final class ParentSetImpl implements ParentSet, Serializable {
 
 
@@ -168,7 +205,7 @@ public class DynamicDAG implements Serializable {
         //TODO Gives an error trying to add a duplicate parent in the following structure: A -> B <- Aclone. Are are considering A and AClone the same variables?
         public void addParent(Variable var) {
             if (!mainVar.getDistributionType().isParentCompatible(var)){
-                throw new IllegalArgumentException("Adding a parent of type "+var.getDistributionTypeEnum().toString()+"which is not compatible" +
+                throw new IllegalArgumentException("Adding a parent of type "+var.getDistributionTypeEnum().toString()+ " which is not compatible " +
                         "with children variable of type "+this.mainVar.getDistributionTypeEnum().toString());
             }
 
@@ -219,7 +256,7 @@ public class DynamicDAG implements Serializable {
          * Is an ArrayList pointer to an ArrayList unmodifiable object still unmodifiable? I guess so right?
          */
         public void blockParents() {
-            vars = Collections.unmodifiableList(vars);
+            //vars = Collections.unmodifiableList(vars);
         }
 
         public boolean contains(Variable var) {

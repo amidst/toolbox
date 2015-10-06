@@ -21,14 +21,20 @@ import java.util.List;
  */
 public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlgorithm {
 
+    /**
+     * Compute the posterior over all the latent variables for a given set of data instances
+     * @param batch, a batch of data instances.
+     * @return A list of {@link DataPosterior} objects.
+     */
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch);
 
     /**
-     * Compute the posterior over a set of latent variables for a given set of data instances
+     * Compute the posterior over a given set of latent variables for a given set of data instances
      * @param batch, a batch of data instances.
      * @param latentVariables, a list of Variable objects.
      * @return A list of {@link DataPosterior} objects.
      */
-    List<DataPosterior> computePosteriorOverLatentVariables(DataOnMemory<DataInstance> batch, List<Variable> latentVariables);
+    List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch, List<Variable> latentVariables);
 
     /**
      * Returns the parameter posterior.

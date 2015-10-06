@@ -18,7 +18,7 @@ import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.utils.Serialization;
+import eu.amidst.core.utils.Serialization;
 import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.api.common.accumulators.DoubleCounter;
 import org.apache.flink.api.common.functions.RichMapFunction;

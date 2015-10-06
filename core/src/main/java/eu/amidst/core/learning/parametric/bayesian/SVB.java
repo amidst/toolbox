@@ -19,6 +19,8 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
@@ -233,6 +235,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public void setOutput(boolean activateOutput) {
         this.getPlateuStructure().getVMP().setOutput(activateOutput);
+        this.getPlateuStructure().getVMP().setTestELBO(activateOutput);
     }
 
     /**
@@ -302,11 +305,23 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
     }
 
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<DataPosterior> computePosteriorOverLatentVariables(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch) {
+
+        List<Variable> latentVariables = this.dag.getVariables().getListOfVariables().stream().filter(var -> var.getAttribute()!=null).collect(Collectors.toList());
+
+        return this.computePosterior(batch, latentVariables);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
         Attribute seq_id = batch.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
@@ -328,6 +343,41 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
                 posteriorsQ.add(plateuStructure.getEFVariablePosterior(latentVariable, i).deepCopy().toUnivariateDistribution());
             }
             posteriors.add(new DataPosterior((int) batch.getDataInstance(i).getValue(seq_id), posteriorsQ));
+        }
+
+        return posteriors;
+    }
+
+
+    public List<DataPosteriorAssignment> computePosteriorAssignment(DataOnMemory<DataInstance> batch, List<Variable> variables) {
+        Attribute seq_id = batch.getAttributes().getSeq_id();
+        if (seq_id==null)
+            throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
+
+        this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
+                .forEach(var -> this.getPlateuStructure().getNodeOfVar(var, 0).setActive(false));
+
+
+        this.plateuStructure.setEvidence(batch.getList());
+        this.plateuStructure.runInference();
+
+        this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
+                .forEach(var -> this.getPlateuStructure().getNodeOfVar(var, 0).setActive(true));
+
+        List<DataPosteriorAssignment> posteriors = new ArrayList<>();
+        for (int i = 0; i < batch.getNumberOfDataInstances(); i++) {
+            List<UnivariateDistribution> posteriorsQ = new ArrayList<>();
+            Assignment assignment = new HashMapAssignment();
+            for (Variable variable : variables) {
+                EF_UnivariateDistribution dist = plateuStructure.getEFVariablePosterior(variable, i);
+                if (dist!=null)
+                    posteriorsQ.add(dist.deepCopy().toUnivariateDistribution());
+                else
+                    assignment.setValue(variable,batch.getDataInstance(i).getValue(variable));
+
+            }
+            DataPosterior dataPosterior = new DataPosterior((int) batch.getDataInstance(i).getValue(seq_id), posteriorsQ);
+            posteriors.add(new DataPosteriorAssignment(dataPosterior,assignment));
         }
 
         return posteriors;
@@ -374,6 +424,15 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     public double getAverageNumOfIterations(){
         return ((double)nIterTotal)/nBatches;
+    }
+
+
+    /**
+     * Returns the associated DAG defining the PGM structure
+     * @return A {@link DAG} object.
+     */
+    public DAG getDAG() {
+        return dag;
     }
 
     /**

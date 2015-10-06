@@ -58,11 +58,11 @@ public final class InferenceEngineForDBN {
         return inferenceAlgorithmForDBN.getPredictivePosterior(var,nTimesAhead);
     }
 
-    public static int getTimeIDOfPosterior(){
+    public static long getTimeIDOfPosterior(){
         return inferenceAlgorithmForDBN.getTimeIDOfPosterior();
     }
 
-    public static int getTimeIDOfLastEvidence(){
+    public static long getTimeIDOfLastEvidence(){
         return inferenceAlgorithmForDBN.getTimeIDOfLastEvidence();
     }
 

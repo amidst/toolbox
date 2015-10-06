@@ -42,9 +42,6 @@ public final class BayesianNetwork implements Serializable {
     /** Represents the Directed Acyclic Graph ({@link DAG}) defining the Bayesian network graphical structure. */
     private DAG dag;
 
-    /** Represents the name of the BN **/
-    private String name;
-
     /**
      * Creates a new BayesianNetwork from a dag.
      * @param dag a directed acyclic graph.
@@ -69,7 +66,7 @@ public final class BayesianNetwork implements Serializable {
      * @return a String object
      */
     public String getName() {
-        return name;
+        return this.dag.getName();
     }
 
     /**
@@ -77,7 +74,7 @@ public final class BayesianNetwork implements Serializable {
      * @param name, a String object
      */
     public void setName(String name) {
-        this.name = name;
+        this.dag.setName(name);
     }
 
     /**

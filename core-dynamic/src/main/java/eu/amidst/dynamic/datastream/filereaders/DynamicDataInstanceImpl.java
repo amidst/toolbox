@@ -79,12 +79,12 @@ class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
     }
 
     @Override
-    public int getSequenceID() {
+    public long getSequenceID() {
         return sequenceID;
     }
 
     @Override
-    public int getTimeID() {
+    public long getTimeID() {
         return timeID;
     }
 

@@ -20,8 +20,9 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataSetLoader;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import junit.framework.TestCase;
+import org.apache.flink.api.java.ExecutionEnvironment;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
 
     public void testingMLParallelAsia() throws IOException, ClassNotFoundException {
 
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
@@ -49,7 +51,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataSetLoader.loadData("./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -74,6 +76,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
     }
 
     public void testingMLParallelWaste() throws IOException, ClassNotFoundException {
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 
         // load the true Asia Bayesian network
@@ -91,7 +94,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataSetLoader.loadData("./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning

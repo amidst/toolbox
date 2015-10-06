@@ -106,8 +106,8 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
             convergence = true;
         }
 
-        if (testELBO && (!convergence && newelbo/nodes.size() < (local_elbo/nodes.size() - 0.01) && local_iter>-1) || Double.isNaN(local_elbo)){
-            throw new IllegalStateException("The elbo is not monotonically increasing at iter "+local_iter+": " + local_elbo + ", "+ newelbo);
+        if (testELBO && (!convergence && (newelbo/nodes.size() < (local_elbo/nodes.size() - 0.01)) && local_iter>-1) || Double.isNaN(local_elbo)){
+            throw new IllegalStateException("The elbo is not monotonically increasing at iter "+local_iter+": " + local_elbo/nodes.size() + ", "+ newelbo/nodes.size());
         }
         local_elbo = newelbo;
         return convergence;
@@ -118,7 +118,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
      */
     @Override
     public double computeLogProbabilityOfEvidence(){
-        return this.nodes.stream().mapToDouble(node -> this.computeELBO(node)).sum();
+        return this.nodes.stream().filter(node-> node.isActive()).mapToDouble(node -> this.computeELBO(node)).sum();
     }
 
     /**
@@ -126,7 +126,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
      * @param node a given {@link Node} object.
      * @return a {@code double} that represents the ELBO value.
      */
-    private double computeELBO(Node node){
+    public double computeELBO(Node node){
 
         Map<Variable, MomentParameters> momentParents = node.getMomentParents();
 

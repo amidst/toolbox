@@ -9,21 +9,21 @@
 package eu.amidst.dynamic.examples.models;
 
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 
 /**
  * Created by afa on 13/1/15.
  */
 public class DBNExample {
 
-    public static DynamicBayesianNetwork getAmidst_DBN_Example()  {
+    public static DynamicBayesianNetwork getAmidst_DBN_Example() {
 
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDiscrete.arff");
 
@@ -79,7 +79,7 @@ public class DBNExample {
         dynamicDAG.getParentSetTimeT(E).addParent(E_TClone);
         dynamicDAG.getParentSetTimeT(G).addParent(G_TClone);
 
-        DynamicBayesianNetwork amidstDBN = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork amidstDBN = new DynamicBayesianNetwork(dynamicDAG);
 
         //****************************************** Distributions *****************************************************
 
@@ -205,7 +205,7 @@ public class DBNExample {
         dynamicDAG.getParentSetTimeT(A).addParent(A_TClone);
 
 
-        DynamicBayesianNetwork amidstDBN = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork amidstDBN = new DynamicBayesianNetwork(dynamicDAG);
 
         System.out.println(dynamicDAG.toString());
 
@@ -229,18 +229,18 @@ public class DBNExample {
 
         // Variable D
         Multinomial_MultinomialParents distD_Time0 = amidstDBN.getConditionalDistributionTime0(D);
-        distD_Time0.getMultinomial(0).setProbabilities(new double[]{0.1,0.9});
-        distD_Time0.getMultinomial(1).setProbabilities(new double[]{0.8,0.2});
-        distD_Time0.getMultinomial(2).setProbabilities(new double[]{0.4,0.6});
-        distD_Time0.getMultinomial(3).setProbabilities(new double[]{0.3,0.7});
-        distD_Time0.getMultinomial(4).setProbabilities(new double[]{0.5,0.5});
-        distD_Time0.getMultinomial(5).setProbabilities(new double[]{0.2,0.8});
-        distD_Time0.getMultinomial(6).setProbabilities(new double[]{0.9,0.1});
-        distD_Time0.getMultinomial(7).setProbabilities(new double[]{0.3,0.7});
-        distD_Time0.getMultinomial(8).setProbabilities(new double[]{0.4,0.6});
-        distD_Time0.getMultinomial(9).setProbabilities(new double[]{0.9,0.1});
-        distD_Time0.getMultinomial(10).setProbabilities(new double[]{0.6,0.4});
-        distD_Time0.getMultinomial(11).setProbabilities(new double[]{0.2,0.8});
+        distD_Time0.getMultinomial(0).setProbabilities(new double[]{0.1, 0.9});
+        distD_Time0.getMultinomial(1).setProbabilities(new double[]{0.8, 0.2});
+        distD_Time0.getMultinomial(2).setProbabilities(new double[]{0.4, 0.6});
+        distD_Time0.getMultinomial(3).setProbabilities(new double[]{0.3, 0.7});
+        distD_Time0.getMultinomial(4).setProbabilities(new double[]{0.5, 0.5});
+        distD_Time0.getMultinomial(5).setProbabilities(new double[]{0.2, 0.8});
+        distD_Time0.getMultinomial(6).setProbabilities(new double[]{0.9, 0.1});
+        distD_Time0.getMultinomial(7).setProbabilities(new double[]{0.3, 0.7});
+        distD_Time0.getMultinomial(8).setProbabilities(new double[]{0.4, 0.6});
+        distD_Time0.getMultinomial(9).setProbabilities(new double[]{0.9, 0.1});
+        distD_Time0.getMultinomial(10).setProbabilities(new double[]{0.6, 0.4});
+        distD_Time0.getMultinomial(11).setProbabilities(new double[]{0.2, 0.8});
 
         // Variable E
         Multinomial_MultinomialParents distE_Time0 = amidstDBN.getConditionalDistributionTime0(E);
@@ -276,18 +276,18 @@ public class DBNExample {
 
         // Variable D
         Multinomial_MultinomialParents distD_TimeT = amidstDBN.getConditionalDistributionTimeT(D);
-        distD_TimeT.getMultinomial(0).setProbabilities(new double[]{0.1,0.9});
-        distD_TimeT.getMultinomial(1).setProbabilities(new double[]{0.8,0.2});
-        distD_TimeT.getMultinomial(2).setProbabilities(new double[]{0.4,0.6});
-        distD_TimeT.getMultinomial(3).setProbabilities(new double[]{0.3,0.7});
-        distD_TimeT.getMultinomial(4).setProbabilities(new double[]{0.5,0.5});
-        distD_TimeT.getMultinomial(5).setProbabilities(new double[]{0.2,0.8});
-        distD_TimeT.getMultinomial(6).setProbabilities(new double[]{0.9,0.1});
-        distD_TimeT.getMultinomial(7).setProbabilities(new double[]{0.3,0.7});
-        distD_TimeT.getMultinomial(8).setProbabilities(new double[]{0.4,0.6});
-        distD_TimeT.getMultinomial(9).setProbabilities(new double[]{0.9,0.1});
-        distD_TimeT.getMultinomial(10).setProbabilities(new double[]{0.6,0.4});
-        distD_TimeT.getMultinomial(11).setProbabilities(new double[]{0.2,0.8});
+        distD_TimeT.getMultinomial(0).setProbabilities(new double[]{0.1, 0.9});
+        distD_TimeT.getMultinomial(1).setProbabilities(new double[]{0.8, 0.2});
+        distD_TimeT.getMultinomial(2).setProbabilities(new double[]{0.4, 0.6});
+        distD_TimeT.getMultinomial(3).setProbabilities(new double[]{0.3, 0.7});
+        distD_TimeT.getMultinomial(4).setProbabilities(new double[]{0.5, 0.5});
+        distD_TimeT.getMultinomial(5).setProbabilities(new double[]{0.2, 0.8});
+        distD_TimeT.getMultinomial(6).setProbabilities(new double[]{0.9, 0.1});
+        distD_TimeT.getMultinomial(7).setProbabilities(new double[]{0.3, 0.7});
+        distD_TimeT.getMultinomial(8).setProbabilities(new double[]{0.4, 0.6});
+        distD_TimeT.getMultinomial(9).setProbabilities(new double[]{0.9, 0.1});
+        distD_TimeT.getMultinomial(10).setProbabilities(new double[]{0.6, 0.4});
+        distD_TimeT.getMultinomial(11).setProbabilities(new double[]{0.2, 0.8});
 
         // Variable E
         Multinomial_MultinomialParents distE_TimeT = amidstDBN.getConditionalDistributionTimeT(E);

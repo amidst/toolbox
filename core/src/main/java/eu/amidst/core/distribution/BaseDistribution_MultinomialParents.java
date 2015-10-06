@@ -14,6 +14,7 @@ import eu.amidst.core.exponentialfamily.EF_Distribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
 
         for (Variable parent : parents) {
 
-            if (parent.isMultinomial()) {
+            if (parent.getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
                 this.multinomialParents.add(parent);
             } else {
                 this.nonMultinomialParents.add(parent);
@@ -123,6 +124,7 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
         //this.nonMultinomialParents = Collections.unmodifiableList(this.nonMultinomialParents);
         //this.parents = Collections.unmodifiableList(this.parents);
     }
+
 
     /**
      * Returns the list of the multinomial parents.
@@ -219,6 +221,43 @@ public class BaseDistribution_MultinomialParents<E extends Distribution> extends
     public UnivariateDistribution getBaseUnivariateDistribution(int position) {
         return (UnivariateDistribution)this.getBaseDistribution(position);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setConditioningVariables(List<Variable> parents){
+        this.parents=parents;
+        this.multinomialParents = new ArrayList<Variable>();
+        this.nonMultinomialParents = new ArrayList<Variable>();
+
+        for (Variable parent : parents) {
+
+            if (parent.getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
+                this.multinomialParents.add(parent);
+            } else {
+                this.nonMultinomialParents.add(parent);
+            }
+        }
+
+        if (this.isBaseConditionalDistribution()) {
+            for (int i = 0; i < this.getNumberOfBaseDistributions(); i++) {
+                this.getBaseConditionalDistribution(i).setConditioningVariables(nonMultinomialParents);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setVar(Variable var) {
+        this.var = var;
+        for (E baseDistribution : baseDistributions) {
+            baseDistribution.setVar(var);
+        }
+    }
+
 
     /**
      * {@inheritDoc}

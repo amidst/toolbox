@@ -74,7 +74,7 @@ public class DynamicBayesianNetworkGenerator {
 
         dag.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
-        DynamicBayesianNetwork network = DynamicBayesianNetwork.newDynamicBayesianNetwork(dag);
+        DynamicBayesianNetwork network = new DynamicBayesianNetwork(dag);
 
         network.randomInitialization(random);
 
