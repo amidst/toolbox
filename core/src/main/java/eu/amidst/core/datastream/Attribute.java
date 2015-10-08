@@ -17,12 +17,12 @@
 
 package eu.amidst.core.datastream;
 
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.core.variables.StateSpaceType;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 
 /**
  * If we consider a data sets as a data  matrix, an Attribute class would represent a column of the matrix.
@@ -44,48 +44,17 @@ public final class Attribute implements Serializable {
     /** Represents the type of the state space of this attribute, that could be either finite or real. */
     private final StateSpaceType stateSpaceType;
 
-    /**
-     * Creates a new Attribute.
-     * @param index the index of column to which this Attribute refers.
-     * @param name the name of this Attribute.
-     * @param unit the name of the unit of this Attribute.
-     * @param stateSpaceTypeEnum1 the state space type of this Attribute (i.e., finite or real).
-     * @param numberOfStates the number of states of this Attribute in case its state space is finite.
-     */
-    public Attribute(int index, String name, String unit, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
+    /** Represents whether the attribute is a special one (e.g. refer to some id, date, etc) */
+    private boolean specialAttribute = false;
 
-        this.index = index;
-        this.name = name;
-        if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.FINITE_SET) {
-            this.stateSpaceType = new FiniteStateSpace(numberOfStates);
-            this.stateSpaceType.setUnit(unit);
-        }else if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.REAL) {
-            this.stateSpaceType = new RealStateSpace();
-            this.stateSpaceType.setUnit(unit);
-        }else {
-            throw new IllegalArgumentException("State Space not defined");
-        }
-    }
+    /** Represents whether the attribute is a seq_id**/
+    private boolean seq_id = false;
 
-    /**
-     * Creates a new Attribute.
-     * @param index the index of column to which this Attribute refers.
-     * @param name the name of this Attribute.
-     * @param stateSpaceTypeEnum1 the state space type of this Attribute (i.e., finite or real).
-     * @param numberOfStates the number of states of this Attribute in case its state space is finite.
-     */
-    public Attribute(int index, String name, StateSpaceTypeEnum stateSpaceTypeEnum1, int numberOfStates) {
+    /** Represents whether the attribute is a time_id**/
+    private boolean time_id = false;
 
-        this.index = index;
-        this.name = name;
-        if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.FINITE_SET) {
-            this.stateSpaceType = new FiniteStateSpace(numberOfStates);
-        }else if (stateSpaceTypeEnum1 == StateSpaceTypeEnum.REAL) {
-            this.stateSpaceType = new RealStateSpace();
-        }else {
-            throw new IllegalArgumentException("State Space not defined");
-        }
-    }
+    /** Represents the number format used to write the values of this attribute*/
+    private NumberFormat numberFormat=null;
 
     /**
      * Creates a new Attribute.
@@ -97,6 +66,71 @@ public final class Attribute implements Serializable {
         this.index = index;
         this.name = name;
         this.stateSpaceType = stateSpaceType1;
+    }
+
+    /**
+     * Set number the number format of the attribute used to write values to a String.
+     * @param numberFormat, a valid {@link NumberFormat} object.
+     */
+    public void setNumberFormat(NumberFormat numberFormat) {
+        this.numberFormat = numberFormat;
+    }
+
+    /**
+     * Returns number the number format of the attribute used to write values to a String.
+     * if null, there is non specific number format.
+     * @return a valid {@link NumberFormat} object.
+     */
+    public NumberFormat getNumberFormat() {
+        return numberFormat;
+    }
+
+    /**
+     * Indicates whether the attribute is a special one (e.g. an id, date, etc).
+     * @return A boolean value
+     */
+    public boolean isSpecialAttribute() {
+        return specialAttribute;
+    }
+
+    /**
+     * Sets whether the attribute is a special one (e.g. an id, date, etc).
+     * @param specialAttribute, a boolean value
+     */
+    public void setSpecialAttribute(boolean specialAttribute) {
+        this.specialAttribute = specialAttribute;
+    }
+
+    /**
+     * Indicates whether the attribute is a seq_id
+     * @return A boolean value
+     */
+    public boolean isSeqId() {
+        return seq_id;
+    }
+
+    /**
+     * Sets whether the attribute is a seq_id
+     * @param seq_id, a boolean value
+     */
+    public void setSeqId(boolean seq_id) {
+        this.seq_id = seq_id;
+    }
+
+    /**
+     * Indicates whether the attribute is a time_id
+     * @return A boolean value
+     */
+    public boolean isTimeId() {
+        return time_id;
+    }
+
+    /**
+     * Sets whether the attribute is a time_id
+     * @param time_id, a boolean value
+     */
+    public void setTimeId(boolean time_id) {
+        this.time_id = time_id;
     }
 
     /**

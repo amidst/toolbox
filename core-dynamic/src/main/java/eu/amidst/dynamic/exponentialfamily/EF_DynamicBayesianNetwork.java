@@ -139,7 +139,7 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
     }
 
     public DynamicBayesianNetwork toDynamicBayesianNetwork(DynamicDAG dag) {
-        return DynamicBayesianNetwork.newDynamicBayesianNetwork(dag,
+        return new DynamicBayesianNetwork(dag,
                 EF_BayesianNetwork.toConditionalDistribution(this.bayesianNetworkTime0.getDistributionList()),
                 EF_BayesianNetwork.toConditionalDistribution(this.bayesianNetworkTimeT.getDistributionList()));
     }

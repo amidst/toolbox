@@ -1,16 +1,17 @@
 package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.*;
-import eu.amidst.core.distribution.*;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -51,10 +52,10 @@ public class BNConverterToAMIDST {
             Node n = (Node)huginNodes.get(i);
             if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 int numStates = (int)((DiscreteChanceNode)n).getNumberOfStates();
-                attributes.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.FINITE_SET, numStates));
+                attributes.add(new Attribute(i, n.getName(), new FiniteStateSpace(numStates)));
             }
             else if (n.getKind().compareTo(NetworkModel.H_KIND_CONTINUOUS) == 0) {
-                attributes.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.REAL, 0));
+                attributes.add(new Attribute(i, n.getName(), new RealStateSpace()));
             }
         }
         Variables variables = new Variables(new Attributes(attributes));

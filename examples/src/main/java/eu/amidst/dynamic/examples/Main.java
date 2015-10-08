@@ -215,14 +215,5 @@ public class Main {
         }
 
 
-        EF_BayesianNetwork ef_bayesianNetwork = new EF_BayesianNetwork(bn);
-        Assignment assignment = null;
-        ef_bayesianNetwork.getDistributionList().stream()
-                .map(dist -> new AbstractMap.SimpleEntry(dist.getVariable().getVarID(),dist.getSufficientStatistics(assignment)))
-                .collect(Collector.of(ArrayList<Map.Entry<Integer,SufficientStatistics>>::new,
-                        List::add,
-                        (left, right) -> { left.addAll(right); return left; },
-                        list -> CompoundVector.newCompoundVector(list)));
-
     }
 }

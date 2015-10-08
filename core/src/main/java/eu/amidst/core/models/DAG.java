@@ -37,7 +37,7 @@ public class DAG implements Serializable {
     private List<ParentSet> parents;
 
     /** Represents the name of the DAG **/
-    private String name;
+    private String name = "DAG";
 
     /**
      * Creates a new DAG from a set of variables.

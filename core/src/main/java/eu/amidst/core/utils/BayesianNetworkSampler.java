@@ -32,7 +32,10 @@ import java.util.stream.Stream;
  * This class implements the interface {@link eu.amidst.core.utils.AmidstOptionsHandler}.
  * It defines a sampler of data from a {@link BayesianNetwork}.
  */
-public class BayesianNetworkSampler implements AmidstOptionsHandler {
+public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializable {
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
 
     /** Represents the {@link BayesianNetwork} object from which the data will be sampled. */
     private BayesianNetwork network;
@@ -72,6 +75,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                 .mapToObj(i -> sample(network, causalOrder, randomGenerator.current()))
                 .map(this::filter);
     }
+
 
     /**
      * Sets a given {@link Variable} object as hidden.
@@ -167,10 +171,14 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
                     private static final long serialVersionUID = -3436599636425587512L;
 
                     Assignment assignment;
-                    TemporalDataInstance(Assignment assignment1){
-                        this.assignment=assignment1;
-                    }
+                    Attributes attributes;
+                    List<Variable> variables;
 
+                    TemporalDataInstance(Assignment assignment1, Attributes atts){
+                        this.assignment=assignment1;
+                        this.attributes = atts;
+                        this.variables = sampler.network.getVariables().getListOfVariables();
+                    }
                     @Override
                     public double getValue(Variable var) {
                         return this.assignment.getValue(var);
@@ -183,7 +191,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
                     @Override
                     public Attributes getAttributes() {
-                        return null;
+                        return attributes;
                     }
 
                     @Override
@@ -193,20 +201,27 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler {
 
                     @Override
                     public double getValue(Attribute att) {
-                        return this.assignment.getValue(sampler.network.getVariables().getVariableByName(att.getName()));
+                         return this.assignment.getValue(variables.get(att.getIndex()));
                     }
 
                     @Override
                     public void setValue(Attribute att, double value) {
-                        this.assignment.setValue(sampler.network.getVariables().getVariableByName(att.getName()), value);
+                        if (!att.isSpecialAttribute())
+                            this.assignment.setValue(variables.get(att.getIndex()), value);
                     }
 
                     @Override
                     public double[] toArray() {
                         throw new UnsupportedOperationException("Operation not supported for an Assignment object");
                     }
+
+                    @Override
+                    public String toString(){
+                        return this.outputString();
+                    }
                 }
-                return this.sampler.getSampleStream(this.nSamples).map(a -> new TemporalDataInstance(a));
+
+                return this.sampler.getSampleStream(this.nSamples).map(a -> new TemporalDataInstance(a,this.atts));
             }
 
             @Override

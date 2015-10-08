@@ -15,11 +15,11 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.util.Collector;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ public class WordCountExample {
         List<Integer> elements = new ArrayList<Integer>();
         elements.add(0);
 
-        elements = Collections.unmodifiableList(elements);
+        //elements = Collections.unmodifiableList(elements);
 
         DataSet<TestClass> set = env.fromElements(new TestClass(elements));
 
@@ -46,7 +46,10 @@ public class WordCountExample {
                 .groupBy(0)
                 .sum(1);
 
-        wordCounts.print();
+        //wordCounts.print();
+
+        wordCounts.writeAsText("./datasets/dataFlink/tmp.txt", FileSystem.WriteMode.OVERWRITE);
+
     }
 
     public static class LineSplitter implements FlatMapFunction<String, Tuple2<String, Integer>> {

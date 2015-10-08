@@ -14,5 +14,5 @@ import eu.amidst.core.datastream.DataStream;
  * Created by andresmasegosa on 19/02/15.
  */
 public interface DataSequence extends DataStream<DynamicDataInstance> {
-    public int getSequenceID();
+    long getSequenceID();
 }

@@ -76,7 +76,7 @@ public class DBNConverterToHuginTest {
         dynamicDAG.getParentSetTimeT(E).addParent(E_TClone);
         dynamicDAG.getParentSetTimeT(G).addParent(G_TClone);
 
-        DynamicBayesianNetwork amidstDBN = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork amidstDBN = new DynamicBayesianNetwork(dynamicDAG);
 
         //****************************************** Distributions *****************************************************
 

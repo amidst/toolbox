@@ -16,11 +16,7 @@ import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
-import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.Variables;
-import eu.amidst.core.variables.Variable;
+import eu.amidst.core.utils.DAGGenerator;
 
 /**
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
@@ -102,23 +98,6 @@ public class NaiveBayesClassifier implements Classifier{
     }
 
     /**
-     * Returns the graphical structure for this NaiveBayesClassifier.
-     * @param dataStream a data stream {@link DataStream}.
-     * @return a directed acyclic graph {@link DAG}.
-     */
-    private DAG staticNaiveBayesStructure(DataStream<DataInstance> dataStream){
-        Variables modelHeader = new Variables(dataStream.getAttributes());
-        Variable classVar = modelHeader.getVariableById(this.getClassVarID());
-        DAG dag = new DAG(modelHeader);
-        if (parallelMode)
-            dag.getParentSets().parallelStream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
-        else
-            dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
-
-        return dag;
-    }
-
-    /**
      * Trains this NaiveBayesClassifier using the given data streams.
      * @param dataStream a data stream {@link DataStream}.
      */
@@ -126,7 +105,7 @@ public class NaiveBayesClassifier implements Classifier{
     public void learn(DataStream<DataInstance> dataStream){
         ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
-        parameterLearningAlgorithm.setDAG(this.staticNaiveBayesStructure(dataStream));
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.classVarID));
         parameterLearningAlgorithm.setDataStream(dataStream);
         parameterLearningAlgorithm.initLearning();
         parameterLearningAlgorithm.runLearning();

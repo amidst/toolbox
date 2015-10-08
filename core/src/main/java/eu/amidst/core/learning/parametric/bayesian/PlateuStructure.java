@@ -167,7 +167,7 @@ public abstract class PlateuStructure implements Serializable {
      * Sets the evidence for this PlateuStructure.
      * @param data a {@code List} of {@link DataInstance}.
      */
-    public void setEvidence(List<DataInstance> data) {
+    public void setEvidence(List<? extends DataInstance> data) {
         if (data.size()> nReplications)
             throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
 

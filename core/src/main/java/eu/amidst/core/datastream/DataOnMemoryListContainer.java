@@ -61,7 +61,7 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
      * @param data the data instance to be added.
      */
     public void set(int id, E data){
-        this.instanceList.set(id,data);
+        this.instanceList.set(id, data);
     }
 
     /**
@@ -129,4 +129,16 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        for (E e : instanceList) {
+            builder.append(e.toString());
+            builder.append("\n");
+        }
+        return builder.toString();
+    }
 }
