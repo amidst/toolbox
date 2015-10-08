@@ -15,7 +15,6 @@ import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
@@ -58,14 +57,22 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
         }
     }
 
+    public static CompoundVector newZeroedVector(CompoundVector vector){
+        List<Vector> newvectors  = new ArrayList(vector.baseVectors.size());
+
+        for (int i = 0; i < vector.baseVectors.size(); i++) {
+            newvectors.add(new ArrayVector(vector.baseVectors.get(i).getVector().size()));
+        }
+
+        return new CompoundVector(newvectors);
+    }
+
     /**
-     * Creates a new CompoundVector from a given list of {@link Map.Entry} objects.
-     * @param vectors a {@code List} of {@link Map.Entry} objects.
-     * @param <T> a type parameter.
-     * @return a CompoundVector.
+     * Returns the number of base vectors
+     * @return a positive integer number.
      */
-    public static <T> CompoundVector newCompoundVector(List<Map.Entry<Integer,T>> vectors){
-        return null;
+    public int getNumberOfBaseVectors(){
+        return this.baseVectors.size();
     }
 
     /**

@@ -33,6 +33,17 @@ public abstract class ConditionalDistribution extends Distribution {
         return this.parents;
     }
 
+
+    /**
+     * Sets the set of conditioning variables, i.e., the list of parents in this ConditionalDistribution.
+     * WARNING: This method should only be used in exceptional cases. It may affect the coherence of
+     * the graphical model.
+     * @param parents
+     */
+    public void setConditioningVariables(List<Variable> parents){
+        this.parents=parents;
+    }
+
     /**
      * Returns the conditional probability of an {@link Assignment} given this ConditionalDistribution.
      * @param assignment an {@link Assignment} object.

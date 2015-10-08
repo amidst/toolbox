@@ -183,11 +183,16 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
 
     }
 
+    @Override
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<DataPosterior> computePosteriorOverLatentVariables(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

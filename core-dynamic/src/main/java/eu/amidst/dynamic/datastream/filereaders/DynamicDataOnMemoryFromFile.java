@@ -56,18 +56,13 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInst
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
 
-        try {
-            attSequenceID = this.reader.getAttributes().getAttributeByName(Attributes.SEQUENCE_ID_ATT_NAME);
+        attSequenceID = this.reader.getAttributes().getSeq_id();
+        if (attSequenceID!=null)
             sequenceID = (int)present.getValue(attSequenceID);
-        }catch (UnsupportedOperationException e){
-            attSequenceID = null;
-        }
-        try {
-            attTimeID = this.reader.getAttributes().getAttributeByName(Attributes.TIME_ID_ATT_NAME);
+
+        attTimeID = this.reader.getAttributes().getTime_id();
+        if (attTimeID!=null)
             timeID = (int)present.getValue(attSequenceID);
-        }catch (UnsupportedOperationException e){
-            attTimeID = null;
-        }
 
         nextDynamicDataInstance = new NextDynamicDataInstance(past, present, sequenceID, timeID);
 

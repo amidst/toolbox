@@ -9,11 +9,10 @@
 package eu.amidst.dynamic.datastream.filereaders;
 
 import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.datastream.filereaders.DataFileReader;
 import eu.amidst.core.datastream.filereaders.DataRow;
 import eu.amidst.core.datastream.filereaders.DataRowMissing;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -21,7 +20,6 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static java.util.Spliterators.spliterator;
 import static java.util.stream.StreamSupport.stream;
 
 public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataInstance> {
@@ -65,18 +63,14 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
             throw new UnsupportedOperationException("There are insufficient instances to learn a model.");
         }
 
-        try {
-            attSequenceID = this.reader.getAttributes().getAttributeByName(Attributes.SEQUENCE_ID_ATT_NAME);
+        attSequenceID = this.reader.getAttributes().getSeq_id();
+        if (attSequenceID!=null)
             sequenceID = (int)present.getValue(attSequenceID);
-        }catch (UnsupportedOperationException e){
-            attSequenceID = null;
-        }
-        try {
-            attTimeID = this.reader.getAttributes().getAttributeByName(Attributes.TIME_ID_ATT_NAME);
+
+        attTimeID = this.reader.getAttributes().getTime_id();
+        if (attTimeID!=null)
             timeID = (int)present.getValue(attTimeID);
-        }catch (UnsupportedOperationException e){
-            attTimeID = null;
-        }
+
 
         nextDynamicDataInstance = new NextDynamicDataInstance(past, present, sequenceID, timeID);
 

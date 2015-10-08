@@ -15,9 +15,9 @@ package eu.amidst.core.examples.conceptdrift;
 import eu.amidst.core.conceptdrift.SVBFading;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.examples.learning.SVBExample;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.DAGGenerator;
 
 /**
  *
@@ -45,7 +45,7 @@ public class SVBFadingExample {
         SVBFading parameterLearningAlgorithm = new SVBFading();
 
         //We fix the DAG structure
-        parameterLearningAlgorithm.setDAG(SVBExample.getHiddenNaiveBayesStructure(data));
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getHiddenNaiveBayesStructure(data.getAttributes(),"GlobalHidden", 2));
 
         //We fix the fading or forgeting factor
         parameterLearningAlgorithm.setFadingFactor(0.9);

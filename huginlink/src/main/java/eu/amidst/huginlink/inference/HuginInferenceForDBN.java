@@ -36,13 +36,13 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
     private DynamicAssignment assignment = new HashMapDynamicAssignment(0);
 
     /** Represents the time ID of the current assignment being processed. */
-    int timeID;
+    long timeID;
 
     /**
      * Represents the sequence ID of the current assignment being processed.
      * For the Cajamar data set, this corresponds to the client ID.
      */
-    int sequenceID;
+    long sequenceID;
 
     /**
      * Class constructor.
@@ -216,7 +216,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
      * {@inheritDoc}
      */
     @Override
-    public int getTimeIDOfLastEvidence() {
+    public long getTimeIDOfLastEvidence() {
         return this.assignment.getTimeID();
     }
 
@@ -224,7 +224,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
      * {@inheritDoc}
      */
     @Override
-    public int getTimeIDOfPosterior() {
+    public long getTimeIDOfPosterior() {
         return this.timeID;
     }
 }

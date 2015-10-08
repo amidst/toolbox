@@ -189,8 +189,8 @@ public class DynamicBayesianNetworkSampler {
         DynamicBayesianNetwork dbn;
         private HashMapAssignment dataPresent;
         private HashMapAssignment dataPast;
-        private int sequenceID;
-        private int timeID;
+        private long sequenceID;
+        private long timeID;
 
         public DynamicDataInstanceImpl(DynamicBayesianNetwork dbn_, HashMapAssignment dataPast1, HashMapAssignment dataPresent1, int sequenceID1, int timeID1){
             this.dbn=dbn_;
@@ -201,12 +201,12 @@ public class DynamicBayesianNetworkSampler {
         }
 
         @Override
-        public int getSequenceID() {
+        public long getSequenceID() {
             return sequenceID;
         }
 
         @Override
-        public int getTimeID() {
+        public long getTimeID() {
             return timeID;
         }
 

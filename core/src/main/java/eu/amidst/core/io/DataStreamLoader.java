@@ -14,8 +14,10 @@ import eu.amidst.core.datastream.filereaders.DataFileReader;
 import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 /**
- * This class allows to load a {@link DataStream} from a file.
+ * This class allows to load a {@link DataStream} from disk.
  *
  * <p> For an example of use follow this link </p>
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#iodatastreamsexample"> http://amidst.github.io/toolbox/CodeExamples.html#iodatastreamsexample </a>  </p>
@@ -23,16 +25,12 @@ import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
  */
 public final class DataStreamLoader {
 
+    /** Represents the class name of the different loaders available in the toolbox*/
+    private static String[] loaders = {"eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader",
+                                        "eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataFolderReader"};
+
     /** Represents the data file reader. */
     private static DataFileReader dataFileReader = new ARFFDataReader();
-
-    /**
-     * Sets the data file reader.
-     * @param dataFileReader a {@link DataFileReader} object.
-     */
-    public static void setDataFileReader(DataFileReader dataFileReader) {
-        dataFileReader = dataFileReader;
-    }
 
     /**
      * Loads a {@link DataStream} from a file.
@@ -40,8 +38,27 @@ public final class DataStreamLoader {
      * @return a {@link DataStream}.
      */
     public static DataStream<DataInstance> openFromFile(String path){
+        dataFileReader = selectRightLoader(path);
         dataFileReader.loadFromFile(path);
         return new DataStreamFromFile(dataFileReader);
     }
 
+    /**
+     * Gets the suitable DataFileReader according the name of the file.
+     * @param fileName, the name of the file/folder
+     * @return A valid {@link DataFileReader}.
+     */
+    private static DataFileReader selectRightLoader(String fileName){
+        try{
+            for (String loaderName : loaders) {
+                DataFileReader reader = (DataFileReader) Class.forName(loaderName).newInstance();
+                if (reader.doesItReadThisFile(fileName))
+                    return reader;
+            }
+        }catch (Exception ex){
+            throw new UndeclaredThrowableException(ex);
+        }
+
+        throw new IllegalArgumentException("The provided file name is not compatible with any of the available file readers");
+    }
 }
