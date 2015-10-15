@@ -36,6 +36,11 @@ public class MPEInference implements PointEstimator {
     private int sampleSize;
     private int seed = 0;
 
+    private long numberOfDiscreteVariables = 0;
+    private long numberOfDiscreteVariablesInEvidence = 0;
+
+    private int numberOfIterations = 100;
+
     private Assignment evidence;
     private Assignment MPEestimate;
     private double MPEestimateLogProbability;
@@ -65,7 +70,9 @@ public class MPEInference implements PointEstimator {
 
 
     public MPEInference() {
+
         this.evidence = new HashMapAssignment(0);
+        this.sampleSize = 10;
     }
 
     /**
@@ -92,6 +99,9 @@ public class MPEInference implements PointEstimator {
     public void setModel(BayesianNetwork model_) {
         this.model = model_;
         this.causalOrder = Utils.getCausalOrder(this.model.getDAG());
+        this.numberOfDiscreteVariables = this.model.getVariables().getListOfVariables().stream()
+                .filter(Variable::isMultinomial).count();
+
     }
 
     /**
@@ -100,7 +110,7 @@ public class MPEInference implements PointEstimator {
     @Override
     public void setEvidence(Assignment evidence_) {
         this.evidence = evidence_;
-
+        this.numberOfDiscreteVariablesInEvidence = this.evidence.getVariables().stream().filter(Variable::isMultinomial).count();
     }
 
     public void setSampleSize(int sampleSize) {
@@ -124,7 +134,11 @@ public class MPEInference implements PointEstimator {
         return MPEestimateLogProbability;
     }
 
-//    private double getProbabilityOf(Assignment as1) {
+    public void setNumberOfIterations(int numberOfIterations) {
+        this.numberOfIterations = numberOfIterations;
+    }
+
+    //    private double getProbabilityOf(Assignment as1) {
 //        return Math.exp(this.model.getLogProbabiltyOf(as1));
 //    }
 
@@ -149,18 +163,23 @@ public class MPEInference implements PointEstimator {
         ISaux.setSampleSize(this.sampleSize);
         ISaux.setParallelMode(this.parallelMode);
         ISaux.setEvidence(this.evidence);
+        ISaux.setKeepDataOnMemory(true);
 
         Random random = new Random();
         //random.setSeed(this.seed);
         ISaux.setSeed(random.nextInt());
         ISaux.runInference();
 
-        Stream<Assignment> sample = ISaux.getSamples();
+        Stream<Assignment> sample = ISaux.getSamples().parallel();
 
+        //ISaux.getSamples().parallel().forEachOrdered(assign -> System.out.println(assign.outputString(causalOrder) + ", p=" + Math.exp(model.getLogProbabiltyOf(assign))));
+        //System.out.println();
+        //sample.map(this::hillClimbingOneVar).forEachOrdered(assign -> System.out.println(assign.outputString(causalOrder) + ", p=" + Math.exp(model.getLogProbabiltyOf(assign))));
+        //sample = ISaux.getSamples().parallel();
 
         switch(inferenceAlgorithm) {
 
-            case -2:   // DETERMINISTIC, MAY BE VERY SLOW ON BIG NETWORKS
+            case -2:    // DETERMINISTIC, MAY BE VERY SLOW ON BIG NETWORKS
                 MPEestimate = this.sequentialSearch();
                 break;
 
@@ -174,9 +193,8 @@ public class MPEInference implements PointEstimator {
                 MPEestimate = sample.map(this::simulatedAnnealingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
 
-            case 1:
-              // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
-                MPEestimate = sample.map(this::simulatedAnnealingAllVars).reduce((a1, a2) -> (model.getLogProbabiltyOf(a1) > model.getLogProbabiltyOf(a2) ? a1 : a2)).get();
+            case 1:     // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
+                MPEestimate = sample.map(this::simulatedAnnealingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
 
 
@@ -189,10 +207,10 @@ public class MPEInference implements PointEstimator {
             default:
                 MPEestimate = sample.map(this::hillClimbingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
-
-
         }
+
         MPEestimateLogProbability = model.getLogProbabiltyOf(MPEestimate);
+
     }
 
 
@@ -321,6 +339,10 @@ public class MPEInference implements PointEstimator {
         Random random = new Random();
         ArrayList<Integer> indicesVariablesMoved = new ArrayList<>();
 
+        if(numberOfMovements > numberOfDiscreteVariables - numberOfDiscreteVariablesInEvidence) { // this.model.getNumberOfVars()-this.evidence.getVariables().size()) {
+            numberOfMovements = (int) (numberOfDiscreteVariables - numberOfDiscreteVariablesInEvidence);
+        }
+
         int indexSelectedVariable;
         Variable selectedVariable;
         int newValue;
@@ -424,15 +446,18 @@ public class MPEInference implements PointEstimator {
         Assignment newGuess; // = new HashMapAssignment(this.evidence);
         Assignment bestGuess = initialGuess;
 
-        double R=10000; // Temperature
-        double eps=0.01;
+        double R=1000; // Temperature
         double alpha=0.90;
+        double eps=R * Math.pow(alpha,this.numberOfIterations);
 
         double currentProbability=0;
         double nextProbability;
 
         //Random random = new Random(this.seed+initialGuess.hashCode());
-        Random random = new Random(this.seed);
+
+        //Random random = new Random(this.seed);
+        Random random = new Random();
+
         while (R>eps) {
             //random = new Random();
             //System.out.println(R);
@@ -472,16 +497,20 @@ public class MPEInference implements PointEstimator {
     * "Simulated annealing": changes ONE variable at each iteration. If improves, accept, if not, sometimes accept.
      */
     private Assignment simulatedAnnealingOneVar(Assignment initialGuess) {
-        Assignment result = new HashMapAssignment(initialGuess);
 
-        double R=10000; // Temperature
-        double eps=0.01;
+        double R=1000; // Temperature
         double alpha=0.90;
+        double eps=R * Math.pow(alpha,this.numberOfIterations);
 
-        double currentProbability;
+
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        double currentProbability=this.model.getLogProbabiltyOf(currentAssignment);
+
+        Assignment nextAssignment;
         double nextProbability;
 
-        Random random = new Random(this.seed);
+        //Random random = new Random(this.seed);
+        Random random = new Random();
 
         while (R>eps) {
 
@@ -508,15 +537,14 @@ public class MPEInference implements PointEstimator {
 //
 //            result.setValue(selectedVariable,selectedVariableNewValue);
 
-            result = moveDiscreteVariables(initialGuess, 3);
-            result = assignContinuousVariables(result);
+            nextAssignment = moveDiscreteVariables(initialGuess, 3);
+            nextAssignment = assignContinuousVariables(nextAssignment);
 
+            nextProbability=this.model.getLogProbabiltyOf(nextAssignment);
 
-            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-            nextProbability=this.model.getLogProbabiltyOf(result);
-
-            if (nextProbability>currentProbability) {
-                initialGuess=result;
+            if (nextProbability > currentProbability) {
+                currentAssignment = nextAssignment;
+                currentProbability = nextProbability;
             }
             else {
                 double diff = currentProbability - nextProbability;
@@ -524,13 +552,14 @@ public class MPEInference implements PointEstimator {
                 double aux = random.nextDouble();
 
                 if (aux < Math.exp( -diff/R )) {
-                    initialGuess = result;
+                    currentAssignment = nextAssignment;
+                    currentProbability = nextProbability;
                 }
             }
             R = alpha * R;
         }
 
-        return result;
+        return currentAssignment;
 
     }
 
@@ -539,34 +568,34 @@ public class MPEInference implements PointEstimator {
 
 
     private Assignment hillClimbingAllVars(Assignment initialGuess) {
-        Assignment result = new HashMapAssignment(this.evidence);
 
-        double R=130;
+        double R=this.numberOfIterations;
         double eps=0;
 
-        double currentProbability;
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        double currentProbability=this.model.getLogProbabiltyOf(currentAssignment);
+
+        Assignment nextAssignment;
         double nextProbability;
 
-        //Random random = new Random(this.seed+initialGuess.hashCode());
+
         Random random = new Random();
         while (R>eps) {
 
             // GIVE VALUES
-            result=obtainValues(evidence, random);
+            nextAssignment=obtainValues(evidence, random);
 
+            nextProbability=this.model.getLogProbabiltyOf(nextAssignment);
 
-            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-            nextProbability=this.model.getLogProbabiltyOf(result);
-
-
-            if (nextProbability>=currentProbability) {
-                initialGuess=result;
+            if (nextProbability > currentProbability) {
+                currentAssignment = nextAssignment;
+                currentProbability = nextProbability;
             }
 
             R = R - 1;
         }
 
-        return result;
+        return currentAssignment;
 
     }
 
@@ -574,20 +603,22 @@ public class MPEInference implements PointEstimator {
     * "Hill climbing": changes ONE variable at each iteration. If improves, accept.
     */
     private Assignment hillClimbingOneVar(Assignment initialGuess) {
-        Assignment result = new HashMapAssignment(initialGuess);
+        //Assignment result = new HashMapAssignment(initialGuess);
 
-        double R=130;
+        double R=this.numberOfIterations;
         double eps=0;
 
-        double currentProbability;
-        double nextProbability;
 
-        //Random random = new Random();
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        double currentProbability=this.model.getLogProbabiltyOf(currentAssignment);
+
+        Assignment nextAssignment;
+        double nextProbability;
 
         while (R>eps) {
 
-            result = moveDiscreteVariables(initialGuess, 3);
-            result = assignContinuousVariables(result);
+            nextAssignment = moveDiscreteVariables(currentAssignment, 3);
+            nextAssignment = assignContinuousVariables(nextAssignment);
 
 //            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
 //            double selectedVariableNewValue;
@@ -605,23 +636,24 @@ public class MPEInference implements PointEstimator {
 //
 //            result.setValue(selectedVariable,selectedVariableNewValue);
 
-            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-            nextProbability=this.model.getLogProbabiltyOf(result);
+            //currentProbability=this.model.getLogProbabiltyOf(initialGuess);
+            nextProbability=this.model.getLogProbabiltyOf(nextAssignment);
 
-            if (nextProbability>currentProbability) {
-                initialGuess=result;
+            if (nextProbability > currentProbability) {
+                currentAssignment = nextAssignment;
+                currentProbability = nextProbability;
             }
 
             R = R - 1;
         }
 
-        return result;
+        return currentAssignment;
 
     }
 
 
 
-    // DETERMINISTIC SEARCH OF THE BEST CONFIGURATION FOR DISCRETE (BINARY) VARS
+    // DETERMINISTIC SEARCH OF THE BEST CONFIGURATION FOR DISCRETE VARS
     private Assignment bestConfig(Assignment current, int varIndex) {
 
         int numVars=this.model.getNumberOfVars();
@@ -742,7 +774,7 @@ public class MPEInference implements PointEstimator {
         }
     }
 
-    // DETERMINISTIC SEARCH OF THE BEST CONFIGURATION FOR DISCRETE (BINARY) VARS
+    // DETERMINISTIC SEARCH OF THE BEST CONFIGURATION FOR DISCRETE VARS
     private Assignment sequentialSearch() {
 
         int numberOfVariables = this.model.getNumberOfVars();
@@ -821,7 +853,6 @@ public class MPEInference implements PointEstimator {
         evidenceAssignment.setValue(variable3, var3value);
 
         mpeInference.setEvidence(evidenceAssignment);
-
 
 
         /***********************************************
