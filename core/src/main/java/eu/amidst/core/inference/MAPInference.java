@@ -319,7 +319,7 @@ public class MAPInference implements PointEstimator {
                 // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
                 //MAPestimate = sample.map(this::simulatedAnnealingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::simulatedAnnealingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
-                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::simulatedAnnealingAllVars).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
                 //MAPestimate = weightedAssignment.assignment;
                 MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
@@ -328,7 +328,7 @@ public class MAPInference implements PointEstimator {
             case 3:     // HILL CLIMBING, MOVING ALL VARIABLES AT EACH ITERATION
                 //MAPestimate = sample.map(this::hillClimbingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::hillClimbingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
-                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::hillClimbingAllVars).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
                 //MAPestimate = weightedAssignment.assignment;
                 MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
@@ -338,7 +338,7 @@ public class MAPInference implements PointEstimator {
             default:
                 //MAPestimate = sample.map(this::hillClimbingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::hillClimbingOneVar).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
-                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::hillClimbingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
                 //MAPestimate = weightedAssignment.assignment;
                 MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
@@ -1510,6 +1510,7 @@ public class MAPInference implements PointEstimator {
         mapInference.runInference(-1);
 
         mapEstimate = mapInference.getEstimate();
+
         System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
         System.out.println("with probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
         timeStop = System.nanoTime();
