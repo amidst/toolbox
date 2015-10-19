@@ -184,6 +184,11 @@ public class NaiveBayesVirtualConceptDriftDetector{
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);
+
+        svb.setOutput(false);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setThreshold(0.001);
+
         svb.initLearning();
     }
 
