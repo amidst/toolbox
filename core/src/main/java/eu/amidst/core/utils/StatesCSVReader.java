@@ -121,18 +121,32 @@ public class StatesCSVReader {
 
         //for(int i=0; i<variableNames.size(); i++) {
         IntStream.range(0, variableNames.size()).forEach(i -> {
+            varStates.get(i).remove("?");
             String varValues;
-            if (isVariableContinuous[i]) {
+            if (isVariableContinuous[i] || varStates.get(i).size() > 10) {
                 varValues = "real";
             } else {
 
-                StringBuilder builder = new StringBuilder(2+varStates.get(i).size()*2);
-                builder.append("{");
-                varStates.get(i).stream().forEach(str -> builder.append(str + ","));
-                builder.deleteCharAt(builder.lastIndexOf(","));
-                builder.append("}");
-
-                varValues = builder.toString();
+                try{
+                    StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
+                    builder.append("{");
+                    //varStates.get(i).stream().sorted().forEach(str -> builder.append(str + ","));
+                    varStates.get(i).stream()//filter(str -> str.compareTo("?")!=0).
+                    .mapToInt(Integer::parseInt).sorted().forEach(str -> builder.append(str + ","));
+                    builder.deleteCharAt(builder.lastIndexOf(","));
+                    builder.append("}");
+                    varValues = builder.toString();
+                }
+                catch(NumberFormatException ex) {
+                    StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
+                    builder.append("{");
+                    varStates.get(i).stream()//.filter(str -> str.compareTo("?")!=0)
+                    .sorted().forEach(str -> builder.append(str + ","));
+                    //varStates.get(i).stream().mapToInt(Integer::parseInt).sorted().forEach();
+                    builder.deleteCharAt(builder.lastIndexOf(","));
+                    builder.append("}");
+                    varValues = builder.toString();
+                }
 
             }
             System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
@@ -207,19 +221,32 @@ public class StatesCSVReader {
 
         //for(int i=0; i<variableNames.size(); i++) {
         IntStream.range(0, variableNames.size()).forEach(i -> {
+            varStates.get(i).remove("?");
             String varValues;
-            if (isVariableContinuous[i]) {
+            if (isVariableContinuous[i] || varStates.get(i).size()>10) {
                 varValues = "real";
             } else {
 
-                StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
-                builder.append("{");
-                varStates.get(i).stream().forEach(str -> builder.append(str + ","));
-                builder.deleteCharAt(builder.lastIndexOf(","));
-                builder.append("}");
-
-                varValues = builder.toString();
-
+                try{
+                    StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
+                    builder.append("{");
+                    //varStates.get(i).stream().sorted().forEach(str -> builder.append(str + ","));
+                    varStates.get(i).stream()//.filter(str -> str.compareTo("?")!=0)
+                    .mapToInt(Integer::parseInt).sorted().forEach(str -> builder.append(str + ","));
+                    builder.deleteCharAt(builder.lastIndexOf(","));
+                    builder.append("}");
+                    varValues = builder.toString();
+                }
+                catch(NumberFormatException ex) {
+                    StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
+                    builder.append("{");
+                    varStates.get(i).stream()//.filter(str -> str.compareTo("?")!=0)
+                    .sorted().forEach(str -> builder.append(str + ","));
+                    //varStates.get(i).stream().mapToInt(Integer::parseInt).sorted().forEach();
+                    builder.deleteCharAt(builder.lastIndexOf(","));
+                    builder.append("}");
+                    varValues = builder.toString();
+                }
             }
             System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
         });

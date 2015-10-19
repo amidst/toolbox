@@ -152,6 +152,7 @@ public class ImportanceSamplingExperiments {
             //importanceSampling.setSamplingModel(vmp.getSamplingModel());
             importanceSampling.setSamplingModel(bn);
             importanceSampling.setParallelMode(true);
+            importanceSampling.setKeepDataOnMemory(true);
             importanceSampling.setSampleSize(N);
 
 
