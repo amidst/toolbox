@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 /**
  * Created by dario on 02/10/15.
  */
-public class StatesCSVReader {
+public class CSVtoARFFHeader {
 
     public static List<Path> listSourceFiles(Path dir) throws IOException {
         List<Path> result = new ArrayList<>();
@@ -62,6 +62,9 @@ public class StatesCSVReader {
         reader1.close();
 
         boolean[] isVariableContinuous = new boolean[numberOfVariables];
+        for (int i = 0; i < isVariableContinuous.length; i++) {
+            isVariableContinuous[i]=true;
+        }
 
         List<HashSet<String>> varStates = new ArrayList<>(numberOfVariables);
 
@@ -91,11 +94,28 @@ public class StatesCSVReader {
 
                     IntStream.range(0, values.length).forEach(k -> {
 
-                        if (values[k].contains(".")) {
-                            isVariableContinuous[k] = true;
-                        } else {
-                            varStates.get(k).add(values[k]);
+//                        if (values[k].contains(".")) {
+//                            isVariableContinuous[k] = true;
+//                        } else {
+//                            varStates.get(k).add(values[k]);
+//                        }
+
+                        if ( !values[k].contains("?") ) {
+                            double dd=0;
+                            try {
+                                dd = Double.parseDouble(values[k]);
+                            }
+                            catch (NumberFormatException e) {
+                                isVariableContinuous[k] = false;
+                            }
+
+                            if ( values[k].contains("s") || Double.isNaN(dd) || !isVariableContinuous[k] ) {
+                                isVariableContinuous[k] = false;
+                                varStates.get(k).add(values[k]);
+                            }
                         }
+
+
                     });
                     newLine = reader.readLine();
                     lineNumber++;
@@ -123,9 +143,10 @@ public class StatesCSVReader {
         IntStream.range(0, variableNames.size()).forEach(i -> {
             varStates.get(i).remove("?");
             String varValues;
-            if (isVariableContinuous[i] || varStates.get(i).size() > 10) {
+            if (isVariableContinuous[i]) {
                 varValues = "real";
-            } else {
+            }
+            else {
 
                 try{
                     StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
@@ -176,6 +197,9 @@ public class StatesCSVReader {
         System.out.println("File " + path.getFileName() + " has " + numberOfVariables + " variables");
 
         boolean[] isVariableContinuous = new boolean[numberOfVariables];
+        for (int i = 0; i < isVariableContinuous.length; i++) {
+            isVariableContinuous[i]=true;
+        }
 
         List<HashSet<String>> varStates = new ArrayList<>(numberOfVariables);
 
@@ -198,10 +222,24 @@ public class StatesCSVReader {
 
             IntStream.range(0, values.length).forEach(k -> {
 
-                if (values[k].contains(".")) {
-                    isVariableContinuous[k] = true;
-                } else {
-                    varStates.get(k).add(values[k]);
+//                if (values[k].contains(".")) {
+//                    isVariableContinuous[k] = true;
+//                } else {
+//                    varStates.get(k).add(values[k]);
+//                }
+                if ( !values[k].contains("?") ) {
+                    double dd=0;
+                    try {
+                        dd = Double.parseDouble(values[k]);
+                    }
+                    catch (NumberFormatException e) {
+                        isVariableContinuous[k] = false;
+                    }
+
+                    if ( values[k].contains("s") || Double.isNaN(dd) || !isVariableContinuous[k] ) {
+                        isVariableContinuous[k] = false;
+                        varStates.get(k).add(values[k]);
+                    }
                 }
             });
 
@@ -223,9 +261,11 @@ public class StatesCSVReader {
         IntStream.range(0, variableNames.size()).forEach(i -> {
             varStates.get(i).remove("?");
             String varValues;
-            if (isVariableContinuous[i] || varStates.get(i).size()>10) {
+
+            if (isVariableContinuous[i]) {
                 varValues = "real";
-            } else {
+            }
+            else {
 
                 try{
                     StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
@@ -273,7 +313,9 @@ public class StatesCSVReader {
 //        @attribute I real
 
         if(args.length!=1) {
-            System.out.println("Incorrect number of arguments. Please use \"StatesCSVReader CSVFolderPath\"");
+            System.out.println("Incorrect number of arguments. Please use \"CSVtoARFFHeader CSVFolderPath\"");
+            //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder2");
+            //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder");
         }
         else {
             String dirName = args[0];
