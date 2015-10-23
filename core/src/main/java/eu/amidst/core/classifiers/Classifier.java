@@ -25,16 +25,16 @@ public interface Classifier {
     double[] predict(DataInstance instance);
 
     /**
-     * Returns the ID of the class variable.
-     * @return the ID of the class variable.
+     * Returns the name of the class variable.
+     * @return the name of the class variable.
      */
-    int getClassVarID();
+    String getClassName();
 
     /**
-     * Sets the ID of the class variable.
-     * @param varID the ID of the class variable.
+     * Sets the name of the class variable.
+     * @param className the name of the class variable.
      */
-    void setClassVarID(int varID);
+    void setClassName(String className);
 
     /**
      * Trains the classifier using the input data streams.

@@ -39,9 +39,6 @@ public class Variables implements Iterable<Variable>, Serializable {
      * that maps the Variable names ({@code String}) to their IDs ({@code Integer}). */
     private Map<String, Integer> mapping;
 
-    /** Represents the list of {@link Attributes} associated with Variables. */
-    Attributes attributes;
-
     /**
      * Creates a new list of Variables.
      */
@@ -55,7 +52,6 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param atts a list of Attributes.
      */
     public Variables(Attributes atts) {
-        this.attributes= new Attributes(atts.getFullListOfAttributes());
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
 
@@ -102,19 +98,10 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param attributes
      */
     public void setAttributes(Attributes attributes){
-        this.attributes=attributes;
-        for (Attribute attribute : attributes) {
-            VariableImplementation variableImplementation = (VariableImplementation)this.getVariableByName(attribute.getName());
-            variableImplementation.setAttribute(attribute);
+        for (Variable variable : allVariables) {
+            VariableImplementation variableImplementation = (VariableImplementation)variable;
+            variableImplementation.setAttribute(attributes.getAttributeByName(variable.getName()));
         }
-    }
-
-    /**
-     * Returns the list of Attributes associated with these Variables.
-     * @return the list of Attributes associated with these Variables.
-     */
-    public Attributes getAttributes() {
-        return attributes;
     }
 
     /**

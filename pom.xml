@@ -38,6 +38,7 @@
         <module>extensions/caepia2015</module>
         <module>moa-customized</module>
         <module>flinklink</module>
+        <module>extensions/cajamar</module>
     </modules>
 
 

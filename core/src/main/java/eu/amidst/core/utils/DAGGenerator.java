@@ -12,7 +12,6 @@
 package eu.amidst.core.utils;
 
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
@@ -27,12 +26,12 @@ public class DAGGenerator {
     /**
      * Returns the graphical structure for this NaiveBayesClassifier.
      * @param attributes, the attributes.
-     * @param classVarID, the class varID.
+     * @param className, the class name.
      * @return a directed acyclic graph {@link DAG}.
      */
-    public static DAG getNaiveBayesStructure(Attributes attributes, int classVarID){
+    public static DAG getNaiveBayesStructure(Attributes attributes, String className){
         Variables modelHeader = new Variables(attributes);
-        Variable classVar = modelHeader.getVariableById(classVarID);
+        Variable classVar = modelHeader.getVariableByName(className);
         DAG dag = new DAG(modelHeader);
         dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
 

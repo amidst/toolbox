@@ -23,8 +23,11 @@ import eu.amidst.core.utils.DAGGenerator;
  */
 public class NaiveBayesClassifier implements Classifier{
 
+    /** Represents the name of the class variable. */
+    String className;
+
     /** Represents the ID of the class variable. */
-    int classVarID;
+    String classVarID;
 
     /** Represents the Naive Bayes Classifier, which is considered as a {@link BayesianNetwork}. */
     BayesianNetwork bnModel;
@@ -67,26 +70,26 @@ public class NaiveBayesClassifier implements Classifier{
     @Override
     public double[] predict(DataInstance instance) {
         this.predictions.setEvidence(instance);
-        Multinomial multinomial = this.predictions.getPosterior(this.classVarID);
+        Multinomial multinomial = this.predictions.getPosterior(this.getBNModel().getVariables().getVariableByName(className));
         return multinomial.getParameters();
     }
 
     /**
-     * Returns the ID of the class variable.
-     * @return the ID of the class variable.
+     * Returns the name of the class variable.
+     * @return the name of the class variable.
      */
     @Override
-    public int getClassVarID() {
-        return classVarID;
+    public String getClassName() {
+        return className;
     }
 
     /**
      * Sets the ID of the class variable.
-     * @param classVarID the ID of the class variable.
+     * @param className the ID of the class variable.
      */
     @Override
-    public void setClassVarID(int classVarID) {
-        this.classVarID = classVarID;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     /**
@@ -105,11 +108,30 @@ public class NaiveBayesClassifier implements Classifier{
     public void learn(DataStream<DataInstance> dataStream){
         ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
-        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.classVarID));
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.className));
         parameterLearningAlgorithm.setDataStream(dataStream);
         parameterLearningAlgorithm.initLearning();
         parameterLearningAlgorithm.runLearning();
         bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
         predictions.setModel(bnModel);
     }
+
+
+    /**
+     * Trains this NaiveBayesClassifier using the given data streams.
+     * @param dataStream a data stream {@link DataStream}.
+     * @param batchSize the size of the batch for the parallel ML algorithm.
+     */
+    public void learn(DataStream<DataInstance> dataStream, int batchSize){
+        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        parameterLearningAlgorithm.setBatchSize(batchSize);
+        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.className));
+        parameterLearningAlgorithm.setDataStream(dataStream);
+        parameterLearningAlgorithm.initLearning();
+        parameterLearningAlgorithm.runLearning();
+        bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+        predictions.setModel(bnModel);
+    }
+
 }

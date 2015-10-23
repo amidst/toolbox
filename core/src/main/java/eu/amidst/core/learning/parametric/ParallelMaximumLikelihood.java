@@ -59,6 +59,19 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
     /** Represents a {@link EF_BayesianNetwork} object */
     protected EF_BayesianNetwork efBayesianNetwork;
 
+
+    /** Represents if the class is in debug mode*/
+    protected boolean debug = true;
+
+
+    /**
+     * Sets the debug mode of the class
+     * @param debug
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
     /**
      * Sets the batch size.
      * @param batchSize_ the batch size.
@@ -128,6 +141,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
         sumSS = stream
                 .peek(batch -> {
                     dataInstanceCount.getAndAdd(batch.getNumberOfDataInstances());
+                    if (debug) System.out.println("Parallel ML procesando "+(int)dataInstanceCount.get() +" instances");
                 })
                 .map(batch -> {
                     SufficientStatistics ss = efBayesianNetwork.createZeroSufficientStatistics();
