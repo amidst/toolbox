@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -56,9 +57,9 @@ public class ARFFDataFolderReader implements DataFileReader {
     @Override
     public void loadFromFile(String path) {
 
-        this.pathFileData=pathFileData+"/data/";
-        this.pathFileHeader=pathFileData+"/attributes.txt";
-        this.pathFileName = pathFileData+"/name.txt";
+        this.pathFileData=path+"/data/";
+        this.pathFileHeader=path+"/attributes.txt";
+        this.pathFileName = path+"/name.txt";
 
 
         try {
@@ -72,6 +73,7 @@ public class ARFFDataFolderReader implements DataFileReader {
                     .filter(line -> line.startsWith("@attribute"))
                     .collect(Collectors.toList());
 
+            /*
             List<Attribute> atts = attLines.stream()
                     .map(line -> {
                         String[] parts = line.split(" |\t");
@@ -86,6 +88,13 @@ public class ARFFDataFolderReader implements DataFileReader {
                         return ARFFDataReader.createAttributeFromLine(index, builder.toString());
                     })
                     .collect(Collectors.toList());
+            */
+
+
+            List<Attribute> atts = IntStream.range(0, attLines.size())
+                    .mapToObj(i -> ARFFDataReader.createAttributeFromLine(i, attLines.get(i)))
+                    .collect(Collectors.toList());
+
 
             Collections.sort(atts, (a, b) -> a.getIndex() - b.getIndex());
             attributes = new Attributes(atts);
@@ -109,8 +118,8 @@ public class ARFFDataFolderReader implements DataFileReader {
     public boolean doesItReadThisFile(String fileName) {
         if (!new File(fileName).isDirectory())
             return false;
-        String[] parts = fileName.split(".");
-        return parts[parts.length-1].equals(".arff");
+        String[] parts = fileName.split("\\.");
+        return parts[parts.length-1].equals("arff");
     }
 
     /**
@@ -123,12 +132,13 @@ public class ARFFDataFolderReader implements DataFileReader {
             Stream<Path> stream = StreamSupport.stream(directoryStream.spliterator(), false);
 
             Stream<String> fileLines = stream.flatMap(path -> {
-                try(Stream<String> locallines = Files.lines(path)){
-                    return locallines;
+                try{
+                    return Files.lines(path);
                 }catch (Exception ex){
                     throw new UndeclaredThrowableException(ex);
                 }
             });
+
 
             return fileLines
                     .filter(w -> !w.isEmpty())

@@ -61,7 +61,11 @@ public class BNConverterToAMIDST {
         Variables variables = new Variables(new Attributes(attributes));
         DAG dag = new DAG(variables);
 
-        dag.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
+        try {
+            dag.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
+        }catch(Exception e){
+            dag.setName("DAG");
+        }
 
         Variables amidstVariables = variables;
 
@@ -99,7 +103,11 @@ public class BNConverterToAMIDST {
             }
         }
         this.amidstBN = new BayesianNetwork(dag);
-        amidstBN.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
+        try {
+            amidstBN.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
+        }catch(Exception e){
+            amidstBN.setName("BN");
+        }
     }
 
     /**

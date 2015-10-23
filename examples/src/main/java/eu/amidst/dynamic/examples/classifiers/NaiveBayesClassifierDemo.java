@@ -34,7 +34,7 @@ public class NaiveBayesClassifierDemo {
         DataStream<DataInstance> data =  sampler.sampleToDataStream(sampleSize);
 
         NaiveBayesClassifier model = new NaiveBayesClassifier();
-        model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
+        model.setClassName(data.getAttributes().getFullListOfAttributes().get(0).getName());
         model.setParallelMode(true);
         model.learn(data);
         BayesianNetwork nbClassifier = model.getBNModel();

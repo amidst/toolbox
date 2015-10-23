@@ -17,24 +17,24 @@ public interface AmidstOptionsHandler {
      * Returns the list of options.
      * @return a {@code String} containing le list of options.
      */
-    public String listOptions();
+    String listOptions();
 
     /**
      * Returns the list of options recursively.
      * @return a {@code String} containing le list of options.
      */
-    public String listOptionsRecursively();
+    String listOptionsRecursively();
 
     /**
      * Loads the options.
      */
-    public void loadOptions();
+    void loadOptions();
 
     /**
      * Returns the name of this class.
      * @return a {@code String} containing the name of this class.
      */
-    public default String classNameID(){
+    default String classNameID(){
         return this.getClass().getName();
     }
 
@@ -42,7 +42,7 @@ public interface AmidstOptionsHandler {
      * Sets the option list.
      * @param args the option list.
      */
-    public default void setOptions(String[] args){
+    default void setOptions(String[] args){
         OptionParser.setArgsOptions(classNameID(),args);
         this.loadOptions();
     }
@@ -51,7 +51,7 @@ public interface AmidstOptionsHandler {
      * Loads the list of options from a given file name.
      * @param fileName a {@code String} containing the file name.
      */
-    public default void loadOptionsFromFile(String fileName){
+    default void loadOptionsFromFile(String fileName){
         OptionParser.setConfFileName(fileName);
         OptionParser.loadFileOptions();
         OptionParser.loadDefaultOptions(classNameID());
@@ -63,7 +63,7 @@ public interface AmidstOptionsHandler {
      * @param optionName the option name.
      * @return an {@code String} containing the value of the option.
      */
-    public default String getOption(String optionName) {
+    default String getOption(String optionName) {
         return OptionParser.parse(classNameID(), listOptions(), optionName);
     }
 
@@ -72,7 +72,7 @@ public interface AmidstOptionsHandler {
      * @param optionName the option name.
      * @return an {@code int} containing the value of the option.
      */
-    public default int getIntOption(String optionName){
+    default int getIntOption(String optionName){
         return Integer.parseInt(this.getOption(optionName));
     }
 
@@ -81,7 +81,7 @@ public interface AmidstOptionsHandler {
      * @param optionName the option name.
      * @return a {@code double} containing the value of the option.
      */
-    public default double getDoubleOption(String optionName){
+    default double getDoubleOption(String optionName){
         return Double.parseDouble(this.getOption(optionName));
     }
 
@@ -90,7 +90,7 @@ public interface AmidstOptionsHandler {
      * @param optionName the option name.
      * @return a {@code boolean} containing the value of the option.
      */
-    public default boolean getBooleanOption(String optionName){
+    default boolean getBooleanOption(String optionName){
         return this.getOption(optionName).equalsIgnoreCase("true") || this.getOption(optionName).equalsIgnoreCase("T");
     }
 
@@ -99,7 +99,7 @@ public interface AmidstOptionsHandler {
      * @param obj a {@code Class} instance.
      * @return a {@code String} containing le list of options.
      */
-    public static String listOptionsRecursively(Class obj){
+    static String listOptionsRecursively(Class obj){
         try {
             return ((AmidstOptionsHandler) obj.newInstance()).listOptionsRecursively();
         }catch (Exception e){

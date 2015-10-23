@@ -85,7 +85,6 @@ public class HuginInference implements InferenceAlgorithm {
     @Override
     public void runInference() {
         try {
-            this.huginBN.compile();
             huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
         } catch (ExceptionHugin exceptionHugin) {
             exceptionHugin.printStackTrace();
@@ -100,6 +99,7 @@ public class HuginInference implements InferenceAlgorithm {
         this.amidstBN = model;
         try {
             this.huginBN = BNConverterToHugin.convertToHugin(model);
+            this.huginBN.compile();
         } catch (ExceptionHugin exceptionHugin) {
             exceptionHugin.printStackTrace();
         }

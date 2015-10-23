@@ -50,11 +50,31 @@ public class DataRowWeka implements DataRow{
             else {
                 switch (atts.getFullListOfAttributes().get(i).getStateSpaceType().getStateSpaceTypeEnum()) {
                     case REAL:
-                        data[i] = Double.parseDouble(parts[i]);
+                        try{
+                            data[i] = Double.parseDouble(parts[i]);
+                        }catch(Exception ex){
+                            System.out.println("Error Reading ARFF:");
+                            System.out.println("Attribute Name: " + atts.getFullListOfAttributes().get(i).getName());
+                            System.out.println("Error when reading value: " + parts[i]);
+
+                            ex.printStackTrace();
+                            new Exception();
+                        }
                         break;
                     case FINITE_SET:
-                        FiniteStateSpace finiteStateSpace = atts.getFullListOfAttributes().get(i).getStateSpaceType();
-                        data[i] = finiteStateSpace.getIndexOfState(parts[i]);
+                        try {
+                            FiniteStateSpace finiteStateSpace = atts.getFullListOfAttributes().get(i).getStateSpaceType();
+                            data[i] = finiteStateSpace.getIndexOfState(parts[i]);
+                        }catch(Exception ex){
+                            System.out.println("Error Reading ARFF:");
+                            System.out.println("Attribute Name: " + atts.getFullListOfAttributes().get(i).getName());
+                            System.out.print("Attribute States: ");
+                            ((FiniteStateSpace)atts.getFullListOfAttributes().get(i).getStateSpaceType()).getStatesNames().stream().forEach(state -> System.out.print(state + ", "));
+                            System.out.println();
+                            System.out.println("Error when reading value: " + parts[i]);
+
+                            new Exception();
+                        }
                 }
             }
         }

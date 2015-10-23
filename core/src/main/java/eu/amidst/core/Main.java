@@ -24,6 +24,8 @@ public class Main {
 
     public static void main (String[] args){
 
+        System.out.println(Integer.parseInt("0008")+"");
+
         Variables vars = new Variables();
         Variable var = vars.newGaussianVariable("A");
         double mean = 1;

@@ -318,42 +318,49 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 
-        // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
-        asianet.randomInitialization(new Random(0));
+        // load the true WasteIncinerator Bayesian network
+        BayesianNetwork wasteIncinerator = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        wasteIncinerator.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        System.out.println(wasteIncinerator.toString());
 
-        //Sampling from Asia BN
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
+        //Sampling from WasteIncinerator BN
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(wasteIncinerator);
         sampler.setSeed(0);
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
-        sampler.setHiddenVar(asianet.getVariables().getVariableById(6));
+        sampler.setHiddenVar(wasteIncinerator.getVariables().getVariableById(6));
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
+        //We load the data
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
 
-        //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
-        // and just learn then test the parameter learning
 
-        //Parameter Learning
+        //ParallelVB is defined
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
+        parallelVB.setSeed(5);
+        parallelVB.setBatchSize(100);
+
+
+        //Defining the finishing condition for global iterations
         parallelVB.setMaximumGlobalIterations(20);
         parallelVB.setGlobalThreshold(0.001);
 
-        parallelVB.setSeed(5);
-        parallelVB.setBatchSize(100);
+        //Defining the finishing condition for local iterations
         VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(false);
         vmp.setMaxIter(100);
         vmp.setThreshold(0.0001);
 
 
-        parallelVB.setDAG(asianet.getDAG());
+        //Setting DAG
+        parallelVB.setDAG(wasteIncinerator.getDAG());
+
+        //Setting the distributed data source
         parallelVB.setDataFlink(dataFlink);
+
+        //Run
         parallelVB.runLearning();
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 

@@ -37,6 +37,7 @@ import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.functions.RichMapPartitionFunction;
+import org.apache.flink.api.common.operators.base.JoinOperatorBase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.operators.IterativeDataSet;
@@ -175,7 +176,7 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
 
     protected DataSet<DataPosteriorAssignment> joinData(DataSet<DynamicDataInstance> data){
         //TODO: Define which is the best join strategy!!!!
-        DataSet<DataPosteriorInstance>  dataJoined = data.join(dataPosteriorDataSet)
+        DataSet<DataPosteriorInstance>  dataJoined = data.join(dataPosteriorDataSet, JoinOperatorBase.JoinHint.REPARTITION_SORT_MERGE)
                 .where(new KeySelector<DynamicDataInstance, Long>() {
                     @Override
                     public Long getKey(DynamicDataInstance value) throws Exception {

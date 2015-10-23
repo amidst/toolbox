@@ -5,7 +5,6 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -16,23 +15,22 @@ public class NaiveBayesclassifierTest {
     @Test
     public void testingNBC(){
 
-        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(5, 2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(100);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(7000, 10);
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
-        Assert.assertEquals(5, bn.getNumberOfVars());
 
-        int sampleSize = 100;
+        int sampleSize = 100000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         DataStream<DataInstance> data =  sampler.sampleToDataStream(sampleSize);
 
         NaiveBayesClassifier model = new NaiveBayesClassifier();
-        model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
+        model.setClassName(data.getAttributes().getFullListOfAttributes().get(0).getName());
         model.learn(data);
         BayesianNetwork nbClassifier = model.getBNModel();
 
-        System.out.println(nbClassifier.toString());
+        //System.out.println(nbClassifier.toString());
     }
 }
