@@ -14,6 +14,7 @@ package eu.amidst.cajamareval;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Utils;
@@ -49,6 +50,7 @@ public class ParallelTANEval {
             fw.write(dataInstance.getValue(seq_id) +"\t" + tan.predict(dataInstance)[1]+"\n");
         }
 
+        BayesianNetworkWriter.saveToFile(bn, fileOutput + "_TAN_model.bn");
 
         fw.close();
     }
