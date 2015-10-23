@@ -1,4 +1,4 @@
-package eu.amidst.core.utils;
+package eu.amidst.cajamareval;
 
 import java.io.BufferedReader;
 import java.io.IOException;
