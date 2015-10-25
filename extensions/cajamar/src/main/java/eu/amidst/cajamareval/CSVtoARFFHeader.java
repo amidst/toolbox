@@ -31,13 +31,13 @@ public class CSVtoARFFHeader {
 
     public static void getNumberOfStatesFromCSVFolder(String folderName) throws IOException {
 
-        System.out.println("Reading folder " + folderName + ", with files:");
+        //System.out.println("Reading folder " + folderName + ", with files:");
         Path folder = Paths.get(folderName); //"./datasets/CSVfolder/");
         String SEPARATOR = ",";
 
         List<Path> CSVfiles = listSourceFiles(folder);
-        CSVfiles.forEach(csv -> System.out.println(csv.getFileName()));
-        System.out.println();
+        //CSVfiles.forEach(csv -> System.out.println(csv.getFileName()));
+        //System.out.println();
 
         Path firstCSV = CSVfiles.stream().findFirst().get();
 
@@ -56,7 +56,7 @@ public class CSVtoARFFHeader {
         //variableNames.stream().forEach(st -> System.out.println(st));
 
         int numberOfVariables = variableNames.size();
-        System.out.println("File " + firstCSV.getFileName() + " has " + numberOfVariables + " variables");
+        //System.out.println("File " + firstCSV.getFileName() + " has " + numberOfVariables + " variables");
 
         source1.close();
         reader1.close();
@@ -124,7 +124,7 @@ public class CSVtoARFFHeader {
                 reader.close();
                 source.close();
 
-                System.out.println("Read " + (lineNumber - 1) + " lines in file " + csvfile.getFileName());
+                //System.out.println("Read " + (lineNumber - 1) + " lines in file " + csvfile.getFileName());
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -135,9 +135,9 @@ public class CSVtoARFFHeader {
          * DISPLAYS THE .ARFF FILE HEADER:
          */
 
-        System.out.println();
-        System.out.println("ARFF Header:");
-        System.out.println();
+        //System.out.println();
+        //System.out.println("ARFF Header:");
+        //System.out.println();
 
         //for(int i=0; i<variableNames.size(); i++) {
         IntStream.range(0, variableNames.size()).forEach(i -> {
@@ -177,7 +177,7 @@ public class CSVtoARFFHeader {
 
     public static void getNumberOfStatesFromCSVFile(String folder, String file) throws IOException {
 
-        System.out.println("Reading file " + file);
+        //System.out.println("Reading file " + file);
         Path path = Paths.get(folder, file);
         Reader source = Files.newBufferedReader(
                 path, Charset.forName("UTF-8"));
@@ -194,7 +194,7 @@ public class CSVtoARFFHeader {
                 .get();
 
         int numberOfVariables = variableNames.size();
-        System.out.println("File " + path.getFileName() + " has " + numberOfVariables + " variables");
+        //System.out.println("File " + path.getFileName() + " has " + numberOfVariables + " variables");
 
         boolean[] isVariableContinuous = new boolean[numberOfVariables];
         for (int i = 0; i < isVariableContinuous.length; i++) {
@@ -247,15 +247,15 @@ public class CSVtoARFFHeader {
             lineNumber++;
         }
 
-        System.out.println("Read " + (lineNumber-1) + " lines");
+//        System.out.println("Read " + (lineNumber-1) + " lines");
 
         /*
          * DISPLAYS THE .ARFF FILE HEADER:
          */
 
-        System.out.println();
-        System.out.println("ARFF Header:");
-        System.out.println();
+//        System.out.println();
+//        System.out.println("ARFF Header:");
+//        System.out.println();
 
         //for(int i=0; i<variableNames.size(); i++) {
         IntStream.range(0, variableNames.size()).forEach(i -> {
@@ -295,7 +295,7 @@ public class CSVtoARFFHeader {
         reader.close();
         source.close();
 
-        System.out.println();
+        //System.out.println();
     }
 
     public static void main(String[] args) throws IOException {
