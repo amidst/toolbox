@@ -510,6 +510,7 @@ public class MPEInference implements PointEstimator {
         double nextProbability;
 
         //Random random = new Random(this.seed);
+
         Random random = new Random();
 
         while (R>eps) {
