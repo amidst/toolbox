@@ -23,7 +23,7 @@ public class Serialization {
      * Serializes a given object
      * @param object, any serializable object.
      * @return An array of bytes
-     * @throws Exception
+     *
      */
     public static byte[] serializeObject(Object object){
 

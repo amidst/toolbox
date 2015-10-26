@@ -52,7 +52,9 @@ public interface Assignment {
         builder.append("{");
         this.getVariables().stream().forEach(var -> builder.append(var.getName() + " = " + (var.isMultinomial() ? (int) this.getValue(var) : String.format("%1$,.3f", this.getValue(var))) + ", "));
         //builder.deleteCharAt(builder.lastIndexOf(","));
-        builder.delete(builder.lastIndexOf(","), builder.lastIndexOf(",")+2);
+        if (builder.length()>1) {
+            builder.delete(builder.lastIndexOf(","), builder.lastIndexOf(",") + 2);
+        }
         builder.append("}");
         return builder.toString();
     }
@@ -74,7 +76,9 @@ public interface Assignment {
 //        }
         vars.stream().filter(var -> !Double.isNaN(this.getValue(var))).forEach(var -> builder.append(var.getName() + " = " + (var.isMultinomial() ? (int) this.getValue(var) : String.format("%1$,.3f", this.getValue(var))) + ", "));
         //builder.deleteCharAt(builder.lastIndexOf(","));
-        builder.delete(builder.lastIndexOf(","), builder.lastIndexOf(",") + 2);
+        if (builder.length()>1) {
+            builder.delete(builder.lastIndexOf(","), builder.lastIndexOf(",") + 2);
+        }
         builder.append("}");
 
         return builder.toString();
