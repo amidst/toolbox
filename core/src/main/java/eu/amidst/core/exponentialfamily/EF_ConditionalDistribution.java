@@ -50,7 +50,7 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
     /**
      * Returns the expected value of the log-normalizer for a given parent according to the given moment parameters of
      * the rest of parent variables (i.e., Co-Parents).
-     * @param parent the reference parent {@linkVariable} object.
+     * @param parent the reference parent {@link Variable} object.
      * @param momentChildCoParents a {@code Map} object that maps parent {@link Variable}s to their corresponding {@link MomentParameters} objects.
      * @return a {@code double} value that represents the expected value of the log-normalizer.
      */
@@ -73,7 +73,7 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
     /**
      * Returns the expected natural parameter vector for a given parent variable given the moment parameters of the rest of parent
      * variables (i.e., Co-Parents).
-     * @param parent the reference parent {@linkVariable} object.
+     * @param parent the reference parent {@link Variable} object.
      * @param momentChildCoParents a {@code Map} object that maps parent {@link Variable}s to their corresponding {@link MomentParameters} objects.
      * @return a {@link NaturalParameters} object.
      */
