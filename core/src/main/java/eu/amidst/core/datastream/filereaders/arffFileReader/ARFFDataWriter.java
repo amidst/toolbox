@@ -10,12 +10,13 @@ package eu.amidst.core.datastream.filereaders.arffFileReader;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.filereaders.DataFileWriter;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,7 +32,7 @@ public class ARFFDataWriter implements DataFileWriter {
      * Saves a given data stream to an ARFF file.
      * @param dataStream an input {@link DataStream}.
      * @param path the path of the ARFF file where the data stream will be saved.
-     * @throws IOException
+     * @throws IOException in case of an error when writing to file
      */
     public static void writeToARFFFile(DataStream<? extends DataInstance> dataStream, String path) throws IOException {
         FileWriter fw = new FileWriter(path);

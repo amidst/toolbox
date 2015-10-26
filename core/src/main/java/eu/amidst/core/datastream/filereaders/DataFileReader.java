@@ -39,8 +39,8 @@ public interface DataFileReader extends Iterable<DataRow> {
     boolean doesItReadThisFile(String fileName);
 
     /**
-     * Returns a Stream of {@DataRow} objects to be processed sequentially.
-     * @return a valid Java stream of {@DataRow} objects.
+     * Returns a Stream of {@link DataRow} objects to be processed sequentially.
+     * @return a valid Java stream of {@link DataRow} objects.
      */
     Stream<DataRow> stream();
 
@@ -61,7 +61,7 @@ public interface DataFileReader extends Iterable<DataRow> {
     }
 
     /**
-     * Returns a fixed batch Stream of {@DataRow} objects to be processed in parallel.
+     * Returns a fixed batch Stream of {@link DataRow} objects to be processed in parallel.
      * @param batchSize the batch size.
      * @return a fixed batch stream to be processed in parallel.
      * @see eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper
@@ -71,7 +71,7 @@ public interface DataFileReader extends Iterable<DataRow> {
     }
 
     /**
-     * Returns a Stream of {@DataRow} objects to be processed in parallel.
+     * Returns a Stream of {@link DataRow} objects to be processed in parallel.
      * @return a stream to be processed in parallel.
      */
     default Stream<DataRow> parallelStream(){
@@ -79,8 +79,8 @@ public interface DataFileReader extends Iterable<DataRow> {
     }
 
     /**
-     * Returns an {@link Iterator} over the stream of {@DataRow} objects.
-     * @return an {@link Iterator} over the stream of {@DataRow} objects.
+     * Returns an {@link Iterator} over the stream of {@link DataRow} objects.
+     * @return an {@link Iterator} over the stream of {@link DataRow} objects.
      */
     default Iterator<DataRow> iterator() {
         return this.stream().iterator();
