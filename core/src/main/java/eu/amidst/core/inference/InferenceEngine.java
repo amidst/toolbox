@@ -68,6 +68,7 @@ public final class InferenceEngine {
 
     /**
      * Returns the posterior distribution for a given input {@link Variable} and a {@link BayesianNetwork}.
+     * @param <E> a class extending {@link UnivariateDistribution}.
      * @param var an input {@link Variable}.
      * @param bayesianNetwork a {@link BayesianNetwork} object.
      * @return a {@link UnivariateDistribution} object.

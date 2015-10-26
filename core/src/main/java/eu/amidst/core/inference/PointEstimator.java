@@ -6,7 +6,7 @@ import eu.amidst.core.variables.Assignment;
 /**
  * This interface handles a Bayesian posterior point-estimator in a {@link BayesianNetwork}.
  *
- * For an example, {@see eu.amidst.core.examples.inference}.
+ * @see "eu.amidst.core.examples.inference".
  */
 public interface PointEstimator {
 
