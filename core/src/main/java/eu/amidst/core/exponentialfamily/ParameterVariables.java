@@ -16,13 +16,16 @@
 
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.variables.*;
 import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.variables.*;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -84,6 +87,7 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
 
     /**
      * Creates a new parameter Dirichlet Variable from a given name.
+     * @param nOfStates the number of states of this variable.
      * @param name a given name.
      * @return a new gaussian {@link Variable}.
      */

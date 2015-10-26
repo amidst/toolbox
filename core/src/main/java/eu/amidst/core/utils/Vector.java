@@ -108,7 +108,7 @@ public interface Vector {
      * Returns the dot product of this Vector and an input vector, defined as
      * the sum of the pairwise products of the values of the two vectors.
      * @param vector an input vector.
-     * @return a {@double} that represents the dot product of the two vectors.
+     * @return a double that represents the dot product of the two vectors.
      */
     public default double dotProduct(Vector vector){
         if (this.size()!=vector.size())
