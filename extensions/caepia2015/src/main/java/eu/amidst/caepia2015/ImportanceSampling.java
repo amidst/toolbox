@@ -15,6 +15,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
@@ -23,7 +24,6 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.inference.InferenceAlgorithm;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -238,6 +238,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
         //System.out.println(meanWeightsSuccess);
         //System.out.println(meanAllWeights);
 
+        System.out.printf("sumWeigthSuccess: " + sumWeightsSuccess + ", sumAllWeights: " + sumAllWeights);
         probInterest = sumWeightsSuccess/sumAllWeights;
 
         return probInterest;
