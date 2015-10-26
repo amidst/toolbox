@@ -70,6 +70,7 @@ public class NaiveBayesClassifier implements Classifier{
     @Override
     public double[] predict(DataInstance instance) {
         this.predictions.setEvidence(instance);
+        this.predictions.runInference();
         Multinomial multinomial = this.predictions.getPosterior(this.getBNModel().getVariables().getVariableByName(className));
         return multinomial.getParameters();
     }
