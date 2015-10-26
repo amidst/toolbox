@@ -79,6 +79,7 @@ public final class BayesianNetwork implements Serializable {
 
     /**
      * Returns the conditional probability distribution of a variable.
+     * @param <E> a class extending {@link ConditionalDistribution}.
      * @param var a variable of type {@link Variable}.
      * @return a conditional probability distribution.
      */
