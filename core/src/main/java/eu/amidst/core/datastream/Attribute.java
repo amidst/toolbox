@@ -27,7 +27,7 @@ import java.text.NumberFormat;
 /**
  * If we consider a data sets as a data  matrix, an Attribute class would represent a column of the matrix.
  * This Attribute contains information such as the column name and the type of data it contains (discrete, continuous, etc.).
- * <p> See {@code eu.amidst.core.examples.datastream.DataStreamExample} for an example of use. <p>
+ * <p> See {@code eu.amidst.core.examples.datastream.DataStreamExample} for an example of use. </p>
  */
 
 public final class Attribute implements Serializable {
@@ -135,7 +135,7 @@ public final class Attribute implements Serializable {
 
     /**
      * Returns the index of this Attribute.
-     * @return an integer i>=0.
+     * @return an integer i&gt;=0.
      */
     public int getIndex() {
         return index;
@@ -151,6 +151,7 @@ public final class Attribute implements Serializable {
 
     /**
      * Returns a StateSpaceType object describing this Attribute.
+     * @param <E> any class extending {@link StateSpaceType}
      * @return a StateSpaceType object describing this Attribute.
      */
     public <E extends StateSpaceType> E getStateSpaceType() {
