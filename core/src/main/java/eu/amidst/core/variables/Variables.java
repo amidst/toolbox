@@ -12,6 +12,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -95,7 +96,7 @@ public class Variables implements Iterable<Variable>, Serializable {
     /**
      * Sets a new set of attributes. Links current variables with this new set by matching
      * variable names with attributes names.
-     * @param attributes
+     * @param attributes an object of class {@link Attributes}
      */
     public void setAttributes(Attributes attributes){
         for (Variable variable : allVariables) {
