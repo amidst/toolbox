@@ -153,6 +153,13 @@ public abstract class EF_Distribution implements Serializable {
     }
 
     /**
+     * Creates the initial sufficient statistics vector (i.e., a vector with the initial counts).
+     * It is used to implement MAP learning.
+     * @return a {@link SufficientStatistics} object.
+     */
+    public abstract SufficientStatistics createInitSufficientStatistics();
+
+    /**
      * Creates a zero natural parameter vector (i.e., a vector filled with zeros).
      * @return a {@link NaturalParameters} object.
      */

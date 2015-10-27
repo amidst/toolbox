@@ -49,11 +49,11 @@ public class MLMultinomialsTest {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
-            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
+            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.07));
         }
 
         //Or check directly if the true and learned networks are equals
-        Assert.assertTrue(bnet.equalBNs(asianet, 0.05));
+        Assert.assertTrue(bnet.equalBNs(asianet, 0.07));
     }
 
 
@@ -88,11 +88,11 @@ public class MLMultinomialsTest {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
-            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
+            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.07));
         }
 
         //Or check directly if the true and learned networks are equals
-        Assert.assertTrue(bnet.equalBNs(asianet, 0.05));
+        Assert.assertTrue(bnet.equalBNs(asianet, 0.07));
     }
 
     @Test
@@ -130,10 +130,10 @@ public class MLMultinomialsTest {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
-            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
+            Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.07));
         }
 
         //Or check directly if the true and learned networks are equals
-        Assert.assertTrue(bnet.equalBNs(asianet, 0.05));
+        Assert.assertTrue(bnet.equalBNs(asianet, 0.07));
     }
 }
