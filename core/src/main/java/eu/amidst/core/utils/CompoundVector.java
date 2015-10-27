@@ -169,7 +169,7 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
      * Returns the dot product of this CompoundVector and an input CompoundVector, defined as
      * the sum of the pairwise products of the values of the two CompoundVectors.
      * @param vec an input CompoundVector.
-     * @return a {@double} that represents the dot product of the two CompoundVectors.
+     * @return a double that represents the dot product of the two CompoundVectors.
      */
     public double dotProduct(CompoundVector vec) {
         return this.baseVectors.stream().mapToDouble(w -> w.getVector().dotProduct(vec.getVectorByPosition(w.getIndex()))).sum();

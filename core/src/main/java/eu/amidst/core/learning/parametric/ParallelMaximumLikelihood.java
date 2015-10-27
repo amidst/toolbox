@@ -12,7 +12,6 @@
 package eu.amidst.core.learning.parametric;
 
 
-
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
@@ -24,6 +23,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -66,7 +66,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
 
     /**
      * Sets the debug mode of the class
-     * @param debug
+     * @param debug a boolean setting whether to execute in debug mode or not.
      */
     public void setDebug(boolean debug) {
         this.debug = debug;

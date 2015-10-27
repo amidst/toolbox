@@ -55,7 +55,7 @@ public final class DataStreamLoader {
                 if (reader.doesItReadThisFile(fileName))
                     return reader;
             }
-        }catch (Exception ex){
+        } catch (Exception ex){
             throw new UndeclaredThrowableException(ex);
         }
 

@@ -82,7 +82,7 @@ public class DataPosterior implements Serializable {
 
     /**
      * Returns whethers a given variable is present in the object.
-     * @param var, a {@Variable} object.
+     * @param var, a {@link Variable} object.
      * @return A boolean value.
      */
     public boolean isPresent(Variable var){

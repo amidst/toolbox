@@ -10,8 +10,8 @@ package eu.amidst.core.utils;
 
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ public final class Utils {
 
     /**
      * Normalizes a given vector.
+     * @param <E> a class extending {@link Vector}.
      * @param vector the vector to be normalized.
      * @return a normalized vector.
      */
@@ -38,6 +39,7 @@ public final class Utils {
 
     /**
      * Normalizes a given vector.
+     * @param <E> a class extending {@link Vector}.
      * @param vector the vector to be normalized.
      * @return a normalized vector.
      */
@@ -234,8 +236,8 @@ public final class Utils {
     /**
      * Returns the Inverse digamma of a given {@code double} value.
      * <p> The digamma function is the derivative of the log gamma function.
-     * It calculates the value Y > 0 for a value X such that digamma(Y) = X.
-     * This algorithm is from Paul Fackler & Harvard Univesity:
+     * It calculates the value Y &gt; 0 for a value X such that digamma(Y) = X.
+     * This algorithm is from Paul Fackler and Harvard Univesity:
      * http://www4.ncsu.edu/~pfackler/
      * http://hips.seas.harvard.edu/content/inverse-digamma-function-matlab </p>
      * @param X a {@code double} value.

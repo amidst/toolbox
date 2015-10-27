@@ -451,6 +451,7 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
 
     /**
      * Returns the exponential family posterior of a given {@link Variable}.
+     * @param <E> a class extending {@link EF_UnivariateDistribution}
      * @param var a {@link Variable} object.
      * @return an {@link EF_UnivariateDistribution} object.
      */
