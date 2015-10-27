@@ -43,16 +43,16 @@ public class NaiveBayesEval {
 
         naiveBayesClassifier.setClassName(className);
 
-        naiveBayesClassifier.learn(train,10000);
+        naiveBayesClassifier.learn(train, 10000);
+
+        BayesianNetworkWriter.saveToFile(naiveBayesClassifier.getBNModel(), fileOutput + "_NB_model.bn");
 
         Attribute seq_id = train.getAttributes().getSeq_id();
         Attribute classAtt  = train.getAttributes().getAttributeByName(className);
         for (DataInstance dataInstance : test) {
             dataInstance.setValue(classAtt, Utils.missingValue());
-            fw.write(dataInstance.getValue(seq_id) +"\t" + naiveBayesClassifier.predict(dataInstance)[1]+"\n");
+            fw.write(dataInstance.getValue(seq_id) + "\t" + naiveBayesClassifier.predict(dataInstance)[1] + "\n");
         }
-
-        BayesianNetworkWriter.saveToFile(naiveBayesClassifier.getBNModel(), fileOutput + "_NB_model.bn");
 
         fw.close();
 

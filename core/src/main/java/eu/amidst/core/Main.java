@@ -12,18 +12,21 @@
 package eu.amidst.core;
 
 
-import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.exponentialfamily.EF_Normal;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
+import eu.amidst.core.io.BayesianNetworkLoader;
+
+import java.io.IOException;
 
 /**
  * Created by andresmasegosa on 24/6/15.
  */
 public class Main {
 
-    public static void main (String[] args){
+    public static void main (String[] args) throws IOException, ClassNotFoundException {
 
+
+        System.out.println(BayesianNetworkLoader.loadFromFile("./networks/outputNB.txt_NB_model.bn"));
+
+        /*
         System.out.println(Integer.parseInt("0008")+"");
 
         Variables vars = new Variables();
@@ -51,7 +54,7 @@ public class Main {
             mean*=10;
             //variance/=10;
         }
-
+        */
 
     }
 

@@ -316,6 +316,14 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
      * {@inheritDoc}
      */
     @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
 
         ConditionalLinearGaussian dist = new ConditionalLinearGaussian(this.var, this.realYVariables);

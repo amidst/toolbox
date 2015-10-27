@@ -20,7 +20,7 @@ import eu.amidst.core.io.DataStreamLoader;
  */
 public class TestArff {
     public static void main(String[] args) throws Exception {
-        String fileTrain = "datasets/datatest.arff";//args[0];
+        String fileTrain = args[0];
 
         System.out.println("Processing ARFF File: ");
 

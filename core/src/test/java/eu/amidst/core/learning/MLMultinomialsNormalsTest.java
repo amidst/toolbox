@@ -58,11 +58,11 @@ public class MLMultinomialsNormalsTest {
                 System.out.println("\n------ Variable " + var.getName() + " ------");
                 System.out.println("\nTrue distribution:\n"+ trueBN.getConditionalDistribution(var));
                 System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
-                Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(trueBN.getConditionalDistribution(var), 0.05));
+                Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(trueBN.getConditionalDistribution(var), 0.07));
             }
 
             //Or check directly if the true and learned networks are equals
-            Assert.assertTrue(bnet.equalBNs(trueBN, 0.05));
+            Assert.assertTrue(bnet.equalBNs(trueBN, 0.07));
         }
 }
 

@@ -98,6 +98,20 @@ public class EF_Normal extends EF_UnivariateDistribution {
      * {@inheritDoc}
      */
     @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
+
+        vector.set(0, 0);
+        vector.set(1, 1);
+
+        return vector;
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics vec = this.createZeroSufficientStatistics();
         vec.set(EXPECTED_MEAN, val);
