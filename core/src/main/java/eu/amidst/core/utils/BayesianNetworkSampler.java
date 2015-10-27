@@ -88,7 +88,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     /**
      * Sets a given {@link Variable} object as noisy.
      * @param var a given {@link Variable} object.
-     * @param noiseProb a {@double} that represents the noise probability.
+     * @param noiseProb a double that represents the noise probability.
      */
     public void setMARVar(Variable var, double noiseProb){ this.marNoise.put(var,noiseProb);}
 

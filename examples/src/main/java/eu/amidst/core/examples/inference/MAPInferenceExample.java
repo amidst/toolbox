@@ -12,7 +12,7 @@
 package eu.amidst.core.examples.inference;
 
 
-import eu.amidst.core.inference.MPEInference;
+import eu.amidst.core.inference.MAPInference;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Utils;
@@ -20,6 +20,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ import java.util.List;
  * algorithm detailed in
  *
  */
-public class MPEInferenceExample {
+public class MAPInferenceExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -41,10 +42,10 @@ public class MPEInferenceExample {
         Variable varW = bn.getVariables().getVariableByName("W");
 
         //First we create an instance of a point estimator. In this case, we use the MPEInference class.
-        MPEInference mpeInference = new MPEInference();
+        MAPInference mapInference = new MAPInference();
 
         //Then, we set the BN model
-        mpeInference.setModel(bn);
+        mapInference.setModel(bn);
 
         System.out.println(bn.toString());
 
@@ -52,23 +53,34 @@ public class MPEInferenceExample {
         Assignment assignment = new HashMapAssignment(2);
         assignment.setValue(varW, 0);
         assignment.setValue(varMin, 0.15);
-        mpeInference.setEvidence(assignment);
+        mapInference.setEvidence(assignment);
 
 
         System.out.println("Evidence: " + assignment.outputString(causalOrder) + "\n");
 
+        // Set also the list of variables of interest (or MAP variables).
+        List<Variable> varsInterest = new ArrayList<>();
+
+        Variable var1 = bn.getVariables().getVariableByName("B");
+        Variable var2 = bn.getVariables().getVariableByName("C");
+
+        varsInterest.add(var1);
+        varsInterest.add(var2);
+        mapInference.setMAPVariables(varsInterest);
+        System.out.println("Variables of Interest: " + var1.getName() + ", " + var2.getName() + "\n");
+
         //We can also set to be run in parallel on multicore CPUs
-        mpeInference.setParallelMode(true);
+        mapInference.setParallelMode(true);
 
         //Then we run inference
-        mpeInference.runInference();
+        mapInference.runInference();
 
         //We show the found MPE estimate
-        System.out.println("MPE = " + mpeInference.getEstimate().outputString(causalOrder));
+        System.out.println("MAP = " + mapInference.getEstimate().outputString(causalOrder));
 
 
         //And its probability
-        System.out.println("P(MPE) = " + Math.exp(mpeInference.getLogProbabilityOfEstimate()));
+        System.out.println("P(MAP) = " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
 
     }
 }

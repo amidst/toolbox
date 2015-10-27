@@ -9,12 +9,12 @@
 package eu.amidst.core.inference.messagepassing;
 
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -147,7 +147,7 @@ public class Node implements Serializable{
 
     /**
      * Sets this Node as either active or not active.
-     * @param active a {@boolean} value to be set.
+     * @param active a boolean value to be set.
      */
     public void setActive(boolean active) {
         this.active = active;
@@ -356,7 +356,7 @@ public class Node implements Serializable{
 
     /**
      * Sets this Node as either done or not.
-     * @param isDone a {@boolean} value to be set.
+     * @param isDone a boolean value to be set.
      */
     public void setIsDone(boolean isDone) {
         this.isDone = isDone;
