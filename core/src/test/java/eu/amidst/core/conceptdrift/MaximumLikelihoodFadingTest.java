@@ -47,6 +47,7 @@ public class MaximumLikelihoodFadingTest {
 
             //Parameter Learning
             MaximumLikelihoodFading maximumLikelihoodFading = new MaximumLikelihoodFading();
+            maximumLikelihoodFading.setLaplace(false);
             maximumLikelihoodFading.setFadingFactor(1.0);
             maximumLikelihoodFading.setBatchSize(1000);
             maximumLikelihoodFading.setDAG(trueBN.getDAG());

@@ -47,9 +47,8 @@ public class MLTestOneVar {
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
         parallelMaximumLikelihood.setBatchSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
+        parallelMaximumLikelihood.setLaplace(false);
         LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-
-
         //using Maximum likelihood learnParametersStaticModel
         BayesianNetwork bn = LearningEngine.learnParameters(net.getDAG(), data);
         System.out.println(bn.toString());

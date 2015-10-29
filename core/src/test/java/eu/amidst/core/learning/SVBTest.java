@@ -9,6 +9,7 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.learning.parametric.LearningEngine;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -43,6 +44,11 @@ public class SVBTest extends TestCase {
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
 
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setParallelMode(true);
+        parallelMaximumLikelihood.setLaplace(false);
+        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(bn.getDAG(), data);
 
         System.out.println(learntNormalVarBN.toString());
@@ -90,6 +96,11 @@ public class SVBTest extends TestCase {
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
 
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setParallelMode(true);
+        parallelMaximumLikelihood.setLaplace(false);
+        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         System.out.println(LearningEngine.learnParameters(bn.getDAG(), data).toString());
 
         SVB svb = new SVB();
@@ -373,6 +384,11 @@ public class SVBTest extends TestCase {
 
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
+            ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setParallelMode(true);
+            parallelMaximumLikelihood.setLaplace(false);
+            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
             System.out.println(LearningEngine.learnParameters(oneNormalVarBN.getDAG(), data).toString());
 
             SVB svb = new SVB();
@@ -410,6 +426,12 @@ public class SVBTest extends TestCase {
         sampler.setSeed(1);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
+
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setParallelMode(true);
+        parallelMaximumLikelihood.setLaplace(false);
+        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
         System.out.println(normalVarBN.toString());
@@ -453,6 +475,11 @@ public class SVBTest extends TestCase {
             sampler.setSeed(2);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
+            ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setParallelMode(true);
+            parallelMaximumLikelihood.setLaplace(false);
+            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
@@ -499,6 +526,11 @@ public class SVBTest extends TestCase {
             sampler.setSeed(0);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
+            ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setParallelMode(true);
+            parallelMaximumLikelihood.setLaplace(false);
+            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
@@ -540,6 +572,11 @@ public class SVBTest extends TestCase {
             sampler.setSeed(0);
             DataStream<DataInstance> data = sampler.sampleToDataStream(20000);
 
+            ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setParallelMode(true);
+            parallelMaximumLikelihood.setLaplace(false);
+            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());
@@ -582,6 +619,11 @@ public class SVBTest extends TestCase {
             sampler.setSeed(0);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
+            ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setParallelMode(true);
+            parallelMaximumLikelihood.setLaplace(false);
+            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
             BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
 
             System.out.println(normalVarBN.toString());

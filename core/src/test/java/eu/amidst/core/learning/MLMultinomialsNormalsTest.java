@@ -49,6 +49,7 @@ public class MLMultinomialsNormalsTest {
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
             parallelMaximumLikelihood.setBatchSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
+            parallelMaximumLikelihood.setLaplace(false);
             LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
 
             BayesianNetwork bnet = LearningEngine.learnParameters(trueBN.getDAG(), data);

@@ -36,6 +36,7 @@ doc/REproccess.pdf
 target/maven-archiver*
 target/surefire-reports*
 target/*
+extensions/cajamar/target/*
 huginlink/target/*
 moalink/target/*
 core-static/target/*
