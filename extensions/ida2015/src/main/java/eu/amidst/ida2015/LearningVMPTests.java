@@ -567,7 +567,13 @@ public class LearningVMPTests {
             Variable varB = normalVarBN.getVariables().getVariableByName("B");
 
 
-            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+            ParallelMaximumLikelihood pml = new ParallelMaximumLikelihood();
+            pml.setDAG(normalVarBN.getDAG());
+            pml.setDataStream(data);
+            pml.setLaplace(false);
+            pml.runLearning();
+
+            BayesianNetwork learntNormalVarBN = pml.getLearntBayesianNetwork();
             String beta0fromML = Double.toString(((ConditionalLinearGaussian) learntNormalVarBN.
                     getConditionalDistribution(varA)).getIntercept());
             String beta1fromML = Double.toString(((ConditionalLinearGaussian) learntNormalVarBN.
@@ -653,7 +659,13 @@ public class LearningVMPTests {
             Variable varB = normalVarBN.getVariables().getVariableByName("B");
 
 
-            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+            ParallelMaximumLikelihood pml = new ParallelMaximumLikelihood();
+            pml.setDAG(normalVarBN.getDAG());
+            pml.setDataStream(data);
+            pml.setLaplace(false);
+            pml.runLearning();
+
+            BayesianNetwork learntNormalVarBN = pml.getLearntBayesianNetwork();
 
             //System.out.println(learntNormalVarBN.outputString());
 
@@ -918,6 +930,7 @@ public class LearningVMPTests {
                 outputPerWindowSize[3][j] = windowsSizes[j] + "\t";
                 outputPerWindowSize[4][j] = windowsSizes[j] + "\t";
                 MaximumLikelihoodFading likelihoodFading = new MaximumLikelihoodFading();
+                likelihoodFading.setLaplace(false);
 
                 for (int f = 0; f < fadingFactor.length; f++) {
                     likelihoodFading.setFadingFactor(fadingFactor[f]);
