@@ -252,10 +252,18 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
             elboBatch =  this.updateModelParallel(batch);
         }
 
+        this.applyTransition();
+
+        return elboBatch;
+    }
+
+    /**
+     * Apply the transition method defined by the method setTransitionMethod.
+     */
+    public void applyTransition(){
         if (transitionMethod!=null)
             this.ef_extendedBN=this.transitionMethod.transitionModel(this.ef_extendedBN, this.plateuStructure);
 
-        return elboBatch;
     }
 
     /**
@@ -553,6 +561,15 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     public void setParallelMode(boolean parallelMode) {
         throw new UnsupportedOperationException("Non Parallel Mode Supported. Use class ParallelSVB");
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter){
+        return this.getPlateuStructure().getEFVariablePosterior(parameter, 0).toUnivariateDistribution();
+    }
+
 
     /**
      * Defines the batch Output.

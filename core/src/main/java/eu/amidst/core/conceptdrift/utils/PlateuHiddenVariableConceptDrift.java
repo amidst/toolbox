@@ -12,6 +12,7 @@ package eu.amidst.core.conceptdrift.utils;
 
 
 
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.variables.Variable;
@@ -106,6 +107,11 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
         }
 
         this.vmp.setNodes(allNodes);
+    }
+
+    public <E extends EF_UnivariateDistribution> E getEFParameterPosterior(Variable var) {
+
+        return (E)this.parametersToNode.get(var).getQDist();
     }
 
     public Node getNodeOfVar(Variable variable, int slice) {
