@@ -162,10 +162,12 @@ public class BCC {
 
         //For each month of the period
         for (int i = 0; i < MONTHS; i++) {
+
             //We load the data for that month
             DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month"+i+".arff");
-            //We get the attribute expenses
-            Attribute expenses = instances.getAttributes().getAttributeByName("expenses");
+
+            //We get the attribute credit
+            Attribute expenses = instances.getAttributes().getAttributeByName("credit");
 
             //We compute the average, using a parallel stream.
             double expensesMonthlyAverage = instances
