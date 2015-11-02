@@ -12,7 +12,11 @@
 package eu.amidst.core;
 
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.io.DataStreamWriter;
 
 import java.io.IOException;
 
@@ -22,6 +26,15 @@ import java.io.IOException;
 public class Main {
 
     public static void main (String[] args) throws IOException, ClassNotFoundException {
+
+
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/tmp2.arff");
+
+        int cont=0;
+        for (DataStream<DataInstance> batch : data.iterableOverBatches(1000)) {
+            DataStreamWriter.writeDataToFile(batch,"./datasets/bnaic2015/BCC/Month"+cont+".arff");
+            cont++;
+        }
 
 
         System.out.println(BayesianNetworkLoader.loadFromFile("./networks/outputNB.txt_NB_model.bn"));

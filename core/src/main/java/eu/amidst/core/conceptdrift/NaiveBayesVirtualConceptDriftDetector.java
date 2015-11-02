@@ -218,7 +218,7 @@ public class NaiveBayesVirtualConceptDriftDetector{
         double[] out = new double[hiddenVars.size()];
         for (int i = 0; i < out.length; i++) {
             Variable hiddenVar = this.hiddenVars.get(i);
-            Normal normal = svb.getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+            Normal normal = svb.getParameterPosterior(hiddenVar);
             out[i] = normal.getMean();
         }
         return out;
