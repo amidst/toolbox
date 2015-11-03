@@ -17,7 +17,6 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
 import eu.amidst.core.models.BayesianNetwork;
@@ -45,7 +44,7 @@ public class BCC {
      * This method constains the code needed to learn the model and produce the output.
      * @param parallelSVB
      */
-    public static void learnModel(ParallelSVB parallelSVB) throws IOException {
+    public static BayesianNetwork learnModel(ParallelSVB parallelSVB) throws IOException {
 
         //We access the hidden var
         Variable hiddenGaussian = parallelSVB.getSVBEngine().getDAG().getVariables().getVariableByName("HiddenGaussian");
@@ -66,10 +65,8 @@ public class BCC {
             System.out.println("E(H) at month "+i+":\t" + normal.getMean());
         }
 
-        //Finally we get the learnt Bayesian network and save it to disk
-        BayesianNetwork bn = parallelSVB.getLearntBayesianNetwork();
-        BayesianNetworkWriter.saveToFile(bn, "./datasets/bnaic2015/BCC/PGM.bn");
-
+        //Finally we get the learnt Bayesian network and return it.
+        return  parallelSVB.getLearntBayesianNetwork();
     }
 
     /**
@@ -129,11 +126,11 @@ public class BCC {
         //Define the variables. By default, a random variable is created for each attribute
         Variables variables  = new Variables(instances.getAttributes());
 
-        //We get the variable Default
-        Variable defaultVariable = variables.getVariableByName("default");
-
         //We create a new global hidden Gaussian variable
         Variable hiddenGaussian = variables.newGaussianVariable("HiddenGaussian");
+
+        //We get the variable Default
+        Variable defaultVariable = variables.getVariableByName("default");
 
         //We define the DAG
         DAG dag = new DAG(variables);
@@ -190,16 +187,27 @@ public class BCC {
     public static void main(String[] args) throws Exception {
 
         //Step 1. We show how to compute the monthly average value of the "expenses" variable.
+        System.out.println("-----------------------CREDIT MONTHLY AVERAGE--------------------------");
         BCC.computeMonthlyAverage();
+        System.out.println("-----------------------------------------------------------------------");
 
         //Step 2. We build the NaiveBayes DAG with a global hidden var to track the concept drift
+        System.out.println("--------------------------------DAG------------------------------------");
         DAG dag = BCC.modelBuilding();
+        System.out.println(dag.toString());
+        System.out.println("-----------------------------------------------------------------------");
 
         //Step 3. We set up the plateau structure use for learning
+        System.out.println("------------------------DEFINING PLATEAU MODEL-------------------------");
         ParallelSVB parallelSVB = BCC.plateuModelSetUp(dag);
+        System.out.println("-----------------------------------------------------------------------");
 
         //Step 4. We learn the model and print the results.
-        BCC.learnModel(parallelSVB);
+        System.out.println("------------------------------LEARNING---------------------------------");
+        BayesianNetwork bayesianNetwork = BCC.learnModel(parallelSVB);
+        System.out.println(bayesianNetwork.toString());
+        System.out.println("-----------------------------------------------------------------------");
+
     }
 
 }
