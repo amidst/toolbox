@@ -18,6 +18,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -106,8 +107,8 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
             svbEngines[i].setDAG(this.dag);
             svbEngines[i].setWindowsSize(this.SVBEngine.getWindowsSize());
 
-            svbEngines[i].setPlateuStructure(this.SVBEngine.getPlateuStructure());
-            svbEngines[i].setTransitionMethod(this.SVBEngine.getTransitionMethod());
+            svbEngines[i].setPlateuStructure(Serialization.deepCopy(this.SVBEngine.getPlateuStructure()));
+            svbEngines[i].setTransitionMethod(Serialization.deepCopy(this.SVBEngine.getTransitionMethod()));
 
             svbEngines[i].getPlateuStructure().getVMP().setOutput(activateOutput);
             svbEngines[i].getPlateuStructure().getVMP().setTestELBO(this.SVBEngine.getPlateuStructure().getVMP().getTestELBO());

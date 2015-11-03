@@ -68,7 +68,7 @@ public class BCC {
 
         //Finally we get the learnt Bayesian network and save it to disk
         BayesianNetwork bn = parallelSVB.getLearntBayesianNetwork();
-        BayesianNetworkWriter.saveToFile(bn, "./datasets/BCC/PGM.bn");
+        BayesianNetworkWriter.saveToFile(bn, "./datasets/bnaic2015/BCC/PGM.bn");
 
     }
 
@@ -167,17 +167,17 @@ public class BCC {
             DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month"+i+".arff");
 
             //We get the attribute credit
-            Attribute expenses = instances.getAttributes().getAttributeByName("credit");
+            Attribute credit = instances.getAttributes().getAttributeByName("credit");
 
             //We compute the average, using a parallel stream.
-            double expensesMonthlyAverage = instances
+            double creditMonthlyAverage = instances
                                                 .parallelStream(1000)
-                                                .mapToDouble(instance -> instance.getValue(expenses))
+                                                .mapToDouble(instance -> instance.getValue(credit))
                                                 .average()
                                                 .getAsDouble();
 
             //We print the computed average
-            System.out.println("Average Monthly Expenses " + i + ": " + expensesMonthlyAverage);
+            System.out.println("Average Monthly Credit " + i + ": " + creditMonthlyAverage);
         }
 
     }
