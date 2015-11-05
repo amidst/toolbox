@@ -21,6 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>ida2015</artifactId>
+    <version>1.0.0</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
