@@ -1,16 +1,18 @@
-package eu.amidst.flinklink.examples.cim2015.examples;
+package eu.amidst.flinklink.examples.cim2015;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.OptionParser;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import  eu.amidst.flinklink.core.learning.parametric.*;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.io.IOException;
 import java.util.stream.IntStream;
@@ -21,7 +23,6 @@ import java.util.stream.IntStream;
 public class ExperimentsParallelML {
 
     /*Options for core comparisons*/
-    static boolean coreComparison = false;
     static int batchSize = 1000;
 
     /*Options for batch size comparisons*/
@@ -99,14 +100,6 @@ public class ExperimentsParallelML {
         ExperimentsParallelML.sampleData = sampleData;
     }
 
-    public static boolean isCoreComparison() {
-        return coreComparison;
-    }
-
-    public static void setCoreComparison(boolean coreComparison) {
-        ExperimentsParallelML.coreComparison = coreComparison;
-    }
-
     public static int getBatchSize() {
         return batchSize;
     }
@@ -125,12 +118,13 @@ public class ExperimentsParallelML {
         if(isSampleData())
             sampleBayesianNetwork();
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/sampleBatchSize.arff");
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "datasets/sampleBatchSize.arff");
+
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
-        parameterLearningAlgorithm.setParallelMode(isParallel());
         parameterLearningAlgorithm.setDAG(dag);
-        parameterLearningAlgorithm.setDataStream(data);
-        parameterLearningAlgorithm.setBatchSize(getBatchSize());
+        parameterLearningAlgorithm.setDataFlink(dataFlink);
 
 
         System.out.println("Available number of processors: " + Runtime.getRuntime().availableProcessors());
@@ -146,46 +140,11 @@ public class ExperimentsParallelML {
             if(j>4){
                 average+=seconds;
             }
-            data.restart();
+            //dataFlink.restart();
         }
         System.out.println(average/10.0 + " secs");
     }
 
-    public static void compareBatchSizes() throws IOException {
-
-        System.out.println("Batch size comparisons");
-        System.out.println("----------------------");
-
-        createBayesianNetwork();
-        if(isSampleData())
-            sampleBayesianNetwork();
-
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/sampleBatchSize.arff");
-
-
-        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
-        parameterLearningAlgorithm.setParallelMode(isParallel());
-        parameterLearningAlgorithm.setDAG(dag);
-        parameterLearningAlgorithm.setDataStream(data);
-
-
-        //We discard the first five experiments and then record the following 10 repetitions
-        for (int i = 0; i < batchSizes.length; i++) {
-            long average = 0L;
-            for (int j = 0; j < 15; j++) {
-                parameterLearningAlgorithm.setBatchSize(batchSizes[i]);
-                long start = System.nanoTime();
-                parameterLearningAlgorithm.runLearning();
-                long duration = (System.nanoTime() - start) / 1;
-                double seconds = duration / 1000000000.0;
-                //System.out.println("Iteration ["+j+"] = "+seconds + " secs");
-                if (j > 4) {
-                    average += seconds;
-                }
-            }
-            System.out.println(batchSizes[i]+"\t"+average/10.0 + " secs");
-        }
-    }
 
     private static void createBayesianNetwork(){
         /* ********** */
@@ -245,7 +204,7 @@ public class ExperimentsParallelML {
     }
 
     public static String classNameID(){
-        return "eu.amidst.cim2015.examples.ExperimentsParallelML";
+        return "eu.amidst.flinklink.examples.cim2015.ExperimentsParallelML";
     }
 
     public static String getOption(String optionName) {
@@ -271,7 +230,6 @@ public class ExperimentsParallelML {
                 "-SPDV, 10, Num of states for super-parent discrete variable\\"+
                 "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\"+
                 "-parallelMode, true, Run in parallel\\"+
-                "-coreComparison, false, Perform comparisons varying the number of cores\\"+
                 "-batchSize, 1000, Batch size for comparisons in the number of cores\\";
     }
 
@@ -284,7 +242,6 @@ public class ExperimentsParallelML {
         setSampleSize(getIntOption("-sampleSize"));
         setSampleData(getBooleanOption("-sampleData"));
         setParallel(getBooleanOption("-parallelMode"));
-        setCoreComparison(getBooleanOption("-coreComparison"));
         setBatchSize(getIntOption("-batchSize"));
     }
 
