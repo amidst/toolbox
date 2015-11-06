@@ -19,6 +19,7 @@
 
     <groupId>eu.amidst</groupId>
     <artifactId>core-dynamic</artifactId>
+    <version>1.0.0</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
