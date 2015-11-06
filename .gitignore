@@ -32,6 +32,7 @@ hgapi82_amidst-64.jar
 doc/REproccess.pdf
 
 *.iml
+**/*.iml
 #papers/*/*.iml
 target/maven-archiver*
 target/surefire-reports*
