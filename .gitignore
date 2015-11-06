@@ -33,6 +33,7 @@ doc/REproccess.pdf
 
 *.iml
 **/*.iml
+core/core.iml
 #papers/*/*.iml
 target/maven-archiver*
 target/surefire-reports*
