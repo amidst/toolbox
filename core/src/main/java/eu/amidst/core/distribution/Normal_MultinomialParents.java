@@ -31,7 +31,7 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
     private BaseDistribution_MultinomialParents<Normal> base;
 
     /**
-     * Creates a new Normal_MultinomialParents distribution for a given BaseDistribution_MultinomialParents<Normal>.
+     * Creates a new Normal_MultinomialParents distribution for a given BaseDistribution_MultinomialParents&lt;Normal&gt;.
      * @param base_ an array of {@link Normal} distributions, one for each configuration of the Multinomial parents.
      */
     public Normal_MultinomialParents(BaseDistribution_MultinomialParents<Normal> base_) {
@@ -61,6 +61,24 @@ public class Normal_MultinomialParents extends ConditionalDistribution {
      */
     public Normal getNormal(int position) {
         return base.getBaseDistribution(position);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setVar(Variable var) {
+        this.var = var;
+        this.base.setVar(var);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setConditioningVariables(List<Variable> parents) {
+        this.parents = parents;
+        this.base.setConditioningVariables(parents);
     }
 
     /**

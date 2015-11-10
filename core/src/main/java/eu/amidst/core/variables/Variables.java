@@ -12,6 +12,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,9 +40,6 @@ public class Variables implements Iterable<Variable>, Serializable {
      * that maps the Variable names ({@code String}) to their IDs ({@code Integer}). */
     private Map<String, Integer> mapping;
 
-    /** Represents the list of {@link Attributes} associated with Variables. */
-    Attributes attributes;
-
     /**
      * Creates a new list of Variables.
      */
@@ -55,7 +53,6 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param atts a list of Attributes.
      */
     public Variables(Attributes atts) {
-        this.attributes= new Attributes(atts.getFullListOfAttributes());
         this.allVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
 
@@ -97,11 +94,15 @@ public class Variables implements Iterable<Variable>, Serializable {
     }
 
     /**
-     * Returns the list of Attributes associated with these Variables.
-     * @return the list of Attributes associated with these Variables.
+     * Sets a new set of attributes. Links current variables with this new set by matching
+     * variable names with attributes names.
+     * @param attributes an object of class {@link Attributes}
      */
-    public Attributes getAttributes() {
-        return attributes;
+    public void setAttributes(Attributes attributes){
+        for (Variable variable : allVariables) {
+            VariableImplementation variableImplementation = (VariableImplementation)variable;
+            variableImplementation.setAttribute(attributes.getAttributeByName(variable.getName()));
+        }
     }
 
     /**
@@ -236,7 +237,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param builder a {@link VariableBuilder} object.
      * @return a new {@link Variable}.
      */
-    private Variable newVariable(VariableBuilder builder) {
+    public Variable newVariable(VariableBuilder builder) {
         VariableImplementation var = new VariableImplementation(builder, allVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names: " + var.getName());
@@ -355,6 +356,10 @@ public class Variables implements Iterable<Variable>, Serializable {
             this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 
+        public void setAttribute(Attribute attribute) {
+            this.attribute = attribute;
+        }
+
         /**
          * {@inheritDoc}
          */
@@ -408,7 +413,8 @@ public class Variables implements Iterable<Variable>, Serializable {
          */
         @Override
         public boolean isInterfaceVariable() {
-            throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
+            //throw new UnsupportedOperationException("In a static context a variable cannot be temporal.");
+            return false;
         }
 
         /**
@@ -433,6 +439,21 @@ public class Variables implements Iterable<Variable>, Serializable {
         @Override
         public boolean isParameterVariable() {
             return false;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VariableBuilder getVariableBuilder(){
+            VariableBuilder variableBuilder = new VariableBuilder();
+            variableBuilder.setAttribute(this.getAttribute());
+            variableBuilder.setDistributionType(this.getDistributionTypeEnum());
+            variableBuilder.setName(this.getName());
+            variableBuilder.setObservable(this.observable);
+            variableBuilder.setStateSpaceType(this.getStateSpaceType());
+
+            return variableBuilder;
         }
 
         /**

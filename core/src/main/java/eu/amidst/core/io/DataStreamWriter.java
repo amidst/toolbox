@@ -39,7 +39,7 @@ public final class DataStreamWriter {
      * Saves a {@link DataStream} in a file.
      * @param data the {@link DataStream} to ba saved.
      * @param path the path of the file where the data stream will be saved.
-     * @throws IOException
+     * @throws IOException in case of an error while writing to file.
      */
     public static void writeDataToFile(DataStream<? extends DataInstance> data, String path) throws IOException {
         dataFileWriter.writeToFile(data, path);

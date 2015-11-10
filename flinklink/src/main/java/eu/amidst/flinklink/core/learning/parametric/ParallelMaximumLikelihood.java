@@ -18,7 +18,7 @@ import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.utils.Serialization;
+import eu.amidst.core.utils.Serialization;
 import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.api.common.accumulators.DoubleCounter;
 import org.apache.flink.api.common.functions.RichMapFunction;
@@ -67,7 +67,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
 
     public void initLearning() {
         efBayesianNetwork = new EF_BayesianNetwork(dag);
-        sumSS = efBayesianNetwork.createZeroSufficientStatistics();
+        sumSS = efBayesianNetwork.createInitSufficientStatistics();
 
     }
 
@@ -106,9 +106,13 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
                     .reduce(new SufficientSatisticsReduce())
                     .collect().get(0);
 
+            //Add the prior
+            sumSS.sum(efBayesianNetwork.createInitSufficientStatistics());
+
             JobExecutionResult result = dataset.getExecutionEnvironment().getLastJobExecutionResult();
 
             numInstances = result.getAccumulatorResult(ParallelMaximumLikelihood.COUNTER_NAME+"_"+this.dag.getName());
+            numInstances++;//Initial counts
 
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);

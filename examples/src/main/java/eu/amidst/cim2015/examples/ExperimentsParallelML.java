@@ -23,7 +23,7 @@ public final class ExperimentsParallelML {
 
     static int[] batchSizes = {100,200,500,1000,2000,5000,10000};
     /*Options for core comparisons*/
-    static boolean coreComparison = false;
+    static boolean coreComparison = true;
     static int batchSize = 1000;
 
     /*Options for batch size comparisons*/
@@ -272,7 +272,7 @@ public final class ExperimentsParallelML {
                 "-SPDV, 10, Num of states for super-parent discrete variable\\"+
                 "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\"+
                 "-parallelMode, true, Run in parallel\\"+
-                "-coreComparison, false, Perform comparisons varying the number of cores\\"+
+                "-coreComparison, true, Perform comparisons varying the number of cores\\"+
                 "-batchSize, 1000, Batch size for comparisons in the number of cores\\";
     }
 

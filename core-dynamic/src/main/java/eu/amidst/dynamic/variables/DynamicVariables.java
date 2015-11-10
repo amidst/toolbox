@@ -41,34 +41,36 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
     private static final long serialVersionUID = -4959625141445606681L;
 
-    private List<Variable> allVariables;
+    public static final String INTERFACE_SUFFIX = "_Interface";
+    
+    private List<Variable> nonInterfaceVariables;
     private List<Variable> interfaceVariables;
 
     private Map<String, Integer> mapping;
 
     public DynamicVariables() {
-        this.allVariables = new ArrayList();
+        this.nonInterfaceVariables = new ArrayList();
         this.interfaceVariables = new ArrayList();
         this.mapping = new ConcurrentHashMap<>();
     }
 
     public DynamicVariables(Attributes atts) {
 
-        this.allVariables = new ArrayList<>();
+        this.nonInterfaceVariables = new ArrayList<>();
         this.interfaceVariables = new ArrayList<>();
         this.mapping = new ConcurrentHashMap<>();
 
         for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             VariableBuilder builder = new VariableBuilder(att);
-            VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+            VariableImplementation var = new VariableImplementation(builder, nonInterfaceVariables.size());
             if (mapping.containsKey(var.getName())) {
                 throw new IllegalArgumentException("Attribute list contains duplicated names");
             }
             this.mapping.put(var.getName(), var.getVarID());
-            allVariables.add(var.getVarID(), var);
+            nonInterfaceVariables.add(var.getVarID(), var);
 
 
-            VariableImplementation interfaceVariable = new VariableImplementation(var);
+            VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
             var.setInterfaceVariable(interfaceVariable);
             interfaceVariables.add(var.getVarID(), interfaceVariable);
         }
@@ -80,7 +82,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
      */
     public DynamicVariables(Attributes atts, Map<Attribute, DistributionTypeEnum> typeDists) {
 
-        this.allVariables = new ArrayList<>();
+        this.nonInterfaceVariables = new ArrayList<>();
         this.interfaceVariables = new ArrayList<>();
 
         for (Attribute att : atts.getListOfNonSpecialAttributes()) {
@@ -91,14 +93,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
                 builder = new VariableBuilder(att);
             }
 
-            VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+            VariableImplementation var = new VariableImplementation(builder, nonInterfaceVariables.size());
             if (mapping.containsKey(var.getName())) {
                 throw new IllegalArgumentException("Attribute list contains duplicated names");
             }
             this.mapping.put(var.getName(), var.getVarID());
-            allVariables.add(var.getVarID(), var);
+            nonInterfaceVariables.add(var.getVarID(), var);
 
-            VariableImplementation interfaceVariable = new VariableImplementation(var);
+            VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
             var.setInterfaceVariable(interfaceVariable);
             interfaceVariables.add(var.getVarID(), interfaceVariable);
 
@@ -111,7 +113,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     public Variable getVariableFromInterface(Variable var){
-        return allVariables.get(var.getVarID());
+        return nonInterfaceVariables.get(var.getVarID());
     }
 
     /*
@@ -128,12 +130,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         builder.setName(var.getName()+"_Indicator");
         builder.setDistributionType(DistType.INDICATOR);
 
-        VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
+        VariableImplementation varNew = new VariableImplementation(builder, nonInterfaceVariables.size());
         if (mapping.containsKey(varNew.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
         }
         this.mapping.put(varNew.getName(), varNew.getVarID());
-        allVariables.add(varNew);
+        nonInterfaceVariables.add(varNew);
 
         VariableImplementation interfaceVariable = new VariableImplementation(varNew);
         var.setInterfaceVariable(interfaceVariable);
@@ -179,14 +181,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
     public Variable newDynamicVariable(Attribute att) {
 
-        VariableImplementation var = new VariableImplementation(new VariableBuilder(att), allVariables.size());
+        VariableImplementation var = new VariableImplementation(new VariableBuilder(att), nonInterfaceVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
         }
         this.mapping.put(var.getName(), var.getVarID());
-        allVariables.add(var);
+        nonInterfaceVariables.add(var);
 
-        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
         var.setInterfaceVariable(interfaceVariable);
         interfaceVariables.add(var.getVarID(), interfaceVariable);
 
@@ -199,14 +201,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         variableBuilder.setDistributionType(distributionTypeEnum);
         variableBuilder.setStateSpaceType(stateSpaceType);
         variableBuilder.setObservable(false);
-        VariableImplementation var = new VariableImplementation(variableBuilder, allVariables.size());
+        VariableImplementation var = new VariableImplementation(variableBuilder, nonInterfaceVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
         }
         this.mapping.put(var.getName(), var.getVarID());
-        allVariables.add(var);
+        nonInterfaceVariables.add(var);
 
-        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
         var.setInterfaceVariable(interfaceVariable);
         interfaceVariables.add(var.getVarID(), interfaceVariable);
 
@@ -216,14 +218,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     public Variable newDynamicVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
         VariableBuilder variableBuilder = new VariableBuilder(att);
         variableBuilder.setDistributionType(distributionTypeEnum);
-        VariableImplementation var = new VariableImplementation(variableBuilder, allVariables.size());
+        VariableImplementation var = new VariableImplementation(variableBuilder, nonInterfaceVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
         }
         this.mapping.put(var.getName(), var.getVarID());
-        allVariables.add(var);
+        nonInterfaceVariables.add(var);
 
-        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
         var.setInterfaceVariable(interfaceVariable);
         interfaceVariables.add(var.getVarID(), interfaceVariable);
 
@@ -232,14 +234,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
     public Variable newDynamicVariable(VariableBuilder builder) {
 
-        VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+        VariableImplementation var = new VariableImplementation(builder, nonInterfaceVariables.size());
         if (mapping.containsKey(var.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
         }
         this.mapping.put(var.getName(), var.getVarID());
-        allVariables.add(var);
+        nonInterfaceVariables.add(var);
 
-        VariableImplementation interfaceVariable = new VariableImplementation(var);
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
         interfaceVariables.add(var.getVarID(), interfaceVariable);
 
         return var;
@@ -257,14 +259,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         VariableBuilder builder = new VariableBuilder(var.getAttribute());
         builder.setName(var.getName()+"_Real");
 
-        VariableImplementation varNew = new VariableImplementation(builder, allVariables.size());
+        VariableImplementation varNew = new VariableImplementation(builder, nonInterfaceVariables.size());
         if (mapping.containsKey(varNew.getName())) {
             throw new IllegalArgumentException("Attribute list contains duplicated names");
         }
         this.mapping.put(varNew.getName(), varNew.getVarID());
-        allVariables.add(varNew);
+        nonInterfaceVariables.add(varNew);
 
-        VariableImplementation interfaceVariable = new VariableImplementation(varNew);
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
         varNew.setInterfaceVariable(interfaceVariable);
         interfaceVariables.add(varNew.getVarID(), interfaceVariable);
 
@@ -272,7 +274,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     public List<Variable> getListOfDynamicVariables() {
-        return this.allVariables;
+        return this.nonInterfaceVariables;
     }
 
     //public List<Variable> getListOfInterfaceVariables() {
@@ -280,7 +282,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     //}
 
     public Variable getVariableById(int varID) {
-       return this.allVariables.get(varID);
+       return this.nonInterfaceVariables.get(varID);
     }
 
 
@@ -303,18 +305,44 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     public int getNumberOfVars() {
-        return this.allVariables.size();
+        return this.nonInterfaceVariables.size();
     }
 
     public void block(){
-        this.allVariables = Collections.unmodifiableList(this.allVariables);
+        //this.nonInterfaceVariables = Collections.unmodifiableList(this.nonInterfaceVariables);
     }
 
     @Override
     public Iterator<Variable> iterator() {
-        return this.allVariables.iterator();
+        return this.nonInterfaceVariables.iterator();
     }
 
+    public Variables toVariablesTimeT(){
+
+        Variables variables = new Variables();
+
+        for (Variable nonInterfaceVariable : nonInterfaceVariables) {
+            variables.newVariable(nonInterfaceVariable.getVariableBuilder());
+        }
+
+        for (Variable interfaceVariable : interfaceVariables) {
+            variables.newVariable(interfaceVariable.getVariableBuilder());
+        }
+
+        return variables;
+    }
+
+
+    public Variables toVariablesTime0(){
+
+        Variables variables = new Variables();
+
+        for (Variable nonInterfaceVariable : nonInterfaceVariables) {
+            variables.newVariable(nonInterfaceVariable.getVariableBuilder());
+        }
+
+        return variables;
+    }
 
     //TODO Implements hashCode method!!
     private static class VariableImplementation implements Variable, Serializable {
@@ -351,11 +379,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 
+
         /*
          * Constructor for an Interface (based on a variable)
          */
-        public VariableImplementation(Variable variable) {
-            this.name = variable.getName()+"_Interface";
+        private VariableImplementation(Variable variable) {
+            this.name = variable.getName()+INTERFACE_SUFFIX;
             this.varID = variable.getVarID();
             this.observable = variable.isObservable();
             this.stateSpaceType = variable.getStateSpaceType();
@@ -369,6 +398,10 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
             this.distributionType=distributionTypeEnum.newDistributionType(this);
 
+        }
+
+        public static VariableImplementation newInterfaceVariable(Variable variable){
+            return new VariableImplementation(variable);
         }
 
         public String getName() {
@@ -417,6 +450,21 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
 
         public Attribute getAttribute(){return attribute;}
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VariableBuilder getVariableBuilder(){
+            VariableBuilder variableBuilder = new VariableBuilder();
+            variableBuilder.setAttribute(this.getAttribute());
+            variableBuilder.setDistributionType(this.getDistributionTypeEnum());
+            variableBuilder.setName(this.getName());
+            variableBuilder.setObservable(this.observable);
+            variableBuilder.setStateSpaceType(this.getStateSpaceType());
+
+            return variableBuilder;
+        }
 
         public boolean isDynamicVariable(){
             return true;

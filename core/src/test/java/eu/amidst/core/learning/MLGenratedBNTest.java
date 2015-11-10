@@ -40,6 +40,7 @@ public class MLGenratedBNTest {
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
         parallelMaximumLikelihood.setBatchSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
+        parallelMaximumLikelihood.setLaplace(false);
         LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork bnet = LearningEngine.learnParameters(naiveBayes.getDAG(), data);
 

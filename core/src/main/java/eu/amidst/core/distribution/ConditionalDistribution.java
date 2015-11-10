@@ -11,6 +11,7 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
+
 import java.util.List;
 
 /**
@@ -31,6 +32,17 @@ public abstract class ConditionalDistribution extends Distribution {
      */
     public List<Variable> getConditioningVariables() {
         return this.parents;
+    }
+
+
+    /**
+     * Sets the set of conditioning variables, i.e., the list of parents in this ConditionalDistribution.
+     * WARNING: This method should only be used in exceptional cases. It may affect the coherence of
+     * the graphical model.
+     * @param parents a {@link List} of {@link Variable} representing the parents of this variable.
+     */
+    public void setConditioningVariables(List<Variable> parents){
+        this.parents=parents;
     }
 
     /**
@@ -65,7 +77,8 @@ public abstract class ConditionalDistribution extends Distribution {
     }
 
     /**
-     * Converts this ConditionalDistribution to an Exponential Family (EF) conditional distribution.
+     * Converts this ConditionalDistribution to an Exponential Family (EF) conditional distribution
+     * @param <E> any class extending {@link EF_ConditionalDistribution}
      * @return an {@link EF_ConditionalDistribution} object.
      * @exception UnsupportedOperationException if this distribution is not convertible to EF form.
      */

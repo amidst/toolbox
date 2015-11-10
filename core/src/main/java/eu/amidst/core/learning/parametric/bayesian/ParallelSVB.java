@@ -18,6 +18,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -106,8 +107,8 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
             svbEngines[i].setDAG(this.dag);
             svbEngines[i].setWindowsSize(this.SVBEngine.getWindowsSize());
 
-            //svbEngines[i].setPlateuStructure(this.SVBEngine.getPlateuStructure());
-            //svbEngines[i].setTransitionMethod(this.SVBEngine.getTransitionMethod());
+            svbEngines[i].setPlateuStructure(Serialization.deepCopy(this.SVBEngine.getPlateuStructure()));
+            svbEngines[i].setTransitionMethod(Serialization.deepCopy(this.SVBEngine.getTransitionMethod()));
 
             svbEngines[i].getPlateuStructure().getVMP().setOutput(activateOutput);
             svbEngines[i].getPlateuStructure().getVMP().setTestELBO(this.SVBEngine.getPlateuStructure().getVMP().getTestELBO());
@@ -115,6 +116,8 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
             svbEngines[i].getPlateuStructure().getVMP().setThreshold(this.SVBEngine.getPlateuStructure().getVMP().getThreshold());
             svbEngines[i].initLearning();
         }
+
+        this.SVBEngine=svbEngines[0];
     }
 
     /**
@@ -184,10 +187,58 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
     }
 
     /**
+     * Update the model in parallel using the provide data stream.
+     * @param data, A {@link DataStream} object.
+     */
+    public void updateModelInParallel(DataStream<DataInstance> data) {
+
+        Iterator<DataOnMemory<DataInstance>> iterator = data.iterableOverBatches(this.SVBEngine.getWindowsSize()).iterator();
+
+        logLikelihood = 0;
+        while(iterator.hasNext()){
+            CompoundVector posterior =  this.svbEngines[0].getNaturalParameterPrior();
+
+            //Load Data
+            List<DataOnMemory<DataInstance>> dataBatches = new ArrayList();
+            int cont=0;
+            while (iterator.hasNext() && cont<nCores){
+                dataBatches.add(iterator.next());
+                cont++;
+            }
+
+            //Run Inference
+            SVB.BatchOutput out=
+                    IntStream.range(0, dataBatches.size())
+                            .parallel()
+                            .mapToObj(i -> this.svbEngines[i].updateModelOnBatchParallel(dataBatches.get(i)))
+                            .reduce(SVB.BatchOutput::sum)
+                            .get();
+
+            //Update logLikelihood
+            this.logLikelihood+=out.getElbo();
+
+            //Combine the output
+            posterior.sum(out.getVector());
+            for (int i = 0; i < nCores; i++) {
+                this.svbEngines[i].updateNaturalParameterPrior(posterior);
+            }
+        }
+
+        for (SVB svbEngine : svbEngines) {
+            svbEngine.applyTransition();
+        }
+    }
+
+    @Override
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
-    public List<DataPosterior> computePosteriorOverLatentVariables(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

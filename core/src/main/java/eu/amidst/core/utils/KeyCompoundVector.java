@@ -142,7 +142,7 @@ public class KeyCompoundVector<E> implements MomentParameters, NaturalParameters
      * Returns the dot product of this KeyCompoundVector and an input KeyCompoundVector, defined as
      * the sum of the pairwise products of the values of the two KeyCompoundVectors.
      * @param vec an input KeyCompoundVector.
-     * @return a {@double} that represents the dot product of the two KeyCompoundVectors.
+     * @return a double that represents the dot product of the two KeyCompoundVectors.
      */
     public double dotProduct(KeyCompoundVector vec) {
         return this.baseVectors.values().stream().mapToDouble(w -> w.getVector().dotProduct(vec.getVectorByPosition(w.getIndex()))).sum();

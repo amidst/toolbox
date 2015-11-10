@@ -47,7 +47,7 @@ public interface ParameterLearningAlgorithm {
 
     /**
      * Returns the log marginal probability.
-     * @returnthe log marginal probability.
+     * @return the log marginal probability.
      */
     double getLogMarginalProbability();
 

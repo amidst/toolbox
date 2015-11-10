@@ -12,7 +12,6 @@
 package eu.amidst.core.learning.parametric;
 
 
-
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
@@ -24,6 +23,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -59,6 +59,29 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
     /** Represents a {@link EF_BayesianNetwork} object */
     protected EF_BayesianNetwork efBayesianNetwork;
 
+    /** Represents if the class is in debug mode*/
+    protected boolean debug = true;
+
+    /** Represents whether Laplace correction (i.e. MAP estimation) is used*/
+    protected boolean laplace = true;
+
+
+    /**
+     * Sets whether Laplace correction (i.e. MAP estimation) is used
+     * @param laplace, a boolean value.
+     */
+    public void setLaplace(boolean laplace) {
+        this.laplace = laplace;
+    }
+
+    /**
+     * Sets the debug mode of the class
+     * @param debug a boolean setting whether to execute in debug mode or not.
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
     /**
      * Sets the batch size.
      * @param batchSize_ the batch size.
@@ -72,9 +95,14 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
      */
     @Override
     public void initLearning() {
-        dataInstanceCount = new AtomicDouble(0);
         efBayesianNetwork = new EF_BayesianNetwork(dag);
-        sumSS = efBayesianNetwork.createZeroSufficientStatistics();
+        if (laplace) {
+            sumSS = efBayesianNetwork.createInitSufficientStatistics();
+            dataInstanceCount = new AtomicDouble(1.0); //Initial counts
+        }else {
+            sumSS = efBayesianNetwork.createZeroSufficientStatistics();
+            dataInstanceCount = new AtomicDouble(0.0); //Initial counts
+        }
     }
 
     /**
@@ -123,11 +151,19 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
             stream = dataStream.streamOfBatches(batchSize);
         }
 
-        dataInstanceCount = new AtomicDouble(0);
+        SufficientStatistics initSS = null;
+        if (laplace) {
+            dataInstanceCount = new AtomicDouble(1); //Initial count
+            initSS = efBayesianNetwork.createInitSufficientStatistics();
+        }else{
+            dataInstanceCount = new AtomicDouble(0); //Initial count
+            initSS = efBayesianNetwork.createZeroSufficientStatistics();
+        }
 
         sumSS = stream
                 .peek(batch -> {
                     dataInstanceCount.getAndAdd(batch.getNumberOfDataInstances());
+                    if (debug) System.out.println("Parallel ML procesando "+(int)dataInstanceCount.get() +" instances");
                 })
                 .map(batch -> {
                     SufficientStatistics ss = efBayesianNetwork.createZeroSufficientStatistics();
@@ -135,7 +171,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
                             .map(efBayesianNetwork::getSufficientStatistics)
                             .reduce(ss, SufficientStatistics::sumVector);
                 })
-                .reduce(efBayesianNetwork.createZeroSufficientStatistics(), SufficientStatistics::sumVector);
+                .reduce(initSS, SufficientStatistics::sumVector);
     }
 
     /**

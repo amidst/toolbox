@@ -74,6 +74,7 @@ public class Message<E extends Vector> {
 
     /**
      * Combines two given Messages.
+     * @param <E> a class extending {@link Vector}
      * @param m1 a first given message.
      * @param m2 a second given message.
      * @return the message that represents the result of the combination of the two input messages.

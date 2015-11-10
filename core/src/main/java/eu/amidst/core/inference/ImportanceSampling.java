@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 
 /**
  * This class implements the interface {@link InferenceAlgorithm} and defines the Importance Sampling algorithm.
- * J.M. Hammersley and D.C. Handscomb. Monte Carlo Methods. Methuen & Co, London, UK, 1964.
+ * J.M. Hammersley and D.C. Handscomb. Monte Carlo Methods. Methuen and Co, London, UK, 1964.
  *
  * <p> For an example of use follow this link
  * <a href="http://amidst.github.io/toolbox/CodeExamples.html#isexample"> http://amidst.github.io/toolbox/CodeExamples.html#isexample </a>  </p>
@@ -48,7 +48,10 @@ public class ImportanceSampling implements InferenceAlgorithm {
     private BayesianNetwork samplingModel;
     private int sampleSize = 100;
     private List<Variable> causalOrder;
-    public List<ImportanceSampling.WeightedAssignment> weightedSampleList;
+
+    private boolean keepDataOnMemory;
+    private List<ImportanceSampling.WeightedAssignment> weightedSampleList;
+    private Stream<ImportanceSampling.WeightedAssignment> weightedSampleStream;
     private int seed = 0;
     private Assignment evidence;
     private boolean parallelMode = true;
@@ -125,6 +128,9 @@ public class ImportanceSampling implements InferenceAlgorithm {
         this.sampleSize = sampleSize;
     }
 
+    public void setKeepDataOnMemory(boolean keepDataOnMemory) {
+        this.keepDataOnMemory = keepDataOnMemory;
+    }
 
     /**
      * {@inheritDoc}
@@ -140,7 +146,15 @@ public class ImportanceSampling implements InferenceAlgorithm {
      */
     @Override
     public double getLogProbabilityOfEvidence() {
-        return Math.log(weightedSampleList.stream().mapToDouble(ws -> ws.weight).average().getAsDouble());
+
+        if(keepDataOnMemory) {
+            weightedSampleStream = weightedSampleList.stream().sequential();
+        }
+        if(parallelMode) {
+            weightedSampleStream.parallel();
+        }
+
+        return Math.log(weightedSampleStream.mapToDouble(ws -> ws.weight).average().getAsDouble());
     }
 
     /**
@@ -148,7 +162,14 @@ public class ImportanceSampling implements InferenceAlgorithm {
      * @return a {@link Stream} of {@link HashMapAssignment} objects.
      */
     public Stream<Assignment> getSamples() {
-        return weightedSampleList.stream().map(wsl -> wsl.assignment);
+
+        if(keepDataOnMemory) {
+            weightedSampleStream = weightedSampleList.stream().sequential();
+        }
+        if(parallelMode) {
+            weightedSampleStream.parallel();
+        }
+        return weightedSampleStream.map(wsl -> wsl.assignment);
     }
 
 
@@ -194,7 +215,14 @@ public class ImportanceSampling implements InferenceAlgorithm {
      */
     @Override
     public double getExpectedValue(Variable var, Function<Double,Double> function) {
-        List<Double> sum = weightedSampleList.stream()
+
+        if(keepDataOnMemory) {
+            weightedSampleStream = weightedSampleList.stream().sequential();
+        }
+        if(parallelMode) {
+            weightedSampleStream.parallel();
+        }
+        List<Double> sum = weightedSampleStream
                 .map(ws -> Arrays.asList(ws.weight, ws.weight * function.apply(ws.assignment.getValue(var))))
                 .reduce(Arrays.asList(new Double(0.0), new Double(0.0)), (List<Double> e1, List<Double> e2) -> Arrays.asList(e1.get(0) + e2.get(0), e1.get(1) + e2.get(1)));
 
@@ -214,7 +242,14 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         AtomicInteger dataInstanceCount = new AtomicInteger(0);
 
-        SufficientStatistics sumSS = weightedSampleList.stream()
+        if(keepDataOnMemory) {
+            weightedSampleStream = weightedSampleList.stream().sequential();
+        }
+        if(parallelMode) {
+            weightedSampleStream.parallel();
+        }
+
+        SufficientStatistics sumSS = weightedSampleStream
                 .peek(w -> {
                     dataInstanceCount.getAndIncrement();
                 })
@@ -248,7 +283,13 @@ public class ImportanceSampling implements InferenceAlgorithm {
         if (parallelMode) {
             auxIntStream.parallel();
         }
-        weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
+
+        if(keepDataOnMemory) {
+            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
+        }
+        else {
+            weightedSampleStream = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+        }
     }
 
     /**
@@ -278,6 +319,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
         importanceSampling.setParallelMode(true);
         importanceSampling.setSampleSize(100);
         importanceSampling.setSeed(57457);
+        importanceSampling.setKeepDataOnMemory(true);
         importanceSampling.runInference();
 
         List<Variable> causalOrder = importanceSampling.causalOrder;

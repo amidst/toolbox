@@ -16,6 +16,7 @@ import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -158,8 +159,11 @@ public class ARFFDataReader implements DataFileReader {
      * {@inheritDoc}
      */
     @Override
-    public boolean doesItReadThisFileExtension(String fileExtension) {
-        return fileExtension.equals(".arff");
+    public boolean doesItReadThisFile(String fileName) {
+        if (new File(fileName).isDirectory())
+            return false;
+        String[] parts = fileName.split("\\.");
+        return parts[parts.length-1].equals("arff");
     }
 
     /**
@@ -170,7 +174,12 @@ public class ARFFDataReader implements DataFileReader {
     public Stream<DataRow> stream() {
         //if (streamString ==null) {
             try {
-                streamString = Files.lines(pathFile).filter(w -> !w.isEmpty()).filter(w -> !w.startsWith("%")).skip(this.dataLineCount).filter(w -> !w.isEmpty()).map(line -> new DataRowWeka(this.attributes, line));
+                streamString = Files.lines(pathFile)
+                                .filter(w -> !w.isEmpty())
+                                .filter(w -> !w.startsWith("%"))
+                                .skip(this.dataLineCount)
+                                .filter(w -> !w.isEmpty())
+                                .map(line -> new DataRowWeka(this.attributes, line));
             } catch (IOException ex) {
                 throw new UncheckedIOException(ex);
             }

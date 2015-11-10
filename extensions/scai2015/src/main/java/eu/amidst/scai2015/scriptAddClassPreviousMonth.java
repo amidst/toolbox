@@ -17,12 +17,15 @@ import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataWriter;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -45,10 +48,10 @@ public class scriptAddClassPreviousMonth {
         Attribute classAtt = newAtts.get(newAtts.size()-1);
         newAtts.remove(classAtt); //Remove the class to append at the end
 
-        Attribute attDefaultingLastMonth = new Attribute (newAtts.size(), "DEFAULTING_PM", StateSpaceTypeEnum.FINITE_SET, 2);
+        Attribute attDefaultingLastMonth = new Attribute (newAtts.size(), "DEFAULTING_PM", new FiniteStateSpace(2));
         newAtts.add(attDefaultingLastMonth);
 
-        Attribute attDefaulting = new Attribute (newAtts.size(), "DEFAULTING", StateSpaceTypeEnum.FINITE_SET, 2);
+        Attribute attDefaulting = new Attribute (newAtts.size(), "DEFAULTING", new FiniteStateSpace(2));
         newAtts.add(attDefaulting);
 
         String newPath = path.replace(".arff", "_DEFAULTING_PM.arff");

@@ -18,16 +18,19 @@ package eu.amidst.dynamic.models;
 
 
 import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
-import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * <h2>This class implements a dynamic Bayesian network.</h2>
@@ -53,23 +56,43 @@ public final class DynamicBayesianNetwork implements Serializable {
 
     private DynamicDAG dynamicDAG;
 
-    private DynamicBayesianNetwork(DynamicDAG dynamicDAG1){
+    public DynamicBayesianNetwork(DynamicDAG dynamicDAG1){
         dynamicDAG = dynamicDAG1;
         this.initializeDistributions();
     }
 
-    private DynamicBayesianNetwork(DynamicDAG dynamicDAG1, List<ConditionalDistribution> distsTime0, List<ConditionalDistribution> distsTimeT){
+    public DynamicBayesianNetwork(DynamicDAG dynamicDAG1, List<ConditionalDistribution> distsTime0, List<ConditionalDistribution> distsTimeT){
         dynamicDAG = dynamicDAG1;
         this.distributionsTime0=distsTime0;
         this.distributionsTimeT=distsTimeT;
     }
 
-    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicDAG dynamicDAG){
-        return new DynamicBayesianNetwork(dynamicDAG);
+    public BayesianNetwork toBayesianNetworkTime0(){
+        DAG dagTime0 = this.getDynamicDAG().toDAGTime0();
+        BayesianNetwork bnTime0 = new BayesianNetwork(dagTime0);
+        for (Variable dynamicVar : this.getDynamicVariables()) {
+            Variable staticVar = dagTime0.getVariables().getVariableByName(dynamicVar.getName());
+            ConditionalDistribution deepCopy = Serialization.deepCopy(this.getConditionalDistributionTime0(dynamicVar));
+            deepCopy.setVar(staticVar);
+            List<Variable> newParents = deepCopy.getConditioningVariables().stream().map(var -> dagTime0.getVariables().getVariableByName(var.getName())).collect(Collectors.toList());
+            deepCopy.setConditioningVariables(newParents);
+            bnTime0.setConditionalDistribution(staticVar,deepCopy);
+        }
+        return bnTime0;
     }
 
-    public static DynamicBayesianNetwork newDynamicBayesianNetwork(DynamicDAG dynamicDAG, List<ConditionalDistribution> distsTime0, List<ConditionalDistribution> distsTimeT) {
-        return new DynamicBayesianNetwork(dynamicDAG,distsTime0,distsTimeT);
+    public BayesianNetwork toBayesianNetworkTimeT(){
+        DAG dagTimeT = this.getDynamicDAG().toDAGTimeT();
+        BayesianNetwork bnTimeT = new BayesianNetwork(dagTimeT);
+        for (Variable dynamicVar : this.getDynamicVariables()) {
+            Variable staticVar = dagTimeT.getVariables().getVariableByName(dynamicVar.getName());
+            ConditionalDistribution deepCopy = Serialization.deepCopy(this.getConditionalDistributionTimeT(dynamicVar));
+            deepCopy.setVar(staticVar);
+            List<Variable> newParents = deepCopy.getConditioningVariables().stream().map(var -> dagTimeT.getVariables().getVariableByName(var.getName())).collect(Collectors.toList());
+            deepCopy.setConditioningVariables(newParents);
+            bnTimeT.setConditionalDistribution(staticVar,deepCopy);
+        }
+        return bnTimeT;
     }
 
     private void initializeDistributions() {
@@ -90,9 +113,25 @@ public final class DynamicBayesianNetwork implements Serializable {
             this.dynamicDAG.getParentSetTime0(var).blockParents();
         }
 
-        distributionsTimeT = Collections.unmodifiableList(this.distributionsTimeT);
-        distributionsTime0 = Collections.unmodifiableList(this.distributionsTime0);
+        //distributionsTimeT = Collections.unmodifiableList(this.distributionsTimeT);
+        //distributionsTime0 = Collections.unmodifiableList(this.distributionsTime0);
 
+    }
+
+    public void setConditionalDistributionTime0(Variable var, ConditionalDistribution dist){
+        this.distributionsTime0.set(var.getVarID(),dist);
+    }
+
+    public void setConditionalDistributionTimeT(Variable var, ConditionalDistribution dist){
+        this.distributionsTimeT.set(var.getVarID(),dist);
+    }
+
+    public void setName(String name) {
+        this.dynamicDAG.setName(name);
+    }
+
+    public String getName() {
+        return this.dynamicDAG.getName();
     }
 
     public int getNumberOfDynamicVars() {

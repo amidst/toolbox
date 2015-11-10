@@ -8,8 +8,8 @@
 
 package eu.amidst.core.datastream.filereaders;
 
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ public interface DataFileWriter {
      * Saves a {@link DataStream} in a given file.
      * @param dataStream the {@link DataStream} to be written in the file.
      * @param file a String that represents the name of the file where the data will be written.
-     * @throws IOException
+     * @throws IOException in case of an error when writing to file
      */
     void writeToFile(DataStream<? extends DataInstance> dataStream, String file) throws IOException;
 

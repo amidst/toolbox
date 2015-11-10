@@ -226,4 +226,13 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
 
         return normal;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        throw new UnsupportedOperationException();
+    }
+
 }

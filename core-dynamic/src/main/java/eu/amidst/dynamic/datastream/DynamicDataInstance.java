@@ -18,9 +18,9 @@ import eu.amidst.core.variables.Variable;
  */
 public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
 
-    int getSequenceID();
+    long getSequenceID();
 
-    int getTimeID();
+    long getTimeID();
 
     double getValue(Attribute att, boolean present);
 

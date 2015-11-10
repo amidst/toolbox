@@ -164,7 +164,7 @@ public final class DaimlerModels {
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object. Similarly
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dynamicBayesianNetwork = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
         DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/HuginDaimlerLEAcceleration.dbn");
