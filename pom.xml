@@ -28,15 +28,10 @@
 
     <modules>
         <module>huginlink</module>
-        <module>moalink</module>
         <module>core</module>
         <module>sparklink</module>
         <module>core-dynamic</module>
         <module>examples</module>
-        <module>extensions/ida2015</module>
-        <module>extensions/scai2015</module>
-        <module>extensions/caepia2015</module>
-        <module>moa-customized</module>
         <module>flinklink</module>
     </modules>
 
