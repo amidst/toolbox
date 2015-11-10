@@ -209,4 +209,21 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     public Vector createZeroVector() {
         return new ArrayVector(nOfStates);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+
+        ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
+
+        for (int i = 0; i < this.sizeOfSufficientStatistics(); i++) {
+            vector.set(i, Gamma.digamma(1.0) - Gamma.digamma(this.sizeOfSufficientStatistics()));
+        }
+
+        return vector;
+    }
+
+
 }

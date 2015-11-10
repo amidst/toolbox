@@ -183,4 +183,20 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     @Override
     public void fixNumericalInstability() {
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+
+        ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
+
+        double alpha = 1;
+        double beta = 1;
+        vector.set(0, Gamma.digamma(alpha) - Math.log(beta));
+        vector.set(1, alpha / beta);
+
+        return vector;
+    }
 }

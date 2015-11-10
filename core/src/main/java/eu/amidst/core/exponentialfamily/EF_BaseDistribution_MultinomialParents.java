@@ -285,6 +285,22 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
         return this.createCompoundVector();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        CompoundVector vector = this.createCompoundVector();
+
+        for (int i = 0; i < this.numberOfConfigurations() ; i++) {
+            Vector vec = this.getBaseEFDistribution(i).createInitSufficientStatistics();
+            vector.setBaseConf(i, 1.0);
+            vector.setVectorByPosition(i,vec);
+        }
+
+        return vector;
+    }
+
 
     /**
      * {@inheritDoc}

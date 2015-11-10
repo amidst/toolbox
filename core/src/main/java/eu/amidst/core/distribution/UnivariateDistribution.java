@@ -12,6 +12,7 @@ import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -51,6 +52,7 @@ public abstract class UnivariateDistribution extends ConditionalDistribution {
 
     /**
      * Converts this UnivariateDistribution to an Exponential Family (EF) univariate distribution.
+     * @param <E> any class extending {@link EF_UnivariateDistribution}
      * @return an {@link EF_UnivariateDistribution} object.
      * @exception UnsupportedOperationException if this distribution is not convertible to the EF form.
      */

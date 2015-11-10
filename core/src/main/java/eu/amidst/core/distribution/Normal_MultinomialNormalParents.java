@@ -46,7 +46,7 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
     private BaseDistribution_MultinomialParents<ConditionalLinearGaussian> base;
 
     /**
-     * Creates a new Normal_MultinomialNormalParents distribution for a given BaseDistribution_MultinomialParents<ConditionalLinearGaussian>.
+     * Creates a new Normal_MultinomialNormalParents distribution for a given BaseDistribution_MultinomialParents&lt;ConditionalLinearGaussian&gt;.
      * @param base_ an array of <code>Normal_NormalParents</code> objects, one for each configuration of the Multinomial parents.
      */
     public Normal_MultinomialNormalParents(BaseDistribution_MultinomialParents<ConditionalLinearGaussian> base_) {
@@ -167,6 +167,24 @@ public class Normal_MultinomialNormalParents extends ConditionalDistribution {
      */
     public List<ConditionalLinearGaussian> getDistribution() {
         return base.getBaseDistributions();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setVar(Variable var) {
+        this.var= var;
+        this.base.setVar(var);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setConditioningVariables(List<Variable> parents) {
+        this.parents = parents;
+        this.base.setConditioningVariables(parents);
     }
 
     /**

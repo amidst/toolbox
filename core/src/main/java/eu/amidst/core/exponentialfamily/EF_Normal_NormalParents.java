@@ -214,6 +214,28 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
      * {@inheritDoc}
      */
     @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        CompoundVector vectorSS = this.createEmtpyCompoundVector();
+
+        double[] Xarray = {0.0};
+
+        double[] Yarray = this.parents.stream()
+                .mapToDouble(w-> 0.0)
+                .toArray();
+        RealVector XYRealVector = new ArrayRealVector(Xarray,Yarray);
+        vectorSS.setXYbaseVector(XYRealVector);
+
+        RealMatrix covRealmatrix = new Array2DRowRealMatrix(Yarray.length + 1,Yarray.length + 1);
+        covRealmatrix.scalarAdd(1.0);
+        vectorSS.setcovbaseVector(covRealmatrix);
+
+        return vectorSS;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double getExpectedLogNormalizer(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
         throw new UnsupportedOperationException("No Implemented. This method is no really needed");
     }

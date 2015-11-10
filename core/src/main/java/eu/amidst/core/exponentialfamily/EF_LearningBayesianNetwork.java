@@ -10,6 +10,7 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -198,5 +199,13 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     @Override
     public Vector createZeroVector() {
         throw new UnsupportedOperationException("This method does not apply in this case!");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics(){
+        return new CompoundVector(this.distributionList.stream().map(w-> w.createInitSufficientStatistics()).collect(Collectors.toList()));
     }
 }

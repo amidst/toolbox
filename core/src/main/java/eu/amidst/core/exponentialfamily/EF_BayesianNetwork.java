@@ -235,6 +235,14 @@ public class EF_BayesianNetwork extends EF_Distribution {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics(){
+        return new CompoundVector(this.distributionList.stream().map(w-> w.createInitSufficientStatistics()).collect(Collectors.toList()));
+    }
+
+    /**
      * Creates a zero compound parameter vector (i.e., a vector filled with zeros).
      * @return a {@link CompoundVector} object.
      */

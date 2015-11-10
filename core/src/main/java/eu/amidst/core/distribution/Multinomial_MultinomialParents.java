@@ -47,7 +47,7 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
     private BaseDistribution_MultinomialParents<Multinomial> base;
 
     /**
-     * Creates a new Multinomial_MultinomialParents distribution for a given BaseDistribution_MultinomialParents<Multinomial>.
+     * Creates a new Multinomial_MultinomialParents distribution for a given BaseDistribution_MultinomialParents&lt;Multinomial&gt;.
      * @param base_ an array of {@link Multinomial} objects, one for each configuration of the parents.
      */
     public Multinomial_MultinomialParents(BaseDistribution_MultinomialParents<Multinomial> base_) {
@@ -114,6 +114,24 @@ public class Multinomial_MultinomialParents extends ConditionalDistribution {
      */
     public void setMultinomial(Assignment parentAssignment, Multinomial multinomialDistribution) {
         this.base.setBaseDistribution(parentAssignment, multinomialDistribution);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setVar(Variable var) {
+        this.var = var;
+        this.base.setVar(var);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setConditioningVariables(List<Variable> parents) {
+        this.parents = parents;
+        this.base.setConditioningVariables(parents);
     }
 
     /**

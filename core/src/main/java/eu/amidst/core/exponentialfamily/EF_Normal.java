@@ -31,6 +31,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public static final int EXPECTED_MEAN = 0;
     public static final int EXPECTED_SQUARE = 1;
 
+    private static final double LIMIT = 1000000;
     /**
      * Creates a new EF_Normal distribution for a given variable.
      * @param var1 a {@link Variable} object with a Normal distribution type.
@@ -57,10 +58,10 @@ public class EF_Normal extends EF_UnivariateDistribution {
     @Override
     public void fixNumericalInstability() {
 
-        if (this.naturalParameters.get(1)<(-0.5*1000000)){ //To avoid numerical problems!
+        if (this.naturalParameters.get(1)<(-0.5*LIMIT)){ //To avoid numerical problems!
             double x = -0.5*this.naturalParameters.get(0)/this.getNaturalParameters().get(1);
-            this.naturalParameters.set(0,x*1000000);
-            this.naturalParameters.set(1,-0.5*1000000);
+            this.naturalParameters.set(0,x*LIMIT);
+            this.naturalParameters.set(1,-0.5*LIMIT);
         }
     }
 
@@ -79,7 +80,10 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public double computeLogNormalizer() {
         double m0=this.momentParameters.get(EXPECTED_MEAN);
         double m1=this.momentParameters.get(EXPECTED_SQUARE);
-        return m0*m0/(2*(m1-m0*m0)) + 0.5*Math.log(m1-m0*m0);
+        double variance =m1-m0*m0;
+        if (variance < 1/LIMIT) variance = 1/LIMIT;
+
+        return m0*m0/(2*(variance)) + 0.5*Math.log(variance);
     }
 
     /**
@@ -88,6 +92,20 @@ public class EF_Normal extends EF_UnivariateDistribution {
     @Override
     public Vector createZeroVector() {
         return new ArrayVector(2);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
+
+        vector.set(0, 0);
+        vector.set(1, 1);
+
+        return vector;
+
     }
 
     /**
@@ -166,10 +184,11 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         Normal normal = new Normal(this.getVariable());
         double mean = this.getMomentParameters().get(EF_Normal.EXPECTED_MEAN);
-        double sigma = this.getMomentParameters().get(EF_Normal.EXPECTED_SQUARE) - mean * mean;
+        double variance = this.getMomentParameters().get(EF_Normal.EXPECTED_SQUARE) - mean * mean;
+        if (variance < 1/LIMIT) variance = 1/LIMIT;
 
         normal.setMean(mean);
-        normal.setVariance(sigma);
+        normal.setVariance(variance);
 
         return normal;
     }
@@ -181,9 +200,12 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public void updateNaturalFromMomentParameters() {
         double m0=this.momentParameters.get(EXPECTED_MEAN);
         double m1=this.momentParameters.get(EXPECTED_SQUARE);
+        double variance =m1-m0*m0;
+        if (variance < 1/LIMIT) variance = 1/LIMIT;
+
         // var = E(X^2) - E(X)^2 = m1 - m0*m0
-        this.naturalParameters.set(0, m0 / (m1 - m0 * m0));
-        this.naturalParameters.set(1, -0.5 / (m1 - m0 * m0));
+        this.naturalParameters.set(0, m0 / (variance));
+        this.naturalParameters.set(1, -0.5 / (variance));
     }
 
     /**

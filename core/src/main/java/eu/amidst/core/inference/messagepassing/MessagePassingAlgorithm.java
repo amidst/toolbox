@@ -61,7 +61,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     protected int seed=0;
 
     /** Represents the maximum number of iterations. */
-    protected int maxIter = 100;
+    protected int maxIter = 1000;
 
     /** Represents a threshold. */
     protected double threshold = 0.0001;
@@ -311,6 +311,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
     /**
      * Returns the exponential family posterior of a given {@link Variable}.
+     * @param <E> a class extending {@link EF_UnivariateDistribution}
      * @param var a {@link Variable} object.
      * @return an {@link EF_UnivariateDistribution} object.
      */

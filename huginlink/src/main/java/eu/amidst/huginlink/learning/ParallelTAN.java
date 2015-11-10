@@ -5,8 +5,9 @@ import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.learning.parametric.LearningEngine;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.*;
@@ -14,6 +15,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
+import eu.amidst.huginlink.inference.HuginInference;
 
 import java.io.IOException;
 
@@ -48,6 +50,15 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
     /** Indicates if the learning is performed in parallel or not. */
     boolean parallelMode;
+
+    /** Represents the learned BN**/
+    BayesianNetwork learnedBN;
+
+    /** Represents the inference engine for the predections*/
+    HuginInference inference = null;
+
+    /** Represents the class varible of the model*/
+    private Variable targetVar;
 
     /**
      * Class constructor.
@@ -133,6 +144,27 @@ public class ParallelTAN implements AmidstOptionsHandler {
     }
 
     /**
+     * Gets the name of the class variable in the TAN model.
+     */
+    public String getNameTarget() {
+        return this.nameTarget;
+    }
+    /**
+     * Predicts the class membership probabilities for a given instance.
+     * @param instance the data instance to be classified.
+     * @return an array of doubles containing the estimated membership probabilities of the data instance for each class label.
+     */
+    public double[] predict(DataInstance instance) {
+        if (learnedBN==null)
+            throw new IllegalArgumentException("The model has not been learned");
+
+        this.inference.setEvidence(instance);
+        this.inference.runInference();
+        Multinomial dist = this.inference.getPosterior(targetVar);
+        return dist.getParameters();
+    }
+
+    /**
      * Learns a TAN structure from data using the Chow-Liu algorithm included in the Hugin API.
      * Parallel learning is performed only if the parallel mode was set to true.
      * @param dataStream a stream of data instances to be processed during the TAN structural learning.
@@ -141,6 +173,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
      */
     public DAG learnDAG(DataStream dataStream) throws ExceptionHugin {
         Variables modelHeader = new Variables(dataStream.getAttributes());
+        this.targetVar = modelHeader.getVariableByName(this.nameTarget);
         DAG dag = new DAG(modelHeader);
         BayesianNetwork bn = new BayesianNetwork(dag);
 
@@ -184,7 +217,9 @@ public class ParallelTAN implements AmidstOptionsHandler {
             huginNetwork.learnChowLiuTree(root, target);
             System.out.println("Structural Learning in Hugin: " + watch.stop());
 
-            return (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
+            DAG dagLearned = (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
+            dagLearned.getVariables().setAttributes(dataStream.getAttributes());
+            return dagLearned;
         } catch (ExceptionHugin exceptionHugin) {
             throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
         }
@@ -197,9 +232,39 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @throws ExceptionHugin
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream) throws ExceptionHugin {
-        LearningEngine.setParallelMode(this.parallelMode);
-        LearningEngine.setParameterLearningAlgorithm(new ParallelMaximumLikelihood());
-        return LearningEngine.learnParameters(this.learnDAG(dataStream), dataStream);
+        ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
+        parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
+        parameterLearningAlgorithm.setDataStream(dataStream);
+        parameterLearningAlgorithm.initLearning();
+        parameterLearningAlgorithm.runLearning();
+        learnedBN = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+        this.inference = new HuginInference();
+        this.inference.setModel(this.learnedBN);
+        return this.learnedBN;
+    }
+
+    /**
+     * Learns the parameters of a TAN structure using the {@link eu.amidst.core.learning.parametric.ParallelMaximumLikelihood}.
+     * @param dataStream a stream of data instances for learning the parameters.
+     * @param batchSize the size of the batch for the parallel ML algorithm.
+     * @return a <code>BayesianNetwork</code> object in ADMIST format.
+     * @throws ExceptionHugin
+     */
+    public BayesianNetwork learn(DataStream<DataInstance> dataStream, int batchSize) throws ExceptionHugin {
+        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        parameterLearningAlgorithm.setBatchSize(batchSize);
+        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
+        parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
+        parameterLearningAlgorithm.setDataStream(dataStream);
+        parameterLearningAlgorithm.initLearning();
+        parameterLearningAlgorithm.runLearning();
+        learnedBN = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+        this.inference = new HuginInference();
+        this.inference.setModel(this.learnedBN);
+        return this.learnedBN;
     }
 
     /**

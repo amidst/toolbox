@@ -177,6 +177,14 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
      * {@inheritDoc}
      */
     @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ConditionalDistribution toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables) {
         Multinomial multinomial = new Multinomial(this.getVariable());
 

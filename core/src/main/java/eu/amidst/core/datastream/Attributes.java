@@ -9,13 +9,14 @@
 package eu.amidst.core.datastream;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * This class acts as a container of the {@link Attribute} objects of a data set.
- * <p> See {@code eu.amidst.core.examples.datastream.DataStreamExample} for an example of use. <p>
+ * <p> See {@code eu.amidst.core.examples.datastream.DataStreamExample} for an example of use. </p>
  */
 
 public class Attributes implements Serializable, Iterable<Attribute> {
@@ -51,12 +52,16 @@ public class Attributes implements Serializable, Iterable<Attribute> {
             String name = att.getName();
             if(name.equals(Attributes.TIME_ID_ATT_NAME)){
                 this.time_id = att;
+                this.time_id.setSpecialAttribute(true);
+                this.time_id.setTimeId(true);
+                this.time_id.setNumberFormat(new DecimalFormat("#"));
             }else if (name.equals(Attributes.SEQUENCE_ID_ATT_NAME)){
                 this.seq_id = att;
+                this.seq_id.setSpecialAttribute(true);
+                this.seq_id.setSeqId(true);
+                this.seq_id.setNumberFormat(new DecimalFormat("#"));
             }
         }
-
-
     }
 
     /**
@@ -99,8 +104,7 @@ public class Attributes implements Serializable, Iterable<Attribute> {
     public List<Attribute> getListOfNonSpecialAttributes(){
         List<Attribute> attributeList = new ArrayList<>();
         for(Attribute att: getFullListOfAttributes()){
-            String name = att.getName();
-            if(!name.equals(Attributes.TIME_ID_ATT_NAME) && !name.equals(Attributes.SEQUENCE_ID_ATT_NAME)){
+            if (!att.isSpecialAttribute()){
                 attributeList.add(att);
             }
         }

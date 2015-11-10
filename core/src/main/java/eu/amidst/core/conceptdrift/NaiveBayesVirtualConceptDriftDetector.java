@@ -184,6 +184,11 @@ public class NaiveBayesVirtualConceptDriftDetector{
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);
+
+        svb.setOutput(false);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setThreshold(0.001);
+
         svb.initLearning();
     }
 
@@ -213,7 +218,7 @@ public class NaiveBayesVirtualConceptDriftDetector{
         double[] out = new double[hiddenVars.size()];
         for (int i = 0; i < out.length; i++) {
             Variable hiddenVar = this.hiddenVars.get(i);
-            Normal normal = svb.getPlateuStructure().getEFVariablePosterior(hiddenVar, 0).toUnivariateDistribution();
+            Normal normal = svb.getParameterPosterior(hiddenVar);
             out[i] = normal.getMean();
         }
         return out;

@@ -27,6 +27,13 @@ public class HashMapAssignment implements Assignment, Serializable {
     private Map<Variable,Double> assignment;
 
     /**
+     * Creates a new HashMapAssignment.
+     */
+    public HashMapAssignment(){
+        assignment = new ConcurrentHashMap();
+    }
+
+    /**
      * Creates a new HashMapAssignment given the number of variables.
      * @param nOfVars the number of variables.
      */

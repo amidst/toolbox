@@ -19,8 +19,9 @@ import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataSetLoader;
-import eu.amidst.flinklink.core.utils.Serialization;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.core.utils.Serialization;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
  * Created by andresmasegosa on 1/9/15.
@@ -28,6 +29,8 @@ import eu.amidst.flinklink.core.utils.Serialization;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
@@ -44,7 +47,8 @@ public class Main {
 
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataSetLoader.loadData("./datasets/tmp.arff");
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
 
         SVB svb = new SVB();
         svb.setDAG(asianet.getDAG());

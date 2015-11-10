@@ -22,6 +22,8 @@ import org.apache.flink.api.java.DataSet;
  */
 public interface DataFlink<T extends DataInstance> {
 
+    String getName();
+
     Attributes getAttributes();
 
     DataSet<T> getDataSet();
@@ -29,5 +31,4 @@ public interface DataFlink<T extends DataInstance> {
     default DataSet<DataOnMemory<T>> getBatchedDataSet(int batchSize){
         return ConversionToBatches.toBatches(this,batchSize);
     }
-
 }

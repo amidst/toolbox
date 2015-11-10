@@ -51,7 +51,7 @@ public class SVBFadingTest {
             svbFading.setFadingFactor(1.0);
             VMP vmp = svbFading.getSVB().getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
-            vmp.setMaxIter(1000);
+            vmp.setMaxIter(500);
             vmp.setThreshold(0.0001);
             svbFading.setWindowsSize(1000);
             svbFading.setDAG(trueBN.getDAG());
@@ -95,7 +95,7 @@ public class SVBFadingTest {
         svbFading.setFadingFactor(0.95);
         VMP vmp = svbFading.getSVB().getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
-        vmp.setMaxIter(1000);
+        vmp.setMaxIter(500);
         vmp.setThreshold(0.0001);
         svbFading.setWindowsSize(1000);
         svbFading.setDAG(trueBN.getDAG());

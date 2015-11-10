@@ -36,8 +36,12 @@ public class MAPInference implements PointEstimator {
 
     private int sampleSize;
     private int seed = 0;
+    private int numberOfIterations=100;
 
     private Assignment evidence;
+
+    private long numberOfDiscreteVariables = 0;
+    private long numberOfDiscreteVariablesInEvidence = 0;
 
     private boolean parallelMode = true;
 
@@ -67,6 +71,11 @@ public class MAPInference implements PointEstimator {
         }
     }
 
+    public MAPInference() {
+
+        this.evidence = new HashMapAssignment(0);
+        this.sampleSize = 10;
+    }
 
     /**
      * {@inheritDoc}
@@ -138,7 +147,9 @@ public class MAPInference implements PointEstimator {
         this.MAPvariables = varsOfInterest1;
     }
 
-
+    public void setNumberOfIterations(int numberOfIterations) {
+        this.numberOfIterations = numberOfIterations;
+    }
 
     /**
      * {@inheritDoc}
@@ -242,19 +253,21 @@ public class MAPInference implements PointEstimator {
      */
     public void runInference(int inferenceAlgorithm) {
 
+
         ImportanceSampling ISaux = new ImportanceSampling();
         ISaux.setModel(this.model);
         ISaux.setSamplingModel(this.model);
         ISaux.setSampleSize(this.sampleSize);
         ISaux.setParallelMode(this.parallelMode);
         ISaux.setEvidence(this.evidence);
+        ISaux.setKeepDataOnMemory(true);
 
         Random random = new Random();
-        random.setSeed(this.seed);
+        //random.setSeed(this.seed);
         ISaux.setSeed(random.nextInt());
         ISaux.runInference();
 
-        Stream<Assignment> sample = ISaux.getSamples();
+        Stream<Assignment> sample = ISaux.getSamples().parallel();
         WeightedAssignment weightedAssignment;
 
         /*
@@ -293,7 +306,7 @@ public class MAPInference implements PointEstimator {
                 Map.Entry<Assignment, Double> MAPentry = newMap.entrySet().stream().reduce((e1, e2) -> (e1.getValue() > e2.getValue() ? e1 : e2)).get();
 
                 MAPestimate = MAPentry.getKey();
-                MAPestimateLogProbability = Math.log(MAPentry.getValue()/normalizationFactor);
+                MAPestimateLogProbability = Math.log(MAPentry.getValue()); //   /normalizationFactor);
                 break;
 
 
@@ -319,7 +332,7 @@ public class MAPInference implements PointEstimator {
                 // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
                 //MAPestimate = sample.map(this::simulatedAnnealingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::simulatedAnnealingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
-                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::simulatedAnnealingAllVars).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
                 //MAPestimate = weightedAssignment.assignment;
                 MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
@@ -328,7 +341,7 @@ public class MAPInference implements PointEstimator {
             case 3:     // HILL CLIMBING, MOVING ALL VARIABLES AT EACH ITERATION
                 //MAPestimate = sample.map(this::hillClimbingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::hillClimbingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
-                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::hillClimbingAllVars).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
                 //MAPestimate = weightedAssignment.assignment;
                 MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
@@ -338,7 +351,7 @@ public class MAPInference implements PointEstimator {
             default:
                 //MAPestimate = sample.map(this::hillClimbingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::hillClimbingOneVar).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
-                weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
+                weightedAssignment = sample.map(this::hillClimbingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
                 //MAPestimate = weightedAssignment.assignment;
                 MAPestimate = fullAssignmentToMAPassignment(weightedAssignment.assignment);
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
@@ -597,7 +610,7 @@ public class MAPInference implements PointEstimator {
     public double estimateProbabilityOfPartialAssignment(Assignment MAPassignment) {
 
         double probabilityEstimate = 0;
-        final int numSamplesAverage = 100;
+        final int numSamplesAverage = 50;
 
         Assignment evidenceAugmented=new HashMapAssignment(evidence);
         MAPvariables.forEach(voi -> evidenceAugmented.setValue(voi, MAPassignment.getValue(voi)));
@@ -616,7 +629,7 @@ public class MAPInference implements PointEstimator {
     public double estimateRandomlyProbabilityOfPartialAssignment(Assignment MAPassignment) {
 
         double probabilityEstimate = 0;
-        final int numSamplesAverage = 100;
+        final int numSamplesAverage = 50;
 
         Assignment evidenceAugmented=new HashMapAssignment(evidence);
         MAPvariables.forEach(voi -> evidenceAugmented.setValue(voi, MAPassignment.getValue(voi)));
@@ -636,17 +649,18 @@ public class MAPInference implements PointEstimator {
     * "Simulated annealing": changes All variables at each iteration. If improves, accept, if not, sometimes accept.
      */
     private WeightedAssignment simulatedAnnealingAllVars(Assignment initialGuess) {
-        Assignment nextAssignment;
 
-        double R=10; // Temperature
-        double eps=0.01;
+
+        double R=1000; // Temperature
         double alpha=0.90;
+        double eps=R * Math.pow(alpha,this.numberOfIterations);
 
-        double currentProbability;
+        Assignment currentAssignment = new HashMapAssignment(initialGuess);
+        double currentProbability = estimateProbabilityOfPartialAssignment(currentAssignment);
+
+        Assignment nextAssignment;
         double nextProbability;
 
-        Assignment currentAssignment=new HashMapAssignment(initialGuess);
-        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
 
         Random random = new Random(this.seed);
         while (R>eps) {
@@ -674,13 +688,13 @@ public class MAPInference implements PointEstimator {
 //
 //            result.setValue(selectedVariable,selectedVariableNewValue);
 
-            nextAssignment = obtainValuesRandomly(currentAssignment, evidence, random);
+            nextAssignment = obtainValues(currentAssignment, evidence, random);
 
             //currentProbability=this.model.getLogProbabiltyOf(currentAssignment);
             nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment);
 
             if (nextProbability > currentProbability) {
-                currentAssignment=nextAssignment;
+                currentAssignment = nextAssignment;
                 currentProbability = nextProbability;
             }
             else {
@@ -798,17 +812,18 @@ public class MAPInference implements PointEstimator {
     * "Simulated annealing": changes ONE variable at each iteration. If improves, accept, if not, sometimes accept.
      */
     private WeightedAssignment simulatedAnnealingOneVar(Assignment initialGuess) {
-        Assignment nextAssignment;
 
-        double R=10; // Temperature
-        double eps=0.01;
+
+        double R=1000; // Temperature
         double alpha=0.90;
-
-        double currentProbability;
-        double nextProbability;
+        double eps=R * Math.pow(alpha,this.numberOfIterations);
 
         Assignment currentAssignment=new HashMapAssignment(initialGuess);
-        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
+        double currentProbability = estimateProbabilityOfPartialAssignment(currentAssignment);
+
+        Assignment nextAssignment;
+        double nextProbability;
+
 
         Random random = new Random(this.seed);
         while (R>eps) {
@@ -844,7 +859,7 @@ public class MAPInference implements PointEstimator {
             nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment);
 
             if (nextProbability > currentProbability) {
-                currentAssignment=nextAssignment;
+                currentAssignment = nextAssignment;
                 currentProbability = nextProbability;
             }
             else {
@@ -929,16 +944,16 @@ public class MAPInference implements PointEstimator {
 
 
     private WeightedAssignment hillClimbingAllVars(Assignment initialGuess) {
-        Assignment nextAssignment;
 
-        double R=50;
+
+        double R=this.numberOfIterations;
         double eps=0;
 
-        double currentProbability=0;
-        double nextProbability;
-
         Assignment currentAssignment=new HashMapAssignment(initialGuess);
-        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
+        double currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
+
+        Assignment nextAssignment;
+        double nextProbability;
 
         //Random random = new Random(this.seed+initialGuess.hashCode());
         Random random = new Random();
@@ -946,8 +961,8 @@ public class MAPInference implements PointEstimator {
 
             // GIVE VALUES
             //result=obtainValues(currentAssignment, evidence, random);
-            nextAssignment=obtainValuesRandomly(currentAssignment, evidence, random);
 
+            nextAssignment=obtainValues(currentAssignment, evidence, random);
             nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment);
 
 //            final Assignment finalResult=new HashMapAssignment(result);
@@ -973,8 +988,8 @@ public class MAPInference implements PointEstimator {
 
 
             if (nextProbability > currentProbability) {
-                currentAssignment=nextAssignment;
-                currentProbability=nextProbability;
+                currentAssignment = nextAssignment;
+                currentProbability = nextProbability;
             }
 
             R = R - 1;
@@ -984,12 +999,120 @@ public class MAPInference implements PointEstimator {
 
     }
 
+    /*
+* "Hill climbing": changes ONE variable at each iteration. If improves, accept.
+*/
+    private WeightedAssignment hillClimbingOneVar(Assignment initialGuess) {
+        //Assignment result = new HashMapAssignment(initialGuess);
+
+        double R=this.numberOfIterations;;
+        double eps=0;
+
+        //Random random = new Random();
+
+        Assignment currentAssignment=new HashMapAssignment(initialGuess);
+        double currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
+
+
+        Assignment nextAssignment;
+        double nextProbability;
+
+        while (R>eps) {
+
+            nextAssignment = moveDiscreteVariables(currentAssignment, 3);
+            nextAssignment = assignContinuousVariables(nextAssignment);
+
+//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+//            double selectedVariableNewValue;
+//
+//            // Choose a new value for ONE of the variables and check whether the probability grows or not
+//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//
+//            if (!Double.isNaN(this.evidence.getValue(selectedVariable)) || selectedVariable.isNormal()) {
+//                continue;
+//            }
+//
+//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
+//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
+//
+//
+//            result.setValue(selectedVariable,selectedVariableNewValue);
+
+            //currentProbability=this.model.getLogProbabiltyOf(initialGuess);
+            //nextProbability=this.model.getLogProbabiltyOf(result);
+
+            nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment);
+
+
+            if (nextProbability > currentProbability) {
+                currentAssignment = nextAssignment;
+                currentProbability = nextProbability;
+            }
+
+            //System.out.println(currentAssignment.outputString(this.MAPvariables));
+
+            R = R - 1;
+        }
+
+        return new WeightedAssignment(currentAssignment,currentProbability);
+
+    }
+//
+//    /*
+//    * "Hill climbing": changes ONE variable at each iteration. If improves, accept.
+//    */
+//    private Assignment hillClimbingOneVar(Assignment initialGuess) {
+//        Assignment result = new HashMapAssignment(initialGuess);
+//
+//        double R=50;
+//        double eps=0;
+//
+//        double currentProbability;
+//        double nextProbability;
+//
+//        while (R>eps) {
+//
+//            Random random = new Random(this.seed);
+//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
+//            double selectedVariableNewValue;
+//
+//            // Choose a new value for ONE of the variables and check whether the probability grows or not
+//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
+//
+//
+//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
+//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
+//
+//
+//            result.setValue(selectedVariable,selectedVariableNewValue);
+//
+//            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
+//            nextProbability=this.model.getLogProbabiltyOf(result);
+//
+//            if (nextProbability>currentProbability) {
+//                initialGuess=result;
+//            }
+//
+//            R = R - 1;
+//        }
+//
+//        return result;
+//
+//    }
+
+
+
+
 
     private Assignment moveDiscreteVariables(Assignment initialGuess, int numberOfMovements) {
 
         Assignment result = new HashMapAssignment(initialGuess);
         Random random = new Random();
         ArrayList<Integer> indicesVariablesMoved = new ArrayList<>();
+
+        if(numberOfMovements > numberOfDiscreteVariables - numberOfDiscreteVariablesInEvidence) { // this.model.getNumberOfVars()-this.evidence.getVariables().size()) {
+            numberOfMovements = (int) (numberOfDiscreteVariables - numberOfDiscreteVariablesInEvidence);
+        }
 
         int indexSelectedVariable;
         Variable selectedVariable;
@@ -1085,106 +1208,6 @@ public class MAPInference implements PointEstimator {
 
         return result;
     }
-
-    /*
-* "Hill climbing": changes ONE variable at each iteration. If improves, accept.
-*/
-    private WeightedAssignment hillClimbingOneVar(Assignment initialGuess) {
-        Assignment result = new HashMapAssignment(initialGuess);
-
-        double R=50;
-        double eps=0;
-
-        double currentProbability;
-        double nextProbability;
-
-        //Random random = new Random();
-        Assignment currentAssignment=new HashMapAssignment(initialGuess);
-        currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment);
-
-        while (R>eps) {
-
-            result = moveDiscreteVariables(currentAssignment, 3);
-            result = assignContinuousVariables(result);
-
-//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
-//            double selectedVariableNewValue;
-//
-//            // Choose a new value for ONE of the variables and check whether the probability grows or not
-//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
-//
-//            if (!Double.isNaN(this.evidence.getValue(selectedVariable)) || selectedVariable.isNormal()) {
-//                continue;
-//            }
-//
-//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
-//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
-//
-//
-//            result.setValue(selectedVariable,selectedVariableNewValue);
-
-            //currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-            //nextProbability=this.model.getLogProbabiltyOf(result);
-
-            nextProbability=estimateProbabilityOfPartialAssignment(result);
-
-
-            if (nextProbability > currentProbability) {
-                currentAssignment=result;
-                currentProbability=nextProbability;
-            }
-
-            //System.out.println(currentAssignment.outputString(this.MAPvariables));
-
-            R = R - 1;
-        }
-
-        return new WeightedAssignment(currentAssignment,currentProbability);
-
-    }
-//
-//    /*
-//    * "Hill climbing": changes ONE variable at each iteration. If improves, accept.
-//    */
-//    private Assignment hillClimbingOneVar(Assignment initialGuess) {
-//        Assignment result = new HashMapAssignment(initialGuess);
-//
-//        double R=50;
-//        double eps=0;
-//
-//        double currentProbability;
-//        double nextProbability;
-//
-//        while (R>eps) {
-//
-//            Random random = new Random(this.seed);
-//            int indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
-//            double selectedVariableNewValue;
-//
-//            // Choose a new value for ONE of the variables and check whether the probability grows or not
-//            Variable selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
-//
-//
-//            ConditionalDistribution cd = this.model.getConditionalDistributions().get(indexSelectedVariable);
-//            selectedVariableNewValue = cd.getUnivariateDistribution(initialGuess).sample(random);
-//
-//
-//            result.setValue(selectedVariable,selectedVariableNewValue);
-//
-//            currentProbability=this.model.getLogProbabiltyOf(initialGuess);
-//            nextProbability=this.model.getLogProbabiltyOf(result);
-//
-//            if (nextProbability>currentProbability) {
-//                initialGuess=result;
-//            }
-//
-//            R = R - 1;
-//        }
-//
-//        return result;
-//
-//    }
-
 
 
 
@@ -1510,6 +1533,7 @@ public class MAPInference implements PointEstimator {
         mapInference.runInference(-1);
 
         mapEstimate = mapInference.getEstimate();
+
         System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
         System.out.println("with probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
         timeStop = System.nanoTime();

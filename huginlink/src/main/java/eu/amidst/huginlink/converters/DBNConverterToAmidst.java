@@ -6,12 +6,12 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.utils.MultinomialIndex;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
-import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +56,7 @@ public class DBNConverterToAmidst {
             //Only temporal master nodes
             if (n.getTemporalMaster()==null) {
                 int numStates = (int) ((DiscreteChanceNode) n).getNumberOfStates();
-                listOfAttributes.add(new Attribute(i, n.getName(), "", StateSpaceTypeEnum.FINITE_SET, numStates));
+                listOfAttributes.add(new Attribute(i, n.getName(), new FiniteStateSpace(numStates)));
             }
         }
 
@@ -107,7 +107,7 @@ public class DBNConverterToAmidst {
                 }
             }
         }
-        this.amidstDBN = DynamicBayesianNetwork.newDynamicBayesianNetwork(dynamicDAG);
+        this.amidstDBN = new DynamicBayesianNetwork(dynamicDAG);
     }
 
     /**

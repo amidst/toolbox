@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 /**
  * This interface handles and defines the algorithm used to run inference in {@link BayesianNetwork} models.
  *
- * For an example, {@see eu.amidst.core.examples.inference}.
+ * @see "eu.amidst.core.examples.inference"
  */
 public interface InferenceAlgorithm {
 
@@ -75,6 +75,7 @@ public interface InferenceAlgorithm {
 
     /**
      * Returns the posterior of a given {@link Variable}.
+     * @param <E> a class extending {@link UnivariateDistribution}.
      * @param var a {@link Variable} object.
      * @return an {@link UnivariateDistribution} object.
      */
@@ -82,6 +83,7 @@ public interface InferenceAlgorithm {
 
     /**
      * Returns the posterior of a given {@link Variable}.
+     * @param <E> a class extending {@link UnivariateDistribution}.
      * @param varID an {@code int} that represents the ID of a variable.
      * @return an {@link UnivariateDistribution} object.
      */

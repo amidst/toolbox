@@ -10,12 +10,13 @@ package eu.amidst.core.datastream.filereaders.arffFileReader;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.filereaders.DataFileWriter;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -31,7 +32,7 @@ public class ARFFDataWriter implements DataFileWriter {
      * Saves a given data stream to an ARFF file.
      * @param dataStream an input {@link DataStream}.
      * @param path the path of the ARFF file where the data stream will be saved.
-     * @throws IOException
+     * @throws IOException in case of an error when writing to file
      */
     public static void writeToARFFFile(DataStream<? extends DataInstance> dataStream, String path) throws IOException {
         FileWriter fw = new FileWriter(path);
@@ -84,6 +85,28 @@ public class ARFFDataWriter implements DataFileWriter {
         }
     }
 
+    public static String attributeToARFFStringWithIndex(Attribute att){
+        if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.REAL) {
+            return "@attribute " + att.getName() + " " +att.getIndex()+ " real";
+        } else if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
+            StringBuilder stringBuilder = new StringBuilder("@attribute " + att.getName() + " " +att.getIndex()+ " {");
+            FiniteStateSpace stateSpace = att.getStateSpaceType();
+            stateSpace.getStatesNames().stream().limit(stateSpace.getNumberOfStates()-1).forEach(e -> stringBuilder.append(e+", "));
+            stringBuilder.append(stateSpace.getStatesName(stateSpace.getNumberOfStates()-1)+"}");
+            return stringBuilder.toString();
+        }else{
+            throw new IllegalArgumentException("Unknown SateSapaceType");
+        }
+    }
+    /**
+     * Converts a {@link DataInstance} object to an ARFF format {@code String}.
+     * @param assignment a {@link DataInstance} object.
+     * @return an ARFF format {@code String}.
+     */
+    public static String dataInstanceToARFFString(DataInstance assignment) {
+        return dataInstanceToARFFString(assignment.getAttributes(), assignment);
+    }
+
     /**
      * Converts a {@link DataInstance} object to an ARFF format {@code String}.
      * @param atts an input list of the list of {@link Attributes}.
@@ -95,31 +118,34 @@ public class ARFFDataWriter implements DataFileWriter {
 
         //MEJORAR PONER CUANDO REAL
         for(int i=0; i<atts.getNumberOfAttributes()-1;i++) {
-            if (Utils.isMissingValue(assignment.getValue(atts.getFullListOfAttributes().get(i)))){
-                builder.append("?,");
-            }else if (atts.getFullListOfAttributes().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
-                FiniteStateSpace stateSpace = atts.getFullListOfAttributes().get(i).getStateSpaceType();
-                String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getFullListOfAttributes().get(i)));
-                builder.append(nameState + ",");
-            }else if (atts.getFullListOfAttributes().get(i).getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.REAL) {
-                builder.append(assignment.getValue(atts.getFullListOfAttributes().get(i))+ ",");
-            }else{
-                throw new IllegalArgumentException("Illegal State Space Type: " + atts.getFullListOfAttributes().get(i).getStateSpaceType().getStateSpaceTypeEnum());
-            }
+            Attribute att = atts.getFullListOfAttributes().get(i);
+            builder.append(dataInstanceToARFFString(att,assignment,","));
         }
+        Attribute att = atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1);
+        builder.append(dataInstanceToARFFString(att,assignment,""));
 
-        if (Utils.isMissingValue(assignment.getValue(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1)))) {
-            builder.append("?,");
-        }else if(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.FINITE_SET) {
-            FiniteStateSpace stateSpace = atts.getFullListOfAttributes().get(atts.getNumberOfAttributes() - 1).getStateSpaceType();
-            String nameState = stateSpace.getStatesName((int) assignment.getValue(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes() - 1)));
-            builder.append(nameState);
-        }else if(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum()  == StateSpaceTypeEnum.REAL) {
-            builder.append(assignment.getValue(atts.getFullListOfAttributes().get(atts.getNumberOfAttributes() - 1)));
-        }else{
-            throw new IllegalArgumentException("Illegal State Space Type: " + atts.getFullListOfAttributes().get(atts.getNumberOfAttributes()-1).getStateSpaceType().getStateSpaceTypeEnum());
-        }
         return builder.toString();
     }
 
+    public static String dataInstanceToARFFString(Attribute att, DataInstance assignment, String separator) {
+        StringBuilder builder = new StringBuilder();
+
+        if (Utils.isMissingValue(assignment.getValue(att))) {
+            builder.append("?,");
+        } else if (att.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
+            FiniteStateSpace stateSpace = att.getStateSpaceType();
+            String nameState = stateSpace.getStatesName((int) assignment.getValue(att));
+            builder.append(nameState + separator);
+        } else if (att.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.REAL) {
+            if (att.getNumberFormat() != null) {
+                builder.append(att.getNumberFormat().format(assignment.getValue(att)) + separator);
+            } else {
+                builder.append(assignment.getValue(att) + separator);
+            }
+        } else {
+            throw new IllegalArgumentException("Illegal State Space Type: " + att.getStateSpaceType().getStateSpaceTypeEnum());
+        }
+
+        return builder.toString();
+    }
 }

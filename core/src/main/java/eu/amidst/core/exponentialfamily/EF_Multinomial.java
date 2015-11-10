@@ -207,4 +207,20 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
 
         return Arrays.asList(new EF_Multinomial_Dirichlet(this.var, varDirichlet), uni);
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+
+        ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
+        double nstates = this.sizeOfSufficientStatistics();
+        for (int i = 0; i < nstates; i++) {
+            vector.set(i, 1.0/nstates);
+        }
+
+        return vector;
+    }
 }

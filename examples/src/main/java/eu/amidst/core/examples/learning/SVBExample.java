@@ -18,9 +18,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
+import eu.amidst.core.utils.DAGGenerator;
 
 /**
  *
@@ -36,29 +34,6 @@ import eu.amidst.core.variables.Variables;
 public class SVBExample {
 
 
-    /**
-     * This method creates a DAG object with a naive Bayes structure for the attributes of the passed data stream.
-     * The main variable is defined as a latent binary variable which is a parent of all the observed variables.
-     * @param dataStream
-     * @return
-     */
-    public static DAG getHiddenNaiveBayesStructure(DataStream<DataInstance> dataStream){
-        //We create a Variables object from the attributes of the data stream
-        Variables modelHeader = new Variables(dataStream.getAttributes());
-
-        //We define the global latent binary variable
-        Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden",2);
-
-        //Then, we create a DAG object with the defined model header
-        DAG dag = new DAG(modelHeader);
-
-        //We set the linkds of the DAG.
-        dag.getParentSets().stream().filter(w -> w.getMainVar() != globalHiddenVar).forEach(w -> w.addParent(globalHiddenVar));
-
-        return dag;
-    }
-
-
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
@@ -68,7 +43,7 @@ public class SVBExample {
         SVB parameterLearningAlgorithm = new SVB();
 
         //We fix the DAG structure
-        parameterLearningAlgorithm.setDAG(getHiddenNaiveBayesStructure(data));
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getHiddenNaiveBayesStructure(data.getAttributes(),"GlobalHidden", 2));
 
         //We fix the size of the window
         parameterLearningAlgorithm.setWindowsSize(100);
