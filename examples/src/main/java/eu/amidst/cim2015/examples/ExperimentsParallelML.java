@@ -136,7 +136,7 @@ public final class ExperimentsParallelML {
 
 
         System.out.println("Available number of processors: " + Runtime.getRuntime().availableProcessors());
-        System.out.println("AverageTime");
+
         //We discard the first five experiments and then record the following 10 repetitions
         double average = 0.0;
         for (int j = 0; j <15; j++) {
@@ -150,7 +150,7 @@ public final class ExperimentsParallelML {
             }
             data.restart();
         }
-        System.out.println(average/10.0 + " secs");
+        System.out.println("Average = "+average/10.0 + " secs");
     }
 
     public static void compareBatchSizes() throws IOException {
