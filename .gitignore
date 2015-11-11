@@ -47,6 +47,8 @@ sparklink/target/*
 core-dynamic/target/*
 examplesIDA2015/target/*
 papers/*/target/*
+examples/target/*
+moa-customized/target/*
 classes/*
 
 # latex noise
