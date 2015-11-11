@@ -9,8 +9,9 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataSetLoader;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.util.Random;
 
@@ -38,7 +39,9 @@ public class ParallelVMP {
 
         DataStreamWriter.writeDataToFile(data, "./tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataSetLoader.loadData("./tmp.arff");
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,"./tmp.arff");
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
