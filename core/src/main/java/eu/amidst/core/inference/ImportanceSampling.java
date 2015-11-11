@@ -49,7 +49,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
     private int sampleSize = 100;
     private List<Variable> causalOrder;
 
-    private boolean keepDataOnMemory;
+    private boolean keepDataOnMemory = true;
     private List<ImportanceSampling.WeightedAssignment> weightedSampleList;
     private Stream<ImportanceSampling.WeightedAssignment> weightedSampleStream;
     private int seed = 0;
@@ -140,6 +140,10 @@ public class ImportanceSampling implements InferenceAlgorithm {
         return this.model;
     }
 
+    public BayesianNetwork getSamplingModel() {
+        return this.samplingModel;
+    }
+
 
     /**
      * {@inheritDoc}
@@ -149,6 +153,8 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         if(keepDataOnMemory) {
             weightedSampleStream = weightedSampleList.stream().sequential();
+        }else{
+            computeWeightedSampleStream(false);
         }
         if(parallelMode) {
             weightedSampleStream.parallel();
@@ -218,7 +224,10 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         if(keepDataOnMemory) {
             weightedSampleStream = weightedSampleList.stream().sequential();
+        }else{
+            computeWeightedSampleStream(false);
         }
+
         if(parallelMode) {
             weightedSampleStream.parallel();
         }
@@ -244,7 +253,10 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         if(keepDataOnMemory) {
             weightedSampleStream = weightedSampleList.stream().sequential();
+        }else{
+            computeWeightedSampleStream(false);
         }
+
         if(parallelMode) {
             weightedSampleStream.parallel();
         }
@@ -275,20 +287,19 @@ public class ImportanceSampling implements InferenceAlgorithm {
         return (E)posteriorDistribution;
     }
 
-    private void computeWeightedSampleStream() {
+    private void computeWeightedSampleStream(boolean saveDataOnMemory_) {
 
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-
-        IntStream auxIntStream = IntStream.range(0, sampleSize).sequential();
         if (parallelMode) {
-            auxIntStream.parallel();
+            weightedSampleStream = IntStream.range(0, sampleSize).parallel()
+                    .mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+        } else {
+            weightedSampleStream = IntStream.range(0, sampleSize).sequential()
+                    .mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
         }
 
-        if(keepDataOnMemory) {
-            weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
-        }
-        else {
-            weightedSampleStream = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+        if(saveDataOnMemory_){
+                weightedSampleList = weightedSampleStream.collect(Collectors.toList());
         }
     }
 
@@ -297,7 +308,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
      */
     @Override
     public void runInference() {
-       this.computeWeightedSampleStream();
+        if(keepDataOnMemory) computeWeightedSampleStream(true);
     }
 
 

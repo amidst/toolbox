@@ -186,7 +186,9 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             this.vmpTime0.runInference();
             this.timeID=0;
 
-            this.vmpTime0.getNodes().stream().filter(node -> !node.isObserved()).forEach(node -> {
+            this.vmpTime0.getNodes().stream()
+                    .filter(node -> !node.isObserved())
+                    .forEach(node -> {
                 Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(node.getMainVariable());
                 moveNodeQDist(this.vmpTimeT.getNodeOfVar(temporalClone), node);
             });
@@ -239,7 +241,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        String file = "./datasets/bank_data_train_small.arff";
+        String file = "./datasets/bank_data_train.arff";
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
@@ -250,13 +252,6 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
         file = "./datasets/bank_data_predict.arff";
         data = DynamicDataStreamLoader.loadFromFile(file);
-
-
-        // The value of the timeWindow must be sampleSize-1 at maximum
-        int timeSlices = 9;
-
-
-        System.out.println("Computing Probabilities of Defaulting for 10 clients using Hugin API:\n");
 
 
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new DynamicVMP());
@@ -276,7 +271,7 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             InferenceEngineForDBN.addDynamicEvidence(instance);
             InferenceEngineForDBN.runInference();
             dist = InferenceEngineForDBN.getFilteredPosterior(defaultVar);
-            distAhead = InferenceEngineForDBN.getPredictivePosterior(defaultVar,1);
+            distAhead = InferenceEngineForDBN.getPredictivePosterior(defaultVar,2);
         }
     }
 }
