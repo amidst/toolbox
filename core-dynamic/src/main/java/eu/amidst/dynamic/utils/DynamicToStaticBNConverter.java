@@ -73,7 +73,7 @@ public class DynamicToStaticBNConverter {
                     dynamicDAG.getParentSetTime0(dynVar).getParents().stream().forEach(parentaux2 -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentaux2.getName() + "_t0")));
                 } else {
                     final int final_i=i;
-                    dynamicDAG.getParentSetTimeT(dynVar).getParents().stream().filter(parentVar -> parentVar.isInterfaceVariable()).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentVar.getName().replace("Interface", "t" + Integer.toString(final_i - 1)))));
+                    dynamicDAG.getParentSetTimeT(dynVar).getParents().stream().filter(parentVar -> parentVar.isInterfaceVariable()).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentVar.getName().replace("_Interface", "_t" + Integer.toString(final_i - 1)))));
                     dynamicDAG.getParentSetTimeT(dynVar).getParents().stream().filter(parentVar -> !parentVar.isInterfaceVariable()).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentVar.getName() + "_t" + Integer.toString(final_i))));
                 }
             }
@@ -105,7 +105,7 @@ public class DynamicToStaticBNConverter {
                     cdist = Serialization.deepCopy(dbn.getConditionalDistributionsTimeT().get(j));
                     cdist.getConditioningVariables().stream().forEachOrdered(cdvar -> {
                         parentList.add(((cdvar.isInterfaceVariable() || (cdvar.getName().contains("_t"))) ?
-                                variables.getVariableByName(cdvar.getName().replace("_Interface", "_t" + Integer.toString(final_i - 1)).replaceAll("_t.", "_t" + Integer.toString(final_i - 1))) :
+                                variables.getVariableByName(cdvar.getName().replace("_Interface", "_t" + Integer.toString(final_i - 1))) :
                                 variables.getVariableByName(cdvar.getName() + "_t" + Integer.toString(final_i))));
                     });
                 }
