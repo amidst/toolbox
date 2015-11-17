@@ -35,7 +35,7 @@ public class HuginInferenceExample {
         Variable varW = bn.getVariables().getVariableByName("W");
 
         //Create an instance of a inference algorithm.
-        // In this case, the ImportanceSampling class is used.
+        // In this case, a HUGIN exact algorithm for inference is used.
         InferenceAlgorithm inferenceAlgorithm = new HuginInference();
         //Then, we set the BN model
         inferenceAlgorithm.setModel(bn);
