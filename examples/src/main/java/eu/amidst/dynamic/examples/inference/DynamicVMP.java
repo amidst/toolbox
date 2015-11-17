@@ -21,12 +21,14 @@ public class DynamicVMP {
 
         Random random = new Random(1);
 
+        //We first generate a dynamic Bayesian network (NB structure, only class is temporally linked)
         DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfStates(3);
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random,2,false);
 
         //TODO Fix so that it can work with Normal variables as well
+        //We add temporal links (1st order Markov Model) in the discrete predictive variables
         dbn.getDynamicVariables().getListOfDynamicVariables().stream()
                 .filter(v -> !v.getName().equalsIgnoreCase("classVar"))
                 .filter(v -> !v.isNormal())
@@ -34,25 +36,35 @@ public class DynamicVMP {
                     dbn.getDynamicDAG().getParentSetTimeT(v).addParent(varLinkInterface);
         });
 
+        //We initialize the parameters of the network randomly
         dbn.randomInitialization(random);
 
+        //We create a dynamic dataset for prediction
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(dbn);
-
         DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(1,10000);
 
+        //We select the target variable for inference, in this case the class variable
         Variable classVar = dbn.getDynamicVariables().getVariableByName("ClassVar");
 
-        UnivariateDistribution posterior = null;
+        //We select DynamicVMP as the Inference Algorithm
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new eu.amidst.dynamic.inference.DynamicVMP());
+        //Then, we set the DBN model
         InferenceEngineForDBN.setModel(dbn);
 
+        UnivariateDistribution posterior = null;
         for (DynamicDataInstance instance : dataPredict) {
+            //The InferenceEngineForDBN must be reset at the begining of each Sequence.
             if (instance.getTimeID()==0 && posterior != null) {
                 InferenceEngineForDBN.reset();
             }
+            //We also set the evidence.
             instance.setValue(classVar, Utils.missingValue());
             InferenceEngineForDBN.addDynamicEvidence(instance);
+
+            //Then we run inference
             InferenceEngineForDBN.runInference();
+
+            //Then we query the posterior of the target variable
             posterior = InferenceEngineForDBN.getFilteredPosterior(classVar);
         }
     }
