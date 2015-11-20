@@ -205,6 +205,7 @@ public class BCC {
         //Step 4. We learn the model and print the results.
         System.out.println("------------------------------LEARNING---------------------------------");
         BayesianNetwork bayesianNetwork = BCC.learnModel(parallelSVB);
+        System.out.println("\n\nLearnt Bayesian network:\n\n");
         System.out.println(bayesianNetwork.toString());
         System.out.println("-----------------------------------------------------------------------");
 

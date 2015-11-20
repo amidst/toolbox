@@ -14,6 +14,7 @@ package eu.amidst.flinklink.core.utils;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.java.DataSet;
@@ -52,6 +53,23 @@ public class BayesianNetworkSampler {
     public void setSeed(int seed) {
         this.seed = seed;
     }
+
+
+    /**
+     * Sets a given {@link Variable} object as hidden.
+     * @param var a given {@link Variable} object.
+     */
+    public void setHiddenVar(Variable var) {
+        this.localSampler.setHiddenVar(var);
+    }
+
+    /**
+     * Sets a given {@link Variable} object as noisy.
+     * @param var a given {@link Variable} object.
+     * @param noiseProb a double that represents the noise probability.
+     */
+    public void setMARVar(Variable var, double noiseProb){ this.localSampler.setMARVar(var, noiseProb);}
+
 
     public eu.amidst.core.utils.BayesianNetworkSampler getLocalSampler() {
         return localSampler;

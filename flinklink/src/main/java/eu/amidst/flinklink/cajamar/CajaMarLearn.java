@@ -41,15 +41,13 @@ import org.apache.flink.api.common.operators.base.JoinOperatorBase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.operators.IterativeDataSet;
+import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -103,6 +101,12 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
                                         .collect(Collectors.toList());
 
         this.dataPosteriorDataSet = this.parallelVBTime0.computePosteriorAssignment(vars);
+
+        try {
+            this.dataPosteriorDataSet.first(100).print();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public DataSet<DataPosteriorAssignment> getDataPosteriorDataSet() {
@@ -116,16 +120,15 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
             //System.out.println("DATA POSTERIOR: " + dataPosteriorDataSet.count());
 
             /********************************  JOIN DATA ************************************/
-            DataSet<DataPosteriorAssignment> dataPosteriorInstanceDataSet = this.joinData(data.getDataSet());
+            DataSet<DataPosteriorAssignment> dataPosteriorInstanceDataSet = this.joinData2(data.getDataSet());
             /**************************************************************************/
 
             //System.out.println("DATA INSTANCE: " + dataPosteriorInstanceDataSet.count());
 
             /********************************  ITERATIVE VMP ************************************/
             CompoundVector parameterPrior = this.svbTimeT.getNaturalParameterPrior();
-            CompoundVector zeroedVector = CompoundVector.newZeroedVector(parameterPrior);
 
-            DataSet<CompoundVector> paramSet = data.getDataSet().getExecutionEnvironment().fromElements(zeroedVector);
+            DataSet<CompoundVector> paramSet = data.getDataSet().getExecutionEnvironment().fromElements(parameterPrior);
 
 
             // set number of bulk iterations for KMeans algorithm
@@ -135,10 +138,16 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
             Configuration config = new Configuration();
             config.setString(eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm.BN_NAME, this.dagTimeT.getName());
             config.setBytes(ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
-            config.setBytes(ParallelVB.PRIOR, Serialization.serializeObject(parameterPrior));
             config.setBytes(LATENT_INTERFACE_VARIABLE_NAMES, Serialization.serializeObject(this.latentInterfaceVariablesNames));
 
-            DataSet<CompoundVector> newparamSet = ConversionToBatches.toBatches(dataPosteriorInstanceDataSet, this.batchSize)
+            List<DataPosteriorAssignment> emtpyBatch = new ArrayList<DataPosteriorAssignment>();
+            DataSet<List<DataPosteriorAssignment>> unionData =
+                    ConversionToBatches.toBatches(dataPosteriorInstanceDataSet, this.batchSize)
+                            .union(data.getDataSet().getExecutionEnvironment().fromCollection(Arrays.asList(emtpyBatch),
+                                    TypeExtractor.getForClass((Class<List<DataPosteriorAssignment>>) Class.forName("java.util.List"))));
+
+
+            DataSet<CompoundVector> newparamSet = unionData
                     .map(new CajaMarLearn.ParallelVBMap(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables()))
                     .withParameters(config)
                     .withBroadcastSet(loop, "VB_PARAMS_" + this.dagTimeT.getName())
@@ -164,6 +173,9 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
                                         .flatMap(new CajaMarLearnMapInferenceAssignment(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables()))
                                         .withParameters(config);
             /**************************************************************************/
+
+            this.dataPosteriorDataSet.first(100).print();
+
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);
         }
@@ -176,7 +188,7 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
 
     protected DataSet<DataPosteriorAssignment> joinData(DataSet<DynamicDataInstance> data){
         //TODO: Define which is the best join strategy!!!!
-        DataSet<DataPosteriorInstance>  dataJoined = data.join(dataPosteriorDataSet, JoinOperatorBase.JoinHint.REPARTITION_SORT_MERGE)
+        DataSet<DataPosteriorInstance>  dataJoined = data.join(dataPosteriorDataSet, JoinOperatorBase.JoinHint.REPARTITION_HASH_FIRST)
                 .where(new KeySelector<DynamicDataInstance, Long>() {
                     @Override
                     public Long getKey(DynamicDataInstance value) throws Exception {
@@ -190,6 +202,29 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
                 }).with(new JoinFunction<DynamicDataInstance, DataPosteriorAssignment, DataPosteriorInstance>() {
                     @Override
                     public DataPosteriorInstance join(DynamicDataInstance dynamicDataInstance, DataPosteriorAssignment dataPosterior) throws Exception {
+                        return new DataPosteriorInstance(dataPosterior, dynamicDataInstance);
+                    }
+                });
+
+        return this.translate(dataJoined);
+    }
+
+    protected DataSet<DataPosteriorAssignment> joinData2(DataSet<DynamicDataInstance> data){
+        //TODO: Define which is the best join strategy!!!!
+        DataSet<DataPosteriorInstance>  dataJoined = dataPosteriorDataSet.join(data, JoinOperatorBase.JoinHint.REPARTITION_HASH_FIRST)
+                .where(new KeySelector<DataPosteriorAssignment, Long>() {
+                    @Override
+                    public Long getKey(DataPosteriorAssignment value) throws Exception {
+                        return value.getPosterior().getId();
+                    }
+                }).equalTo(new KeySelector<DynamicDataInstance, Long>() {
+                    @Override
+                    public Long getKey(DynamicDataInstance value) throws Exception {
+                        return value.getSequenceID();
+                    }
+                }).with(new JoinFunction<DataPosteriorAssignment,DynamicDataInstance, DataPosteriorInstance>() {
+                    @Override
+                    public DataPosteriorInstance join(DataPosteriorAssignment dataPosterior, DynamicDataInstance dynamicDataInstance) throws Exception {
                         return new DataPosteriorInstance(dataPosterior, dynamicDataInstance);
                     }
                 });
@@ -212,6 +247,7 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
     @Override
     public void initLearning() {
         this.parallelVBTime0 = new ParallelVB();
+        this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setMaxIter(1000);
         this.parallelVBTime0.setBatchSize(this.batchSize);
         this.parallelVBTime0.setGlobalThreshold(this.globalThreshold);
         this.parallelVBTime0.setMaximumGlobalIterations(this.maximumGlobalIterations);
@@ -221,6 +257,7 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
         this.parallelVBTime0.initLearning();
 
         this.svbTimeT = new SVB();
+        this.svbTimeT.getPlateuStructure().getVMP().setMaxIter(1000);
         this.svbTimeT.setWindowsSize(this.batchSize);
         this.svbTimeT.setOutput(this.output);
         this.svbTimeT.setSeed(this.seed);
@@ -521,31 +558,34 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
         @Override
         public CompoundVector map(List<DataPosteriorAssignment> data) throws Exception {
 
-
-            for (int i = 0; i < data.size(); i++) {
-                for (Variable latentVariable : latentInterfaceVariables) {
-                    DataPosteriorAssignment dataPosteriorAssignment = data.get(i);
-                    if (!dataPosteriorAssignment.isObserved(latentVariable)){
-                        UnivariateDistribution dist = dataPosteriorAssignment.getPosterior().getPosterior(latentVariable);
-                        Variable interfaceVariable = this.svb.getDAG().getVariables().getVariableByName(latentVariable.getName() + DynamicVariables.INTERFACE_SUFFIX);
-                        this.svb.getPlateuStructure().getNodeOfVar(latentVariable, i).setPDist(dist.toEFUnivariateDistribution().deepCopy(interfaceVariable));
-                        this.svb.getPlateuStructure().getNodeOfVar(latentVariable, i).setAssignment(null);
+            if (data.size()==0) {
+                return this.svb.getNaturalParameterPrior();
+            }else{
+                for (int i = 0; i < data.size(); i++) {
+                    for (Variable latentVariable : latentInterfaceVariables) {
+                        DataPosteriorAssignment dataPosteriorAssignment = data.get(i);
+                        if (!dataPosteriorAssignment.isObserved(latentVariable)) {
+                            UnivariateDistribution dist = dataPosteriorAssignment.getPosterior().getPosterior(latentVariable);
+                            Variable interfaceVariable = this.svb.getDAG().getVariables().getVariableByName(latentVariable.getName() + DynamicVariables.INTERFACE_SUFFIX);
+                            this.svb.getPlateuStructure().getNodeOfVar(latentVariable, i).setPDist(dist.toEFUnivariateDistribution().deepCopy(interfaceVariable));
+                            this.svb.getPlateuStructure().getNodeOfVar(latentVariable, i).setAssignment(null);
+                        }
                     }
                 }
+
+                data.get(0).getAssignment().getVariables();
+
+                DataOnMemory<DataInstance> dataBatch = new DataOnMemoryListContainer<DataInstance>(
+                        attributes,
+                        data.stream()
+                                .map(d ->
+                                        new DataInstanceFromAssignment(d.getPosterior().getId(), d.getAssignment(), attributes, variables))
+                                .collect(Collectors.toList())
+                );
+                SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
+                elbo.aggregate(out.getElbo());
+                return out.getVector();
             }
-
-            data.get(0).getAssignment().getVariables();
-
-            DataOnMemory<DataInstance> dataBatch = new DataOnMemoryListContainer<DataInstance>(
-                    attributes,
-                    data.stream()
-                            .map(d ->
-                            new DataInstanceFromAssignment(d.getPosterior().getId(), d.getAssignment(),attributes,variables))
-                            .collect(Collectors.toList())
-            );
-            SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
-            elbo.aggregate(out.getElbo());
-            return out.getVector();
         }
 
         @Override
@@ -553,11 +593,9 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
             super.open(parameters);
             String bnName = parameters.getString(ParallelVB.BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(ParallelVB.SVB, null));
-            CompoundVector parameterPrior = Serialization.deserializeObject(parameters.getBytes(ParallelVB.PRIOR, null));
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
-            parameterPrior.sum(updatedPrior);
-            svb.updateNaturalParameterPrior(parameterPrior);
+            svb.updateNaturalParameterPrior(updatedPrior);
 
             List<String> names = Serialization.deserializeObject(parameters.getBytes(LATENT_INTERFACE_VARIABLE_NAMES, null));
             latentInterfaceVariables = names.stream().map(name -> svb.getDAG().getVariables().getVariableByName(name)).collect(Collectors.toList());
