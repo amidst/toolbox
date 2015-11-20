@@ -30,9 +30,7 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,11 +47,33 @@ public class DBNSampler {
     int seed = 0;
     private int batchSize;
 
+    /** Represents a {@code Map} containing the hidden variables. */
+    private Map<Variable, Boolean> hiddenVars = new HashMap();
+
+    /** Represents a {@code Map} containing the noisy variables. */
+    private Map<Variable, Double> marNoise = new HashMap();
+
+
     public DBNSampler(DynamicBayesianNetwork dbn) {
         this.dbn = dbn;
         this.bnTime0 = dbn.toBayesianNetworkTime0();
         this.bnTimeT = dbn.toBayesianNetworkTimeT();
     }
+
+    /**
+     * Sets a given {@link Variable} object as hidden.
+     * @param var a given {@link Variable} object.
+     */
+    public void setHiddenVar(Variable var) {
+        this.hiddenVars.put(var,true);
+    }
+
+    /**
+     * Sets a given {@link Variable} object as noisy.
+     * @param var a given {@link Variable} object.
+     * @param noiseProb a double that represents the noise probability.
+     */
+    public void setMARVar(Variable var, double noiseProb){ this.marNoise.put(var,noiseProb);}
 
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
@@ -70,6 +90,9 @@ public class DBNSampler {
     public DataFlink<DynamicDataInstance> cascadingSample(DataFlink<DynamicDataInstance> previousSample){
         if (previousSample==null){
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(this.bnTime0);
+            this.hiddenVars.keySet().stream().forEach(var -> sampler.setHiddenVar(bnTime0.getVariables().getVariableByName(var.getName())));
+            this.marNoise.entrySet().stream().forEach(e -> sampler.setMARVar(bnTime0.getVariables().getVariableByName(e.getKey().getName()),e.getValue()));
+
             sampler.setSeed(this.seed);
             sampler.setBatchSize(this.batchSize);
             DataFlink<DataInstance> data= sampler.sampleToDataFlink(this.nSamples);
@@ -95,7 +118,7 @@ public class DBNSampler {
 
         }else{
 
-            DataSet<DynamicDataInstance> data = previousSample.getDataSet().mapPartition(new MAPDynamicInstancesSampler(this.bnTimeT, newAttributes, seed));
+            DataSet<DynamicDataInstance> data = previousSample.getDataSet().mapPartition(new MAPDynamicInstancesSampler(this.bnTimeT, newAttributes, this.hiddenVars, this.marNoise, seed));
 
             return new DataFlink<DynamicDataInstance>() {
 
@@ -128,11 +151,16 @@ public class DBNSampler {
         Random random;
         Attributes attributes;
         int seed;
+        Map<Variable,Boolean> hiddenVars;
+        Map<Variable,Double> marVars;
 
-        public MAPDynamicInstancesSampler(BayesianNetwork bn, Attributes attributes, int seed) {
+
+        public MAPDynamicInstancesSampler(BayesianNetwork bn, Attributes attributes, Map<Variable,Boolean> hiddenVars, Map<Variable,Double> marVars,  int seed) {
             this.bn = bn;
             this.seed = seed;
             this.attributes = attributes;
+            this.hiddenVars = hiddenVars;
+            this.marVars = marVars;
             this.causalOrder = Utils.getCausalOrder(this.bn.getDAG());
         }
 
@@ -151,6 +179,11 @@ public class DBNSampler {
                     pastAssignment.setValue(bn.getVariables().getVariableByName(att.getName()+ DynamicVariables.INTERFACE_SUFFIX),d.getValue(att));
                 }
                 Assignment assignment = sample(bn, causalOrder, random, pastAssignment);
+                hiddenVars.keySet().stream().forEach(var -> assignment.setValue(bn.getVariables().getVariableByName(var.getName()),Utils.missingValue()));
+                marVars.entrySet().forEach(e -> {
+                    if (random.nextDouble()<e.getValue())
+                        assignment.setValue(bn.getVariables().getVariableByName(e.getKey().getName()),Utils.missingValue());
+                });
                 DataInstance dataInstanceNew = new DataStreamFromStreamOfAssignments.DataInstanceFromAssignment(assignment,attributes, bn.getVariables().getListOfVariables());
                 DynamicDataInstanceWrapper wrapper = new DynamicDataInstanceWrapper(dataInstanceNew,attributes,d.getSequenceID(), d.getTimeID()+1);
                 out.collect(wrapper);
