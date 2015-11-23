@@ -45,7 +45,7 @@ public class HashMapDynamicAssignment implements DynamicAssignment {
 
     @Override
     public Set<Variable> getVariables() {
-        return null;
+        return assignment.keySet();
     }
 
     @Override
