@@ -1,6 +1,8 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -11,36 +13,75 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * Created by dario on 11/11/15.
  */
-public class DynamicMAPInference {
+        public class DynamicMAPInference {
 
-    private DynamicBayesianNetwork model;
-    private BayesianNetwork staticEvenModel, staticOddModel;
+            private DynamicBayesianNetwork model;
+            private BayesianNetwork staticEvenModel, staticOddModel;
 
-    private int nTimeSteps = 2;
+            private int nTimeSteps = 2;
 
-    private Variable MAPvariable;
-    private String MAPvarName;
+            private Variable MAPvariable;
+            private String MAPvarName;
 
-    private DynamicAssignment evidence;
-    private boolean parallelMode = true;
+            private List<DynamicAssignment> evidence;
+            private Assignment staticEvidence;
 
-    private DynamicAssignment MAPestimate;
-    private double MAPestimateLogProbability;
+            private boolean parallelMode = true;
 
-    String groupedClassName = "==GROUPED_CLASS==";
+            private DynamicAssignment MAPestimate;
+            private double MAPestimateLogProbability;
 
-    public void setEvidence(DynamicAssignment evidence) {
-        this.evidence = evidence;
+            String groupedClassName = "==GROUPED_CLASS==";
+
+            public void setEvidence(List<DynamicAssignment> evidence) {
+
+                if (staticEvenModel==null || staticOddModel==null) {
+                    System.out.println("Error: Even and/or odd model have not been initialized");
+                    System.exit(-25);
+                }
+                long sequenceID = evidence.get(0).getSequenceID();
+                for(DynamicAssignment dynAssig : evidence) {
+                    if (dynAssig.getSequenceID()!=sequenceID) {
+                        System.out.println("Error: Different sequence IDs in the evidence");
+                        System.exit(-15);
+                    }
+                    if (dynAssig.getTimeID()>=nTimeSteps || dynAssig.getTimeID()<0) {
+                        System.out.println("Error: Evidence time ID out of the range");
+                        System.exit(-20);
+                    }
+                    if (!Double.isNaN(dynAssig.getValue(MAPvariable))) {
+                        System.out.println("Error: MAP variable should not be in the evidence");
+                        System.exit(-30);
+                    }
+                }
+                this.evidence = evidence;
+
+                staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+
+                evidence.stream().forEach(dynamicAssignment -> {
+                    int time = (int) dynamicAssignment.getTimeID();
+                    Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+                    for (Variable dynVariable : dynAssigVariables) {
+                        Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+                        double varValue = dynamicAssignment.getValue(dynVariable);
+                        staticEvidence.setValue(staticVariable, varValue);
+                    }
+
+                });
+                System.out.println(staticEvidence.outputString(staticEvenModel.getVariables().getListOfVariables()));
     }
 
     public void setModel(DynamicBayesianNetwork model) {
@@ -83,6 +124,16 @@ public class DynamicMAPInference {
 //        dynamicVMP.setModel(this.model);
 //        dynamicVMP.runInference();
 //        UnivariateDistribution posterior = dynamicVMP.getPredictivePosterior(this.MAPvariable, this.nTimesSteps);
+
+//        VMP vmpEvenModel = new VMP();
+//        vmpEvenModel.setModel(staticEvenModel);
+//        vmpEvenModel.setEvidence(staticEvidence);
+//        vmpEvenModel.runInference();
+
+        VMP vmpOddModel = new VMP();
+        vmpOddModel.setModel(staticOddModel);
+        vmpOddModel.setEvidence(staticEvidence);
+        vmpOddModel.runInference();
 
     }
 
@@ -203,6 +254,17 @@ public class DynamicMAPInference {
 
                     });
                 });
+//        System.out.println("\n" +
+//                "\n\n" +
+//                "\n\n" +
+//                "\n\n" +
+//                "\n\n" +
+//                "\n\n" +
+//                "\n\n" +
+//                "\n\n" +
+//                "\n\n" +
+//                even_partition +
+//                "\n" + dag.toString() + "\n\n\n\n\n");
         return dag;
     }
 
@@ -240,7 +302,8 @@ public class DynamicMAPInference {
         for (int m = 0; m < nStatesStaticVarParent; m++) {
             double y_jminus2 = m % dynVar.getNumberOfStates();
 
-            double[] probs1 = new double[staticVar.getNumberOfStates()];
+            double[] probs1  = new double[staticVar.getNumberOfStates()];
+
             int probs_index1 = 0;
 
             assignment0 = new HashMapAssignment(1);
@@ -258,7 +321,7 @@ public class DynamicMAPInference {
                 assignment1.setValue(dynVar.getInterfaceVariable(), y_jminus1);
                 uniDist_uniDist_y_j = conDistT.getUnivariateDistribution(assignment1);
 
-                if (staticVar.getNumberOfStates()>nStatesStaticVarParent) {
+                if (staticVar.getNumberOfStates() >= nStatesStaticVarParent && nTimeSteps>2) {
                     for (int l = 0; l < dynVar.getNumberOfStates(); l++) {
                         double y_j = l;
 
@@ -272,6 +335,7 @@ public class DynamicMAPInference {
                     probs_index1++;
                 }
             }
+            //System.out.println(Arrays.toString(probs1));
             multinomial = new Multinomial(staticVar);
             multinomial.setProbabilities(probs1);
             multinomial_multinomialParents.setMultinomial(m, multinomial);
@@ -563,6 +627,10 @@ public class DynamicMAPInference {
 //                            System.out.println(dynamicParentsConfiguration.outputString());
                             //UnivariateDistribution uniDist = dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration);
                             Normal_MultinomialNormalParents clgDist = dynamicConDist.toEFConditionalDistribution().toConditionalDistribution();
+                            //ConditionalLinearGaussian clgaux = clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration);
+                            //clgaux.setConditioningVariables(parentList.stream().filter(parent -> !parent.isMultinomial()).collect(Collectors.toList()));
+                            //ConditionalLinearGaussian clgDist = dynamicConDist.toEFConditionalDistribution().toConditionalDistribution().;
+
 //                            System.out.println(clgDist.toString());
 //                            System.out.println(clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration).toString());
                             //System.out.println(dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration).toString());
@@ -687,11 +755,14 @@ public class DynamicMAPInference {
 //                            System.out.println(dynamicParentsConfiguration.outputString());
                             //UnivariateDistribution uniDist = dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration);
                             Normal_MultinomialNormalParents clgDist = dynamicConDist.toEFConditionalDistribution().toConditionalDistribution();
+                            ConditionalLinearGaussian clgAux = clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration);
+                            clgAux.setConditioningVariables(parentList.stream().filter(parent -> !parent.isMultinomial()).collect(Collectors.toList()));
+
 //                            System.out.println(clgDist.toString());
 //                            System.out.println(clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration).toString());
                             //System.out.println(dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration).toString());
 
-                            staticConDist.setBaseDistribution(staticParentsConfigurations, clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration));
+                            staticConDist.setBaseDistribution(staticParentsConfigurations, clgAux.toEFConditionalDistribution().toConditionalDistribution());
                         }
                         bn.setConditionalDistribution(staticVar2, staticConDist);
                     }
@@ -743,7 +814,7 @@ public class DynamicMAPInference {
         BayesianNetwork bn;
         DynamicVariables dynamicVariables = model.getDynamicVariables();
 
-        System.out.println("EVEN PARTITION");
+        //System.out.println("EVEN PARTITION");
         variables = obtainReplicatedStaticVariables(dynamicVariables, true);
         //variables.forEach(var -> System.out.println(var.getName()));
 
@@ -753,7 +824,7 @@ public class DynamicMAPInference {
 
         bn = this.obtainStaticGroupedClassBayesianNetwork(dag, variables, true);
 
-        System.out.println(bn.toString());
+        //System.out.println(bn.toString());
         this.staticEvenModel = bn;
         return bn;
     }
@@ -768,7 +839,7 @@ public class DynamicMAPInference {
         BayesianNetwork bn;
         DynamicVariables dynamicVariables = model.getDynamicVariables();
 
-        System.out.println("ODD PARTITION");
+        //System.out.println("ODD PARTITION");
         variables = obtainReplicatedStaticVariables(dynamicVariables, false);
         //variables.forEach(var -> System.out.println(var.getName()));
 
@@ -777,7 +848,7 @@ public class DynamicMAPInference {
 
         bn = this.obtainStaticGroupedClassBayesianNetwork(dag, variables, false);
 
-        System.out.println(bn.toString());
+        //System.out.println(bn.toString());
         this.staticOddModel = bn;
         return bn;
     }
@@ -789,25 +860,15 @@ public class DynamicMAPInference {
 //        String file = "./networks/CajamarDBN.dbn";
 //        DynamicBayesianNetwork cajamarDBN = DynamicBayesianNetworkLoader.loadFromFile(file);
 //
-//        DynamicMAPInference dMAP = new DynamicMAPInference();
-//        dMAP.setModel(cajamarDBN);
-//        dMAP.setNumberOfTimeSteps(6);
-////        //dMAP.runInference();
+//        DynamicMAPInference dynMAP = new DynamicMAPInference();
+//        dynMAP.setModel(cajamarDBN);
+//        dynMAP.setNumberOfTimeSteps(6);
+////        //dynMAP.runInference();
 ////
-////        List<Variable> vars = cajamarDBN.getDynamicVariables().getListOfDynamicVariables();
-////
-////        Variable varEvidence1 = vars.get(1);
-////        double varEvidence1value=0;
-////        Variable varEvidence2 = vars.get(2);
-////        double varEvidence2value=1;
+
 ////
 ////
 ////
-////        HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(3);
-////        dynAssignment.setSequenceID(2343);
-////        dynAssignment.setTimeID(0);
-////        dynAssignment.setValue(varEvidence1, varEvidence1value);
-////        dynAssignment.setValue(varEvidence2,varEvidence2value);
 ////
 ////        cajamarDBN.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
 //
@@ -822,35 +883,100 @@ public class DynamicMAPInference {
 //        System.out.println(cajamarDBN.getDynamicDAG().toString());
 //
 //        Variable mapVariable = cajamarDBN.getDynamicVariables().getVariableByName("DEFAULT");
-//        dMAP.setMAPvariable(mapVariable);
-//        BayesianNetwork test = dMAP.getDynamicMAPEvenModel();
+//        dynMAP.setMAPvariable(mapVariable);
+//        BayesianNetwork test = dynMAP.getDynamicMAPEvenModel();
 //        //System.out.println(test.getDAG().toString());
 
 
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(4);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
-        DynamicBayesianNetworkGenerator.setNumberOfStates(3);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
         DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
 
-        DynamicBayesianNetwork dynamicNaiveBayes = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
 
         System.out.println("ORIGINAL DYNAMIC DAG:");
 
         //System.out.println(dynamicNaiveBayes.getDynamicDAG().toString());
-        System.out.println(dynamicNaiveBayes.toString());
+        System.out.println(dynamicBayesianNetwork.toString());
         System.out.println();
         //dynamicNaiveBayes.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
         //dynamicNaiveBayes.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
 
 
+        int nTimeSteps = 2;
 
-        DynamicMAPInference dMAP = new DynamicMAPInference();
-        dMAP.setModel(dynamicNaiveBayes);
-        dMAP.setNumberOfTimeSteps(6);
 
-        dMAP.setMAPvariable(dynamicNaiveBayes.getDynamicVariables().getVariableByName("ClassVar"));
+        DynamicMAPInference dynMAP = new DynamicMAPInference();
+        dynMAP.setModel(dynamicBayesianNetwork);
+        dynMAP.setNumberOfTimeSteps(nTimeSteps);
 
-        dMAP.getDynamicMAPEvenModel();
-        dMAP.getDynamicMAPOddModel();
+        dynMAP.setMAPvariable(dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar"));
+
+        BayesianNetwork evenModel = dynMAP.getDynamicMAPEvenModel();
+        BayesianNetworkWriter.saveToFile(evenModel,"dynamicMAPhybridEvenModel.bn");
+
+        BayesianNetwork oddModel = dynMAP.getDynamicMAPOddModel();
+        BayesianNetworkWriter.saveToFile(oddModel,"dynamicMAPhybridOddModel.bn");
+
+        System.out.println(evenModel.toString());
+        System.out.println();
+
+        System.out.println(oddModel.toString());
+        System.out.println();
+
+        System.out.println(evenModel.getDAG().toString());
+
+        //EF_BayesianNetwork efBN = new EF_BayesianNetwork(oddModel);
+        //efBN.getDistributionList().forEach(dist -> System.out.println(dist.toConditionalDistribution().toString()));
+
+        //System.out.println(oddModel.getDAG().toString());
+
+        /*
+         * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
+         */
+        List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
+
+        varsDynamicModel.forEach(var -> System.out.println("Var ID " + var.getVarID() + ": " + var.getName()));
+        int indexVarEvidence1 = 1;
+        int indexVarEvidence2 = 2;
+        int indexVarEvidence3 = 3;
+        Variable varEvidence1 = varsDynamicModel.get(indexVarEvidence1);
+        Variable varEvidence2 = varsDynamicModel.get(indexVarEvidence2);
+        Variable varEvidence3 = varsDynamicModel.get(indexVarEvidence3);
+
+        List<Variable> varsEvidence = new ArrayList<>(3);
+        varsEvidence.add(0,varEvidence1);
+        varsEvidence.add(1,varEvidence2);
+        varsEvidence.add(2,varEvidence3);
+
+        double varEvidenceValue;
+
+        Random random = new Random();
+        
+        List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
+
+        for (int t = 0; t < nTimeSteps; t++) {
+            HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+
+            for (int i = 0; i < varsEvidence.size(); i++) {
+
+                dynAssignment.setSequenceID(2343253);
+                dynAssignment.setTimeID(t);
+                Variable varEvidence = varsEvidence.get(i);
+
+                if (varEvidence.isMultinomial()) {
+                    varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
+                } else {
+                    varEvidenceValue = -5 + 10 * random.nextDouble();
+                }
+
+                dynAssignment.setValue(varEvidence, varEvidenceValue);
+            }
+            evidence.add(dynAssignment);
+        }
+
+        dynMAP.setEvidence(evidence);
+        dynMAP.runInference();
     }
 }
