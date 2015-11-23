@@ -2,7 +2,6 @@ package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -13,10 +12,8 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -120,6 +117,9 @@ import java.util.stream.IntStream;
 
     public void runInference() {
 
+        if (this.staticOddModel==null || this.staticEvenModel == null) {
+            return;
+        }
 //        DynamicVMP dynamicVMP = new DynamicVMP();
 //        dynamicVMP.setModel(this.model);
 //        dynamicVMP.runInference();
@@ -130,9 +130,10 @@ import java.util.stream.IntStream;
 //        vmpEvenModel.setEvidence(staticEvidence);
 //        vmpEvenModel.runInference();
 
+
         VMP vmpOddModel = new VMP();
         vmpOddModel.setModel(staticOddModel);
-        vmpOddModel.setEvidence(staticEvidence);
+        //vmpOddModel.setEvidence(staticEvidence);
         vmpOddModel.runInference();
 
     }
@@ -176,15 +177,23 @@ import java.util.stream.IntStream;
 
 
         // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
+        Variables staticVariables = dynamicVariables.toVariablesTimeT();
+        //staticVariables.forEach(var -> System.out.println(var.getName() + var.getClass().toString()));
+        //System.out.println("\n\n");
+
         dynamicVariables.getListOfDynamicVariables().stream()
                 .filter(var -> !var.equals(MAPvariable))
                 .forEach(dynVar ->
                                 IntStream.range(0, nTimeSteps).forEach(i -> {
-                                    VariableBuilder aux = dynVar.getVariableBuilder();
+                                    //VariableBuilder aux = dynVar.getVariableBuilder();
+                                    //aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
+                                    Variable newVar = staticVariables.getVariableByName(dynVar.getName());
+                                    VariableBuilder aux = newVar.getVariableBuilder();
                                     aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
                                     variables.newVariable(aux);
                                 })
                 );
+        variables.forEach(var -> System.out.println(var.getName() + ", " + var.getClass().toString()));
 
         return variables;
     }
@@ -375,6 +384,7 @@ import java.util.stream.IntStream;
         }
         else {
             multinomial = (Multinomial) conDist0;
+            multinomial.setVar(staticVar);
         }
         bn.setConditionalDistribution(staticVar, multinomial);
 
@@ -540,6 +550,7 @@ import java.util.stream.IntStream;
                 thisVarParents.add(indexMAPvariable, staticMAPVar1);
 
                 conditionalDistribution.setConditioningVariables(thisVarParents);
+                conditionalDistribution.setVar(staticVar1);
                 //System.out.println(conditionalDistribution.toString());
 
                 bn.setConditionalDistribution(staticVar1, conditionalDistribution);
@@ -682,51 +693,19 @@ import java.util.stream.IntStream;
 
                     ConditionalDistribution dynamicConDist = Serialization.deepCopy(model.getConditionalDistributionTimeT(dynVariable));
                     Variable staticVar2 = variables.getVariableByName(dynVariable.getName() + "_t" + Integer.toString(i));
+
                     List<Variable> parentList = bn.getDAG().getParentSet(staticVar2).getParents();
+                    List<Variable> multinomialParents = parentList.stream().filter(parent -> parent.isMultinomial()).collect(Collectors.toList());
 
-                    if (parentList.stream().allMatch(parent -> parent.isMultinomial())) {
-                        BaseDistribution_MultinomialParents staticConDist = new BaseDistribution_MultinomialParents(staticVar2, parentList); //= Serialization.deepCopy(bn.getConditionalDistribution(staticVar2));
+                    System.out.println("Variable " + staticVar2.getName() + " with " + parentList.size() + " parents");
 
-                        int nStatesParents = (int) Math.round(Math.exp(parentList.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
-                        for (int m = 0; m < nStatesParents; m++) {
-                            Assignment staticParentsConfigurations = MultinomialIndex.getVariableAssignmentFromIndex(parentList, m);
-                            Assignment dynamicParentsConfiguration = new HashMapAssignment(parentList.size());
-                            IntStream.range(0, parentList.size()).forEach(k -> {
-                                double parentValue = staticParentsConfigurations.getValue(parentList.get(k));
-                                String parentName;
-                                if (parentList.get(k).getName().contains(groupedClassName)) {
-                                    parentName = parentList.get(k).getName().replace(groupedClassName, MAPvarName).replaceFirst("_t.", "");
-                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+                    int nStatesMultinomialParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
 
-                                    double dynParentValue;
+                    if (staticVar2.isMultinomial()) {
+                        Multinomial_MultinomialParents staticVar2conDist = new Multinomial_MultinomialParents(staticVar2, multinomialParents);
 
-                                    if (i % 2 == 1) {
-                                        dynParentValue = parentValue / MAPvariable.getNumberOfStates();
-                                    } else {
-                                        dynParentValue = parentValue % MAPvariable.getNumberOfStates();
-                                    }
-                                    dynamicParentsConfiguration.setValue(dynParent, dynParentValue);
-                                } else {
-                                    parentName = parentList.get(k).getName().replaceFirst("_t.", "");
-                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
-                                    dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
-                                }
-                            });
-                            staticConDist.setBaseDistribution(staticParentsConfigurations, dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration));
-                        }
-                        bn.setConditionalDistribution(staticVar2, staticConDist);
-                    }
-                    else {
-                        List<Variable> multinomialParents = parentList.stream().filter(parent -> parent.isMultinomial()).collect(Collectors.toList());
-                        int nStatesParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
-                        //System.out.println(nStatesParents);
-
-                        BaseDistribution_MultinomialParents staticConDist = new BaseDistribution_MultinomialParents(staticVar2, multinomialParents);
-
-                        for (int m = 0; m < nStatesParents; m++) {
-
+                        for (int m = 0; m < nStatesMultinomialParents; m++) {
                             Assignment staticParentsConfigurations = MultinomialIndex.getVariableAssignmentFromIndex(multinomialParents, m);
-//                            System.out.println(staticParentsConfigurations.outputString());
                             Assignment dynamicParentsConfiguration = new HashMapAssignment(multinomialParents.size());
 
                             IntStream.range(0, multinomialParents.size()).forEach(k -> {
@@ -749,23 +728,162 @@ import java.util.stream.IntStream;
                                     Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
                                     dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
                                 }
-//                                System.out.println(parentName + ", " + parentValue);
                             });
-//                            System.out.println(dynamicConDist.toString());
-//                            System.out.println(dynamicParentsConfiguration.outputString());
-                            //UnivariateDistribution uniDist = dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration);
-                            Normal_MultinomialNormalParents clgDist = dynamicConDist.toEFConditionalDistribution().toConditionalDistribution();
-                            ConditionalLinearGaussian clgAux = clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration);
-                            clgAux.setConditioningVariables(parentList.stream().filter(parent -> !parent.isMultinomial()).collect(Collectors.toList()));
+                            Multinomial multinomial1 = (Multinomial)dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration);
+                            multinomial1.setVar(staticVar2);
+                            multinomial1.setConditioningVariables(multinomialParents);
 
-//                            System.out.println(clgDist.toString());
-//                            System.out.println(clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration).toString());
-                            //System.out.println(dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration).toString());
-
-                            staticConDist.setBaseDistribution(staticParentsConfigurations, clgAux.toEFConditionalDistribution().toConditionalDistribution());
+                            System.out.println(multinomial1.toString());
+                            multinomial1.getConditioningVariables().forEach(condVar -> condVar.getName());
+                            staticVar2conDist.setMultinomial(m, multinomial1);
                         }
-                        bn.setConditionalDistribution(staticVar2, staticConDist);
+                        bn.setConditionalDistribution(staticVar2, staticVar2conDist);
                     }
+                    else {
+                        Normal_MultinomialNormalParents staticVar2conDist = new Normal_MultinomialNormalParents(staticVar2,parentList);
+                        //staticVar2conDist = Serialization.deepCopy(bn.getConditionalDistribution(staticVar2));
+
+                        for (int m = 0; m < nStatesMultinomialParents; m++) {
+                            Assignment staticParentsConfigurations = MultinomialIndex.getVariableAssignmentFromIndex(multinomialParents, m);
+                            Assignment dynamicParentsConfiguration = new HashMapAssignment(multinomialParents.size());
+
+                            IntStream.range(0, multinomialParents.size()).forEach(k -> {
+                                double parentValue = staticParentsConfigurations.getValue(multinomialParents.get(k));
+                                String parentName;
+                                if (multinomialParents.get(k).getName().contains(groupedClassName)) {
+                                    parentName = multinomialParents.get(k).getName().replace(groupedClassName, MAPvarName).replaceFirst("_t.", "");
+                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+
+                                    double dynParentValue;
+
+                                    if (i % 2 == 1) {
+                                        dynParentValue = parentValue / MAPvariable.getNumberOfStates();
+                                    } else {
+                                        dynParentValue = parentValue % MAPvariable.getNumberOfStates();
+                                    }
+                                    dynamicParentsConfiguration.setValue(dynParent, dynParentValue);
+                                } else {
+                                    parentName = multinomialParents.get(k).getName().replaceFirst("_t.", "");
+                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+                                    dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
+                                }
+                            });
+
+                            Normal_MultinomialNormalParents N_MNP_aux = (Normal_MultinomialNormalParents) dynamicConDist;
+                            System.out.println(N_MNP_aux.getVariable().getName());
+                            //N_MNP_aux.setConditioningVariables(parentList);
+                            N_MNP_aux.getConditioningVariables().forEach(var -> System.out.println(var.getName() + ", " + var.getClass().getCanonicalName()));
+                            ConditionalLinearGaussian clg = N_MNP_aux.getNormal_NormalParentsDistribution(staticParentsConfigurations);
+                            clg.setConditioningVariables(parentList);
+                            clg.setVar(staticVar2);
+
+                            N_MNP_aux.getConditioningVariables().forEach(var -> var.getName());
+                            System.out.println(clg.toString());
+                            //clg.setConditioningVariables(parentList);
+//                            ConditionalLinearGaussian clgAux = clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration);
+                            //clgAux.setConditioningVariables(parentList.stream().filter(parent -> !parent.isMultinomial()).collect(Collectors.toList()));
+
+                            staticVar2conDist.setNormal_NormalParentsDistribution(m, clg);
+                        }
+                        bn.setConditionalDistribution(staticVar2, staticVar2conDist);
+                    }
+
+//                    if (parentList.stream().allMatch(parent -> parent.isMultinomial())) {
+//                        BaseDistribution_MultinomialParents staticConDist = new BaseDistribution_MultinomialParents(staticVar2, parentList); //= Serialization.deepCopy(bn.getConditionalDistribution(staticVar2));
+//
+//                        int nStatesParents = (int) Math.round(Math.exp(parentList.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
+//                        for (int m = 0; m < nStatesParents; m++) {
+//                            Assignment staticParentsConfigurations = MultinomialIndex.getVariableAssignmentFromIndex(parentList, m);
+//                            Assignment dynamicParentsConfiguration = new HashMapAssignment(parentList.size());
+//                            IntStream.range(0, parentList.size()).forEach(k -> {
+//                                double parentValue = staticParentsConfigurations.getValue(parentList.get(k));
+//                                String parentName;
+//                                if (parentList.get(k).getName().contains(groupedClassName)) {
+//                                    parentName = parentList.get(k).getName().replace(groupedClassName, MAPvarName).replaceFirst("_t.", "");
+//                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+//
+//                                    double dynParentValue;
+//
+//                                    if (i % 2 == 1) {
+//                                        dynParentValue = parentValue / MAPvariable.getNumberOfStates();
+//                                    } else {
+//                                        dynParentValue = parentValue % MAPvariable.getNumberOfStates();
+//                                    }
+//                                    dynamicParentsConfiguration.setValue(dynParent, dynParentValue);
+//                                }
+//                                else {
+//                                    parentName = parentList.get(k).getName().replaceFirst("_t.", "");
+//                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+//                                    dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
+//                                }
+//                            });
+//                            staticConDist.setBaseDistribution(staticParentsConfigurations, dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration));
+//                        }
+//                        bn.setConditionalDistribution(staticVar2, staticConDist);
+//                    }
+//                    else {
+//                        List<Variable> multinomialParents = parentList.stream().filter(parent -> parent.isMultinomial()).collect(Collectors.toList());
+//                        int nStatesParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
+//                        System.out.println(nStatesParents);
+//
+//                        parentList.forEach(parent -> System.out.println("Variable " + staticVar2.getName() + ", with parent " + parent.getName()));
+//                        BaseDistribution_MultinomialParents staticConDist = new BaseDistribution_MultinomialParents(staticVar2, parentList);
+//                        staticConDist.randomInitialization(new Random());
+//                        System.out.println();
+//                        System.out.println("Time " + i);
+//                        System.out.println(staticConDist.toString());
+//                        System.out.println();
+//                        for (int m = 0; m < nStatesParents; m++) {
+//
+//                            Assignment staticParentsConfigurations = MultinomialIndex.getVariableAssignmentFromIndex(multinomialParents, m);
+////                            System.out.println(staticParentsConfigurations.outputString());
+//                            Assignment dynamicParentsConfiguration = new HashMapAssignment(multinomialParents.size());
+//
+//                            IntStream.range(0, multinomialParents.size()).forEach(k -> {
+//                                double parentValue = staticParentsConfigurations.getValue(multinomialParents.get(k));
+//                                String parentName;
+//                                if (multinomialParents.get(k).getName().contains(groupedClassName)) {
+//                                    parentName = multinomialParents.get(k).getName().replace(groupedClassName, MAPvarName).replaceFirst("_t.", "");
+//                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+//
+//                                    double dynParentValue;
+//
+//                                    if (i % 2 == 1) {
+//                                        dynParentValue = parentValue / MAPvariable.getNumberOfStates();
+//                                    } else {
+//                                        dynParentValue = parentValue % MAPvariable.getNumberOfStates();
+//                                    }
+//                                    dynamicParentsConfiguration.setValue(dynParent, dynParentValue);
+//                                } else {
+//                                    parentName = multinomialParents.get(k).getName().replaceFirst("_t.", "");
+//                                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+//                                    dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
+//                                }
+////                                System.out.println(parentName + ", " + parentValue);
+//                            });
+////                            System.out.println(dynamicConDist.toString());
+//                            System.out.println(staticParentsConfigurations.outputString());
+//                            System.out.println(dynamicParentsConfiguration.outputString());
+//                            System.out.println(staticConDist.getNumberOfBaseDistributions() + ", " + Arrays.toString(staticConDist.getParameters()));
+//                            System.out.println();
+//                            staticConDist.setConditioningVariables(parentList);
+//
+//                            System.out.println(staticConDist.toString());
+//                            System.out.println();
+////                            UnivariateDistribution uniDist = dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration);
+//
+//                            Normal_MultinomialNormalParents clgDist = dynamicConDist.toEFConditionalDistribution().toConditionalDistribution();
+//                            ConditionalLinearGaussian clgAux = clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration);
+//                            clgAux.setConditioningVariables(parentList.stream().filter(parent -> !parent.isMultinomial()).collect(Collectors.toList()));
+//                            //clgAux.toEFConditionalDistribution().to
+////                            System.out.println(clgDist.toString());
+////                            System.out.println(clgDist.getNormal_NormalParentsDistribution(dynamicParentsConfiguration).toString());
+//                            //System.out.println(dynamicConDist.getUnivariateDistribution(dynamicParentsConfiguration).toString());
+//
+//                            staticConDist.setBaseDistribution(staticParentsConfigurations, clgAux.getNormal(dynamicParentsConfiguration));
+//                        }
+//                        bn.setConditionalDistribution(staticVar2, staticConDist);
+//                    }
 
                 });
             });
@@ -888,7 +1006,7 @@ import java.util.stream.IntStream;
 //        //System.out.println(test.getDAG().toString());
 
 
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfStates(2);
         DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
@@ -900,6 +1018,15 @@ import java.util.stream.IntStream;
         //System.out.println(dynamicNaiveBayes.getDynamicDAG().toString());
         System.out.println(dynamicBayesianNetwork.toString());
         System.out.println();
+
+//        dynamicBayesianNetwork.getConditionalDistributionsTimeT().forEach(cDist -> {
+//            System.out.println(cDist.getVariable().getName());
+//            cDist.getConditioningVariables().forEach(cDistCondVar -> System.out.println(cDistCondVar.getName() + ", " + cDistCondVar.getClass().getName()));
+//            System.out.println(cDist.getClass().getName());
+//            System.out.println(cDist.toString());
+//        });
+//        System.out.println();
+
         //dynamicNaiveBayes.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
         //dynamicNaiveBayes.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
 
@@ -914,18 +1041,18 @@ import java.util.stream.IntStream;
         dynMAP.setMAPvariable(dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar"));
 
         BayesianNetwork evenModel = dynMAP.getDynamicMAPEvenModel();
-        BayesianNetworkWriter.saveToFile(evenModel,"dynamicMAPhybridEvenModel.bn");
+//        BayesianNetworkWriter.saveToFile(evenModel,"dynamicMAPhybridEvenModel.bn");
 
         BayesianNetwork oddModel = dynMAP.getDynamicMAPOddModel();
-        BayesianNetworkWriter.saveToFile(oddModel,"dynamicMAPhybridOddModel.bn");
+//        BayesianNetworkWriter.saveToFile(oddModel,"dynamicMAPhybridOddModel.bn");
 
-        System.out.println(evenModel.toString());
-        System.out.println();
+//        System.out.println(evenModel.toString());
+//        System.out.println();
 
         System.out.println(oddModel.toString());
         System.out.println();
 
-        System.out.println(evenModel.getDAG().toString());
+        System.out.println(oddModel.getDAG().toString());
 
         //EF_BayesianNetwork efBN = new EF_BayesianNetwork(oddModel);
         //efBN.getDistributionList().forEach(dist -> System.out.println(dist.toConditionalDistribution().toString()));
@@ -935,48 +1062,67 @@ import java.util.stream.IntStream;
         /*
          * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
          */
-        List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
+//        List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
+//
+//        varsDynamicModel.forEach(var -> System.out.println("Var ID " + var.getVarID() + ": " + var.getName()));
+//        int indexVarEvidence1 = 1;
+//        int indexVarEvidence2 = 2;
+//        int indexVarEvidence3 = 3;
+//        Variable varEvidence1 = varsDynamicModel.get(indexVarEvidence1);
+//        Variable varEvidence2 = varsDynamicModel.get(indexVarEvidence2);
+//        Variable varEvidence3 = varsDynamicModel.get(indexVarEvidence3);
+//
+//        List<Variable> varsEvidence = new ArrayList<>(3);
+//        varsEvidence.add(0,varEvidence1);
+//        varsEvidence.add(1,varEvidence2);
+//        varsEvidence.add(2,varEvidence3);
+//
+//        double varEvidenceValue;
+//
+//        Random random = new Random();
+//
+//        List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
+//
+//        for (int t = 0; t < nTimeSteps; t++) {
+//            HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+//
+//            for (int i = 0; i < varsEvidence.size(); i++) {
+//
+//                dynAssignment.setSequenceID(2343253);
+//                dynAssignment.setTimeID(t);
+//                Variable varEvidence = varsEvidence.get(i);
+//
+//                if (varEvidence.isMultinomial()) {
+//                    varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
+//                } else {
+//                    varEvidenceValue = -5 + 10 * random.nextDouble();
+//                }
+//
+//                dynAssignment.setValue(varEvidence, varEvidenceValue);
+//            }
+//            evidence.add(dynAssignment);
+//        }
+//
+//        dynMAP.setEvidence(evidence);
 
-        varsDynamicModel.forEach(var -> System.out.println("Var ID " + var.getVarID() + ": " + var.getName()));
-        int indexVarEvidence1 = 1;
-        int indexVarEvidence2 = 2;
-        int indexVarEvidence3 = 3;
-        Variable varEvidence1 = varsDynamicModel.get(indexVarEvidence1);
-        Variable varEvidence2 = varsDynamicModel.get(indexVarEvidence2);
-        Variable varEvidence3 = varsDynamicModel.get(indexVarEvidence3);
 
-        List<Variable> varsEvidence = new ArrayList<>(3);
-        varsEvidence.add(0,varEvidence1);
-        varsEvidence.add(1,varEvidence2);
-        varsEvidence.add(2,varEvidence3);
+        evenModel.getVariables().forEach(var -> System.out.println(var.getName() + ", " + var.getClass().getName() + ", " + var.getNumberOfStates() + " states, multinomial? " + var.isMultinomial() + ", " + var.getDistributionType().getClass().getName()));
+        oddModel.getVariables().forEach(var -> System.out.println(var.getName() + ", " + var.getClass().getName() + ", " + var.getNumberOfStates() + " states, multinomial? " + var.isMultinomial() + ", " + var.getDistributionType().getClass().getName()));
 
-        double varEvidenceValue;
+        evenModel.getDAG().getVariables().forEach(var -> System.out.println(var.getName() + ", " + var.getClass().getName() + ", " + var.getNumberOfStates() + " states, multinomial? " + var.isMultinomial() + ", " + var.getDistributionType().getClass().getName()));
+        oddModel.getDAG().getVariables().forEach(var -> System.out.println(var.getName() + ", " + var.getClass().getName() + ", " + var.getNumberOfStates() + " states, multinomial? " + var.isMultinomial() + ", " + var.getDistributionType().getClass().getName()));
 
-        Random random = new Random();
-        
-        List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
+        evenModel.getDAG().getParentSets().forEach(parentSet -> {System.out.println("Parents of " + parentSet.getMainVar().getName() + ": " + parentSet.toString()); parentSet.getParents().stream().forEach(parent -> System.out.println((parent.getName() + ", " + parent.isMultinomial() + ", " + parent.getClass().getName()))); });
+        oddModel.getDAG().getParentSets().forEach(parentSet -> System.out.println("Parents of " + parentSet.getMainVar().getName() + ": " + parentSet.toString()));
 
-        for (int t = 0; t < nTimeSteps; t++) {
-            HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+        System.out.println(oddModel.toString());
 
-            for (int i = 0; i < varsEvidence.size(); i++) {
+        oddModel.getConditionalDistributions().forEach(cDist -> {
+            System.out.println(cDist.toString());
+            System.out.println(cDist.getVariable().getName() + ", " + cDist.getVariable().getClass().getName());
+            cDist.getConditioningVariables().forEach(cDistVar -> System.out.println(cDistVar.getName() + ", " + cDistVar.getClass().getName()));
+        });
 
-                dynAssignment.setSequenceID(2343253);
-                dynAssignment.setTimeID(t);
-                Variable varEvidence = varsEvidence.get(i);
-
-                if (varEvidence.isMultinomial()) {
-                    varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
-                } else {
-                    varEvidenceValue = -5 + 10 * random.nextDouble();
-                }
-
-                dynAssignment.setValue(varEvidence, varEvidenceValue);
-            }
-            evidence.add(dynAssignment);
-        }
-
-        dynMAP.setEvidence(evidence);
         dynMAP.runInference();
     }
 }
