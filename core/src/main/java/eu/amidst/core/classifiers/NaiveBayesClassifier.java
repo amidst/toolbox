@@ -8,15 +8,25 @@
 
 package eu.amidst.core.classifiers;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
-import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.DAGGenerator;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.MissingAssignment;
+import eu.amidst.core.variables.Variable;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
@@ -37,6 +47,9 @@ public class NaiveBayesClassifier implements Classifier{
 
     /** Represents the inference algorithm. */
     InferenceAlgorithm predictions;
+
+    /** Represents the class variable */
+    Variable classVar;
 
     /**
      * Creates a new NaiveBayesClassifier.
@@ -69,9 +82,11 @@ public class NaiveBayesClassifier implements Classifier{
      */
     @Override
     public double[] predict(DataInstance instance) {
-        this.predictions.setEvidence(instance);
+        MissingAssignment assignment = new MissingAssignment(instance);
+        assignment.addMissingVariable(classVar);
+        this.predictions.setEvidence(assignment);
         this.predictions.runInference();
-        Multinomial multinomial = this.predictions.getPosterior(this.getBNModel().getVariables().getVariableByName(className));
+        Multinomial multinomial = this.predictions.getPosterior(classVar);
         return multinomial.getParameters();
     }
 
@@ -107,14 +122,7 @@ public class NaiveBayesClassifier implements Classifier{
      */
     @Override
     public void learn(DataStream<DataInstance> dataStream){
-        ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
-        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
-        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.className));
-        parameterLearningAlgorithm.setDataStream(dataStream);
-        parameterLearningAlgorithm.initLearning();
-        parameterLearningAlgorithm.runLearning();
-        bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
-        predictions.setModel(bnModel);
+        this.learn(dataStream,1000);
     }
 
 
@@ -124,15 +132,94 @@ public class NaiveBayesClassifier implements Classifier{
      * @param batchSize the size of the batch for the parallel ML algorithm.
      */
     public void learn(DataStream<DataInstance> dataStream, int batchSize){
-        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
-        parameterLearningAlgorithm.setBatchSize(batchSize);
-        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
-        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.className));
-        parameterLearningAlgorithm.setDataStream(dataStream);
-        parameterLearningAlgorithm.initLearning();
-        parameterLearningAlgorithm.runLearning();
-        bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
-        predictions.setModel(bnModel);
+        DAG dag = DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(), this.className);
+        BayesianNetwork naiveBayes = new BayesianNetwork(dag);
+        classVar = naiveBayes.getVariables().getVariableByName(this.className);
+
+        EF_BayesianNetwork ef_naiveBayes = new EF_BayesianNetwork(naiveBayes);
+
+        AtomicDouble dataInstanceCount = new AtomicDouble(0); //Initial count
+
+        CountVectors initSS = new CountVectors(ef_naiveBayes.getDistributionList().stream().map(w -> new CountVector(w.createInitSufficientStatistics())).collect(Collectors.toList()));
+
+        CountVectors result =
+                dataStream
+                        .parallelStream(batchSize)
+                        .peek(a -> {if (dataInstanceCount.addAndGet(1)%batchSize==1) System.out.println("Data Instance:"+dataInstanceCount.toString());})
+                        .map(batch -> {
+
+                            List<CountVector> list = ef_naiveBayes.getDistributionList().stream().map(dist -> {
+                                if (!Utils.isMissingValue(batch.getValue(dist.getVariable())))
+                                    return new CountVector(dist.getSufficientStatistics(batch));
+                                else
+                                    return new CountVector();
+                            }).collect(Collectors.toList());
+
+                            return new CountVectors(list);
+                        }).reduce(initSS, CountVectors::combine);
+
+        result.normalize();
+        List<Vector> ssList = result.list.stream().map(a -> a.sufficientStatistics).collect(Collectors.toList());
+        CompoundVector vectorSS = new CompoundVector(ssList);
+        SufficientStatistics finalSS = ef_naiveBayes.createZeroSufficientStatistics();
+        finalSS.sum(vectorSS);
+        ef_naiveBayes.setMomentParameters(finalSS);
+
+
+        bnModel = ef_naiveBayes.toBayesianNetwork(dag);
+
+        this.predictions.setModel(bnModel);
+
+    }
+
+    static class CountVectors {
+
+        List<CountVector> list;
+
+        public CountVectors(List<CountVector> list) {
+            this.list = list;
+        }
+
+        public void normalize(){
+            list.stream().forEach(a -> a.normalize());
+        }
+        public static CountVectors combine(CountVectors a, CountVectors b) {
+            for (int i = 0; i < b.list.size(); i++) {
+                CountVector.combine(a.list.get(i),b.list.get(i));
+            }
+            return b;
+        }
+    }
+
+    static class CountVector {
+
+        SufficientStatistics sufficientStatistics;
+        int count;
+
+        public CountVector() {
+            count=0;
+            sufficientStatistics=null;
+        }
+
+        public CountVector(SufficientStatistics sufficientStatistics) {
+            this.sufficientStatistics = sufficientStatistics;
+            this.count=1;
+        }
+
+        public void normalize(){
+            this.sufficientStatistics.divideBy(count);
+        }
+        public static CountVector combine(CountVector a, CountVector b){
+            b.count+=a.count;
+
+            if (b.sufficientStatistics==null){
+                b.sufficientStatistics=a.sufficientStatistics;
+            }else if (a.sufficientStatistics!=null){
+                b.sufficientStatistics.sum(a.sufficientStatistics);
+            }
+
+            return b;
+        }
     }
 
 }
