@@ -39,9 +39,9 @@ public class DynamicVMP {
         //We initialize the parameters of the network randomly
         dbn.randomInitialization(random);
 
-        //We create a dynamic dataset for prediction
+        //We create a dynamic dataset with 3 sequences for prediction
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(dbn);
-        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(1,10000);
+        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3,10000);
 
         //We select the target variable for inference, in this case the class variable
         Variable classVar = dbn.getDynamicVariables().getVariableByName("ClassVar");
