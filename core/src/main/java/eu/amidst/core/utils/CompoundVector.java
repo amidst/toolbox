@@ -93,6 +93,18 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
         return this.baseVectors.get(position).getVector();
     }
 
+
+    /**
+     * Returns a list of Vectors.
+     */
+    public List<Vector> getVectors(){
+        List<Vector> vectors = new ArrayList();
+        for (int i = 0; i < baseVectors.size(); i++) {
+            vectors.add(this.getVectorByPosition(i));
+        }
+        return vectors;
+    }
+
     /**
      * {@inheritDoc}
      */

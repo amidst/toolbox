@@ -717,7 +717,7 @@ public class SVBTest extends TestCase {
             System.out.println(bn.toString());
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
-            sampler.setMARVar(varB, 0.9);
+            sampler.setMARVar(varB, 0.8);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 

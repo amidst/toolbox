@@ -107,6 +107,23 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
     }
 
+    /**
+     * Sets a new set of attributes. Links current variables with this new set by matching
+     * variable names with attributes names.
+     * @param attributes an object of class {@link Attributes}
+     */
+    public void setAttributes(Attributes attributes){
+        for (Variable variable : nonInterfaceVariables) {
+            VariableImplementation variableImplementation = (VariableImplementation)variable;
+            variableImplementation.setAttribute(attributes.getAttributeByName(variable.getName()));
+        }
+
+        for (Variable variable : interfaceVariables) {
+            VariableImplementation variableImplementation = (VariableImplementation)variable;
+            variableImplementation.setAttribute(attributes.getAttributeByName(getVariableFromInterface(variable).getName()));
+        }
+
+    }
 
     public Variable getInterfaceVariable(Variable var){
         return interfaceVariables.get(var.getVarID());
@@ -450,6 +467,10 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
 
         public Attribute getAttribute(){return attribute;}
+
+        public void setAttribute(Attribute att) {
+            this.attribute=att;
+        }
 
         /**
          * {@inheritDoc}

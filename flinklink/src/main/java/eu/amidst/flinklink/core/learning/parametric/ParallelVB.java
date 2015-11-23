@@ -14,6 +14,7 @@ package eu.amidst.flinklink.core.learning.parametric;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
 import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
@@ -31,12 +32,14 @@ import org.apache.flink.api.common.functions.RichReduceFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.IterativeDataSet;
+import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.types.DoubleValue;
 import org.apache.flink.util.Collector;
 
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -72,6 +75,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     protected int maximumGlobalIterations = 10;
 
+    protected int maximumLocalIterations = 100;
+
     protected double globalThreshold = 0.01;
 
     public ParallelVB(){
@@ -86,6 +91,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         this.maximumGlobalIterations = maximumGlobalIterations;
     }
 
+    public void setMaximumLocalIterations(int maximumLocalIterations) {
+        this.maximumLocalIterations = maximumLocalIterations;
+    }
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
@@ -95,6 +103,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
+        //this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.setDAG(this.dag);
         this.svb.setWindowsSize(batchSize);
         this.svb.initLearning();
@@ -188,13 +197,12 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     public void updateModel(DataFlink<DataInstance> dataUpdate){
 
         try{
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+            final ExecutionEnvironment env = dataUpdate.getDataSet().getExecutionEnvironment();
 
             // get input data
             CompoundVector parameterPrior = this.svb.getNaturalParameterPrior();
-            CompoundVector zeroedVector = CompoundVector.newZeroedVector(parameterPrior);
 
-            DataSet<CompoundVector> paramSet = env.fromElements(zeroedVector);
+            DataSet<CompoundVector> paramSet = env.fromElements(parameterPrior);
 
             // set number of bulk iterations for KMeans algorithm
             IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
@@ -203,10 +211,16 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             Configuration config = new Configuration();
             config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
-            config.setBytes(PRIOR, Serialization.serializeObject(parameterPrior));
 
-            DataSet<CompoundVector> newparamSet = dataUpdate
-                    .getBatchedDataSet(this.batchSize)
+            //We add an empty batched data set to emit the updated prior.
+            DataOnMemory<DataInstance> emtpyBatch = new DataOnMemoryListContainer<DataInstance>(dataUpdate.getAttributes());
+            DataSet<DataOnMemory<DataInstance>> unionData =
+                    dataUpdate.getBatchedDataSet(this.batchSize)
+                    .union(env.fromCollection(Arrays.asList(emtpyBatch),
+                                              TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
+
+            DataSet<CompoundVector> newparamSet =
+                    unionData
                     .map(new ParallelVBMap())
                     .withParameters(config)
                     .withBroadcastSet(loop, "VB_PARAMS_" + this.dag.getName())
@@ -273,23 +287,19 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         @Override
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
-            SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
-/*
-            double sum = svb.getPlateuStructure()
-                    .getVMP()
-                    .getNodes()
-                    .stream()
-                    .filter(node -> node.isActive())
-                    .filter(node -> !node.getMainVariable().isParameterVariable())
-                    .mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node))
-                    .sum();
 
-            elbo.aggregate(sum);
-            out.setElbo(sum);
-            return out.getVector();
-*/
-            elbo.aggregate(out.getElbo()/svb.getPlateuStructure().getVMP().getNodes().size());
-            return out.getVector();
+            if (dataBatch.getNumberOfDataInstances()==0){
+                //System.out.println(this.svb.getLearntBayesianNetwork().toString());
+                return this.svb.getNaturalParameterPrior();
+            }else {
+                SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
+                //System.out.println("DIFF 36:" + out.getVector().getVectorByPosition(36).get(0)+", "+out.getVector().getVectorByPosition(36).get(1));
+                //System.out.println("DIFF 37:" + out.getVector().getVectorByPosition(37).get(0)+", "+out.getVector().getVectorByPosition(37).get(1));
+
+                elbo.aggregate(out.getElbo() / svb.getPlateuStructure().getVMP().getNodes().size());
+                return out.getVector();
+            }
+
         }
 
 
@@ -298,14 +308,17 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             super.open(parameters);
             String bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
-            CompoundVector parameterPrior = Serialization.deserializeObject(parameters.getBytes(PRIOR, null));
 
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
-            parameterPrior.sum(updatedPrior);
 
-            svb.updateNaturalParameterPrior(parameterPrior);
+            //System.out.println("Prior 36\t" + updatedPrior.getVectorByPosition(36).get(0)+"\t"+updatedPrior.getVectorByPosition(36).get(1));
+            //System.out.println("Prior 37:" + updatedPrior.getVectorByPosition(37).get(0)+", "+updatedPrior.getVectorByPosition(37).get(1));
+
+            svb.updateNaturalParameterPrior(updatedPrior);
+
+            //System.out.println("PriorP 36\t" + svb.getNaturalParameterPrior().getVectorByPosition(36).get(0) + "\t" + svb.getNaturalParameterPrior().getVectorByPosition(36).get(1));
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
         }
@@ -380,13 +393,13 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             if (iteration==1) {
                 previousELBO=value.getValue();
                 return false;
-            }else if ((value.getValue() < previousELBO)){
+            }else if (value.getValue() < (previousELBO - threshold)){
                 //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", " + value.getValue() +" < " + previousELBO);
-                System.out.println("Global bound is not monotonically increasing: "+ iteration +", " + (value.getValue() -previousELBO));
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +", " + (value.getValue() +">" + previousELBO));
                 this.previousELBO=value.getValue();
-                return false;
+                return true;
             }else if (value.getValue()>(previousELBO+threshold)) {
-                System.out.println("Global bound is monotonically increasing: "+ iteration +", " + (value.getValue() -previousELBO));
+                System.out.println("Global bound is monotonically increasing: "+ iteration +", " + (value.getValue() +">" + previousELBO));
                 this.previousELBO=value.getValue();
                 return false;
             }else {
