@@ -34,8 +34,8 @@ public interface Vector {
     public int size();
 
     /**
-     * Returns the sum of all elements.
-     * @return a {@code double} that represents the sum of all elements.
+     * Returns the sumNonStateless of all elements.
+     * @return a {@code double} that represents the sumNonStateless of all elements.
      */
     public default double sum() {
         double sum=0;
@@ -46,7 +46,7 @@ public interface Vector {
     }
 
     /**
-     * Updates the values of this Vector as a sum of its initial values and the input vector values.
+     * Updates the values of this Vector as a sumNonStateless of its initial values and the input vector values.
      * @param vector an input Vector.
      */
     public default void sum(Vector vector){
@@ -106,7 +106,7 @@ public interface Vector {
 
     /**
      * Returns the dot product of this Vector and an input vector, defined as
-     * the sum of the pairwise products of the values of the two vectors.
+     * the sumNonStateless of the pairwise products of the values of the two vectors.
      * @param vector an input vector.
      * @return a double that represents the dot product of the two vectors.
      */
@@ -145,7 +145,7 @@ public interface Vector {
      * Sums two vectors.
      * @param vec1 an input Vector.
      * @param vec2 a destination Vector.
-     * @return the destination vector containing the sum of the two vectors.
+     * @return the destination vector containing the sumNonStateless of the two vectors.
      */
     public static Vector sumVector(Vector vec1, Vector vec2){
         vec2.sum(vec1);

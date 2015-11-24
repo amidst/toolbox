@@ -294,7 +294,8 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
         for (int i = 0; i < this.numberOfConfigurations() ; i++) {
             Vector vec = this.getBaseEFDistribution(i).createInitSufficientStatistics();
-            vector.setBaseConf(i, 1.0);
+            vector.setBaseConf(i, 1.0/(double)this.numberOfConfigurations());
+            vec.multiplyBy(1.0/(double)this.numberOfConfigurations());
             vector.setVectorByPosition(i,vec);
         }
 

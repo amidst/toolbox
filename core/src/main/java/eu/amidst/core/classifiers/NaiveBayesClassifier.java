@@ -139,7 +139,6 @@ public class NaiveBayesClassifier implements Classifier{
 
         AtomicDouble dataInstanceCount = new AtomicDouble(0); //Initial count
 
-        CountVectors initSS = new CountVectors(ef_naiveBayes.getDistributionList().stream().map(w -> new CountVector(w.createInitSufficientStatistics())).collect(Collectors.toList()));
 
         CountVectors result =
                 dataStream
@@ -155,8 +154,10 @@ public class NaiveBayesClassifier implements Classifier{
                             }).collect(Collectors.toList());
 
                             return new CountVectors(list);
-                        }).reduce(initSS, CountVectors::combine);
+                        }).reduce(CountVectors::sumNonStateless).get();
 
+        CountVectors initSS = new CountVectors(ef_naiveBayes.getDistributionList().stream().map(w -> new CountVector(w.createInitSufficientStatistics())).collect(Collectors.toList()));
+        result.sum(initSS);
         result.normalize();
         List<Vector> ssList = result.list.stream().map(a -> a.sufficientStatistics).collect(Collectors.toList());
         CompoundVector vectorSS = new CompoundVector(ssList);
@@ -182,9 +183,16 @@ public class NaiveBayesClassifier implements Classifier{
         public void normalize(){
             list.stream().forEach(a -> a.normalize());
         }
-        public static CountVectors combine(CountVectors a, CountVectors b) {
+
+        public void sum(CountVectors a){
+            for (int i = 0; i < this.list.size(); i++) {
+                this.list.get(i).sum(a.list.get(i));
+            }
+        }
+
+        public static CountVectors sumNonStateless(CountVectors a, CountVectors b) {
             for (int i = 0; i < b.list.size(); i++) {
-                CountVector.combine(a.list.get(i),b.list.get(i));
+                b.list.get(i).sum(a.list.get(i));
             }
             return b;
         }
@@ -208,16 +216,18 @@ public class NaiveBayesClassifier implements Classifier{
         public void normalize(){
             this.sufficientStatistics.divideBy(count);
         }
-        public static CountVector combine(CountVector a, CountVector b){
-            b.count+=a.count;
 
-            if (b.sufficientStatistics==null){
-                b.sufficientStatistics=a.sufficientStatistics;
-            }else if (a.sufficientStatistics!=null){
-                b.sufficientStatistics.sum(a.sufficientStatistics);
+        public void sum(CountVector a){
+            if (a.sufficientStatistics==null)
+                return;
+
+            this.count+=a.count;
+
+            if (this.sufficientStatistics==null) {
+                this.sufficientStatistics = a.sufficientStatistics;
+            }else{
+                this.sufficientStatistics.sum(a.sufficientStatistics);
             }
-
-            return b;
         }
     }
 
