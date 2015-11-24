@@ -90,6 +90,9 @@
         <module>examples</module>
         <module>flinklink</module>
         <module>extensions/cajamar</module>
+        <module>extensions/caepia2015</module>
+        <module>extensions/ida2015</module>
+        <module>extensions/scai2015</module>
     </modules>
 
 

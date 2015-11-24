@@ -56,7 +56,7 @@ public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implement
 
         SufficientStatistics batchSS = batch.stream()
                 .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         sumSS.multiplyBy(fadingFactor);
         sumSS.sum(batchSS);
@@ -79,7 +79,7 @@ public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implement
         for (DataOnMemory<DataInstance> batch : dataStream.iterableOverBatches(batchSize)){
             SufficientStatistics batchSS = batch.stream()
                     .map(efBayesianNetwork::getSufficientStatistics)
-                    .reduce(SufficientStatistics::sumVector).get();
+                    .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
             sumSS.multiplyBy(fadingFactor);
             sumSS.sum(batchSS);

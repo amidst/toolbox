@@ -171,7 +171,7 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
                     IntStream.range(0, dataBatches.size())
                         .parallel()
                         .mapToObj(i -> this.svbEngines[i].updateModelOnBatchParallel(dataBatches.get(i)))
-                        .reduce(SVB.BatchOutput::sum)
+                        .reduce(SVB.BatchOutput::sumNonStateless)
                         .get();
 
             //Update logLikelihood
@@ -211,7 +211,7 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
                     IntStream.range(0, dataBatches.size())
                             .parallel()
                             .mapToObj(i -> this.svbEngines[i].updateModelOnBatchParallel(dataBatches.get(i)))
-                            .reduce(SVB.BatchOutput::sum)
+                            .reduce(SVB.BatchOutput::sumNonStateless)
                             .get();
 
             //Update logLikelihood

@@ -105,7 +105,7 @@ public class KMeans {
         DataSet<Centroid> newCentroids = points
                 // compute closest centroid for each point
                 .map(new SelectNearestCenter()).withBroadcastSet(loop, "centroids")
-                        // count and sum point coordinates for each centroid
+                        // count and sumNonStateless point coordinates for each centroid
                 .map(new CountAppender())
                 .groupBy(0).reduce(new CentroidAccumulator())
                         // compute new centroids from point counts and coordinate sums
@@ -277,7 +277,7 @@ public class KMeans {
         }
     }
 
-    /** Computes new centroid from coordinate sum and count of points. */
+    /** Computes new centroid from coordinate sumNonStateless and count of points. */
     @ForwardedFields("0->id")
     public static final class CentroidAverager implements MapFunction<Tuple3<Integer, Point, Long>, Centroid> {
 
