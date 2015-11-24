@@ -161,7 +161,7 @@ public class DBNSampler {
             this.attributes = attributes;
             this.hiddenVars = hiddenVars;
             this.marVars = marVars;
-            this.causalOrder = Utils.getCausalOrder(this.bn.getDAG());
+            this.causalOrder = Utils.getTopologicalOrder(this.bn.getDAG());
         }
 
         @Override

@@ -83,7 +83,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
     }
     public void setSamplingModel(BayesianNetwork samplingModel_) {
         this.samplingModel = samplingModel_;
-        this.causalOrder = Utils.getCausalOrder(samplingModel.getDAG());
+        this.causalOrder = Utils.getTopologicalOrder(samplingModel.getDAG());
     }
 
     public void setSampleSize(int sampleSize) {
