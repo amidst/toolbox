@@ -116,4 +116,9 @@ public class Uniform extends UnivariateDistribution {
     public <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution() {
         throw new UnsupportedOperationException("This distribution is not supported yet in exponential form");
     }
+
+    @Override
+    public UnivariateDistribution deepCopy(Variable variable) {
+        return new Uniform(variable);
+    }
 }

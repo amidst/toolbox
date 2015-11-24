@@ -27,6 +27,8 @@ import java.util.Random;
  */
 public abstract class UnivariateDistribution extends ConditionalDistribution {
 
+    private static final long serialVersionUID = -5983759861664273449L;
+
     /**
      * Returns the log probability for a given input value.
      * @param value a double value.
@@ -98,4 +100,12 @@ public abstract class UnivariateDistribution extends ConditionalDistribution {
     public double getLogProbability(Assignment assignment) {
         return this.getLogProbability(assignment.getValue(this.var));
     }
+
+    /**
+     * Returns a deep copy of this UnivariateDistribution and changes the current main variable to the
+     * one given as input parameter.
+     * @param variable a {@link Variable} object.
+     * @return a {@link UnivariateDistribution} object.
+     */
+    public abstract UnivariateDistribution deepCopy(Variable variable);
 }
