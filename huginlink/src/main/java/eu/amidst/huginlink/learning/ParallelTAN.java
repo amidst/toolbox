@@ -6,6 +6,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -237,7 +238,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @throws ExceptionHugin
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream) throws ExceptionHugin {
-        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
         parameterLearningAlgorithm.setLaplace(true);
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
@@ -259,7 +260,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @throws ExceptionHugin
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream, int batchSize) throws ExceptionHugin {
-        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
         parameterLearningAlgorithm.setBatchSize(batchSize);
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
