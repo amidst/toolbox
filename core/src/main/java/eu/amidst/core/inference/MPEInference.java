@@ -98,7 +98,7 @@ public class MPEInference implements PointEstimator {
     @Override
     public void setModel(BayesianNetwork model_) {
         this.model = model_;
-        this.causalOrder = Utils.getCausalOrder(this.model.getDAG());
+        this.causalOrder = Utils.getTopologicalOrder(this.model.getDAG());
         this.numberOfDiscreteVariables = this.model.getVariables().getListOfVariables().stream()
                 .filter(Variable::isMultinomial).count();
 
@@ -148,14 +148,14 @@ public class MPEInference implements PointEstimator {
     @Override
     public void runInference() {
 
-        this.runInference(2); // Uses Hill climbing with local search, by default
+        this.runInference("HC_local"); // Uses Hill climbing with local search, by default
     }
 
     /**
      * Runs inference with an specific method.
-     * @param inferenceAlgorithm an {@code int} that represents the search algorithm to use (-2: Deterministic sequential search; -1: Sampling;  0: Simulated annealing, local; 1: Simulated annealing, global; 2: Hill climbing, local (default); 3: Hill climbing, global)
+     * @param inferenceAlgorithm an {@code String} that represents the search algorithm to use (exhaustiveSearch: exhaustive search; sampling: Sampling;  SA_local: Simulated annealing, local; SA_global: Simulated annealing, global; HC_local: Hill climbing, local (default); HC_global: Hill climbing, global)
      */
-    public void runInference(int inferenceAlgorithm) {
+    public void runInference(String inferenceAlgorithm) {
 
         ImportanceSampling ISaux = new ImportanceSampling();
         ISaux.setModel(this.model);
@@ -179,31 +179,31 @@ public class MPEInference implements PointEstimator {
 
         switch(inferenceAlgorithm) {
 
-            case -2:    // DETERMINISTIC, MAY BE VERY SLOW ON BIG NETWORKS
+            case "exhaustiveSearch":    // DETERMINISTIC, MAY BE VERY SLOW ON BIG NETWORKS
                 MPEestimate = this.sequentialSearch();
                 break;
 
-            case -1:    // NO OPTIMIZATION ALGORITHM, JUST PICKING THE SAMPLE WITH HIGHEST PROBABILITY
+            case "sampling":    // NO OPTIMIZATION ALGORITHM, JUST PICKING THE SAMPLE WITH HIGHEST PROBABILITY
                 MPEestimate = sample.reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
 
 
 
-            case 0:     // "SIMULATED ANNEALING", MOVING SOME VARIABLES AT EACH ITERATION
+            case "SA_local":     // "SIMULATED ANNEALING", MOVING SOME VARIABLES AT EACH ITERATION
                 MPEestimate = sample.map(this::simulatedAnnealingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
 
-            case 1:     // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
+            case "SA_global":     // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
                 MPEestimate = sample.map(this::simulatedAnnealingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
 
 
 
-            case 3:     // HILL CLIMBING, MOVING ALL VARIABLES AT EACH ITERATION
+            case "HC_global":     // HILL CLIMBING, MOVING ALL VARIABLES AT EACH ITERATION
                 MPEestimate = sample.map(this::hillClimbingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
 
-            case 2:     // HILL CLIMBING, MOVING SOME VARIABLES AT EACH ITERATION
+            case "HC_local":     // HILL CLIMBING, MOVING SOME VARIABLES AT EACH ITERATION
             default:
                 MPEestimate = sample.map(this::hillClimbingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 break;
@@ -824,7 +824,7 @@ public class MPEInference implements PointEstimator {
         System.out.println();
 
 
-        List<Variable> modelVariables = Utils.getCausalOrder(bn.getDAG());
+        List<Variable> modelVariables = Utils.getTopologicalOrder(bn.getDAG());
 
 
         int parallelSamples=10;
@@ -863,7 +863,7 @@ public class MPEInference implements PointEstimator {
         // MPE INFERENCE WITH SIMULATED ANNEALING, ALL VARIABLES
         System.out.println();
         long timeStart = System.nanoTime();
-        mpeInference.runInference(1);
+        mpeInference.runInference("SA_global");
 
 
         Assignment mpeEstimate = mpeInference.getEstimate();
@@ -880,7 +880,7 @@ public class MPEInference implements PointEstimator {
 
         // MPE INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mpeInference.runInference(0);
+        mpeInference.runInference("SA_local");
 
 
         mpeEstimate = mpeInference.getEstimate();
@@ -899,7 +899,7 @@ public class MPEInference implements PointEstimator {
 
         // MPE INFERENCE WITH HILL CLIMBING, ALL VARIABLES
         timeStart = System.nanoTime();
-        mpeInference.runInference(3);
+        mpeInference.runInference("HC_global");
 
         mpeEstimate = mpeInference.getEstimate();
         //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
@@ -915,7 +915,7 @@ public class MPEInference implements PointEstimator {
 
         //  MPE INFERENCE WITH HILL CLIMBING, SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mpeInference.runInference(2);
+        mpeInference.runInference("HC_local");
 
 
         mpeEstimate = mpeInference.getEstimate();
@@ -936,7 +936,7 @@ public class MPEInference implements PointEstimator {
         mpeInference.setSampleSize(samplingMethodSize);
 
         timeStart = System.nanoTime();
-        mpeInference.runInference(-1);
+        mpeInference.runInference("sampling");
 
         mpeEstimate = mpeInference.getEstimate();
         //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
@@ -952,7 +952,7 @@ public class MPEInference implements PointEstimator {
 
         // MPE INFERENCE, DETERMINISTIC
         timeStart = System.nanoTime();
-        mpeInference.runInference(-2);
+        mpeInference.runInference("exhaustiveSearch");
 
         mpeEstimate = mpeInference.getEstimate();
         //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
