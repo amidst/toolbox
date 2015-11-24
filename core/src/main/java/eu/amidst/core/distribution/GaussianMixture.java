@@ -101,7 +101,7 @@ public abstract class GaussianMixture extends UnivariateDistribution {
         /*
         DoubleStream aux = Arrays.stream(this.coefficients);
         aux.
-        double suma=aux.sum();
+        double suma=aux.sumNonStateless();
         aux = Arrays.stream(this.coefficients);
         this.coefficients = aux.map(x -> x/suma).toArray();
         return Double.NaN;*/
@@ -201,7 +201,7 @@ public abstract class GaussianMixture extends UnivariateDistribution {
         this.coefficients = aux.map(x -> x/suma).toArray();
 
         //System.out.println(coefficients);
-        //this.coefficients = this.coefficients / .map().sum();
+        //this.coefficients = this.coefficients / .map().sumNonStateless();
 
     }
 

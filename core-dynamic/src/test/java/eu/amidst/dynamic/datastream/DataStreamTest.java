@@ -66,7 +66,7 @@ public class DataStreamTest extends TestCase {
                     dataInstanceCount.getAndIncrement();
                 })
                 .map(efBayesianNetwork::getSufficientStatistics)
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
@@ -82,9 +82,9 @@ public class DataStreamTest extends TestCase {
         sumSS = sampler.sampleToDataStream(1000).streamOfBatches(10)
                 .map( batch -> {
                     EF_BayesianNetwork efBayesianNetworkLocal = new EF_BayesianNetwork(naiveBayes.getDAG());
-                    return batch.stream().map(efBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
+                    return batch.stream().map(efBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVectorNonStateless).get();
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
@@ -101,9 +101,9 @@ public class DataStreamTest extends TestCase {
         sumSS = sampler.sampleToDataStream(1000).parallelStreamOfBatches(10)
                 .map( batch -> {
                     EF_BayesianNetwork efBayesianNetworkLocal = new EF_BayesianNetwork(naiveBayes.getDAG());
-                    return batch.stream().map(efBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
+                    return batch.stream().map(efBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVectorNonStateless).get();
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());

@@ -653,7 +653,7 @@ import java.util.stream.IntStream;
 //                    if (parentList.stream().allMatch(parent -> parent.isMultinomial())) {
 //                        BaseDistribution_MultinomialParents staticConDist = new BaseDistribution_MultinomialParents(staticVar2, parentList); //= Serialization.deepCopy(bn.getConditionalDistribution(staticVar2));
 //                        staticConDist = new BaseDistribution_MultinomialParents(staticVar2, parentList);
-//                        int nStatesParents = (int) Math.round(Math.exp(parentList.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
+//                        int nStatesParents = (int) Math.round(Math.exp(parentList.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sumNonStateless()));
 //                        //System.out.println(nStatesParents);
 //
 //                        for (int m = 0; m < nStatesParents; m++) {
@@ -791,7 +791,7 @@ import java.util.stream.IntStream;
 //                    if (parentList.stream().allMatch(parent -> parent.isMultinomial())) {
 //                        BaseDistribution_MultinomialParents staticConDist = new BaseDistribution_MultinomialParents(staticVar2, parentList); //= Serialization.deepCopy(bn.getConditionalDistribution(staticVar2));
 //
-//                        int nStatesParents = (int) Math.round(Math.exp(parentList.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
+//                        int nStatesParents = (int) Math.round(Math.exp(parentList.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sumNonStateless()));
 //                        for (int m = 0; m < nStatesParents; m++) {
 //                            Assignment staticParentsConfigurations = MultinomialIndex.getVariableAssignmentFromIndex(parentList, m);
 //                            Assignment dynamicParentsConfiguration = new HashMapAssignment(parentList.size());
@@ -823,7 +823,7 @@ import java.util.stream.IntStream;
 //                    }
 //                    else {
 //                        List<Variable> multinomialParents = parentList.stream().filter(parent -> parent.isMultinomial()).collect(Collectors.toList());
-//                        int nStatesParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
+//                        int nStatesParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sumNonStateless()));
 //                        System.out.println(nStatesParents);
 //
 //                        parentList.forEach(parent -> System.out.println("Variable " + staticVar2.getName() + ", with parent " + parent.getName()));

@@ -8,20 +8,14 @@
 
 package eu.amidst.dynamic.learning.dynamic;
 
-import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
-import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.Vector;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -67,110 +61,12 @@ public final class MaximumLikelihoodForDBN {
                         dataInstanceCount.getAndIncrement();
                 })
                 .map(efDynamicBayesianNetwork::getSufficientStatistics)
-                .reduce(SufficientStatistics::sumVector).get();
-                //.reduce(efDynamicBayesianNetwork.createZeroSufficientStatistics(), SufficientStatistics::sumVector);
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
 
         efDynamicBayesianNetwork.setMomentParameters(sumSS);
         return efDynamicBayesianNetwork.toDynamicBayesianNetwork(dag);
-    }
-
-    public static void main(String[] args){
-
-        List<ArrayVector> vectorList = IntStream.range(0,10).mapToObj(i -> {
-            ArrayVector vec = new ArrayVector(2);
-            vec.set(0, 1);
-            vec.set(1, 1);
-            return vec;
-        }).collect(Collectors.toList());
-
-
-        Vector out1 = vectorList.parallelStream()
-                .reduce(new ArrayVector(2), (u, v) -> {
-                    ArrayVector outvec = new ArrayVector(2);
-                    outvec.sum(v);
-                    outvec.sum(u);
-                    return outvec;});
-
-
-        Vector out2 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sum(v); return u;});
-        Vector out3 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sum(u); return v;});
-
-        System.out.println(out1.get(0) + ", " + out1.get(1));
-        System.out.println(out2.get(0) + ", " + out2.get(1));
-        System.out.println(out3.get(0) + ", " + out3.get(1));
-
-        /*
-        BayesianNetwork bn=null;
-
-        int nlinks = bn.getDAG().getParentSets()
-                .parallelStream()
-                .mapToInt(parentSet -> parentSet.getNumberOfParents()).sum();
-
-        nlinks=0;
-
-        for (ParentSet parentSet: bn.getDAG().getParentSets()){
-            nlinks+=parentSet.getNumberOfParents();
-        }
-
-        for (int i = 0; i < bn.getDAG().getParentSets().size(); i++) {
-            nlinks+=bn.getDAG().getParentSets().get(i).getNumberOfParents();
-        }*/
-
-
-        int nSamples = 4000000;
-        int sizeSS=1000000;
-        int sizeSS2=100;
-
-        double[][] sum = new double[sizeSS][];
-        double[][] ss = new double[sizeSS][];
-
-        for (int i = 0; i < 100; i++) {
-            /*for (int j = 0; j < ss.length; j++) {
-                    ss[j]=new double[sizeSS];
-            }*/
-            /*
-            for (int j = 0; j < ss.length; j++) {
-                for (int k = 0; k < ss[j].length; k++) {
-                    ss[j][k]=1.0;//Math.random();
-                }
-            }
-
-
-            for (int j = 0; j < ss.length; j++) {
-                for (int k = 0; k < ss[j].length; k++) {
-                    sum[j][k]+=ss[j][k];
-                }
-            }
-*/
-
-            class ArrayVector{
-                double[] array;
-                public ArrayVector(int size){
-                    array = new double[size];
-                }
-                public double[] getArray(){
-                    return this.array;
-                }
-            }
-
-            Stopwatch watch = Stopwatch.createStarted();
-            for (int j = 0; j < sizeSS ; j++) {
-                    ArrayVector vex = new ArrayVector(sizeSS2);
-                    ss[j]=vex.getArray();
-            }
-            System.out.println(watch.stop());
-
-            watch = Stopwatch.createStarted();
-            for (int j = 0; j < sizeSS ; j++) {
-                ss[j]= new double[sizeSS2];
-            }
-            System.out.println(watch.stop());
-            System.out.println();
-        }
-
-
     }
 }

@@ -270,7 +270,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
                     SS.multiplyBy(e.weight);
                     return SS;
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         sumSS.divideBy(dataInstanceCount.get());
 

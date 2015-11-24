@@ -27,9 +27,9 @@ public interface SufficientStatistics extends Vector {
      * Sums two sufficient statistics vectors having the same size.
      * @param vec1 a first input {@link SufficientStatistics} object.
      * @param vec2 a second input {@link SufficientStatistics} object.
-     * @return a {@link SufficientStatistics} object including the sum of the two input vectors.
+     * @return a {@link SufficientStatistics} object including the sumNonStateless of the two input vectors.
      */
-    static SufficientStatistics sumVector(SufficientStatistics vec1, SufficientStatistics vec2){
+    static SufficientStatistics sumVectorNonStateless(SufficientStatistics vec1, SufficientStatistics vec2){
         vec2.sum(vec1);
         return vec2;
     }
@@ -46,12 +46,12 @@ public interface SufficientStatistics extends Vector {
         Vector out1 = vectorList.parallelStream()
                 .reduce(new ArrayVector(2), (u, v) -> {
                     ArrayVector outvec = new ArrayVector(2);
-                    outvec.sum(v);
-                    outvec.sum(u);
+                    outvec.sumNonStateless(v);
+                    outvec.sumNonStateless(u);
                     return outvec;});
 
-        Vector out2 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sum(v); return u;});
-        Vector out3 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sum(u); return v;});
+        Vector out2 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sumNonStateless(v); return u;});
+        Vector out3 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sumNonStateless(u); return v;});
 
         System.out.println(out1.get(0) + ", " + out1.get(1));
         System.out.println(out2.get(0) + ", " + out2.get(1));

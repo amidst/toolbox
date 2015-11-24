@@ -140,7 +140,7 @@ public class KeyCompoundVector<E> implements MomentParameters, NaturalParameters
 
     /**
      * Returns the dot product of this KeyCompoundVector and an input KeyCompoundVector, defined as
-     * the sum of the pairwise products of the values of the two KeyCompoundVectors.
+     * the sumNonStateless of the pairwise products of the values of the two KeyCompoundVectors.
      * @param vec an input KeyCompoundVector.
      * @return a double that represents the dot product of the two KeyCompoundVectors.
      */
@@ -161,7 +161,7 @@ public class KeyCompoundVector<E> implements MomentParameters, NaturalParameters
     }
 
     /**
-     * Updates the values of this KeyCompoundVector as a sum of its initial values and the input KeyCompoundVector values.
+     * Updates the values of this KeyCompoundVector as a sumNonStateless of its initial values and the input KeyCompoundVector values.
      * @param vector an input KeyCompoundVector.
      */
     public void sum(KeyCompoundVector vector) {
