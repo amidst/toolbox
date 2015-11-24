@@ -23,6 +23,8 @@ import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
+
+import java.util.Arrays;
 import java.util.Random;
 
 
@@ -34,6 +36,9 @@ import java.util.Random;
  *
  */
 public class Multinomial extends UnivariateDistribution  {
+
+
+    private static final long serialVersionUID = 8587756877237341367L;
 
     /** Represents a set of probabilities, one for each state of the variable. */
     private double[] probabilities;
@@ -128,6 +133,13 @@ public class Multinomial extends UnivariateDistribution  {
             }
         }
         return probabilities.length-1;
+    }
+
+    @Override
+    public UnivariateDistribution deepCopy(Variable variable) {
+        Multinomial copy = new Multinomial(variable);
+        copy.probabilities = Arrays.copyOf(this.getProbabilities(),this.getProbabilities().length);
+        return copy;
     }
 
     public String label() {

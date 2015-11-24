@@ -68,6 +68,11 @@ public class DeltaDistribution extends UnivariateDistribution {
         throw new UnsupportedOperationException("This distribution is not supported yet in exponential form");
     }
 
+    @Override
+    public UnivariateDistribution deepCopy(Variable variable) {
+        return new DeltaDistribution(variable, this.getDeltaValue());
+    }
+
     /**
      * {@inheritDoc}
      */
