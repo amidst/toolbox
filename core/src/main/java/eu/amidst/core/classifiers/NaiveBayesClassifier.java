@@ -140,29 +140,18 @@ public class NaiveBayesClassifier implements Classifier{
         AtomicDouble dataInstanceCount = new AtomicDouble(0); //Initial count
 
 
-        CountVectors result =
-                dataStream
+        PartialSufficientSatistics result =
+                        dataStream
                         .parallelStream(batchSize)
                         .peek(a -> {if (dataInstanceCount.addAndGet(1)%batchSize==1) System.out.println("Data Instance:"+dataInstanceCount.toString());})
-                        .map(batch -> {
+                        .map(dataInstance -> computeCountSufficientStatistics(ef_naiveBayes, dataInstance))
+                        .reduce(PartialSufficientSatistics::sumNonStateless).get();
 
-                            List<CountVector> list = ef_naiveBayes.getDistributionList().stream().map(dist -> {
-                                if (!Utils.isMissingValue(batch.getValue(dist.getVariable())))
-                                    return new CountVector(dist.getSufficientStatistics(batch));
-                                else
-                                    return new CountVector();
-                            }).collect(Collectors.toList());
-
-                            return new CountVectors(list);
-                        }).reduce(CountVectors::sumNonStateless).get();
-
-        CountVectors initSS = new CountVectors(ef_naiveBayes.getDistributionList().stream().map(w -> new CountVector(w.createInitSufficientStatistics())).collect(Collectors.toList()));
+        PartialSufficientSatistics initSS = PartialSufficientSatistics.createInitPartialSufficientStatistics(ef_naiveBayes);
         result.sum(initSS);
         result.normalize();
-        List<Vector> ssList = result.list.stream().map(a -> a.sufficientStatistics).collect(Collectors.toList());
-        CompoundVector vectorSS = new CompoundVector(ssList);
         SufficientStatistics finalSS = ef_naiveBayes.createZeroSufficientStatistics();
-        finalSS.sum(vectorSS);
+        finalSS.sum(result.getCompoundVector());
         ef_naiveBayes.setMomentParameters(finalSS);
 
 
@@ -172,29 +161,58 @@ public class NaiveBayesClassifier implements Classifier{
 
     }
 
-    static class CountVectors {
+    private static PartialSufficientSatistics computeCountSufficientStatistics(EF_BayesianNetwork bn, DataInstance dataInstance){
+        List<CountVector> list = bn.getDistributionList().stream().map(dist -> {
+            if (Utils.isMissingValue(dataInstance.getValue(dist.getVariable())))
+                    return new CountVector();
+
+            for (Variable var: dist.getConditioningVariables())
+                if (Utils.isMissingValue(dataInstance.getValue(var)))
+                    return new CountVector();
+
+            return new CountVector(dist.getSufficientStatistics(dataInstance));
+        }).collect(Collectors.toList());
+
+        return new PartialSufficientSatistics(list);
+    }
+
+
+    static class PartialSufficientSatistics {
 
         List<CountVector> list;
 
-        public CountVectors(List<CountVector> list) {
+        public PartialSufficientSatistics(List<CountVector> list) {
             this.list = list;
+        }
+
+        public static PartialSufficientSatistics createInitPartialSufficientStatistics(EF_BayesianNetwork ef_bayesianNetwork){
+            return new PartialSufficientSatistics(ef_bayesianNetwork.getDistributionList().stream().map(w -> new CountVector(w.createInitSufficientStatistics())).collect(Collectors.toList()));
+        }
+
+        public static PartialSufficientSatistics createZeroPartialSufficientStatistics(EF_BayesianNetwork ef_bayesianNetwork){
+            return new PartialSufficientSatistics(ef_bayesianNetwork.getDistributionList().stream().map(w -> new CountVector(w.createZeroSufficientStatistics())).collect(Collectors.toList()));
         }
 
         public void normalize(){
             list.stream().forEach(a -> a.normalize());
         }
 
-        public void sum(CountVectors a){
+        public void sum(PartialSufficientSatistics a){
             for (int i = 0; i < this.list.size(); i++) {
                 this.list.get(i).sum(a.list.get(i));
             }
         }
 
-        public static CountVectors sumNonStateless(CountVectors a, CountVectors b) {
+        public static PartialSufficientSatistics sumNonStateless(PartialSufficientSatistics a, PartialSufficientSatistics b) {
             for (int i = 0; i < b.list.size(); i++) {
                 b.list.get(i).sum(a.list.get(i));
             }
             return b;
+        }
+
+        public CompoundVector getCompoundVector(){
+            List<Vector> ssList = this.list.stream().map(a -> a.sufficientStatistics).collect(Collectors.toList());
+            return new CompoundVector(ssList);
         }
     }
 
