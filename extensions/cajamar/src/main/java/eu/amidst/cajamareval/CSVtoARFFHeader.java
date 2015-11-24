@@ -27,7 +27,7 @@ public class CSVtoARFFHeader {
         return result;
     }
 
-    public static void getNumberOfStatesFromCSVFolder(String folderName) throws IOException {
+    public static void getNumberOfStatesFromCSVFolder(String folderName, String outputFolderName) throws IOException {
 
         //System.out.println("Reading folder " + folderName + ", with files:");
         Path folder = Paths.get(folderName); //"./datasets/CSVfolder/");
@@ -138,7 +138,7 @@ public class CSVtoARFFHeader {
         //System.out.println();
 
         String outputFileName = "attributes.txt";
-        Path outputPath = Paths.get(folderName, outputFileName);
+        Path outputPath = Paths.get(outputFolderName, outputFileName);
         File outputFile = outputPath.toFile();
         PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
 
@@ -148,24 +148,22 @@ public class CSVtoARFFHeader {
             String varValues;
             if (isVariableContinuous[i]) {
                 varValues = "real";
-            }
-            else {
+            } else {
 
-                try{
+                try {
                     StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
                     builder.append("{");
                     //varStates.get(i).stream().sorted().forEach(str -> builder.append(str + ","));
                     varStates.get(i).stream()//filter(str -> str.compareTo("?")!=0).
-                    .mapToInt(Integer::parseInt).sorted().forEach(str -> builder.append(str + ","));
+                            .mapToInt(Integer::parseInt).sorted().forEach(str -> builder.append(str + ","));
                     builder.deleteCharAt(builder.lastIndexOf(","));
                     builder.append("}");
                     varValues = builder.toString();
-                }
-                catch(NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
                     builder.append("{");
                     varStates.get(i).stream()//.filter(str -> str.compareTo("?")!=0)
-                    .sorted().forEach(str -> builder.append(str + ","));
+                            .sorted().forEach(str -> builder.append(str + ","));
                     //varStates.get(i).stream().mapToInt(Integer::parseInt).sorted().forEach();
                     builder.deleteCharAt(builder.lastIndexOf(","));
                     builder.append("}");
@@ -180,7 +178,7 @@ public class CSVtoARFFHeader {
 
     }
 
-    public static void getNumberOfStatesFromCSVFile(String folder, String file) throws IOException {
+    public static void getNumberOfStatesFromCSVFile(String folder, String file, String outputFolderName) throws IOException {
 
         //System.out.println("Reading file " + file);
         Path path = Paths.get(folder, file);
@@ -264,7 +262,7 @@ public class CSVtoARFFHeader {
 
         //for(int i=0; i<variableNames.size(); i++) {
         String outputFileName = "attributes.txt";
-        Path outputPath = Paths.get(folder, outputFileName);
+        Path outputPath = Paths.get(outputFolderName, outputFileName);
         File outputFile = outputPath.toFile();
         PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
 
@@ -323,14 +321,15 @@ public class CSVtoARFFHeader {
 //        @attribute H real
 //        @attribute I real
 
-        if(args.length!=1) {
-            System.out.println("Incorrect number of arguments. Please use \"CSVtoARFFHeader CSVFolderPath\"");
+        if(args.length!=2) {
+            System.out.println("Incorrect number of arguments. Please use \"CSVtoARFFHeader 'csv_folder_path' 'output_file_path'\"");
             //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder2");
             //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder");
         }
         else {
-            String dirName = args[0];
-            getNumberOfStatesFromCSVFolder(dirName);
+            String csvFolderName = args[0];
+            String outputFolderName = args[1];
+            getNumberOfStatesFromCSVFolder(csvFolderName, outputFolderName);
         }
 
         //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder");
