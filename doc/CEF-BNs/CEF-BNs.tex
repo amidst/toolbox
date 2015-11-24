@@ -749,7 +749,7 @@ This conditional probability distribution can be expressed in different exponent
 
 \begin{itemize}
 
-\item \textbf{First form}:
+\item \textbf{F-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid Y) &=& \theta^T s(X,Y) - A(\theta) \\
@@ -783,7 +783,7 @@ I(X=x^2)I(Y=y^2)
 - 0
 \end{eqnarray*}
 
-\item \textbf{Second form}:
+\item \textbf{C-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid Y) &=& \theta(Y)^Ts(X) - A(Y) \\
@@ -809,7 +809,7 @@ I(X=x^2)
 - 0 
 \end{eqnarray*}
 
-\item \textbf{Third form}:
+\item \textbf{P-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid Y) &=& \theta(X)^T s(Y) - A(X) \\
@@ -852,7 +852,7 @@ Similarly the above log-conditional probability can be expressed in the followin
 
 \begin{itemize}
 
-\item \textbf{First form}:
+\item \textbf{P-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid \mathbf{Y}) &=& \theta^T s(X,\mathbf{Y}) - A(\theta) \\\\
@@ -899,7 +899,7 @@ I(X=x^k) I(\mathbf{Y}=\mathbf{y}^q)
 \end{eqnarray*}
 
 \vspace{0.5in}
-\item \textbf{Second form}:
+\item \textbf{C-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid \mathbf{Y}) &=& \theta(\mathbf{Y})^Ts(X) - A(\mathbf{Y}) \\ \\
@@ -932,7 +932,7 @@ I(X=x^k)
 \noindent such that $\mathbf{m}^{\mathbf{Y}}_1 = \prod_{i=1}^n I( Y_i = y_i^1) = \prod_{i=1}^n m^{Y_i}_1$ denotes the expected sufficient statistics for the first parental configuration, and $\mathbf{m}^{\mathbf{Y}}_q = \prod_{i=1}^n I( Y_i = y_i^{r_i})  = \prod_{i=1}^n m^{Y_i}_{r_i} $ denotes the expected sufficient statistics for the last parental configuration.
 
 \vspace{0.5in}
-\item \textbf{Third form}:
+\item \textbf{P-form}:
 
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y}) &=& \theta(X)^T s(\mathbf{Y}) - A(X) \\ \\
@@ -1016,7 +1016,7 @@ Similarly the above log-conditional probability can be expressed in the followin
 \begin{itemize}
 
 \vspace{0.5in}
-\item \textbf{Second form}:
+\item \textbf{C-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid \mathbf{Y}) &=& \theta(\rho)^Ts(X) - A(\mathbf{Y}) \\ \\
@@ -1036,7 +1036,7 @@ I(X=x^k)
 
 
 \vspace{0.5in}
-\item \textbf{Third form}:
+\item \textbf{P-form}:
 
 %----------------------------------------- with one parent
 
@@ -1130,7 +1130,7 @@ Similarly the above log-conditional probability can be expressed in the followin
 \newcommand{\beb}{\bs \beta}
 
 \begin{itemize}
-\item \textbf{First form - Joint suff. stat. (Maxim. Likelihood, matrix representation)}:
+\item \textbf{F-form - Joint suff. stat. (Maxim. Likelihood, matrix representation)}:
 
 $$\bm Z = ( X, \bm Y)$$
 \begin{eqnarray*}
@@ -1235,7 +1235,7 @@ Via inference.
 \end{itemize}
 
 \vspace{0.5in}
-\item \textbf{Second form}:
+\item \textbf{C-form}:
 
 \begin{eqnarray}\label{NormalGNomal2form}
 \ln p(X\mid \mathbf{Y}) &=& \theta(\mathbf{Y})^T s(X) - A \big(\theta(\mathbf{Y})\big) + h(\mathbf{X})\\\nonumber\\
@@ -1268,7 +1268,7 @@ X^2 \nonumber\\
 
 
 \vspace{0.2in}
-\item \textbf{Third form (for each parent $Y_i$, $\Y' = \Y \setminus Y_i $)}: 
+\item \textbf{P-form (for each parent $Y_i$, $\Y' = \Y \setminus Y_i $)}: 
 
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(Y_i) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
@@ -1314,7 +1314,7 @@ Note that here all $\beb$ and $\sigma^2$ values must be taken from the moment pa
 
 \begin{itemize} 
 
-\item \textbf{Second form (messages from $\beb$ and $\gamma$ variables to $X$)}:
+\item \textbf{C-form (messages from $\beb$ and $\gamma$ variables to $X$)}:
 
 As in \ref{NormalGNomal2form}, but now the natural parameters should be taken from the moment parameters of the parent variables, and not the natural parameters of $X$.
 
@@ -1333,7 +1333,7 @@ X^2 \\
 \left(0.5\ln{\sigma^2} + \frac{\beta_0\beb}{\sigma^2} \Y + \frac{\beb\beb^T}{2\sigma^2}\Y\Y^T +\frac{\beta_0^2}{2\sigma^2}\right) - \tfrac{1}{2}\ln{(2\pi)} 
 \end{eqnarray*}
 
-\item \textbf{Third form (messages from $X$ to $\beta_0$)}:
+\item \textbf{P-form (messages from $X$ to $\beta_0$)}:
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beb,\gamma)^T s(\beta_0) - A \big(\theta(X,\Y,\beb,\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
 &=&
@@ -1349,7 +1349,7 @@ X\sigma^{-2} - \beb^T \Y \sigma^{-2} \\
 \end{eqnarray*}
 
 
-\item \textbf{Third form (messages from $X$ to $\beta_i$)}:
+\item \textbf{P-form (messages from $X$ to $\beta_i$)}:
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y},\beta_0,\beb,\gamma) &=& \theta(X,\Y,\beta_0,\beb',\gamma)^T s(\beta_i) - A \big(\theta(X,\Y,\beta_0,\beb',\gamma) \big) + h(\mathbf{Y,\beta_0,\beb,\gamma})\\\\
 &=&
@@ -1368,7 +1368,7 @@ X\sigma^{-2} - \beb^T \Y \sigma^{-2} \\
 where $\beb_i' = \beb$ where $\beta_i = 0$,\\
 
 
-\item \textbf{Third form (messages from $X$ to $\gamma$ ($\sigma^2$))}:
+\item \textbf{P-form (messages from $X$ to $\gamma$ ($\sigma^2$))}:
 \begin{eqnarray*}
 \ln p(X|Y_1,\ldots,Y_n,\beb,\gamma) &=& \theta(X,\Y, \beta_0, \beb)^T s(\gamma) - A \big(\theta(X,\Y,\beta_0,\beb) \big) + h(\mathbf{\Y,\beta_0, \beb})\\\\
 &=&
@@ -1383,7 +1383,7 @@ where $\beb_i' = \beb$ where $\beta_i = 0$,\\
  - 0.5\ln{(2\pi)}
 \end{eqnarray*}
 
-\item \textbf{Third form (for each parent $Y_i$, $\Y' = \Y \setminus Y_i $)}: 
+\item \textbf{P-form (for each parent $Y_i$, $\Y' = \Y \setminus Y_i $)}: 
 
 \begin{eqnarray*}
 \ln p(X\mid \mathbf{Y}) &=& \theta(X,\Y')^T s(Y_i) - A \big(\theta(X,\Y') \big) + h(\mathbf{Y})\\\\
@@ -1444,7 +1444,7 @@ This conditional probability distribution can be expressed in different exponent
 
 \begin{itemize}
 
-\item \textbf{First form}:
+\item \textbf{F-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid Y) &=& \theta^T s(X,Y) - A(\theta) \\
@@ -1464,7 +1464,7 @@ s(X) \cdot I(Y=y^2)
 - 0 
 \end{eqnarray*}
 
-\item \textbf{Second form}:
+\item \textbf{C-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid Y) &=& \theta(Y)^Ts(X) - A(\theta(Y)) \\
@@ -1479,7 +1479,7 @@ s(X)
 -  m^Y_1 \cdot  A(\theta_{X1}) -  m^Y_2  \cdot A(\theta_{X2})
 \end{eqnarray*}
 
-\item \textbf{Third form}:
+\item \textbf{P-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid Y) &=& \theta(X)^T s(Y) - A(X) \\
@@ -1520,7 +1520,7 @@ This conditional probability distribution can be expressed in different exponent
 
 \begin{itemize}
 
-\item \textbf{First form}:
+\item \textbf{F-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid \bm  Z, \mathbf{Y}) &=& \theta^T s(X,\bm Z, \mathbf{Y}) - A(\theta) \\
@@ -1544,7 +1544,7 @@ s(X, \bm  Z) \cdot I(\mathbf{Y} =\mathbf{y}^q)
 - 0 
 \end{eqnarray*}
 
-\item \textbf{Second form}:
+\item \textbf{C-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid \bm  Z, \mathbf{Y} ) &=& \theta(\bm  Z, \mathbf{Y} )^T s(X) - A(\mathbf{Y} ) \\
@@ -1558,7 +1558,7 @@ s(X)
 - \sum^q_{l=1} \mathbf{m}^\mathbf{Y}_l \cdot A(\theta_{X_l}(\bm Z)) \\\\
 \end{eqnarray*}
 
-\item \textbf{Third form}:
+\item \textbf{P-form}:
 
 \begin{eqnarray*}
 \ln p(X \mid \mathbf{Y}) &=& \theta(X)^T s(\mathbf{Y}) - A(X) \\
