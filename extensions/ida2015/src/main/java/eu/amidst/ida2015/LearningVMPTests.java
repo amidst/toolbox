@@ -1286,7 +1286,7 @@ public class LearningVMPTests {
                     //System.out.println("  fading: "+fadingFactor[f]);
                     svb.initLearning();
                     svb.setTransitionMethod(new Fading(fadingFactor[f]));
-                    //double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sum();
+                    //double logProbOfEv_Batch1 = data.streamOfBatches(windowsSizes[i]).sequential().mapToDouble(svb::updateModel).sumNonStateless();
                     BayesianNetwork bn = svb.getLearntBayesianNetwork();
                     ConditionalLinearGaussian distMout = ((ConditionalLinearGaussian) bn.
                             getConditionalDistribution(varMout));

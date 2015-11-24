@@ -268,10 +268,10 @@ public class MAPInferenceExperiments {
 //        double s4 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
 //        System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s4);
 //
-//        double sum = s1+s2+s3+s4;
+//        double sumNonStateless = s1+s2+s3+s4;
 //
 //        System.out.println();
-//        System.out.println("Sum = " + sum + "; Normalized probs: [V1=0,V2=0]=" + s1/sum + ", [V1=0,V2=1]=" + s2/sum + ", [V1=1,V2=0]=" + s3/sum + ", [V1=1,V2=1]=" + s4/sum );
+//        System.out.println("Sum = " + sumNonStateless + "; Normalized probs: [V1=0,V2=0]=" + s1/sumNonStateless + ", [V1=0,V2=1]=" + s2/sumNonStateless + ", [V1=1,V2=0]=" + s3/sumNonStateless + ", [V1=1,V2=1]=" + s4/sumNonStateless );
 
 
 
@@ -862,9 +862,9 @@ public class MAPInferenceExperiments {
 //        double s4 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
 //        System.out.println(mapEstimate.outputString() + " with prob. " + s4);
 //
-//        double sum = s1+s2+s3+s4;
+//        double sumNonStateless = s1+s2+s3+s4;
 //
-//        System.out.println("Probs: " + s1/sum + ", " + s2/sum + ", " + s3/sum + ", " + s4/sum + ", suma = " + sum );
+//        System.out.println("Probs: " + s1/sumNonStateless + ", " + s2/sumNonStateless + ", " + s3/sumNonStateless + ", " + s4/sumNonStateless + ", suma = " + sumNonStateless );
 
 
 

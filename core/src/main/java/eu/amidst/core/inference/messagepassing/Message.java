@@ -73,13 +73,26 @@ public class Message<E extends Vector> {
     }
 
     /**
+     * Combines the given message.
+     * @param m1 a given message.
+     */
+    public void combine(Message<E> m1){
+        if (m1.getNode().getMainVariable()!=this.getNode().getMainVariable()) {
+            throw new IllegalArgumentException();
+        }
+        this.getVector().sum(m1.vector);
+        this.setDone(this.isDone() && m1.isDone());
+    }
+
+
+    /**
      * Combines two given Messages.
      * @param <E> a class extending {@link Vector}
      * @param m1 a first given message.
      * @param m2 a second given message.
      * @return the message that represents the result of the combination of the two input messages.
      */
-    public static <E extends Vector> Message<E> combine(Message<E> m1, Message<E> m2){
+    public static <E extends Vector> Message<E> combineNonStateless(Message<E> m1, Message<E> m2){
         if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
             throw new IllegalArgumentException();
         }

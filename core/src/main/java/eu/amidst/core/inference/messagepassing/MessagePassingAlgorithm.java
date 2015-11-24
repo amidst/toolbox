@@ -24,6 +24,7 @@ import eu.amidst.core.variables.Variable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -154,11 +155,14 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
                 Message<E> selfMessage = newSelfMessage(node);
 
-                selfMessage =   node.getChildren()
+                Optional<Message<E>> message = node.getChildren()
                                 .stream()
                                 .filter(children -> children.isActive())
-                                .map(children -> newMessageToParent(children,node))
-                                .reduce(selfMessage, Message::combine);
+                                .map(children -> newMessageToParent(children, node))
+                                .reduce(Message::combineNonStateless);
+
+                if (message.isPresent())
+                 selfMessage.combine(message.get());
 
                 //for (Node child: node.getChildren()){
                 //    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);

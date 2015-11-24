@@ -55,9 +55,9 @@ public final class Utils {
     }
 
     /**
-     * Returns the sum of the elements in a given vector.
+     * Returns the sumNonStateless of the elements in a given vector.
      * @param vector a {@link Vector} object.
-     * @return a {@code double} that represents the sum of the vector elements.
+     * @return a {@code double} that represents the sumNonStateless of the vector elements.
      */
     public static double sum(Vector vector){
         double sum = 0;

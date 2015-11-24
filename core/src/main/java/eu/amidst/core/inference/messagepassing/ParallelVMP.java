@@ -146,7 +146,7 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
                     .flatMap(node -> computeMessagesParallelVMP(node))
                     .collect(
                             Collectors.groupingBy(Message::getNode,ConcurrentHashMap::new,
-                                    Collectors.reducing(Message::combine))
+                                    Collectors.reducing(Message::combineNonStateless))
                     );
 
             //Set Messages
@@ -166,7 +166,7 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
                     .flatMap(node -> computeMessagesParallelVMP(node))
                     .collect(
                             Collectors.groupingBy(Message::getNode,ConcurrentHashMap::new,
-                                    Collectors.reducing(Message::combine))
+                                    Collectors.reducing(Message::combineNonStateless))
                     );
 
             //Set Messages
@@ -185,7 +185,7 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
             }
 
             //Compute lower-bound
-            //newelbo.set(this.nodes.parallelStream().mapToDouble(Node::computeELBO).sum());
+            //newelbo.set(this.nodes.parallelStream().mapToDouble(Node::computeELBO).sumNonStateless());
             if (Math.abs(newelbo.get() - elbo) < threshold) {
                 convergence = true;
             }

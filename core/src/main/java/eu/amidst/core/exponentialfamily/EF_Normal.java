@@ -102,7 +102,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
         ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
 
         vector.set(0, 0);
-        vector.set(1, 1);
+        vector.set(1, 0.000001);
 
         return vector;
 

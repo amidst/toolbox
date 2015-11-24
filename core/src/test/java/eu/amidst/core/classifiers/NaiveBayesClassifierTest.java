@@ -59,6 +59,8 @@ public class NaiveBayesClassifierTest extends TestCase {
         BayesianNetwork nb = parallelMaximumLikelihood.getLearntBayesianNetwork();
         System.out.println(nb.toString());
         assertTrue(nb.equalBNs(nbClassifier, 0.1));
+        assertTrue(bn.equalBNs(nbClassifier, 0.3));
+        assertTrue(bn.equalBNs(nb, 0.3));
 
     }
 }

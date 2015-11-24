@@ -85,12 +85,12 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
     public void runLearning() {
         this.initLearning();
         if (!parallelMode) {
-            //this.elbo = this.dataStream.stream().sequential().mapToDouble(this::updateModel).sum();
+            //this.elbo = this.dataStream.stream().sequential().mapToDouble(this::updateModel).sumNonStateless();
             this.elbo = this.dataStream.streamOfBatches(this.windowsSize).sequential().mapToDouble(this::updateModel).sum();
         }else {
             //Creeat EF_ExtendedBN which returns ParameterVariable object
             //Paremter variable car
-            //BatchOutput finalout = this.dataStream.streamOfBatches(100).map(this::updateModelOnBatchParallel).reduce(BatchOutput::sum).get();
+            //BatchOutput finalout = this.dataStream.streamOfBatches(100).map(this::updateModelOnBatchParallel).reduce(BatchOutput::sumNonStateless).get();
         }
     }
 
