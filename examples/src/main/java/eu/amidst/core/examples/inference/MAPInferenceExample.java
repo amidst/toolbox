@@ -35,7 +35,7 @@ public class MAPInferenceExample {
 
         //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
-        List<Variable> causalOrder = Utils.getCausalOrder(bn.getDAG());
+        List<Variable> topologicalOrder = Utils.getTopologicalOrder(bn.getDAG());
 
         //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
         Variable varMin = bn.getVariables().getVariableByName("Min");
@@ -56,7 +56,7 @@ public class MAPInferenceExample {
         mapInference.setEvidence(assignment);
 
 
-        System.out.println("Evidence: " + assignment.outputString(causalOrder) + "\n");
+        System.out.println("Evidence: " + assignment.outputString(topologicalOrder) + "\n");
 
         // Set also the list of variables of interest (or MAP variables).
         List<Variable> varsInterest = new ArrayList<>();
@@ -76,7 +76,7 @@ public class MAPInferenceExample {
         mapInference.runInference();
 
         //We show the found MPE estimate
-        System.out.println("MAP = " + mapInference.getEstimate().outputString(causalOrder));
+        System.out.println("MAP = " + mapInference.getEstimate().outputString(topologicalOrder));
 
 
         //And its probability

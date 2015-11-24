@@ -113,9 +113,9 @@ public class MAPInferenceExperiments {
 //        mapInference.setParallelMode(true);
 //        mapInference.setSampleSize(1);
 //
-//        List<Variable> causalOrder = Utils.getCausalOrder(mapInference.getOriginalModel().getDAG());
+//        List<Variable> causalOrder = Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG());
 //
-//        System.out.println("CausalOrder: " + Arrays.toString(Utils.getCausalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
+//        System.out.println("CausalOrder: " + Arrays.toString(Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
 //        System.out.println();
 //
 //
@@ -331,9 +331,9 @@ public class MAPInferenceExperiments {
         mapInference.setParallelMode(true);
         mapInference.setSampleSize(1);
 
-        List<Variable> causalOrder = Utils.getCausalOrder(mapInference.getOriginalModel().getDAG());
+        List<Variable> causalOrder = Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG());
 
-        System.out.println("CausalOrder: " + Arrays.toString(Utils.getCausalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
+        System.out.println("CausalOrder: " + Arrays.toString(Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
         System.out.println();
 
 
@@ -389,7 +389,7 @@ public class MAPInferenceExperiments {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(1);
+        mapInference.runInference("SA_global");
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.All): " + mapEstimate.outputString(varsInterest));
@@ -403,7 +403,7 @@ public class MAPInferenceExperiments {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(0);
+        mapInference.runInference("SA_local");
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.Some): " + mapEstimate.outputString(varsInterest));
@@ -421,7 +421,7 @@ public class MAPInferenceExperiments {
 
         //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(3);
+        mapInference.runInference("HC_global");
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.All): " + mapEstimate.outputString(varsInterest));
@@ -435,7 +435,7 @@ public class MAPInferenceExperiments {
 
         //  MAP INFERENCE WITH HILL CLIMBING, MOVING SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(2);
+        mapInference.runInference("HC_local");
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.Some): " + mapEstimate.outputString(varsInterest));
@@ -453,7 +453,7 @@ public class MAPInferenceExperiments {
         // MAP INFERENCE WITH SIMULATION AND PICKING MAX
         mapInference.setSampleSize(samplingMethodSize);
         timeStart = System.nanoTime();
-        mapInference.runInference(-1);
+        mapInference.runInference("sampling");
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
