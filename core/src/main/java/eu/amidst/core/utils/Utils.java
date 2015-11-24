@@ -156,11 +156,11 @@ public final class Utils {
     }
 
     /**
-     * Returns the causal order of {@link Variables} of a given {@link DAG}.
+     * Returns the topological order of {@link Variables} of a given {@link DAG}.
      * @param dag a given {@link DAG}.
-     * @return a causal ordered list of {@link Variables}.
+     * @return a topological ordered list of {@link Variables}.
      */
-    public static List<Variable> getCausalOrder(DAG dag){
+    public static List<Variable> getTopologicalOrder(DAG dag){
         Variables variables = dag.getVariables();
         int nNrOfAtts = variables.getNumberOfVars();
         List<Variable> order = new ArrayList();

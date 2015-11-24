@@ -61,7 +61,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      */
     public BayesianNetworkSampler(BayesianNetwork network1){
         network=network1;
-        this.causalOrder=Utils.getCausalOrder(network.getDAG());
+        this.causalOrder=Utils.getTopologicalOrder(network.getDAG());
     }
 
     /**

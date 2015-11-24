@@ -34,7 +34,7 @@ public class MPEInferenceExample {
 
         //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
-        List<Variable> causalOrder = Utils.getCausalOrder(bn.getDAG());
+        List<Variable> topologicalOrder = Utils.getTopologicalOrder(bn.getDAG());
 
         //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
         Variable varMin = bn.getVariables().getVariableByName("Min");
@@ -55,7 +55,7 @@ public class MPEInferenceExample {
         mpeInference.setEvidence(assignment);
 
 
-        System.out.println("Evidence: " + assignment.outputString(causalOrder) + "\n");
+        System.out.println("Evidence: " + assignment.outputString(topologicalOrder) + "\n");
 
         //We can also set to be run in parallel on multicore CPUs
         mpeInference.setParallelMode(true);
@@ -64,7 +64,7 @@ public class MPEInferenceExample {
         mpeInference.runInference();
 
         //We show the found MPE estimate
-        System.out.println("MPE = " + mpeInference.getEstimate().outputString(causalOrder));
+        System.out.println("MPE = " + mpeInference.getEstimate().outputString(topologicalOrder));
 
 
         //And its probability
