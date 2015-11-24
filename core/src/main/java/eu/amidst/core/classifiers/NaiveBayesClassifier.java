@@ -16,6 +16,9 @@ import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.learning.parametric.ParallelMLMissingData;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
@@ -121,7 +124,14 @@ public class NaiveBayesClassifier implements Classifier{
      */
     @Override
     public void learn(DataStream<DataInstance> dataStream){
-        this.learn(dataStream,1000);
+        ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
+        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.className));
+        parameterLearningAlgorithm.setDataStream(dataStream);
+        parameterLearningAlgorithm.initLearning();
+        parameterLearningAlgorithm.runLearning();
+        bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+        predictions.setModel(bnModel);
     }
 
 
@@ -131,122 +141,14 @@ public class NaiveBayesClassifier implements Classifier{
      * @param batchSize the size of the batch for the parallel ML algorithm.
      */
     public void learn(DataStream<DataInstance> dataStream, int batchSize){
-        DAG dag = DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(), this.className);
-        BayesianNetwork naiveBayes = new BayesianNetwork(dag);
-        classVar = naiveBayes.getVariables().getVariableByName(this.className);
-
-        EF_BayesianNetwork ef_naiveBayes = new EF_BayesianNetwork(naiveBayes);
-
-        AtomicDouble dataInstanceCount = new AtomicDouble(0); //Initial count
-
-
-        PartialSufficientSatistics result =
-                        dataStream
-                        .parallelStream(batchSize)
-                        .peek(a -> {if (dataInstanceCount.addAndGet(1)%batchSize==1) System.out.println("Data Instance:"+dataInstanceCount.toString());})
-                        .map(dataInstance -> computeCountSufficientStatistics(ef_naiveBayes, dataInstance))
-                        .reduce(PartialSufficientSatistics::sumNonStateless).get();
-
-        PartialSufficientSatistics initSS = PartialSufficientSatistics.createInitPartialSufficientStatistics(ef_naiveBayes);
-        result.sum(initSS);
-        result.normalize();
-        SufficientStatistics finalSS = ef_naiveBayes.createZeroSufficientStatistics();
-        finalSS.sum(result.getCompoundVector());
-        ef_naiveBayes.setMomentParameters(finalSS);
-
-
-        bnModel = ef_naiveBayes.toBayesianNetwork(dag);
-
-        this.predictions.setModel(bnModel);
-
+        ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
+        parameterLearningAlgorithm.setBatchSize(batchSize);
+        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getNaiveBayesStructure(dataStream.getAttributes(),this.className));
+        parameterLearningAlgorithm.setDataStream(dataStream);
+        parameterLearningAlgorithm.initLearning();
+        parameterLearningAlgorithm.runLearning();
+        bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+        predictions.setModel(bnModel);
     }
-
-    private static PartialSufficientSatistics computeCountSufficientStatistics(EF_BayesianNetwork bn, DataInstance dataInstance){
-        List<CountVector> list = bn.getDistributionList().stream().map(dist -> {
-            if (Utils.isMissingValue(dataInstance.getValue(dist.getVariable())))
-                    return new CountVector();
-
-            for (Variable var: dist.getConditioningVariables())
-                if (Utils.isMissingValue(dataInstance.getValue(var)))
-                    return new CountVector();
-
-            return new CountVector(dist.getSufficientStatistics(dataInstance));
-        }).collect(Collectors.toList());
-
-        return new PartialSufficientSatistics(list);
-    }
-
-
-    static class PartialSufficientSatistics {
-
-        List<CountVector> list;
-
-        public PartialSufficientSatistics(List<CountVector> list) {
-            this.list = list;
-        }
-
-        public static PartialSufficientSatistics createInitPartialSufficientStatistics(EF_BayesianNetwork ef_bayesianNetwork){
-            return new PartialSufficientSatistics(ef_bayesianNetwork.getDistributionList().stream().map(w -> new CountVector(w.createInitSufficientStatistics())).collect(Collectors.toList()));
-        }
-
-        public static PartialSufficientSatistics createZeroPartialSufficientStatistics(EF_BayesianNetwork ef_bayesianNetwork){
-            return new PartialSufficientSatistics(ef_bayesianNetwork.getDistributionList().stream().map(w -> new CountVector(w.createZeroSufficientStatistics())).collect(Collectors.toList()));
-        }
-
-        public void normalize(){
-            list.stream().forEach(a -> a.normalize());
-        }
-
-        public void sum(PartialSufficientSatistics a){
-            for (int i = 0; i < this.list.size(); i++) {
-                this.list.get(i).sum(a.list.get(i));
-            }
-        }
-
-        public static PartialSufficientSatistics sumNonStateless(PartialSufficientSatistics a, PartialSufficientSatistics b) {
-            for (int i = 0; i < b.list.size(); i++) {
-                b.list.get(i).sum(a.list.get(i));
-            }
-            return b;
-        }
-
-        public CompoundVector getCompoundVector(){
-            List<Vector> ssList = this.list.stream().map(a -> a.sufficientStatistics).collect(Collectors.toList());
-            return new CompoundVector(ssList);
-        }
-    }
-
-    static class CountVector {
-
-        SufficientStatistics sufficientStatistics;
-        int count;
-
-        public CountVector() {
-            count=0;
-            sufficientStatistics=null;
-        }
-
-        public CountVector(SufficientStatistics sufficientStatistics) {
-            this.sufficientStatistics = sufficientStatistics;
-            this.count=1;
-        }
-
-        public void normalize(){
-            this.sufficientStatistics.divideBy(count);
-        }
-
-        public void sum(CountVector a){
-            if (a.sufficientStatistics==null)
-                return;
-
-            this.count+=a.count;
-
-            if (this.sufficientStatistics==null) {
-                this.sufficientStatistics = a.sufficientStatistics;
-            }else{
-                this.sufficientStatistics.sum(a.sufficientStatistics);
-            }
-        }
-    }
-
 }
