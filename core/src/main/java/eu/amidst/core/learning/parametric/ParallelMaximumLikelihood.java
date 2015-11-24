@@ -144,26 +144,16 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
         }else{
             stream = dataStream.streamOfBatches(batchSize);
         }
-
-
-        dataInstanceCount = new AtomicDouble(0); //Initial count
-
-        sumSS = stream
+        sumSS.sum(stream
                 .peek(batch -> {
                     dataInstanceCount.getAndAdd(batch.getNumberOfDataInstances());
                     if (debug) System.out.println("Parallel ML procesando "+(int)dataInstanceCount.get() +" instances");
                 })
-                .map(batch -> {
-                    return batch.stream()
-                            .map(efBayesianNetwork::getSufficientStatistics)
-                            .reduce(SufficientStatistics::sumVectorNonStateless).get();
-                })
-                .reduce(SufficientStatistics::sumVectorNonStateless).get();
-
-        if (laplace) {
-            dataInstanceCount.addAndGet(1); //Initial count
-            sumSS.sum(efBayesianNetwork.createInitSufficientStatistics());
-        }
+                .map(batch ->  batch.stream()
+                                    .map(efBayesianNetwork::getSufficientStatistics)
+                                    .reduce(SufficientStatistics::sumVectorNonStateless)
+                                    .get())
+                .reduce(SufficientStatistics::sumVectorNonStateless).get());
     }
 
     /**
