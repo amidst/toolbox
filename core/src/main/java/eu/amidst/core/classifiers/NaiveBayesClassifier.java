@@ -22,7 +22,6 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.DAGGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.utils.Vector;
-import eu.amidst.core.variables.MissingAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
@@ -82,9 +81,9 @@ public class NaiveBayesClassifier implements Classifier{
      */
     @Override
     public double[] predict(DataInstance instance) {
-        MissingAssignment assignment = new MissingAssignment(instance);
-        assignment.addMissingVariable(classVar);
-        this.predictions.setEvidence(assignment);
+        if (!Utils.isMissingValue(instance.getValue(classVar)))
+            System.out.println("Class Variable can not be set.");
+        this.predictions.setEvidence(instance);
         this.predictions.runInference();
         Multinomial multinomial = this.predictions.getPosterior(classVar);
         return multinomial.getParameters();
