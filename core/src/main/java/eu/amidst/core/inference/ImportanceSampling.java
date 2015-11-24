@@ -18,12 +18,14 @@ import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.LocalRandomGenerator;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,9 @@ import java.util.stream.Stream;
  * <p> For an example of use follow this link
  * <a href="http://amidst.github.io/toolbox/CodeExamples.html#isexample"> http://amidst.github.io/toolbox/CodeExamples.html#isexample </a>  </p>
  */
-public class ImportanceSampling implements InferenceAlgorithm {
+public class ImportanceSampling implements InferenceAlgorithm, Serializable {
+
+    private static final long serialVersionUID = 8587756877237341367L;
 
     private BayesianNetwork model;
     private BayesianNetwork samplingModel;
@@ -116,8 +120,9 @@ public class ImportanceSampling implements InferenceAlgorithm {
      * @param samplingModel_ a {@link BayesianNetwork} model according to which samples will be taken.
      */
     public void setSamplingModel(BayesianNetwork samplingModel_) {
-        this.samplingModel = samplingModel_;
-        this.causalOrder = Utils.getCausalOrder(samplingModel.getDAG());
+        this.samplingModel = new BayesianNetwork(samplingModel_.getDAG(),
+                Serialization.deepCopy(samplingModel_.getConditionalDistributions()));
+        this.causalOrder = Utils.getTopologicalOrder(samplingModel.getDAG());
     }
 
     /**
@@ -245,7 +250,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
     //TODO For continuous variables, instead of returning a Gaussian distributions, we should return a Mixture of Gaussians!!
     public <E extends UnivariateDistribution> E getPosterior(Variable var) {
 
-        Variable samplingVar = this.samplingModel.getVariables().getVariableById(var.getVarID());
+        Variable samplingVar = this.samplingModel.getVariables().getVariableByName(var.getName());
         // TODO Could we build this object in a general way for Multinomial and Normal?
         EF_UnivariateDistribution ef_univariateDistribution = samplingVar.newUnivariateDistribution().toEFUnivariateDistribution();
 
@@ -260,6 +265,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
         if(parallelMode) {
             weightedSampleStream.parallel();
         }
+
 
         SufficientStatistics sumSS = weightedSampleStream
                 .peek(w -> {
