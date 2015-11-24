@@ -1,8 +1,6 @@
 package eu.amidst.cajamareval;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -132,12 +130,17 @@ public class CSVtoARFFHeader {
         });
 
         /*
-         * DISPLAYS THE .ARFF FILE HEADER:
+         * DISPLAYS OR SAVES THE .ARFF FILE HEADER:
          */
 
         //System.out.println();
         //System.out.println("ARFF Header:");
         //System.out.println();
+
+        String outputFileName = "attributes.txt";
+        Path outputPath = Paths.get(folderName, outputFileName);
+        File outputFile = outputPath.toFile();
+        PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
 
         //for(int i=0; i<variableNames.size(); i++) {
         IntStream.range(0, variableNames.size()).forEach(i -> {
@@ -170,8 +173,10 @@ public class CSVtoARFFHeader {
                 }
 
             }
-            System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
+            //System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
+            writer.println("@attribute " + variableNames.get(i) + " " + varValues);
         });
+        writer.close();
 
     }
 
@@ -258,39 +263,45 @@ public class CSVtoARFFHeader {
 //        System.out.println();
 
         //for(int i=0; i<variableNames.size(); i++) {
+        String outputFileName = "attributes.txt";
+        Path outputPath = Paths.get(folder, outputFileName);
+        File outputFile = outputPath.toFile();
+        PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
+
+
         IntStream.range(0, variableNames.size()).forEach(i -> {
             varStates.get(i).remove("?");
             String varValues;
 
             if (isVariableContinuous[i]) {
                 varValues = "real";
-            }
-            else {
+            } else {
 
-                try{
+                try {
                     StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
                     builder.append("{");
                     //varStates.get(i).stream().sorted().forEach(str -> builder.append(str + ","));
                     varStates.get(i).stream()//.filter(str -> str.compareTo("?")!=0)
-                    .mapToInt(Integer::parseInt).sorted().forEach(str -> builder.append(str + ","));
+                            .mapToInt(Integer::parseInt).sorted().forEach(str -> builder.append(str + ","));
                     builder.deleteCharAt(builder.lastIndexOf(","));
                     builder.append("}");
                     varValues = builder.toString();
-                }
-                catch(NumberFormatException ex) {
+                } catch (NumberFormatException ex) {
                     StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
                     builder.append("{");
                     varStates.get(i).stream()//.filter(str -> str.compareTo("?")!=0)
-                    .sorted().forEach(str -> builder.append(str + ","));
+                            .sorted().forEach(str -> builder.append(str + ","));
                     //varStates.get(i).stream().mapToInt(Integer::parseInt).sorted().forEach();
                     builder.deleteCharAt(builder.lastIndexOf(","));
                     builder.append("}");
                     varValues = builder.toString();
                 }
             }
-            System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
+            //System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
+            writer.println("@attribute " + variableNames.get(i) + " " + varValues);
         });
 
+        writer.close();
 
         reader.close();
         source.close();
