@@ -7,9 +7,9 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.*;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
@@ -150,7 +150,6 @@ public class DynamicMAPInference {
 
         dynamicDAG = model.getDynamicDAG();
         dag = obtainStaticDAG(dynamicDAG, variables, true);
-
         bn = this.obtainStaticGroupedClassBayesianNetwork(dag, variables, true);
 
         this.staticEvenModel = bn;
@@ -939,19 +938,27 @@ public class DynamicMAPInference {
                 List<Variable> thisVarParents = conditionalDistribution.getConditioningVariables();
                 List<Variable> parentList0 = bn.getDAG().getParentSet(staticVar1).getParents();
                 int indexMAPvariable = thisVarParents.indexOf(MAPvariable);
-                thisVarParents.remove(indexMAPvariable);
-                thisVarParents.add(indexMAPvariable, staticMAPVar1);
+                //thisVarParents.remove(indexMAPvariable);
+                thisVarParents.set(indexMAPvariable, staticMAPVar1);
 
-                BaseDistribution_MultinomialParents baseDist = new BaseDistribution_MultinomialParents(staticVar1,thisVarParents);
-                for (int m = 0; m < baseDist.getNumberOfBaseDistributions(); m++) {
-                    Assignment assignment = new HashMapAssignment(1);
-                    assignment.setValue(MAPvariable, m / MAPvariable.getNumberOfStates());
-                    UnivariateDistribution uniDist = conditionalDistribution.getUnivariateDistribution(assignment);
-                    uniDist.setVar(staticVar1);
-                    uniDist.setConditioningVariables(parentList0);
-                    baseDist.setBaseDistribution(m, uniDist);
-                }
-                bn.setConditionalDistribution(staticVar1, baseDist);
+                BaseDistribution_MultinomialParents staticVar2Distribution = distributionMAPChildrenTimeT(staticVar1, conditionalDistribution, parentList0, even_partition, 0);
+                bn.setConditionalDistribution(staticVar1, staticVar2Distribution);
+//                BaseDistribution_MultinomialParents baseDist = new BaseDistribution_MultinomialParents(staticVar1,thisVarParents);
+//                boolean allParentsMultinomial = thisVarParents.stream().allMatch(parent -> parent.isMultinomial());
+//
+//                for (int m = 0; m < baseDist.getNumberOfBaseDistributions(); m++) {
+//                    Assignment assignment = new HashMapAssignment(1);
+//                    assignment.setValue(MAPvariable, m / MAPvariable.getNumberOfStates());
+//                    UnivariateDistribution uniDist = conditionalDistribution.getUnivariateDistribution(assignment);
+//                    uniDist.setVar(staticVar1);
+//                    uniDist.setConditioningVariables(parentList0);
+//                    baseDist.setBaseDistribution(m, uniDist);
+//                }
+//                conditionalDistribution.setConditioningVariables(parentList0);
+//                conditionalDistribution.setVar(staticVar1);
+//
+//                bn.setConditionalDistribution(staticVar1, conditionalDistribution);
+//                bn.setConditionalDistribution(staticVar1, baseDist);
             });
         }
         else {
@@ -961,11 +968,12 @@ public class DynamicMAPInference {
                 Variable staticMAPVar1 = variables.getVariableByName(groupedClassName + "_t0");
                 Variable staticVar1 = variables.getVariableByName(dynVariable.getName() + "_t0");
                 List<Variable> thisVarParents = conditionalDistribution.getConditioningVariables();
+                List<Variable> parentList0 = bn.getDAG().getParentSet(staticVar1).getParents();
                 int indexMAPvariable = thisVarParents.indexOf(MAPvariable);
-                thisVarParents.remove(indexMAPvariable);
-                thisVarParents.add(indexMAPvariable, staticMAPVar1);
+                //thisVarParents.remove(indexMAPvariable);
+                thisVarParents.set(indexMAPvariable, staticMAPVar1);
 
-                conditionalDistribution.setConditioningVariables(thisVarParents);
+                conditionalDistribution.setConditioningVariables(parentList0);
                 conditionalDistribution.setVar(staticVar1);
 
                 bn.setConditionalDistribution(staticVar1, conditionalDistribution);
@@ -1028,11 +1036,11 @@ public class DynamicMAPInference {
         int nStatesMultinomialParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
 
         for (int m = 0; m < nStatesMultinomialParents; m++) {
-            Assignment staticParentsConfigurations = MultinomialIndex.getVariableAssignmentFromIndex(multinomialParents, m);
+            Assignment staticParentsConfiguration = MultinomialIndex.getVariableAssignmentFromIndex(multinomialParents, m);
             Assignment dynamicParentsConfiguration = new HashMapAssignment(multinomialParents.size());
 
             IntStream.range(0, multinomialParents.size()).forEach(k -> {
-                double parentValue = staticParentsConfigurations.getValue(multinomialParents.get(k));
+                double parentValue = staticParentsConfiguration.getValue(multinomialParents.get(k));
                 String parentName;
                 if (multinomialParents.get(k).getName().contains(groupedClassName)) {
                     parentName = multinomialParents.get(k).getName().replace(groupedClassName, MAPvarName).replaceAll("_t\\d+", "");
@@ -1040,30 +1048,50 @@ public class DynamicMAPInference {
 
                     double dynParentValue;
 
-                    if (  (!even_partition && nTimeSteps%2==0 && (time_step==nTimeSteps-1))  ||  (even_partition && nTimeSteps%2==1 && (time_step==nTimeSteps-1))  ) {
-                        dynParentValue = parentValue;
+                    if (time_step==0) {
+                        dynParentValue = parentValue / MAPvariable.getNumberOfStates();;
                     }
                     else {
-                        if (  (!even_partition && (time_step % 2 == 1))  ||  (even_partition && (time_step % 2 == 0))  ) {
-                            dynParentValue = parentValue / MAPvariable.getNumberOfStates();
+                        if ((!even_partition && nTimeSteps % 2 == 0 && (time_step == nTimeSteps - 1)) || (even_partition && nTimeSteps % 2 == 1 && (time_step == nTimeSteps - 1))) {
+                            dynParentValue = parentValue;
                         } else {
-                            dynParentValue = parentValue % MAPvariable.getNumberOfStates();
+                            if ((!even_partition && (time_step % 2 == 1)) || (even_partition && (time_step % 2 == 0))) {
+                                dynParentValue = parentValue / MAPvariable.getNumberOfStates();
+                            } else {
+                                dynParentValue = parentValue % MAPvariable.getNumberOfStates();
+                            }
                         }
                     }
                     dynamicParentsConfiguration.setValue(dynParent, dynParentValue);
                 } else {
-                    parentName = multinomialParents.get(k).getName().replaceFirst("_t\\d+", "");
-                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
-                    dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
+
+                    if (multinomialParents.get(k).getName().endsWith("_t" + Integer.toString(time_step - 1))) {
+                        parentName = multinomialParents.get(k).getName().replaceFirst("_t\\d+", "");
+                        Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+                        dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
+                    } else {
+                        parentName = multinomialParents.get(k).getName().replaceFirst("_t\\d+", "");
+                        Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
+                        dynamicParentsConfiguration.setValue(dynParent, parentValue);
+                    }
                 }
             });
 
-            if (allParentsMultinomial) {
+            if (allParentsMultinomial && staticVariable.isMultinomial()) {
                 Multinomial multinomial1 = (Multinomial) dynamicConditionalDistribution.getUnivariateDistribution(dynamicParentsConfiguration);
                 multinomial1.setVar(staticVariable);
                 multinomial1.setConditioningVariables(multinomialParents);
 
                 staticVarConDist.setBaseDistribution(m, multinomial1);
+            }
+            else if (allParentsMultinomial && staticVariable.isNormal() ){
+                Normal_MultinomialParents normal_multinomialParents = (Normal_MultinomialParents) dynamicConditionalDistribution;
+                Normal clg = normal_multinomialParents.getNormal(m/MAPvariable.getNumberOfStates());
+                clg.setConditioningVariables(multinomialParents);
+                //clg.setConditioningVariables(continuousParents);
+                clg.setVar(staticVariable);
+
+                staticVarConDist.setBaseDistribution(m, clg);
             }
             else {
                 Normal_MultinomialNormalParents normal_multinomialNormalParents = (Normal_MultinomialNormalParents) dynamicConditionalDistribution;
@@ -1082,56 +1110,59 @@ public class DynamicMAPInference {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        String file = "./networks/CajamarDBN.dbn";
-        DynamicBayesianNetwork cajamarDBN = DynamicBayesianNetworkLoader.loadFromFile(file);
-
-        DynamicMAPInference dynMAP = new DynamicMAPInference();
-        dynMAP.setModel(cajamarDBN);
-        dynMAP.setNumberOfTimeSteps(6);
-
-        cajamarDBN.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
-
-        System.out.println(cajamarDBN.toString());
-        System.out.println("CausalOrder: " + cajamarDBN.getDynamicDAG().toString());
-
-        System.out.println(cajamarDBN.getDynamicDAG().toString());
-
-        Variable mapVariable = cajamarDBN.getDynamicVariables().getVariableByName("DEFAULT");
-        dynMAP.setMAPvariable(mapVariable);
-
-        dynMAP.computeDynamicMAPEvenModel();
-        BayesianNetwork test = dynMAP.getStaticEvenModel();
-
-        System.out.println(test.getDAG().toString());
-        System.out.println(cajamarDBN.toString());
-
-        dynMAP.runInference();
-
-
-
-
-
-//        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(3);
-//        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
-//        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
-//        DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
+//        String file = "./networks/CajamarDBN.dbn";
+//        DynamicBayesianNetwork cajamarDBN = DynamicBayesianNetworkLoader.loadFromFile(file);
 //
-//        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
+//        DynamicMAPInference dynMAP = new DynamicMAPInference();
+//        dynMAP.setModel(cajamarDBN);
+//        dynMAP.setNumberOfTimeSteps(6);
 //
-//        System.out.println("ORIGINAL DYNAMIC NETWORK:");
+//        cajamarDBN.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
+//
+//        System.out.println(cajamarDBN.toString());
+//        System.out.println("CausalOrder: " + cajamarDBN.getDynamicDAG().toString());
+//
+//        System.out.println(cajamarDBN.getDynamicDAG().toString());
+//
+//        Variable mapVariable = cajamarDBN.getDynamicVariables().getVariableByName("DEFAULT");
+//        dynMAP.setMAPvariable(mapVariable);
+//
+//        dynMAP.computeDynamicMAPEvenModel();
+//        BayesianNetwork test = dynMAP.getStaticEvenModel();
+//
+//        System.out.println(test.getDAG().toString());
+//        System.out.println(cajamarDBN.toString());
+//
+//        dynMAP.runInference();
 
-        System.out.println(cajamarDBN.toString());
+
+
+
+        DynamicMAPInference dynMAP;
+        Variable mapVariable;
+
+
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(3);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
+        DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
+
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
+
+        System.out.println("ORIGINAL DYNAMIC NETWORK:");
+
+        System.out.println(dynamicBayesianNetwork.toString());
         System.out.println();
 
 
 
         dynMAP = new DynamicMAPInference();
-        dynMAP.setModel(cajamarDBN);
+        dynMAP.setModel(dynamicBayesianNetwork);
 
         // INITIALIZE THE MODEL
         int nTimeSteps = 10;
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
-        mapVariable = cajamarDBN.getDynamicVariables().getVariableByName("DEFAULT");
+        mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("DEFAULT");
         dynMAP.setMAPvariable(mapVariable);
 
         dynMAP.computeDynamicMAPEvenModel();
@@ -1153,7 +1184,7 @@ public class DynamicMAPInference {
         /*
          * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
          */
-        List<Variable> varsDynamicModel = cajamarDBN.getDynamicVariables().getListOfDynamicVariables();
+        List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
 
         varsDynamicModel.forEach(var -> System.out.println("Var ID " + var.getVarID() + ": " + var.getName()));
         int indexVarEvidence1 = 0;
