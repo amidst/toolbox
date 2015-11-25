@@ -89,6 +89,7 @@
         <module>core-dynamic</module>
         <module>examples</module>
         <module>flinklink</module>
+        <module>moalink</module>
         <module>extensions/cajamar</module>
         <module>extensions/caepia2015</module>
         <module>extensions/ida2015</module>
