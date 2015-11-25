@@ -4,8 +4,11 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
@@ -18,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -81,7 +85,7 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         }
 
         if (assignment.getTimeID()==0) {
-            this.infAlgTime0.setEvidence(this.assignment);
+            this.infAlgTime0.setEvidence(updateDynamicAssignmentTime0(this.assignment,this.infAlgTime0.getOriginalModel()));
             this.infAlgTime0.runInference();
             this.timeID=0;
             this.getTargetVarsTime0().stream()
@@ -93,7 +97,7 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 this.moveWindow((int)(this.assignment.getTimeID() - this.timeID - 1));
 
             this.timeID=this.assignment.getTimeID();
-            this.infAlgTimeT.setEvidence(this.assignment);
+            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(this.assignment,this.infAlgTimeT.getOriginalModel()));
             this.infAlgTimeT.runInference();
             this.getTargetVarsTimeT().stream()
                     .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.infAlgTimeT,var));
@@ -124,7 +128,7 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         }
 
         for (int i = 0; i < nsteps; i++) {
-            this.infAlgTimeT.setEvidence(newassignment);
+            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(newassignment,this.infAlgTimeT.getOriginalModel()));
             this.infAlgTimeT.runInference();
             this.getTargetVarsTimeT().stream()
                     .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.infAlgTimeT,var));
@@ -222,6 +226,40 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         return this.timeID;
     }
 
+    private Assignment updateDynamicAssignmentTime0(DynamicAssignment dynamicAssignment, BayesianNetwork network){
+
+        HashMapAssignment assignment = new HashMapAssignment();
+
+        this.model.getDynamicVariables()
+                .getListOfDynamicVariables()
+                .stream()
+                .forEach(var -> {
+                    double value = dynamicAssignment.getValue(var);
+                    assignment.setValue(network.getVariables().getVariableByName(var.getName()),value);
+                });
+
+        return assignment;
+    }
+
+    private Assignment updateDynamicAssignmentTimeT(DynamicAssignment dynamicAssignment, BayesianNetwork network){
+
+        HashMapAssignment assignment = new HashMapAssignment();
+
+        this.model.getDynamicVariables()
+                .getListOfDynamicVariables()
+                .stream()
+                .forEach(var -> {
+                    double value = dynamicAssignment.getValue(var);
+                    assignment.setValue(network.getVariables().getVariableByName(var.getName()),value);
+
+                    Variable var_interface = var.getInterfaceVariable();
+                    double value_interface = dynamicAssignment.getValue(var_interface);
+                    assignment.setValue(network.getVariables().getVariableByName(var_interface.getName()),value_interface);
+
+                });
+
+        return assignment;
+    }
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
 
@@ -236,6 +274,7 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         model.learn(data);
         DynamicBayesianNetwork bn = model.getDynamicBNModel();
 
+        bn.randomInitialization(new Random(0));
         System.out.println(bn.toString());
 
 
@@ -290,6 +329,7 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         InferenceEngineForDBN.setModel(bn);
         dist=null;
         //countRightPred.set(0);
+        dataPredict = DynamicDataStreamLoader.loadFromFile(file);
 
         for(DynamicDataInstance instance: dataPredict){
 
@@ -311,8 +351,8 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                         System.out.println("max index = "+ix); if(ix==trueClass) countRightPred.getAndIncrement();});
             */
             System.out.println(dist.toString());
-            distAhead = InferenceEngineForDBN.getPredictivePosterior(targetVar,1);
-            System.out.println(distAhead.toString());
+            //distAhead = InferenceEngineForDBN.getPredictivePosterior(targetVar,1);
+            //System.out.println(distAhead.toString());
         }
         //System.out.println("Right predictions for IS = "+countRightPred.get());
 
