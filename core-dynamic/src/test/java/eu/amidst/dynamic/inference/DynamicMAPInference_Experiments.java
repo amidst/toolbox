@@ -9,6 +9,7 @@ import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class DynamicMAPInference_Experiments {
         /*
          *  INITIALIZE THE DYNAMIC MAP OBJECT
          */
-        int nTimeSteps = 10;
+        int nTimeSteps = 50;
         DynamicMAPInference dynMAP = new DynamicMAPInference();
         dynMAP.setModel(cajamarDBN);
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
@@ -63,54 +64,73 @@ public class DynamicMAPInference_Experiments {
 
         Random random = new Random(23739303);
 
-        List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
+        int nRepetitionsExperiments=10;
+        double [] executionTimes = new double[nRepetitionsExperiments];
+        double timeStart, timeStop, execTime;
 
-        for (int t = 0; t < nTimeSteps; t++) {
-            HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+        for (int ii = 0; ii < nRepetitionsExperiments; ii++) {
 
-            for (int i = 0; i < varsEvidence.size(); i++) {
+            dynMAP = new DynamicMAPInference();
+            dynMAP.setModel(cajamarDBN);
+            dynMAP.setNumberOfTimeSteps(nTimeSteps);
 
-                dynAssignment.setSequenceID(12302253);
-                dynAssignment.setTimeID(t);
-                Variable varEvidence = varsEvidence.get(i);
+            dynMAP.setMAPvariable(mapVariable);
 
-                if (varEvidence.isMultinomial()) {
-                    varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
+            List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
+
+            for (int t = 0; t < nTimeSteps; t++) {
+                HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+
+                for (int i = 0; i < varsEvidence.size(); i++) {
+
+                    dynAssignment.setSequenceID(12302253);
+                    dynAssignment.setTimeID(t);
+                    Variable varEvidence = varsEvidence.get(i);
+
+                    if (varEvidence.isMultinomial()) {
+                        varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
+                    } else {
+                        varEvidenceValue = -5 + 10 * random.nextDouble();
+                    }
+                    dynAssignment.setValue(varEvidence, varEvidenceValue);
                 }
-                else {
-                    varEvidenceValue = -5 + 10 * random.nextDouble();
-                }
-                dynAssignment.setValue(varEvidence, varEvidenceValue);
+                evidence.add(dynAssignment);
             }
-            evidence.add(dynAssignment);
-        }
-        System.out.println("EVIDENCE:");
-        evidence.forEach(evid -> {
-            System.out.println("Evidence at time " + evid.getTimeID());
-            evid.getVariables().forEach(variable -> System.out.println(variable.getName() + ": " + Integer.toString((int) evid.getValue(variable))));
-            System.out.println();
-        });
+//            System.out.println("EVIDENCE:");
+//            evidence.forEach(evid -> {
+//                System.out.println("Evidence at time " + evid.getTimeID());
+//                evid.getVariables().forEach(variable -> System.out.println(variable.getName() + ": " + Integer.toString((int) evid.getValue(variable))));
+//                System.out.println();
+//            });
 
         /*
          *  SET THE EVIDENCE AND MAKE INFERENCE
          */
-        dynMAP.setEvidence(evidence);
-        dynMAP.runInference();
+
+            timeStart = System.nanoTime();
+
+            dynMAP.setEvidence(evidence);
+            dynMAP.runInference();
+
+            timeStop = System.nanoTime();
+            execTime = (double) (timeStop - timeStart) / 1000000000.0;
+            executionTimes[ii] = execTime;
 
         /*
          *  SHOW RESULTS
          */
-        Assignment MAPestimate = dynMAP.getMAPestimate();
-        double MAPestimateProbability = dynMAP.getMAPestimateProbability();
+            Assignment MAPestimate = dynMAP.getMAPestimate();
+            double MAPestimateProbability = dynMAP.getMAPestimateProbability();
 
-        System.out.println("MAP sequence over " + mapVariable.getName() + ":");
-        List<Variable> MAPvarReplications = MAPestimate.getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID()? 1 : -1)).collect(Collectors.toList());
-        StringBuilder sequence = new StringBuilder();
-        MAPvarReplications.stream().forEachOrdered(var -> sequence.append( Integer.toString((int)MAPestimate.getValue(var)) + ", "));
-        //System.out.println(MAPestimate.outputString(MAPvarReplications));
-        System.out.println(sequence.toString());
-        System.out.println("with probability prop. to: " + MAPestimateProbability);
+            System.out.println("MAP sequence over " + mapVariable.getName() + ":");
+            List<Variable> MAPvarReplications = MAPestimate.getVariables().stream().sorted((var1, var2) -> (var1.getVarID() > var2.getVarID() ? 1 : -1)).collect(Collectors.toList());
+            StringBuilder sequence = new StringBuilder();
+            MAPvarReplications.stream().forEachOrdered(var -> sequence.append(Integer.toString((int) MAPestimate.getValue(var)) + ", "));
+            //System.out.println(MAPestimate.outputString(MAPvarReplications));
+            System.out.println(sequence.toString());
+            System.out.println("with probability prop. to: " + MAPestimateProbability);
 
-
+        }
+        System.out.println(Arrays.toString(executionTimes));
     }
 }
