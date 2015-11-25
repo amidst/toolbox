@@ -105,7 +105,8 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         //Recover original model and do the copy, then set again.
         Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(var);
         Variable staticTemporalClone = InfAlgto.getOriginalModel().getVariables().getVariableByName(temporalClone.getName());
-        UnivariateDistribution posteriorDist = InfAlgfrom.getPosterior(var).deepCopy(staticTemporalClone);
+        Variable staticVar = InfAlgfrom.getOriginalModel().getVariables().getVariableByName(var.getName());
+        UnivariateDistribution posteriorDist = InfAlgfrom.getPosterior(staticVar).deepCopy(staticTemporalClone);
         InfAlgto.getOriginalModel().setConditionalDistribution(staticTemporalClone,posteriorDist);
         InfAlgto.setModel(InfAlgto.getOriginalModel());
     }
@@ -170,7 +171,13 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
 
     @Override
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
-        return (getTimeIDOfPosterior()==0)? this.infAlgTime0.getPosterior(var): this.infAlgTimeT.getPosterior(var);
+        if(getTimeIDOfPosterior()==0){
+            Variable staticVar = this.infAlgTime0.getOriginalModel().getVariables().getVariableByName(var.getName());
+            return this.infAlgTime0.getPosterior(staticVar);
+        }else{
+            Variable staticVar = this.infAlgTimeT.getOriginalModel().getVariables().getVariableByName(var.getName());
+            return this.infAlgTimeT.getPosterior(staticVar);
+        }
     }
 
     @Override
