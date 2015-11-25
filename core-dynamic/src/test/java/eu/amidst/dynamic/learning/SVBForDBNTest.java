@@ -566,7 +566,7 @@ public class SVBForDBNTest extends TestCase {
             //Sampling from the generated Dynamic NB
             DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicNB);
             //sampler.setHiddenVar(varA);
-            sampler.setMARVar(varA,0.9);
+            sampler.setMARVar(varA,0.6);
             sampler.setSeed(0);
 
             //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
@@ -614,7 +614,7 @@ public class SVBForDBNTest extends TestCase {
                 // time T
                 System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
                 System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
-                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.2));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.1));
             }
             System.out.println();
             System.out.println();
@@ -995,7 +995,7 @@ public class SVBForDBNTest extends TestCase {
 
             //Sampling from the generated Dynamic NB
             DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicNB);
-            sampler.setMARVar(varA, 0.5);
+            sampler.setMARVar(varA, 0.4);
             sampler.setSeed(0);
 
             //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
@@ -1039,7 +1039,7 @@ public class SVBForDBNTest extends TestCase {
                 // time T
                 System.out.println("\nTrue distribution at time T:\n" + dynamicNB.getConditionalDistributionTimeT(var));
                 System.out.println("\nLearned distribution at time T:\n" + learnDBN.getConditionalDistributionTimeT(var));
-                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.06));
+                assertTrue(dynamicNB.getConditionalDistributionTimeT(var).equalDist(learnDBN.getConditionalDistributionTimeT(var), 0.1));
             }
 
         }
@@ -1093,7 +1093,7 @@ public class SVBForDBNTest extends TestCase {
 
             //Sampling from the generated Dynamic NB
             DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicNB);
-            sampler.setMARVar(varA, 0.99);
+            sampler.setMARVar(varA, 0.9);
             sampler.setSeed(0);
 
             //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
