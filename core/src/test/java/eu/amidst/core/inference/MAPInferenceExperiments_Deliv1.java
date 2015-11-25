@@ -214,7 +214,7 @@ public class MAPInferenceExperiments_Deliv1 {
             // MPE INFERENCE WITH SIMULATED ANNEALING, ALL VARIABLES
             //System.out.println();
             timeStart = System.nanoTime();
-            mapInference.runInference("SA_global");
+            mapInference.runInference(MAPInference.SearchAlgorithm.SA_GLOBAL);
 
 
             //mpeEstimate = mapInference.getEstimate();
@@ -237,7 +237,7 @@ public class MAPInferenceExperiments_Deliv1 {
 
             // MPE INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES AT EACH TIME
             timeStart = System.nanoTime();
-            mapInference.runInference("SA_local");
+            mapInference.runInference(MAPInference.SearchAlgorithm.SA_LOCAL);
 
 
             //mpeEstimate = mapInference.getEstimate();
@@ -264,7 +264,7 @@ public class MAPInferenceExperiments_Deliv1 {
 
             // MPE INFERENCE WITH HILL CLIMBING, ALL VARIABLES
             timeStart = System.nanoTime();
-            mapInference.runInference("HC_global");
+            mapInference.runInference(MAPInference.SearchAlgorithm.HC_GLOBAL);
 
             //mpeEstimate = mapInference.getEstimate();
             //modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
@@ -285,7 +285,7 @@ public class MAPInferenceExperiments_Deliv1 {
 
             //  MPE INFERENCE WITH HILL CLIMBING, ONE VARIABLE AT EACH TIME
             timeStart = System.nanoTime();
-            mapInference.runInference("HC_local");
+            mapInference.runInference(MAPInference.SearchAlgorithm.HC_LOCAL);
 
 
             //mpeEstimate = mapInference.getEstimate();
@@ -314,7 +314,7 @@ public class MAPInferenceExperiments_Deliv1 {
             mapInference.setSampleSize(samplingMethodSize);
 
             timeStart = System.nanoTime();
-            mapInference.runInference("sampling");
+            mapInference.runInference(MAPInference.SearchAlgorithm.SAMPLING);
 
             //mpeEstimate = mapInference.getEstimate();
             //modelVariables = mapInference.getOriginalModel().getVariables().getListOfVariables();
