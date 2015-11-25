@@ -55,9 +55,6 @@ public class MAPInference implements PointEstimator {
     private Assignment MAPestimate;
     private double MAPestimateLogProbability;
 
-    public SearchAlgorithm type;
-
-
 
     private class WeightedAssignment {
         private Assignment assignment;
