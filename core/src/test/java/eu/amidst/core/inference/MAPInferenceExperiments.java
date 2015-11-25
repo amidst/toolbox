@@ -389,7 +389,7 @@ public class MAPInferenceExperiments {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference("SA_global");
+        mapInference.runInference(MAPInference.SearchAlgorithm.SA_GLOBAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.All): " + mapEstimate.outputString(varsInterest));
@@ -403,7 +403,7 @@ public class MAPInferenceExperiments {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference("SA_local");
+        mapInference.runInference(MAPInference.SearchAlgorithm.SA_LOCAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.Some): " + mapEstimate.outputString(varsInterest));
@@ -421,7 +421,7 @@ public class MAPInferenceExperiments {
 
         //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference("HC_global");
+        mapInference.runInference(MAPInference.SearchAlgorithm.HC_GLOBAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.All): " + mapEstimate.outputString(varsInterest));
@@ -435,7 +435,7 @@ public class MAPInferenceExperiments {
 
         //  MAP INFERENCE WITH HILL CLIMBING, MOVING SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference("HC_local");
+        mapInference.runInference(MAPInference.SearchAlgorithm.HC_LOCAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.Some): " + mapEstimate.outputString(varsInterest));
@@ -453,7 +453,7 @@ public class MAPInferenceExperiments {
         // MAP INFERENCE WITH SIMULATION AND PICKING MAX
         mapInference.setSampleSize(samplingMethodSize);
         timeStart = System.nanoTime();
-        mapInference.runInference("sampling");
+        mapInference.runInference(MAPInference.SearchAlgorithm.SAMPLING);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
