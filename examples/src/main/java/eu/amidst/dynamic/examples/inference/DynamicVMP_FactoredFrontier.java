@@ -2,7 +2,7 @@ package eu.amidst.dynamic.examples.inference;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
@@ -19,7 +19,7 @@ import java.util.Random;
 /**
  * Created by ana@cs.aau.dk on 16/11/15.
  */
-public class DynamicIS {
+public class DynamicVMP_FactoredFrontier {
     public static void main(String[] args) throws IOException {
 
         Random random = new Random(1);
@@ -50,10 +50,8 @@ public class DynamicIS {
         //We select the target variable for inference, in this case the class variable
         Variable classVar = extendedDBN.getDynamicVariables().getVariableByName("ClassVar");
 
-        //We select IS with the factored frontier algorithm as the Inference Algorithm
-        ImportanceSampling importanceSampling = new ImportanceSampling();
-        importanceSampling.setKeepDataOnMemory(false);
-        FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(importanceSampling);
+        //We select VMP with the factored frontier algorithm as the Inference Algorithm
+        FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(new VMP());
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(FFalgorithm);
 
         //Then, we set the DBN model
@@ -75,6 +73,8 @@ public class DynamicIS {
             //Then we query the posterior of the target variable
             posterior = InferenceEngineForDBN.getFilteredPosterior(classVar);
 
+            //We show the output
+            System.out.println("P(ClassVar|e) = "+posterior);
         }
     }
 }
