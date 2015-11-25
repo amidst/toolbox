@@ -2,9 +2,11 @@ package eu.amidst.dynamic.examples.inference;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -17,7 +19,7 @@ import java.util.Random;
 /**
  * Created by ana@cs.aau.dk on 16/11/15.
  */
-public class DynamicVMP {
+public class DynamicIS {
     public static void main(String[] args) throws IOException {
 
         Random random = new Random(1);
@@ -41,18 +43,19 @@ public class DynamicVMP {
 
         DynamicBayesianNetwork extendedDBN = new DynamicBayesianNetwork(extendedNBDAG);
 
-        //We initialize the parameters of the network randomly
-        extendedDBN.randomInitialization(random);
-
         //We create a dynamic dataset with 3 sequences for prediction
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(extendedDBN);
-        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3,10000);
+        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3,100);
 
         //We select the target variable for inference, in this case the class variable
         Variable classVar = extendedDBN.getDynamicVariables().getVariableByName("ClassVar");
 
-        //We select DynamicVMP as the Inference Algorithm
-        InferenceEngineForDBN.setInferenceAlgorithmForDBN(new eu.amidst.dynamic.inference.DynamicVMP());
+        //We select IS with the factored frontier algorithm as the Inference Algorithm
+        ImportanceSampling importanceSampling = new ImportanceSampling();
+        importanceSampling.setKeepDataOnMemory(false);
+        FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(importanceSampling);
+        InferenceEngineForDBN.setInferenceAlgorithmForDBN(FFalgorithm);
+
         //Then, we set the DBN model
         InferenceEngineForDBN.setModel(extendedDBN);
 
@@ -71,6 +74,7 @@ public class DynamicVMP {
 
             //Then we query the posterior of the target variable
             posterior = InferenceEngineForDBN.getFilteredPosterior(classVar);
+
         }
     }
 }
