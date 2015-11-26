@@ -189,7 +189,14 @@ public class HuginInference implements InferenceAlgorithm, Serializable {
      */
     @Override
     public double getLogProbabilityOfEvidence() {
-        throw new UnsupportedOperationException("Method not implemented");
+        double log=Double.NaN;
+        try{
+            log =  huginBN.getLogLikelihood();
+        } catch (ExceptionHugin exceptionHugin) {
+            exceptionHugin.printStackTrace();
+        }
+
+        return log;
     }
 
     /**
