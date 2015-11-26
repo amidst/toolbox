@@ -32,6 +32,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
     private InferenceAlgorithm infAlgTime0;
     private InferenceAlgorithm infAlgTimeT;
 
+    private BayesianNetwork bnTime0;
+    private BayesianNetwork bnTimeT;
+
     private DynamicBayesianNetwork model;
 
     // If it is Importance Sampling, data should not be kept on memory
@@ -77,19 +80,21 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
     public void runInference() {
 
         if (this.timeID==-1 && assignment.getTimeID()>0) {
+            this.infAlgTime0.setModel(this.bnTime0);
             this.infAlgTime0.setEvidence(null);
             this.infAlgTime0.runInference();
             this.timeID=0;
             this.getTargetVarsTime0().stream()
-                    .forEach(var -> moveNodeQDist(this.infAlgTime0,this.infAlgTimeT,var));
+                    .forEach(var -> moveNodeQDist(this.infAlgTime0, this.bnTime0, this.bnTimeT, var));
         }
 
         if (assignment.getTimeID()==0) {
-            this.infAlgTime0.setEvidence(updateDynamicAssignmentTime0(this.assignment,this.infAlgTime0.getOriginalModel()));
+            this.infAlgTime0.setModel(this.bnTime0);
+            this.infAlgTime0.setEvidence(updateDynamicAssignmentTime0(this.assignment, this.bnTime0));
             this.infAlgTime0.runInference();
             this.timeID=0;
             this.getTargetVarsTime0().stream()
-                    .forEach(var -> moveNodeQDist(this.infAlgTime0,this.infAlgTimeT,var));
+                    .forEach(var -> moveNodeQDist(this.infAlgTime0, this.bnTime0, this.bnTimeT, var));
 
         }else{
             //If there is a missing instance
@@ -97,22 +102,22 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 this.moveWindow((int)(this.assignment.getTimeID() - this.timeID - 1));
 
             this.timeID=this.assignment.getTimeID();
-            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(this.assignment,this.infAlgTimeT.getOriginalModel()));
+            this.infAlgTimeT.setModel(this.bnTimeT);
+            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(this.assignment,this.bnTimeT));
             this.infAlgTimeT.runInference();
             this.getTargetVarsTimeT().stream()
-                    .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.infAlgTimeT,var));
+                    .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.bnTimeT, this.bnTimeT, var));
         }
     }
 
-    private void moveNodeQDist(InferenceAlgorithm InfAlgfrom, InferenceAlgorithm InfAlgto, Variable var){
+    private void moveNodeQDist(InferenceAlgorithm infAlg, BayesianNetwork bnFrom, BayesianNetwork bnTo, Variable var){
 
         //Recover original model and do the copy, then set again.
         Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(var);
-        Variable staticTemporalClone = InfAlgto.getOriginalModel().getVariables().getVariableByName(temporalClone.getName());
-        Variable staticVar = InfAlgfrom.getOriginalModel().getVariables().getVariableByName(var.getName());
-        UnivariateDistribution posteriorDist = InfAlgfrom.getPosterior(staticVar).deepCopy(staticTemporalClone);
-        InfAlgto.getOriginalModel().setConditionalDistribution(staticTemporalClone,posteriorDist);
-        InfAlgto.setModel(InfAlgto.getOriginalModel());
+        Variable staticTemporalClone = bnTo.getVariables().getVariableByName(temporalClone.getName());
+        Variable staticVar = bnFrom.getVariables().getVariableByName(var.getName());
+        UnivariateDistribution posteriorDist = infAlg.getPosterior(staticVar).deepCopy(staticTemporalClone);
+        bnTo.setConditionalDistribution(staticTemporalClone, posteriorDist);
     }
 
     private void moveWindow(int nsteps){
@@ -127,11 +132,13 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
             }
         }
 
+
         for (int i = 0; i < nsteps; i++) {
-            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(newassignment,this.infAlgTimeT.getOriginalModel()));
+            this.infAlgTimeT.setModel(this.bnTimeT);
+            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(newassignment,this.bnTimeT));
             this.infAlgTimeT.runInference();
             this.getTargetVarsTimeT().stream()
-                    .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.infAlgTimeT,var));
+                    .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.bnTimeT, this.bnTimeT, var));
             newassignment=null;
         }
     }
@@ -139,8 +146,8 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
     @Override
     public void setModel(DynamicBayesianNetwork model_) {
         this.model = model_;
-        this.infAlgTime0.setModel(this.model.toBayesianNetworkTime0());
-        this.infAlgTimeT.setModel(this.model.toBayesianNetworkTimeT());
+        this.bnTime0 = model.toBayesianNetworkTime0();
+        this.bnTimeT = model.toBayesianNetworkTimeT();
     }
 
     @Override
@@ -176,10 +183,10 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
     @Override
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
         if(getTimeIDOfPosterior()==0){
-            Variable staticVar = this.infAlgTime0.getOriginalModel().getVariables().getVariableByName(var.getName());
+            Variable staticVar = this.bnTime0.getVariables().getVariableByName(var.getName());
             return this.infAlgTime0.getPosterior(staticVar);
         }else{
-            Variable staticVar = this.infAlgTimeT.getOriginalModel().getVariables().getVariableByName(var.getName());
+            Variable staticVar = this.bnTimeT.getVariables().getVariableByName(var.getName());
             return this.infAlgTimeT.getPosterior(staticVar);
         }
     }
@@ -187,10 +194,11 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
         if (timeID==-1){
+            this.infAlgTime0.setModel(this.bnTime0);
             this.infAlgTime0.setEvidence(null);
             this.infAlgTime0.runInference();
             this.getTargetVarsTimeT().stream()
-                    .forEach(v -> moveNodeQDist(this.infAlgTimeT,this.infAlgTimeT,v));
+                    .forEach(v -> moveNodeQDist(this.infAlgTime0,this.bnTime0, this.bnTimeT, v));
 
             this.moveWindow(nTimesAhead-1);
             E resultQ = this.getFilteredPosterior(var);
@@ -203,14 +211,13 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
 
             //Create at copy of Qs
             this.getTargetVarsTimeT().stream()
-                    .forEach(v -> map.put(v,this.infAlgTimeT.getPosterior(var)));
+                    .forEach(v -> map.put(v,this.infAlgTimeT.getPosterior(v).deepCopy(v)));
 
             this.moveWindow(nTimesAhead);
             E resultQ = this.getFilteredPosterior(var);
 
             //Come to the original state
-            map.entrySet().forEach(e -> this.infAlgTimeT.getOriginalModel().setConditionalDistribution(e.getKey(),e.getValue()));
-            this.infAlgTimeT.setModel(this.infAlgTimeT.getOriginalModel());
+            map.entrySet().forEach(e -> this.bnTimeT.setConditionalDistribution(e.getKey(),e.getValue()));
 
             return resultQ;
         }

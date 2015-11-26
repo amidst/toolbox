@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.Random;
 
 /**
+ * This example shows how to use the Factored Frontier algorithm with Importance Sampling described in
+ * Deliverable 3.4 (Section 6).
  * Created by ana@cs.aau.dk on 16/11/15.
  */
 public class DynamicIS_FactoredFrontier {
@@ -23,10 +25,10 @@ public class DynamicIS_FactoredFrontier {
         Random random = new Random(1);
 
         //We first generate a dynamic Bayesian network (NB structure, only class is temporally linked)
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfStates(3);
-        DynamicBayesianNetwork extendedDBN = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random,2,false);
+        DynamicBayesianNetwork extendedDBN = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random, 2, false);
 
         System.out.println(extendedDBN.toString());
 
@@ -38,9 +40,6 @@ public class DynamicIS_FactoredFrontier {
         dynamicSampler.setHiddenVar(classVar);
         DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3, 100);
 
-
-
-
         //We select IS with the factored frontier algorithm as the Inference Algorithm
         ImportanceSampling importanceSampling = new ImportanceSampling();
         importanceSampling.setKeepDataOnMemory(true);
@@ -50,13 +49,13 @@ public class DynamicIS_FactoredFrontier {
         //Then, we set the DBN model
         InferenceEngineForDBN.setModel(extendedDBN);
 
-        int time = 0 ;
+        int time = 0;
         UnivariateDistribution posterior = null;
         for (DynamicDataInstance instance : dataPredict) {
             //The InferenceEngineForDBN must be reset at the begining of each Sequence.
-            if (instance.getTimeID()==0 && posterior != null) {
+            if (instance.getTimeID() == 0 && posterior != null) {
                 InferenceEngineForDBN.reset();
-                time=0;
+                time = 0;
             }
 
             InferenceEngineForDBN.addDynamicEvidence(instance);
@@ -69,9 +68,7 @@ public class DynamicIS_FactoredFrontier {
 
 
             //We show the output
-            System.out.println("P(ClassVar|e[0:"+(time++)+"]) = "+posterior);
+            System.out.println("P(ClassVar|e[0:" + (time++) + "]) = " + posterior);
         }
-
-
     }
 }

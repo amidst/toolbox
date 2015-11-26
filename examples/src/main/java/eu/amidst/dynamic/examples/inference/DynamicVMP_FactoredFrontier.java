@@ -26,7 +26,7 @@ public class DynamicVMP_FactoredFrontier {
         Random random = new Random(1);
 
         //We first generate a dynamic Bayesian network (NB structure, only class is temporally linked)
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfStates(3);
         DynamicBayesianNetwork extendedDBN = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random,2,false);

@@ -15,12 +15,16 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;
 
+import java.io.Serializable;
+
 //TODO: Implement method getLogProbabilityOfEvidence
 
 /**
  * This class provides an interface to perform Bayesian network inference using the Hugin inference engine.
  */
-public class HuginInference implements InferenceAlgorithm {
+public class HuginInference implements InferenceAlgorithm, Serializable {
+
+    private static final long serialVersionUID = 8587756877237341367L;
 
     /** Represents the Bayesian network model in AMIDST format. */
     BayesianNetwork amidstBN;
