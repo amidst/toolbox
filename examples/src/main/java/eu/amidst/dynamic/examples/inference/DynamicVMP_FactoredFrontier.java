@@ -9,7 +9,6 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 
@@ -17,6 +16,8 @@ import java.io.IOException;
 import java.util.Random;
 
 /**
+ * This example shows how to use the Factored Frontier algorithm with Variational Message Passing described in
+ * Deliverable 3.4 (Section 6).
  * Created by ana@cs.aau.dk on 16/11/15.
  */
 public class DynamicVMP_FactoredFrontier {

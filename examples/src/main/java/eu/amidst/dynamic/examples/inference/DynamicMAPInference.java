@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
+ * This example shows how to use the Dynamic MAP Inference algorithm described in Deliverable 3.4 (Section 6).
  * Created by dario on 11/11/15.
  */
 public class DynamicMAPInference {
