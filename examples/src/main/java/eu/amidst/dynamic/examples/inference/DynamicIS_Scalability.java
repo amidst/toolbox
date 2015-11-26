@@ -4,7 +4,6 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.utils.AmidstOptionsHandler;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
@@ -23,12 +22,13 @@ import java.util.stream.IntStream;
  */
 public class DynamicIS_Scalability implements AmidstOptionsHandler {
 
-    int numberOfDiscreteVars = 10;
-    int numberOfContinuousVars = 10;
-    int numberOfStates = 3;
+    int numberOfDiscreteVars = 5;
+    int numberOfContinuousVars = 5;
+    int numberOfStates = 2;
     int sequenceLength = 1000;
     int numOfSequences = 3;
-    boolean connectChildrenTemporally = true;
+    boolean connectChildrenTemporally = false;
+    boolean activateMiddleLayer = true;
 
 
     public int getNumOfSequences() {
@@ -79,6 +79,14 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         this.connectChildrenTemporally = connectChildrenTemporally;
     }
 
+    public boolean isActivateMiddleLayer() {
+        return activateMiddleLayer;
+    }
+
+    public void setActivateMiddleLayer(boolean activateMiddleLayer) {
+        this.activateMiddleLayer = activateMiddleLayer;
+    }
+
     public void runExperiment(){
         Random random = new Random(1);
 
@@ -89,8 +97,14 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         Variable varH1 = dynamicVariables.newMultinomialDynamicVariable("varH1",numberOfStates);
 
         //Middle layer
-        Variable varH2 = dynamicVariables.newMultinomialDynamicVariable("varH2", numberOfStates);
-        Variable varH3 = dynamicVariables.newMultinomialDynamicVariable("varH3", numberOfStates);
+        Variable varH2, varH3;
+        if(activateMiddleLayer) {
+            varH2 = dynamicVariables.newMultinomialDynamicVariable("varH2", numberOfStates);
+            varH3 = dynamicVariables.newMultinomialDynamicVariable("varH3", numberOfStates);
+        }else{
+            varH2 = null;
+            varH3 = null;
+        }
 
         //Discrete leaf variables (lower layer)
         IntStream.range(1, numberOfDiscreteVars+1)
@@ -103,27 +117,44 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
         //Connect varH1 as parent of hidden nodes in the second layer
-        dag.getParentSetTimeT(varH2).addParent(varH1);
-        dag.getParentSetTimeT(varH3).addParent(varH1);
+        if(activateMiddleLayer) {
+            dag.getParentSetTimeT(varH2).addParent(varH1);
+            dag.getParentSetTimeT(varH3).addParent(varH1);
+        }
         //Connect hidden nodes temporally
         dag.getParentSetTimeT(varH1).addParent(varH1.getInterfaceVariable());
-        dag.getParentSetTimeT(varH2).addParent(varH2.getInterfaceVariable());
-        dag.getParentSetTimeT(varH3).addParent(varH2.getInterfaceVariable());
+        if(activateMiddleLayer) {
+            dag.getParentSetTimeT(varH2).addParent(varH2.getInterfaceVariable());
+            dag.getParentSetTimeT(varH3).addParent(varH2.getInterfaceVariable());
+        }
 
 
         //Connect hidden vars in middle layer (varH2 and varH3) with all leaves
         //connect leaf variables in time if set.
-        dag.getParentSetsTimeT().stream()
-                .filter(var -> var.getMainVar().getVarID()!=varH1.getVarID() &&
-                        var.getMainVar().getVarID()!=varH2.getVarID()&&
-                        var.getMainVar().getVarID()!=varH3.getVarID())
-                .forEach(w -> {
-                            w.addParent(varH2);
-                            w.addParent(varH3);
-                            if(this.connectChildrenTemporally)
-                                w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
-                        }
-                );
+        if(activateMiddleLayer) {
+            dag.getParentSetsTimeT().stream()
+                    .filter(var -> var.getMainVar().getVarID()!=varH1.getVarID() &&
+                    var.getMainVar().getVarID()!=varH2.getVarID()&&
+                    var.getMainVar().getVarID()!=varH3.getVarID())
+                    .forEach(w -> {
+                                w.addParent(varH2);
+                                w.addParent(varH3);
+                                if(this.connectChildrenTemporally)
+                                    w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
+                            }
+                    );
+        }else{
+            //Connect hidden var in top layer (varH1) with all leaves
+            //Connect leaf variables in time if set
+            dag.getParentSetsTimeT().stream()
+                    .filter(var -> var.getMainVar().getVarID()!=varH1.getVarID())
+                    .forEach(w -> {
+                                w.addParent(varH1);
+                                if(this.connectChildrenTemporally)
+                                    w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
+                            }
+                    );
+        }
 
         System.out.println(dag);
 
@@ -134,6 +165,11 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
 
         //We create a dynamic dataset with 3 sequences for prediction
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(dbn);
+        dynamicSampler.setHiddenVar(varH1);
+        if(activateMiddleLayer) {
+            dynamicSampler.setHiddenVar(varH2);
+            dynamicSampler.setHiddenVar(varH3);
+        }
         DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(this.numOfSequences,
                 this.sequenceLength);
 
@@ -152,26 +188,26 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         InferenceEngineForDBN.setModel(dbn);
 
         UnivariateDistribution posterior = null;
+        int time = 0 ;
 
         long start = System.nanoTime();
         for (DynamicDataInstance instance : dataPredict) {
             //The InferenceEngineForDBN must be reset at the begining of each Sequence.
             if (instance.getTimeID()==0 && posterior != null) {
                 InferenceEngineForDBN.reset();
+                time=0;
             }
             //We also set the evidence.
-            instance.setValue(varH2, Utils.missingValue());
-            instance.setValue(varH3, Utils.missingValue());
             InferenceEngineForDBN.addDynamicEvidence(instance);
 
             //Then we run inference
             InferenceEngineForDBN.runInference();
 
             //Then we query the posterior of the target variable
-            posterior = InferenceEngineForDBN.getFilteredPosterior(varH2);
+            posterior = InferenceEngineForDBN.getFilteredPosterior(varH1);
 
-            //Show results
-            //System.out.println(posterior);
+            //We show the output
+            System.out.println("P(varH1|e[0:"+(time++)+"]) = "+posterior);
         }
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
@@ -187,12 +223,14 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
     @Override
     public String listOptions() {
         return  this.classNameID() +",\\"+
-                "-d, 10, Number of discrete leaf vars\\" +
-                "-c, 10, Number of continuous leaf vars\\" +
-                "-s, 3, Number of states for all the discrete vars\\" +
+                "-d, 5, Number of discrete leaf vars\\" +
+                "-c, 5, Number of continuous leaf vars\\" +
+                "-s, 2, Number of states for all the discrete vars\\" +
                 "-l 1000, Length for each sequence\\" +
                 "-q, 3, Number of sequences\\" +
-                "-linkNodes, true, Connects nodes in consecutive time steps.\\";
+                "-linkNodes, false, Connects leaf nodes in consecutive time steps.\\"+
+                "-activateMiddleLayer, true, Create middle layer with two (temporaly connected) " +
+                                            "discrete hidden nodes.\\";
     }
 
     @Override
@@ -208,5 +246,6 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         this.setSequenceLength(this.getIntOption("-l"));
         this.setNumOfSequences(this.getIntOption("q"));
         this.setConnectChildrenTemporally(getBooleanOption("-linkNodes"));
+        this.setActivateMiddleLayer(getBooleanOption("-activateMiddleLayer"));
     }
 }
