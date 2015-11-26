@@ -137,6 +137,12 @@ public class DynamicMAPInference {
         return staticOddModel;
     }
 
+    public List<Variable> getReplicatedMAPVariables() {
+        if (MAPestimate==null) {
+            return null;
+        }
+        return getMAPestimate().getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID() ? 1 : -1)).collect(Collectors.toList());
+    }
 
     public void computeDynamicMAPEvenModel() {
 
@@ -205,25 +211,32 @@ public class DynamicMAPInference {
             });
         }
 
+//        long timeStart = System.nanoTime();
         VMP vmpEvenModel = new VMP();
         VMP vmpOddModel = new VMP();
 
-        IntStream.range(0,2).forEach(i -> {
+        IntStream.range(0, 2).parallel().forEach(i -> {
             if (i == 0) {
                 vmpEvenModel.setModel(staticEvenModel);
                 if (evidence != null) {
                     vmpEvenModel.setEvidence(staticEvidence);
                 }
                 vmpEvenModel.runInference();
-            }
-            else {
+            } else {
                 vmpOddModel.setModel(staticOddModel);
-                if (evidence!=null) {
+                if (evidence != null) {
                     vmpOddModel.setEvidence(staticEvidence);
                 }
                 vmpOddModel.runInference();
             }
         });
+//        long timeStop = System.nanoTime();
+//        double execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//        System.out.println("Time VMP" + execTime);
+
+
+
+//        timeStart = System.nanoTime();
 
         List<UnivariateDistribution> posteriorMAPDistributionsEvenModel = new ArrayList<>();
         List<UnivariateDistribution> posteriorMAPDistributionsOddModel = new ArrayList<>();
@@ -245,6 +258,9 @@ public class DynamicMAPInference {
 
         computeMostProbableSequence(conditionalDistributionsMAPvariable);
 
+//        timeStop = System.nanoTime();
+//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//        System.out.println("Time Distibutions" + execTime);
     }
 
     private void computeMostProbableSequence(List<double[]> conditionalDistributionsMAPvariable) {

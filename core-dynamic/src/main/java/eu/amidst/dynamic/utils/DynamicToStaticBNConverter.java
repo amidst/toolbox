@@ -14,6 +14,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
  * Created by dario on 16/11/15.
@@ -49,14 +50,19 @@ public class DynamicToStaticBNConverter {
          * CREATE STATIC DAG FROM THE DYNAMIC DAG
          * 1st STEP: ADD REPLICATED VARIABLES
          */
-        for (int i = 0; i < nTimeSteps; i++) {
-            for (int j = 0; j < dynamicVariables.getNumberOfVars(); j++) {
-                Variable dynVar = dynamicVariables.getVariableById(j);
-                VariableBuilder aux = dynVar.getVariableBuilder();
-                aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
-                variables.newVariable(aux);
-            }
-        }
+        // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
+        Variables staticVariablesTimeT = dynamicVariables.toVariablesTimeT();
+
+        dynamicVariables.getListOfDynamicVariables().stream()
+                .forEach(dynVar ->
+                                IntStream.range(0, nTimeSteps).forEach(i -> {
+
+                                    Variable newVar = staticVariablesTimeT.getVariableByName(dynVar.getName());
+                                    VariableBuilder aux = newVar.getVariableBuilder();
+                                    aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
+                                    variables.newVariable(aux);
+                                })
+                );
         DAG dag = new DAG(variables);
 
         /*
@@ -110,6 +116,7 @@ public class DynamicToStaticBNConverter {
                     });
                 }
                 cdist.setConditioningVariables(parentList);
+                cdist.setVar(staticVar);
                 bn.setConditionalDistribution(staticVar, cdist);
             }
         }
