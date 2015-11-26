@@ -24,21 +24,21 @@ public class DynamicIS_FactoredFrontier {
 
         Random random = new Random(1);
 
-        //We first generate a dynamic Bayesian network (NB structure, only class is temporally linked)
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
+        //We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfStates(3);
-        DynamicBayesianNetwork extendedDBN = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random, 2, false);
+        DynamicBayesianNetwork extendedDBN = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random, 2, true);
 
         System.out.println(extendedDBN.toString());
 
         //We select the target variable for inference, in this case the class variable
         Variable classVar = extendedDBN.getDynamicVariables().getVariableByName("ClassVar");
 
-        //We create a dynamic dataset with 3 sequences for prediction
+        //We create a dynamic dataset with 3 sequences for prediction. The class var is made hidden.
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(extendedDBN);
         dynamicSampler.setHiddenVar(classVar);
-        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3, 100);
+        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3, 1000);
 
         //We select IS with the factored frontier algorithm as the Inference Algorithm
         ImportanceSampling importanceSampling = new ImportanceSampling();
@@ -58,6 +58,7 @@ public class DynamicIS_FactoredFrontier {
                 time = 0;
             }
 
+            //We also set the evidence.
             InferenceEngineForDBN.addDynamicEvidence(instance);
 
             //Then we run inference
