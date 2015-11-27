@@ -18,18 +18,23 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
+ * This example shows the scalability with respect to the number of cores of the Factored Frontier algorithm
+ * with the Importance Sampling inference engine, as described in Deliverable 3.4 (Section 6).
+ * (Note that the different number of cores has to be set from the operating system and run this experiment
+ * at least once with each configuration)
  * Created by ana@cs.aau.dk on 25/11/15.
  */
 public class DynamicIS_Scalability implements AmidstOptionsHandler {
 
     int numberOfDiscreteVars = 30;
     int numberOfContinuousVars = 0;
-    int numberOfDiscreteHiddenVars = 20;
+    int numberOfDiscreteHiddenVars = 10;
     int numberOfStates = 2;
-    int sequenceLength = 10000;
-    int numOfSequences = 3;
+    int sequenceLength = 1000;
+    int numOfSequences = 2;
     boolean connectChildrenTemporally = false;
     boolean activateMiddleLayer = true;
+    int seed = 1;
 
 
     public int getNumOfSequences() {
@@ -96,27 +101,35 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         this.activateMiddleLayer = activateMiddleLayer;
     }
 
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
     public void runExperiment(){
-        Random random = new Random(1);
+        Random random = new Random(this.getSeed());
 
         //We first generate a dynamic Bayesian network with two latent nodes
         DynamicVariables dynamicVariables  = new DynamicVariables();
 
         //Upper layer
-        Variable varH1 = dynamicVariables.newMultinomialDynamicVariable("H1",numberOfStates);
+        Variable varH1 = dynamicVariables.newMultinomialDynamicVariable("H1",this.getNumberOfStates());
 
         //Middle layer
-        if(activateMiddleLayer) {
-            IntStream.range(2, numberOfDiscreteHiddenVars+2)
-                    .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("H" + i, numberOfStates));
+        if(this.isActivateMiddleLayer()) {
+            IntStream.range(2, this.getNumberOfDiscreteHiddenVars()+2)
+                    .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("H" + i, this.getNumberOfStates()));
         }
 
         //Discrete leaf variables (lower layer)
-        IntStream.range(1, numberOfDiscreteVars+1)
-                .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("A" + i, numberOfStates));
+        IntStream.range(1, this.getNumberOfDiscreteVars()+1)
+                .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("A" + i, this.getNumberOfStates()));
 
         //Continuous leaf variables (lower layer)
-        IntStream.range(1,numberOfContinuousVars+1)
+        IntStream.range(1,this.getNumberOfContinuousVars()+1)
                 .forEach(i -> dynamicVariables.newGaussianDynamicVariable("C" + i));
 
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
@@ -127,7 +140,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
 
         //Connect varH1 as parent of hidden nodes in the second layer
         //and the latter in consecutive time steps.
-        if(activateMiddleLayer) {
+        if(this.isActivateMiddleLayer()) {
             dag.getParentSetsTimeT().stream()
                     .filter(v -> !v.getMainVar().getName().contains("A") &&
                                  !v.getMainVar().getName().contains("C") &&
@@ -140,7 +153,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
 
         //Connect hidden vars in middle layer (varH2 and varH3) with all leaves,
         //connect leaf variables in time if set.
-        if(activateMiddleLayer) {
+        if(this.isActivateMiddleLayer()) {
             dag.getParentSetsTimeT().stream()
                     .filter(var -> !var.getMainVar().getName().contains("H"))
                     .forEach(w -> {
@@ -148,7 +161,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
                                         .filter(x -> x.getName().contains("H") &&
                                                      x.getVarID()!=varH1.getVarID())
                                         .forEach(v -> w.addParent(v));
-                                if(this.connectChildrenTemporally)
+                                if(this.isConnectChildrenTemporally())
                                     w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
                     });
         //Connect hidden var in top layer (varH1) with all leaves
@@ -158,7 +171,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
                     .filter(var -> var.getMainVar().getVarID()!=varH1.getVarID())
                     .forEach(w -> {
                                 w.addParent(varH1);
-                                if(this.connectChildrenTemporally)
+                                if(this.isConnectChildrenTemporally())
                                     w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
                             }
                     );
@@ -175,14 +188,14 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         //We create a dynamic dataset with 3 sequences for prediction
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(dbn);
         dynamicSampler.setHiddenVar(varH1);
-        if(activateMiddleLayer) {
+        if(this.isActivateMiddleLayer()) {
             dag.getDynamicVariables().getListOfDynamicVariables().stream()
                     .filter(x -> x.getName().contains("H") &&
                             x.getVarID()!=varH1.getVarID())
                     .forEach(v -> dynamicSampler.setHiddenVar(v));
         }
-        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(this.numOfSequences,
-                this.sequenceLength);
+        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(this.getNumOfSequences(),
+                this.getSequenceLength());
 
 
         //********************************************************************************************
@@ -245,13 +258,14 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         return  this.classNameID() +",\\"+
                 "-d, 30, Number of discrete leaf vars\\" +
                 "-c, 0, Number of continuous leaf vars\\" +
-                "-h, 20, Number of discrete hidden leaf vars\\" +
+                "-h, 10, Number of discrete hidden leaf vars\\" +
                 "-s, 2, Number of states for all the discrete vars\\" +
-                "-l, 10000, Length for each sequence\\" +
-                "-q, 3, Number of sequences\\" +
+                "-l, 1000, Length for each sequence\\" +
+                "-q, 2, Number of sequences\\" +
                 "-linkNodes, false, Connects leaf nodes in consecutive time steps.\\"+
                 "-activateMiddleLayer, true, Create middle layer with two (temporaly connected) " +
-                                            "discrete hidden nodes.\\";
+                                            "discrete hidden nodes.\\"+
+                "-seed, 1, seed to generate random numbers\\";
     }
 
     @Override
@@ -269,5 +283,6 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         this.setNumOfSequences(this.getIntOption("-q"));
         this.setConnectChildrenTemporally(getBooleanOption("-linkNodes"));
         this.setActivateMiddleLayer(getBooleanOption("-activateMiddleLayer"));
+        this.setSeed(this.getIntOption("-seed"));
     }
 }
