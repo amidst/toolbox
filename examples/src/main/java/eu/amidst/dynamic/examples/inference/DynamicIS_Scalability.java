@@ -14,7 +14,9 @@ import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -35,6 +37,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
     boolean connectChildrenTemporally = false;
     boolean activateMiddleLayer = true;
     int seed = 1;
+    int numberOfSamples = 1000;
 
 
     public int getNumOfSequences() {
@@ -107,6 +110,14 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
 
     public void setSeed(int seed) {
         this.seed = seed;
+    }
+
+    public int getNumberOfSamples() {
+        return numberOfSamples;
+    }
+
+    public void setNumberOfSamples(int numberOfSamples) {
+        this.numberOfSamples = numberOfSamples;
     }
 
     public void runExperiment(){
@@ -197,6 +208,8 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(this.getNumOfSequences(),
                 this.getSequenceLength());
 
+        List<DynamicDataInstance> dataPredictList = dataPredict.stream().collect(Collectors.toList());
+
 
         //********************************************************************************************
         //                   DYNAMIC IS WITH FACTORED FRONTIER ALGORITHM
@@ -206,6 +219,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         ImportanceSampling importanceSampling = new ImportanceSampling();
         importanceSampling.setParallelMode(true);
         importanceSampling.setKeepDataOnMemory(true);
+        importanceSampling.setSampleSize(this.getNumberOfSamples());
         FactoredFrontierForDBN factoredFrontierForDBN = new FactoredFrontierForDBN(importanceSampling);
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(factoredFrontierForDBN);
         //Then, we set the DBN model
@@ -214,28 +228,37 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         UnivariateDistribution posterior = null;
         int time = 0 ;
 
-        long start = System.nanoTime();
-        for (DynamicDataInstance instance : dataPredict) {
-            //The InferenceEngineForDBN must be reset at the begining of each Sequence.
-            if (instance.getTimeID()==0 && posterior != null) {
-                InferenceEngineForDBN.reset();
-                time=0;
+        double average = 0;
+        for (int j = 0; j < 15; j++) {
+            long start = System.nanoTime();
+            for (DynamicDataInstance instance : dataPredictList) {
+                //The InferenceEngineForDBN must be reset at the begining of each Sequence.
+                if (instance.getTimeID() == 0 && posterior != null) {
+                    InferenceEngineForDBN.reset();
+                    time = 0;
+                }
+                factoredFrontierForDBN.setSeed(j);
+
+                //We also set the evidence.
+                InferenceEngineForDBN.addDynamicEvidence(instance);
+
+                //Then we run inference
+                InferenceEngineForDBN.runInference();
+
+                //Then we query the posterior of the target variable
+                posterior = InferenceEngineForDBN.getFilteredPosterior(varH1);
+
+                //We show the output
+                //System.out.println("P(varH1|e[0:" + (time++) + "]) = " + posterior);
             }
-            //We also set the evidence.
-            InferenceEngineForDBN.addDynamicEvidence(instance);
-
-            //Then we run inference
-            InferenceEngineForDBN.runInference();
-
-            //Then we query the posterior of the target variable
-            posterior = InferenceEngineForDBN.getFilteredPosterior(varH1);
-
-            //We show the output
-            System.out.println("P(varH1|e[0:"+(time++)+"]) = "+posterior);
+            long duration = (System.nanoTime() - start) / 1;
+            double seconds = duration / 1000000000.0;
+            if (j > 4) {
+                average += seconds;
+            }
         }
-        long duration = (System.nanoTime() - start) / 1;
-        double seconds = duration / 1000000000.0;
-        System.out.println("Time for Dynamic IS = "+seconds+" secs");
+
+        System.out.println("Time for Dynamic IS = "+average/10+" secs");
     }
 
     public static void main(String[] args) throws IOException {
@@ -265,7 +288,8 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
                 "-linkNodes, false, Connects leaf nodes in consecutive time steps.\\"+
                 "-activateMiddleLayer, true, Create middle layer with two (temporaly connected) " +
                                             "discrete hidden nodes.\\"+
-                "-seed, 1, seed to generate random numbers\\";
+                "-seed, 1, seed to generate random numbers\\"+
+                "-samples, 1000, Number of samples for IS";
     }
 
     @Override
@@ -284,5 +308,6 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         this.setConnectChildrenTemporally(getBooleanOption("-linkNodes"));
         this.setActivateMiddleLayer(getBooleanOption("-activateMiddleLayer"));
         this.setSeed(this.getIntOption("-seed"));
+        this.setNumberOfSamples(this.getIntOption("-samples"));
     }
 }
