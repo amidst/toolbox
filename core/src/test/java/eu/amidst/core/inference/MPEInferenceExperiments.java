@@ -98,8 +98,8 @@ public class MPEInferenceExperiments {
         mpeInference.setParallelMode(true);
 
 
-        System.out.println("CausalOrder: " + Arrays.toString(Utils.getCausalOrder(mpeInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
-        List<Variable> modelVariables = Utils.getCausalOrder(bn.getDAG());
+        System.out.println("CausalOrder: " + Arrays.toString(Utils.getTopologicalOrder(mpeInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
+        List<Variable> modelVariables = Utils.getTopologicalOrder(bn.getDAG());
         System.out.println();
 
 
@@ -126,7 +126,7 @@ public class MPEInferenceExperiments {
         // MPE INFERENCE WITH SIMULATED ANNEALING, ALL VARIABLES
         System.out.println();
         long timeStart = System.nanoTime();
-        mpeInference.runInference(1);
+        mpeInference.runInference(MPEInference.SearchAlgorithm.SA_GLOBAL);
 
 
         Assignment mpeEstimate = mpeInference.getEstimate();
@@ -143,7 +143,7 @@ public class MPEInferenceExperiments {
 
         // MPE INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES AT EACH TIME
         timeStart = System.nanoTime();
-        mpeInference.runInference(0);
+        mpeInference.runInference(MPEInference.SearchAlgorithm.SA_LOCAL);
 
 
         mpeEstimate = mpeInference.getEstimate();
@@ -163,7 +163,7 @@ public class MPEInferenceExperiments {
 
         // MPE INFERENCE WITH HILL CLIMBING, ALL VARIABLES
         timeStart = System.nanoTime();
-        mpeInference.runInference(3);
+        mpeInference.runInference(MPEInference.SearchAlgorithm.HC_GLOBAL);
 
         mpeEstimate = mpeInference.getEstimate();
         //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
@@ -179,7 +179,7 @@ public class MPEInferenceExperiments {
 
         //  MPE INFERENCE WITH HILL CLIMBING, ONE VARIABLE AT EACH TIME
         timeStart = System.nanoTime();
-        mpeInference.runInference(2);
+        mpeInference.runInference(MPEInference.SearchAlgorithm.HC_LOCAL);
 
 
         mpeEstimate = mpeInference.getEstimate();
@@ -201,7 +201,7 @@ public class MPEInferenceExperiments {
         mpeInference.setSampleSize(samplingMethodSize);
 
         timeStart = System.nanoTime();
-        mpeInference.runInference(-1);
+        mpeInference.runInference(MPEInference.SearchAlgorithm.SAMPLING);
 
         mpeEstimate = mpeInference.getEstimate();
         //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
@@ -217,7 +217,7 @@ public class MPEInferenceExperiments {
 
             // MPE INFERENCE, DETERMINISTIC
             timeStart = System.nanoTime();
-            mpeInference.runInference(-2);
+            mpeInference.runInference(MPEInference.SearchAlgorithm.EXHAUSTIVE);
 
             mpeEstimate = mpeInference.getEstimate();
             //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();

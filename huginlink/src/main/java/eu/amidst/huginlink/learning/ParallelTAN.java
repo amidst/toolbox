@@ -6,8 +6,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
-import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.*;
@@ -158,9 +158,13 @@ public class ParallelTAN implements AmidstOptionsHandler {
         if (learnedBN==null)
             throw new IllegalArgumentException("The model has not been learned");
 
+        if (!Utils.isMissingValue(instance.getValue(targetVar)))
+            System.out.println("Class Variable can not be set.");
+
         this.inference.setEvidence(instance);
         this.inference.runInference();
         Multinomial dist = this.inference.getPosterior(targetVar);
+
         return dist.getParameters();
     }
 
@@ -197,14 +201,16 @@ public class ParallelTAN implements AmidstOptionsHandler {
                 if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                     ((DiscreteChanceNode) n).getExperienceTable();
                     for (int j = 0; j < numCases; j++) {
-                        int state = (int) dataOnMemory.getDataInstance(j).getValue(var);
-                        ((DiscreteChanceNode) n).setCaseState(j, state);
+                        double state = dataOnMemory.getDataInstance(j).getValue(var);
+                        if (!Utils.isMissingValue(state))
+                            ((DiscreteChanceNode) n).setCaseState(j, (int)state);
                     }
                 } else {
                     ((ContinuousChanceNode) n).getExperienceTable();
                     for (int j = 0; j < numCases; j++) {
                         double value = dataOnMemory.getDataInstance(j).getValue(var);
-                        ((ContinuousChanceNode) n).setCaseValue(j, (long) value);
+                        if (!Utils.isMissingValue(value))
+                            ((ContinuousChanceNode) n).setCaseValue(j, value);
                     }
                 }
             }
@@ -232,7 +238,8 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @throws ExceptionHugin
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream) throws ExceptionHugin {
-        ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
+        parameterLearningAlgorithm.setLaplace(true);
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
         parameterLearningAlgorithm.setDataStream(dataStream);
@@ -253,7 +260,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @throws ExceptionHugin
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream, int batchSize) throws ExceptionHugin {
-        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+        ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
         parameterLearningAlgorithm.setBatchSize(batchSize);
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));

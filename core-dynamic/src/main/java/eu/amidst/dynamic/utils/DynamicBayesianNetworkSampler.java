@@ -63,7 +63,7 @@ public class DynamicBayesianNetworkSampler {
         this.marNoise.put(var,noiseProb);
     }
 
-    private DynamicDataInstance filter(DynamicDataInstance assignment){
+    private HashMapAssignment filter(HashMapAssignment assignment){
         hiddenVars.keySet().stream().forEach(var -> assignment.setValue(var,Utils.missingValue()));
         marNoise.entrySet().forEach(e -> {
             if (random.nextDouble()<e.getValue())
@@ -76,8 +76,7 @@ public class DynamicBayesianNetworkSampler {
     private Stream<DynamicAssignment> getSampleStream(int nSequences, int sequenceLength) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         return IntStream.range(0,nSequences).mapToObj(Integer::new)
-                .flatMap(i -> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength))
-                .map(this::filter);
+                .flatMap(i -> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength));
     }
 
     public void setSeed(int seed) {
@@ -92,7 +91,7 @@ public class DynamicBayesianNetworkSampler {
 
 
     // Sample a stream of assignments of length "sequenceLength" for a given sequence "sequenceID"
-    private static Stream<DynamicDataInstance> sample(DynamicBayesianNetwork network, List<Variable> causalOrderTime0, List<Variable> causalOrderTimeT, Random random, int sequenceID, int sequenceLength) {
+    private Stream<DynamicDataInstance> sample(DynamicBayesianNetwork network, List<Variable> causalOrderTime0, List<Variable> causalOrderTimeT, Random random, int sequenceID, int sequenceLength) {
 
 
         final HashMapAssignment[] data = new HashMapAssignment[2];
@@ -106,17 +105,10 @@ public class DynamicBayesianNetworkSampler {
                     double sampledValue = network.getConditionalDistributionsTime0().get(var.getVarID()).getUnivariateDistribution(dataPresent).sample(random);
                     dataPresent.setValue(var, sampledValue);
                 }
+                data[0] = replicateOnPast(dataPresent);
+                data[1] = filter(dataPresent);
 
-                DynamicDataInstanceImpl d = new DynamicDataInstanceImpl(network, null, dataPresent, sequenceID, 0);
-
-                HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
-                for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
-                    dataPast.setValue(network.getDynamicVariables().getInterfaceVariable(var), dataPresent.getValue(var));
-                }
-                data[0] = dataPast;
-                data[1] = dataPresent;
-
-                return d;
+                return new DynamicDataInstanceImpl(network, null, data[1], sequenceID, 0);
             }else {
                 HashMapAssignment dataPresent = new HashMapAssignment(network.getNumberOfVars());
 
@@ -126,17 +118,24 @@ public class DynamicBayesianNetworkSampler {
                     double sampledValue = network.getConditionalDistributionsTimeT().get(var.getVarID()).getUnivariateDistribution(d).sample(random);
                     dataPresent.setValue(var, sampledValue);
                 }
+                data[0] = replicateOnPast(dataPresent);
+                dataPresent = filter(dataPresent);
 
-                HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
-                for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
-                    dataPast.setValue(network.getDynamicVariables().getInterfaceVariable(var), dataPresent.getValue(var));
-                }
-                data[0] = dataPast;
-                data[1] = dataPresent;
+                d = new DynamicDataInstanceImpl(network, replicateOnPast(data[1]), dataPresent, sequenceID, k);
+
+                data[1] = filter(dataPresent);
 
                 return d;
             }
         });
+    }
+
+    private HashMapAssignment replicateOnPast(HashMapAssignment dataPresent){
+        HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
+        for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
+            dataPast.setValue(network.getDynamicVariables().getInterfaceVariable(var), dataPresent.getValue(var));
+        }
+        return dataPast;
     }
 
     static class TemporalDataStream implements DataStream {

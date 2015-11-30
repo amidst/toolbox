@@ -83,7 +83,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
     }
     public void setSamplingModel(BayesianNetwork samplingModel_) {
         this.samplingModel = samplingModel_;
-        this.causalOrder = Utils.getCausalOrder(samplingModel.getDAG());
+        this.causalOrder = Utils.getTopologicalOrder(samplingModel.getDAG());
     }
 
     public void setSampleSize(int sampleSize) {
@@ -198,13 +198,13 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         if (parallelMode) {
             //sumWeights = weightedSampleList.stream().parallel()
-            //        .mapToDouble(ws -> ws.weight).sum();
+            //        .mapToDouble(ws -> ws.weight).sumNonStateless();
             //sumWeightsSuccess = weightedSampleList.stream().parallel()
             /*sumWeightsSuccess = weightedSampleList
                     .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a) && (ws.assignment.getValue(continuousVarInterest)<b))
-                    .mapToDouble(ws -> ws.weight).sum();
+                    .mapToDouble(ws -> ws.weight).sumNonStateless();
             sumAllWeights = weightedSampleList.parallel()
-                    .mapToDouble(ws -> ws.weight).sum();*/
+                    .mapToDouble(ws -> ws.weight).sumNonStateless();*/
             List<Double> sum = weightedSampleList.map(ws ->
                     { if ((ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
                         return Arrays.asList(ws.weight, ws.weight);
@@ -217,12 +217,12 @@ public class ImportanceSampling implements InferenceAlgorithm {
         }
         else {
             //sumWeights = weightedSampleList.stream().sequential()
-            //        .mapToDouble(ws -> ws.weight).sum();
+            //        .mapToDouble(ws -> ws.weight).sumNonStateless();
             /*sumWeightsSuccess = weightedSampleList.sequential()
                     .filter(ws -> (ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
-                    .mapToDouble(ws -> ws.weight).sum();
+                    .mapToDouble(ws -> ws.weight).sumNonStateless();
             sumAllWeights = weightedSampleList.sequential()
-                    .mapToDouble(ws -> ws.weight).sum();*/
+                    .mapToDouble(ws -> ws.weight).sumNonStateless();*/
             List<Double> sum = weightedSampleList.map(ws ->
                     { if ((ws.assignment.getValue(continuousVarInterest)>a && ws.assignment.getValue(continuousVarInterest)<b))
                         return Arrays.asList(ws.weight, ws.weight);
@@ -265,7 +265,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
 
         if (parallelMode) {
             //sumWeights = weightedSampleList.stream().parallel()
-            //        .mapToDouble(ws -> ws.weight).sum();
+            //        .mapToDouble(ws -> ws.weight).sumNonStateless();
             sumWeightsSuccess = weightedSampleList.parallel()
                     .filter(ws -> new Double(ws.assignment.getValue(discreteVarInterest)).compareTo((double)w)==0)
                     .mapToDouble(ws -> ws.weight).sum();
@@ -274,7 +274,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
         }
         else {
             //sumWeights = weightedSampleList.stream().sequential()
-            //        .mapToDouble(ws -> ws.weight).sum();
+            //        .mapToDouble(ws -> ws.weight).sumNonStateless();
             sumWeightsSuccess = weightedSampleList.sequential()
                     .filter(ws -> new Double(ws.assignment.getValue(discreteVarInterest)).compareTo((double)w)==0)
                     .mapToDouble(ws -> ws.weight).sum();
@@ -331,7 +331,7 @@ public class ImportanceSampling implements InferenceAlgorithm {
                     SS.multiplyBy(e.weight);
                     return SS;
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         sumSS.divideBy(dataInstanceCount.get());
 
