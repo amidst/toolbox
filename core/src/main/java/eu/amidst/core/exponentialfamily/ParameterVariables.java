@@ -189,7 +189,6 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
         private DistributionTypeEnum distributionTypeEnum;
         private DistributionType distributionType;
 
-        private Attribute attribute;
         private int numberOfStates = -1;
 
 
@@ -199,7 +198,6 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
             this.observable = builder.isObservable();
             this.stateSpaceType = builder.getStateSpaceType();
             this.distributionTypeEnum = builder.getDistributionType();
-            this.attribute = builder.getAttribute();
 
             if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
                 this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
@@ -246,7 +244,11 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
 
         @Override
         public Attribute getAttribute() {
-            return attribute;
+            return null;
+        }
+
+        public void setAttribute(Attribute att) {
+
         }
 
         @Override

@@ -113,9 +113,9 @@ public class MAPInferenceExperiments {
 //        mapInference.setParallelMode(true);
 //        mapInference.setSampleSize(1);
 //
-//        List<Variable> causalOrder = Utils.getCausalOrder(mapInference.getOriginalModel().getDAG());
+//        List<Variable> causalOrder = Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG());
 //
-//        System.out.println("CausalOrder: " + Arrays.toString(Utils.getCausalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
+//        System.out.println("CausalOrder: " + Arrays.toString(Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
 //        System.out.println();
 //
 //
@@ -268,10 +268,10 @@ public class MAPInferenceExperiments {
 //        double s4 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
 //        System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s4);
 //
-//        double sum = s1+s2+s3+s4;
+//        double sumNonStateless = s1+s2+s3+s4;
 //
 //        System.out.println();
-//        System.out.println("Sum = " + sum + "; Normalized probs: [V1=0,V2=0]=" + s1/sum + ", [V1=0,V2=1]=" + s2/sum + ", [V1=1,V2=0]=" + s3/sum + ", [V1=1,V2=1]=" + s4/sum );
+//        System.out.println("Sum = " + sumNonStateless + "; Normalized probs: [V1=0,V2=0]=" + s1/sumNonStateless + ", [V1=0,V2=1]=" + s2/sumNonStateless + ", [V1=1,V2=0]=" + s3/sumNonStateless + ", [V1=1,V2=1]=" + s4/sumNonStateless );
 
 
 
@@ -331,9 +331,9 @@ public class MAPInferenceExperiments {
         mapInference.setParallelMode(true);
         mapInference.setSampleSize(1);
 
-        List<Variable> causalOrder = Utils.getCausalOrder(mapInference.getOriginalModel().getDAG());
+        List<Variable> causalOrder = Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG());
 
-        System.out.println("CausalOrder: " + Arrays.toString(Utils.getCausalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
+        System.out.println("CausalOrder: " + Arrays.toString(Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
         System.out.println();
 
 
@@ -389,7 +389,7 @@ public class MAPInferenceExperiments {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(1);
+        mapInference.runInference(MAPInference.SearchAlgorithm.SA_GLOBAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.All): " + mapEstimate.outputString(varsInterest));
@@ -403,7 +403,7 @@ public class MAPInferenceExperiments {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(0);
+        mapInference.runInference(MAPInference.SearchAlgorithm.SA_LOCAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.Some): " + mapEstimate.outputString(varsInterest));
@@ -421,7 +421,7 @@ public class MAPInferenceExperiments {
 
         //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(3);
+        mapInference.runInference(MAPInference.SearchAlgorithm.HC_GLOBAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.All): " + mapEstimate.outputString(varsInterest));
@@ -435,7 +435,7 @@ public class MAPInferenceExperiments {
 
         //  MAP INFERENCE WITH HILL CLIMBING, MOVING SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(2);
+        mapInference.runInference(MAPInference.SearchAlgorithm.HC_LOCAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.Some): " + mapEstimate.outputString(varsInterest));
@@ -453,7 +453,7 @@ public class MAPInferenceExperiments {
         // MAP INFERENCE WITH SIMULATION AND PICKING MAX
         mapInference.setSampleSize(samplingMethodSize);
         timeStart = System.nanoTime();
-        mapInference.runInference(-1);
+        mapInference.runInference(MAPInference.SearchAlgorithm.SAMPLING);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
@@ -862,9 +862,9 @@ public class MAPInferenceExperiments {
 //        double s4 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
 //        System.out.println(mapEstimate.outputString() + " with prob. " + s4);
 //
-//        double sum = s1+s2+s3+s4;
+//        double sumNonStateless = s1+s2+s3+s4;
 //
-//        System.out.println("Probs: " + s1/sum + ", " + s2/sum + ", " + s3/sum + ", " + s4/sum + ", suma = " + sum );
+//        System.out.println("Probs: " + s1/sumNonStateless + ", " + s2/sumNonStateless + ", " + s3/sumNonStateless + ", " + s4/sumNonStateless + ", suma = " + sumNonStateless );
 
 
 

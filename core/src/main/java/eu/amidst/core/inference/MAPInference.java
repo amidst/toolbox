@@ -31,6 +31,11 @@ import java.util.stream.Stream;
  */
 public class MAPInference implements PointEstimator {
 
+    public enum SearchAlgorithm {
+        SAMPLING, SA_LOCAL, SA_GLOBAL,
+        HC_LOCAL, HC_GLOBAL
+    }
+
     private BayesianNetwork model;
     private List<Variable> causalOrder;
 
@@ -49,7 +54,6 @@ public class MAPInference implements PointEstimator {
     private List<Variable> MAPvariables;
     private Assignment MAPestimate;
     private double MAPestimateLogProbability;
-
 
 
     private class WeightedAssignment {
@@ -100,7 +104,7 @@ public class MAPInference implements PointEstimator {
     @Override
     public void setModel(BayesianNetwork model_) {
         this.model = model_;
-        this.causalOrder = Utils.getCausalOrder(this.model.getDAG());
+        this.causalOrder = Utils.getTopologicalOrder(this.model.getDAG());
     }
 
     /**
@@ -244,14 +248,17 @@ public class MAPInference implements PointEstimator {
      */
     @Override
     public void runInference() {
-        this.runInference(2); // Uses Hill climbing with local search, by default
+        this.runInference(SearchAlgorithm.HC_LOCAL); // Uses Hill climbing with local search, by default
     }
 
     /**
      * Runs inference with an specific method.
-     * @param inferenceAlgorithm an {@code int} that represents the search algorithm to use (-1: Sampling;  0: Simulated annealing, local; 1: Simulated annealing, global; 2: Hill climbing, local (default); 3: Hill climbing, global)
+     * @param searchAlgorithm an {@code SearchAlgorithm} that represents the search algorithm to use
+     *                        (SAMPLING: Sampling; SA_LOCAL: Simulated annealing, local;
+     *                        SA_GLOBAL: Simulated annealing, global; HC_LOCAL: Hill climbing, local (default);
+     *                        HC_GLOBAL: Hill climbing, global)
      */
-    public void runInference(int inferenceAlgorithm) {
+    public void runInference(SearchAlgorithm searchAlgorithm) {
 
 
         ImportanceSampling ISaux = new ImportanceSampling();
@@ -276,8 +283,8 @@ public class MAPInference implements PointEstimator {
             MAPvariables=new HashSet<Variable>(this.model.getStaticVariables().getListOfVariables());
         }*/
 
-        switch(inferenceAlgorithm) {
-            case -1:
+        switch(searchAlgorithm) {
+            case SAMPLING:
 
                 //Map<String, Double> groupedSample = sample.collect(Collectors.groupingBy(this::getMAPVariablesFromAssignment, HashMap::new, Collectors.averagingDouble(this::getProbabilityOf)));
                 //groupedSample.forEach((smp,values) -> System.out.println(smp + Double.toString(values)));
@@ -319,7 +326,7 @@ public class MAPInference implements PointEstimator {
 //                break;
 
 
-            case 0:     // "SIMULATED ANNEALING", MOVING SOME VARIABLES AT EACH ITERATION
+            case SA_LOCAL:     // "SIMULATED ANNEALING", MOVING SOME VARIABLES AT EACH ITERATION
                 //MAPestimate = sample.map(this::simulatedAnnealingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
                 weightedAssignment = sample.map(this::simulatedAnnealingOneVar).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
@@ -328,7 +335,7 @@ public class MAPInference implements PointEstimator {
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
                 break;
 
-            case 1:
+            case SA_GLOBAL:
                 // SIMULATED ANNEALING, MOVING ALL VARIABLES AT EACH ITERATION
                 //MAPestimate = sample.map(this::simulatedAnnealingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::simulatedAnnealingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
@@ -338,7 +345,7 @@ public class MAPInference implements PointEstimator {
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
                 break;
 
-            case 3:     // HILL CLIMBING, MOVING ALL VARIABLES AT EACH ITERATION
+            case HC_GLOBAL:     // HILL CLIMBING, MOVING ALL VARIABLES AT EACH ITERATION
                 //MAPestimate = sample.map(this::hillClimbingAllVars).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::hillClimbingAllVars).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
                 weightedAssignment = sample.map(this::hillClimbingAllVars).reduce((wa1, wa2) -> (wa1.weight > wa2.weight ? wa1 : wa2)).get();
@@ -347,7 +354,7 @@ public class MAPInference implements PointEstimator {
                 MAPestimateLogProbability = Math.log(weightedAssignment.weight);
                 break;
 
-            case 2:     // HILL CLIMBING, MOVING SOME VARIABLES AT EACH ITERATION
+            case HC_LOCAL:     // HILL CLIMBING, MOVING SOME VARIABLES AT EACH ITERATION
             default:
                 //MAPestimate = sample.map(this::hillClimbingOneVar).reduce((s1, s2) -> (model.getLogProbabiltyOf(s1) > model.getLogProbabiltyOf(s2) ? s1 : s2)).get();
                 //weightedAssignment = sample.map(this::hillClimbingOneVar).reduce((wa1, wa2) -> (model.getLogProbabiltyOf(wa1.assignment) > model.getLogProbabiltyOf(wa2.assignment) ? wa1 : wa2)).get();
@@ -1255,7 +1262,7 @@ public class MAPInference implements PointEstimator {
 
         mapInference.setEvidence(evidenceAssignment);
 
-        //List<Variable> modelVariables = Utils.getCausalOrder(bn.getDAG());
+        //List<Variable> modelVariables = Utils.getTopologicalOrder(bn.getDAG());
 
 
 //
@@ -1466,7 +1473,7 @@ public class MAPInference implements PointEstimator {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(1);
+        mapInference.runInference(SearchAlgorithm.SA_GLOBAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.All): " + mapEstimate.outputString(varsInterest));
@@ -1480,7 +1487,7 @@ public class MAPInference implements PointEstimator {
 
         // MAP INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(0);
+        mapInference.runInference(SearchAlgorithm.SA_LOCAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (SA.Some): " + mapEstimate.outputString(varsInterest));
@@ -1498,7 +1505,7 @@ public class MAPInference implements PointEstimator {
 
         //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(3);
+        mapInference.runInference(SearchAlgorithm.HC_GLOBAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.All): " + mapEstimate.outputString(varsInterest));
@@ -1512,7 +1519,7 @@ public class MAPInference implements PointEstimator {
 
         //  MAP INFERENCE WITH HILL CLIMBING, SOME VARIABLES EACH TIME
         timeStart = System.nanoTime();
-        mapInference.runInference(2);
+        mapInference.runInference(SearchAlgorithm.HC_LOCAL);
 
         mapEstimate = mapInference.getEstimate();
         System.out.println("MAP estimate  (HC.Some): " + mapEstimate.outputString(varsInterest));
@@ -1530,7 +1537,7 @@ public class MAPInference implements PointEstimator {
         // MAP INFERENCE WITH SIMULATION AND PICKING MAX
         mapInference.setSampleSize(samplingMethodSize);
         timeStart = System.nanoTime();
-        mapInference.runInference(-1);
+        mapInference.runInference(SearchAlgorithm.SAMPLING);
 
         mapEstimate = mapInference.getEstimate();
 

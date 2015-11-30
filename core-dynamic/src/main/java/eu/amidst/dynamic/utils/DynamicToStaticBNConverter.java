@@ -14,6 +14,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
  * Created by dario on 16/11/15.
@@ -22,14 +23,14 @@ public class DynamicToStaticBNConverter {
 
     DynamicBayesianNetwork dbn;
     BayesianNetwork bn;
-    int nTimeSlices = 2;
+    int nTimeSteps = 2;
 
     public void setDynamicBayesianNetwork(DynamicBayesianNetwork dbn) {
         this.dbn = dbn;
     }
 
-    public void setNumberOfTimeSlices(int nTimeSlices) {
-        this.nTimeSlices = nTimeSlices;
+    public void setNumberOfTimeSteps(int nTimeSteps) {
+        this.nTimeSteps = nTimeSteps;
     }
 
     public BayesianNetwork getBayesianNetwork() {
@@ -49,21 +50,26 @@ public class DynamicToStaticBNConverter {
          * CREATE STATIC DAG FROM THE DYNAMIC DAG
          * 1st STEP: ADD REPLICATED VARIABLES
          */
-        for (int i = 0; i < nTimeSlices; i++) {
-            for (int j = 0; j < dynamicVariables.getNumberOfVars(); j++) {
-                Variable dynVar = dynamicVariables.getVariableById(j);
-                VariableBuilder aux = dynVar.getVariableBuilder();
-                aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
-                variables.newVariable(aux);
-            }
-        }
+        // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
+        Variables staticVariablesTimeT = dynamicVariables.toVariablesTimeT();
+
+        dynamicVariables.getListOfDynamicVariables().stream()
+                .forEach(dynVar ->
+                                IntStream.range(0, nTimeSteps).forEach(i -> {
+
+                                    Variable newVar = staticVariablesTimeT.getVariableByName(dynVar.getName());
+                                    VariableBuilder aux = newVar.getVariableBuilder();
+                                    aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
+                                    variables.newVariable(aux);
+                                })
+                );
         DAG dag = new DAG(variables);
 
         /*
          * CREATE STATIC DAG FROM THE DYNAMIC DAG
          * 2nd STEP: ADD EDGES
          */
-        for (int i = 0; i < nTimeSlices; i++) {
+        for (int i = 0; i < nTimeSteps; i++) {
             for (int j = 0; j < dynamicVariables.getNumberOfVars(); j++) {
 
                 Variable dynVar = dynamicVariables.getVariableById(j);
@@ -84,7 +90,7 @@ public class DynamicToStaticBNConverter {
          * CREATE STATIC BN FROM THE DYNAMIC BN
          * 3nd STEP: ADD CONDITIONAL DISTRIBUTIONS
          */
-        for (int i = 0; i < nTimeSlices; i++) {
+        for (int i = 0; i < nTimeSteps; i++) {
             for (int j = 0; j < dynamicVariables.getNumberOfVars(); j++) {
 
                 List<Variable> parentList = new ArrayList<>();
@@ -110,6 +116,7 @@ public class DynamicToStaticBNConverter {
                     });
                 }
                 cdist.setConditioningVariables(parentList);
+                cdist.setVar(staticVar);
                 bn.setConditionalDistribution(staticVar, cdist);
             }
         }
@@ -134,7 +141,7 @@ public class DynamicToStaticBNConverter {
         //dynamicNaiveBayes.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
 
         DynamicToStaticBNConverter converterDBNtoBN = new DynamicToStaticBNConverter();
-        converterDBNtoBN.setNumberOfTimeSlices(4);
+        converterDBNtoBN.setNumberOfTimeSteps(4);
         converterDBNtoBN.setDynamicBayesianNetwork(dynamicNaiveBayes);
 
         converterDBNtoBN.convertDBNtoBN();

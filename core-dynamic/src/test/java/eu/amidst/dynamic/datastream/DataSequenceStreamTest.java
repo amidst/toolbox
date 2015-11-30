@@ -92,7 +92,7 @@ public class DataSequenceStreamTest extends TestCase {
                     dataInstanceCount.getAndIncrement();
                 })
                 .map(efDynamicBayesianNetwork::getSufficientStatistics)
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
@@ -108,9 +108,9 @@ public class DataSequenceStreamTest extends TestCase {
         sumSS = sampler.sampleToDataStream(nsquences, sizesequences).streamOfBatches(10)
                 .map( batch -> {
                     EF_DynamicBayesianNetwork efDynamicBayesianNetworkLocal = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
-                    return batch.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
+                    return batch.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVectorNonStateless).get();
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
@@ -128,9 +128,9 @@ public class DataSequenceStreamTest extends TestCase {
         sumSS = sampler.sampleToDataBase(nsquences, sizesequences).parallelStreamOfBatches(10)
                 .map( batch -> {
                     EF_DynamicBayesianNetwork efDynamicBayesianNetworkLocal = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
-                    return batch.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
+                    return batch.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVectorNonStateless).get();
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
@@ -148,9 +148,9 @@ public class DataSequenceStreamTest extends TestCase {
         sumSS = DataSequenceStream.streamOfDataSequences(sampler.sampleToDataStream(nsquences, sizesequences))
                 .map( sequence -> {
                     EF_DynamicBayesianNetwork efDynamicBayesianNetworkLocal = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
-                    return sequence.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
+                    return sequence.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVectorNonStateless).get();
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());
@@ -167,9 +167,9 @@ public class DataSequenceStreamTest extends TestCase {
         sumSS = DataSequenceStream.parallelStreamOfDataSequences(sampler.sampleToDataStream(nsquences, sizesequences))
                 .map( sequence -> {
                     EF_DynamicBayesianNetwork efDynamicBayesianNetworkLocal = new EF_DynamicBayesianNetwork(dynamicNB.getDynamicDAG());
-                    return sequence.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVector).get();
+                    return sequence.stream().map(efDynamicBayesianNetworkLocal::getSufficientStatistics).reduce(SufficientStatistics::sumVectorNonStateless).get();
                 })
-                .reduce(SufficientStatistics::sumVector).get();
+                .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
         //Normalize the sufficient statistics
         sumSS.divideBy(dataInstanceCount.get());

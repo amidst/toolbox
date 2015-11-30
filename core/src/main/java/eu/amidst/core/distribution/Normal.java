@@ -31,6 +31,8 @@ import java.util.Random;
  */
 public class Normal extends UnivariateDistribution {
 
+    private static final long serialVersionUID = -5498079146465770364L;
+
     /** Represents the mean of the Normal distribution. */
     private double mean;
 
@@ -125,6 +127,14 @@ public class Normal extends UnivariateDistribution {
     @Override
     public double sample(Random rand) {
         return rand.nextGaussian()*this.getSd()+this.getMean();
+    }
+
+    @Override
+    public UnivariateDistribution deepCopy(Variable variable) {
+        Normal copy = new Normal(variable);
+        copy.setMean(this.getMean());
+        copy.setVariance(this.getVariance());
+        return copy;
     }
 
     /**

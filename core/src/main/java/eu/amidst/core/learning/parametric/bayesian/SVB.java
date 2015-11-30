@@ -307,6 +307,9 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
         CompoundVector compoundVectorEnd = new CompoundVector(naturalParametersPosterior);
 
+        //System.out.println("OUT 36\t" + compoundVectorEnd.getVectorByPosition(36).get(0)+"\t"+compoundVectorEnd.getVectorByPosition(36).get(1));
+        //System.out.println("OUT 37:" + compoundVectorEnd.getVectorByPosition(37).get(0)+", "+compoundVectorEnd.getVectorByPosition(37).get(1));
+
         compoundVectorEnd.substract(this.getNaturalParameterPrior());
 
         return new BatchOutput(compoundVectorEnd, this.plateuStructure.getLogProbabilityOfEvidence());
@@ -413,7 +416,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
         BatchOutput out = new BatchOutput(compoundVectorEnd, this.plateuStructure.getLogProbabilityOfEvidence());
 
-        this.naturalVectorPosterior = BatchOutput.sum(out, this.getNaturalParameterPosterior());
+        this.naturalVectorPosterior = BatchOutput.sumNonStateless(out, this.getNaturalParameterPosterior());
 
         return out.getElbo();
     }
@@ -599,7 +602,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
             this.elbo = elbo;
         }
 
-        public static BatchOutput sum(BatchOutput batchOutput1, BatchOutput batchOutput2){
+        public static BatchOutput sumNonStateless(BatchOutput batchOutput1, BatchOutput batchOutput2){
             batchOutput2.getVector().sum(batchOutput1.getVector());
             batchOutput2.setElbo(batchOutput2.getElbo()+batchOutput1.getElbo());
             return batchOutput2;

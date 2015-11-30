@@ -1,10 +1,12 @@
 package eu.amidst.huginlink.inference;
 
 import COM.hugin.HAPI.*;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
@@ -13,12 +15,16 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.io.BNWriterToHugin;
 
+import java.io.Serializable;
+
 //TODO: Implement method getLogProbabilityOfEvidence
 
 /**
  * This class provides an interface to perform Bayesian network inference using the Hugin inference engine.
  */
-public class HuginInference implements InferenceAlgorithm {
+public class HuginInference implements InferenceAlgorithm, Serializable {
+
+    private static final long serialVersionUID = 8587756877237341367L;
 
     /** Represents the Bayesian network model in AMIDST format. */
     BayesianNetwork amidstBN;
@@ -119,14 +125,32 @@ public class HuginInference implements InferenceAlgorithm {
     @Override
     public void setEvidence(Assignment assignment) {
 
-        ((HashMapAssignment)assignment).entrySet().stream()
-                .forEach(entry -> {
-                    try {
-                        this.setVarEvidence(entry.getKey(), entry.getValue().doubleValue());
-                    } catch (ExceptionHugin exceptionHugin) {
-                        exceptionHugin.printStackTrace();
-                    }
-                });
+        if (assignment.getVariables()!=null) {
+            assignment.getVariables().stream().forEach(var -> {
+                try {
+                    double val = assignment.getValue(var);
+                    if (!Utils.isMissingValue(val))
+                        this.setVarEvidence(var,val);
+                } catch (ExceptionHugin exceptionHugin) {
+                    exceptionHugin.printStackTrace();
+                }
+            });
+        }else{
+            DataInstance dataInstance = (DataInstance)assignment;
+
+            dataInstance.getAttributes().getListOfNonSpecialAttributes().stream()
+                    .forEach(att -> {
+                        try {
+                            Variable var = this.getOriginalModel().getVariables().getVariableByName(att.getName());
+                            double val = assignment.getValue(var);
+                            if (!Utils.isMissingValue(val))
+                                this.setVarEvidence(var, val);
+                        } catch (ExceptionHugin exceptionHugin) {
+                            exceptionHugin.printStackTrace();
+                        }
+                    });
+        }
+
     }
 
     /**
@@ -165,7 +189,14 @@ public class HuginInference implements InferenceAlgorithm {
      */
     @Override
     public double getLogProbabilityOfEvidence() {
-        throw new UnsupportedOperationException("Method not implemented");
+        double log=Double.NaN;
+        try{
+            log =  huginBN.getLogLikelihood();
+        } catch (ExceptionHugin exceptionHugin) {
+            exceptionHugin.printStackTrace();
+        }
+
+        return log;
     }
 
     /**

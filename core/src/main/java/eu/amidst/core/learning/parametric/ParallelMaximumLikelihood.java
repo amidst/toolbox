@@ -12,7 +12,6 @@
 package eu.amidst.core.learning.parametric;
 
 
-import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -21,12 +20,7 @@ import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.Vector;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -111,9 +105,9 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
 
-        this.sumSS = batch.stream()
+        this.sumSS.sum(batch.stream()
                     .map(efBayesianNetwork::getSufficientStatistics)
-                    .reduce(this.sumSS, SufficientStatistics::sumVector);
+                    .reduce(SufficientStatistics::sumVectorNonStateless).get());
 
         dataInstanceCount.addAndGet(batch.getNumberOfDataInstances());
 
@@ -150,28 +144,16 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
         }else{
             stream = dataStream.streamOfBatches(batchSize);
         }
-
-        SufficientStatistics initSS = null;
-        if (laplace) {
-            dataInstanceCount = new AtomicDouble(1); //Initial count
-            initSS = efBayesianNetwork.createInitSufficientStatistics();
-        }else{
-            dataInstanceCount = new AtomicDouble(0); //Initial count
-            initSS = efBayesianNetwork.createZeroSufficientStatistics();
-        }
-
-        sumSS = stream
+        sumSS.sum(stream
                 .peek(batch -> {
                     dataInstanceCount.getAndAdd(batch.getNumberOfDataInstances());
                     if (debug) System.out.println("Parallel ML procesando "+(int)dataInstanceCount.get() +" instances");
                 })
-                .map(batch -> {
-                    SufficientStatistics ss = efBayesianNetwork.createZeroSufficientStatistics();
-                    return batch.stream()
-                            .map(efBayesianNetwork::getSufficientStatistics)
-                            .reduce(ss, SufficientStatistics::sumVector);
-                })
-                .reduce(initSS, SufficientStatistics::sumVector);
+                .map(batch ->  batch.stream()
+                                    .map(efBayesianNetwork::getSufficientStatistics)
+                                    .reduce(SufficientStatistics::sumVectorNonStateless)
+                                    .get())
+                .reduce(SufficientStatistics::sumVectorNonStateless).get());
     }
 
     /**
@@ -217,103 +199,6 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
      */
     @Override
     public void setOutput(boolean activateOutput) {
-
-    }
-
-    public static void main(String[] args){
-
-        List<ArrayVector> vectorList = IntStream.range(0,10).mapToObj(i -> {
-            ArrayVector vec = new ArrayVector(2);
-            vec.set(0, 1);
-            vec.set(1, 1);
-            return vec;
-        }).collect(Collectors.toList());
-
-
-        Vector out1 = vectorList.parallelStream()
-                .reduce(new ArrayVector(2), (u, v) -> {
-                    ArrayVector outvec = new ArrayVector(2);
-                    outvec.sum(v);
-                    outvec.sum(u);
-                    return outvec;});
-
-
-        Vector out2 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {u.sum(v); return u;});
-        Vector out3 = vectorList.parallelStream().reduce(new ArrayVector(2), (u, v) -> {v.sum(u); return v;});
-
-        System.out.println(out1.get(0) + ", " + out1.get(1));
-        System.out.println(out2.get(0) + ", " + out2.get(1));
-        System.out.println(out3.get(0) + ", " + out3.get(1));
-
-        /*
-        BayesianNetwork bn=null;
-
-        int nlinks = bn.getDAG().getParentSets()
-                .parallelStream()
-                .mapToInt(parentSet -> parentSet.getNumberOfParents()).sum();
-
-        nlinks=0;
-
-        for (ParentSet parentSet: bn.getDAG().getParentSets()){
-            nlinks+=parentSet.getNumberOfParents();
-        }
-
-        for (int i = 0; i < bn.getDAG().getParentSets().size(); i++) {
-            nlinks+=bn.getDAG().getParentSets().get(i).getNumberOfParents();
-        }*/
-
-
-        int nSamples = 4000000;
-        int sizeSS=1000000;
-        int sizeSS2=100;
-
-        double[][] sum = new double[sizeSS][];
-        double[][] ss = new double[sizeSS][];
-
-        for (int i = 0; i < 100; i++) {
-            /*for (int j = 0; j < ss.length; j++) {
-                    ss[j]=new double[sizeSS];
-            }*/
-            /*
-            for (int j = 0; j < ss.length; j++) {
-                for (int k = 0; k < ss[j].length; k++) {
-                    ss[j][k]=1.0;//Math.random();
-                }
-            }
-
-
-            for (int j = 0; j < ss.length; j++) {
-                for (int k = 0; k < ss[j].length; k++) {
-                    sum[j][k]+=ss[j][k];
-                }
-            }
-*/
-
-            class ArrayVector{
-                double[] array;
-                public ArrayVector(int size){
-                    array = new double[size];
-                }
-                public double[] getArray(){
-                    return this.array;
-                }
-            }
-
-            Stopwatch watch = Stopwatch.createStarted();
-            for (int j = 0; j < sizeSS ; j++) {
-                    ArrayVector vex = new ArrayVector(sizeSS2);
-                    ss[j]=vex.getArray();
-            }
-            System.out.println(watch.stop());
-
-            watch = Stopwatch.createStarted();
-            for (int j = 0; j < sizeSS ; j++) {
-                ss[j]= new double[sizeSS2];
-            }
-            System.out.println(watch.stop());
-            System.out.println();
-        }
-
 
     }
 }
