@@ -50,8 +50,7 @@ public class DynamicBayesianNetworkGenerator {
         DynamicBayesianNetworkGenerator.numberOfStates = numberOfStates;
     }
 
-    public static DynamicBayesianNetwork generateDynamicNaiveBayes(Random random, int numberClassStates, boolean connectChildrenTemporally){
-
+    public static DynamicDAG generateDynamicNaiveBayesDAG(int numberClassStates, boolean connectChildrenTemporally){
         DynamicVariables dynamicVariables  = new DynamicVariables();
 
         //class variable which is always discrete
@@ -59,7 +58,8 @@ public class DynamicBayesianNetworkGenerator {
 
         //Discrete variables
         IntStream.range(1, numberOfDiscreteVars+1)
-                .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("DiscreteVar" + i, DynamicBayesianNetworkGenerator.numberOfStates));
+                .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("DiscreteVar" + i,
+                        DynamicBayesianNetworkGenerator.numberOfStates));
 
         //Continuous variables
         IntStream.range(1,numberOfContinuousVars+1)
@@ -79,7 +79,17 @@ public class DynamicBayesianNetworkGenerator {
 
         dag.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
-        DynamicBayesianNetwork network = new DynamicBayesianNetwork(dag);
+        return dag;
+    }
+
+    public static DynamicBayesianNetwork generateDynamicNaiveBayes(Random random, int numberClassStates,
+                                                                   boolean connectChildrenTemporally){
+
+
+
+        DynamicBayesianNetwork network = new DynamicBayesianNetwork(
+                DynamicBayesianNetworkGenerator.generateDynamicNaiveBayesDAG(numberClassStates,
+                        connectChildrenTemporally));
 
         network.randomInitialization(random);
 
