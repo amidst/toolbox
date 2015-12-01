@@ -53,7 +53,7 @@ public class WrapperFS {
         return null;
     }
 
-    private BayesianNetwork trainModel(DataOnMemory<DataInstance> dataTrain, List<Variable> SF){
+    private BayesianNetwork trainModel(DataOnMemory<DataInstance> dataTrain, List<Variable> SF, boolean parallel){
 
         DAG dag;
         switch (modelType){
@@ -71,7 +71,7 @@ public class WrapperFS {
 
         //We set the options
         parameterLearningAlgorithm.setBatchSize(10000);
-        parameterLearningAlgorithm.setParallelMode(true);
+        parameterLearningAlgorithm.setParallelMode(parallel);
         parameterLearningAlgorithm.setDebug(false);
 
         //We fix the DAG structure
@@ -135,7 +135,7 @@ public class WrapperFS {
         Boolean stop = false;
 
         //Learn the initial BN with training data including only the class variable
-        BayesianNetwork bNet = trainModel(trainingData, SF);
+        BayesianNetwork bNet = trainModel(trainingData, SF, false);
 
         //System.out.println(bNet.outputString());
 
@@ -160,7 +160,7 @@ public class WrapperFS {
                 SF_TMP.add(V);
 
                 //train
-                BayesianNetwork bNet_TMP = trainModel(trainingData, SF_TMP);
+                BayesianNetwork bNet_TMP = trainModel(trainingData, SF_TMP, false);
                 //evaluate
                 scores.put(V, testModel(testData, bNet_TMP));
                 SF_TMP.remove(V);
@@ -175,7 +175,7 @@ public class WrapperFS {
                 SF_TMP.remove(V);
 
                 //train
-                BayesianNetwork bNet_TMP = trainModel(trainingData, SF_TMP);
+                BayesianNetwork bNet_TMP = trainModel(trainingData, SF_TMP, false);
                 //evaluate
                 scores.put(V, testModel(testData, bNet_TMP));
                 SF_TMP.add(V);
@@ -258,7 +258,7 @@ public class WrapperFS {
         DataOnMemory<DataInstance> allDataTrain = joinTrainData(dataTrain, dataTrainEval);
 
         //Train the model with all training data and only the selected attributes
-        BayesianNetwork bn = this.trainModel(allDataTrain,selectedAtts);
+        BayesianNetwork bn = this.trainModel(allDataTrain,selectedAtts, true);
 
         System.out.printf("Area under the ROC curve = "+this.testModel(dataTest, bn));
 
