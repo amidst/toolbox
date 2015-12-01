@@ -21,24 +21,24 @@ public class ParallelMLE {
 
         // load the true Asia Bayesian network
         BayesianNetwork originalBnet = BayesianNetworkLoader.loadFromFile(args[0]);
-
         System.out.println("\n Network \n " + args[0]);
+
         //System.out.println(originalBnet.getDAG().outputString());
         //System.out.println(originalBnet.outputString());
 
         //Sampling from Asia BN
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
-        sampler.setSeed(0);
+        //BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
+        //sampler.setSeed(0);
         //Load the sampled data
 
-        int sizeData = Integer.parseInt(args[1]);
-        DataStream<DataInstance> data = sampler.sampleToDataStream(sizeData);
+        //int sizeData = Integer.parseInt(args[1]);
+        //DataStream<DataInstance> data = sampler.sampleToDataStream(sizeData);
 
-        DataStreamWriter.writeDataToFile(data, "./tmp.arff");
+        //DataStreamWriter.writeDataToFile(data, "./tmp.arff");
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,"./tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,"hdfs:///tmp.arff");
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning

@@ -85,7 +85,6 @@
     <modules>
         <module>huginlink</module>
         <module>core</module>
-        <module>sparklink</module>
         <module>core-dynamic</module>
         <module>examples</module>
         <module>flinklink</module>

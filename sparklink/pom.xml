@@ -13,7 +13,7 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -57,7 +57,5 @@
             <artifactId>spark-mllib_2.10</artifactId>
             <version>1.0.0</version>
         </dependency>
-
     </dependencies>
-
 </project>
