@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  * In this example, we simply show how to create a BN model with latent variables. We simply
  * create a BN for clustering, i.e.,  a naive-Bayes like structure with a single common latent or hidden variable
- * acting as parant of all the observable variables.
+ * acting as parent of all the observable variables.
  *
  * Created by andresmasegosa on 18/6/15.
  */
@@ -114,7 +114,7 @@ public class CreatingBayesianNetworksWithLatentVariables {
         System.out.println(bn.toString());
 
         /**
-         * Finally teh Bayesian network is saved to a file.
+         * Finally the Bayesian network is saved to a file.
          */
         BayesianNetworkWriter.saveToFile(bn, "networks/BNHiddenExample.bn");
 

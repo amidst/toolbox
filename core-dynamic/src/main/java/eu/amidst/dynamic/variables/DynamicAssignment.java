@@ -19,4 +19,6 @@ public interface DynamicAssignment extends Assignment {
 
     long getTimeID();
 
+    //@TODO: Problems if we try to print a DynamicAssignment as the outputString method in DataInstance is invoked
+
 }
