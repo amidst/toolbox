@@ -1,6 +1,8 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -24,6 +26,10 @@ import java.util.stream.IntStream;
  */
 public class DynamicMAPInference {
 
+    public enum SearchAlgorithm {
+        VMP, IS
+    }
+
     private DynamicBayesianNetwork model;
     private BayesianNetwork staticEvenModel, staticOddModel;
 
@@ -36,6 +42,7 @@ public class DynamicMAPInference {
     private Assignment staticEvidence;
 
     private boolean parallelMode = true;
+    private int seed = 125123;
 
     private Assignment MAPestimate;
     private double MAPestimateLogProbability;
@@ -211,56 +218,126 @@ public class DynamicMAPInference {
             });
         }
 
-//        long timeStart = System.nanoTime();
-        VMP vmpEvenModel = new VMP();
-        VMP vmpOddModel = new VMP();
+        this.runInference(SearchAlgorithm.VMP);
 
-        IntStream.range(0, 2).parallel().forEach(i -> {
-            if (i == 0) {
-                vmpEvenModel.setModel(staticEvenModel);
-                if (evidence != null) {
-                    vmpEvenModel.setEvidence(staticEvidence);
+
+//        timeStop = System.nanoTime();
+//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//        System.out.println("Time Distibutions" + execTime);
+    }
+
+    public void runInference(SearchAlgorithm searchAlgorithm) {
+
+        if (MAPvariable==null || MAPvarName==null) {
+            System.out.println("Error: The MAP variable has not been set");
+            System.exit(-30);
+        }
+
+        if (this.staticOddModel == null) {
+            this.computeDynamicMAPOddModel();
+        }
+        if (this.staticEvenModel == null) {
+            this.computeDynamicMAPEvenModel();
+        }
+
+        if (evidence!=null && staticEvidence==null) {
+
+            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+
+            evidence.stream().forEach(dynamicAssignment -> {
+                int time = (int) dynamicAssignment.getTimeID();
+                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+                for (Variable dynVariable : dynAssigVariables) {
+                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+                    double varValue = dynamicAssignment.getValue(dynVariable);
+                    staticEvidence.setValue(staticVariable, varValue);
                 }
-                vmpEvenModel.runInference();
-            } else {
-                vmpOddModel.setModel(staticOddModel);
-                if (evidence != null) {
-                    vmpOddModel.setEvidence(staticEvidence);
-                }
-                vmpOddModel.runInference();
-            }
-        });
+
+            });
+        }
+
+        InferenceAlgorithm evenModelInference, oddModelInference;
+        switch(searchAlgorithm) {
+            case VMP:
+                //        long timeStart = System.nanoTime();
+                evenModelInference = new VMP();
+                oddModelInference = new VMP();
+
+                break;
+
+//                IntStream.range(0, 2).parallel().forEach(i -> {
+//                    if (i == 0) {
+//                        evenModelInference.setModel(staticEvenModel);
+//                        if (evidence != null) {
+//                            evenModelInference.setEvidence(staticEvidence);
+//                        }
+//                        evenModelInference.runInference();
+//                    } else {
+//                        oddModelInference.setModel(staticOddModel);
+//                        if (evidence != null) {
+//                            oddModelInference.setEvidence(staticEvidence);
+//                        }
+//                        oddModelInference.runInference();
+//                    }
+//                });
+
 //        long timeStop = System.nanoTime();
 //        double execTime = (double) (timeStop - timeStart) / 1000000000.0;
 //        System.out.println("Time VMP" + execTime);
 
-
-
 //        timeStart = System.nanoTime();
+
+            case IS:
+            default:
+
+                evenModelInference = new ImportanceSampling();
+                oddModelInference = new ImportanceSampling();
+
+                Random random = new Random((this.seed));
+                oddModelInference.setSeed(random.nextInt());
+                evenModelInference.setSeed(random.nextInt());
+
+                break;
+        }
+
+        IntStream.range(0, 2).parallel().forEach(i -> {
+            if (i == 0) {
+                evenModelInference.setParallelMode(this.parallelMode);
+                evenModelInference.setModel(staticEvenModel);
+                if (evidence != null) {
+                    evenModelInference.setEvidence(staticEvidence);
+                }
+                evenModelInference.runInference();
+            }
+            else {
+                oddModelInference.setParallelMode(this.parallelMode);
+                oddModelInference.setModel(staticOddModel);
+                if (evidence != null) {
+                    oddModelInference.setEvidence(staticEvidence);
+                }
+                oddModelInference.runInference();
+            }
+        });
 
         List<UnivariateDistribution> posteriorMAPDistributionsEvenModel = new ArrayList<>();
         List<UnivariateDistribution> posteriorMAPDistributionsOddModel = new ArrayList<>();
 
         int replicationsMAPVariableEvenModel = nTimeSteps/2 + nTimeSteps%2;
-        IntStream.range(0,replicationsMAPVariableEvenModel).forEachOrdered(i -> posteriorMAPDistributionsEvenModel.add(vmpEvenModel.getPosterior(i)));
+        IntStream.range(0,replicationsMAPVariableEvenModel).forEachOrdered(i -> posteriorMAPDistributionsEvenModel.add(evenModelInference.getPosterior(i)));
 
         int replicationsMAPVariableOddModel = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
-        IntStream.range(0,replicationsMAPVariableOddModel).forEachOrdered(i -> posteriorMAPDistributionsOddModel.add(vmpOddModel.getPosterior(i)));
+        IntStream.range(0,replicationsMAPVariableOddModel).forEachOrdered(i -> posteriorMAPDistributionsOddModel.add(oddModelInference.getPosterior(i)));
 
 //        System.out.println("Even model distributions \n");
 //        posteriorMAPDistributionsEvenModel.forEach(dist -> System.out.println(dist.toString()));
-
+//
 //        System.out.println("\nOdd model distributions \n");
 //        posteriorMAPDistributionsOddModel.forEach(dist -> System.out.println(dist.toString()));
 //        System.out.println();
 
         List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributionsEvenModel, posteriorMAPDistributionsOddModel);
-
         computeMostProbableSequence(conditionalDistributionsMAPvariable);
 
-//        timeStop = System.nanoTime();
-//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("Time Distibutions" + execTime);
     }
 
     private void computeMostProbableSequence(List<double[]> conditionalDistributionsMAPvariable) {
@@ -1178,7 +1255,7 @@ public class DynamicMAPInference {
         // INITIALIZE THE MODEL
         int nTimeSteps = 10;
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
-        mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("DEFAULT");
+        mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
         dynMAP.setMAPvariable(mapVariable);
 
         dynMAP.computeDynamicMAPEvenModel();
@@ -1203,7 +1280,7 @@ public class DynamicMAPInference {
         List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
 
         varsDynamicModel.forEach(var -> System.out.println("Var ID " + var.getVarID() + ": " + var.getName()));
-        int indexVarEvidence1 = 0;
+        int indexVarEvidence1 = 2;
         int indexVarEvidence2 = 3;
         int indexVarEvidence3 = 8;
         Variable varEvidence1 = varsDynamicModel.get(indexVarEvidence1);
@@ -1217,7 +1294,7 @@ public class DynamicMAPInference {
 
         double varEvidenceValue;
 
-        Random random = new Random(93123466);
+        Random random = new Random(931234662);
 
         List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
 
@@ -1242,5 +1319,6 @@ public class DynamicMAPInference {
 
         dynMAP.setEvidence(evidence);
         dynMAP.runInference();
+
     }
 }
