@@ -1,4 +1,4 @@
-package eu.amidst.dynamic.inference;
+package eu.amidst.ijcai2016;
 
 import eu.amidst.core.inference.MAPInference;
 import eu.amidst.core.models.BayesianNetwork;
@@ -29,8 +29,8 @@ public class DynamicMAPInference_Experiments1 {
         int nContVars = 10;
         int nDiscreteVars=40;
 
-        //int numberOfLinks=(int)((nContVars+nDiscreteVars)*1.5);
-        int numberOfLinks=(nContVars+nDiscreteVars);
+        int numberOfLinks=(int)((nContVars+nDiscreteVars)*1.5);
+        //int numberOfLinks=(nContVars+nDiscreteVars);
 
         DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(nContVars);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(nDiscreteVars);
