@@ -1,4 +1,4 @@
-package eu.amidst.dynamic.inference;
+package eu.amidst.ijcai2016;
 
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.MAPInference;
@@ -7,6 +7,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.dynamic.inference.DynamicMAPInference;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicToStaticBNConverter;
