@@ -93,6 +93,8 @@
         <module>extensions/caepia2015</module>
         <module>extensions/ida2015</module>
         <module>extensions/scai2015</module>
+        <module>extensions/ijcai2016</module>
+        <module>extensions/uai2016</module>
     </modules>
 
 

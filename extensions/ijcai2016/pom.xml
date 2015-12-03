@@ -50,7 +50,7 @@
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
-            <artifactId>dynamic</artifactId>
+            <artifactId>core-dynamic</artifactId>
             <version>1.0.0</version>
         </dependency>
     </dependencies>
