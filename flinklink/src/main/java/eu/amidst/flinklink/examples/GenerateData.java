@@ -7,6 +7,7 @@ import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 
+
 /**
  * Created by Hanen on 17/11/15.
  */
@@ -24,11 +25,18 @@ public static void main(String[] args) throws Exception {
     //Sampling from Asia BN
     BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
     sampler.setSeed(0);
+
+    // Defines the size of the data to be generated
     int sizeData = Integer.parseInt(args[1]);
+
+
+    System.out.println("\n Sampling the data... \n ");
+    
     DataStream<DataInstance> data = sampler.sampleToDataStream(sizeData);
 
-    DataStreamWriter.writeDataToFile(data, "./tmp.arff");
+    System.out.println("\n Saving the data... \n ");
 
+    DataStreamWriter.writeDataToFile(data, "./tmp.arff");
 }
 
 }
