@@ -75,7 +75,7 @@ public class DAG implements Serializable {
      * @return the number of links.
      */
     public long getNumberOfLinks(){
-        return this.parents.stream().mapToInt(p -> p.getNumberOfParents()).count();
+        return this.parents.stream().mapToInt(p -> p.getNumberOfParents()).sum();
     }
 
     /**

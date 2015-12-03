@@ -47,6 +47,8 @@ public class NaiveBayesEval {
 
         BayesianNetworkWriter.saveToFile(naiveBayesClassifier.getBNModel(), fileOutput + "_NB_model.bn");
 
+        System.out.println(naiveBayesClassifier.getBNModel());
+
         Attribute seq_id = train.getAttributes().getSeq_id();
         Attribute classAtt  = train.getAttributes().getAttributeByName(className);
         for (DataInstance dataInstance : test) {

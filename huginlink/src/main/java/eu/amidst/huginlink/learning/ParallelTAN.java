@@ -237,19 +237,23 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @return a <code>BayesianNetwork</code> object in ADMIST format.
      * @throws ExceptionHugin
      */
-    public BayesianNetwork learn(DataStream<DataInstance> dataStream) throws ExceptionHugin {
-        ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
-        parameterLearningAlgorithm.setLaplace(true);
-        parameterLearningAlgorithm.setParallelMode(this.parallelMode);
-        parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
-        parameterLearningAlgorithm.setDataStream(dataStream);
-        parameterLearningAlgorithm.initLearning();
-        parameterLearningAlgorithm.runLearning();
-        learnedBN = parameterLearningAlgorithm.getLearntBayesianNetwork();
+    public BayesianNetwork learn(DataStream<DataInstance> dataStream) {
+        try {
+            ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
+            parameterLearningAlgorithm.setLaplace(true);
+            parameterLearningAlgorithm.setParallelMode(this.parallelMode);
+            parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
+            parameterLearningAlgorithm.setDataStream(dataStream);
+            parameterLearningAlgorithm.initLearning();
+            parameterLearningAlgorithm.runLearning();
+            learnedBN = parameterLearningAlgorithm.getLearntBayesianNetwork();
 
-        this.inference = new HuginInference();
-        this.inference.setModel(this.learnedBN);
-        return this.learnedBN;
+            this.inference = new HuginInference();
+            this.inference.setModel(this.learnedBN);
+            return this.learnedBN;
+        }catch (ExceptionHugin ex){
+            throw new IllegalStateException("Hugin Exception: " + ex.getMessage());
+        }
     }
 
     /**
@@ -320,7 +324,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     }
 
 
-    public static void main(String[] args) throws ExceptionHugin, IOException {
+    public static void main(String[] args) throws IOException {
 
 
         OptionParser.setArgsOptions(ParallelTAN.class, args);
