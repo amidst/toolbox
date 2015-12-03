@@ -275,6 +275,14 @@ public class ParallelTANDemo {
 
     /**
      * Writes "help" to the provided OutputStream.
+     * @param options an Options object
+     * @param printedRowWidth an integer
+     * @param header a String
+     * @param footer a String
+     * @param spacesBeforeOption an integer
+     * @param spacesBeforeOptionDescription an integer
+     * @param displayUsage a boolean
+     * @param out an OutputStream object
      */
     public static void printHelp(
             final Options options,
