@@ -121,7 +121,7 @@ public class InferenceDemo {
                      //Avoid entering evidence in class variable to have something to predict
                      if ((var.getVarID()!=model.getClassVarID())){
                          LabelledDCNode node = (LabelledDCNode)domainObject.getNodeByName("T"+i+"."+var.getName());
-                         node.selectState((long)dataInstance.getValue(var));
+                         node.selectState((int)dataInstance.getValue(var));
                      }
                  }
                  dataInstance= iterator.next();

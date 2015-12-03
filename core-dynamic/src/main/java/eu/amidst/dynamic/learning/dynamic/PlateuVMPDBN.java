@@ -8,6 +8,7 @@
 
 package eu.amidst.dynamic.learning.dynamic;
 
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
@@ -59,6 +60,14 @@ public class PlateuVMPDBN {
 
     public void setDBNModel(DynamicDAG dbnModel) {
         this.dbnModel = dbnModel;
+
+        List<EF_ConditionalDistribution> distTim0 = this.dbnModel.getParentSetsTime0().stream().map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents())).collect(Collectors.toList());
+        this.setEFBayesianNetworkTime0(new EF_LearningBayesianNetwork(distTim0));
+
+        List<EF_ConditionalDistribution> distTimT = this.dbnModel.getParentSetsTimeT().stream().map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents())).collect(Collectors.toList());
+        this.setEFBayesianNetworkTimeT(new EF_LearningBayesianNetwork(distTimT));
+
+
     }
 
     public VMP getVMPTimeT() {
@@ -112,7 +121,7 @@ public class PlateuVMPDBN {
         return this.vmpTime0.getLogProbabilityOfEvidence();
     }
 
-    public void setPlateuModelTime0(EF_LearningBayesianNetwork modelTime0) {
+    private void setEFBayesianNetworkTime0(EF_LearningBayesianNetwork modelTime0) {
         ef_learningmodelTime0 = modelTime0;
         parametersNodeTime0 = new ArrayList();
 
@@ -150,7 +159,8 @@ public class PlateuVMPDBN {
 
     }
 
-    public void setPlateuModelTimeT(EF_LearningBayesianNetwork modelTimeT) {
+
+    private void setEFBayesianNetworkTimeT(EF_LearningBayesianNetwork modelTimeT) {
 
         ef_learningmodelTimeT = modelTimeT;
         parametersNodeTimeT = new ArrayList();

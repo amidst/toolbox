@@ -11,12 +11,12 @@
 package eu.amidst.core.conceptdrift;
 
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
-import eu.amidst.core.conceptdrift.utils.PlateuHiddenVariableConceptDrift;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -36,7 +36,7 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#nbconceptdriftexample"> http://amidst.github.io/toolbox/CodeExamples.html#nbconceptdriftexample </a>  </p>
  *
  */
-public class NaiveBayesVirtualConceptDriftDetector{
+public class NaiveBayesVirtualConceptDriftDetector {
 
     /** Represents the drift detection mode. Only the global mode is currently provided.*/
     public enum DriftDetector {GLOBAL};
@@ -178,7 +178,7 @@ public class NaiveBayesVirtualConceptDriftDetector{
 
         svb = new SVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuHiddenVariableConceptDrift(hiddenVars, true));
+        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(fading);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);

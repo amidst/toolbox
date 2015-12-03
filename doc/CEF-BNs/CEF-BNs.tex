@@ -54,9 +54,18 @@
 \newcommand{\e}[1]{E\left[ #1 \right]}
 
 \usepackage{amsthm}
-\theoremstyle{definition}
-\newtheorem{exmp}{Example}[section]
 \usepackage{pdfpages}
+
+
+\usepackage{lipsum}
+\newcounter{examplecounter}
+\newenvironment{exmp}{\begin{quote}%
+    \refstepcounter{examplecounter}%
+  \textbf{Example \arabic{examplecounter}}%
+  \quad
+}{%
+\end{quote}%
+}
 
 \begin{document}
 \title{ Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models }
@@ -147,6 +156,51 @@ More specific subfamilies inside this broad class of probabilistic models are us
 \noindent where now $\eta$ is a function that maps the parameters $\theta$ to the canonical parameters $\bm \eta=\eta(\theta)$. A model belongs to the \textit{curved exponential family} if it is described by Equation \ref{Equation:EFCurved} and $dim(\theta)<dim(\eta(\theta))$, which means that the model has more sufficient statistics than parameters. 
 
 \end{description}
+
+
+\begin{exmp}
+
+A variable $X$ which follows a Bernoulli probability distribution has the following equation:
+
+$$ p(X|\theta) = \rho^{I(X=0)}(1-\rho)^{I(X=1)}$$
+
+\noindent where $I(\cdot)$ refers to the indicator function and $\rho\in[0,1]$ is the success probability of the 
+Bernoulli distribution.  Now, we will show how this probability distribution can be expressed in different exponential family forms:
+
+
+\begin{itemize}
+
+\item \textbf{Minimal:} The representation of Equation \ref{eq:Bernoulli:Minimal} is minimal simply because the dimension of the sufficient statistics is zero. 
+
+\begin{equation}
+\label{eq:Bernoulli:Minimal}
+p(X|\theta) =\ln\frac{\rho}{1-\rho}\cdot I(X=0) + \ln(1-\rho)
+\end{equation} 
+
+
+\item \textbf{Overcomplete:}  The representation of Equation \ref{eq:Bernoulli:Overcomplete} is overcomplete because the sum of the components of the sufficient statistics vector is always equal to 1. 
+
+\begin{equation}
+\label{eq:Bernoulli:Overcomplete}
+\ln p(X|\theta) =\begin{pmatrix} \ln\rho \\ \ln(1-\rho) \end{pmatrix}^T \begin{pmatrix} I(X=0)\\I(X=1)  \end{pmatrix} - 0
+\end{equation}
+
+\item \textbf{Regular:} The representation of Equation \ref{eq:Bernoulli:Minimal} is regular because $\Theta = { \ln\frac{\rho}{1-\rho} : \rho\in[0,1]}$ covers all the real numbers and, in consequence, is an open set. The representation of Equation \ref{eq:Bernoulli:Overcomplete} is not regular because $\Theta = \{\begin{pmatrix} \ln\rho \\ \ln(1-\rho) \end{pmatrix} : \rho\in[0,1] \}$  is now a curve of one dimension in $\Re^2$.
+
+\item \textbf{Linear:} The representation of Equation \ref{eq:Bernoulli:Minimal} is linear because it is minimal and regular. 
+
+\item \textbf{Curved:} The representation of Equation \ref{eq:Bernoulli:Curved} is curved because the dimension of $\rho$ is equal to one while the dimension of $\eta(\rho)$ is equal to two.
+
+\begin{equation}
+\label{eq:Bernoulli:Curved}
+\ln p(X|\rho) =\eta(\rho)^T \begin{pmatrix} I(X=0)\\I(X=1)  \end{pmatrix} - 0
+\end{equation}
+\noindent where $\eta(\rho) = \begin{pmatrix} \ln\rho \\ \ln(1-\rho) \end{pmatrix}$ is function mapping a real value to a bidimensional vector. 
+
+\end{itemize}
+
+\end{exmp}
+
 
 %------------------------------------------------------------------------------------------------------
 \subsection{Dual Parametrization}

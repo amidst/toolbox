@@ -4,6 +4,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.filereaders.DataOnMemoryFromFile;
+import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataFolderReader;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceAlgorithm;
@@ -146,9 +147,10 @@ public class WrapperFS {
         //iterate until there is no improvement in score
         while (nbrNSF > 0 && stop == false ){
 
-            //System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
-            //SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
-            //System.out.println();
+            System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
+            SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
+            System.out.println();
+
             Map<Variable, Double> scores = new ConcurrentHashMap<>(); //scores for each considered feature
 
             //Scores for adding
@@ -219,6 +221,13 @@ public class WrapperFS {
         return new DataOnMemoryFromFile(reader);
     }
 
+    private DataOnMemory<DataInstance> loadDataOnMemoryFromArffFolder(String path){
+        ARFFDataFolderReader reader = new ARFFDataFolderReader();
+        reader.loadFromFile(path);
+        return new DataOnMemoryFromFile(reader);
+    }
+
+
     private DataOnMemory<DataInstance> joinTrainData(DataOnMemory<DataInstance> data,
                                                      DataOnMemory<DataInstance> dataEval){
         DataOnMemoryListContainer<DataInstance> allTrain = new DataOnMemoryListContainer(data.getAttributes(),
@@ -231,10 +240,22 @@ public class WrapperFS {
 
     public void runExperiments(String[] args){
 
-        DataOnMemory<DataInstance> dataTrain = loadDataOnMemoryFromFile(args[0]);
-        DataOnMemory<DataInstance> dataTrainEval = loadDataOnMemoryFromFile(args[1]);
-        DataOnMemory<DataInstance> dataTest = loadDataOnMemoryFromFile(args[2]);
-        className = args[3];
+        DataOnMemory<DataInstance> dataTotal = loadDataOnMemoryFromArffFolder(args[0]);
+        DataOnMemory<DataInstance> dataTest = loadDataOnMemoryFromArffFolder(args[1]);
+        className = args[2];
+
+        DataOnMemoryListContainer<DataInstance> dataTrain = new DataOnMemoryListContainer<DataInstance>(dataTotal.getAttributes());
+        DataOnMemoryListContainer<DataInstance> dataTrainEval = new DataOnMemoryListContainer<DataInstance>(dataTotal.getAttributes());
+
+
+        Random random = new Random(0);
+        for (DataInstance dataInstance : dataTotal) {
+            if (random.nextDouble()<0.666){
+                dataTrain.add(dataInstance);
+            }else{
+                dataTrainEval.add(dataInstance);
+            }
+        }
 
         modelType = Model.NB;
         if(args.length>4){

@@ -10,7 +10,6 @@
  */
 package eu.amidst.huginlink.examples.demos;
 
-import COM.hugin.HAPI.ExceptionHugin;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -44,7 +43,7 @@ public class ParallelTANDemo {
     static int batchSize = 1000;
     static int numStates = 2;
 
-    public static void demoPigs() throws ExceptionHugin, IOException, ClassNotFoundException {
+    public static void demoPigs() throws IOException, ClassNotFoundException {
 
         //It needs GBs, so avoid putting this file in a Dropbox folder!!
         //String dataFile = new String("/Users/afa/Pigs.arff");
@@ -75,7 +74,7 @@ public class ParallelTANDemo {
     }
 
 
-    public static void demoLive() throws ExceptionHugin, IOException {
+    public static void demoLive() throws IOException {
 
         String dataFile = "";
         int numContVars = 0;
@@ -128,7 +127,7 @@ public class ParallelTANDemo {
         model = tan.learn(data);
     }
 
-    public static void demoLuxembourg() throws ExceptionHugin, IOException {
+    public static void demoLuxembourg() throws IOException {
         String dataFile = "";
         int numContVars = 0;
         String nameRoot = "";
@@ -174,7 +173,7 @@ public class ParallelTANDemo {
         System.out.println();
     }
 
-    public static void demoOnServer() throws ExceptionHugin, IOException {
+    public static void demoOnServer() throws IOException {
         String dataFile = "";
         int numContVars = 0;
         String nameRoot = "";
@@ -331,7 +330,7 @@ public class ParallelTANDemo {
 
 
     //TODO: Sub-options should be considered in the future
-    public static void main(String[] args) throws ExceptionHugin, IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         ParallelTANDemo.demoPigs();
     }
 

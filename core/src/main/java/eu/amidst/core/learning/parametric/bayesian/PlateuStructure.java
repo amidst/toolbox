@@ -9,47 +9,102 @@
 package eu.amidst.core.learning.parametric.bayesian;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.messagepassing.Node;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * This class defines a Plateu Structure.
  */
-public abstract class PlateuStructure implements Serializable {
+public class PlateuStructure implements Serializable {
 
-    /** Represents the serial version ID for serializing the object. */
+    /**
+     * Represents the serial version ID for serializing the object.
+     */
     private static final long serialVersionUID = 4107783324901370839L;
 
-    /** Represents the list of {@link Node}s. */
-    protected List<Node> parametersNode;
+    /**
+     * Represents a map describing which variables are replicated
+     */
+    Map<Variable, Boolean> replicatedVariables;
 
-    /** Represents the list of plateu {@link Node}s. */
-    protected List<List<Node>> plateuNodes;
+    /**
+     * Represents the list of non replicated {@link Node}s.
+     */
+    protected List<Node> nonReplictedNodes;
 
-    /** Represents the {@link EF_LearningBayesianNetwork} model. */
+    /**
+     * Represents the list of replicated nodes {@link Node}s.
+     */
+    protected List<List<Node>> replicatedNodes;
+
+    /**
+     * Represents the {@link EF_LearningBayesianNetwork} model.
+     */
     protected EF_LearningBayesianNetwork ef_learningmodel;
 
-    /** Represents the number of replications. */
+    /**
+     * Represents the number of replications.
+     */
     protected int nReplications = 100;
 
-    /** Represents the {@link VMP} object. */
+    /**
+     * Represents the {@link VMP} object.
+     */
     protected VMP vmp = new VMP();
 
-    /** Represents a {@code Map} object that maps {@link Variable} parameters to the corresponding {@link Node}s. */
-    protected Map<Variable, Node> parametersToNode;
+    /**
+     * Represents a {@code Map} object that maps {@link Variable} parameters to the corresponding {@link Node}s.
+     */
+    protected Map<Variable, Node> nonReplicatedVarsToNode;
 
-    /** Represents the list of {@code Map} objects that map {@link Variable}s to the corresponding {@link Node}s. */
-    protected List<Map<Variable, Node>> variablesToNode;
+    /**
+     * Represents the list of {@code Map} objects that map {@link Variable}s to the corresponding {@link Node}s.
+     */
+    protected List<Map<Variable, Node>> replicatedVarsToNode;
+
+
+    /**
+     * Represents the initial list of non-replicated variables
+     */
+    protected List<Variable> nonReplicatedVariablesList;
+
+    /**
+     * Empty builder.
+     */
+    public PlateuStructure() {
+        nonReplicatedVariablesList = new ArrayList<>();
+    }
+
+    /**
+     * Builder which initially specify a list of non-replicated variables.
+     *
+     * @param nonReplicatedVariablesList
+     */
+    public PlateuStructure(List<Variable> nonReplicatedVariablesList) {
+        this.nonReplicatedVariablesList = new ArrayList<>();
+        this.nonReplicatedVariablesList.addAll(nonReplicatedVariablesList);
+    }
 
     /**
      * Returns the number of replications of this PlateuStructure.
+     *
      * @return the number of replications.
      */
     public int getNumberOfReplications() {
@@ -58,6 +113,7 @@ public abstract class PlateuStructure implements Serializable {
 
     /**
      * Returns the {@link VMP} object of this PlateuStructure.
+     *
      * @return the {@link VMP} object.
      */
     public VMP getVMP() {
@@ -73,6 +129,7 @@ public abstract class PlateuStructure implements Serializable {
 
     /**
      * Sets the seed for the {@link VMP} object of this PlateuStructure.
+     *
      * @param seed an {@code int} that represents the seed value.
      */
     public void setSeed(int seed) {
@@ -81,6 +138,7 @@ public abstract class PlateuStructure implements Serializable {
 
     /**
      * Returns the {@link EF_LearningBayesianNetwork} of this PlateuStructure.
+     *
      * @return an {@link EF_LearningBayesianNetwork} object.
      */
     public EF_LearningBayesianNetwork getEFLearningBN() {
@@ -88,15 +146,57 @@ public abstract class PlateuStructure implements Serializable {
     }
 
     /**
-     * Sets the {@link EF_LearningBayesianNetwork} of this PlateuStructure.
-     * @param model the {@link EF_LearningBayesianNetwork} model to be set.
+     * Sets the {@link DAG} of this PlateuStructure. By default,
+     * all parameter variables are set as non-replicated and all non-parameter variables
+     * are set as replicated.
+     *
+     * @param dag the {@link DAG} model to be set.
      */
-    public void setEFBayesianNetwork(EF_LearningBayesianNetwork model) {
-        ef_learningmodel = model;
+    public void setDAG(DAG dag) {
+
+        List<EF_ConditionalDistribution> dists = dag.getParentSets().stream()
+                .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
+                .collect(Collectors.toList());
+
+        ef_learningmodel = new EF_LearningBayesianNetwork(dists, this.nonReplicatedVariablesList);
+        this.replicatedVariables = new HashMap<>();
+        this.ef_learningmodel.getListOfParametersVariables().stream().forEach(var -> this.replicatedVariables.put(var, false));
+        this.ef_learningmodel.getListOfNonParameterVariables().stream().forEach(var -> this.replicatedVariables.put(var, true));
+
+        this.nonReplicatedVariablesList.stream().forEach(var -> this.replicatedVariables.put(var, false));
+
+    }
+
+    /**
+     * Sets a given variable as a non replicated variable.
+     *
+     * @param var, a {@link Variable} object.
+     */
+    private void setVariableAsNonReplicated(Variable var) {
+        this.replicatedVariables.put(var, false);
+    }
+
+    /**
+     * Sets a given variable as a replicated variable.
+     *
+     * @param var, a {@link Variable} object.
+     */
+    private void setVariableAsReplicated(Variable var) {
+        this.replicatedVariables.put(var, true);
+    }
+
+    /**
+     * Returns the list of non replicated Variables
+     *
+     * @return
+     */
+    public List<Variable> getNonReplicatedVariables() {
+        return this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).collect(Collectors.toList());
     }
 
     /**
      * Sets the number of repetitions for this PlateuStructure.
+     *
      * @param nRepetitions_ an {@code int} that represents the number of repetitions to be set.
      */
     public void setNRepetitions(int nRepetitions_) {
@@ -112,6 +212,7 @@ public abstract class PlateuStructure implements Serializable {
 
     /**
      * Returns the log probability of the evidence.
+     *
      * @return the log probability of the evidence.
      */
     public double getLogProbabilityOfEvidence() {
@@ -120,19 +221,21 @@ public abstract class PlateuStructure implements Serializable {
 
     /**
      * Returns the {@link Node} for a given variable and slice.
+     *
      * @param variable a {@link Variable} object.
-     * @param slice an {@code int} that represents the slice value.
+     * @param slice    an {@code int} that represents the slice value.
      * @return a {@link Node} object.
      */
     public Node getNodeOfVar(Variable variable, int slice) {
-        if (variable.isParameterVariable())
-            return this.parametersToNode.get(variable);
+        if (isNonReplicatedVar(variable))
+            return this.nonReplicatedVarsToNode.get(variable);
         else
-            return this.variablesToNode.get(slice).get(variable);
+            return this.replicatedVarsToNode.get(slice).get(variable);
     }
 
     /**
      * Returns the exponential family parameter posterior for a given {@link Variable} object.
+     *
      * @param var a given {@link Variable} object.
      * @param <E> a subtype distribution of {@link EF_UnivariateDistribution}.
      * @return an {@link EF_UnivariateDistribution} object.
@@ -141,14 +244,15 @@ public abstract class PlateuStructure implements Serializable {
         if (!var.isParameterVariable())
             throw new IllegalArgumentException("Only parameter variables can be queried");
 
-        return (E)this.parametersToNode.get(var).getQDist();
+        return (E) this.nonReplicatedVarsToNode.get(var).getQDist();
     }
 
     /**
      * Returns the exponential family variable posterior for a given {@link Variable} object and a slice value.
-     * @param var a given {@link Variable} object.
+     *
+     * @param var   a given {@link Variable} object.
      * @param slice an {@code int} that represents the slice value.
-     * @param <E> a subtype distribution of {@link EF_UnivariateDistribution}.
+     * @param <E>   a subtype distribution of {@link EF_UnivariateDistribution}.
      * @return an {@link EF_UnivariateDistribution} object.
      */
     public <E extends EF_UnivariateDistribution> E getEFVariablePosterior(Variable var, int slice) {
@@ -161,24 +265,153 @@ public abstract class PlateuStructure implements Serializable {
     /**
      * Replicates the model of this PlateuStructure.
      */
-    public abstract void replicateModel();
+    public void replicateModel() {
+        nonReplictedNodes = new ArrayList();
+        replicatedNodes = new ArrayList<>(nReplications);
+
+        replicatedVarsToNode = new ArrayList<>();
+        nonReplicatedVarsToNode = new ConcurrentHashMap<>();
+        nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
+                .filter(dist -> isNonReplicatedVar(dist.getVariable()))
+                .map(dist -> {
+                    Node node = new Node(dist);
+                    nonReplicatedVarsToNode.put(dist.getVariable(), node);
+                    return node;
+                })
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < nReplications; i++) {
+
+            Map<Variable, Node> map = new ConcurrentHashMap<>();
+            List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
+                    .filter(dist -> isReplicatedVar(dist.getVariable()))
+                    .map(dist -> {
+                        Node node = new Node(dist);
+                        map.put(dist.getVariable(), node);
+                        return node;
+                    })
+                    .collect(Collectors.toList());
+            this.replicatedVarsToNode.add(map);
+            replicatedNodes.add(tmpNodes);
+        }
+
+        for (int i = 0; i < nReplications; i++) {
+            for (Node node : replicatedNodes.get(i)) {
+                final int slice = i;
+                node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, slice)).collect(Collectors.toList()));
+                node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, slice).getChildren().add(node));
+            }
+        }
+
+        List<Node> allNodes = new ArrayList();
+
+        allNodes.addAll(this.nonReplictedNodes);
+
+        for (int i = 0; i < nReplications; i++) {
+            allNodes.addAll(this.replicatedNodes.get(i));
+        }
+
+        this.vmp.setNodes(allNodes);
+    }
 
     /**
      * Sets the evidence for this PlateuStructure.
+     *
      * @param data a {@code List} of {@link DataInstance}.
      */
     public void setEvidence(List<? extends DataInstance> data) {
-        if (data.size()> nReplications)
+        if (data.size() > nReplications)
             throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
 
-        for (int i = 0; i < nReplications && i<data.size(); i++) {
+        for (int i = 0; i < nReplications && i < data.size(); i++) {
             final int slice = i;
-            this.plateuNodes.get(i).forEach(node -> {node.setAssignment(data.get(slice)); node.setActive(true);});
+            this.replicatedNodes.get(i).forEach(node -> {
+                node.setAssignment(data.get(slice));
+                node.setActive(true);
+            });
         }
 
         for (int i = data.size(); i < nReplications; i++) {
-            this.plateuNodes.get(i).forEach(node -> {node.setAssignment(null); node.setActive(false);});
+            this.replicatedNodes.get(i).forEach(node -> {
+                node.setAssignment(null);
+                node.setActive(false);
+            });
         }
     }
 
+    public Node getNodeOfNonReplicatedVar(Variable variable) {
+        if (isNonReplicatedVar(variable))
+            return this.nonReplicatedVarsToNode.get(variable);
+        else
+            throw new IllegalArgumentException("This variable is a replicated var.");
+    }
+
+    public boolean isNonReplicatedVar(Variable var){
+        return !this.replicatedVariables.get(var);
+    }
+
+    public boolean isReplicatedVar(Variable var){
+        return this.replicatedVariables.get(var);
+    }
+
+    public CompoundVector getPlateauNaturalParameterPrior() {
+
+        List<Vector> naturalPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
+                .map(var -> {
+                    NaturalParameters parameter = this.ef_learningmodel.getDistribution(var).getNaturalParameters();
+                    NaturalParameters copy = new ArrayVector(parameter.size());
+                    copy.copy(parameter);
+                    return copy;
+                }).collect(Collectors.toList());
+
+        return new CompoundVector(naturalPlateauParametersPriors);
+    }
+
+    public CompoundVector getPlateauNaturalParameterPosterior() {
+
+        List<Vector> naturalPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
+                .map(var -> {
+                    NaturalParameters parameter =this.getNodeOfNonReplicatedVar(var).getQDist().getNaturalParameters();
+                    NaturalParameters copy = new ArrayVector(parameter.size());
+                    copy.copy(parameter);
+                    return copy;
+                }).collect(Collectors.toList());
+
+        return new CompoundVector(naturalPlateauParametersPriors);
+    }
+
+
+    public Map<Variable,EF_UnivariateDistribution> getPlateauEFUnivariatePriors() {
+        Map<Variable,EF_UnivariateDistribution> map = new HashMap<>();
+
+        ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
+                .forEach(var -> {
+                    map.put(var,this.ef_learningmodel.getDistribution(var));
+                });
+
+        return map;
+    }
+
+    public Map<Variable,EF_UnivariateDistribution> getPlateauEFUnivariatePosteriors() {
+        Map<Variable,EF_UnivariateDistribution> map = new HashMap<>();
+
+        ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
+                .forEach(var -> {
+                    map.put(var,this.getNodeOfNonReplicatedVar(var).getQDist());
+                });
+
+        return map;
+    }
 }
