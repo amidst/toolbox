@@ -103,7 +103,7 @@ public class DynamicMAPInference_Experiments2 {
 
         DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
         //DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicTAN(new Random(0), 2, true);
-        //System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
+        System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
         //System.out.println(dynamicBayesianNetwork.toString());
 
 

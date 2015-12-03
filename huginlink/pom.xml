@@ -99,7 +99,7 @@
             <artifactId>hugin</artifactId>
             <version>8.2</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/huginlib/hgapi82_amidst-64.jar</systemPath>
+            <systemPath>${project.basedir}/huginlib/hgapi83_amidst-64.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -12,13 +12,13 @@
 package eu.amidst.bnaic2015.examples;
 
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
-import eu.amidst.core.conceptdrift.utils.PlateuHiddenVariableConceptDrift;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
+import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -89,7 +89,7 @@ public class BCC {
         parallelSVB.setDAG(dag);
 
         //We tell how the above DAG should be expanded.
-        parallelSVB.getSVBEngine().setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(hiddenGaussian), true));
+        parallelSVB.getSVBEngine().setPlateuStructure(new PlateuStructure(Arrays.asList(hiddenGaussian)));
 
         //We also tell how to evolve the hidden variable over time
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(Arrays.asList(hiddenGaussian), 0, 0.1);
