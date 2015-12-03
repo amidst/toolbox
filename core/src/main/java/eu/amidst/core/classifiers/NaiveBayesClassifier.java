@@ -8,27 +8,16 @@
 
 package eu.amidst.core.classifiers;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
-import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.DAGGenerator;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
@@ -37,9 +26,6 @@ public class NaiveBayesClassifier implements Classifier{
 
     /** Represents the name of the class variable. */
     String className;
-
-    /** Represents the ID of the class variable. */
-    String classVarID;
 
     /** Represents the Naive Bayes Classifier, which is considered as a {@link BayesianNetwork}. */
     BayesianNetwork bnModel;
@@ -132,6 +118,7 @@ public class NaiveBayesClassifier implements Classifier{
         parameterLearningAlgorithm.runLearning();
         bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
         predictions.setModel(bnModel);
+        this.classVar = this.bnModel.getVariables().getVariableByName(this.className);
     }
 
 
@@ -150,5 +137,6 @@ public class NaiveBayesClassifier implements Classifier{
         parameterLearningAlgorithm.runLearning();
         bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
         predictions.setModel(bnModel);
+        this.classVar = this.bnModel.getVariables().getVariableByName(this.className);
     }
 }

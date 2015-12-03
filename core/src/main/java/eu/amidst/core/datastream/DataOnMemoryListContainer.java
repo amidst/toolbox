@@ -44,7 +44,10 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
      * @param instanceList a list of data instances stored in the object.
      */
     public DataOnMemoryListContainer(Attributes attributes_, List<E> instanceList){
-        this.instanceList=instanceList;
+        this.instanceList=new ArrayList();
+        for (E dataInstance: instanceList){
+            this.instanceList.add(dataInstance);
+        }
         this.attributes=attributes_;
     }
 

@@ -13,12 +13,12 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
-import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
@@ -51,7 +51,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     EF_LearningBayesianNetwork ef_extendedBN;
 
     /** Represents the plateu structure {@link PlateuStructure}*/
-    PlateuStructure plateuStructure = new PlateuIIDReplication();
+    PlateuStructure plateuStructure = new PlateuStructure();
 
     /** Represents a directed acyclic graph {@link DAG}. */
     DAG dag;
@@ -194,18 +194,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      * @return a {@link CompoundVector} including the natural parameter priors.
      */
     protected CompoundVector computeNaturalParameterVectorPrior(){
-        List<Vector> naturalParametersPriors =  this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
-                .map(var -> {
-                    NaturalParameters parameter =this.ef_extendedBN.getDistribution(var).getNaturalParameters();
-                    NaturalParameters copy = new ArrayVector(parameter.size());
-                    copy.copy(parameter);
-                    return copy;
-                }).collect(Collectors.toList());
-
-        CompoundVector compoundVectorPrior = new CompoundVector(naturalParametersPriors);
-
-        return compoundVectorPrior;
+        return this.getPlateuStructure().getPlateauNaturalParameterPrior();
     }
 
     /**
@@ -278,10 +267,11 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.plateuStructure.runInference();
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
-        ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream().forEach(var -> {
-            EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
-            ef_extendedBN.setDistribution(var, uni);
-            this.plateuStructure.getNodeOfVar(var,0).setPDist(uni);
+        this.getPlateuStructure().getPlateauEFUnivariatePosteriors().entrySet().forEach(entry -> {
+            EF_UnivariateDistribution uni = entry.getValue().deepCopy();
+            ef_extendedBN.setDistribution(entry.getKey(), uni);
+            this.plateuStructure.getNodeOfNonReplicatedVar(entry.getKey()).setPDist(uni);
+
         });
 
         //this.plateuVMP.resetQs();
@@ -300,15 +290,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.plateuStructure.runInference();
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
-        List<Vector> naturalParametersPosterior =  this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                .filter(var -> this.getPlateuStructure().getNodeOfVar(var, 0).isActive())
-                .map(var -> plateuStructure.getEFParameterPosterior(var).deepCopy().getNaturalParameters()).collect(Collectors.toList());
-
-
-        CompoundVector compoundVectorEnd = new CompoundVector(naturalParametersPosterior);
-
-        //System.out.println("OUT 36\t" + compoundVectorEnd.getVectorByPosition(36).get(0)+"\t"+compoundVectorEnd.getVectorByPosition(36).get(1));
-        //System.out.println("OUT 37:" + compoundVectorEnd.getVectorByPosition(37).get(0)+", "+compoundVectorEnd.getVectorByPosition(37).get(1));
+        CompoundVector compoundVectorEnd = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
         compoundVectorEnd.substract(this.getNaturalParameterPrior());
 
@@ -406,11 +388,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.plateuStructure.runInference();
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
-        List<Vector> naturalParametersPosterior =  this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
-                .map(var -> plateuStructure.getEFParameterPosterior(var).deepCopy().getNaturalParameters()).collect(Collectors.toList());
-
-        CompoundVector compoundVectorEnd = new CompoundVector(naturalParametersPosterior);
+        CompoundVector compoundVectorEnd = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
         compoundVectorEnd.substract(this.getNaturalParameterPrior());
 
@@ -464,15 +442,12 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
         this.nBatches = 0;
         this.nIterTotal = 0;
-        List<EF_ConditionalDistribution> dists = this.dag.getParentSets().stream()
-                .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
-                .collect(Collectors.toList());
-
-        this.ef_extendedBN = new EF_LearningBayesianNetwork(dists);
         this.plateuStructure.setSeed(seed);
-        plateuStructure.setEFBayesianNetwork(ef_extendedBN);
+        plateuStructure.setDAG(dag);
         plateuStructure.replicateModel();
         this.plateuStructure.resetQs();
+        this.ef_extendedBN = this.plateuStructure.getEFLearningBN();
+
         if (transitionMethod!=null)
            this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN, plateuStructure);
     }
@@ -525,7 +500,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         if(!nonSequentialModel)
             return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
         else{
-            CompoundVector posterior = (CompoundVector)this.getNaturalParameterPosterior().getVector();
+            CompoundVector posterior = this.getNaturalParameterPosterior().getVector();
 
             final int[] count = new int[1];
             ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()

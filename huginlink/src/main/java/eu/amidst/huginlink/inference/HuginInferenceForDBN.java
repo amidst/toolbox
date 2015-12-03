@@ -133,7 +133,7 @@ public class HuginInferenceForDBN implements InferenceAlgorithmForDBN {
                 if (var.isMultinomial()) {
                     try {
                         LabelledDCNode node = (LabelledDCNode) domainObject.getNodeByName("T" + time + "." + var.getName());
-                        node.selectState((long) assignment.getValue(var));
+                        node.selectState((int)assignment.getValue(var));
                     } catch (ExceptionHugin exceptionHugin) {
                         exceptionHugin.printStackTrace();
                     }

@@ -10,17 +10,15 @@ package eu.amidst.dynamic.learning.dynamic;
 
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.ParameterVariables;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.core.variables.Variable;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -152,19 +150,11 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
     }
 
     public void initLearning(){
-
-        List<EF_ConditionalDistribution> distTim0 = this.dag.getParentSetsTime0().stream().map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents())).collect(Collectors.toList());
-        this.ef_extendedBNTime0 = new EF_LearningBayesianNetwork(distTim0);
-
-        List<EF_ConditionalDistribution> distTimT = this.dag.getParentSetsTimeT().stream().map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents())).collect(Collectors.toList());
-        this.ef_extendedBNTimeT = new EF_LearningBayesianNetwork(distTimT);
-
-
         this.plateuVMPDBN.setSeed(seed);
         this.plateuVMPDBN.setDBNModel(this.dag);
-        this.plateuVMPDBN.setPlateuModelTime0(this.ef_extendedBNTime0);
-        this.plateuVMPDBN.setPlateuModelTimeT(this.ef_extendedBNTimeT);
         this.plateuVMPDBN.resetQs();
+        this.ef_extendedBNTime0 = this.plateuVMPDBN.getEFLearningBNTime0();
+        this.ef_extendedBNTimeT = this.plateuVMPDBN.getEFLearningBNTimeT();
     }
 
     @Override
