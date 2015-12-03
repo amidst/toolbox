@@ -66,7 +66,7 @@ public class DynamicMAPInference {
 
         double varEvidenceValue;
 
-        Random random = new Random();
+        Random random = new Random(4634);
 
         List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
 
@@ -99,7 +99,7 @@ public class DynamicMAPInference {
          *  SET THE EVIDENCE AND MAKE INFERENCE
          */
         dynMAP.setEvidence(evidence);
-        dynMAP.runInference();
+        dynMAP.runInference(eu.amidst.dynamic.inference.DynamicMAPInference.SearchAlgorithm.IS);
 
         /*
          *  SHOW RESULTS
@@ -111,9 +111,10 @@ public class DynamicMAPInference {
         List<Variable> MAPvarReplications = MAPestimate.getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID()? 1 : -1)).collect(Collectors.toList());
 
         StringBuilder sequence = new StringBuilder();
-        MAPvarReplications.stream().forEachOrdered(var -> sequence.append( Integer.toString((int)MAPestimate.getValue(var)) + ", "));
+        MAPvarReplications.stream().forEachOrdered(var -> sequence.append(Integer.toString((int) MAPestimate.getValue(var)) + ", "));
         //System.out.println(MAPestimate.outputString(MAPvarReplications));
         System.out.println(sequence.toString());
         System.out.println("with probability prop. to: " + MAPestimateProbability);
+
     }
 }
