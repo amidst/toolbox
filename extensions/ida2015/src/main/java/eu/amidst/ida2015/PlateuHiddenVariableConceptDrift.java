@@ -9,7 +9,6 @@
 package eu.amidst.ida2015;
 
 import eu.amidst.core.inference.messagepassing.Node;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -33,16 +32,16 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
     }
 
     public void replicateModel(){
-        nonReplictedNodes = new ArrayList();
-        replicatedNodes = new ArrayList<>(nReplications);
+        parametersNode = new ArrayList();
+        plateuNodes = new ArrayList<>(nReplications);
 
-        replicatedVarsToNode = new ArrayList<>();
-        nonReplicatedVarsToNode = new ConcurrentHashMap<>();
-        nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
+        variablesToNode = new ArrayList<>();
+        parametersToNode = new ConcurrentHashMap<>();
+        parametersNode = ef_learningmodel.getDistributionList().stream()
                 .filter(dist -> dist.getVariable().isParameterVariable())
                 .map(dist -> {
                     Node node = new Node(dist);
-                    nonReplicatedVarsToNode.put(dist.getVariable(), node);
+                    parametersToNode.put(dist.getVariable(), node);
                     return node;
                 })
                 .collect(Collectors.toList());
@@ -68,13 +67,13 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
                     })
                     .collect(Collectors.toList());
 
-            this.replicatedVarsToNode.add(map);
-            replicatedNodes.add(tmpNodes);
+            this.variablesToNode.add(map);
+            plateuNodes.add(tmpNodes);
         }
 
 
         for (int i = 0; i < nReplications; i++) {
-            for (Node node : replicatedNodes.get(i)) {
+            for (Node node : plateuNodes.get(i)) {
                 final int slice = i;
                 node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, slice)).collect(Collectors.toList()));
                 node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, slice).getChildren().add(node));
@@ -93,12 +92,12 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
 
         List<Node> allNodes = new ArrayList();
 
-        allNodes.addAll(this.nonReplictedNodes);
+        allNodes.addAll(this.parametersNode);
 
         allNodes.addAll(localHiddenNodes);
 
         for (int i = 0; i < nReplications; i++) {
-            allNodes.addAll(this.replicatedNodes.get(i));
+            allNodes.addAll(this.plateuNodes.get(i));
         }
 
         this.vmp.setNodes(allNodes);
@@ -106,11 +105,11 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
 
     public Node getNodeOfVar(Variable variable, int slice) {
         if (variable.isParameterVariable())
-            return this.nonReplicatedVarsToNode.get(variable);
+            return this.parametersToNode.get(variable);
         else if (this.hiddenToNode.containsKey(variable))
             return this.hiddenToNode.get(variable);
         else
-            return this.replicatedVarsToNode.get(slice).get(variable);
+            return this.variablesToNode.get(slice).get(variable);
     }
 
 }
