@@ -306,6 +306,10 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
         sampler.setSeed(0);
 
         DataStream<DataInstance> dataStream = sampler.sampleToDataStream(100);
+
+
+
+
         DataStreamWriter.writeDataToFile(dataStream,"datasets/asisa-samples.arff");
 
         System.out.println(watch.stop());
