@@ -36,13 +36,13 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
         nonReplictedNodes = new ArrayList();
         replicatedNodes = new ArrayList<>(nReplications);
 
-        variablesToNode = new ArrayList<>();
-        parametersToNode = new ConcurrentHashMap<>();
+        replicatedVarsToNode = new ArrayList<>();
+        nonReplicatedVarsToNode = new ConcurrentHashMap<>();
         nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
                 .filter(dist -> dist.getVariable().isParameterVariable())
                 .map(dist -> {
                     Node node = new Node(dist);
-                    parametersToNode.put(dist.getVariable(), node);
+                    nonReplicatedVarsToNode.put(dist.getVariable(), node);
                     return node;
                 })
                 .collect(Collectors.toList());
@@ -68,7 +68,7 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
                     })
                     .collect(Collectors.toList());
 
-            this.variablesToNode.add(map);
+            this.replicatedVarsToNode.add(map);
             replicatedNodes.add(tmpNodes);
         }
 
@@ -106,11 +106,11 @@ public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
 
     public Node getNodeOfVar(Variable variable, int slice) {
         if (variable.isParameterVariable())
-            return this.parametersToNode.get(variable);
+            return this.nonReplicatedVarsToNode.get(variable);
         else if (this.hiddenToNode.containsKey(variable))
             return this.hiddenToNode.get(variable);
         else
-            return this.variablesToNode.get(slice).get(variable);
+            return this.replicatedVarsToNode.get(slice).get(variable);
     }
 
 }

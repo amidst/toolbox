@@ -40,7 +40,7 @@ public class HuginInference implements InferenceAlgorithm, Serializable {
      */
     private void setVarEvidence(Variable n, double value) throws ExceptionHugin {
         if (n.isMultinomial()){
-            ((DiscreteNode)huginBN.getNodeByName(n.getName())).selectState((long)value);
+            ((DiscreteNode)huginBN.getNodeByName(n.getName())).selectState((int)value);
         }
         else if (n.isNormal()) {
             ((ContinuousChanceNode)huginBN.getNodeByName(n.getName())).enterValue(value);

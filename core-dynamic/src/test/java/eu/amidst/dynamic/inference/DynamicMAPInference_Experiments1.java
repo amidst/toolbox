@@ -29,8 +29,8 @@ public class DynamicMAPInference_Experiments1 {
         int nContVars = 10;
         int nDiscreteVars=40;
 
-        //int numberOfLinks=(int)((nContVars+nDiscreteVars)*1.5);
-        int numberOfLinks=(nContVars+nDiscreteVars);
+        int numberOfLinks=(int)((nContVars+nDiscreteVars)*1.5);
+        // int numberOfLinks=(nContVars+nDiscreteVars);
 
         DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(nContVars);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(nDiscreteVars);
@@ -41,7 +41,7 @@ public class DynamicMAPInference_Experiments1 {
         //DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
         DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicTAN(new Random(0), 2, true);
 
-        //System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
+        System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
         //System.out.println(dynamicBayesianNetwork.toString());
         /*
          *  INITIALIZE THE DYNAMIC MAP OBJECT
