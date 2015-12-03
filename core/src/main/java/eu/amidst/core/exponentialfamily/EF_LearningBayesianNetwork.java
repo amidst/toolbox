@@ -15,10 +15,7 @@ import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -83,11 +80,60 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     }
 
     /**
+     * Creates a new EF_LearningBayesianNetwork object from a given list {@link EF_ConditionalDistribution} objects.
+     * @param distributions a list of {@link EF_ConditionalDistribution} objects.
+     */
+
+    /**
+     * Creates a new EF_LearningBayesianNetwork object from a given list {@link EF_ConditionalDistribution} objects.
+     * @param distributions a list of {@link EF_ConditionalDistribution} objects.
+     * @param non_expand, a list of {@link Variable} objects which are not expanded.
+     */
+    public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions, List<Variable> non_expand){
+
+        parametersVariables = new ParameterVariables(distributions.size());
+
+        distributionList =
+                distributions
+                        .stream()
+                        .map(dist -> {
+                            if (non_expand.contains(dist.getVariable()))
+                                return Arrays.asList(dist);
+                            else
+                                return dist.toExtendedLearningDistribution(parametersVariables);
+                        })
+                        .flatMap(listOfDist -> listOfDist.stream())
+                        .sorted((a,b) -> a.getVariable().getVarID() - b.getVariable().getVarID())
+                        .collect(Collectors.toList());
+
+        this.naturalParameters = null;
+        this.momentParameters = null;
+    }
+
+    /**
      * Returns the set of parameter variables included in this EF_LearningBayesianNetwork model.
      * @return A {@link ParameterVariables} object.
      */
     public ParameterVariables getParametersVariables() {
         return parametersVariables;
+    }
+
+
+    /**
+     * Returns the list of parameter variables included in this EF_LearningBayesianNetwork model.
+     * @return A {@link List} of {@list Variable} objects.
+     */
+    public List<Variable> getListOfParametersVariables(){ return this.parametersVariables.getListOfParamaterVariables();}
+
+    /**
+     * Returns the list of non parameter variables included in this EF_LearningBayesianNetwork model.
+     * @return A {@link List} of {@list Variable} objects.
+     */
+    public List<Variable> getListOfNonParameterVariables() {
+        return this.distributionList.stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> !var.isParameterVariable())
+                .collect(Collectors.toList());
     }
 
     /**

@@ -25,8 +25,7 @@ import java.util.List;
 
 /**
  *
- * This example we show how to perform inference on a general Bayesian network using an importance sampling
- * algorithm detailed in
+ * This example we show how to perform MAP inference on a general Bayesian network.
  *
  */
 public class MAPInferenceExample {

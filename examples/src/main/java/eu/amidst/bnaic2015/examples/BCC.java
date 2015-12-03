@@ -12,13 +12,13 @@
 package eu.amidst.bnaic2015.examples;
 
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
-import eu.amidst.core.conceptdrift.utils.PlateuHiddenVariableConceptDrift;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
+import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -42,7 +42,9 @@ public class BCC {
 
     /**
      * This method constains the code needed to learn the model and produce the output.
-     * @param parallelSVB
+     * @param parallelSVB a parallel SVB (Streaming Variational Bayes) object
+     * @return a Bayesian Network
+     * @throws IOException if a file reading error occurs
      */
     public static BayesianNetwork learnModel(ParallelSVB parallelSVB) throws IOException {
 
@@ -87,7 +89,7 @@ public class BCC {
         parallelSVB.setDAG(dag);
 
         //We tell how the above DAG should be expanded.
-        parallelSVB.getSVBEngine().setPlateuStructure(new PlateuHiddenVariableConceptDrift(Arrays.asList(hiddenGaussian), true));
+        parallelSVB.getSVBEngine().setPlateuStructure(new PlateuStructure(Arrays.asList(hiddenGaussian)));
 
         //We also tell how to evolve the hidden variable over time
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(Arrays.asList(hiddenGaussian), 0, 0.1);
@@ -116,7 +118,7 @@ public class BCC {
      * This method contains the code needed to build the NaiveBayes DAG with a global hidden variable modelling
      * concept drift.
      * @return A poperly created {@link DAG} object.
-     * @throws Exception
+     * @throws Exception if an error occurs while reading the file.
      */
     public static DAG modelBuilding() throws Exception {
 
@@ -137,14 +139,14 @@ public class BCC {
 
         //We add the links of the DAG
         dag.getVariables()
-                    .getListOfVariables()
-                    .stream()
-                    .filter(var -> var != defaultVariable)
-                    .filter(var -> var != hiddenGaussian)
-                    .forEach(var -> {
-                        dag.getParentSet(var).addParent(defaultVariable);
-                        dag.getParentSet(var).addParent(hiddenGaussian);
-                    });
+                .getListOfVariables()
+                .stream()
+                .filter(var -> var != defaultVariable)
+                .filter(var -> var != hiddenGaussian)
+                .forEach(var -> {
+                    dag.getParentSet(var).addParent(defaultVariable);
+                    dag.getParentSet(var).addParent(hiddenGaussian);
+                });
 
 
         return dag;
@@ -153,7 +155,7 @@ public class BCC {
 
     /**
      * This method contains an example about how to compute the monthly average value of one variable.
-     * @throws Exception
+     * @throws Exception if an error occurs while reading the file.
      */
     public static void computeMonthlyAverage() throws Exception {
 
@@ -168,10 +170,10 @@ public class BCC {
 
             //We compute the average, using a parallel stream.
             double creditMonthlyAverage = instances
-                                                .parallelStream(1000)
-                                                .mapToDouble(instance -> instance.getValue(credit))
-                                                .average()
-                                                .getAsDouble();
+                    .parallelStream(1000)
+                    .mapToDouble(instance -> instance.getValue(credit))
+                    .average()
+                    .getAsDouble();
 
             //We print the computed average
             System.out.println("Average Monthly Credit " + i + ": " + creditMonthlyAverage);
@@ -181,8 +183,8 @@ public class BCC {
 
     /**
      * This is the main method of the class which contains the sequence of executions included in the demo.
-     * @param args
-     * @throws Exception
+     * @param args input arguments (not used)
+     * @throws Exception if an error occurs while reading the file.
      */
     public static void main(String[] args) throws Exception {
 
