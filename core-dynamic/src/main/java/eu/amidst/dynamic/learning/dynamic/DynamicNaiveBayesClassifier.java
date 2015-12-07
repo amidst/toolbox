@@ -31,6 +31,7 @@ public class DynamicNaiveBayesClassifier {
     int classVarID;
     DynamicBayesianNetwork bnModel;
     boolean parallelMode = true;
+    boolean connectChildrenTemporally = false;
 
     public boolean isParallelMode() {
         return parallelMode;
@@ -38,6 +39,14 @@ public class DynamicNaiveBayesClassifier {
 
     public void setParallelMode(boolean parallelMode) {
         this.parallelMode = parallelMode;
+    }
+
+    public boolean isConnectChildrenTemporally() {
+        return connectChildrenTemporally;
+    }
+
+    public void setConnectChildrenTemporally(boolean connectChildrenTemporally) {
+        this.connectChildrenTemporally = connectChildrenTemporally;
     }
 
     public int getClassVarID() {
@@ -55,9 +64,9 @@ public class DynamicNaiveBayesClassifier {
 
     private DynamicDAG dynamicNaiveBayesStructure(DataStream<DynamicDataInstance> dataStream){
 
-        DynamicVariables modelHeader = new DynamicVariables(dataStream.getAttributes());
-        Variable classVar = modelHeader.getVariableById(this.getClassVarID());
-        DynamicDAG dag = new DynamicDAG(modelHeader);
+        DynamicVariables dynamicVariables = new DynamicVariables(dataStream.getAttributes());
+        Variable classVar = dynamicVariables.getVariableById(this.getClassVarID());
+        DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
         // TODO Remove this commented part. Done for efficiency in the inference demos.
 
@@ -65,11 +74,12 @@ public class DynamicNaiveBayesClassifier {
                 .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
                 .forEach(w -> {
                     w.addParent(classVar);
-                    //w.addParent(modelHeader.getInterfaceVariable(w.getMainVar()));
+                    if(isConnectChildrenTemporally())
+                        w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
                 });
 
 
-        dag.getParentSetTimeT(classVar).addParent(modelHeader.getInterfaceVariable(classVar));
+        dag.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
         return dag;
     }

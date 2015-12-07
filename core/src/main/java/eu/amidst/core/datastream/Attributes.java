@@ -8,6 +8,8 @@
 
 package eu.amidst.core.datastream;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -131,5 +133,22 @@ public class Attributes implements Serializable, Iterable<Attribute> {
     @Override
     public Iterator<Attribute> iterator() {
         return attributes.iterator();
+    }
+
+
+    @Override
+    public String toString(){
+
+        final int FIXED_WIDTH = 80;
+
+        String s = "";
+        Iterator<Attribute> it = this.iterator();
+        if (it.hasNext()) {
+            s += it.next().getName();
+        }
+        while (it.hasNext()) {
+            s += ", " + it.next().getName();
+        }
+        return(WordUtils.wrap(s+"\n",FIXED_WIDTH));
     }
 }
