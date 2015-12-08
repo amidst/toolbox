@@ -267,12 +267,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.plateuStructure.runInference();
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
-        this.getPlateuStructure().getPlateauEFUnivariatePosteriors().entrySet().forEach(entry -> {
-            EF_UnivariateDistribution uni = entry.getValue().deepCopy();
-            ef_extendedBN.setDistribution(entry.getKey(), uni);
-            this.plateuStructure.getNodeOfNonReplicatedVar(entry.getKey()).setPDist(uni);
-
-        });
+        this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
 
         //this.plateuVMP.resetQs();
         return this.plateuStructure.getLogProbabilityOfEvidence();
@@ -319,15 +314,12 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
-        this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                .forEach(var -> this.getPlateuStructure().getNodeOfVar(var, 0).setActive(false));
-
+        this.plateuStructure.desactiveParametersNodes();
 
         this.plateuStructure.setEvidence(batch.getList());
         this.plateuStructure.runInference();
 
-        this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                .forEach(var -> this.getPlateuStructure().getNodeOfVar(var, 0).setActive(true));
+        this.plateuStructure.activeParametersNodes();
 
         List<DataPosterior> posteriors = new ArrayList<>();
         for (int i = 0; i < batch.getNumberOfDataInstances(); i++) {
@@ -347,15 +339,12 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
-        this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                .forEach(var -> this.getPlateuStructure().getNodeOfVar(var, 0).setActive(false));
-
+        this.plateuStructure.desactiveParametersNodes();
 
         this.plateuStructure.setEvidence(batch.getList());
         this.plateuStructure.runInference();
 
-        this.ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                .forEach(var -> this.getPlateuStructure().getNodeOfVar(var, 0).setActive(true));
+        this.plateuStructure.activeParametersNodes();
 
         List<DataPosteriorAssignment> posteriors = new ArrayList<>();
         for (int i = 0; i < batch.getNumberOfDataInstances(); i++) {
@@ -474,21 +463,8 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      * @param parameterVector a {@link CompoundVector} object.
      */
     public void updateNaturalParameterPrior(CompoundVector parameterVector){
-
-        List<Variable> params  = ef_extendedBN.getParametersVariables().getListOfParamaterVariables();
-
-        int count=0;
-        for (Variable var : params) {
-            if (!this.getPlateuStructure().getNodeOfVar(var, 0).isActive())
-                continue;
-            EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
-            uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count));
-            uni.fixNumericalInstability();
-            uni.updateMomentFromNaturalParameters();
-            ef_extendedBN.setDistribution(var, uni);
-            this.plateuStructure.getNodeOfVar(var,0).setPDist(uni);
-            count++;
-        }
+        this.plateuStructure.updateNaturalParameterPrior(parameterVector);
+        this.ef_extendedBN = this.plateuStructure.getEFLearningBN();
         this.naturalVectorPrior=this.computeNaturalParameterVectorPrior();
     }
 
@@ -500,34 +476,13 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         if(!nonSequentialModel)
             return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
         else{
-            CompoundVector posterior = this.getNaturalParameterPosterior().getVector();
 
-            final int[] count = new int[1];
-            ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                    .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
-                    .forEach( var -> {
-                        EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
-                        uni.getNaturalParameters().copy(posterior.getVectorByPosition(count[0]));
-                        uni.fixNumericalInstability();
-                        uni.updateMomentFromNaturalParameters();
-                        ef_extendedBN.setDistribution(var, uni);
-                        count[0]++;
-            });
+            this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
 
             BayesianNetwork learntBN =  new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
 
-            CompoundVector priors = this.getNaturalParameterPrior();
-            count[0] = 0;
-            ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream()
-                    .filter( var -> this.getPlateuStructure().getNodeOfVar(var,0).isActive())
-                    .forEach( var -> {
-                        EF_UnivariateDistribution uni = plateuStructure.getEFParameterPosterior(var).deepCopy();
-                        uni.getNaturalParameters().copy(priors.getVectorByPosition(count[0]));
-                        uni.fixNumericalInstability();
-                        uni.updateMomentFromNaturalParameters();
-                        ef_extendedBN.setDistribution(var, uni);
-                        count[0]++;
-                    });
+            this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPrior());
+
             return learntBN;
         }
     }

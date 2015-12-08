@@ -83,23 +83,30 @@ public class PlateuStructure implements Serializable {
     /**
      * Represents the initial list of non-replicated variables
      */
+    protected List<Variable> initialNonReplicatedVariablesList;
+
+
+    /**
+     * Represents the list of non-replicated variables
+     */
     protected List<Variable> nonReplicatedVariablesList;
+
 
     /**
      * Empty builder.
      */
     public PlateuStructure() {
-        nonReplicatedVariablesList = new ArrayList<>();
+        initialNonReplicatedVariablesList = new ArrayList<>();
     }
 
     /**
      * Builder which initially specify a list of non-replicated variables.
      *
-     * @param nonReplicatedVariablesList
+     * @param initialNonReplicatedVariablesList
      */
-    public PlateuStructure(List<Variable> nonReplicatedVariablesList) {
-        this.nonReplicatedVariablesList = new ArrayList<>();
-        this.nonReplicatedVariablesList.addAll(nonReplicatedVariablesList);
+    public PlateuStructure(List<Variable> initialNonReplicatedVariablesList) {
+        this.initialNonReplicatedVariablesList = new ArrayList<>();
+        this.initialNonReplicatedVariablesList.addAll(initialNonReplicatedVariablesList);
     }
 
     /**
@@ -158,13 +165,15 @@ public class PlateuStructure implements Serializable {
                 .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
                 .collect(Collectors.toList());
 
-        ef_learningmodel = new EF_LearningBayesianNetwork(dists, this.nonReplicatedVariablesList);
+        ef_learningmodel = new EF_LearningBayesianNetwork(dists, this.initialNonReplicatedVariablesList);
         this.replicatedVariables = new HashMap<>();
         this.ef_learningmodel.getListOfParametersVariables().stream().forEach(var -> this.replicatedVariables.put(var, false));
         this.ef_learningmodel.getListOfNonParameterVariables().stream().forEach(var -> this.replicatedVariables.put(var, true));
 
-        this.nonReplicatedVariablesList.stream().forEach(var -> this.replicatedVariables.put(var, false));
+        this.initialNonReplicatedVariablesList.stream().forEach(var -> this.replicatedVariables.put(var, false));
 
+
+        this.nonReplicatedVariablesList = this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).sorted((a,b) -> a.getVarID()-b.getVarID()).collect(Collectors.toList());
     }
 
     /**
@@ -191,8 +200,10 @@ public class PlateuStructure implements Serializable {
      * @return
      */
     public List<Variable> getNonReplicatedVariables() {
-        return this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).collect(Collectors.toList());
+        return this.nonReplicatedVariablesList;
     }
+
+
 
     /**
      * Sets the number of repetitions for this PlateuStructure.
@@ -359,7 +370,6 @@ public class PlateuStructure implements Serializable {
         List<Vector> naturalPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
                 .map(var -> {
                     NaturalParameters parameter = this.ef_learningmodel.getDistribution(var).getNaturalParameters();
                     NaturalParameters copy = new ArrayVector(parameter.size());
@@ -375,7 +385,6 @@ public class PlateuStructure implements Serializable {
         List<Vector> naturalPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
                 .map(var -> {
                     NaturalParameters parameter =this.getNodeOfNonReplicatedVar(var).getQDist().getNaturalParameters();
                     NaturalParameters copy = new ArrayVector(parameter.size());
@@ -393,7 +402,6 @@ public class PlateuStructure implements Serializable {
         ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
                 .forEach(var -> {
                     map.put(var,this.ef_learningmodel.getDistribution(var));
                 });
@@ -407,11 +415,40 @@ public class PlateuStructure implements Serializable {
         ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .filter(var -> this.getNodeOfNonReplicatedVar(var).isActive())
                 .forEach(var -> {
                     map.put(var,this.getNodeOfNonReplicatedVar(var).getQDist());
                 });
 
         return map;
     }
+
+    /**
+     * Updates the Natural Parameter Prior from a given parameter vector.
+     * @param parameterVector a {@link CompoundVector} object.
+     */
+    public void updateNaturalParameterPrior(CompoundVector parameterVector) {
+
+        List<Variable> vars = this.getNonReplicatedVariables();
+        for (int i = 0; i < vars.size(); i++) {
+            Variable var = vars.get(i);
+            EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
+            uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(i));
+            uni.fixNumericalInstability();
+            uni.updateMomentFromNaturalParameters();
+            this.ef_learningmodel.setDistribution(var, uni);
+            this.getNodeOfNonReplicatedVar(var).setPDist(uni);
+        }
+    }
+
+
+    public void desactiveParametersNodes(){
+        this.ef_learningmodel.getParametersVariables().getListOfParamaterVariables().stream()
+                .forEach(var -> this.getNodeOfNonReplicatedVar(var).setActive(false));
+    }
+
+    public void activeParametersNodes() {
+        this.ef_learningmodel.getParametersVariables().getListOfParamaterVariables().stream()
+                .forEach(var -> this.getNodeOfNonReplicatedVar(var).setActive(true));
+    }
+
 }
