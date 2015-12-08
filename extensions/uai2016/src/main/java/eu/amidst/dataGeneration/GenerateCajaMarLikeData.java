@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class GenerateCajaMarLikeData {
 
     public void generateDataFromRScript() throws IOException{
-                /*
+        /*
          * The 1st parameter is the number of files (per month)
          * The 2nd parameter is the length of the sequence, i.e., # of clients
          */
@@ -61,7 +61,7 @@ public class GenerateCajaMarLikeData {
         model = new NaiveBayesClassifier();
         model.setClassName("DEFAULT");
         model.setParallelMode(true);
-        model.learn(dataIDA, 1000);
+        model.learn(dataSCAI, 1000);
         BayesianNetwork nbClassifierSCAI = model.getBNModel();
         System.out.println("\nNB classifier for SCAI data learnt succesfully\n");
         System.out.println(nbClassifierSCAI.toString());
@@ -72,7 +72,7 @@ public class GenerateCajaMarLikeData {
 
         generateCajaMarLikeData.generateDataFromRScript();
 
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(60);
 
         generateCajaMarLikeData.testGeneratedDataWithRScript();
 
