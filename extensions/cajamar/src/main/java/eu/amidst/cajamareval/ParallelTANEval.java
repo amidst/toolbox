@@ -41,6 +41,7 @@ public class ParallelTANEval {
         tan.setParallelMode(true);
         BayesianNetwork bn = tan.learn(train,10000);
 
+
         System.out.println(bn);
 
         Attribute seq_id = train.getAttributes().getSeq_id();

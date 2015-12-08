@@ -33,7 +33,10 @@ public class Serialization {
             try {
                 out = new ObjectOutputStream(bos);
                 out.writeObject(object);
-                return bos.toByteArray();
+                out.close();
+                byte[] result = bos.toByteArray();
+                bos.close();
+                return result;
             } catch (Exception ex) {
                 throw new UndeclaredThrowableException(ex);
             } finally {
@@ -69,7 +72,10 @@ public class Serialization {
         ObjectInput in = null;
         try {
             in = new ObjectInputStream(bis);
-            return (T) in.readObject();
+            T result = (T) in.readObject();
+            bis.close();
+            in.close();
+            return result ;
         } catch (ClassNotFoundException ex) {
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {

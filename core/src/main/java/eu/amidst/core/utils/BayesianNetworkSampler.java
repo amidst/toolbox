@@ -145,7 +145,10 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      * @return a {@link DataStream} of {@link DataInstance}s.
      */
     public DataStream<DataInstance> sampleToDataStream(int nSamples){
-        class TemporalDataStream implements DataStream<DataInstance> {
+        class TemporalDataStream implements DataStream<DataInstance>, Serializable {
+            /** Represents the serial version ID for serializing the object. */
+            private static final long serialVersionUID = -3436599636425587512L;
+
             Attributes atts;
             BayesianNetworkSampler sampler;
             int nSamples;
