@@ -226,7 +226,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         vectorSS.setXYbaseVector(XYRealVector);
 
         RealMatrix covRealmatrix = new Array2DRowRealMatrix(Yarray.length + 1,Yarray.length + 1);
-        covRealmatrix.scalarAdd(1.0);
+        covRealmatrix = covRealmatrix.scalarAdd(1.0);
         vectorSS.setcovbaseVector(covRealmatrix);
 
         return vectorSS;
