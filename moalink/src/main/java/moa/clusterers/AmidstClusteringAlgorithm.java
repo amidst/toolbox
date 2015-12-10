@@ -1,5 +1,6 @@
 package moa.clusterers;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
@@ -158,7 +159,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
             setNumClusters(numberClustersOption.getValue());
 
             attributes_ = Converter.convertAttributes(getDataset(instance.numAttributes(), 0).enumerateAttributes());
-            Variables modelHeader = new Variables(attributes_);
+            Variables modelHeader = ModelFactory.newVariables(attributes_);
             clusterVar_ = modelHeader.newMultionomialVariable("clusterVar", getNumClusters());
 
             batch_ = new DataOnMemoryListContainer(attributes_);
@@ -166,7 +167,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
             predictions_.setSeed(this.randomSeed);
 
 
-            dag = new DAG(modelHeader);
+            dag = ModelFactory.newDAG(modelHeader);
 
             /* Set DAG structure. */
             /* Add the hidden cluster variable as a parent of all the predictive attributes. */

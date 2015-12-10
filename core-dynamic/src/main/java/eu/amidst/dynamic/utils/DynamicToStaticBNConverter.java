@@ -1,5 +1,6 @@
 package eu.amidst.dynamic.utils;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -43,7 +44,7 @@ public class DynamicToStaticBNConverter {
             return null;
 
         DynamicVariables dynamicVariables = dbn.getDynamicVariables();
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         DynamicDAG dynamicDAG = dbn.getDynamicDAG();
 
         /*
@@ -63,7 +64,7 @@ public class DynamicToStaticBNConverter {
                                     variables.newVariable(aux);
                                 })
                 );
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         /*
          * CREATE STATIC DAG FROM THE DYNAMIC DAG
@@ -84,7 +85,7 @@ public class DynamicToStaticBNConverter {
                 }
             }
         }
-        bn = new BayesianNetwork(dag);
+        bn = ModelFactory.newBayesianNetwork(dag);
 
         /*
          * CREATE STATIC BN FROM THE DYNAMIC BN

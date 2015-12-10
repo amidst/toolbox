@@ -3,13 +3,14 @@ package eu.amidst.dataGeneration;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.utils.AmidstOptionsHandler;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.flinklink.cajamar.CajaMarLearn;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
@@ -150,13 +151,13 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
     public static DynamicDAG getNaiveBayesStructure(Attributes attributes){
 
         //We create a Variables object from the attributes of the data stream
-        DynamicVariables dynamicVariables = new DynamicVariables(attributes);
+        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(attributes);
 
         //We define the predicitive class variable
         Variable classVar = dynamicVariables.getVariableByName("DEFAULT");
 
         //Then, we create a DAG object with the defined model header
-        DynamicDAG dag = new DynamicDAG(dynamicVariables);
+        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         //We set the links of the DAG.
         dag.getParentSetsTimeT().stream()
@@ -185,9 +186,9 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
                     getOutputFullPath() + "/MONTH1.arff");
         DynamicDAG dynamicDAG = getNaiveBayesStructure(data0.getAttributes());
-        dbn = new DynamicBayesianNetwork(dynamicDAG);
+        dbn = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
 
-        CajaMarLearn learn = new CajaMarLearn();
+        DynamicParallelVB learn = new DynamicParallelVB();
         learn.setMaximumGlobalIterations(10);
         learn.setBatchSize(getBatchSize());
         learn.setDAG(dynamicDAG);

@@ -252,8 +252,8 @@ public class PlateuStructure implements Serializable {
      * @return an {@link EF_UnivariateDistribution} object.
      */
     public <E extends EF_UnivariateDistribution> E getEFParameterPosterior(Variable var) {
-        if (!var.isParameterVariable())
-            throw new IllegalArgumentException("Only parameter variables can be queried");
+        if (!this.nonReplicatedVariablesList.contains(var) && !var.isParameterVariable())
+            throw new IllegalArgumentException("Only non replicated variables or parameters can be queried");
 
         return (E) this.nonReplicatedVarsToNode.get(var).getQDist();
     }
@@ -267,8 +267,8 @@ public class PlateuStructure implements Serializable {
      * @return an {@link EF_UnivariateDistribution} object.
      */
     public <E extends EF_UnivariateDistribution> E getEFVariablePosterior(Variable var, int slice) {
-        if (var.isParameterVariable())
-            throw new IllegalArgumentException("Only non parameter variables can be queried");
+        if (this.nonReplicatedVariablesList.contains(var) || var.isParameterVariable())
+            throw new IllegalArgumentException("Only replicated variables can be queried");
 
         return (E) this.getNodeOfVar(var, slice).getQDist();
     }

@@ -8,6 +8,7 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -108,7 +109,7 @@ public class EF_BayesianNetwork extends EF_Distribution {
      * @return a {@link BayesianNetwork} object.
      */
     public BayesianNetwork toBayesianNetwork(DAG dag){
-        return new BayesianNetwork(dag, toConditionalDistribution(this.distributionList));
+        return ModelFactory.newBayesianNetwork(dag, toConditionalDistribution(this.distributionList));
     }
 
     /**

@@ -8,6 +8,7 @@
 
 package eu.amidst.core.utils;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
@@ -89,7 +90,7 @@ public final class BayesianNetworkGenerator{
      */
     public static BayesianNetwork generateNaiveBayesWithGlobalHiddenVar(int nClassLabels, String nameGlobalHiddenVar){
 
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
 
         IntStream.range(0, numberOfMultinomialVars -1)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
@@ -101,13 +102,13 @@ public final class BayesianNetworkGenerator{
 
         Variable classVar = variables.newMultionomialVariable("ClassVar", nClassLabels);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSets().stream()
                 .filter(parentSet -> !parentSet.getMainVar().equals(classVar) && !parentSet.getMainVar().equals(globalHiddenVar))
                 .forEach(w -> {w.addParent(classVar); w.addParent(globalHiddenVar);});
 
-        BayesianNetwork network = new BayesianNetwork(dag);
+        BayesianNetwork network = ModelFactory.newBayesianNetwork(dag);
 
         network.randomInitialization(new Random(seed));
 
@@ -121,7 +122,7 @@ public final class BayesianNetworkGenerator{
      */
     public static BayesianNetwork generateNaiveBayes(int nClassLabels){
 
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
 
 
         IntStream.range(0, numberOfMultinomialVars -1)
@@ -132,13 +133,13 @@ public final class BayesianNetworkGenerator{
 
         Variable classVar = variables.newMultionomialVariable("ClassVar", nClassLabels);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSets().stream()
                 .filter(parentSet -> parentSet.getMainVar().getVarID()!=classVar.getVarID())
                 .forEach(w -> w.addParent(classVar));
 
-        BayesianNetwork network = new BayesianNetwork(dag);
+        BayesianNetwork network = ModelFactory.newBayesianNetwork(dag);
 
         network.randomInitialization(new Random(seed));
 
@@ -151,7 +152,7 @@ public final class BayesianNetworkGenerator{
      * @return a {@link DAG} object.
      */
     public static DAG generateTreeDAG(Variables variables) {
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         List<Variable> connectedVars = new ArrayList();
 
@@ -186,7 +187,7 @@ public final class BayesianNetworkGenerator{
      */
     public static BayesianNetwork generateBayesianNetwork(){
 
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
 
         IntStream.range(0, numberOfMultinomialVars)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
@@ -217,7 +218,7 @@ public final class BayesianNetworkGenerator{
         if (dag.containCycles())
             throw new IllegalStateException("DAG with cycles");
 
-        BayesianNetwork network = new BayesianNetwork(dag);
+        BayesianNetwork network = ModelFactory.newBayesianNetwork(dag);
 
         network.randomInitialization(new Random(seed));
 

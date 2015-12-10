@@ -1,10 +1,11 @@
 package eu.amidst.core.models;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,7 +19,7 @@ public class BayesianNetworkTest {
     @Test
     public void testingBN(){
 
-        Variables variables = new Variables(data.getAttributes());
+        Variables variables = ModelFactory.newVariables(data.getAttributes());
 
         Variable A = variables.getVariableByName("A");
         Variable B = variables.getVariableByName("B");
@@ -29,7 +30,7 @@ public class BayesianNetworkTest {
         Variable H = variables.getVariableByName("H");
         Variable I = variables.getVariableByName("I");
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(E).addParent(A);
         dag.getParentSet(E).addParent(B);
@@ -65,7 +66,7 @@ public class BayesianNetworkTest {
             Assert.assertTrue(false);
         }
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         System.out.println(bn.toString());
 

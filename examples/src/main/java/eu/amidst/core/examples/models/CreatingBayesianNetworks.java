@@ -11,6 +11,7 @@
 
 package eu.amidst.core.examples.models;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
@@ -45,7 +46,7 @@ public class CreatingBayesianNetworks {
          *
          * 3. We can extract the Variable objects by using the method getVariableByName();
          */
-        Variables variables = new Variables(data.getAttributes());
+        Variables variables = ModelFactory.newVariables(data.getAttributes());
 
         Variable a = variables.getVariableByName("A");
         Variable b = variables.getVariableByName("B");
@@ -63,7 +64,7 @@ public class CreatingBayesianNetworks {
          * 2. To add parents to each variable, we first recover the ParentSet object by the method
          * getParentSet(Variable var) and then call the method addParent().
          */
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(e).addParent(a);
         dag.getParentSet(e).addParent(b);
@@ -104,7 +105,7 @@ public class CreatingBayesianNetworks {
          *
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object.
          */
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
         System.out.println(bn.toString());
 
 

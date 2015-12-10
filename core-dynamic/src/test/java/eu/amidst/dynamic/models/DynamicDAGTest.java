@@ -2,10 +2,11 @@ package eu.amidst.dynamic.models;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ public class DynamicDAGTest {
         attributeList.add(attOLATSIGMA);
         attributeList.add(attOLATMEAS);
 
-        DynamicVariables dynamicVariables = new DynamicVariables();
+        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
 
         Variable vlatSIGMA = dynamicVariables.newDynamicVariable(attVLATSIGMA);
         Variable vlatMEAS = dynamicVariables.newDynamicVariable(attVLATMEAS);
@@ -48,7 +49,7 @@ public class DynamicDAGTest {
 
         Variable latEv = dynamicVariables.newMultinomialLogisticDynamicVariable("LE",Arrays.asList("Yes", "No"));
 
-        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatSIGMA);
         dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatREAL);
@@ -73,7 +74,7 @@ public class DynamicDAGTest {
         Assert.assertEquals(2, dynamicDAG.getParentSetTimeT(latEv).getNumberOfParents());
 
         /* test if dynamicDAG and dynamicDAG2 (containing no arcs) are equals*/
-        DynamicDAG dynamicDAG2 = new DynamicDAG(dynamicVariables);
+        DynamicDAG dynamicDAG2 = DynamicModelFactory.newDynamicDAG(dynamicVariables);
         Assert.assertFalse(dynamicDAG.equals(dynamicDAG2));
 
         /* define dag2 as a copy of dag and test again */

@@ -34,7 +34,7 @@ The class Directed acyclic graph (DAG) defines the Bayesian network graphical st
          \texttt{~~~~~~WekaDataFileReader("data/dataWeka/contact-lenses.arff");}\\
 
         \texttt{StaticVariables variables = new StaticVariables(reader.getAttributes());}\\
-        \texttt{DAG dag = new DAG(variables);}\\\\
+        \texttt{DAG dag = ModelFactory.newDAG(variables);}\\\\
 
         \texttt{StaticVariables variables = dag.getStaticVariables();}\\
         \texttt{Variable A = variables.getVariableById(0);}\\

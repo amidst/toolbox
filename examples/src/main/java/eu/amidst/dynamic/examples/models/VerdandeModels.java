@@ -11,13 +11,14 @@ package eu.amidst.dynamic.examples.models;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public final class VerdandeModels {
         attributeList.add(attTRQ);
         attributeList.add(attROP);
 
-        DynamicVariables dynamicVariables = new DynamicVariables();
+        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
 
         Variable observedROP = dynamicVariables.newDynamicVariable(attROP);
         Variable observedTRQ = dynamicVariables.newDynamicVariable(attTRQ);
@@ -118,7 +119,7 @@ public final class VerdandeModels {
          * 4. We can define temporal dependencies by referring to the temporal clones of the variables.
          *
          */
-        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(observedROP);
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(realTRQ);
@@ -155,7 +156,7 @@ public final class VerdandeModels {
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object. Similarly
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
-        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOSKF.dbn");
@@ -207,7 +208,7 @@ public final class VerdandeModels {
         Attribute attROP = data.getAttributes().getAttributeByName("ROP");
         Attribute attPRESSURE = data.getAttributes().getAttributeByName("PRESSURE");
 
-        DynamicVariables dynamicVariables = new DynamicVariables();
+        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
 
         Variable observedWOB = dynamicVariables.newDynamicVariable(attWOB);
         Variable observedRPMB = dynamicVariables.newDynamicVariable(attRPM);
@@ -251,7 +252,7 @@ public final class VerdandeModels {
          * 4. We can define temporal dependencies by referring to the temporal clones of the variables.
          *
          */
-        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(observedWOB);
         dynamicDAG.getParentSetTimeT(observedTRQ).addParent(observedRPMB);
@@ -324,7 +325,7 @@ public final class VerdandeModels {
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
 
-        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKFwithMG.dbn");
@@ -340,7 +341,7 @@ public final class VerdandeModels {
         Attribute attDepth = data.getAttributes().getAttributeByName("depth");
         Attribute attGammaDiff = data.getAttributes().getAttributeByName("gammaDiff");
 
-        DynamicVariables dynamicVariables = new DynamicVariables();
+        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
 
         Variable observedDepth = dynamicVariables.newDynamicVariable(attDepth);
         Variable observedGammaDiff = dynamicVariables.newDynamicVariable(attGammaDiff);
@@ -350,7 +351,7 @@ public final class VerdandeModels {
         Variable shift = dynamicVariables.newMultinomialDynamicVariable("Shift",2);
 
 
-        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         dynamicDAG.getParentSetTimeT(formationNo).addParent(observedDepth);
         dynamicDAG.getParentSetTimeT(formationNo).addParent(dynamicVariables.getInterfaceVariable(formationNo));
@@ -367,7 +368,7 @@ public final class VerdandeModels {
         System.out.println(dynamicDAG.toString());
 
 
-        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
 

@@ -2,6 +2,7 @@ package eu.amidst.huginlink.learning;
 
 import COM.hugin.HAPI.*;
 import com.google.common.base.Stopwatch;
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -176,10 +177,10 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @throws ExceptionHugin
      */
     public DAG learnDAG(DataStream dataStream) throws ExceptionHugin {
-        Variables modelHeader = new Variables(dataStream.getAttributes());
+        Variables modelHeader = ModelFactory.newVariables(dataStream.getAttributes());
         this.targetVar = modelHeader.getVariableByName(this.nameTarget);
-        DAG dag = new DAG(modelHeader);
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        DAG dag = ModelFactory.newDAG(modelHeader);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         Domain huginNetwork = null;
 
@@ -311,7 +312,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     @Override
     public String listOptionsRecursively() {
         return this.listOptions()
-                + "\n" + BayesianNetwork.listOptionsRecursively()
+                + "\n" //+ BayesianNetwork.listOptionsRecursively()
                 + "\n" + AmidstOptionsHandler.listOptionsRecursively(BayesianNetworkSampler.class);
     }
 
