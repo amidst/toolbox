@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 public class DBNSampler {
 
 
+    Random random;
     DynamicBayesianNetwork dbn;
     int nSamples=1000;
     Attributes newAttributes;
@@ -58,6 +59,7 @@ public class DBNSampler {
         this.dbn = dbn;
         this.bnTime0 = dbn.toBayesianNetworkTime0();
         this.bnTimeT = dbn.toBayesianNetworkTimeT();
+        this.random = new Random(seed);
     }
 
     /**
@@ -81,6 +83,7 @@ public class DBNSampler {
 
     public void setSeed(int seed) {
         this.seed = seed;
+        this.random = new Random(seed);
     }
 
     public void setNSamples(int nSamples) {
@@ -117,6 +120,63 @@ public class DBNSampler {
             return dataFlinkWrapper;
 
         }else{
+
+            DataSet<DynamicDataInstance> data = previousSample.getDataSet().mapPartition(new MAPDynamicInstancesSampler(this.bnTimeT, newAttributes, this.hiddenVars, this.marNoise, seed));
+
+            return new DataFlink<DynamicDataInstance>() {
+
+                @Override
+                public String getName() {
+                    return dbn.getName();
+                }
+
+                @Override
+                public Attributes getAttributes() {
+                    return newAttributes;
+                }
+
+                @Override
+                public DataSet<DynamicDataInstance> getDataSet() {
+                    return data;
+                }
+            };
+
+        }
+    }
+
+
+    public DataFlink<DynamicDataInstance> cascadingSampleConceptDrift(DataFlink<DynamicDataInstance> previousSample, boolean drift){
+        if (previousSample==null){
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(this.bnTime0);
+            this.hiddenVars.keySet().stream().forEach(var -> sampler.setHiddenVar(bnTime0.getVariables().getVariableByName(var.getName())));
+            this.marNoise.entrySet().stream().forEach(e -> sampler.setMARVar(bnTime0.getVariables().getVariableByName(e.getKey().getName()),e.getValue()));
+
+            sampler.setSeed(this.seed);
+            sampler.setBatchSize(this.batchSize);
+            DataFlink<DataInstance> data= sampler.sampleToDataFlink(this.nSamples);
+
+            Attribute attseq = new Attribute(data.getAttributes().getNumberOfAttributes(),Attributes.SEQUENCE_ID_ATT_NAME, new RealStateSpace());
+            Attribute atttime = new Attribute(data.getAttributes().getNumberOfAttributes()+1,Attributes.TIME_ID_ATT_NAME, new RealStateSpace());
+
+            List<Attribute> attributeList = data.getAttributes().getFullListOfAttributes();
+            List<Attribute> att2 =attributeList.stream().map(at -> at).collect(Collectors.toList());
+            att2.add(attseq);
+            att2.add(atttime);
+            newAttributes = new Attributes(att2);
+
+
+            DataFlinkWrapper dataFlinkWrapper = new DataFlinkWrapper();
+            dataFlinkWrapper.setName(this.dbn.getName());
+            dataFlinkWrapper.setAttributes(newAttributes);
+            dataFlinkWrapper.setData(data.getDataSet());
+            dataFlinkWrapper.setnSamples(nSamples);
+            dataFlinkWrapper.setTimeId(0);
+
+            return dataFlinkWrapper;
+
+        }else{
+            if (drift)
+                this.bnTimeT.randomInitialization(this.random);
 
             DataSet<DynamicDataInstance> data = previousSample.getDataSet().mapPartition(new MAPDynamicInstancesSampler(this.bnTimeT, newAttributes, this.hiddenVars, this.marNoise, seed));
 
