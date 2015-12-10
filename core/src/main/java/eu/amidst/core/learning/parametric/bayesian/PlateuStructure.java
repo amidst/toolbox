@@ -396,48 +396,27 @@ public class PlateuStructure implements Serializable {
     }
 
 
-    public Map<Variable,EF_UnivariateDistribution> getPlateauEFUnivariatePriors() {
-        Map<Variable,EF_UnivariateDistribution> map = new HashMap<>();
-
-        ef_learningmodel.getDistributionList().stream()
-                .map(dist -> dist.getVariable())
-                .filter(var -> isNonReplicatedVar(var))
-                .forEach(var -> {
-                    map.put(var,this.ef_learningmodel.getDistribution(var));
-                });
-
-        return map;
-    }
-
-    public Map<Variable,EF_UnivariateDistribution> getPlateauEFUnivariatePosteriors() {
-        Map<Variable,EF_UnivariateDistribution> map = new HashMap<>();
-
-        ef_learningmodel.getDistributionList().stream()
-                .map(dist -> dist.getVariable())
-                .filter(var -> isNonReplicatedVar(var))
-                .forEach(var -> {
-                    map.put(var,this.getNodeOfNonReplicatedVar(var).getQDist());
-                });
-
-        return map;
-    }
-
     /**
      * Updates the Natural Parameter Prior from a given parameter vector.
      * @param parameterVector a {@link CompoundVector} object.
      */
     public void updateNaturalParameterPrior(CompoundVector parameterVector) {
 
-        List<Variable> vars = this.getNonReplicatedVariables();
-        for (int i = 0; i < vars.size(); i++) {
-            Variable var = vars.get(i);
-            EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
-            uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(i));
-            uni.fixNumericalInstability();
-            uni.updateMomentFromNaturalParameters();
-            this.ef_learningmodel.setDistribution(var, uni);
-            this.getNodeOfNonReplicatedVar(var).setPDist(uni);
-        }
+        final int[] count = new int[1];
+        count[0] = 0;
+
+        ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .forEach(var -> {
+                    EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
+                    uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count[0]));
+                    uni.fixNumericalInstability();
+                    uni.updateMomentFromNaturalParameters();
+                    this.ef_learningmodel.setDistribution(var, uni);
+                    this.getNodeOfNonReplicatedVar(var).setPDist(uni);
+                    count[0]++;
+                });
     }
 
 

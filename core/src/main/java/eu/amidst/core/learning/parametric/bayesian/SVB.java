@@ -19,6 +19,7 @@ import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
@@ -172,10 +173,13 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      * @return a {@link CompoundVector} including the natural parameter priors.
      */
     public CompoundVector getNaturalParameterPrior(){
+        return this.computeNaturalParameterVectorPrior();
+        /*
         if (naturalVectorPrior==null){
             naturalVectorPrior = this.computeNaturalParameterVectorPrior();
         }
         return naturalVectorPrior;
+        */
     }
 
     /**
@@ -536,6 +540,13 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
             batchOutput2.getVector().sum(batchOutput1.getVector());
             batchOutput2.setElbo(batchOutput2.getElbo()+batchOutput1.getElbo());
             return batchOutput2;
+        }
+
+        public static BatchOutput sumStateless(BatchOutput batchOutput1, BatchOutput batchOutput2){
+            BatchOutput sum = Serialization.deepCopy(batchOutput2);
+            sum.getVector().sum(batchOutput1.getVector());
+            sum.setElbo(batchOutput2.getElbo()+batchOutput1.getElbo());
+            return sum;
         }
     }
 
