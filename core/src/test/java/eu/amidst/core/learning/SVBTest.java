@@ -1,5 +1,6 @@
 package eu.amidst.core.learning;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
@@ -14,8 +15,8 @@ import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
 
 import java.io.IOException;
@@ -27,13 +28,13 @@ import java.util.Random;
 public class SVBTest extends TestCase {
 
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
 
@@ -74,15 +75,15 @@ public class SVBTest extends TestCase {
     }
 
     public static void testMultinomials2() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -123,18 +124,18 @@ public class SVBTest extends TestCase {
     }
 
     public static void testMultinomials3() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varA);
 
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         bn.randomInitialization(new Random(6));
 
@@ -164,19 +165,19 @@ public class SVBTest extends TestCase {
     }
 
     public static void testMultinomials4() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varC).addParent(varB);
         dag.getParentSet(varB).addParent(varA);
 
 
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         bn.randomInitialization(new Random(5));
 
@@ -208,19 +209,19 @@ public class SVBTest extends TestCase {
     }
 
     public static void testMultinomials5() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newMultionomialVariable("A", 5);
         Variable varB = variables.newMultionomialVariable("B", 5);
         Variable varC = variables.newMultionomialVariable("C", 5);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varC).addParent(varB);
         dag.getParentSet(varB).addParent(varA);
 
 
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         bn.randomInitialization(new Random(5));
 
@@ -251,16 +252,16 @@ public class SVBTest extends TestCase {
     }
 
     public static void testMultinomial6() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varB = variables.newMultionomialVariable("B",4);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
 
         for (int i = 0; i < 10; i++) {
 
 
-            BayesianNetwork bn = new BayesianNetwork(dag);
+            BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
             bn.randomInitialization(new Random(0));
 
 
@@ -656,18 +657,18 @@ public class SVBTest extends TestCase {
     }
 
     public static void testGaussian5() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varA);
 
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
 
         System.out.println(bn.toString());
@@ -697,12 +698,12 @@ public class SVBTest extends TestCase {
     }
 
     public static void testGaussian6() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
@@ -710,7 +711,7 @@ public class SVBTest extends TestCase {
         for (int i = 0; i < 1; i++) {
 
 
-            BayesianNetwork bn = new BayesianNetwork(dag);
+            BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
             bn.randomInitialization(new Random(i));
 
@@ -744,16 +745,16 @@ public class SVBTest extends TestCase {
     }
 
     public static void testGaussian7() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varB = variables.newGaussianVariable("B");
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
 
         for (int i = 0; i < 10; i++) {
 
 
-            BayesianNetwork bn = new BayesianNetwork(dag);
+            BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
             bn.randomInitialization(new Random(0));
 
 
@@ -789,12 +790,12 @@ public class SVBTest extends TestCase {
     }
 
     public static void testGaussian8() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
@@ -802,7 +803,7 @@ public class SVBTest extends TestCase {
         for (int i = 1; i < 2; i++) {
 
 
-            BayesianNetwork bn = new BayesianNetwork(dag);
+            BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
             bn.randomInitialization(new Random(0));
 
             bn.randomInitialization(new Random(i));

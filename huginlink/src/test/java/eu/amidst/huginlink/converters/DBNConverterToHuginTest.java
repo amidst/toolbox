@@ -3,14 +3,15 @@ package eu.amidst.huginlink.converters;
 import COM.hugin.HAPI.Class;
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,8 +25,8 @@ public class DBNConverterToHuginTest {
 
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDiscrete.arff");
 
-        DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
-        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(data.getAttributes());
+        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         Variable A = dynamicVariables.getVariableByName("A");
         Variable B = dynamicVariables.getVariableByName("B");
@@ -76,7 +77,7 @@ public class DBNConverterToHuginTest {
         dynamicDAG.getParentSetTimeT(E).addParent(E_TClone);
         dynamicDAG.getParentSetTimeT(G).addParent(G_TClone);
 
-        DynamicBayesianNetwork amidstDBN = new DynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork amidstDBN = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
 
         //****************************************** Distributions *****************************************************
 

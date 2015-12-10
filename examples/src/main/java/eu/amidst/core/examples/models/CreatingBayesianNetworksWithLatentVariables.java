@@ -11,7 +11,7 @@
 package eu.amidst.core.examples.models;
 
 
-
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
@@ -48,7 +48,7 @@ public class CreatingBayesianNetworksWithLatentVariables {
          *
          * 3. We can extract the Variable objects by using the method getVariableByName();
          */
-        Variables variables = new Variables(data.getAttributes());
+        Variables variables = ModelFactory.newVariables(data.getAttributes());
 
         Variable a = variables.getVariableByName("A");
         Variable b = variables.getVariableByName("B");
@@ -84,7 +84,7 @@ public class CreatingBayesianNetworksWithLatentVariables {
          * 3. We just put the hidden variable as parent of all the other variables. Following a naive-Bayes
          * like structure.
          */
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(a).addParent(hidden);
         dag.getParentSet(b).addParent(hidden);
@@ -110,7 +110,7 @@ public class CreatingBayesianNetworksWithLatentVariables {
          *
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object.
          */
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
         System.out.println(bn.toString());
 
         /**

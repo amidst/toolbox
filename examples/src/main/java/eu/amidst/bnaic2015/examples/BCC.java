@@ -11,6 +11,7 @@
 
 package eu.amidst.bnaic2015.examples;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
@@ -127,7 +128,7 @@ public class BCC {
         DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month0.arff");
 
         //Define the variables. By default, a random variable is created for each attribute
-        Variables variables  = new Variables(instances.getAttributes());
+        Variables variables  = ModelFactory.newVariables(instances.getAttributes());
 
         //We create a new global hidden Gaussian variable
         Variable hiddenGaussian = variables.newGaussianVariable("HiddenGaussian");
@@ -136,7 +137,7 @@ public class BCC {
         Variable defaultVariable = variables.getVariableByName("default");
 
         //We define the DAG
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         //We add the links of the DAG
         dag.getVariables()

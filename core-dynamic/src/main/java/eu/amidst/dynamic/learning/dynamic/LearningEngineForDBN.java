@@ -10,11 +10,12 @@ package eu.amidst.dynamic.learning.dynamic;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 
 /**
  * Created by andresmasegosa on 06/01/15.
@@ -26,8 +27,8 @@ public final class LearningEngineForDBN {
 
 
     private static DynamicDAG dynamicNaiveBayesStructure(DataStream<DynamicDataInstance> dataStream){
-        DynamicVariables modelHeader = new DynamicVariables(dataStream.getAttributes());
-        DynamicDAG dag = new DynamicDAG(modelHeader);
+        DynamicVariables modelHeader = DynamicModelFactory.newDynamicVariables(dataStream.getAttributes());
+        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(modelHeader);
         Variable classVar = modelHeader.getVariableById(modelHeader.getNumberOfVars()-1);
         dag.getParentSetsTimeT()
                 .stream()

@@ -11,9 +11,9 @@
 package eu.amidst.core.inference.messagepassing;
 
 
-
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.AtomicDouble;
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
@@ -249,14 +249,14 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
     @Override
     public BayesianNetwork getSamplingModel() {
 
-        DAG dag = new DAG(this.model.getVariables());
+        DAG dag = ModelFactory.newDAG(this.model.getVariables());
 
         List<ConditionalDistribution> distributionList =
                 this.model.getVariables().getListOfVariables().stream()
                         .map(var -> (ConditionalDistribution)this.getPosterior(var))
                         .collect(Collectors.toList());
 
-        return new BayesianNetwork(dag, distributionList);
+        return ModelFactory.newBayesianNetwork(dag, distributionList);
     }
 
     /**
