@@ -37,6 +37,8 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     /** Represents the parameter variables included in this EF_LearningBayesianNetwork model. */
     ParameterVariables parametersVariables;
 
+    /** Represents the list of Variables which are not expended*/
+    List<Variable> non_expand;
     /**
      * Creates a new EF_LearningBayesianNetwork object from a given {@link DAG} object.
      * @param dag a {@link DAG} object.
@@ -91,13 +93,14 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
      */
     public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions, List<Variable> non_expand){
 
+        this.non_expand = non_expand;
         parametersVariables = new ParameterVariables(distributions.size());
 
         distributionList =
                 distributions
                         .stream()
                         .map(dist -> {
-                            if (non_expand.contains(dist.getVariable()))
+                            if (this.non_expand.contains(dist.getVariable()))
                                 return Arrays.asList(dist);
                             else
                                 return dist.toExtendedLearningDistribution(parametersVariables);
@@ -147,6 +150,11 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
         for (EF_ConditionalDistribution dist: distributionList) {
             if (dist.getVariable().isParameterVariable())
                 continue;
+
+            if (this.non_expand.contains(dist.getVariable())){
+                condDistList.add(dist.toConditionalDistribution());
+                continue;
+            }
 
             EF_ConditionalDistribution distLearning = dist;
             Map<Variable, Vector> expectedParameters = new HashMap<>();

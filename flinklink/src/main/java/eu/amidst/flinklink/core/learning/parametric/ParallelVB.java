@@ -289,12 +289,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
 
             if (dataBatch.getNumberOfDataInstances()==0){
-                //System.out.println(this.svb.getLearntBayesianNetwork().toString());
                 return this.svb.getNaturalParameterPrior();
             }else {
                 SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
-                //System.out.println("DIFF 36:" + out.getVector().getVectorByPosition(36).get(0)+", "+out.getVector().getVectorByPosition(36).get(1));
-                //System.out.println("DIFF 37:" + out.getVector().getVectorByPosition(37).get(0)+", "+out.getVector().getVectorByPosition(37).get(1));
 
                 elbo.aggregate(out.getElbo() / svb.getPlateuStructure().getVMP().getNodes().size());
                 return out.getVector();
@@ -309,16 +306,10 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             String bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
 
-
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
 
-            //System.out.println("Prior 36\t" + updatedPrior.getVectorByPosition(36).get(0)+"\t"+updatedPrior.getVectorByPosition(36).get(1));
-            //System.out.println("Prior 37:" + updatedPrior.getVectorByPosition(37).get(0)+", "+updatedPrior.getVectorByPosition(37).get(1));
-
             svb.updateNaturalParameterPrior(updatedPrior);
-
-            //System.out.println("PriorP 36\t" + svb.getNaturalParameterPrior().getVectorByPosition(36).get(0) + "\t" + svb.getNaturalParameterPrior().getVectorByPosition(36).get(1));
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
         }
