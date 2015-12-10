@@ -48,7 +48,7 @@ public class DynamicDAG implements Serializable {
      * It contains the ParentSets for all variables at time T.
      */
     private List<ParentSet> parentSetTimeT;
-    private String name;
+    private String name = "DynamicDAG";
 
 
     public DynamicDAG(DynamicVariables dynamicVariables1) {

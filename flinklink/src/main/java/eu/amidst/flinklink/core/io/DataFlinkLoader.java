@@ -27,6 +27,7 @@ import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.configuration.Configuration;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
@@ -55,13 +56,13 @@ public class DataFlinkLoader implements Serializable{
 
     boolean isARFFFolder;
 
-    public static DataFlink<DataInstance> loadData(ExecutionEnvironment env, String pathFileData){
+    public static DataFlink<DataInstance> loadData(ExecutionEnvironment env, String pathFileData) throws FileNotFoundException{
         DataFlinkLoader loader = new DataFlinkLoader();
         loader.setPathFileData(pathFileData);
         return new DataFlinkFile(env,loader);
     }
 
-    public static DataFlink<DynamicDataInstance> loadDynamicData(ExecutionEnvironment env, String pathFileData) {
+    public static DataFlink<DynamicDataInstance> loadDynamicData(ExecutionEnvironment env, String pathFileData) throws FileNotFoundException{
         return DataFlinkConverter.convertToDynamic(loadData(env, pathFileData));
     }
 
@@ -90,9 +91,11 @@ public class DataFlinkLoader implements Serializable{
     }
 
 
-    private void setPathFileData(String pathFileData) {
+    private void setPathFileData(String pathFileData) throws FileNotFoundException {
 
         File file = new File(pathFileData);
+        if(!file.exists())
+            throw new FileNotFoundException();
         if (file.isDirectory()){
             this.isARFFFolder= true;
             this.pathFileData=pathFileData+"/data/";
