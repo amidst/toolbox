@@ -280,7 +280,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     @Override
     public String listOptionsRecursively() {
         return this.listOptions()
-                + "\n" + network.listOptionsRecursively();
+                + "\n";// + network.listOptionsRecursively();
     }
 
     /**

@@ -11,7 +11,7 @@
 package eu.amidst.core.examples.learning;
 
 
-
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -41,13 +41,13 @@ public class MaximimumLikelihoodByBatchExample {
     public static DAG getNaiveBayesStructure(DataStream<DataInstance> dataStream, int classIndex){
 
         //We create a Variables object from the attributes of the data stream
-        Variables modelHeader = new Variables(dataStream.getAttributes());
+        Variables modelHeader = ModelFactory.newVariables(dataStream.getAttributes());
 
         //We define the predicitive class variable
         Variable classVar = modelHeader.getVariableById(classIndex);
 
         //Then, we create a DAG object with the defined model header
-        DAG dag = new DAG(modelHeader);
+        DAG dag = ModelFactory.newDAG(modelHeader);
 
         //We set the linkds of the DAG.
         dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));

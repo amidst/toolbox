@@ -1,5 +1,6 @@
 package eu.amidst.dynamic.inference;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
@@ -659,7 +660,7 @@ public class DynamicMAPInference {
 
     private Variables obtainReplicatedStaticVariables(DynamicVariables dynamicVariables, boolean even_partition) {
 
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
 
         // REPLICATIONS OF THE MAP VARIABLE (EACH CONSECUTIVE 2 ARE GROUPED)
         int replicationsMAPVariable;
@@ -713,7 +714,7 @@ public class DynamicMAPInference {
 
     private DAG obtainStaticDAG(DynamicDAG dynamicDAG, Variables variables, boolean even_partition) {
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
         DynamicVariables dynamicVariables = dynamicDAG.getDynamicVariables();
 
         /*
@@ -855,7 +856,7 @@ public class DynamicMAPInference {
     private BayesianNetwork obtainStaticGroupedClassBayesianNetwork(DAG dag, Variables variables, boolean even_partition) {
 
         DynamicDAG dynamicDAG = model.getDynamicDAG();
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
         Variable staticVar, dynVar;
         ConditionalDistribution conDist0, conDist1;
 

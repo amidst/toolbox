@@ -8,6 +8,7 @@
 
 package eu.amidst.core.inference;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.distribution.Multinomial;
@@ -120,7 +121,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
      * @param samplingModel_ a {@link BayesianNetwork} model according to which samples will be taken.
      */
     public void setSamplingModel(BayesianNetwork samplingModel_) {
-        this.samplingModel = new BayesianNetwork(samplingModel_.getDAG(),
+        this.samplingModel = ModelFactory.newBayesianNetwork(samplingModel_.getDAG(),
                 Serialization.deepCopy(samplingModel_.getConditionalDistributions()));
         this.causalOrder = Utils.getTopologicalOrder(samplingModel.getDAG());
     }

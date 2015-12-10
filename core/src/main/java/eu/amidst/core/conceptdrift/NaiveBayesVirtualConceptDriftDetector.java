@@ -10,6 +10,7 @@
  */
 package eu.amidst.core.conceptdrift;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
@@ -149,7 +150,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
     private void buildGlobalDAG(){
-        Variables variables = new Variables(data.getAttributes());
+        Variables variables = ModelFactory.newVariables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -159,7 +160,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         for (Attribute att : data.getAttributes()) {
             if (att.getName().equals(className))

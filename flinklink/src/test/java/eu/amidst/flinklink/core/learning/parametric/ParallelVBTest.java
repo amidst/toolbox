@@ -12,6 +12,7 @@ package eu.amidst.flinklink.core.learning.parametric;
  *
  */
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
@@ -88,12 +89,12 @@ public class ParallelVBTest extends TestCase {
 
 
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
         Multinomial distA = bn.getConditionalDistribution(varA);
 
@@ -112,15 +113,15 @@ public class ParallelVBTest extends TestCase {
     }
 
     public static void testMultinomials2() throws IOException, ClassNotFoundException {
-        Variables variables = new Variables();
+        Variables variables = ModelFactory.newVariables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
 
-        DAG dag = new DAG(variables);
+        DAG dag = ModelFactory.newDAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);

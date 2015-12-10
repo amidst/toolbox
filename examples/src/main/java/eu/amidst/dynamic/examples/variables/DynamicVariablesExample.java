@@ -1,6 +1,7 @@
 package eu.amidst.dynamic.examples.variables;
 
 import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.util.Arrays;
@@ -15,7 +16,7 @@ public class DynamicVariablesExample {
     public static void main(String[] args) throws Exception {
 
         //We first create an empty Variables object
-        DynamicVariables variables = new DynamicVariables();
+        DynamicVariables variables = DynamicModelFactory.newDynamicVariables();
 
         //We invoke the "new" methods of the object Variables to create new variables.
         //Now we create a Gaussian variables

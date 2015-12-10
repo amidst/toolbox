@@ -1,5 +1,6 @@
 package moa.classifiers.bayes;
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
@@ -180,7 +181,7 @@ public class AmidstClassifier extends AbstractClassifier {
         setParallelMode_(parallelModeOption.isSet());
 
         attributes_ = Converter.convertAttributes(this.modelContext);
-        Variables modelHeader = new Variables(attributes_);
+        Variables modelHeader = ModelFactory.newVariables(attributes_);
         classVar_ = modelHeader.getVariableByName(modelContext.classAttribute().name());
 
         batch_ = new DataOnMemoryListContainer(attributes_);
@@ -194,7 +195,7 @@ public class AmidstClassifier extends AbstractClassifier {
         if(getnOfStatesMultHiddenVar_() > 0)
             modelHeader.newMultionomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
 
-        dag = new DAG(modelHeader);
+        dag = ModelFactory.newDAG(modelHeader);
 
         /* Set DAG structure. */
         /* 1. Add classVar as parent of all Gaussian and Multinomial hidden variables. */

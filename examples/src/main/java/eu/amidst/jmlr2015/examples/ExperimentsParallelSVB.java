@@ -12,6 +12,7 @@
 package eu.amidst.jmlr2015.examples;
 
 
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
@@ -44,7 +45,7 @@ public class ExperimentsParallelSVB {
     public static DAG getHiddenNaiveBayesStructure(DataStream<DataInstance> dataStream) {
 
         // Create a Variables object from the attributes of the input data stream.
-        Variables modelHeader = new Variables(dataStream.getAttributes());
+        Variables modelHeader = ModelFactory.newVariables(dataStream.getAttributes());
 
         // Define the global latent binary variable.
         Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
@@ -56,7 +57,7 @@ public class ExperimentsParallelSVB {
         Variable classVar = modelHeader.getVariableById(0);
 
         // Create a DAG object with the defined model header.
-        DAG dag = new DAG(modelHeader);
+        DAG dag = ModelFactory.newDAG(modelHeader);
 
         // Define the structure of the DAG, i.e., set the links between the variables.
         dag.getParentSets()

@@ -8,11 +8,12 @@
 
 package eu.amidst.dynamic.exponentialfamily;
 
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.utils.Vector;
+import eu.amidst.dynamic.DynamicModelFactory;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.core.utils.Vector;
 
 import java.util.stream.Collectors;
 
@@ -139,7 +140,7 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
     }
 
     public DynamicBayesianNetwork toDynamicBayesianNetwork(DynamicDAG dag) {
-        return new DynamicBayesianNetwork(dag,
+        return DynamicModelFactory.newDynamicBayesianNetwork(dag,
                 EF_BayesianNetwork.toConditionalDistribution(this.bayesianNetworkTime0.getDistributionList()),
                 EF_BayesianNetwork.toConditionalDistribution(this.bayesianNetworkTimeT.getDistributionList()));
     }

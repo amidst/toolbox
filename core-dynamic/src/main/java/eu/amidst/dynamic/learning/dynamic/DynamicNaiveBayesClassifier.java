@@ -10,16 +10,17 @@ package eu.amidst.dynamic.learning.dynamic;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.io.DataStreamWriter;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.io.IOException;
 
@@ -64,9 +65,9 @@ public class DynamicNaiveBayesClassifier {
 
     private DynamicDAG dynamicNaiveBayesStructure(DataStream<DynamicDataInstance> dataStream){
 
-        DynamicVariables dynamicVariables = new DynamicVariables(dataStream.getAttributes());
+        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(dataStream.getAttributes());
         Variable classVar = dynamicVariables.getVariableById(this.getClassVarID());
-        DynamicDAG dag = new DynamicDAG(dynamicVariables);
+        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         // TODO Remove this commented part. Done for efficiency in the inference demos.
 
