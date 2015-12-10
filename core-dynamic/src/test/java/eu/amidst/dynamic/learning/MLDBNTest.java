@@ -3,16 +3,17 @@ package eu.amidst.dynamic.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.learning.dynamic.MaximumLikelihoodForDBN;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -257,14 +258,14 @@ public class MLDBNTest {
         for (int i = 0; i < 10; i++) {
 
 
-            DynamicVariables dynamicVariables = new DynamicVariables();
+            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
 
             Variable classVar = dynamicVariables.newMultinomialDynamicVariable("Class", 2);
             Variable varA = dynamicVariables.newGaussianDynamicVariable("A");
             Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
             dynamicDAG.getParentSetTimeT(varA).addParent(classVar);
             dynamicDAG.getParentSetTimeT(varB).addParent(classVar);
@@ -281,7 +282,7 @@ public class MLDBNTest {
             dynamicDAG.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB =  new DynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB =  DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 
@@ -339,13 +340,13 @@ public class MLDBNTest {
         for (int i = 0; i < 10; i++) {
 
 
-            DynamicVariables dynamicVariables = new DynamicVariables();
+            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
 
             Variable varA = dynamicVariables.newGaussianDynamicVariable("A");
             Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(classVar);
             //dynamicDAG.getParentSetTimeT(varB).addParent(classVar);
@@ -362,7 +363,7 @@ public class MLDBNTest {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 

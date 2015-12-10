@@ -6,6 +6,7 @@ import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
@@ -128,7 +129,7 @@ public class DynamicMAPInference_Experiments1 {
             variablesNextLevel = new ArrayList<>(0);
         }
 
-        DynamicBayesianNetwork dynamicTAN = new DynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dynamicTAN = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
         dynamicTAN.randomInitialization(random);
         return dynamicTAN;
     }

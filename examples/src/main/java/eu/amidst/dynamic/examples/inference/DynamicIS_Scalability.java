@@ -5,6 +5,7 @@ import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.utils.AmidstOptionsHandler;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
@@ -124,7 +125,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         Random random = new Random(this.getSeed());
 
         //We first generate a dynamic Bayesian network with two latent nodes
-        DynamicVariables dynamicVariables  = new DynamicVariables();
+        DynamicVariables dynamicVariables  = DynamicModelFactory.newDynamicVariables();
 
         //Upper layer
         Variable varH1 = dynamicVariables.newMultinomialDynamicVariable("H1",this.getNumberOfStates());
@@ -143,7 +144,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         IntStream.range(1,this.getNumberOfContinuousVars()+1)
                 .forEach(i -> dynamicVariables.newGaussianDynamicVariable("C" + i));
 
-        DynamicDAG dag = new DynamicDAG(dynamicVariables);
+        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
 
         //Connect H1 in consecutive time steps.
@@ -191,7 +192,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         System.out.println(dag);
 
         //Creat the dynamic Bayesian network
-        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
+        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dag);
 
         //We initialize the parameters of the network randomly
         dbn.randomInitialization(random);

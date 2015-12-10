@@ -1,6 +1,7 @@
 package eu.amidst.huginlink.converters;
 
 import COM.hugin.HAPI.*;
+import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.distribution.*;
@@ -58,8 +59,8 @@ public class BNConverterToAMIDST {
                 attributes.add(new Attribute(i, n.getName(), new RealStateSpace()));
             }
         }
-        Variables variables = new Variables(new Attributes(attributes));
-        DAG dag = new DAG(variables);
+        Variables variables = ModelFactory.newVariables(new Attributes(attributes));
+        DAG dag = ModelFactory.newDAG(variables);
 
         try {
             dag.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
@@ -102,7 +103,7 @@ public class BNConverterToAMIDST {
                 dag.getParentSet(amidstChild).addParent(amidstParent);
             }
         }
-        this.amidstBN = new BayesianNetwork(dag);
+        this.amidstBN = ModelFactory.newBayesianNetwork(dag);
         try {
             amidstBN.setName(Paths.get(huginBN.getFileName()).getFileName().toString());
         }catch(Exception e){

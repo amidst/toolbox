@@ -10,6 +10,7 @@ package eu.amidst.dynamic.utils;
 
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
@@ -48,7 +49,7 @@ public class DynamicBayesianNetworkGenerator {
     }
 
     public static DynamicDAG generateDynamicNaiveBayesDAG(int numberClassStates, boolean connectChildrenTemporally){
-        DynamicVariables dynamicVariables  = new DynamicVariables();
+        DynamicVariables dynamicVariables  = DynamicModelFactory.newDynamicVariables();
 
         //class variable which is always discrete
         Variable classVar = dynamicVariables.newMultinomialDynamicVariable("ClassVar", numberClassStates);
@@ -62,7 +63,7 @@ public class DynamicBayesianNetworkGenerator {
         IntStream.range(1,numberOfContinuousVars+1)
                 .forEach(i -> dynamicVariables.newGaussianDynamicVariable("ContinuousVar" + i));
 
-        DynamicDAG dag = new DynamicDAG(dynamicVariables);
+        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
 
         dag.getParentSetsTimeT().stream()
                 .filter(var -> var.getMainVar().getVarID()!=classVar.getVarID())
@@ -84,7 +85,7 @@ public class DynamicBayesianNetworkGenerator {
 
 
 
-        DynamicBayesianNetwork network = new DynamicBayesianNetwork(
+        DynamicBayesianNetwork network = DynamicModelFactory.newDynamicBayesianNetwork(
                 DynamicBayesianNetworkGenerator.generateDynamicNaiveBayesDAG(numberClassStates,
                         connectChildrenTemporally));
 
@@ -161,7 +162,7 @@ public class DynamicBayesianNetworkGenerator {
             System.exit(-1);
         }
 
-        DynamicBayesianNetwork dynamicTAN = new DynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dynamicTAN = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
         dynamicTAN.randomInitialization(random);
         return dynamicTAN;
     }
@@ -244,7 +245,7 @@ public class DynamicBayesianNetworkGenerator {
             System.exit(-1);
         }
 
-        DynamicBayesianNetwork dynamicFAN = new DynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dynamicFAN = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
         dynamicFAN.randomInitialization(random);
         return dynamicFAN;
     }
