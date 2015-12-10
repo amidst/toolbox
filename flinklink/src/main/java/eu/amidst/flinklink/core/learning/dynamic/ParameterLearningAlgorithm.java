@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.flinklink.cajamar;
+package eu.amidst.flinklink.core.learning.dynamic;
 
 
 import eu.amidst.core.learning.parametric.bayesian.DataPosterior;

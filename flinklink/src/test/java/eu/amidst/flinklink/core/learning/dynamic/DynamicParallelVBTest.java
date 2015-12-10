@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.flinklink.cajamar;
+package eu.amidst.flinklink.core.learning.dynamic;
 
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
@@ -39,7 +39,7 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 25/9/15.
  */
-public class CajaMarLearnTest extends TestCase {
+public class DynamicParallelVBTest extends TestCase {
 
     public static String NETWORK_NAME = "HuginCajaMarDefaulterPredictor.dbn";
     public static int NSETS = 3;
@@ -294,7 +294,7 @@ public class CajaMarLearnTest extends TestCase {
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
-        CajaMarLearn learn = new CajaMarLearn();
+        DynamicParallelVB learn = new DynamicParallelVB();
         learn.setMaximumGlobalIterations(10);
         learn.setBatchSize(BATCHSIZE);
         learn.setDAG(dbn.getDynamicDAG());
@@ -321,7 +321,7 @@ public class CajaMarLearnTest extends TestCase {
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
-        CajaMarLearn learn = new CajaMarLearn();
+        DynamicParallelVB learn = new DynamicParallelVB();
         learn.setMaximumGlobalIterations(10);
         learn.setBatchSize(BATCHSIZE);
         learn.setDAG(dbn.getDynamicDAG());

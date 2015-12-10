@@ -85,6 +85,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.nonInterfaceVariables = new ArrayList<>();
         this.interfaceVariables = new ArrayList<>();
 
+
         for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             VariableBuilder builder;
             if (typeDists.containsKey(att)) {
