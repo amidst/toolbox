@@ -70,12 +70,17 @@ public class ARFFDataReader implements DataFileReader {
         name = name.replaceAll("^'+", "");
         name = name.replaceAll("'+$", "");
 
-        parts[2]=line.substring(parts[0].length() + parts[1].length() + 2);
+        //parts[2]=line.substring(parts[0].length() + parts[1].length() + 2);
 
         parts[2]=parts[2].trim();
 
         if (parts[2].equals("real") || parts[2].equals("numeric")){
-            return new Attribute(index, name, new RealStateSpace());
+            if(parts.length>3 && parts[3].startsWith("[")){
+                double min = Double.parseDouble(parts[3].substring(parts[3].indexOf("[")+1,parts[3].indexOf(",")));
+                double max = Double.parseDouble(parts[3].substring(parts[3].indexOf(",")+1,parts[3].indexOf("]")));
+                return new Attribute(index, name, new RealStateSpace(min,max));
+            }else
+                return new Attribute(index, name, new RealStateSpace());
         }else if (parts[2].startsWith("{")){
             String[] states = parts[2].substring(1,parts[2].length()-1).split(",");
 
