@@ -8,3 +8,7 @@
 
 
 syntheticDataVerdandeScenario1.arff
+
+
+
+./datasets/cajamar/WITHOUT_HEADER/train.arff ./datasets/cajamar/WITHOUT_HEADER/test.arff ./datasets/cajamar/WITHOUT_HEADER/out.txt -numSamplesOnMemory 10000   -numCores 16  -nameRoot "ClientAnt" -nameTarget "Default" -parallelMode

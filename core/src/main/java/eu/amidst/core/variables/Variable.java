@@ -142,11 +142,7 @@ public interface Variable {
     @Override
     int hashCode();
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    boolean equals(Object o);
+    boolean equals(Variable variable);
 
     /**
      * Tests whether this Variable follows a normal distribution.

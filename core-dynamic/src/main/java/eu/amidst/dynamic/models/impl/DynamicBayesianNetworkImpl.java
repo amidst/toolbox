@@ -268,8 +268,9 @@ public class DynamicBayesianNetworkImpl implements DynamicBayesianNetwork, Seria
     }
 
     public boolean equalDBNs(DynamicBayesianNetwork bnet, double threshold) {
-        boolean equals = true;
+        boolean equals = false;
         if (this.getDynamicDAG().equals(bnet.getDynamicDAG())){
+            equals = true;
             for (Variable var : this.getDynamicVariables()) {
                 equals = equals && this.getConditionalDistributionTime0(var).equalDist(bnet.getConditionalDistributionTime0(var), threshold) && this.getConditionalDistributionTimeT(var).equalDist(bnet.getConditionalDistributionTimeT(var), threshold);
             }

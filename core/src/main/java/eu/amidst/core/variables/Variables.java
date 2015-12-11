@@ -148,4 +148,7 @@ public interface Variables extends Iterable<Variable> {
      */
     List<Variable> getListOfVariables();
 
+
+    boolean equals(Variables variables);
+
 }

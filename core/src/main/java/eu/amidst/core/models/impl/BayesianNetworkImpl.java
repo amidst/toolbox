@@ -241,8 +241,9 @@ public class BayesianNetworkImpl implements BayesianNetwork, Serializable {
      */
     @Override
     public boolean equalBNs(BayesianNetwork bnet, double threshold) {
-        boolean equals = true;
+        boolean equals = false;
         if (this.getDAG().equals(bnet.getDAG())){
+            equals = true;
             for (Variable var : this.getVariables()) {
                 equals = equals && this.getConditionalDistribution(var).equalDist(bnet.getConditionalDistribution(var), threshold);
             }

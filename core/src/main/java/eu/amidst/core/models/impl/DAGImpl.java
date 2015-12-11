@@ -153,6 +153,11 @@ public class DAGImpl implements DAG, Serializable {
         return false;
     }
 
+    @Override
+    public boolean equals(DAG dag) {
+        return this.equals((Object)dag);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -166,9 +171,9 @@ public class DAGImpl implements DAG, Serializable {
             return false;
         }
 
-        DAGImpl dag = (DAGImpl) o;
+        DAG dag = (DAG) o;
 
-        if (this.variables.getNumberOfVars() != dag.variables.getNumberOfVars()) {
+        if (this.variables.getNumberOfVars() != dag.getVariables().getNumberOfVars()) {
             return false;
         } else {
             boolean eqs = true;

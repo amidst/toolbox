@@ -68,4 +68,6 @@ public interface DAG  {
      */
     boolean containCycles();
 
+
+    boolean equals(DAG dag);
 }

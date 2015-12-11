@@ -138,6 +138,11 @@ public class ParentSetImpl implements ParentSet, Serializable {
         return this.vars.contains(var);
     }
 
+    @Override
+    public boolean equals(ParentSet parentSet) {
+        return this.equals((Object)parentSet);
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -223,8 +223,8 @@ public class ParallelTAN implements AmidstOptionsHandler {
             Stopwatch watch = Stopwatch.createStarted();
             huginNetwork.learnChowLiuTree(root, target);
             System.out.println("Structural Learning in Hugin: " + watch.stop());
-
-            DAG dagLearned = (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
+            BayesianNetwork huginBN = BNConverterToAMIDST.convertToAmidst(huginNetwork);
+            DAG dagLearned = huginBN.getDAG();
             dagLearned.getVariables().setAttributes(dataStream.getAttributes());
             return dagLearned;
         } catch (ExceptionHugin exceptionHugin) {
@@ -270,7 +270,6 @@ public class ParallelTAN implements AmidstOptionsHandler {
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
         parameterLearningAlgorithm.setDataStream(dataStream);
-        parameterLearningAlgorithm.initLearning();
         parameterLearningAlgorithm.runLearning();
         learnedBN = parameterLearningAlgorithm.getLearntBayesianNetwork();
 

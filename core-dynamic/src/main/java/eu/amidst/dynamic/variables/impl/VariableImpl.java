@@ -174,4 +174,8 @@ public class VariableImpl implements Variable, Serializable {
         return false;
     }
 
+    @Override
+    public boolean equals(Variable variable) {
+        return this.equals((Object)variable);
+    }
 }
