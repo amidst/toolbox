@@ -11,7 +11,6 @@
 
 package eu.amidst.core.utils;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -31,9 +30,9 @@ public class DAGGenerator {
      * @return a directed acyclic graph {@link DAG}.
      */
     public static DAG getNaiveBayesStructure(Attributes attributes, String className){
-        Variables modelHeader = ModelFactory.newVariables(attributes);
+        Variables modelHeader = new Variables(attributes);
         Variable classVar = modelHeader.getVariableByName(className);
-        DAG dag = ModelFactory.newDAG(modelHeader);
+        DAG dag = new DAG(modelHeader);
         dag.getParentSets().stream().filter(w -> w.getMainVar().getVarID() != classVar.getVarID()).forEach(w -> w.addParent(classVar));
 
         dag.setName("DAGNB");
@@ -52,13 +51,13 @@ public class DAGGenerator {
      */
     public static DAG getHiddenNaiveBayesStructure(Attributes attributes, String varHiddenName, int nstates){
         //We create a Variables object from the attributes of the data stream
-        Variables modelHeader = ModelFactory.newVariables(attributes);
+        Variables modelHeader = new Variables(attributes);
 
         //We define the global latent binary variable
         Variable globalHiddenVar = modelHeader.newMultionomialVariable(varHiddenName, nstates);
 
         //Then, we create a DAG object with the defined model header
-        DAG dag = ModelFactory.newDAG(modelHeader);
+        DAG dag = new DAG(modelHeader);
 
         //We set the linkds of the DAG.
         dag.getParentSets().stream().filter(w -> w.getMainVar() != globalHiddenVar).forEach(w -> w.addParent(globalHiddenVar));

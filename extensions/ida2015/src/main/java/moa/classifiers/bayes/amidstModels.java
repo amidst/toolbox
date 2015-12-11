@@ -8,7 +8,6 @@
 
 package moa.classifiers.bayes;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
 import eu.amidst.core.distribution.Multinomial;
@@ -254,7 +253,7 @@ public class amidstModels extends AbstractClassifier{// implements SemiSupervise
         /* Class attribute */
         convertAttribute(modelContext.classAttribute(), attrList);
         attributes_ = new Attributes(attrList);
-        Variables variables = ModelFactory.newVariables(attributes_);
+        Variables variables = new Variables(attributes_);
         String className = modelContext.classAttribute().name();
         classVar_ = variables.getVariableByName(className);
 

@@ -17,7 +17,6 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -144,7 +143,7 @@ public class IDAConceptDriftDetector {
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
     private void buildGlobalDAG(){
-        DynamicVariables variables = DynamicModelFactory.newDynamicVariables(attributes);
+        DynamicVariables variables = new DynamicVariables(attributes);
         String className = attributes.getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -154,7 +153,7 @@ public class IDAConceptDriftDetector {
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(variables);
+        DynamicDAG dag = new DynamicDAG(variables);
 
         for (Attribute att : attributes.getListOfNonSpecialAttributes()) {
             if (att.getName().equals(className))

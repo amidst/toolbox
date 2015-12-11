@@ -16,6 +16,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.learning.parametric.LearningEngine;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
@@ -54,6 +55,7 @@ public class ParallelMLMissingDataTest extends TestCase {
         parallelMaximumLikelihood.setLaplace(true);
         parallelMaximumLikelihood.setBatchSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
+        parallelMaximumLikelihood.setLaplace(false);
         LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
 
@@ -97,6 +99,7 @@ public class ParallelMLMissingDataTest extends TestCase {
         parallelMaximumLikelihood.setLaplace(true);
         parallelMaximumLikelihood.setBatchSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
+        parallelMaximumLikelihood.setLaplace(false);
         LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
         BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
 

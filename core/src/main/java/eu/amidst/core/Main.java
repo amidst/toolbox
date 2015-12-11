@@ -42,7 +42,7 @@ public class Main {
         /*
         System.out.println(Integer.parseInt("0008")+"");
 
-        Variables vars = ModelFactory.newVariables();
+        Variables vars = new Variables();
         Variable var = vars.newGaussianVariable("A");
         double mean = 1;
         double variance = 1E-06;

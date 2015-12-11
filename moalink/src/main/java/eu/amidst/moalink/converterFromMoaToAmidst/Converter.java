@@ -1,6 +1,5 @@
 package eu.amidst.moalink.converterFromMoaToAmidst;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.StateSpaceType;
@@ -72,7 +71,7 @@ public final class Converter {
      * @return a {@link Variable} object that represents the class variable.
      */
     public static Variable getClassVariable(InstancesHeader modelContext, Attributes atts){
-        Variables variables = ModelFactory.newVariables(atts);
+        Variables variables = new Variables(atts);
         String className = modelContext.classAttribute().name();
         return variables.getVariableByName(className);
     }

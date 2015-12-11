@@ -1,10 +1,9 @@
 package eu.amidst.core.models;
 
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -19,9 +18,9 @@ public class DAGTest {
 
         ARFFDataReader reader = new ARFFDataReader();
         reader.loadFromFile("datasets/dataWeka/contact-lenses.arff");
-        Variables variables = ModelFactory.newVariables(reader.getAttributes());
-        DAG dag = ModelFactory.newDAG(variables);
-        DAG dag2 = ModelFactory.newDAG(variables);
+        Variables variables = new Variables(reader.getAttributes());
+        DAG dag = new DAG(variables);
+        DAG dag2 = new DAG(variables);
 
         variables = dag.getVariables();
         Variable A = variables.getVariableById(0);

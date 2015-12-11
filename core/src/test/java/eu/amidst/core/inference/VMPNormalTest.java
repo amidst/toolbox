@@ -2,7 +2,6 @@ package eu.amidst.core.inference;
 
 //import cern.jet.random.Normal;
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
@@ -49,14 +48,14 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 2 Guassian variables A->B
     public static void test2() throws IOException, ClassNotFoundException{
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -130,17 +129,17 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables A->C<-B
     public static void test3() throws IOException, ClassNotFoundException{
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         Normal distB = bn.getConditionalDistribution(varB);
@@ -240,17 +239,17 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables A->C<-B  And C is Observed
     public static void test4() throws IOException, ClassNotFoundException{
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         Normal distB = bn.getConditionalDistribution(varB);
@@ -342,17 +341,17 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables such that C has two children A and B: i.e., C->A and C->B
     public static void test5() throws IOException, ClassNotFoundException{
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -450,17 +449,17 @@ public class VMPNormalTest extends TestCase {
     //In this test, Both A and B are observed
     public static void test6() throws IOException, ClassNotFoundException{
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         ConditionalLinearGaussian distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -543,17 +542,17 @@ public class VMPNormalTest extends TestCase {
     //Test with a BN containing 3 Guassian variables with a dag structure defined as A->B->C
     public static void test7() throws IOException, ClassNotFoundException{
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);
@@ -653,17 +652,17 @@ public class VMPNormalTest extends TestCase {
     //In this test, variable B is observed
     public static void test8() throws IOException, ClassNotFoundException{
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
         Variable varC = variables.newGaussianVariable("C");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Normal distA = bn.getConditionalDistribution(varA);
         ConditionalLinearGaussian distB = bn.getConditionalDistribution(varB);

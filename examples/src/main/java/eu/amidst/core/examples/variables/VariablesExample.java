@@ -11,7 +11,6 @@
 package eu.amidst.core.examples.variables;
 
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
@@ -30,7 +29,7 @@ public class VariablesExample {
     public static void main(String[] args) throws Exception {
 
         //We first create an empty Variables object
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
 
         //We invoke the "new" methods of the object Variables to create new variables.
         //Now we create a Gaussian variables

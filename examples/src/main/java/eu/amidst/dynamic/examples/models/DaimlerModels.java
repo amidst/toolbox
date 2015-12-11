@@ -11,14 +11,13 @@ package eu.amidst.dynamic.examples.models;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,7 +81,7 @@ public final class DaimlerModels {
         attributeList.add(attOLATSIGMA);
         attributeList.add(attOLATMEAS);
 
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+        DynamicVariables dynamicVariables = new DynamicVariables();
 
         Variable vlatSIGMA = dynamicVariables.newDynamicVariable(attVLATSIGMA);
         Variable vlatMEAS = dynamicVariables.newDynamicVariable(attVLATMEAS);
@@ -125,7 +124,7 @@ public final class DaimlerModels {
          *
          */
 
-        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
         dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatSIGMA);
         dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatREAL);
@@ -165,7 +164,7 @@ public final class DaimlerModels {
          * 3. The network is printed and we can have look at the kind of distributions stored in the BN object. Similarly
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dynamicBayesianNetwork = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
         DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/HuginDaimlerLEAcceleration.dbn");

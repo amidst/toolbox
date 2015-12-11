@@ -1,6 +1,5 @@
 package eu.amidst.scai2015;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.InferenceAlgorithm;
@@ -11,8 +10,8 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.MissingAssignment;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.evaluation.ThresholdCurve;
@@ -106,7 +105,7 @@ public class wrapperBN {
 
     public BayesianNetwork wrapperBNOneMonthNB(DataOnMemory<DataInstance> data){
 
-        Variables Vars = ModelFactory.newVariables(data.getAttributes());
+        Variables Vars = new Variables(data.getAttributes());
 
         //Split the whole data into training and testing
         List<DataOnMemory<DataInstance>> splitData = this.splitTrainAndTest(data,66.0);
@@ -238,7 +237,7 @@ public class wrapperBN {
 
     public BayesianNetwork train(DataOnMemory<DataInstance> data, Variables allVars, List<Variable> SF, boolean includeClassVariablePM){
 
-        DAG dag = ModelFactory.newDAG(allVars);
+        DAG dag = new DAG(allVars);
         if(includeClassVariablePM)
             dag.getParentSet(classVariable).addParent(classVariable_PM);
         /* Add classVariable to all SF*/
@@ -410,7 +409,7 @@ public class wrapperBN {
 
     void learnCajamarModel(DataStream<DataInstance> data) {
 
-        Variables Vars = ModelFactory.newVariables(data.getAttributes());
+        Variables Vars = new Variables(data.getAttributes());
         classVariable = Vars.getVariableById(Vars.getNumberOfVars()-1);
         classVariable_PM = Vars.getVariableById(Vars.getNumberOfVars()-2);
 
@@ -441,7 +440,7 @@ public class wrapperBN {
             BayesianNetwork bn = null;
             if(isOnlyPrediction()){
                 DataOnMemory<DataInstance> batch = monthsMinus12to0.poll();
-                Variables vars = ModelFactory.newVariables(batch.getAttributes());
+                Variables vars = new Variables(batch.getAttributes());
                 bn = train(batch, vars, vars.getListOfVariables(),this.isDynamicNB());
                 double auc = propagateAndTest(monthsMinus12to0, bn);
 

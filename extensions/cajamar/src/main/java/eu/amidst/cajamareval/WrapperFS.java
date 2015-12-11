@@ -1,6 +1,5 @@
 package eu.amidst.cajamareval;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
@@ -42,7 +41,7 @@ public class WrapperFS {
     Model modelType;
 
     private DAG learnNBdag(List<Variable> SF){
-        DAG dag = ModelFactory.newDAG(allVariables);
+        DAG dag = new DAG(allVariables);
         /* Add classVariable to all SF*/
         dag.getParentSets().stream()
                 .filter(parent -> SF.contains(parent.getMainVar()))
@@ -126,7 +125,7 @@ public class WrapperFS {
 
     private List<Variable> runWrapperFS(DataOnMemory<DataInstance> trainingData, DataOnMemory<DataInstance> testData){
 
-        allVariables = ModelFactory.newVariables(trainingData.getAttributes());
+        allVariables = new Variables(trainingData.getAttributes());
         this.classVariable = allVariables.getVariableByName(className);
 
         List<Variable> NSF = new ArrayList<>(allVariables.getListOfVariables()); // NSF: non selected features

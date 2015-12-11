@@ -22,7 +22,6 @@ import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -355,7 +354,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         BayesianNetwork bnTimeT = this.svbTimeT.getLearntBayesianNetwork();
         DynamicVariables dynamicVariables = this.dynamicDAG.getDynamicVariables();
 
-        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(this.dynamicDAG);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(this.dynamicDAG);
 
         for (Variable dynamicVariable : dynamicVariables) {
             ConditionalDistribution dynamicDist = dbn.getConditionalDistributionTime0(dynamicVariable);

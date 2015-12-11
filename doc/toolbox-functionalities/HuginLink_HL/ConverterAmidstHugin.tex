@@ -28,7 +28,7 @@ This is brief code fragment showing how to convert a BN from Amidst to Hugin for
 
 \begin{table}[H]
 \begin{tabular}{l} \hline
-\texttt{BayesianNetwork amidstBN = ModelFactory.newBayesianNetwork(dag);}\\
+\texttt{BayesianNetwork amidstBN = new BayesianNetwork(dag);}\\
 \texttt{Domain huginNetwork = ConverterToHugin.convertToHugin(amidstBN);}\\
 \texttt{huginNetwork.saveAsNet("networks/huginStaticBNHiddenExample.net");}\\ \hline
 

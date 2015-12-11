@@ -9,14 +9,13 @@
 package eu.amidst.dynamic.examples.models;
 
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 
@@ -67,7 +66,7 @@ public final class CajaMarModels {
          * 4. The created variables are dynamic. Here in AMIDST toolbox, it implies they have a temporal clone (similarly to Hugin).
          * This temporal clone is automatically created for each dynamic variable.
          */
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(data.getAttributes());
+        DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
 
         Variable defaulter = dynamicVariables.getVariableByName("DEFAULTER");
         Variable sex = dynamicVariables.getVariableByName("SEX");
@@ -98,7 +97,7 @@ public final class CajaMarModels {
          * 4. We can define temporal dependencies by referring to the temporal clones of the variables.
          *
          */
-        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
         dynamicDAG.setName("CajarMarModel");
 
@@ -152,7 +151,7 @@ public final class CajaMarModels {
          * to dynamic DAG, it is printed in two layers. The model for time 0 and the model from time t.
          */
 
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dynamicBayesianNetwork = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
 

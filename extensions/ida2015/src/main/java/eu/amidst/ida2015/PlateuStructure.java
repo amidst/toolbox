@@ -11,8 +11,8 @@ package eu.amidst.ida2015;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;

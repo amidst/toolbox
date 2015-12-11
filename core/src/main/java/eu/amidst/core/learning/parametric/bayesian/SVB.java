@@ -8,7 +8,6 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -479,12 +478,12 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
         if(!nonSequentialModel)
-            return ModelFactory.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+            return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
         else{
 
             this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
 
-            BayesianNetwork learntBN =  ModelFactory.newBayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+            BayesianNetwork learntBN =  new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
 
             this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPrior());
 
@@ -505,7 +504,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter){
-        return this.getPlateuStructure().getEFParameterPosterior(parameter).toUnivariateDistribution();
+        return this.getPlateuStructure().getEFVariablePosterior(parameter, 0).toUnivariateDistribution();
     }
 
 

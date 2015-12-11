@@ -30,7 +30,7 @@ It defines the dynamic Bayesian network graphical structure over a list of dynam
 \begin{table}[H]
 \begin{tabular}{l} \hline
 
-        \texttt{DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);}\\\\
+        \texttt{DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);}\\\\
         
         \texttt{dynamicDAG.getParentSetTimeT(observedTRQ).addParent(observedWOB);}\\
         \texttt{dynamicDAG.getParentSetTimeT(observedTRQ).addParent(observedRPMB);}\\

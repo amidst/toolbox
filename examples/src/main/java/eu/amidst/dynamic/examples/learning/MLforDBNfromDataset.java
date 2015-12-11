@@ -3,7 +3,6 @@ package eu.amidst.dynamic.examples.learning;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.learning.dynamic.MaximumLikelihoodForDBN;
@@ -30,13 +29,13 @@ public class MLforDBNfromDataset {
     public static DynamicDAG getNaiveBayesStructure(Attributes attributes, int classIndex){
 
         //We create a Variables object from the attributes of the data stream
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(attributes);
+        DynamicVariables dynamicVariables = new DynamicVariables(attributes);
 
         //We define the predicitive class variable
         Variable classVar = dynamicVariables.getVariableById(classIndex);
 
         //Then, we create a DAG object with the defined model header
-        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
         //We set the links of the DAG.
         dag.getParentSetsTimeT().stream()

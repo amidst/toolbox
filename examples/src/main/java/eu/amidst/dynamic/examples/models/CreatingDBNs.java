@@ -10,7 +10,6 @@ package eu.amidst.dynamic.examples.models;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
@@ -40,8 +39,8 @@ public class CreatingDBNs {
          *
          * 3. We can extract the Variable objects by using the method getVariableByName();
          */
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(data.getAttributes());
-        DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
         Variable A = dynamicVariables.getVariableByName("A");
         Variable B = dynamicVariables.getVariableByName("B");
@@ -105,7 +104,7 @@ public class CreatingDBNs {
          *
          * 3. The network is printed and we can have a look at the kind of distributions stored in the DBN object.
          */
-        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
         System.out.printf(dbn.toString());
 
         /**

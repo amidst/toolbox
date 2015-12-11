@@ -45,8 +45,6 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
      */
     public EF_LearningBayesianNetwork(DAG dag){
 
-        this.non_expand = new ArrayList<>();
-
         parametersVariables = new ParameterVariables(dag.getVariables().getNumberOfVars());
 
         distributionList =
@@ -68,8 +66,6 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
      * @param distributions a list of {@link EF_ConditionalDistribution} objects.
      */
     public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions){
-
-        this.non_expand = new ArrayList<>();
 
         parametersVariables = new ParameterVariables(distributions.size());
 

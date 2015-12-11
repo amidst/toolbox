@@ -8,7 +8,6 @@
 
 package eu.amidst.ida2015;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -20,8 +19,8 @@ import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +72,7 @@ public class NaiveBayesMultinomialHiddenConceptDrift {
 
 
     private void buildGlobalDAG(){
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -82,7 +81,7 @@ public class NaiveBayesMultinomialHiddenConceptDrift {
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (Attribute att : data.getAttributes()) {
             if (att.getName().equals(className))

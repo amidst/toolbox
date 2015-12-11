@@ -9,7 +9,6 @@ import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
@@ -62,8 +61,8 @@ public class DBNConverterToAmidst {
         }
 
         Attributes attributes = new Attributes(listOfAttributes);
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(attributes);
-        DynamicDAG dynamicDAG  = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicVariables dynamicVariables = new DynamicVariables(attributes);
+        DynamicDAG dynamicDAG  = new DynamicDAG(dynamicVariables);
 
         // Set the ParentSet at time T. ParentSet at time 0 are automatically created at the same time.
         for(int i=0;i<numNodes;i++){
@@ -108,7 +107,7 @@ public class DBNConverterToAmidst {
                 }
             }
         }
-        this.amidstDBN = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+        this.amidstDBN = new DynamicBayesianNetwork(dynamicDAG);
     }
 
     /**
