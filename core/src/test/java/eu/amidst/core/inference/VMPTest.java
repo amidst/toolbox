@@ -1,6 +1,5 @@
 package eu.amidst.core.inference;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
@@ -11,8 +10,8 @@ import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -25,15 +24,15 @@ public class VMPTest extends TestCase {
     // A -> B
     public static void test1() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -115,15 +114,15 @@ public class VMPTest extends TestCase {
     // A -> (B=0.0)
     public static void test2() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -160,17 +159,17 @@ public class VMPTest extends TestCase {
     // (A,B) -> C
     public static void test3() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial distB = bn.getConditionalDistribution(varB);
@@ -265,17 +264,17 @@ public class VMPTest extends TestCase {
     // (A,B) -> (C==0)
     public static void test4() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial distB = bn.getConditionalDistribution(varB);
@@ -361,18 +360,18 @@ public class VMPTest extends TestCase {
     //A->C, B->C, A->B
     public static void test5() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
         dag.getParentSet(varB).addParent(varA);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
 
         bn.randomInitialization(new Random(0));
@@ -437,17 +436,17 @@ public class VMPTest extends TestCase {
     //C->A, C->B
     public static void test6() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -511,19 +510,19 @@ public class VMPTest extends TestCase {
     //C->A, C->B, B->A
     public static void test7() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
         dag.getParentSet(varB).addParent(varA);
 
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -586,17 +585,17 @@ public class VMPTest extends TestCase {
     //C->A, C->B; C=0
     public static void test8() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
 
 
@@ -654,17 +653,17 @@ public class VMPTest extends TestCase {
     //C->A, C->B, A=0
     public static void test9() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -720,17 +719,17 @@ public class VMPTest extends TestCase {
     //C->A, C->B, A=0, B=0
     public static void test10() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varC);
         dag.getParentSet(varB).addParent(varC);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial_MultinomialParents distA = bn.getConditionalDistribution(varA);
         Multinomial_MultinomialParents distB = bn.getConditionalDistribution(varB);
@@ -770,18 +769,18 @@ public class VMPTest extends TestCase {
     //A->B->C
     public static void test11() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varB).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         bn.randomInitialization(new Random(0));
 
@@ -845,17 +844,17 @@ public class VMPTest extends TestCase {
     //A->B->C, B=1.0
     public static void test12() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         Variable varA = variables.newMultionomialVariable("A", 2);
         Variable varB = variables.newMultionomialVariable("B", 2);
         Variable varC = variables.newMultionomialVariable("C", 2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         dag.getParentSet(varC).addParent(varA);
         dag.getParentSet(varC).addParent(varB);
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         Multinomial distA = bn.getConditionalDistribution(varA);
         Multinomial distB = bn.getConditionalDistribution(varB);
@@ -949,7 +948,7 @@ public class VMPTest extends TestCase {
 
     public static void test13() {
 
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
 
         Variable varA = variables.newMultionomialVariable("A", 4);
 
@@ -958,7 +957,7 @@ public class VMPTest extends TestCase {
             variables.newMultionomialVariable(i + "", 4);
         }
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (int i = 0; i < nVar; i++) {
             //dag.getParentSet(variables.getVariableByName(i+"")).addParent(varA);
@@ -966,7 +965,7 @@ public class VMPTest extends TestCase {
 
         }
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
 
         VMP vmp = new VMP();

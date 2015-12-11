@@ -12,7 +12,6 @@
 package eu.amidst.scai2015;
 
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
@@ -38,7 +37,7 @@ public class DataGeneration {
         for (int M = 0; M < 5; M++) {
 
 
-            Variables vars = ModelFactory.newVariables();
+            Variables vars = new Variables();
 
             vars.newGaussianVariable("SEQUENCE_ID");
             vars.newGaussianVariable("TIME_ID");
@@ -54,13 +53,13 @@ public class DataGeneration {
 
             vars.newMultionomialVariable("Class", 2);
 
-            DAG dag = ModelFactory.newDAG(vars);
+            DAG dag = new DAG(vars);
 
             for (int i = 0; i < connected[M].length; i++) {
                 dag.getParentSet(vars.getVariableById(connected[M][i])).addParent(vars.getVariableByName("Class"));
             }
 
-            BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+            BayesianNetwork bn = new BayesianNetwork(dag);
 
             bn.randomInitialization(new Random(0));
 

@@ -2,14 +2,9 @@ package eu.amidst.dynamic.learning;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
-import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
-import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.dynamic.learning.dynamic.BayesianLearningEngineForDBN;
 import eu.amidst.dynamic.learning.dynamic.MaximumLikelihoodForDBN;
 import eu.amidst.dynamic.learning.dynamic.StreamingVariationalBayesVMPForDBN;
@@ -18,6 +13,7 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -266,7 +262,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             //Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             //Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -276,7 +272,7 @@ public class SVBForDBNTest extends TestCase {
             Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(varC);
             dynamicDAG.getParentSetTimeT(varB).addParent(varA);
@@ -294,7 +290,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i+10));
 
@@ -396,7 +392,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 1; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             //Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             //Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -406,7 +402,7 @@ public class SVBForDBNTest extends TestCase {
             //Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             dynamicDAG.getParentSetTimeT(varA).addParent(varC);
             //dynamicDAG.getParentSetTimeT(varB).addParent(varA);
@@ -424,7 +420,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i+10));
 
@@ -522,7 +518,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 1; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             //Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             //Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -532,7 +528,7 @@ public class SVBForDBNTest extends TestCase {
             Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(varC);
             dynamicDAG.getParentSetTimeT(varB).addParent(varA);
@@ -550,7 +546,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i + 10));
 
@@ -632,7 +628,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 1; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             //Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             //Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -642,7 +638,7 @@ public class SVBForDBNTest extends TestCase {
             Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(varC);
             dynamicDAG.getParentSetTimeT(varB).addParent(varA);
@@ -660,7 +656,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i + 10));
 
@@ -748,7 +744,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             //Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -758,7 +754,7 @@ public class SVBForDBNTest extends TestCase {
             //Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(classVar);
             //dynamicDAG.getParentSetTimeT(varB).addParent(classVar);
@@ -775,7 +771,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 
@@ -855,7 +851,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -865,7 +861,7 @@ public class SVBForDBNTest extends TestCase {
             //Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(classVar);
             //dynamicDAG.getParentSetTimeT(varB).addParent(classVar);
@@ -882,7 +878,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 
@@ -962,7 +958,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 5; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -972,7 +968,7 @@ public class SVBForDBNTest extends TestCase {
             //Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(classVar);
             //dynamicDAG.getParentSetTimeT(varB).addParent(classVar);
@@ -989,7 +985,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 
@@ -1056,7 +1052,7 @@ public class SVBForDBNTest extends TestCase {
         for (int i = 0; i < 1; i++) {
 
 
-            DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+            DynamicVariables dynamicVariables = new DynamicVariables();
 
             Variable varA = dynamicVariables.newMultinomialDynamicVariable("A",2);
             Variable varB = dynamicVariables.newMultinomialDynamicVariable("B",2);
@@ -1066,7 +1062,7 @@ public class SVBForDBNTest extends TestCase {
             //Variable varB = dynamicVariables.newGaussianDynamicVariable("B");
             //Variable varC = dynamicVariables.newGaussianDynamicVariable("C");
 
-            DynamicDAG dynamicDAG = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+            DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
 
             //dynamicDAG.getParentSetTimeT(varA).addParent(classVar);
             //dynamicDAG.getParentSetTimeT(varB).addParent(classVar);
@@ -1083,7 +1079,7 @@ public class SVBForDBNTest extends TestCase {
 
 
             //The number of states for the class variable is equal to 2
-            DynamicBayesianNetwork dynamicNB = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+            DynamicBayesianNetwork dynamicNB = new DynamicBayesianNetwork(dynamicDAG);
 
             dynamicNB.randomInitialization(new Random(i));
 

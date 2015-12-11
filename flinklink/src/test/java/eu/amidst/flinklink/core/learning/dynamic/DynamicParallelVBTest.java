@@ -12,7 +12,6 @@
 package eu.amidst.flinklink.core.learning.dynamic;
 
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
@@ -50,13 +49,13 @@ public class DynamicParallelVBTest extends TestCase {
 
     public static void createDBN1(boolean connect) throws Exception {
 
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+        DynamicVariables dynamicVariables = new DynamicVariables();
         Variable classVar = dynamicVariables.newMultinomialDynamicVariable("C", 2);
 
         for (int i = 0; i < 2; i++) {
             dynamicVariables.newMultinomialDynamicVariable("A" + i, 2);
         }
-        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
         for (int i = 0; i < 2; i++) {
             dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
@@ -66,7 +65,7 @@ public class DynamicParallelVBTest extends TestCase {
 
         dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
         dag.setName("dbn1");
-        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dag);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
@@ -75,13 +74,13 @@ public class DynamicParallelVBTest extends TestCase {
 
     public static void createDBN2() throws Exception {
 
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+        DynamicVariables dynamicVariables = new DynamicVariables();
         Variable classVar = dynamicVariables.newMultinomialDynamicVariable("C", 2);
 
         for (int i = 0; i < 2; i++) {
             dynamicVariables.newGaussianDynamicVariable("A" + i);
         }
-        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
         for (int i = 0; i < 2; i++) {
             dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
@@ -90,7 +89,7 @@ public class DynamicParallelVBTest extends TestCase {
 
         dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
         dag.setName("dbn2");
-        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dag);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
@@ -99,13 +98,13 @@ public class DynamicParallelVBTest extends TestCase {
 
     public static void createDBN3() throws Exception {
 
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables();
+        DynamicVariables dynamicVariables = new DynamicVariables();
         Variable classVar = dynamicVariables.newGaussianDynamicVariable("C");
 
         for (int i = 0; i < 2; i++) {
             dynamicVariables.newGaussianDynamicVariable("A" + i);
         }
-        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
         for (int i = 0; i < 2; i++) {
             dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
@@ -114,7 +113,7 @@ public class DynamicParallelVBTest extends TestCase {
 
         dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
         dag.setName("dbn1");
-        DynamicBayesianNetwork dbn = DynamicModelFactory.newDynamicBayesianNetwork(dag);
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 

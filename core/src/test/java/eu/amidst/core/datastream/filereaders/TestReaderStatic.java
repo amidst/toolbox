@@ -10,7 +10,6 @@
 package eu.amidst.core.datastream.filereaders;
 
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -45,7 +44,7 @@ public class TestReaderStatic {
         dataOnDiskReader = new DataStreamFromFile(reader);
         dataOnDiskIterator = dataOnDiskReader.iterator();
         attributes = dataOnDiskReader.getAttributes();
-        variables = ModelFactory.newVariables(attributes);
+        variables = new Variables(attributes);
     }
 
     @Test

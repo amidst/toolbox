@@ -1,6 +1,5 @@
 package eu.amidst.flinklink.examples.cim2015;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamWriter;
@@ -12,7 +11,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.flinklink.core.learning.parametric.ParallelMaximumLikelihood;
+import  eu.amidst.flinklink.core.learning.parametric.*;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.io.IOException;
@@ -151,7 +150,7 @@ public class ExperimentsParallelML {
         /* ********** */
         /* Create DAG */
         /* Create all variables */
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
 
         IntStream.range(0, getNumDiscVars() -1)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, getNumStates()));
@@ -166,7 +165,7 @@ public class ExperimentsParallelML {
         //if(numStatesHiddenDiscVars > 0)
         Variable discreteHiddenVar = variables.newMultionomialVariable("DiscreteSPVar", getNumStatesHiddenDiscVars());
 
-        dag = ModelFactory.newDAG(variables);
+        dag = new DAG(variables);
 
         /* Link variables */
         dag.getParentSets().stream()
@@ -192,7 +191,7 @@ public class ExperimentsParallelML {
     private static void sampleBayesianNetwork()  throws IOException {
 
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(0);

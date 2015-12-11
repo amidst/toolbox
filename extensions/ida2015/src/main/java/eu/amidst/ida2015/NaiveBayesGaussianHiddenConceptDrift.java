@@ -8,7 +8,6 @@
 
 package eu.amidst.ida2015;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -93,7 +92,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
     }
 
     private void buildGlobalDAG(){
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -103,7 +102,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (Attribute att : data.getAttributes()) {
             if (att.getName().equals(className))
@@ -134,7 +133,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
     private void buildLocalDAG(){
 
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -146,7 +145,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (Attribute att : data.getAttributes()) {
             if (att.getName().equals(className))
@@ -170,7 +169,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
     private void buildGlobalLocalDAG(){
 
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
@@ -185,7 +184,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (Attribute att : data.getAttributes()) {
             if (att.getName().equals(className))

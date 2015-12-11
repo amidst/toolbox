@@ -27,72 +27,496 @@ package eu.amidst.dynamic.variables;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.*;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by afa on 02/07/14.
  */
-public interface DynamicVariables extends Iterable<Variable> {
+public class DynamicVariables  implements Iterable<Variable>, Serializable {
+
+    private static final long serialVersionUID = -4959625141445606681L;
 
     public static final String INTERFACE_SUFFIX = "_Interface";
+    
+    private List<Variable> nonInterfaceVariables;
+    private List<Variable> interfaceVariables;
+
+    private Map<String, Integer> mapping;
+
+    public DynamicVariables() {
+        this.nonInterfaceVariables = new ArrayList();
+        this.interfaceVariables = new ArrayList();
+        this.mapping = new ConcurrentHashMap<>();
+    }
+
+    public DynamicVariables(Attributes atts) {
+
+        this.nonInterfaceVariables = new ArrayList<>();
+        this.interfaceVariables = new ArrayList<>();
+        this.mapping = new ConcurrentHashMap<>();
+
+        for (Attribute att : atts.getListOfNonSpecialAttributes()) {
+            VariableBuilder builder = new VariableBuilder(att);
+            VariableImplementation var = new VariableImplementation(builder, nonInterfaceVariables.size());
+            if (mapping.containsKey(var.getName())) {
+                throw new IllegalArgumentException("Attribute list contains duplicated names");
+            }
+            this.mapping.put(var.getName(), var.getVarID());
+            nonInterfaceVariables.add(var.getVarID(), var);
+
+
+            VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
+            var.setInterfaceVariable(interfaceVariable);
+            interfaceVariables.add(var.getVarID(), interfaceVariable);
+        }
+    }
+
+    /**
+     * Constructor where the distribution type of random variables is provided as an argument.
+     *
+     */
+    public DynamicVariables(Attributes atts, Map<Attribute, DistributionTypeEnum> typeDists) {
+
+        this.nonInterfaceVariables = new ArrayList<>();
+        this.interfaceVariables = new ArrayList<>();
+
+
+        for (Attribute att : atts.getListOfNonSpecialAttributes()) {
+            VariableBuilder builder;
+            if (typeDists.containsKey(att)) {
+                builder = new VariableBuilder(att, typeDists.get(att));
+            }else{
+                builder = new VariableBuilder(att);
+            }
+
+            VariableImplementation var = new VariableImplementation(builder, nonInterfaceVariables.size());
+            if (mapping.containsKey(var.getName())) {
+                throw new IllegalArgumentException("Attribute list contains duplicated names");
+            }
+            this.mapping.put(var.getName(), var.getVarID());
+            nonInterfaceVariables.add(var.getVarID(), var);
+
+            VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
+            var.setInterfaceVariable(interfaceVariable);
+            interfaceVariables.add(var.getVarID(), interfaceVariable);
+
+        }
+    }
 
     /**
      * Sets a new set of attributes. Links current variables with this new set by matching
      * variable names with attributes names.
-     *
      * @param attributes an object of class {@link Attributes}
      */
-    void setAttributes(Attributes attributes);
+    public void setAttributes(Attributes attributes){
+        for (Variable variable : nonInterfaceVariables) {
+            VariableImplementation variableImplementation = (VariableImplementation)variable;
+            variableImplementation.setAttribute(attributes.getAttributeByName(variable.getName()));
+        }
 
-    Variable getInterfaceVariable(Variable var);
+        for (Variable variable : interfaceVariables) {
+            VariableImplementation variableImplementation = (VariableImplementation)variable;
+            variableImplementation.setAttribute(attributes.getAttributeByName(getVariableFromInterface(variable).getName()));
+        }
 
-    Variable getVariableFromInterface(Variable var);
+    }
 
-    Variable newMultinomialLogisticDynamicVariable(Attribute att);
+    public Variable getInterfaceVariable(Variable var){
+        return interfaceVariables.get(var.getVarID());
+    }
 
-    Variable newMultinomialLogisticDynamicVariable(String name, int nOfStates);
+    public Variable getVariableFromInterface(Variable var){
+        return nonInterfaceVariables.get(var.getVarID());
+    }
 
-    Variable newMultinomialLogisticDynamicVariable(String name, List<String> states);
+    /*
+    public Variable addIndicatorDynamicVariable(Variable var) {
+        if (!var.isObservable()) {
+            throw new IllegalArgumentException("An indicator variable should be created from an observed variable");
+        }
 
-    Variable newMultionomialDynamicVariable(Attribute att);
+        if (var.getStateSpace().getStateSpaceType()!=StateSpaceType.REAL) {
+            throw new IllegalArgumentException("An indicator variable should be created from an real variable");
+        }
 
-    Variable newMultinomialDynamicVariable(String name, int nOfStates);
+        VariableBuilder builder = new VariableBuilder(var.getAttribute());
+        builder.setName(var.getName()+"_Indicator");
+        builder.setDistributionType(DistType.INDICATOR);
 
-    Variable newMultinomialDynamicVariable(String name, List<String> states);
+        VariableImplementation varNew = new VariableImplementation(builder, nonInterfaceVariables.size());
+        if (mapping.containsKey(varNew.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(varNew.getName(), varNew.getVarID());
+        nonInterfaceVariables.add(varNew);
 
-    Variable newGaussianDynamicVariable(Attribute att);
+        VariableImplementation interfaceVariable = new VariableImplementation(varNew);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(varNew.getVarID(),interfaceVariable);
 
-    Variable newGaussianDynamicVariable(String name);
+        return varNew;
 
-    Variable newDynamicVariable(Attribute att);
+    }
+*/
 
-    Variable newDynamicVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType);
+    public Variable newMultinomialLogisticDynamicVariable(Attribute att) {
+        return this.newDynamicVariable(att, DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
+    }
 
-    Variable newDynamicVariable(Attribute att, DistributionTypeEnum distributionTypeEnum);
+    public Variable newMultinomialLogisticDynamicVariable(String name, int nOfStates) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(nOfStates));
+    }
 
-    Variable newDynamicVariable(VariableBuilder builder);
+    public Variable newMultinomialLogisticDynamicVariable(String name, List<String> states) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(states));
+    }
 
-    Variable newRealDynamicVariable(Variable var);
+    public Variable newMultionomialDynamicVariable(Attribute att) {
+        return this.newDynamicVariable(att, DistributionTypeEnum.MULTINOMIAL);
+    }
 
-    List<Variable> getListOfDynamicVariables();
+    public Variable newMultinomialDynamicVariable(String name, int nOfStates) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(nOfStates));
+    }
 
-    List<Variable> getListOfDynamicAndInterfaceVariables();
+    public Variable newMultinomialDynamicVariable(String name, List<String> states) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(states));
+    }
 
-    Variable getVariableById(int varID);
+    public Variable newGaussianDynamicVariable(Attribute att) {
+        return this.newDynamicVariable(att, DistributionTypeEnum.NORMAL);
+    }
 
-    Variable getVariableByName(String name);
+    public Variable newGaussianDynamicVariable(String name) {
+        return this.newDynamicVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
+    }
 
-    Variable getInterfaceVariableByName(String name);
 
-    int getNumberOfVars();
+    public Variable newDynamicVariable(Attribute att) {
 
-    void block();
+        VariableImplementation var = new VariableImplementation(new VariableBuilder(att), nonInterfaceVariables.size());
+        if (mapping.containsKey(var.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(var.getName(), var.getVarID());
+        nonInterfaceVariables.add(var);
 
-    Variables toVariablesTime0();
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
 
-    Variables toVariablesTimeT();
+        return var;
+    }
 
-    boolean equals(DynamicVariables variables);
+    public Variable newDynamicVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
+        VariableBuilder variableBuilder = new VariableBuilder();
+        variableBuilder.setName(name);
+        variableBuilder.setDistributionType(distributionTypeEnum);
+        variableBuilder.setStateSpaceType(stateSpaceType);
+        variableBuilder.setObservable(false);
+        VariableImplementation var = new VariableImplementation(variableBuilder, nonInterfaceVariables.size());
+        if (mapping.containsKey(var.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(var.getName(), var.getVarID());
+        nonInterfaceVariables.add(var);
 
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
+
+        return var;
+    }
+
+    public Variable newDynamicVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
+        VariableBuilder variableBuilder = new VariableBuilder(att);
+        variableBuilder.setDistributionType(distributionTypeEnum);
+        VariableImplementation var = new VariableImplementation(variableBuilder, nonInterfaceVariables.size());
+        if (mapping.containsKey(var.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(var.getName(), var.getVarID());
+        nonInterfaceVariables.add(var);
+
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
+        var.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
+
+        return var;
+    }
+
+    public Variable newDynamicVariable(VariableBuilder builder) {
+
+        VariableImplementation var = new VariableImplementation(builder, nonInterfaceVariables.size());
+        if (mapping.containsKey(var.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(var.getName(), var.getVarID());
+        nonInterfaceVariables.add(var);
+
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
+        interfaceVariables.add(var.getVarID(), interfaceVariable);
+
+        return var;
+    }
+
+    public Variable newRealDynamicVariable(Variable var){
+        if (!var.isObservable()) {
+            throw new IllegalArgumentException("A Real variable should be created from an observed variable");
+        }
+
+        if (var.getStateSpaceType().getStateSpaceTypeEnum()!= StateSpaceTypeEnum.REAL) {
+            throw new IllegalArgumentException("An Real variable should be created from a real variable");
+        }
+
+        VariableBuilder builder = new VariableBuilder(var.getAttribute());
+        builder.setName(var.getName()+"_Real");
+
+        VariableImplementation varNew = new VariableImplementation(builder, nonInterfaceVariables.size());
+        if (mapping.containsKey(varNew.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(varNew.getName(), varNew.getVarID());
+        nonInterfaceVariables.add(varNew);
+
+        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
+        varNew.setInterfaceVariable(interfaceVariable);
+        interfaceVariables.add(varNew.getVarID(), interfaceVariable);
+
+        return varNew;
+    }
+
+    public List<Variable> getListOfDynamicVariables() {
+        return this.nonInterfaceVariables;
+    }
+
+    //public List<Variable> getListOfInterfaceVariables() {
+    //    return this.interfaceVariables;
+    //}
+
+    public Variable getVariableById(int varID) {
+       return this.nonInterfaceVariables.get(varID);
+    }
+
+
+    //public Variable getInterfaceVariablesById(int varID) {
+    //    return this.interfaceVariables.get(varID);
+    //}
+
+    public Variable getVariableByName(String name) {
+        Integer index = this.mapping.get(name);
+        if (index==null) {
+            throw new UnsupportedOperationException("Variable " + name + " is not part of the list of Variables");
+        }
+        else {
+            return this.getVariableById(index.intValue());
+        }
+    }
+
+    public Variable getInterfaceVariableByName(String name) {
+        return this.getInterfaceVariable(this.getVariableByName(name));
+    }
+
+    public int getNumberOfVars() {
+        return this.nonInterfaceVariables.size();
+    }
+
+    public void block(){
+        //this.nonInterfaceVariables = Collections.unmodifiableList(this.nonInterfaceVariables);
+    }
+
+    @Override
+    public Iterator<Variable> iterator() {
+        return this.nonInterfaceVariables.iterator();
+    }
+
+    public Variables toVariablesTimeT(){
+
+        Variables variables = new Variables();
+
+        for (Variable nonInterfaceVariable : nonInterfaceVariables) {
+            variables.newVariable(nonInterfaceVariable.getVariableBuilder());
+        }
+
+        for (Variable interfaceVariable : interfaceVariables) {
+            variables.newVariable(interfaceVariable.getVariableBuilder());
+        }
+
+        return variables;
+    }
+
+
+    public Variables toVariablesTime0(){
+
+        Variables variables = new Variables();
+
+        for (Variable nonInterfaceVariable : nonInterfaceVariables) {
+            variables.newVariable(nonInterfaceVariable.getVariableBuilder());
+        }
+
+        return variables;
+    }
+
+    //TODO Implements hashCode method!!
+    private static class VariableImplementation implements Variable, Serializable {
+
+        private static final long serialVersionUID = 7934186475276412196L;
+
+        private String name;
+        private int varID;
+        private boolean observable;
+        private StateSpaceType stateSpaceType;
+        private DistributionTypeEnum distributionTypeEnum;
+        private DistributionType distributionType;
+        private Attribute attribute;
+        private final boolean isInterfaceVariable;
+        private Variable interfaceVariable;
+        private int numberOfStates = -1;
+
+        /*
+         * Constructor for a Variable (not a interface Variable)
+         */
+        public VariableImplementation(VariableBuilder builder, int varID) {
+            this.name = builder.getName();
+            this.varID = varID;
+            this.observable = builder.isObservable();
+            this.stateSpaceType = builder.getStateSpaceType();
+            this.distributionTypeEnum = builder.getDistributionType();
+            this.attribute = builder.getAttribute();
+            this.isInterfaceVariable = false;
+
+            if (this.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
+            }
+
+            this.distributionType=distributionTypeEnum.newDistributionType(this);
+        }
+
+
+        /*
+         * Constructor for an Interface (based on a variable)
+         */
+        private VariableImplementation(Variable variable) {
+            this.name = variable.getName()+INTERFACE_SUFFIX;
+            this.varID = variable.getVarID();
+            this.observable = variable.isObservable();
+            this.stateSpaceType = variable.getStateSpaceType();
+            this.distributionTypeEnum = variable.getDistributionTypeEnum();
+            this.attribute = variable.getAttribute();
+            this.isInterfaceVariable = true;
+
+            if (this.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
+                this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
+            }
+
+            this.distributionType=distributionTypeEnum.newDistributionType(this);
+
+        }
+
+        public static VariableImplementation newInterfaceVariable(Variable variable){
+            return new VariableImplementation(variable);
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public int getVarID() {
+            return varID;
+        }
+
+        public boolean isObservable() {
+            return observable;
+        }
+
+        @Override
+        public <E extends StateSpaceType> E getStateSpaceType() {
+            return (E) stateSpaceType;
+        }
+
+        @Override
+        public int getNumberOfStates() {
+            return this.numberOfStates;
+        }
+
+        public DistributionTypeEnum getDistributionTypeEnum() {
+            return distributionTypeEnum;
+        }
+
+        @Override
+        public <E extends DistributionType> E getDistributionType() {
+            return (E)this.distributionType;
+        }
+
+        @Override
+        public boolean isInterfaceVariable(){
+            return isInterfaceVariable;
+        }
+
+        @Override
+        public Variable getInterfaceVariable(){
+            return this.interfaceVariable;
+        }
+
+        private void setInterfaceVariable(Variable interfaceVariable_){
+            this.interfaceVariable = interfaceVariable_;
+        }
+
+        public Attribute getAttribute(){return attribute;}
+
+        public void setAttribute(Attribute att) {
+            this.attribute=att;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public VariableBuilder getVariableBuilder(){
+            VariableBuilder variableBuilder = new VariableBuilder();
+            variableBuilder.setAttribute(this.getAttribute());
+            variableBuilder.setDistributionType(this.getDistributionTypeEnum());
+            variableBuilder.setName(this.getName());
+            variableBuilder.setObservable(this.observable);
+            variableBuilder.setStateSpaceType(this.getStateSpaceType());
+
+            return variableBuilder;
+        }
+
+        public boolean isDynamicVariable(){
+            return true;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o){
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()){
+                return false;
+            }
+
+            Variable var = (Variable) o;
+
+            return this.isInterfaceVariable()==var.isInterfaceVariable() && this.getVarID()==var.getVarID();
+        }
+
+
+        @Override
+        public int hashCode(){
+            return this.name.hashCode();
+        }
+
+
+        @Override
+        public boolean isParameterVariable() {
+            return false;
+        }
+
+    }
 }

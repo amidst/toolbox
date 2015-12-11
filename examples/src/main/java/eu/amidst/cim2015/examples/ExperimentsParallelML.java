@@ -1,7 +1,6 @@
 package eu.amidst.cim2015.examples;
 
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
@@ -194,7 +193,7 @@ public final class ExperimentsParallelML {
         /* ********** */
         /* Create DAG */
         /* Create all variables */
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
 
         IntStream.range(0, getNumDiscVars() -1)
                 .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, getNumStates()));
@@ -209,7 +208,7 @@ public final class ExperimentsParallelML {
         //if(numStatesHiddenDiscVars > 0)
         Variable discreteHiddenVar = variables.newMultionomialVariable("DiscreteSPVar", getNumStatesHiddenDiscVars());
 
-        dag = ModelFactory.newDAG(variables);
+        dag = new DAG(variables);
 
         /* Link variables */
         dag.getParentSets().stream()
@@ -234,7 +233,7 @@ public final class ExperimentsParallelML {
     private static void sampleBayesianNetwork()  throws IOException {
 
 
-        BayesianNetwork bn = ModelFactory.newBayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(0);

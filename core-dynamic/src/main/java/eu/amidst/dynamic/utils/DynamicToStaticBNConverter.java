@@ -1,6 +1,5 @@
 package eu.amidst.dynamic.utils;
 
-import eu.amidst.core.ModelFactory;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -44,7 +43,7 @@ public class DynamicToStaticBNConverter {
             return null;
 
         DynamicVariables dynamicVariables = dbn.getDynamicVariables();
-        Variables variables = ModelFactory.newVariables();
+        Variables variables = new Variables();
         DynamicDAG dynamicDAG = dbn.getDynamicDAG();
 
         /*
@@ -52,19 +51,19 @@ public class DynamicToStaticBNConverter {
          * 1st STEP: ADD REPLICATED VARIABLES
          */
         // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
-        //Variables staticVariablesTimeT = dynamicVariables.toVariablesTimeT();
+        Variables staticVariablesTimeT = dynamicVariables.toVariablesTimeT();
 
         dynamicVariables.getListOfDynamicVariables().stream()
                 .forEach(dynVar ->
                                 IntStream.range(0, nTimeSteps).forEach(i -> {
 
-                                    //Variable newVar = staticVariablesTimeT.getVariableByName(dynVar.getName());
-                                    VariableBuilder aux = dynVar.getVariableBuilder();
+                                    Variable newVar = staticVariablesTimeT.getVariableByName(dynVar.getName());
+                                    VariableBuilder aux = newVar.getVariableBuilder();
                                     aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
                                     variables.newVariable(aux);
                                 })
                 );
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         /*
          * CREATE STATIC DAG FROM THE DYNAMIC DAG
@@ -85,7 +84,7 @@ public class DynamicToStaticBNConverter {
                 }
             }
         }
-        bn = ModelFactory.newBayesianNetwork(dag);
+        bn = new BayesianNetwork(dag);
 
         /*
          * CREATE STATIC BN FROM THE DYNAMIC BN

@@ -3,14 +3,13 @@ package eu.amidst.dataGeneration;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.utils.AmidstOptionsHandler;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.DynamicModelFactory;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.flinklink.cajamar.CajaMarLearn;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
@@ -21,8 +20,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
  *
  * Example of call: (-Xmx8g)
  * -s 10 -numFiles 3 -RscriptsPath "./extensions/uai2016/doc-experiments/dataGenerationForFlink/"
- * -outputFullPath "~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData"
- * -printINDEX -seed 0
+ * -outputFullPath "~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData" -printINDEX
  *
  *
  * Created by ana@cs.aau.dk on 08/12/15.
@@ -39,7 +37,6 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
     private boolean includeSocioEconomicVars = false;
     private int batchSize = 1000;
     private boolean printINDEX = true;
-    private int seed = 0;
 
     public int getNumSamplesPerFile() {
         return numSamplesPerFile;
@@ -97,14 +94,6 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         this.printINDEX = printINDEX;
     }
 
-    public int getSeed() {
-        return seed;
-    }
-
-    public void setSeed(int seed) {
-        this.seed = seed;
-    }
-
     public void generateIDADataFromRScript() throws Exception {
         /*
          * The 1st parameter is the number of files (per month)
@@ -116,7 +105,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
         Process p = Runtime.getRuntime().exec("Rscript "+getRscriptsPath()+"/data_generator_IDA.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath() + " " +
-                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed());
+                String.valueOf(isPrintINDEX()).toUpperCase());
         p.waitFor();
 
 
@@ -133,7 +122,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
         Process p = Runtime.getRuntime().exec("Rscript "+getRscriptsPath()+"/data_generator_SCAI.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath()  + " " +
-                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed());
+                String.valueOf(isPrintINDEX()).toUpperCase());
         p.waitFor();
     }
     public void generateStaticData() throws Exception{
@@ -151,13 +140,13 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
     public static DynamicDAG getNaiveBayesStructure(Attributes attributes){
 
         //We create a Variables object from the attributes of the data stream
-        DynamicVariables dynamicVariables = DynamicModelFactory.newDynamicVariables(attributes);
+        DynamicVariables dynamicVariables = new DynamicVariables(attributes);
 
         //We define the predicitive class variable
         Variable classVar = dynamicVariables.getVariableByName("DEFAULT");
 
         //Then, we create a DAG object with the defined model header
-        DynamicDAG dag = DynamicModelFactory.newDynamicDAG(dynamicVariables);
+        DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
         //We set the links of the DAG.
         dag.getParentSetsTimeT().stream()
@@ -186,9 +175,9 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
                     getOutputFullPath() + "/MONTH1.arff");
         DynamicDAG dynamicDAG = getNaiveBayesStructure(data0.getAttributes());
-        dbn = DynamicModelFactory.newDynamicBayesianNetwork(dynamicDAG);
+        dbn = new DynamicBayesianNetwork(dynamicDAG);
 
-        DynamicParallelVB learn = new DynamicParallelVB();
+        CajaMarLearn learn = new CajaMarLearn();
         learn.setMaximumGlobalIterations(10);
         learn.setBatchSize(getBatchSize());
         learn.setDAG(dynamicDAG);
@@ -233,8 +222,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
                 "-includeSocioEconomicVars, false, If set, then socioeconoic vars are included, i.e., " +
                 "data like the SCAI paper is generated.\\"+
                 "-batchSize, 1000, batchSize for learning the dbn.\\"+
-                "-printINDEX, true, print index in attribute arff header\\"+
-                "-seed, 0, set seed for data sample generation in Rscript";
+                "-printINDEX, true, print index in attribute arff header";
     }
 
     @Override
@@ -251,6 +239,5 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         this.setIncludeSocioEconomicVars(getBooleanOption("-includeSocioEconomicVars"));
         this.setBatchSize(this.getIntOption("-batchSize"));
         this.setPrintINDEX(this.getBooleanOption("-printINDEX"));
-        this.setSeed(this.getIntOption("-seed"));
     }
 }

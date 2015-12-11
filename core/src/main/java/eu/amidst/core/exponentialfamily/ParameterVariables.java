@@ -290,11 +290,6 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
             return this.name.hashCode();
         }
 
-        @Override
-        public boolean equals(Variable variable) {
-            return this.equals((Object)variable);
-        }
-
 
     }
 }

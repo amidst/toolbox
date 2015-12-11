@@ -8,12 +8,11 @@
 
 package eu.amidst.ida2015;
 
-import eu.amidst.core.ModelFactory;
-import eu.amidst.core.conceptdrift.utils.Fading;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.conceptdrift.utils.Fading;
 import eu.amidst.core.learning.parametric.bayesian.PlateuIIDReplication;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
@@ -712,14 +711,14 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/sea.arff");
 
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("cl");
         Variable at1 = variables.getVariableByName("at1");
         Variable at2 = variables.getVariableByName("at2");
         Variable at3 = variables.getVariableByName("at3");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
         dag.getParentSet(at1).addParent(classVariable);
         dag.getParentSet(at1).addParent(globalHidden);
 
@@ -811,7 +810,7 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/sea.arff");
 
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
 
         List<Variable> localHidden = new ArrayList<Variable>();
         for (Attribute att : data.getAttributes()){
@@ -823,7 +822,7 @@ public class GlobalHiddenConceptDrift {
 
         Variable classVariable = variables.getVariableByName("cl");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (Attribute att : data.getAttributes()) {
             if (att.getName().equals("cl"))
@@ -930,11 +929,11 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("outputString");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (int i = 0; i < 10; i++) {
             Variable att = variables.getVariableByName("attr"+i);
@@ -994,12 +993,12 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/electricityOriginal.arff");
 
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("class");
         //Variable localVariable = variables.newMultionomialVariable("local",2);
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (int i = 1; i < 3; i++) {
             Variable att = variables.getVariableById(i);
@@ -1065,13 +1064,13 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/hyperplane9.arff");
 
-        Variables variables = ModelFactory.newVariables(data.getAttributes());
+        Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable localHidden = variables.newMultionomialVariable("Local", 2);
 
         Variable classVariable = variables.getVariableByName("outputString");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
 
         for (int i = 0; i < 10; i++) {
             Variable att = variables.getVariableByName("attr"+i);
@@ -1124,13 +1123,13 @@ public class GlobalHiddenConceptDrift {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("./IDA2015/DriftSets/sea.arff");
 
-            Variables variables = ModelFactory.newVariables(data.getAttributes());
+            Variables variables = new Variables(data.getAttributes());
         Variable classVariable = variables.getVariableByName("cl");
         Variable at1 = variables.getVariableByName("at1");
         Variable at2 = variables.getVariableByName("at2");
         Variable at3 = variables.getVariableByName("at3");
 
-        DAG dag = ModelFactory.newDAG(variables);
+        DAG dag = new DAG(variables);
         dag.getParentSet(at1).addParent(classVariable);
 
         dag.getParentSet(at2).addParent(classVariable);
