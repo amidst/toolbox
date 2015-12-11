@@ -12,6 +12,7 @@ import eu.amidst.core.variables.*;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
+import eu.amidst.dynamic.utils.DynamicToStaticBNConverter;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
@@ -31,7 +32,7 @@ public class DynamicMAPInference {
     }
 
     private DynamicBayesianNetwork model;
-    private BayesianNetwork staticEvenModel, staticOddModel;
+    private BayesianNetwork staticEvenModel, staticOddModel, staticModel;
 
     private int nTimeSteps = 2;
 
@@ -150,6 +151,7 @@ public class DynamicMAPInference {
         }
         return getMAPestimate().getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID() ? 1 : -1)).collect(Collectors.toList());
     }
+
 
     public void computeDynamicMAPEvenModel() {
 
@@ -340,6 +342,85 @@ public class DynamicMAPInference {
 
     }
 
+
+    public void runInferenceUngroupedMAPVariable(SearchAlgorithm searchAlgorithm) {
+
+        if (MAPvariable==null || MAPvarName==null) {
+            System.out.println("Error: The MAP variable has not been set");
+            System.exit(-30);
+        }
+
+        if (this.staticModel == null) {
+            staticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
+        }
+
+        if (evidence!=null && staticEvidence==null) {
+
+            staticEvidence = new HashMapAssignment(staticModel.getNumberOfVars());
+
+            evidence.stream().forEach(dynamicAssignment -> {
+                int time = (int) dynamicAssignment.getTimeID();
+                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+                for (Variable dynVariable : dynAssigVariables) {
+                    Variable staticVariable = staticModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+                    double varValue = dynamicAssignment.getValue(dynVariable);
+                    staticEvidence.setValue(staticVariable, varValue);
+                }
+
+            });
+        }
+
+        InferenceAlgorithm staticModelInference;
+        switch(searchAlgorithm) {
+            case VMP:
+                staticModelInference = new VMP();
+                break;
+
+            case IS:
+            default:
+                ImportanceSampling importanceSampling =  new ImportanceSampling();
+                importanceSampling.setSampleSize(10000);
+                importanceSampling.setKeepDataOnMemory(true);
+                Random random = new Random((this.seed));
+                importanceSampling.setSeed(random.nextInt());
+                staticModelInference=importanceSampling;
+                break;
+        }
+
+
+        staticModelInference.setParallelMode(this.parallelMode);
+        staticModelInference.setModel(staticModel);
+        if (evidence != null) {
+            staticModelInference.setEvidence(staticEvidence);
+        }
+        staticModelInference.runInference();
+
+
+        List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
+        IntStream.range(0,nTimeSteps).forEachOrdered(i -> posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i)));
+
+        double [] probabilities = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToDouble(array -> array[0]).toArray();
+        double MAPsequenceProbability = Math.exp(Arrays.stream(probabilities).map(prob -> Math.log(prob)).sum());
+
+        int [] MAPsequence = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToInt(array -> (int) array[1]).toArray();
+
+        MAPestimate = new HashMapAssignment(nTimeSteps);
+        IntStream.range(0,nTimeSteps).forEach(t-> {
+            Variables variables = Serialization.deepCopy(this.staticModel.getVariables());
+            Variable currentVar;
+            if (variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t))!=null) {
+                currentVar  = variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
+            }
+            else {
+                currentVar  = variables.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+            }
+
+
+            MAPestimate.setValue(currentVar,MAPsequence[t]);
+        });
+        MAPestimateLogProbability = Math.log(MAPsequenceProbability);
+    }
+
     private void computeMostProbableSequence(List<double[]> conditionalDistributionsMAPvariable) {
         int[] MAPsequence = new int[nTimeSteps];
         int MAPvarNStates = MAPvariable.getNumberOfStates();
@@ -417,7 +498,7 @@ public class DynamicMAPInference {
         int previousVarMAPState = argMaxValues[0];
         MAPsequence[0] = argMaxValues[0];
 
-        int thisVarMAPState = -1;
+        int thisVarMAPState = 0;
         for (int t = 1; t < nTimeSteps; t++) {
 
 //            System.out.println("Time" + t);
@@ -429,7 +510,7 @@ public class DynamicMAPInference {
             double maxProb = -1;
             for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_t
 
-                if (current_probs[previousVarMAPState * MAPvarNStates + j] > maxProb) {
+                if (current_probs[previousVarMAPState * MAPvarNStates + j] >= maxProb) {
                     maxProb = current_probs[previousVarMAPState * MAPvarNStates + j];
                     thisVarMAPState = j;
 //                    System.out.println("This prob " + maxProb + ", with index " + j);

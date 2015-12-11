@@ -25,19 +25,20 @@ public class DynamicToStaticBNConverter {
     BayesianNetwork bn;
     int nTimeSteps = 2;
 
-    public void setDynamicBayesianNetwork(DynamicBayesianNetwork dbn) {
-        this.dbn = dbn;
-    }
+//    public void setDynamicBayesianNetwork(DynamicBayesianNetwork dbn) {
+//        this.dbn = dbn;
+//    }
+//
+//    public void setNumberOfTimeSteps(int nTimeSteps) {
+//        this.nTimeSteps = nTimeSteps;
+//    }
+//
+//    public BayesianNetwork getBayesianNetwork() {
+//        return bn;
+//    }
 
-    public void setNumberOfTimeSteps(int nTimeSteps) {
-        this.nTimeSteps = nTimeSteps;
-    }
+    public static BayesianNetwork convertDBNtoBN(DynamicBayesianNetwork dbn, int nTimeSteps) {
 
-    public BayesianNetwork getBayesianNetwork() {
-        return bn;
-    }
-
-    public BayesianNetwork convertDBNtoBN() {
 
         if (dbn==null)
             return null;
@@ -84,7 +85,7 @@ public class DynamicToStaticBNConverter {
                 }
             }
         }
-        bn = new BayesianNetwork(dag);
+        BayesianNetwork bn = new BayesianNetwork(dag);
 
         /*
          * CREATE STATIC BN FROM THE DYNAMIC BN
@@ -140,13 +141,7 @@ public class DynamicToStaticBNConverter {
         //dynamicNaiveBayes.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
         //dynamicNaiveBayes.getDynamicVariables().getListOfDynamicVariables().forEach(var -> System.out.println(var.getName()));
 
-        DynamicToStaticBNConverter converterDBNtoBN = new DynamicToStaticBNConverter();
-        converterDBNtoBN.setNumberOfTimeSteps(4);
-        converterDBNtoBN.setDynamicBayesianNetwork(dynamicNaiveBayes);
-
-        converterDBNtoBN.convertDBNtoBN();
-
-        BayesianNetwork bn = converterDBNtoBN.getBayesianNetwork();
+        BayesianNetwork bn = DynamicToStaticBNConverter.convertDBNtoBN(dynamicNaiveBayes,4);
         System.out.println("NEW STATIC DAG:");
         System.out.println();
         System.out.println(bn.getDAG().toString());
