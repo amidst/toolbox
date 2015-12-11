@@ -775,15 +775,11 @@ public class DynamicMAPInference {
         }
 
         // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
-        Variables staticVariablesTimeT = dynamicVariables.toVariablesTimeT();
-
         dynamicVariables.getListOfDynamicVariables().stream()
             .filter(var -> !var.equals(MAPvariable))
             .forEach(dynVar ->
                             IntStream.range(0, nTimeSteps).forEach(i -> {
-
-                                Variable newVar = staticVariablesTimeT.getVariableByName(dynVar.getName());
-                                VariableBuilder aux = newVar.getVariableBuilder();
+                                VariableBuilder aux = dynVar.getVariableBuilder();
                                 aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
                                 variables.newVariable(aux);
                             })
