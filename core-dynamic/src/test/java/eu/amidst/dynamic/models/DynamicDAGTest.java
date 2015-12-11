@@ -83,4 +83,55 @@ public class DynamicDAGTest {
         Assert.assertTrue(dynamicDAG.equals(dynamicDAG2));
 
         }
-}
+
+    @Test
+    public void testingDynamicDAGToDAG() {
+        Attribute attVLATSIGMA = data.getAttributes().getAttributeByName("V_LAT_SIGMA");
+        Attribute attVLATMEAS = data.getAttributes().getAttributeByName("V_LAT_MEAS");
+        Attribute attOLATSIGMA = data.getAttributes().getAttributeByName("O_LAT_SIGMA");
+        Attribute attOLATMEAS = data.getAttributes().getAttributeByName("O_LAT_MEAS");
+
+        List<Attribute> attributeList = new ArrayList();
+        attributeList.add(attVLATSIGMA);
+        attributeList.add(attVLATMEAS);
+        attributeList.add(attOLATSIGMA);
+        attributeList.add(attOLATMEAS);
+
+        DynamicVariables dynamicVariables = new DynamicVariables();
+
+        Variable vlatSIGMA = dynamicVariables.newDynamicVariable(attVLATSIGMA);
+        Variable vlatMEAS = dynamicVariables.newDynamicVariable(attVLATMEAS);
+        Variable olatSIGMA = dynamicVariables.newDynamicVariable(attOLATSIGMA);
+        Variable olatMEAS = dynamicVariables.newDynamicVariable(attOLATMEAS);
+
+        Variable vlatREAL = dynamicVariables.newRealDynamicVariable(vlatMEAS);
+        Variable olatREAL = dynamicVariables.newRealDynamicVariable(olatMEAS);
+
+        Variable aLAT = dynamicVariables.newGaussianDynamicVariable("A_LAT");
+
+        Variable latEv = dynamicVariables.newMultinomialLogisticDynamicVariable("LE", Arrays.asList("Yes", "No"));
+
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+
+        dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatSIGMA);
+        dynamicDAG.getParentSetTimeT(vlatMEAS).addParent(vlatREAL);
+        dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatSIGMA);
+        dynamicDAG.getParentSetTimeT(olatMEAS).addParent(olatREAL);
+        dynamicDAG.getParentSetTimeT(aLAT).addParent(dynamicVariables.getInterfaceVariable(aLAT));
+        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(aLAT);
+        dynamicDAG.getParentSetTimeT(vlatREAL).addParent(dynamicVariables.getInterfaceVariable(vlatREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getInterfaceVariable(olatREAL));
+        dynamicDAG.getParentSetTimeT(olatREAL).addParent(dynamicVariables.getInterfaceVariable(vlatREAL));
+        dynamicDAG.getParentSetTimeT(latEv).addParent(vlatREAL);
+        dynamicDAG.getParentSetTimeT(latEv).addParent(olatREAL);
+
+        System.out.println(dynamicDAG.toString());
+
+
+        System.out.println(dynamicDAG.toDAGTime0().toString());
+        System.out.println(dynamicDAG.toDAGTimeT().toString());
+
+    }
+
+
+    }
