@@ -137,10 +137,8 @@ public class DynamicMAPInference_Experiments2 {
 //        System.out.println(dynamicBayesianNetwork.toString());
 //        System.out.println();
 
-        DynamicToStaticBNConverter converter = new DynamicToStaticBNConverter();
-        converter.setNumberOfTimeSteps(nTimeSteps);
-        converter.setDynamicBayesianNetwork(dynamicBayesianNetwork);
-        BayesianNetwork staticBN = converter.convertDBNtoBN();
+
+        BayesianNetwork staticBN = DynamicToStaticBNConverter.convertDBNtoBN(dynamicBayesianNetwork,nTimeSteps);
 
         Variables staticVariables = staticBN.getVariables();
         //System.out.println(staticBN.toString());
