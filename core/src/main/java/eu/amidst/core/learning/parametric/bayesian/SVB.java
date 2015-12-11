@@ -504,7 +504,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter){
-        return this.getPlateuStructure().getEFVariablePosterior(parameter, 0).toUnivariateDistribution();
+        return this.getPlateuStructure().getEFParameterPosterior(parameter).toUnivariateDistribution();
     }
 
 

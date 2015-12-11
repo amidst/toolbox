@@ -131,7 +131,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     public Variable getVariableFromInterface(Variable var){
-        return nonInterfaceVariables.get(var.getVarID());
+        return nonInterfaceVariables.get(var.getVarID()-this.getNumberOfVars());
     }
 
     /*
@@ -327,7 +327,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     public void block(){
-        //this.nonInterfaceVariables = Collections.unmodifiableList(this.nonInterfaceVariables);
+
+        for (int i = 0; i < this.interfaceVariables.size(); i++) {
+            VariableImplementation var = (VariableImplementation)this.interfaceVariables.get(i);
+            var.setVarID(i+this.getNumberOfVars());
+        }
+
     }
 
     @Override
@@ -420,6 +425,11 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
         public static VariableImplementation newInterfaceVariable(Variable variable){
             return new VariableImplementation(variable);
+        }
+
+
+        public void setVarID(int varID) {
+            this.varID = varID;
         }
 
         public String getName() {

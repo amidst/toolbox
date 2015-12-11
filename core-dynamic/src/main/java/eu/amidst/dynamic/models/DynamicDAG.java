@@ -116,12 +116,14 @@ public class DynamicDAG implements Serializable {
 
     public boolean containCycles() {
 
-        boolean[] bDone = new boolean[this.dynamicVariables.getNumberOfVars()];
+        boolean[] bDone = new boolean[2*this.dynamicVariables.getNumberOfVars()];
 
 
-        for (Variable var : this.dynamicVariables) {
-            bDone[var.getVarID()] = false;
+        for (int i = 0; i < bDone.length; i++) {
+            bDone[i] = false;
         }
+
+
 
         for (Variable var : this.dynamicVariables) {
 
