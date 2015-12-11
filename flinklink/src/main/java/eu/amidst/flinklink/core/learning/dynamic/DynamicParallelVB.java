@@ -75,7 +75,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
     transient DataSet<DataPosteriorAssignment> dataPosteriorDataSet;
 
-    PlateuStructure plateuStructure;
+    PlateuStructure plateuStructure = new PlateuStructure();
     TransitionMethod transitionMethod;
 
     protected List<String> latentVariablesNames;
