@@ -77,6 +77,8 @@ public interface DynamicVariables extends Iterable<Variable> {
 
     List<Variable> getListOfDynamicVariables();
 
+    List<Variable> getListOfDynamicAndInterfaceVariables();
+
     Variable getVariableById(int varID);
 
     Variable getVariableByName(String name);
@@ -90,5 +92,7 @@ public interface DynamicVariables extends Iterable<Variable> {
     Variables toVariablesTime0();
 
     Variables toVariablesTimeT();
+
+    boolean equals(DynamicVariables variables);
 
 }

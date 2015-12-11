@@ -205,6 +205,11 @@ class VariableImpl implements Variable, Serializable {
     public int hashCode(){
         return this.name.hashCode();
     }
+
+    @Override
+    public boolean equals(Variable variable) {
+        return this.equals((Object)variable);
+    }
 }
 
     /*  public Variable addIndicatorVariable(Variable var) {

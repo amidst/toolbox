@@ -308,6 +308,18 @@ public class VariablesImpl implements Variables, Serializable {
         return this.allVariables;
     }
 
+    public boolean equals(Object variables) {
+        return this.equals((Variables)variables);
+    }
+
+    @Override
+    public boolean equals(Variables variables) {
+        boolean equals = true;
+        for (int i = 0; i < this.getNumberOfVars() && equals; i++) {
+            equals = equals && this.getVariableById(i).equals(variables.getVariableById(i));
+        }
+        return equals;
+    }
 
 
 }

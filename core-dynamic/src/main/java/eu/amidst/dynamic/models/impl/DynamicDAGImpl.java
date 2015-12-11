@@ -242,6 +242,42 @@ public class DynamicDAGImpl implements DynamicDAG, Serializable {
         public boolean contains(Variable var) {
             return this.vars.contains(var);
         }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            ParentSet parentset = (ParentSet) o;
+
+            if (this.getNumberOfParents() != parentset.getNumberOfParents()) {
+                return false;
+            } else {
+                int i = 0;
+                boolean eqs = true;
+                while (i < this.getNumberOfParents() && eqs) {
+                    if (this.getParents().get(i).equals(parentset.getParents().get(i))) {
+                        i++;
+                    } else {
+                        eqs = false;
+                    }
+                }
+                return eqs;
+            }
+        }
+
+        @Override
+        public boolean equals(ParentSet parentSet) {
+            return this.equals((Object)parentSet);
+        }
     }
 
     @Override
@@ -313,5 +349,10 @@ public class DynamicDAGImpl implements DynamicDAG, Serializable {
         }
 
         return dag;
+    }
+
+    @Override
+    public boolean equals(DynamicDAG dag) {
+        return this.equals((Object)dag);
     }
 }

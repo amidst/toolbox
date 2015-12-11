@@ -74,11 +74,7 @@ public interface ParentSet extends Iterable<Variable>{
      */
     boolean contains(Variable var);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    boolean equals(Object o);
+    boolean equals(ParentSet parentSet);
 
     /**
      * {@inheritDoc}

@@ -48,4 +48,7 @@ public interface DynamicDAG {
     DAG toDAGTimeT();
 
     DAG toDAGTime0();
+
+    boolean equals(DynamicDAG dag);
+
 }
