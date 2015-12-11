@@ -7,9 +7,9 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.flinklink.cajamar.CajaMarLearn;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
@@ -20,7 +20,8 @@ import org.apache.flink.api.java.ExecutionEnvironment;
  *
  * Example of call: (-Xmx8g)
  * -s 10 -numFiles 3 -RscriptsPath "./extensions/uai2016/doc-experiments/dataGenerationForFlink/"
- * -outputFullPath "~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData" -printINDEX
+ * -outputFullPath "~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData"
+ * -printINDEX -seed 0
  *
  *
  * Created by ana@cs.aau.dk on 08/12/15.
@@ -37,6 +38,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
     private boolean includeSocioEconomicVars = false;
     private int batchSize = 1000;
     private boolean printINDEX = true;
+    private int seed = 0;
 
     public int getNumSamplesPerFile() {
         return numSamplesPerFile;
@@ -94,6 +96,14 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         this.printINDEX = printINDEX;
     }
 
+    public int getSeed() {
+        return seed;
+    }
+
+    public void setSeed(int seed) {
+        this.seed = seed;
+    }
+
     public void generateIDADataFromRScript() throws Exception {
         /*
          * The 1st parameter is the number of files (per month)
@@ -105,7 +115,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
         Process p = Runtime.getRuntime().exec("Rscript "+getRscriptsPath()+"/data_generator_IDA.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath() + " " +
-                String.valueOf(isPrintINDEX()).toUpperCase());
+                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed());
         p.waitFor();
 
 
@@ -122,7 +132,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
         Process p = Runtime.getRuntime().exec("Rscript "+getRscriptsPath()+"/data_generator_SCAI.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath()  + " " +
-                String.valueOf(isPrintINDEX()).toUpperCase());
+                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed());
         p.waitFor();
     }
     public void generateStaticData() throws Exception{
@@ -173,11 +183,11 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
         System.out.println(getOutputFullPath() + "/MONTH1.arff");
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
-                    getOutputFullPath() + "/MONTH1.arff");
+                getOutputFullPath() + "/MONTH1.arff");
         DynamicDAG dynamicDAG = getNaiveBayesStructure(data0.getAttributes());
         dbn = new DynamicBayesianNetwork(dynamicDAG);
 
-        CajaMarLearn learn = new CajaMarLearn();
+        DynamicParallelVB learn = new DynamicParallelVB();
         learn.setMaximumGlobalIterations(10);
         learn.setBatchSize(getBatchSize());
         learn.setDAG(dynamicDAG);
@@ -222,7 +232,8 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
                 "-includeSocioEconomicVars, false, If set, then socioeconoic vars are included, i.e., " +
                 "data like the SCAI paper is generated.\\"+
                 "-batchSize, 1000, batchSize for learning the dbn.\\"+
-                "-printINDEX, true, print index in attribute arff header";
+                "-printINDEX, true, print index in attribute arff header\\"+
+                "-seed, 0, set seed for data sample generation in Rscript";
     }
 
     @Override
@@ -239,5 +250,6 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         this.setIncludeSocioEconomicVars(getBooleanOption("-includeSocioEconomicVars"));
         this.setBatchSize(this.getIntOption("-batchSize"));
         this.setPrintINDEX(this.getBooleanOption("-printINDEX"));
+        this.setSeed(this.getIntOption("-seed"));
     }
 }
