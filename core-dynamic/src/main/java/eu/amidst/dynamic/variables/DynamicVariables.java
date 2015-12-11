@@ -295,9 +295,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return this.nonInterfaceVariables;
     }
 
-    //public List<Variable> getListOfInterfaceVariables() {
-    //    return this.interfaceVariables;
-    //}
+    public List<Variable> getListOfInterfaceVariables() {
+        return this.interfaceVariables;
+    }
 
     public Variable getVariableById(int varID) {
        return this.nonInterfaceVariables.get(varID);

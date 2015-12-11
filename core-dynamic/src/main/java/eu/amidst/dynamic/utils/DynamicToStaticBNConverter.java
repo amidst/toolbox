@@ -52,14 +52,10 @@ public class DynamicToStaticBNConverter {
          * 1st STEP: ADD REPLICATED VARIABLES
          */
         // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
-        Variables staticVariablesTimeT = dynamicVariables.toVariablesTimeT();
-
         dynamicVariables.getListOfDynamicVariables().stream()
                 .forEach(dynVar ->
                                 IntStream.range(0, nTimeSteps).forEach(i -> {
-
-                                    Variable newVar = staticVariablesTimeT.getVariableByName(dynVar.getName());
-                                    VariableBuilder aux = newVar.getVariableBuilder();
+                                    VariableBuilder aux = dynVar.getVariableBuilder();
                                     aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
                                     variables.newVariable(aux);
                                 })
