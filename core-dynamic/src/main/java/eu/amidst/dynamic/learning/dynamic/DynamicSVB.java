@@ -27,12 +27,12 @@ import java.util.List;
  *
  * Created by ana@cs.aau.dk on 04/03/15.
  */
-public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgorithmForDBN {
+public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
 
     EF_LearningBayesianNetwork ef_extendedBNTime0;
     EF_LearningBayesianNetwork ef_extendedBNTimeT;
 
-    PlateuVMPDBN plateuVMPDBN = new PlateuVMPDBN();
+    DynamicPlateauStructure dynamicPlateauStructure = new DynamicPlateauStructure();
 
     DynamicDAG dag;
 
@@ -46,13 +46,13 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
     int windowsSize=100;
     int seed = 0;
 
-    public PlateuVMPDBN getPlateuVMPDBN() {
-        return plateuVMPDBN;
+    public DynamicPlateauStructure getDynamicPlateauStructure() {
+        return dynamicPlateauStructure;
     }
 
-    public StreamingVariationalBayesVMPForDBN(){
-        plateuVMPDBN = new PlateuVMPDBN();
-        plateuVMPDBN.setNRepetitions(windowsSize);
+    public DynamicSVB(){
+        dynamicPlateauStructure = new DynamicPlateauStructure();
+        dynamicPlateauStructure.setNRepetitions(windowsSize);
 
     }
 
@@ -76,7 +76,7 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
 
     public void setWindowsSize(int windowsSize) {
         this.windowsSize = windowsSize;
-        this.plateuVMPDBN.setNRepetitions(windowsSize);
+        this.dynamicPlateauStructure.setNRepetitions(windowsSize);
     }
 
     @Override
@@ -116,31 +116,31 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
     }
 
     private double updateModelTime0(DynamicDataInstance dataInstance) {
-        this.plateuVMPDBN.setEvidenceTime0(dataInstance);
-        this.plateuVMPDBN.runInferenceTime0();
+        this.dynamicPlateauStructure.setEvidenceTime0(dataInstance);
+        this.dynamicPlateauStructure.runInferenceTime0();
 
-        for (Variable var: plateuVMPDBN.getEFLearningBNTime0().getParametersVariables()){
-            EF_UnivariateDistribution uni = plateuVMPDBN.getEFParameterPosteriorTime0(var).deepCopy();
-            plateuVMPDBN.getEFLearningBNTime0().setDistribution(var, uni);
-            this.plateuVMPDBN.getNodeOfVarTime0(var).setPDist(uni);
+        for (Variable var: dynamicPlateauStructure.getEFLearningBNTime0().getParametersVariables()){
+            EF_UnivariateDistribution uni = dynamicPlateauStructure.getEFParameterPosteriorTime0(var).deepCopy();
+            dynamicPlateauStructure.getEFLearningBNTime0().setDistribution(var, uni);
+            this.dynamicPlateauStructure.getNodeOfVarTime0(var).setPDist(uni);
         }
 
         //this.plateuVMP.resetQs();
-        return this.plateuVMPDBN.getLogProbabilityOfEvidenceTime0();
+        return this.dynamicPlateauStructure.getLogProbabilityOfEvidenceTime0();
     }
 
     private double updateModelTimeT(List<DynamicDataInstance> batch) {
-        this.plateuVMPDBN.setEvidenceTimeT(batch);
-        this.plateuVMPDBN.runInferenceTimeT();
+        this.dynamicPlateauStructure.setEvidenceTimeT(batch);
+        this.dynamicPlateauStructure.runInferenceTimeT();
 
-        for (Variable var: plateuVMPDBN.getEFLearningBNTimeT().getParametersVariables()){
-            EF_UnivariateDistribution uni = plateuVMPDBN.getEFParameterPosteriorTimeT(var).deepCopy();
-            plateuVMPDBN.getEFLearningBNTimeT().setDistribution(var,uni);
-            this.plateuVMPDBN.getNodeOfVarTimeT(var,0).setPDist(uni);
+        for (Variable var: dynamicPlateauStructure.getEFLearningBNTimeT().getParametersVariables()){
+            EF_UnivariateDistribution uni = dynamicPlateauStructure.getEFParameterPosteriorTimeT(var).deepCopy();
+            dynamicPlateauStructure.getEFLearningBNTimeT().setDistribution(var,uni);
+            this.dynamicPlateauStructure.getNodeOfVarTimeT(var,0).setPDist(uni);
         }
 
         //this.plateuVMPDBN.resetQs();
-        return this.plateuVMPDBN.getLogProbabilityOfEvidenceTimeT();
+        return this.dynamicPlateauStructure.getLogProbabilityOfEvidenceTimeT();
     }
 
 
@@ -150,11 +150,11 @@ public class StreamingVariationalBayesVMPForDBN implements BayesianLearningAlgor
     }
 
     public void initLearning(){
-        this.plateuVMPDBN.setSeed(seed);
-        this.plateuVMPDBN.setDBNModel(this.dag);
-        this.plateuVMPDBN.resetQs();
-        this.ef_extendedBNTime0 = this.plateuVMPDBN.getEFLearningBNTime0();
-        this.ef_extendedBNTimeT = this.plateuVMPDBN.getEFLearningBNTimeT();
+        this.dynamicPlateauStructure.setSeed(seed);
+        this.dynamicPlateauStructure.setDBNModel(this.dag);
+        this.dynamicPlateauStructure.resetQs();
+        this.ef_extendedBNTime0 = this.dynamicPlateauStructure.getEFLearningBNTime0();
+        this.ef_extendedBNTimeT = this.dynamicPlateauStructure.getEFLearningBNTimeT();
     }
 
     @Override

@@ -3,7 +3,7 @@ package eu.amidst.dynamic.examples.learning;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.learning.dynamic.StreamingVariationalBayesVMPForDBN;
+import eu.amidst.dynamic.learning.dynamic.DynamicSVB;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
@@ -31,12 +31,12 @@ public class SVBforDBN {
         DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(3,10000);
 
         /*Parameter Learning with Streaming variational Bayes VMP*/
-        StreamingVariationalBayesVMPForDBN svb = new StreamingVariationalBayesVMPForDBN();
+        DynamicSVB svb = new DynamicSVB();
         //We set the desired options for the svb
         svb.setWindowsSize(100);
         svb.setSeed(0);
         //If desired, we also set some options for the VMP
-        VMP vmp = svb.getPlateuVMPDBN().getVMPTimeT();
+        VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
         vmp.setOutput(true);
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);

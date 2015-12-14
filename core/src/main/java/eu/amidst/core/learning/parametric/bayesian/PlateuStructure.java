@@ -252,8 +252,8 @@ public class PlateuStructure implements Serializable {
      * @return an {@link EF_UnivariateDistribution} object.
      */
     public <E extends EF_UnivariateDistribution> E getEFParameterPosterior(Variable var) {
-        if (!var.isParameterVariable())
-            throw new IllegalArgumentException("Only parameter variables can be queried");
+        if (!this.nonReplicatedVariablesList.contains(var) && !var.isParameterVariable())
+            throw new IllegalArgumentException("Only non replicated variables or parameters can be queried");
 
         return (E) this.nonReplicatedVarsToNode.get(var).getQDist();
     }
@@ -267,8 +267,8 @@ public class PlateuStructure implements Serializable {
      * @return an {@link EF_UnivariateDistribution} object.
      */
     public <E extends EF_UnivariateDistribution> E getEFVariablePosterior(Variable var, int slice) {
-        if (var.isParameterVariable())
-            throw new IllegalArgumentException("Only non parameter variables can be queried");
+        if (this.nonReplicatedVariablesList.contains(var) || var.isParameterVariable())
+            throw new IllegalArgumentException("Only replicated variables can be queried");
 
         return (E) this.getNodeOfVar(var, slice).getQDist();
     }
@@ -396,48 +396,27 @@ public class PlateuStructure implements Serializable {
     }
 
 
-    public Map<Variable,EF_UnivariateDistribution> getPlateauEFUnivariatePriors() {
-        Map<Variable,EF_UnivariateDistribution> map = new HashMap<>();
-
-        ef_learningmodel.getDistributionList().stream()
-                .map(dist -> dist.getVariable())
-                .filter(var -> isNonReplicatedVar(var))
-                .forEach(var -> {
-                    map.put(var,this.ef_learningmodel.getDistribution(var));
-                });
-
-        return map;
-    }
-
-    public Map<Variable,EF_UnivariateDistribution> getPlateauEFUnivariatePosteriors() {
-        Map<Variable,EF_UnivariateDistribution> map = new HashMap<>();
-
-        ef_learningmodel.getDistributionList().stream()
-                .map(dist -> dist.getVariable())
-                .filter(var -> isNonReplicatedVar(var))
-                .forEach(var -> {
-                    map.put(var,this.getNodeOfNonReplicatedVar(var).getQDist());
-                });
-
-        return map;
-    }
-
     /**
      * Updates the Natural Parameter Prior from a given parameter vector.
      * @param parameterVector a {@link CompoundVector} object.
      */
     public void updateNaturalParameterPrior(CompoundVector parameterVector) {
 
-        List<Variable> vars = this.getNonReplicatedVariables();
-        for (int i = 0; i < vars.size(); i++) {
-            Variable var = vars.get(i);
-            EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
-            uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(i));
-            uni.fixNumericalInstability();
-            uni.updateMomentFromNaturalParameters();
-            this.ef_learningmodel.setDistribution(var, uni);
-            this.getNodeOfNonReplicatedVar(var).setPDist(uni);
-        }
+        final int[] count = new int[1];
+        count[0] = 0;
+
+        ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .forEach(var -> {
+                    EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
+                    uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count[0]));
+                    uni.fixNumericalInstability();
+                    uni.updateMomentFromNaturalParameters();
+                    this.ef_learningmodel.setDistribution(var, uni);
+                    this.getNodeOfNonReplicatedVar(var).setPDist(uni);
+                    count[0]++;
+                });
     }
 
 

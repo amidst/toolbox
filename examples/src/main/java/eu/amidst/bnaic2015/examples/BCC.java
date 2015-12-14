@@ -65,6 +65,7 @@ public class BCC {
 
             //We print the mean of this Gaussian var
             System.out.println("E(H) at month "+i+":\t" + normal.getMean());
+
         }
 
         //Finally we get the learnt Bayesian network and return it.

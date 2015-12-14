@@ -304,6 +304,29 @@ public class Variables implements Iterable<Variable>, Serializable {
         return this.allVariables;
     }
 
+
+    /**
+     * Auxiliar builder. It shoud not be used
+     * @param variables
+     * @return
+     */
+    public static Variables auxiliarBuilder(List<Variable> variables){
+        return new Variables(variables);
+    }
+
+    /**
+     * Auxiliar builder.
+     * @param variables
+     */
+    private Variables(List<Variable> variables){
+        this.allVariables = new ArrayList<>();
+        this.allVariables.addAll(variables);
+        this.mapping = new HashMap<>();
+        for (Variable var : allVariables) {
+            this.mapping.put(var.getName(),var.getVarID());
+        }
+    }
+
     /**
      * This class implements the interface {@link Variable}.
      */
@@ -358,6 +381,10 @@ public class Variables implements Iterable<Variable>, Serializable {
 
         public void setAttribute(Attribute attribute) {
             this.attribute = attribute;
+            if (attribute!=null)
+                this.observable = true;
+            else
+                this.observable = false;
         }
 
         /**

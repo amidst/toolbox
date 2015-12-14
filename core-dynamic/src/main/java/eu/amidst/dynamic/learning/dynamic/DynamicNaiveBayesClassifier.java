@@ -85,10 +85,10 @@ public class DynamicNaiveBayesClassifier {
     }
 
     public void learn(DataStream<DynamicDataInstance> dataStream){
-        LearningEngineForDBN.setDynamicStructuralLearningAlgorithm(this::dynamicNaiveBayesStructure);
-        MaximumLikelihoodForDBN.setParallelMode(this.isParallelMode());
-        LearningEngineForDBN.setDynamicParameterLearningAlgorithm(MaximumLikelihoodForDBN::learnDynamic);
-        bnModel = LearningEngineForDBN.learnDynamicModel(dataStream);
+        DynamicLearningEngine.setDynamicStructuralLearningAlgorithm(this::dynamicNaiveBayesStructure);
+        DynamicMaximumLikelihood.setParallelMode(this.isParallelMode());
+        DynamicLearningEngine.setDynamicParameterLearningAlgorithm(DynamicMaximumLikelihood::learnDynamic);
+        bnModel = DynamicLearningEngine.learnDynamicModel(dataStream);
     }
 
     public static void main(String[] args) throws IOException {

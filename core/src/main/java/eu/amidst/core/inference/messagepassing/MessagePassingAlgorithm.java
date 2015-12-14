@@ -162,7 +162,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
                                 .reduce(Message::combineNonStateless);
 
                 if (message.isPresent())
-                 selfMessage.combine(message.get());
+                    selfMessage.combine(message.get());
 
                 //for (Node child: node.getChildren()){
                 //    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);

@@ -48,7 +48,7 @@ public class DynamicDAG implements Serializable {
      * It contains the ParentSets for all variables at time T.
      */
     private List<ParentSet> parentSetTimeT;
-    private String name;
+    private String name = "DynamicDAG";
 
 
     public DynamicDAG(DynamicVariables dynamicVariables1) {
@@ -88,12 +88,15 @@ public class DynamicDAG implements Serializable {
     }
 
     public DAG toDAGTimeT(){
-        Variables staticVariables = this.getDynamicVariables().toVariablesTimeT();
+        List<Variable> allVariables = new ArrayList<>();
+        allVariables.addAll(this.getDynamicVariables().getListOfDynamicVariables());
+        allVariables.addAll(this.getDynamicVariables().getListOfInterfaceVariables());
+        Variables staticVariables = Variables.auxiliarBuilder(allVariables);
         DAG dag = new DAG(staticVariables);
         dag.setName(this.getName());
         for (Variable dynamicVariable : dynamicVariables) {
             for (Variable parent : this.getParentSetTimeT(dynamicVariable)) {
-                dag.getParentSet(staticVariables.getVariableByName(dynamicVariable.getName())).addParent(staticVariables.getVariableByName(parent.getName()));
+                dag.getParentSet(dynamicVariable).addParent(parent);
             }
         }
 
@@ -101,13 +104,13 @@ public class DynamicDAG implements Serializable {
     }
 
     public DAG toDAGTime0(){
-        Variables staticVariables = this.getDynamicVariables().toVariablesTime0();
+        Variables staticVariables = Variables.auxiliarBuilder(this.getDynamicVariables().getListOfDynamicVariables());
         DAG dag = new DAG(staticVariables);
         dag.setName(this.getName());
 
         for (Variable dynamicVariable : dynamicVariables) {
             for (Variable parent : this.getParentSetTime0(dynamicVariable)) {
-                dag.getParentSet(staticVariables.getVariableByName(dynamicVariable.getName())).addParent(staticVariables.getVariableByName(parent.getName()));
+                dag.getParentSet(dynamicVariable).addParent(parent);
             }
         }
 
@@ -116,12 +119,14 @@ public class DynamicDAG implements Serializable {
 
     public boolean containCycles() {
 
-        boolean[] bDone = new boolean[this.dynamicVariables.getNumberOfVars()];
+        boolean[] bDone = new boolean[2*this.dynamicVariables.getNumberOfVars()];
 
 
-        for (Variable var : this.dynamicVariables) {
-            bDone[var.getVarID()] = false;
+        for (int i = 0; i < bDone.length; i++) {
+            bDone[i] = false;
         }
+
+
 
         for (Variable var : this.dynamicVariables) {
 

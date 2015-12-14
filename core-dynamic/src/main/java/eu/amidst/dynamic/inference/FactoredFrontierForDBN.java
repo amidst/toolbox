@@ -114,10 +114,8 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
 
         //Recover original model and do the copy, then set again.
         Variable temporalClone = this.model.getDynamicVariables().getInterfaceVariable(var);
-        Variable staticTemporalClone = bnTo.getVariables().getVariableByName(temporalClone.getName());
-        Variable staticVar = bnFrom.getVariables().getVariableByName(var.getName());
-        UnivariateDistribution posteriorDist = infAlg.getPosterior(staticVar).deepCopy(staticTemporalClone);
-        bnTo.setConditionalDistribution(staticTemporalClone, posteriorDist);
+        UnivariateDistribution posteriorDist = infAlg.getPosterior(var).deepCopy(temporalClone);
+        bnTo.setConditionalDistribution(temporalClone, posteriorDist);
     }
 
     private void moveWindow(int nsteps){
@@ -183,11 +181,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
     @Override
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
         if(getTimeIDOfPosterior()==0){
-            Variable staticVar = this.bnTime0.getVariables().getVariableByName(var.getName());
-            return this.infAlgTime0.getPosterior(staticVar);
+            return this.infAlgTime0.getPosterior(var);
         }else{
-            Variable staticVar = this.bnTimeT.getVariables().getVariableByName(var.getName());
-            return this.infAlgTimeT.getPosterior(staticVar);
+            return this.infAlgTimeT.getPosterior(var);
         }
     }
 
@@ -242,7 +238,7 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 .stream()
                 .forEach(var -> {
                     double value = dynamicAssignment.getValue(var);
-                    assignment.setValue(network.getVariables().getVariableByName(var.getName()),value);
+                    assignment.setValue(var, value);
                 });
 
         return assignment;
@@ -257,11 +253,11 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 .stream()
                 .forEach(var -> {
                     double value = dynamicAssignment.getValue(var);
-                    assignment.setValue(network.getVariables().getVariableByName(var.getName()),value);
+                    assignment.setValue(var,value);
 
                     Variable var_interface = var.getInterfaceVariable();
                     double value_interface = dynamicAssignment.getValue(var_interface);
-                    assignment.setValue(network.getVariables().getVariableByName(var_interface.getName()),value_interface);
+                    assignment.setValue(var_interface,value_interface);
 
                 });
 

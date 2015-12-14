@@ -5,7 +5,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.learning.dynamic.MaximumLikelihoodForDBN;
+import eu.amidst.dynamic.learning.dynamic.DynamicMaximumLikelihood;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
@@ -61,12 +61,12 @@ public class MLforDBNfromDataset {
 
         //Parameter Learning
         //We set the batch size which will be employed to learn the model in parallel
-        MaximumLikelihoodForDBN.setBatchSize(1000);
-        MaximumLikelihoodForDBN.setParallelMode(true);
+        DynamicMaximumLikelihood.setBatchSize(1000);
+        DynamicMaximumLikelihood.setParallelMode(true);
 
 
         //We fix the DAG structure, the data and learn the DBN
-        DynamicBayesianNetwork dbn = MaximumLikelihoodForDBN.learnDynamic(
+        DynamicBayesianNetwork dbn = DynamicMaximumLikelihood.learnDynamic(
                 MLforDBNfromDataset.getNaiveBayesStructure(data.getAttributes(),9), data);
 
         //We print the model
