@@ -50,7 +50,7 @@ public class ParallelVBTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
 
         network.getDAG().getVariables().setAttributes(dataFlink.getAttributes());
 
@@ -196,7 +196,7 @@ public class ParallelVBTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -249,7 +249,7 @@ public class ParallelVBTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -302,7 +302,7 @@ public class ParallelVBTest extends TestCase {
         sampler.setHiddenVar(asianet.getVariables().getVariableById(6));
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -349,7 +349,7 @@ public class ParallelVBTest extends TestCase {
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
         //We load the data
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
 
 
         //ParallelVB is defined
@@ -402,7 +402,7 @@ public class ParallelVBTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -439,7 +439,8 @@ public class ParallelVBTest extends TestCase {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/dataFlink/test_not_modify/SmallDataSet.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,
+                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -480,7 +481,8 @@ public class ParallelVBTest extends TestCase {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/dataFlink/test_not_modify/SmallDataSet.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,
+                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning

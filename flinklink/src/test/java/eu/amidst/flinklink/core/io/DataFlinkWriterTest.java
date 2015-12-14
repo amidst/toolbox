@@ -25,7 +25,8 @@ public class DataFlinkWriterTest extends TestCase {
     public static void test1() throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/dataFlink/test_not_modify/SmallDataSet.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,
+                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
 
         DataFlinkWriter.writeDataToARFFFolder(dataFlink, "./datasets/dataFlink/tmp.arff");
 

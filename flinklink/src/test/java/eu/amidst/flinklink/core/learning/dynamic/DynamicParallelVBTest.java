@@ -148,7 +148,7 @@ public class DynamicParallelVBTest extends TestCase {
 
 
         DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
-        data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
+        data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
         System.out.println(list);
@@ -164,7 +164,7 @@ public class DynamicParallelVBTest extends TestCase {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
 
             dataPrev = dataNew;
 
@@ -187,7 +187,8 @@ public class DynamicParallelVBTest extends TestCase {
     public static void testJoin() throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
+        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
+                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
 
@@ -198,7 +199,8 @@ public class DynamicParallelVBTest extends TestCase {
 
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff");
+            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicData(env,
+                    "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
 
             DataSet<Long> dataJoin = data0.getDataSet().join(dataNew.getDataSet(), JoinOperatorBase.JoinHint.REPARTITION_HASH_FIRST).where(
                     new KeySelector<DynamicDataInstance, Long>() {
@@ -236,7 +238,8 @@ public class DynamicParallelVBTest extends TestCase {
     public static void testFlatJoin() throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
+        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
+                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
 
@@ -247,7 +250,8 @@ public class DynamicParallelVBTest extends TestCase {
 
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff");
+            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicData(env,
+                    "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
 
             DataSet<Long> dataJoin = data0.getDataSet().join(dataNew.getDataSet(), JoinOperatorBase.JoinHint.REPARTITION_HASH_FIRST).where(
                     new KeySelector<DynamicDataInstance, Long>() {
@@ -291,7 +295,8 @@ public class DynamicParallelVBTest extends TestCase {
         System.out.println(dbn.toString());
 
 
-        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
+        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
+                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         DynamicParallelVB learn = new DynamicParallelVB();
@@ -318,7 +323,8 @@ public class DynamicParallelVBTest extends TestCase {
         System.out.println(dbn.toString());
 
 
-        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
+        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
+                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         DynamicParallelVB learn = new DynamicParallelVB();
@@ -333,7 +339,8 @@ public class DynamicParallelVBTest extends TestCase {
 
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicData(env, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff");
+            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicData(env,
+                    "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
             learn.updateModelWithNewTimeSlice(i, dataNew);
             assertEquals(SAMPLESIZE, learn.dataPosteriorDataSet.count());
         }
