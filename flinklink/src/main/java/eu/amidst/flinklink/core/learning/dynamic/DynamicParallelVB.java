@@ -312,7 +312,8 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
         this.parallelVBTime0 = new eu.amidst.flinklink.core.learning.parametric.ParallelVB();
         this.parallelVBTime0.setPlateuStructure(Serialization.deepCopy(plateuStructure));
-        this.parallelVBTime0.setTransitionMethod(Serialization.deepCopy(transitionMethod));
+        if (transitionMethod!=null)
+            this.parallelVBTime0.setTransitionMethod(Serialization.deepCopy(transitionMethod));
         this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setMaxIter(1000);
         this.parallelVBTime0.setBatchSize(this.batchSize);
         this.parallelVBTime0.setGlobalThreshold(this.globalThreshold);
@@ -323,7 +324,8 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.parallelVBTime0.initLearning();
 
         this.svbTimeT = new SVB();
-        this.svbTimeT.setPlateuStructure(Serialization.deepCopy(plateuStructure));
+        if (transitionMethod!=null)
+            this.svbTimeT.setPlateuStructure(Serialization.deepCopy(plateuStructure));
         this.svbTimeT.setTransitionMethod(Serialization.deepCopy(transitionMethod));
         this.svbTimeT.getPlateuStructure().getVMP().setMaxIter(1000);
         this.svbTimeT.setWindowsSize(this.batchSize);

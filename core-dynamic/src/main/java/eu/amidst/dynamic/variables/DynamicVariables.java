@@ -481,6 +481,10 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
         public void setAttribute(Attribute att) {
             this.attribute=att;
+            if (att!=null)
+                this.observable = true;
+            else
+                this.observable = false;
         }
 
         /**
