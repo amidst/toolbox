@@ -42,7 +42,7 @@ public class ParallelVMP {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./tmp.arff");
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,"hdfs:///tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,"hdfs:///data.arff");
 
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
@@ -54,7 +54,9 @@ public class ParallelVMP {
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setMaximumGlobalIterations(1);
         parallelVB.setSeed(5);
-        parallelVB.setBatchSize(1000);
+
+        //Set the window size
+        parallelVB.setBatchSize(Integer.parseInt(args[1]));
         VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
