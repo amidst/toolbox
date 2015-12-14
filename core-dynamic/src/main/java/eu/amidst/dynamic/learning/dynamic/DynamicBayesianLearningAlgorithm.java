@@ -17,7 +17,7 @@ import eu.amidst.dynamic.models.DynamicDAG;
 /**
  * Created by ana@cs.aau.dk on 04/03/15.
  */
-public interface BayesianLearningAlgorithmForDBN {
+public interface DynamicBayesianLearningAlgorithm {
 
     double updateModel(DataOnMemory<DynamicDataInstance> batch);
 
