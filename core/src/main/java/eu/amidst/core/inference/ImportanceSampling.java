@@ -50,7 +50,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
 
     private BayesianNetwork model;
     private BayesianNetwork samplingModel;
-    private int sampleSize = 100;
+    private int sampleSize = 10000;
     private List<Variable> causalOrder;
 
     private boolean keepDataOnMemory = true;

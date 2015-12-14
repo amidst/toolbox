@@ -20,6 +20,7 @@ import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 /**
@@ -379,7 +380,7 @@ public class DynamicMAPInference {
             case IS:
             default:
                 ImportanceSampling importanceSampling =  new ImportanceSampling();
-                importanceSampling.setSampleSize(10000);
+                importanceSampling.setSampleSize(15*staticModel.getNumberOfVars());
                 importanceSampling.setKeepDataOnMemory(true);
                 Random random = new Random((this.seed));
                 importanceSampling.setSeed(random.nextInt());
@@ -523,12 +524,17 @@ public class DynamicMAPInference {
 //        System.out.println(Arrays.toString(MAPsequence) + ", with prob. " + MAPsequenceProbability);
 
         MAPestimate = new HashMapAssignment(nTimeSteps);
-        IntStream.range(0,nTimeSteps).forEach(t-> {
-            Variable currentVar = this.staticEvenModel.getVariables().newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t),MAPvariable.getNumberOfStates());
-            MAPestimate.setValue(currentVar,MAPsequence[t]);
-        });
-        MAPestimateLogProbability = Math.log(MAPsequenceProbability);
 
+        if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
+            MAPestimateLogProbability=Double.NaN;
+        }
+        else {
+            IntStream.range(0, nTimeSteps).forEach(t -> {
+                Variable currentVar = this.staticEvenModel.getVariables().newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+                MAPestimate.setValue(currentVar, MAPsequence[t]);
+            });
+            MAPestimateLogProbability = Math.log(MAPsequenceProbability);
+        }
     }
 
     private List<double[]> getCombinedConditionalDistributions( List<UnivariateDistribution> posteriorMAPDistributionsEvenModel , List<UnivariateDistribution> posteriorMAPDistributionsOddModel) {
