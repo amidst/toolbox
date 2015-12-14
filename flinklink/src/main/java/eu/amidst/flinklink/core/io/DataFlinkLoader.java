@@ -232,7 +232,7 @@ public class DataFlinkLoader implements Serializable{
                 attributesToNormalize.stream()
                         .forEach(att ->
                                 dataInstance.setValue(att, (dataInstance.getValue(att) -
-                                        ((RealStateSpace) att.getStateSpaceType()).getMaxInterval())
+                                        ((RealStateSpace) att.getStateSpaceType()).getMinInterval())
                                         / (((RealStateSpace) att.getStateSpaceType()).getMaxInterval() -
                                         ((RealStateSpace) att.getStateSpaceType()).getMinInterval()))
                         );
