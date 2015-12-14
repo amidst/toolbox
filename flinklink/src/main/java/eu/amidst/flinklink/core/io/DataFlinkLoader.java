@@ -17,6 +17,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.datastream.filereaders.arffFileReader.DataRowWeka;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.data.DataFlinkConverter;
@@ -55,15 +57,26 @@ public class DataFlinkLoader implements Serializable{
     String pathFileData;
 
     boolean isARFFFolder;
+    boolean normalize;
 
-    public static DataFlink<DataInstance> loadData(ExecutionEnvironment env, String pathFileData) throws FileNotFoundException{
+    public boolean isNormalize() {
+        return normalize;
+    }
+
+    public void setNormalize(boolean normalize) {
+        this.normalize = normalize;
+    }
+
+    public static DataFlink<DataInstance> loadData(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException{
         DataFlinkLoader loader = new DataFlinkLoader();
         loader.setPathFileData(pathFileData);
+        loader.setNormalize(normalize);
         return new DataFlinkFile(env,loader);
     }
 
-    public static DataFlink<DynamicDataInstance> loadDynamicData(ExecutionEnvironment env, String pathFileData) throws FileNotFoundException{
-        return DataFlinkConverter.convertToDynamic(loadData(env, pathFileData));
+    public static DataFlink<DynamicDataInstance> loadDynamicData(ExecutionEnvironment env, String pathFileData, boolean normalize)
+            throws FileNotFoundException{
+        return DataFlinkConverter.convertToDynamic(loadData(env, pathFileData, normalize));
     }
 
     private DataSet<DataInstance> loadDataSet(ExecutionEnvironment env){
@@ -85,7 +98,7 @@ public class DataFlinkLoader implements Serializable{
                 .filter(line -> !line.startsWith("@attribute"))
                 .filter(line -> !line.startsWith("@relation"))
                 .filter(line -> !line.startsWith("@data"))
-                .map(new DataInstanceBuilder())
+                .map(new DataInstanceBuilder(isNormalize()))
                 .withParameters(config)
                 .withBroadcastSet(attsDataSet, DataFlinkLoader.ATTRIBUTES_NAME + "_" + this.relationName);
     }
@@ -205,10 +218,26 @@ public class DataFlinkLoader implements Serializable{
 
 
         Attributes attributes;
+        List<Attribute> attributesToNormalize;
+        boolean normalize;
+
+        public DataInstanceBuilder(boolean normalize){
+            this.normalize = normalize;
+        }
 
         @Override
         public DataInstance map(String value) throws Exception {
-            return new DataInstanceFromDataRow(new DataRowWeka(attributes,value));
+            DataInstance dataInstance = new DataInstanceFromDataRow(new DataRowWeka(attributes,value));
+            if(normalize) {
+                attributesToNormalize.stream()
+                        .forEach(att ->
+                                dataInstance.setValue(att, (dataInstance.getValue(att) -
+                                        ((RealStateSpace) att.getStateSpaceType()).getMaxInterval())
+                                        / (((RealStateSpace) att.getStateSpaceType()).getMaxInterval() -
+                                        ((RealStateSpace) att.getStateSpaceType()).getMinInterval()))
+                        );
+            }
+            return dataInstance;
         }
 
         @Override
@@ -217,6 +246,13 @@ public class DataFlinkLoader implements Serializable{
             String relationName = parameters.getString(DataFlinkLoader.RELATION_NAME,"");
             Collection<Attributes> collection = getRuntimeContext().getBroadcastVariable(DataFlinkLoader.ATTRIBUTES_NAME+"_"+relationName);
             attributes  = collection.iterator().next();
+            if(normalize) {
+                attributesToNormalize = attributes.getFullListOfAttributes().stream()
+                        .filter(att -> att.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.REAL)
+                        .filter(att -> ((RealStateSpace) att.getStateSpaceType()).getMinInterval() != Double.NEGATIVE_INFINITY)
+                        .filter(att -> ((RealStateSpace) att.getStateSpaceType()).getMaxInterval() != Double.POSITIVE_INFINITY)
+                        .collect(Collectors.toList());
+            }
         }
 
     }

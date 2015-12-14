@@ -182,8 +182,9 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         System.out.println(getOutputFullPath() + "/MONTH1.arff");
+
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicData(env,
-                getOutputFullPath() + "/MONTH1.arff");
+                getOutputFullPath() + "/MONTH1.arff", true);
         DynamicDAG dynamicDAG = getNaiveBayesStructure(data0.getAttributes());
         dbn = new DynamicBayesianNetwork(dynamicDAG);
 
@@ -201,7 +202,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         for (int i = 2; i < 85; i++) {
             System.out.println("--------------- MONTH " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicData(env,
-                    getOutputFullPath()+"/MONTH" + i + ".arff");
+                    getOutputFullPath()+"/MONTH" + i + ".arff" ,true);
             learn.updateModelWithNewTimeSlice(i, dataNew);
         }
         dbn = learn.getLearntDynamicBayesianNetwork();

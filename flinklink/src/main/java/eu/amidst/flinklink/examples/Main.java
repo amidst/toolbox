@@ -48,7 +48,7 @@ public class Main {
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
 
         SVB svb = new SVB();
         svb.setDAG(asianet.getDAG());

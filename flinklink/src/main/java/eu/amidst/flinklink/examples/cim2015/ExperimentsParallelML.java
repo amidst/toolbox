@@ -120,7 +120,7 @@ public class ExperimentsParallelML {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "datasets/sampleBatchSize.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "datasets/sampleBatchSize.arff", false);
 
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setDAG(dag);

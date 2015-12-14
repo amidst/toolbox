@@ -221,10 +221,11 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             //We add an empty batched data set to emit the updated prior.
             DataOnMemory<DataInstance> emtpyBatch = new DataOnMemoryListContainer<DataInstance>(dataUpdate.getAttributes());
+
             DataSet<DataOnMemory<DataInstance>> unionData =
                     dataUpdate.getBatchedDataSet(this.batchSize)
-                    .union(env.fromCollection(Arrays.asList(emtpyBatch),
-                                              TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
+                            .union(env.fromCollection(Arrays.asList(emtpyBatch),
+                                    TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
 
             DataSet<CompoundVector> newparamSet =
                     unionData
