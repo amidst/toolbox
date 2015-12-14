@@ -126,6 +126,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
+        learn.setBatchSize(100);
         learn.setClassIndex(0);
         learn.setAttributes(data0.getAttributes());
         learn.setNumberOfGlobalVars(1);
@@ -149,9 +150,9 @@ public class IDAConceptDriftDetectorTest extends TestCase {
     }
 
     public static void test1()  throws Exception {
-            String networkName = "dbn1";
+        String networkName = "dbn1";
         //createDBN1(true);
-        //createDataSets(networkName,null,null);
+        // createDataSets(networkName,null,null);
         testUpdateN(networkName, 0.1);
     }
 

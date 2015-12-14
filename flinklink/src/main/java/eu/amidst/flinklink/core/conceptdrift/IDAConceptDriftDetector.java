@@ -44,7 +44,7 @@ public class IDAConceptDriftDetector {
 
 
     /** Represents the size of the batch used by the {@link SVB} class*/
-    int batchSize;
+    int batchSize = 1000;
 
     /** Represents the variance added when making a transition*/
     double transitionVariance;
@@ -70,6 +70,10 @@ public class IDAConceptDriftDetector {
 
     /** Represents the attributes*/
     Attributes attributes;
+
+
+    /** **/
+    DynamicDAG globalDynamicDAG;
 
 
     public void setAttributes(Attributes attributes) {
@@ -108,7 +112,7 @@ public class IDAConceptDriftDetector {
     public int getClassIndex(){return classIndex;}
 
     /**
-     * Sets the window size of the concept drift detection model
+     * Sets the batch size of the concept drift detection model
      * @param batchSize, a positive integer value
      */
     public void setBatchSize(int batchSize) {
@@ -153,35 +157,22 @@ public class IDAConceptDriftDetector {
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DynamicDAG dag = new DynamicDAG(variables);
+        this.globalDynamicDAG = new DynamicDAG(variables);
 
         for (Attribute att : attributes.getListOfNonSpecialAttributes()) {
             if (att.getName().equals(className))
                 continue;
 
             Variable variable = variables.getVariableByName(att.getName());
-            dag.getParentSetTimeT(variable).addParent(classVariable);
+            globalDynamicDAG.getParentSetTimeT(variable).addParent(classVariable);
             for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-                dag.getParentSetTimeT(variable).addParent(hiddenVars.get(i));
+                globalDynamicDAG.getParentSetTimeT(variable).addParent(hiddenVars.get(i));
             }
         }
 
         //System.out.println(dag.toString());
 
-        svb = new DynamicParallelVB();
-        svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(1.0);
-        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
-        svb.setBatchSize(this.batchSize);
-        svb.setDAG(dag);
 
-        svb.setOutput(false);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
-        svb.getPlateuStructure().getVMP().setThreshold(0.001);
-
-        svb.initLearning();
     }
 
     /**
@@ -197,6 +188,22 @@ public class IDAConceptDriftDetector {
                 this.buildGlobalDAG();
                 break;
         }
+
+
+        svb = new DynamicParallelVB();
+        svb.setSeed(this.seed);
+        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
+        gaussianHiddenTransitionMethod.setFading(1.0);
+        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+        svb.setBatchSize(this.batchSize);
+        svb.setDAG(globalDynamicDAG);
+
+        svb.setOutput(false);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setThreshold(0.001);
+
+        svb.initLearning();
     }
 
 

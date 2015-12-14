@@ -287,6 +287,29 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     @Override
     public void initLearning() {
 
+
+        this.noLatentVariablesNames =this.dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .filter(p -> p.getMainVar().isObservable())
+                .map(p -> p.getMainVar().getName())
+                .collect(Collectors.toList());
+
+        this.latentVariablesNames = this.dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .flatMap(p -> p.getParents().stream())
+                .filter(v -> v.isInterfaceVariable())
+                .map( v -> this.dynamicDAG.getDynamicVariables().getVariableFromInterface(v))
+                .map(v -> v.getName())
+                .collect(Collectors.toList());
+
+        this.latentInterfaceVariablesNames = this.dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .flatMap(p -> p.getParents().stream())
+                .filter(v -> v.isInterfaceVariable())
+                .map(v -> v.getName())
+                .collect(Collectors.toList());
+
+
         this.parallelVBTime0 = new eu.amidst.flinklink.core.learning.parametric.ParallelVB();
         this.parallelVBTime0.setPlateuStructure(Serialization.deepCopy(plateuStructure));
         this.parallelVBTime0.setTransitionMethod(Serialization.deepCopy(transitionMethod));
@@ -321,25 +344,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.dagTime0=this.dynamicDAG.toDAGTime0();
         this.dagTimeT=this.dynamicDAG.toDAGTimeT();
 
-        this.noLatentVariablesNames =this.dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .map(p -> p.getMainVar().getName())
-                .collect(Collectors.toList());
 
-        this.latentVariablesNames = this.dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .flatMap(p -> p.getParents().stream())
-                .filter(v -> v.isInterfaceVariable())
-                .map( v -> this.dynamicDAG.getDynamicVariables().getVariableFromInterface(v))
-                .map(v -> v.getName())
-                .collect(Collectors.toList());
-
-        this.latentInterfaceVariablesNames = this.dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .flatMap(p -> p.getParents().stream())
-                .filter(v -> v.isInterfaceVariable())
-                .map(v -> v.getName())
-                .collect(Collectors.toList());
     }
 
     @Override
