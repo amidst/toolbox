@@ -15,28 +15,24 @@ public class GenerateData {
 
 public static void main(String[] args) throws Exception {
 
-    // load the true Asia Bayesian network
+    // load the true Bayesian network
     BayesianNetwork originalBnet = BayesianNetworkLoader.loadFromFile(args[0]);
 
     System.out.println("\n Network \n " + args[0]);
-    //System.out.println(originalBnet.getDAG().outputString());
-    //System.out.println(originalBnet.outputString());
+    System.out.println("\n Number of variables \n " + originalBnet.getDAG().getVariables().getNumberOfVars());
 
-    //Sampling from Asia BN
+    //Sampling from the input BN
     BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
     sampler.setSeed(0);
 
-    // Defines the size of the data to be generated
+    // Defines the size of the data to be generated from the input BN
     int sizeData = Integer.parseInt(args[1]);
 
-
-    System.out.println("\n Sampling the data... \n ");
+    System.out.println("\n Sampling and saving the data... \n ");
     
     DataStream<DataInstance> data = sampler.sampleToDataStream(sizeData);
 
-    System.out.println("\n Saving the data... \n ");
-
-    DataStreamWriter.writeDataToFile(data, "./tmp.arff");
+    DataStreamWriter.writeDataToFile(data, "./data.arff");
 }
 
 }
