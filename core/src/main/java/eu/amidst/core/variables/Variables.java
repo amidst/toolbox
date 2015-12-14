@@ -381,6 +381,10 @@ public class Variables implements Iterable<Variable>, Serializable {
 
         public void setAttribute(Attribute attribute) {
             this.attribute = attribute;
+            if (attribute!=null)
+                this.observable = true;
+            else
+                this.observable = false;
         }
 
         /**
