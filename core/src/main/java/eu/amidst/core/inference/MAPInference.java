@@ -626,7 +626,12 @@ public class MAPInference implements PointEstimator {
 
         IntStream auxIntStream = IntStream.range(0, numSamplesAverage);
         //probabilityEstimate = auxIntStream.mapToObj(i -> obtainValuesRandomly(finalAssignment,evidenceAugmented,new Random())).mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as))).average().getAsDouble();
-        probabilityEstimate = auxIntStream.mapToObj(i -> obtainValues(finalAssignment, evidenceAugmented, new Random())).mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as))).average().getAsDouble();
+        try {
+            probabilityEstimate = auxIntStream.mapToObj(i -> obtainValues(finalAssignment, evidenceAugmented, new Random())).mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as))).average().getAsDouble();
+        }
+        catch(Exception e) {
+            probabilityEstimate=0;
+        }
 
         return probabilityEstimate;
 
