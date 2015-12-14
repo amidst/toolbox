@@ -101,6 +101,44 @@ public class ParallelSVBTest extends TestCase {
 
     }
 
+
+    public static void testAsiaNcore2() throws IOException, ClassNotFoundException{
+
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        asianet.randomInitialization(new Random(0));
+        System.out.println("\nAsia network \n ");
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
+        sampler.setSeed(0);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+
+        SVB svb = new SVB();
+        svb.setWindowsSize(1000);
+        svb.setSeed(5);
+        VMP vmp = svb.getPlateuStructure().getVMP();
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(1000);
+        vmp.setThreshold(0.0001);
+
+        ParallelSVB parallelSVB = new ParallelSVB();
+        parallelSVB.setSVBEngine(svb);
+
+        parallelSVB.setDAG(asianet.getDAG());
+
+        parallelSVB.initLearning();
+
+        parallelSVB.updateModelInParallel(data);
+
+        System.out.println(parallelSVB.getLogMarginalProbability());
+
+        BayesianNetwork learnAsianet = parallelSVB.getLearntBayesianNetwork();
+
+        System.out.println(asianet.toString());
+        System.out.println(learnAsianet.toString());
+        assertTrue(asianet.equalBNs(learnAsianet, 0.05));
+
+    }
+
     public static void testAsiaNcoreHidden() throws IOException, ClassNotFoundException{
 
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");

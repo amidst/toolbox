@@ -41,6 +41,8 @@ public class ParallelTANEval {
         tan.setParallelMode(true);
         BayesianNetwork bn = tan.learn(train,10000);
 
+        BayesianNetworkWriter.saveToFile(bn, fileOutput + "_TAN_model.bn");
+
         System.out.println(bn);
 
         Attribute seq_id = train.getAttributes().getSeq_id();
@@ -49,8 +51,6 @@ public class ParallelTANEval {
             dataInstance.setValue(classAtt, Utils.missingValue());
             fw.write(dataInstance.getValue(seq_id) +"\t" + tan.predict(dataInstance)[1]+"\n");
         }
-
-        BayesianNetworkWriter.saveToFile(bn, fileOutput + "_TAN_model.bn");
 
         fw.close();
     }

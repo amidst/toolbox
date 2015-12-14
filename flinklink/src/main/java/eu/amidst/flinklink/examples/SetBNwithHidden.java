@@ -64,7 +64,7 @@ public class SetBNwithHidden {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./data.arff");
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./data.arff", false);
 
         DAG dag = SetBNwithHidden.getHiddenNaiveBayesStructure(dataFlink);
 

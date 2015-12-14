@@ -85,6 +85,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         this.nonInterfaceVariables = new ArrayList<>();
         this.interfaceVariables = new ArrayList<>();
 
+
         for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             VariableBuilder builder;
             if (typeDists.containsKey(att)) {
@@ -130,7 +131,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     public Variable getVariableFromInterface(Variable var){
-        return nonInterfaceVariables.get(var.getVarID());
+        return nonInterfaceVariables.get(var.getVarID()-this.getNumberOfVars());
     }
 
     /*
@@ -294,9 +295,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return this.nonInterfaceVariables;
     }
 
-    //public List<Variable> getListOfInterfaceVariables() {
-    //    return this.interfaceVariables;
-    //}
+    public List<Variable> getListOfInterfaceVariables() {
+        return this.interfaceVariables;
+    }
 
     public Variable getVariableById(int varID) {
        return this.nonInterfaceVariables.get(varID);
@@ -326,7 +327,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     public void block(){
-        //this.nonInterfaceVariables = Collections.unmodifiableList(this.nonInterfaceVariables);
+
+        for (int i = 0; i < this.interfaceVariables.size(); i++) {
+            VariableImplementation var = (VariableImplementation)this.interfaceVariables.get(i);
+            var.setVarID(i+this.getNumberOfVars());
+        }
+
     }
 
     @Override
@@ -421,6 +427,11 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return new VariableImplementation(variable);
         }
 
+
+        public void setVarID(int varID) {
+            this.varID = varID;
+        }
+
         public String getName() {
             return this.name;
         }
@@ -470,6 +481,10 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
         public void setAttribute(Attribute att) {
             this.attribute=att;
+            if (att!=null)
+                this.observable = true;
+            else
+                this.observable = false;
         }
 
         /**

@@ -6,7 +6,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
-import eu.amidst.dynamic.learning.dynamic.MaximumLikelihoodForDBN;
+import eu.amidst.dynamic.learning.dynamic.DynamicMaximumLikelihood;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
@@ -54,12 +54,12 @@ public class MLDBNTest {
         // and just apply then test parameter learning
 
         //Parameter Learning
-        MaximumLikelihoodForDBN.setBatchSize(1000);
-        MaximumLikelihoodForDBN.setParallelMode(true);
+        DynamicMaximumLikelihood.setBatchSize(1000);
+        DynamicMaximumLikelihood.setParallelMode(true);
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dynamicNB.getDynamicDAG(), data);
+        DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
         System.out.println(watch.stop());
         System.out.println();
@@ -105,12 +105,12 @@ public class MLDBNTest {
         // and just apply then test parameter learning
 
         //Parameter Learning
-        MaximumLikelihoodForDBN.setBatchSize(1000);
-        MaximumLikelihoodForDBN.setParallelMode(true);
+        DynamicMaximumLikelihood.setBatchSize(1000);
+        DynamicMaximumLikelihood.setParallelMode(true);
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dynamicNB.getDynamicDAG(), data);
+        DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
         System.out.println(watch.stop());
         System.out.println();
@@ -156,12 +156,12 @@ public class MLDBNTest {
         // and just apply then test parameter learning
 
         //Parameter Learning
-        MaximumLikelihoodForDBN.setBatchSize(1000);
-        MaximumLikelihoodForDBN.setParallelMode(true);
+        DynamicMaximumLikelihood.setBatchSize(1000);
+        DynamicMaximumLikelihood.setParallelMode(true);
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dynamicNB.getDynamicDAG(), data);
+        DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
         System.out.println(watch.stop());
         System.out.println();
@@ -230,12 +230,12 @@ public class MLDBNTest {
         // and just apply then test parameter learning
 
         //Parameter Learning
-        MaximumLikelihoodForDBN.setBatchSize(1000);
-        MaximumLikelihoodForDBN.setParallelMode(false);
+        DynamicMaximumLikelihood.setBatchSize(1000);
+        DynamicMaximumLikelihood.setParallelMode(false);
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dynamicNB.getDynamicDAG(), data);
+        DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
         System.out.println(watch.stop());
         System.out.println();
@@ -311,12 +311,12 @@ public class MLDBNTest {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            MaximumLikelihoodForDBN.setBatchSize(1000);
-            MaximumLikelihoodForDBN.setParallelMode(true);
+            DynamicMaximumLikelihood.setBatchSize(1000);
+            DynamicMaximumLikelihood.setParallelMode(true);
 
             Stopwatch watch = Stopwatch.createStarted();
 
-            DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dynamicNB.getDynamicDAG(), data);
+            DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
             System.out.println(watch.stop());
             System.out.println();
@@ -389,15 +389,15 @@ public class MLDBNTest {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            MaximumLikelihoodForDBN.setBatchSize(1000);
-            MaximumLikelihoodForDBN.setParallelMode(true);
+            DynamicMaximumLikelihood.setBatchSize(1000);
+            DynamicMaximumLikelihood.setParallelMode(true);
 
             Stopwatch watch = Stopwatch.createStarted();
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
 
 
-            DynamicBayesianNetwork bnet = MaximumLikelihoodForDBN.learnDynamic(dynamicNB.getDynamicDAG(), data);
+            DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
 
             System.out.println(watch.stop());
             System.out.println();

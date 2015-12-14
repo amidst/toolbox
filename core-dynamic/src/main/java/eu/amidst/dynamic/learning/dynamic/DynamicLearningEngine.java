@@ -19,10 +19,10 @@ import eu.amidst.core.variables.Variable;
 /**
  * Created by andresmasegosa on 06/01/15.
  */
-public final class LearningEngineForDBN {
-    private static DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm = MaximumLikelihoodForDBN::learnDynamic;
+public final class DynamicLearningEngine {
+    private static DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm = DynamicMaximumLikelihood::learnDynamic;
 
-    private static DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm = LearningEngineForDBN::dynamicNaiveBayesStructure;
+    private static DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm = DynamicLearningEngine::dynamicNaiveBayesStructure;
 
 
     private static DynamicDAG dynamicNaiveBayesStructure(DataStream<DynamicDataInstance> dataStream){
@@ -43,12 +43,12 @@ public final class LearningEngineForDBN {
 
 
     public static void setDynamicParameterLearningAlgorithm(DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm) {
-        LearningEngineForDBN.dynamicParameterLearningAlgorithm = dynamicParameterLearningAlgorithm;
+        DynamicLearningEngine.dynamicParameterLearningAlgorithm = dynamicParameterLearningAlgorithm;
     }
 
 
     public static void setDynamicStructuralLearningAlgorithm(DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm) {
-        LearningEngineForDBN.dynamicStructuralLearningAlgorithm = dynamicStructuralLearningAlgorithm;
+        DynamicLearningEngine.dynamicStructuralLearningAlgorithm = dynamicStructuralLearningAlgorithm;
     }
 
 

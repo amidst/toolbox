@@ -9,26 +9,24 @@
  *
  */
 
-package eu.amidst.flinklink.core.io;
+package eu.amidst.cajamareval;
 
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.flinklink.core.data.DataFlink;
-import junit.framework.TestCase;
-import org.apache.flink.api.java.ExecutionEnvironment;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
 
 /**
- * Created by andresmasegosa on 23/9/15.
+ * Created by andresmasegosa on 9/12/15.
  */
-public class DataFlinkWriterTest extends TestCase {
+public class Main {
 
 
-    public static void test1() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+    public static void main(String[] args) throws Exception {
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env,
-                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
-
-        DataFlinkWriter.writeDataToARFFFolder(dataFlink, "./datasets/dataFlink/tmp.arff");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/pigs.bn");
+        System.out.println(bn.getNumberOfVars());
+        //System.out.println(BayesianNetworkLoader.loadFromFile("./datasets/cajamar/outputTANOperativos.txt_TAN_model.bn"));
 
     }
+
+
 }

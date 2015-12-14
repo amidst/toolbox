@@ -99,7 +99,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
     public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
 
         for (Variable localVar : this.localHiddenVars) {
-            Normal normalGlobalHiddenPreviousTimeStep = plateuStructure.getEFVariablePosterior(localVar, 0).toUnivariateDistribution();
+            Normal normalGlobalHiddenPreviousTimeStep = plateuStructure.getEFParameterPosterior(localVar).toUnivariateDistribution();
 
             EF_Normal normal = bayesianNetwork.getDistribution(localVar);
 

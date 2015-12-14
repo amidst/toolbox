@@ -15,15 +15,14 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
-import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
-import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
-import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.learning.parametric.bayesian.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.core.utils.Serialization;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -81,6 +80,14 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     public ParallelVB(){
         this.svb = new SVB();
+    }
+
+    public void setPlateuStructure(PlateuStructure plateuStructure){
+        this.svb.setPlateuStructure(plateuStructure);
+    }
+
+    public void setTransitionMethod(TransitionMethod transitionMethod){
+        this.svb.setTransitionMethod(transitionMethod);
     }
 
     public void setGlobalThreshold(double globalThreshold) {
@@ -214,10 +221,11 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             //We add an empty batched data set to emit the updated prior.
             DataOnMemory<DataInstance> emtpyBatch = new DataOnMemoryListContainer<DataInstance>(dataUpdate.getAttributes());
+
             DataSet<DataOnMemory<DataInstance>> unionData =
                     dataUpdate.getBatchedDataSet(this.batchSize)
-                    .union(env.fromCollection(Arrays.asList(emtpyBatch),
-                                              TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
+                            .union(env.fromCollection(Arrays.asList(emtpyBatch),
+                                    TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
 
             DataSet<CompoundVector> newparamSet =
                     unionData
@@ -279,6 +287,12 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     }
 
 
+    public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter) {
+            return this.svb.getParameterPosterior(parameter);
+    }
+
+
+
     public static class ParallelVBMap extends RichMapFunction<DataOnMemory<DataInstance>, CompoundVector> {
 
         DoubleSumAggregator elbo;
@@ -289,12 +303,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
 
             if (dataBatch.getNumberOfDataInstances()==0){
-                //System.out.println(this.svb.getLearntBayesianNetwork().toString());
                 return this.svb.getNaturalParameterPrior();
             }else {
                 SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
-                //System.out.println("DIFF 36:" + out.getVector().getVectorByPosition(36).get(0)+", "+out.getVector().getVectorByPosition(36).get(1));
-                //System.out.println("DIFF 37:" + out.getVector().getVectorByPosition(37).get(0)+", "+out.getVector().getVectorByPosition(37).get(1));
 
                 elbo.aggregate(out.getElbo() / svb.getPlateuStructure().getVMP().getNodes().size());
                 return out.getVector();
@@ -309,16 +320,10 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             String bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
 
-
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
 
-            //System.out.println("Prior 36\t" + updatedPrior.getVectorByPosition(36).get(0)+"\t"+updatedPrior.getVectorByPosition(36).get(1));
-            //System.out.println("Prior 37:" + updatedPrior.getVectorByPosition(37).get(0)+", "+updatedPrior.getVectorByPosition(37).get(1));
-
             svb.updateNaturalParameterPrior(updatedPrior);
-
-            //System.out.println("PriorP 36\t" + svb.getNaturalParameterPrior().getVectorByPosition(36).get(0) + "\t" + svb.getNaturalParameterPrior().getVectorByPosition(36).get(1));
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
         }

@@ -59,9 +59,14 @@ public class CSVtoARFFHeader {
         source1.close();
         reader1.close();
 
+        boolean[] isVariableCategorical = new boolean[numberOfVariables];
+        for (int i = 0; i < isVariableCategorical.length; i++) {
+            isVariableCategorical[i]=false;
+        }
+
         boolean[] isVariableContinuous = new boolean[numberOfVariables];
         for (int i = 0; i < isVariableContinuous.length; i++) {
-            isVariableContinuous[i]=true;
+            isVariableContinuous[i]=false;
         }
 
         List<HashSet<String>> varStates = new ArrayList<>(numberOfVariables);
@@ -102,13 +107,26 @@ public class CSVtoARFFHeader {
                             double dd=0;
                             try {
                                 dd = Double.parseDouble(values[k]);
+                                if( !(dd == Math.floor(dd)) ) {
+                                    isVariableContinuous[k]=true;
+
+                                    if (varStates.get(k).size()<=10) {
+                                        varStates.get(k).add(values[k]);
+                                    }
+                                }
+                                else {
+                                    if (varStates.get(k).size()<=10) {
+                                        varStates.get(k).add(values[k]);
+                                    }
+                                }
                             }
                             catch (NumberFormatException e) {
-                                isVariableContinuous[k] = false;
+                                isVariableCategorical[k] = true;
+                                varStates.get(k).add(values[k]);
                             }
 
-                            if ( values[k].contains("s") || Double.isNaN(dd) || !isVariableContinuous[k] ) {
-                                isVariableContinuous[k] = false;
+                            if ( values[k].contains("s") || Double.isNaN(dd) ) {
+                                isVariableCategorical[k] = true;
                                 varStates.get(k).add(values[k]);
                             }
                         }
@@ -146,7 +164,7 @@ public class CSVtoARFFHeader {
         IntStream.range(0, variableNames.size()).forEach(i -> {
             varStates.get(i).remove("?");
             String varValues;
-            if (isVariableContinuous[i]) {
+            if ( (!isVariableCategorical[i] && isVariableContinuous[i]) || (!isVariableCategorical[i] && varStates.get(i).size() > 10)) {
                 varValues = "real";
             } else {
 

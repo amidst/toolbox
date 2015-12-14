@@ -17,40 +17,40 @@ import eu.amidst.dynamic.models.DynamicDAG;
 /**
  * Created by ana@cs.aau.dk on 04/03/15.
  */
-public final class BayesianLearningEngineForDBN {
+public final class DynamicBayesianLearningEngine {
 
-    private static BayesianLearningAlgorithmForDBN bayesianLearningAlgorithmForDBN = new StreamingVariationalBayesVMPForDBN();
+    private static DynamicBayesianLearningAlgorithm dynamicBayesianLearningAlgorithm = new DynamicSVB();
 
-    public static void setBayesianLearningAlgorithmForDBN(BayesianLearningAlgorithmForDBN bayesianLearningAlgorithmForDBN) {
-        BayesianLearningEngineForDBN.bayesianLearningAlgorithmForDBN = bayesianLearningAlgorithmForDBN;
+    public static void setDynamicBayesianLearningAlgorithm(DynamicBayesianLearningAlgorithm dynamicBayesianLearningAlgorithm) {
+        DynamicBayesianLearningEngine.dynamicBayesianLearningAlgorithm = dynamicBayesianLearningAlgorithm;
     }
 
     public static double updateModel(DataOnMemory<DynamicDataInstance> batch){
-        return bayesianLearningAlgorithmForDBN.updateModel(batch);
+        return dynamicBayesianLearningAlgorithm.updateModel(batch);
     }
 
     public static void runLearning() {
-        bayesianLearningAlgorithmForDBN.runLearning();
+        dynamicBayesianLearningAlgorithm.runLearning();
     }
 
     public static double getLogMarginalProbability(){
-        return bayesianLearningAlgorithmForDBN.getLogMarginalProbability();
+        return dynamicBayesianLearningAlgorithm.getLogMarginalProbability();
     }
 
     public static void setDataStream(DataStream<DynamicDataInstance> data){
-        bayesianLearningAlgorithmForDBN.setDataStream(data);
+        dynamicBayesianLearningAlgorithm.setDataStream(data);
     }
 
     public void setParallelMode(boolean parallelMode) {
-        bayesianLearningAlgorithmForDBN.setParallelMode(parallelMode);
+        dynamicBayesianLearningAlgorithm.setParallelMode(parallelMode);
     }
 
     public static void setDynamicDAG(DynamicDAG dag){
-        bayesianLearningAlgorithmForDBN.setDynamicDAG(dag);
+        dynamicBayesianLearningAlgorithm.setDynamicDAG(dag);
     }
 
     public static DynamicBayesianNetwork getLearntDBN(){
-        return bayesianLearningAlgorithmForDBN.getLearntDBN();
+        return dynamicBayesianLearningAlgorithm.getLearntDBN();
     }
 
     public static void main(String[] args) throws Exception{

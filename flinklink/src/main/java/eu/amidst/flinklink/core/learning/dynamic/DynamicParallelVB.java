@@ -9,14 +9,12 @@
  *
  */
 
-package eu.amidst.flinklink.cajamar;
+package eu.amidst.flinklink.core.learning.dynamic;
 
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
-import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
-import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
@@ -30,7 +28,6 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.data.DataFlinkConverter;
-import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.JoinFunction;
@@ -53,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 21/09/15.
  */
-public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
+public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializable{
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -73,15 +70,35 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
 
     protected double globalThreshold = 0.0001;
 
-    protected ParallelVB parallelVBTime0;
+    protected eu.amidst.flinklink.core.learning.parametric.ParallelVB parallelVBTime0;
     protected SVB svbTimeT;
 
     transient DataSet<DataPosteriorAssignment> dataPosteriorDataSet;
 
+    PlateuStructure plateuStructure = new PlateuStructure();
+    TransitionMethod transitionMethod;
 
     protected List<String> latentVariablesNames;
     protected List<String> latentInterfaceVariablesNames;
     protected List<String> noLatentVariablesNames;
+
+
+
+    public void setPlateuStructure(PlateuStructure plateuStructure){
+        this.plateuStructure = plateuStructure;
+    }
+
+    public PlateuStructure getPlateuStructure() {
+        return plateuStructure;
+    }
+
+    public void setTransitionMethod(TransitionMethod transitionMethod) {
+        this.transitionMethod = transitionMethod;
+    }
+
+    public TransitionMethod getTransitionMethod() {
+        return transitionMethod;
+    }
 
     @Override
     public void updateModelWithNewTimeSlice(int timeSlice, DataFlink<DynamicDataInstance> data) {
@@ -133,11 +150,11 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
 
             // set number of bulk iterations for KMeans algorithm
             IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
-                    .registerAggregationConvergenceCriterion("ELBO_" + this.dagTimeT.getName(), new DoubleSumAggregator(), new ParallelVB.ConvergenceELBO(this.globalThreshold));
+                    .registerAggregationConvergenceCriterion("ELBO_" + this.dagTimeT.getName(), new DoubleSumAggregator(), new eu.amidst.flinklink.core.learning.parametric.ParallelVB.ConvergenceELBO(this.globalThreshold));
 
             Configuration config = new Configuration();
             config.setString(eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm.BN_NAME, this.dagTimeT.getName());
-            config.setBytes(ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
+            config.setBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
             config.setBytes(LATENT_INTERFACE_VARIABLE_NAMES, Serialization.serializeObject(this.latentInterfaceVariablesNames));
 
             List<DataPosteriorAssignment> emtpyBatch = new ArrayList<DataPosteriorAssignment>();
@@ -148,10 +165,10 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
 
 
             DataSet<CompoundVector> newparamSet = unionData
-                    .map(new CajaMarLearn.ParallelVBMap(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables()))
+                    .map(new DynamicParallelVB.ParallelVBMap(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables()))
                     .withParameters(config)
                     .withBroadcastSet(loop, "VB_PARAMS_" + this.dagTimeT.getName())
-                    .reduce(new ParallelVB.ParallelVBReduce());
+                    .reduce(new eu.amidst.flinklink.core.learning.parametric.ParallelVB.ParallelVBReduce());
 
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
@@ -164,7 +181,7 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
 
             config = new Configuration();
             config.setString(eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm.BN_NAME, this.dagTimeT.getName());
-            config.setBytes(ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
+            config.setBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
             config.setBytes(LATENT_VARIABLE_NAMES, Serialization.serializeObject(this.latentVariablesNames));
             config.setBytes(LATENT_INTERFACE_VARIABLE_NAMES, Serialization.serializeObject(this.latentInterfaceVariablesNames));
 
@@ -244,9 +261,59 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
         this.batchSize = batchSize;
     }
 
+
+    public <E extends UnivariateDistribution> E getParameterPosteriorTime0(Variable parameter) {
+
+        if (parameter.isParameterVariable()) {
+            Variable newVar =this.parallelVBTime0.getSVB().getPlateuStructure().getEFLearningBN().getParametersVariables().getVariableByName(parameter.getName());
+            return this.parallelVBTime0.getParameterPosterior(newVar);
+        }else {
+            Variable newVar =this.dagTime0.getVariables().getVariableByName(parameter.getName());
+            return this.parallelVBTime0.getParameterPosterior(newVar);
+
+        }
+    }
+
+    public <E extends UnivariateDistribution> E getParameterPosteriorTimeT(Variable parameter) {
+        if (parameter.isParameterVariable()) {
+            Variable newVar =this.svbTimeT.getPlateuStructure().getEFLearningBN().getParametersVariables().getVariableByName(parameter.getName());
+            return this.svbTimeT.getParameterPosterior(newVar);
+        }else {
+            Variable newVar =this.dagTimeT.getVariables().getVariableByName(parameter.getName());
+            return this.svbTimeT.getParameterPosterior(newVar);
+        }
+    }
+
     @Override
     public void initLearning() {
-        this.parallelVBTime0 = new ParallelVB();
+
+
+        this.noLatentVariablesNames =this.dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .filter(p -> p.getMainVar().isObservable())
+                .map(p -> p.getMainVar().getName())
+                .collect(Collectors.toList());
+
+        this.latentVariablesNames = this.dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .flatMap(p -> p.getParents().stream())
+                .filter(v -> v.isInterfaceVariable())
+                .map( v -> this.dynamicDAG.getDynamicVariables().getVariableFromInterface(v))
+                .map(v -> v.getName())
+                .collect(Collectors.toList());
+
+        this.latentInterfaceVariablesNames = this.dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .flatMap(p -> p.getParents().stream())
+                .filter(v -> v.isInterfaceVariable())
+                .map(v -> v.getName())
+                .collect(Collectors.toList());
+
+
+        this.parallelVBTime0 = new eu.amidst.flinklink.core.learning.parametric.ParallelVB();
+        this.parallelVBTime0.setPlateuStructure(Serialization.deepCopy(plateuStructure));
+        if (transitionMethod!=null)
+            this.parallelVBTime0.setTransitionMethod(Serialization.deepCopy(transitionMethod));
         this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setMaxIter(1000);
         this.parallelVBTime0.setBatchSize(this.batchSize);
         this.parallelVBTime0.setGlobalThreshold(this.globalThreshold);
@@ -257,6 +324,9 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
         this.parallelVBTime0.initLearning();
 
         this.svbTimeT = new SVB();
+        if (transitionMethod!=null)
+            this.svbTimeT.setPlateuStructure(Serialization.deepCopy(plateuStructure));
+        this.svbTimeT.setTransitionMethod(Serialization.deepCopy(transitionMethod));
         this.svbTimeT.getPlateuStructure().getVMP().setMaxIter(1000);
         this.svbTimeT.setWindowsSize(this.batchSize);
         this.svbTimeT.setOutput(this.output);
@@ -276,25 +346,7 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
         this.dagTime0=this.dynamicDAG.toDAGTime0();
         this.dagTimeT=this.dynamicDAG.toDAGTimeT();
 
-        this.noLatentVariablesNames =this.dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .map(p -> p.getMainVar().getName())
-                .collect(Collectors.toList());
 
-        this.latentVariablesNames = this.dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .flatMap(p -> p.getParents().stream())
-                .filter(v -> v.isInterfaceVariable())
-                .map( v -> this.dynamicDAG.getDynamicVariables().getVariableFromInterface(v))
-                .map(v -> v.getName())
-                .collect(Collectors.toList());
-
-        this.latentInterfaceVariablesNames = this.dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .flatMap(p -> p.getParents().stream())
-                .filter(v -> v.isInterfaceVariable())
-                .map(v -> v.getName())
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -414,7 +466,7 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
-            svb = Serialization.deserializeObject(parameters.getBytes(ParallelVB.SVB, null));
+            svb = Serialization.deserializeObject(parameters.getBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, null));
             List<String> variableNames = Serialization.deserializeObject(parameters.getBytes(LATENT_VARIABLE_NAMES, null));
             List<String> interfaceVariablenames = Serialization.deserializeObject(parameters.getBytes(LATENT_INTERFACE_VARIABLE_NAMES, null));
 
@@ -591,8 +643,8 @@ public class CajaMarLearn implements ParameterLearningAlgorithm, Serializable{
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
-            String bnName = parameters.getString(ParallelVB.BN_NAME, "");
-            svb = Serialization.deserializeObject(parameters.getBytes(ParallelVB.SVB, null));
+            String bnName = parameters.getString(eu.amidst.flinklink.core.learning.parametric.ParallelVB.BN_NAME, "");
+            svb = Serialization.deserializeObject(parameters.getBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, null));
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
             svb.updateNaturalParameterPrior(updatedPrior);
