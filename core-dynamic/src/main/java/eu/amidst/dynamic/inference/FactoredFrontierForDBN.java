@@ -238,7 +238,7 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 .stream()
                 .forEach(var -> {
                     double value = dynamicAssignment.getValue(var);
-                    assignment.setValue(network.getVariables().getVariableByName(var.getName()),value);
+                    assignment.setValue(var, value);
                 });
 
         return assignment;
@@ -253,11 +253,11 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 .stream()
                 .forEach(var -> {
                     double value = dynamicAssignment.getValue(var);
-                    assignment.setValue(network.getVariables().getVariableByName(var.getName()),value);
+                    assignment.setValue(var,value);
 
                     Variable var_interface = var.getInterfaceVariable();
                     double value_interface = dynamicAssignment.getValue(var_interface);
-                    assignment.setValue(network.getVariables().getVariableByName(var_interface.getName()),value_interface);
+                    assignment.setValue(var_interface,value_interface);
 
                 });
 

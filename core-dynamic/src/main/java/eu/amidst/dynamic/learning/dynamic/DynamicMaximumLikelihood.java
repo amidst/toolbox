@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 /**
  * Created by andresmasegosa on 06/01/15.
  */
-public final class MaximumLikelihoodForDBN {
+public final class DynamicMaximumLikelihood {
 
     private static int batchSize = 1000;
     private static boolean parallelMode = true;
@@ -31,7 +31,7 @@ public final class MaximumLikelihoodForDBN {
     }
 
     public static void setBatchSize(int batchSize) {
-        MaximumLikelihoodForDBN.batchSize = batchSize;
+        DynamicMaximumLikelihood.batchSize = batchSize;
     }
 
     public static boolean isParallelMode() {
@@ -39,7 +39,7 @@ public final class MaximumLikelihoodForDBN {
     }
 
     public static void setParallelMode(boolean parallelMode) {
-        MaximumLikelihoodForDBN.parallelMode = parallelMode;
+        DynamicMaximumLikelihood.parallelMode = parallelMode;
     }
 
     public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataStream<DynamicDataInstance> dataStream) {

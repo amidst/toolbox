@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 10/03/15.
  */
-public class PlateuVMPDBN {
+public class DynamicPlateauStructure {
     List<Node> parametersNodeTime0;
     List<Node> parametersNodeTimeT;
 
