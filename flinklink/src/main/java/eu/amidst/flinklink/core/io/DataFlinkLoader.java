@@ -28,7 +28,6 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.configuration.Configuration;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -67,16 +66,28 @@ public class DataFlinkLoader implements Serializable{
         this.normalize = normalize;
     }
 
-    public static DataFlink<DataInstance> loadData(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException{
+    public static DataFlink<DataInstance> loadDataFromFile(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException{
         DataFlinkLoader loader = new DataFlinkLoader();
         loader.setPathFileData(pathFileData);
         loader.setNormalize(normalize);
         return new DataFlinkFile(env,loader);
     }
 
-    public static DataFlink<DynamicDataInstance> loadDynamicData(ExecutionEnvironment env, String pathFileData, boolean normalize)
+    public static DataFlink<DataInstance> loadDataFromFolder(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException{
+        DataFlinkLoader loader = new DataFlinkLoader();
+        loader.setPathFolderData(pathFileData);
+        loader.setNormalize(normalize);
+        return new DataFlinkFile(env,loader);
+    }
+
+    public static DataFlink<DynamicDataInstance> loadDynamicDataFromFile(ExecutionEnvironment env, String pathFileData, boolean normalize)
             throws FileNotFoundException{
-        return DataFlinkConverter.convertToDynamic(loadData(env, pathFileData, normalize));
+        return DataFlinkConverter.convertToDynamic(loadDataFromFile(env, pathFileData, normalize));
+    }
+
+    public static DataFlink<DynamicDataInstance> loadDynamicDataFromFolder(ExecutionEnvironment env, String pathFileData, boolean normalize)
+            throws FileNotFoundException{
+        return DataFlinkConverter.convertToDynamic(loadDataFromFile(env, pathFileData, normalize));
     }
 
     private DataSet<DataInstance> loadDataSet(ExecutionEnvironment env){
@@ -104,21 +115,17 @@ public class DataFlinkLoader implements Serializable{
     }
 
 
-    private void setPathFileData(String pathFileData) throws FileNotFoundException {
+    private void setPathFolderData(String pathFileData) throws FileNotFoundException {
+        this.isARFFFolder= true;
+        this.pathFileData=pathFileData+"/data/";
+        this.pathFileHeader=pathFileData+"/attributes.txt";
+        this.pathFileName = pathFileData+"/name.txt";
+    }
 
-        File file = new File(pathFileData);
-        if(!file.exists())
-            throw new FileNotFoundException();
-        if (file.isDirectory()){
-            this.isARFFFolder= true;
-            this.pathFileData=pathFileData+"/data/";
-            this.pathFileHeader=pathFileData+"/attributes.txt";
-            this.pathFileName = pathFileData+"/name.txt";
-        }else {
-            this.isARFFFolder= false;
-            this.pathFileData = pathFileData;
-            this.pathFileHeader = pathFileData;
-        }
+    private void setPathFileData(String pathFileData) throws FileNotFoundException {
+        this.isARFFFolder= false;
+        this.pathFileData = pathFileData;
+        this.pathFileHeader = pathFileData;
     }
 
     private Attributes getAttributes() {

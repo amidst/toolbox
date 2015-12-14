@@ -51,7 +51,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -94,7 +94,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
