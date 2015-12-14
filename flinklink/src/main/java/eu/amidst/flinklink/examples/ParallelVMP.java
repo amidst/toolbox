@@ -39,6 +39,7 @@ public class ParallelVMP {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./tmp.arff");
+
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,args[2], false);
 
 
@@ -51,7 +52,9 @@ public class ParallelVMP {
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(5);
-        parallelVB.setBatchSize(1000);
+
+        //Set the window size
+        parallelVB.setBatchSize(Integer.parseInt(args[1]));
         VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
