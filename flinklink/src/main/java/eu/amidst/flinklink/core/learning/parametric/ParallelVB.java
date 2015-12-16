@@ -117,7 +117,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         //this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.setDAG(this.dag);
         this.svb.setWindowsSize(batchSize);
-        this.svb.initLearning();
+        this.svb.initLearning(); //Init learning is peformed in each mapper.
     }
 
 
@@ -207,7 +207,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     }
     public void updateModel(DataFlink<DataInstance> dataUpdate){
 
-        try{
+        //try{
             final ExecutionEnvironment env = dataUpdate.getDataSet().getExecutionEnvironment();
 
             // get input data
@@ -226,11 +226,16 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             //We add an empty batched data set to emit the updated prior.
             DataOnMemory<DataInstance> emtpyBatch = new DataOnMemoryListContainer<DataInstance>(dataUpdate.getAttributes());
+            DataSet<DataOnMemory<DataInstance>> unionData = null;
 
-            DataSet<DataOnMemory<DataInstance>> unionData =
-                    dataUpdate.getBatchedDataSet(this.batchSize)
-                            .union(env.fromCollection(Arrays.asList(emtpyBatch),
-                                    TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
+            try{
+                unionData =
+                        dataUpdate.getBatchedDataSet(this.batchSize)
+                                .union(env.fromCollection(Arrays.asList(emtpyBatch),
+                                        TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
+            }catch(Exception ex){
+                throw new RuntimeException(ex.getMessage());
+            }
 
             DataSet<CompoundVector> newparamSet =
                     unionData
@@ -242,14 +247,17 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
-            parameterPrior.sum(finlparamSet.collect().get(0));
+            try {
+                parameterPrior.sum(finlparamSet.collect().get(0));
+            }catch(Exception ex){
+                throw new RuntimeException(ex.getMessage());
+            }
+
             this.svb.updateNaturalParameterPrior(parameterPrior);
 
-            this.globalELBO = convergenceELBO.getELBO();
+            this.globalELBO = ((ConvergenceELBO)loop.getAggregators().getConvergenceCriterion()).getELBO();
 
-        }catch(Exception ex){
-            throw new RuntimeException(ex.getMessage());
-        }
+
     }
 
 
@@ -327,6 +335,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             super.open(parameters);
             String bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
+            svb.initLearning();
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
@@ -353,6 +362,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
+            svb.initLearning();
             latentVariables = Serialization.deserializeObject(parameters.getBytes(LATENT_VARS, null));
         }
     }
@@ -380,6 +390,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
+            svb.initLearning();
             latentVariables = Serialization.deserializeObject(parameters.getBytes(LATENT_VARS, null));
         }
     }

@@ -467,6 +467,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
             svb = Serialization.deserializeObject(parameters.getBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, null));
+            svb.initLearning();
             List<String> variableNames = Serialization.deserializeObject(parameters.getBytes(LATENT_VARIABLE_NAMES, null));
             List<String> interfaceVariablenames = Serialization.deserializeObject(parameters.getBytes(LATENT_INTERFACE_VARIABLE_NAMES, null));
 
@@ -645,6 +646,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             super.open(parameters);
             String bnName = parameters.getString(eu.amidst.flinklink.core.learning.parametric.ParallelVB.BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, null));
+            svb.initLearning();
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
             svb.updateNaturalParameterPrior(updatedPrior);

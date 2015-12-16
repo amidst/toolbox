@@ -47,12 +47,12 @@ public class PlateuStructure implements Serializable {
     /**
      * Represents the list of non replicated {@link Node}s.
      */
-    protected List<Node> nonReplictedNodes;
+    transient protected List<Node> nonReplictedNodes;
 
     /**
      * Represents the list of replicated nodes {@link Node}s.
      */
-    protected List<List<Node>> replicatedNodes;
+    transient protected List<List<Node>> replicatedNodes;
 
     /**
      * Represents the {@link EF_LearningBayesianNetwork} model.
@@ -72,12 +72,12 @@ public class PlateuStructure implements Serializable {
     /**
      * Represents a {@code Map} object that maps {@link Variable} parameters to the corresponding {@link Node}s.
      */
-    protected Map<Variable, Node> nonReplicatedVarsToNode;
+    transient protected Map<Variable, Node> nonReplicatedVarsToNode;
 
     /**
      * Represents the list of {@code Map} objects that map {@link Variable}s to the corresponding {@link Node}s.
      */
-    protected List<Map<Variable, Node>> replicatedVarsToNode;
+    transient protected List<Map<Variable, Node>> replicatedVarsToNode;
 
 
     /**
@@ -429,5 +429,6 @@ public class PlateuStructure implements Serializable {
         this.ef_learningmodel.getParametersVariables().getListOfParamaterVariables().stream()
                 .forEach(var -> this.getNodeOfNonReplicatedVar(var).setActive(true));
     }
+
 
 }
