@@ -47,10 +47,10 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     protected Assignment assignment = new HashMapAssignment(0);
 
     /** Represents the list of {@link Node}s. */
-    protected List<Node> nodes;
+    transient protected List<Node> nodes;
 
     /** Represents a {@code Map} object that maps variables to nodes. */
-    protected Map<Variable,Node> variablesToNode;
+    transient protected Map<Variable,Node> variablesToNode;
 
     /** Represents the probability of evidence. */
     protected double probOfEvidence = Double.NaN;
@@ -356,5 +356,5 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
      * @return the log probability of the evidence
      */
     public abstract double computeLogProbabilityOfEvidence();
-
+    
 }

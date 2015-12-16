@@ -421,7 +421,7 @@ public class ParallelVBTest extends TestCase {
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(5);
-        parallelVB.setBatchSize(100);
+        parallelVB.setBatchSize(1000);
         VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
         vmp.setOutput(true);
         vmp.setTestELBO(true);
