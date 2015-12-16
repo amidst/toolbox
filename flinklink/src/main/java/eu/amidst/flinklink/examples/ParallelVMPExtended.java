@@ -96,9 +96,9 @@ public class ParallelVMPExtended {
      *
      * windowSize = 1000
      *
-     * globalIter = 1000
+     * globalIter = 10
      *
-     * localIter = 10
+     * localIter = 100
      *
      * Other test with windowSize = 100
      *

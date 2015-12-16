@@ -102,7 +102,12 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
         boolean convergence = false;
         //Compute lower-bound
         double newelbo = this.computeLogProbabilityOfEvidence();
-        if (Math.abs(newelbo - local_elbo) < threshold) {
+        //if (Math.abs(newelbo - local_elbo) < threshold) {
+        //    convergence = true;
+        //}
+
+        double percentage = 100*Math.abs(newelbo - local_elbo)/Math.abs(local_elbo);
+        if ( percentage < threshold) {
             convergence = true;
         }
 
