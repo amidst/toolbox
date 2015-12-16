@@ -227,6 +227,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
             dagLearned.getVariables().setAttributes(dataStream.getAttributes());
             return dagLearned;
         } catch (ExceptionHugin exceptionHugin) {
+            exceptionHugin.printStackTrace();
             throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
         }
     }
