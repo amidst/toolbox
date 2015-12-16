@@ -96,8 +96,7 @@ public class ParallelVMPExtended {
         int globalIter = Integer.parseInt(args[4]);
         int localIter = Integer.parseInt(args[5]);
 
-        //String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
-        String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
+        String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
 
         // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
         BayesianNetworkGenerator.setNumberOfGaussianVars(nCVars);
