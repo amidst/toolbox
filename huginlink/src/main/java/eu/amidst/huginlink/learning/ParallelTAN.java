@@ -185,25 +185,37 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
         try {
             huginNetwork = BNConverterToHugin.convertToHugin(bn);
+        } catch (ExceptionHugin exceptionHugin) {
+            System.out.println("ParallelTan LearnDAG Error 1");
+            exceptionHugin.printStackTrace();
+            throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
+        }
+        DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory, dataStream);
 
-            DataOnMemory dataOnMemory = ReservoirSampling.samplingNumberOfSamples(this.numSamplesOnMemory, dataStream);
-
-            // Set the number of cases
-            int numCases = dataOnMemory.getNumberOfDataInstances();
+        // Set the number of cases
+        int numCases = dataOnMemory.getNumberOfDataInstances();
+        try {
             huginNetwork.setNumberOfCases(numCases);
             huginNetwork.setConcurrencyLevel(this.numCores);
-            NodeList nodeList = huginNetwork.getNodes();
+        } catch (ExceptionHugin exceptionHugin) {
+            System.out.println("ParallelTan LearnDAG Error 2");
+            exceptionHugin.printStackTrace();
+            throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
+        }
 
-            // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
-            for (int i = 0; i < nodeList.size(); i++) {
-                Variable var = bn.getDAG().getVariables().getVariableById(i);
-                Node n = nodeList.get(i);
+        NodeList nodeList = huginNetwork.getNodes();
+
+        // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
+        for (int i = 0; i < nodeList.size(); i++) {
+            Variable var = bn.getDAG().getVariables().getVariableById(i);
+            Node n = nodeList.get(i);
+            try {
                 if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                     ((DiscreteChanceNode) n).getExperienceTable();
                     for (int j = 0; j < numCases; j++) {
                         double state = dataOnMemory.getDataInstance(j).getValue(var);
                         if (!Utils.isMissingValue(state))
-                            ((DiscreteChanceNode) n).setCaseState(j, (int)state);
+                            ((DiscreteChanceNode) n).setCaseState(j, (int) state);
                     }
                 } else {
                     ((ContinuousChanceNode) n).getExperienceTable();
@@ -214,22 +226,48 @@ public class ParallelTAN implements AmidstOptionsHandler {
                     }
                 }
             }
+            catch (ExceptionHugin exceptionHugin) {
+                System.out.println("ParallelTan LearnDAG Error 3 with node " + Integer.toString(i));
+                exceptionHugin.printStackTrace();
+                throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
+            }
+        }
 
-            //Structural learning
-            Node root = huginNetwork.getNodeByName(nameRoot);
-            Node target = huginNetwork.getNodeByName(nameTarget);
-
-            Stopwatch watch = Stopwatch.createStarted();
-            huginNetwork.learnChowLiuTree(root, target);
-            System.out.println("Structural Learning in Hugin: " + watch.stop());
-
-            DAG dagLearned = (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
-            dagLearned.getVariables().setAttributes(dataStream.getAttributes());
-            return dagLearned;
+        //Structural learning
+        Node root, target;
+        try {
+            root = huginNetwork.getNodeByName(nameRoot);
+            target = huginNetwork.getNodeByName(nameTarget);
         } catch (ExceptionHugin exceptionHugin) {
+            System.out.println("ParallelTan LearnDAG Error 4");
             exceptionHugin.printStackTrace();
             throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
         }
+
+
+        Stopwatch watch = Stopwatch.createStarted();
+        try {
+            huginNetwork.learnChowLiuTree(root, target);
+        } catch (ExceptionHugin exceptionHugin) {
+            System.out.println("ParallelTan LearnDAG Error 5");
+            exceptionHugin.printStackTrace();
+            throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
+        }
+        System.out.println("Structural Learning in Hugin: " + watch.stop());
+
+
+        DAG dagLearned;
+        try {
+            dagLearned = (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
+            dagLearned.getVariables().setAttributes(dataStream.getAttributes());
+        } catch (ExceptionHugin exceptionHugin) {
+            System.out.println("ParallelTan LearnDAG Error 6");
+            exceptionHugin.printStackTrace();
+            throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
+        }
+
+        return dagLearned;
+
     }
 
     /**
