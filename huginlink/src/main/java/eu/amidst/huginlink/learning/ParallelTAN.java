@@ -18,6 +18,7 @@ import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.inference.HuginInference;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * This class provides a link to the <a href="https://www.hugin.com">Hugin</a>'s functionality to learn in parallel a TAN model.
@@ -185,6 +186,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
         try {
             huginNetwork = BNConverterToHugin.convertToHugin(bn);
+
         } catch (ExceptionHugin exceptionHugin) {
             System.out.println("ParallelTan LearnDAG Error 1");
             exceptionHugin.printStackTrace();
@@ -209,13 +211,15 @@ public class ParallelTAN implements AmidstOptionsHandler {
         for (int i = 0; i < nodeList.size(); i++) {
             Variable var = bn.getDAG().getVariables().getVariableById(i);
             Node n = nodeList.get(i);
+
             try {
                 if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                     ((DiscreteChanceNode) n).getExperienceTable();
                     for (int j = 0; j < numCases; j++) {
                         double state = dataOnMemory.getDataInstance(j).getValue(var);
-                        if (!Utils.isMissingValue(state))
+                        if (!Utils.isMissingValue(state)) {
                             ((DiscreteChanceNode) n).setCaseState(j, (int) state);
+                        }
                     }
                 } else {
                     ((ContinuousChanceNode) n).getExperienceTable();
@@ -231,13 +235,22 @@ public class ParallelTAN implements AmidstOptionsHandler {
                 exceptionHugin.printStackTrace();
                 throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
             }
+//            if(i==0 || i==6) {
+//                System.out.println("Node " + i);
+//                System.out.println(Arrays.toString(n.getTable().getData()));
+//
+//                System.out.println(Arrays.toString (((DiscreteChanceNode) n).getExperienceTable().getData()));
+//                System.out.println(((DiscreteChanceNode) n).getEnteredValue());
+//                System.out.println(n.getChildren().stream().count());
+//            }
         }
 
         //Structural learning
-        Node root, target;
+        DiscreteChanceNode root, target;
         try {
-            root = huginNetwork.getNodeByName(nameRoot);
-            target = huginNetwork.getNodeByName(nameTarget);
+            root = (DiscreteChanceNode)huginNetwork.getNodeByName(nameRoot);
+            target = (DiscreteChanceNode)huginNetwork.getNodeByName(nameTarget);
+
         } catch (ExceptionHugin exceptionHugin) {
             System.out.println("ParallelTan LearnDAG Error 4");
             exceptionHugin.printStackTrace();
@@ -247,6 +260,10 @@ public class ParallelTAN implements AmidstOptionsHandler {
 
         Stopwatch watch = Stopwatch.createStarted();
         try {
+            System.out.println("Root: " + root.getName());
+            System.out.println("Target: " + target.getName());
+
+            //root.getHome().getNodes().stream().forEach(node -> System.out.println(node.getName())
             huginNetwork.learnChowLiuTree(root, target);
         } catch (ExceptionHugin exceptionHugin) {
             System.out.println("ParallelTan LearnDAG Error 5");
