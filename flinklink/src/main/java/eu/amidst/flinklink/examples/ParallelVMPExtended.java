@@ -86,7 +86,25 @@ public class ParallelVMPExtended {
 
     }
 
-
+    /**
+     *
+     * ./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 5000 -c eu.amidst.flinklink.examples.ParallelVMPExtended ../flinklink.jar 50 50 10000 100 10 100
+     *
+     * yn  = 1, 2, 4, 8, 16
+     *
+     * samples = 100000
+     *
+     * windowSize = 1000
+     *
+     * globalIter = 1000
+     *
+     * localIter = 10
+     *
+     * Other test with windowSize = 100
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
 
         int nCVars = Integer.parseInt(args[0]);
