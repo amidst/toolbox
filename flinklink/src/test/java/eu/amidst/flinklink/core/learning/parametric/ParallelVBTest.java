@@ -29,6 +29,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -383,7 +384,7 @@ public class ParallelVBTest extends TestCase {
         System.out.println(bnet.toString());
     }
 
-    public void testingMLParallelWaste() throws IOException, ClassNotFoundException {
+    public void testingMLParallelWaste() throws Exception {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
@@ -395,14 +396,23 @@ public class ParallelVBTest extends TestCase {
         System.out.println(asianet.toString());
 
         //Sampling from Asia BN
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
+/*        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+*/
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(asianet);
+        sampler.setSeed(0);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(10000);
+
+        DataFlinkWriter.writeDataToARFFFolder(data, "./datasets/tmpfolder.arff");
+
+
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "./datasets/tmpfolder.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -411,7 +421,7 @@ public class ParallelVBTest extends TestCase {
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(5);
-        parallelVB.setBatchSize(1000);
+        parallelVB.setBatchSize(100);
         VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
         vmp.setOutput(true);
         vmp.setTestELBO(true);

@@ -78,9 +78,13 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     protected double globalThreshold = 0.01;
 
+    protected double globalELBO = Double.NaN;
+
+
     public ParallelVB(){
         this.svb = new SVB();
     }
+
 
     public void setPlateuStructure(PlateuStructure plateuStructure){
         this.svb.setPlateuStructure(plateuStructure);
@@ -131,7 +135,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
      */
     @Override
     public double getLogMarginalProbability() {
-        throw new UnsupportedOperationException("Method not implemented yet");
+        return this.globalELBO;
     }
 
     public DataSet<DataPosteriorAssignment> computePosteriorAssignment(List<Variable> latentVariables){
@@ -211,9 +215,10 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             DataSet<CompoundVector> paramSet = env.fromElements(parameterPrior);
 
+            ConvergenceELBO convergenceELBO = new ConvergenceELBO(this.globalThreshold);
             // set number of bulk iterations for KMeans algorithm
             IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
-                    .registerAggregationConvergenceCriterion("ELBO_" + this.dag.getName(), new DoubleSumAggregator(), new ConvergenceELBO(this.globalThreshold));
+                    .registerAggregationConvergenceCriterion("ELBO_" + this.dag.getName(), new DoubleSumAggregator(),convergenceELBO);
 
             Configuration config = new Configuration();
             config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
@@ -239,8 +244,11 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             parameterPrior.sum(finlparamSet.collect().get(0));
             this.svb.updateNaturalParameterPrior(parameterPrior);
+
+            this.globalELBO = convergenceELBO.getELBO();
+
         }catch(Exception ex){
-            throw new UndeclaredThrowableException(ex);
+            throw new RuntimeException(ex.getMessage());
         }
     }
 
@@ -393,6 +401,11 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public ConvergenceELBO(double threshold){
             this.threshold=threshold;
         }
+
+        public double getELBO() {
+            return previousELBO;
+        }
+
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
             if (iteration==1) {

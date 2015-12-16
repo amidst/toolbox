@@ -94,6 +94,7 @@ public class HuginInference implements InferenceAlgorithm, Serializable {
             huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
         } catch (ExceptionHugin exceptionHugin) {
             exceptionHugin.printStackTrace();
+            throw new RuntimeException(exceptionHugin.getMessage());
         }
     }
 
