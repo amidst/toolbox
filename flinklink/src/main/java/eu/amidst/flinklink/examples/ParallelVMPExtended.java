@@ -26,11 +26,16 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by Hanen on 08/10/15.
  */
 public class ParallelVMPExtended {
+
+    static Logger logger = LoggerFactory.getLogger(ParallelVMPExtended.class);
 
     /**
      * Creates a {@link DAG} object with a naive Bayes structure from a given {@link DataStream}.
@@ -94,11 +99,11 @@ public class ParallelVMPExtended {
      *
      * samples = 100000
      *
-     * windowSize = 1000
+     * windowSize = 100
      *
-     * globalIter = 1000
+     * globalIter = 10
      *
-     * localIter = 10
+     * localIter = 100
      *
      * Other test with windowSize = 100
      *
@@ -113,6 +118,15 @@ public class ParallelVMPExtended {
         int windowSize = Integer.parseInt(args[3]);
         int globalIter = Integer.parseInt(args[4]);
         int localIter = Integer.parseInt(args[5]);
+
+        /*
+         * Logging
+         */
+        //PropertyConfigurator.configure(args[6]);
+        BasicConfigurator.configure();
+
+        logger.info("Starting ParallelVMPExtended experiments");
+
 
         String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
 
@@ -162,8 +176,8 @@ public class ParallelVMPExtended {
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
-        System.out.println("Running time: \n" + seconds + " secs");
-        System.out.println("Global ELBO:" + parallelVB.getLogMarginalProbability());
+        logger.info("Running time: {} seconds.", seconds);
+        logger.info("Global ELBO: {}", parallelVB.getLogMarginalProbability());
 
     }
 
