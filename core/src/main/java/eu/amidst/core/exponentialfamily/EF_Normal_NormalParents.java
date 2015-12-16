@@ -13,14 +13,10 @@ import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-
 import org.apache.commons.math.linear.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /**
@@ -226,7 +222,18 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         vectorSS.setXYbaseVector(XYRealVector);
 
         RealMatrix covRealmatrix = new Array2DRowRealMatrix(Yarray.length + 1,Yarray.length + 1);
-        covRealmatrix = covRealmatrix.scalarAdd(1.0);
+
+
+
+        //We perform the "laplace" correction in that way to break symmetric covariance matrixes.
+        Random rand = new Random(0);
+        for (int i = 0; i < Yarray.length + 1; i++) {
+            for (int j = 0; j < Yarray.length + 1; j++) {
+                covRealmatrix.addToEntry(i,j,rand.nextDouble()+0.01);
+            }
+        }
+        //covRealmatrix = covRealmatrix.scalarAdd(1.0);
+
         vectorSS.setcovbaseVector(covRealmatrix);
 
         return vectorSS;

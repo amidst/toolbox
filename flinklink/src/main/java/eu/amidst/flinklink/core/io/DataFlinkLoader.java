@@ -87,7 +87,7 @@ public class DataFlinkLoader implements Serializable{
 
     public static DataFlink<DynamicDataInstance> loadDynamicDataFromFolder(ExecutionEnvironment env, String pathFileData, boolean normalize)
             throws FileNotFoundException{
-        return DataFlinkConverter.convertToDynamic(loadDataFromFile(env, pathFileData, normalize));
+        return DataFlinkConverter.convertToDynamic(loadDataFromFolder(env, pathFileData, normalize));
     }
 
     private DataSet<DataInstance> loadDataSet(ExecutionEnvironment env){
