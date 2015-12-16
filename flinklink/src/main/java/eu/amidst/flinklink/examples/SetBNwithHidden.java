@@ -1,7 +1,6 @@
 package eu.amidst.flinklink.examples;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -64,7 +63,7 @@ public class SetBNwithHidden {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./data.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./data.arff", false);
 
         DAG dag = SetBNwithHidden.getHiddenNaiveBayesStructure(dataFlink);
 

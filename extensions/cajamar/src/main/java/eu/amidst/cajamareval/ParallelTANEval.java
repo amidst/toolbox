@@ -47,10 +47,21 @@ public class ParallelTANEval {
 
         Attribute seq_id = train.getAttributes().getSeq_id();
         Attribute classAtt  = train.getAttributes().getAttributeByName(tan.getNameTarget());
+        double nNontest = 0;
         for (DataInstance dataInstance : test) {
             dataInstance.setValue(classAtt, Utils.missingValue());
-            fw.write(dataInstance.getValue(seq_id) +"\t" + tan.predict(dataInstance)[1]+"\n");
+            try {
+                double pred = tan.predict(dataInstance)[1];
+                fw.write(dataInstance.getValue(seq_id) +"\t" + pred+"\n");
+            }catch (Exception ex){
+                ex.printStackTrace();
+                nNontest++;
+            }
+
+
         }
+
+        System.out.println("Non tested clients: "+nNontest);
 
         fw.close();
     }

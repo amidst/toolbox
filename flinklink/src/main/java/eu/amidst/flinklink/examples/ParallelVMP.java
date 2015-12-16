@@ -11,6 +11,7 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.junit.Assert;
 
 /**
  * Created by Hanen on 08/10/15.
@@ -22,6 +23,8 @@ public class ParallelVMP {
         // load the true Asia Bayesian network
         BayesianNetwork originalBnet = BayesianNetworkLoader.loadFromFile(args[0]);
         System.out.println("\n Network \n " + args[0]);
+
+
 
         //originalBnet.randomInitialization(new Random(0));
         //System.out.println(originalBnet.toString());
@@ -39,9 +42,7 @@ public class ParallelVMP {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./tmp.arff");
-
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,args[2], false);
-
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -54,7 +55,7 @@ public class ParallelVMP {
         parallelVB.setSeed(5);
 
         //Set the window size
-        parallelVB.setBatchSize(Integer.parseInt(args[1]));
+        parallelVB.setBatchSize(Integer.parseInt(args[3]));
         VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
@@ -70,6 +71,7 @@ public class ParallelVMP {
             System.out.println("\n------ Variable " + var.getName() + " ------");
             System.out.println("\nTrue distribution:\n"+ originalBnet.getConditionalDistribution(var));
             System.out.println("\nLearned distribution:\n" + LearnedBnet.getConditionalDistribution(var));
+            Assert.assertTrue(originalBnet.getConditionalDistribution(var).equalDist(LearnedBnet.getConditionalDistribution(var), 0.4));
         }
 
         if (LearnedBnet.equalBNs(originalBnet, 0.02))
