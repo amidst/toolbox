@@ -26,7 +26,6 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,10 +123,7 @@ public class ParallelVMPExtended {
          * Logging
          */
         //BasicConfigurator.configure();
-        PropertyConfigurator.configure(args[6]);
-
-        logger.info("Starting ParallelVMPExtended experiments");
-
+        //PropertyConfigurator.configure(args[7]);
 
         String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
 
