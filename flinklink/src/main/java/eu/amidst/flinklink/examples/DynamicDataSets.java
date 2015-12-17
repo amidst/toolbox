@@ -34,6 +34,16 @@ public class DynamicDataSets {
     static Logger logger = LoggerFactory.getLogger(DynamicDataSets.class);
 
 
+    /**
+     *
+     * ./bin/flink run -m yarn-cluster -yn 8 -ys 4 -yjm 1024 -ytm 9000
+     *              -c eu.amidst.flinklink.examples.DynamicDataSets ../flinklink.jar 5 5 10000 100 3 0
+     *
+     *
+     *
+     * @param args
+     * @throws Exception
+     */
 
     public static void main(String[] args) throws Exception {
         int nCVars = Integer.parseInt(args[0]);
@@ -52,8 +62,8 @@ public class DynamicDataSets {
         logger.info("Starting DynmaicDataSets experiments");
 
 
-        //String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
-        String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
+        String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
+        //String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
