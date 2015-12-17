@@ -12,58 +12,51 @@
 package eu.amidst.flinklink.examples;
 
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.flinklink.core.io.DataFlinkWriter;
-import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
-import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
+import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.java.ExecutionEnvironment;
-<<<<<<< HEAD
-=======
 import org.apache.log4j.BasicConfigurator;
->>>>>>> 567d32bea08019eba1b6761c35cbe428155c3423
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by Hanen on 08/10/15.
  */
-public class ParallelVMPExtended {
+public class DynamicParallelVMPExtended {
 
-    static Logger logger = LoggerFactory.getLogger(ParallelVMPExtended.class);
+    static Logger logger = LoggerFactory.getLogger(DynamicParallelVMPExtended.class);
 
     /**
      * Creates a {@link DAG} object with a naive Bayes structure from a given {@link DataStream}.
      * The main variable is defined as a latent binary variable which is set as a parent of all the observed variables.
      * @return a {@link DAG} object.
      */
-    public static DAG getHiddenNaiveBayesStructure(Attributes attributes) {
+    public static DynamicDAG getHiddenDynamicNaiveBayesStructure(Attributes attributes) {
 
         // Create a Variables object from the attributes of the input data stream.
-        Variables modelHeader = new Variables(attributes);
+        DynamicVariables modelHeader = new DynamicVariables(attributes);
 
         // Define the global latent binary variable.
-        Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
+        Variable globalHiddenVar = modelHeader.newMultinomialDynamicVariable("GlobalHidden", 2);
 
         // Define the global Gaussian latent binary variable.
-        Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");
+        Variable globalHiddenGaussian = modelHeader.newGaussianDynamicVariable("globalHiddenGaussian");
 
         // Define the class variable.
         Variable classVar = modelHeader.getVariableById(0);
 
         // Create a DAG object with the defined model header.
-        DAG dag = new DAG(modelHeader);
+        DynamicDAG dag = new DynamicDAG(modelHeader);
 
         // Define the structure of the DAG, i.e., set the links between the variables.
-        dag.getParentSets()
+        dag.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .filter(w -> w.getMainVar() != globalHiddenVar)
@@ -71,7 +64,7 @@ public class ParallelVMPExtended {
                 .filter(w -> w.getMainVar().isMultinomial())
                 .forEach(w -> w.addParent(globalHiddenVar));
 
-        dag.getParentSets()
+        dag.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .filter(w -> w.getMainVar() != globalHiddenVar)
@@ -79,22 +72,22 @@ public class ParallelVMPExtended {
                 .filter(w -> w.getMainVar().isNormal())
                 .forEach(w -> w.addParent(globalHiddenGaussian));
 
-        dag.getParentSets()
+        dag.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
+
+        dag.getParentSetsTimeT()
+                .stream()
+                .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
+
+        dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
 
         // Return the DAG.
         return dag;
     }
 
-    public static void main2(String[] args) throws Exception {
-
-
-
-    }
-
-    /**
+      /**
      *
      * ./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 5000 -c eu.amidst.flinklink.examples.ParallelVMPExtended ../flinklink.jar 50 50 10000 100 10 100
      *
@@ -121,37 +114,26 @@ public class ParallelVMPExtended {
         int windowSize = Integer.parseInt(args[3]);
         int globalIter = Integer.parseInt(args[4]);
         int localIter = Integer.parseInt(args[5]);
-        int seed = Integer.parseInt(args[6]);
+        int nsets = Integer.parseInt(args[6]);
+        int seed = Integer.parseInt(args[7]);
 
         /*
          * Logging
          */
+        //PropertyConfigurator.configure(args[6]);
         BasicConfigurator.configure();
-        //PropertyConfigurator.configure(args[7]);
 
-        String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
+        logger.info("Starting DynamicVMPExtended experiments");
 
-        // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
-        BayesianNetworkGenerator.setSeed(seed);
-        BayesianNetworkGenerator.setNumberOfGaussianVars(nCVars);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(nMVars, 2);
-        BayesianNetwork originalBnet  = BayesianNetworkGenerator.generateBayesianNetwork();
 
-        //Sampling from Asia BN
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
-        sampler.setSeed(seed);
-
-        //Load the sampled data
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(nSamples);
-
-        DataFlinkWriter.writeDataToARFFFolder(data,fileName);
+        //String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
+        String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
+        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,fileName+"_iter_"+0+".arff", false);
 
-        DAG hiddenNB = getHiddenNaiveBayesStructure(dataFlink.getAttributes());
-
+        DynamicDAG hiddenNB = getHiddenDynamicNaiveBayesStructure(data0.getAttributes());
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -159,29 +141,36 @@ public class ParallelVMPExtended {
         long start = System.nanoTime();
 
         //Parameter Learning
-        ParallelVB parallelVB = new ParallelVB();
+        DynamicParallelVB parallelVB = new DynamicParallelVB();
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(globalIter);
+        parallelVB.setLocalThreshold(0.1);
+        parallelVB.setMaximumLocalIterations(localIter);
         parallelVB.setSeed(5);
+        parallelVB.setOutput(true);
 
         //Set the window size
         parallelVB.setBatchSize(windowSize);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(localIter);
-        vmp.setThreshold(0.1);
-
         parallelVB.setDAG(hiddenNB);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
-        BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
-        System.out.println(LearnedBnet.toString());
+        parallelVB.initLearning();
+
+        System.out.println("--------------- DATA " + 0 + " --------------------------");
+        parallelVB.updateModelWithNewTimeSlice(0, data0);
+
+
+        for (int i = 1; i < nsets; i++) {
+            logger.info("--------------- DATA " + i + " --------------------------");
+            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
+                    fileName+"_iter_"+i+".arff", false);
+            parallelVB.updateModelWithNewTimeSlice(i, dataNew);
+        }
+
+        logger.info(parallelVB.getLearntDynamicBayesianNetwork().toString());
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
         logger.info("Running time: {} seconds.", seconds);
-        //logger.info("Global ELBO: {}", parallelVB.getLogMarginalProbability());
 
     }
 
-    }
+}
