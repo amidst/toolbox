@@ -26,10 +26,7 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
-<<<<<<< HEAD
-=======
 import org.apache.log4j.BasicConfigurator;
->>>>>>> 567d32bea08019eba1b6761c35cbe428155c3423
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
