@@ -323,7 +323,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             }else {
                 SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
 
-                elbo.aggregate(out.getElbo() / svb.getPlateuStructure().getVMP().getNodes().size());
+                elbo.aggregate(out.getElbo());
                 return out.getVector();
             }
 
@@ -416,7 +416,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public double getELBO() {
             return previousELBO;
         }
-
+/*
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
             if (iteration==1) {
@@ -432,7 +432,31 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 this.previousELBO=value.getValue();
                 return false;
             }else {
-                System.out.println("Global Convergence: "+ iteration +", " + (value.getValue() -previousELBO));
+                System.out.println("Global Convergence: "+ iteration +", " + (value.getValue() -previousELBO) + ", " + value.getValue());
+                return true;
+            }
+        }
+        */
+
+        @Override
+        public boolean isConverged(int iteration, DoubleValue value) {
+
+            double percentage = 100*(value.getValue() - previousELBO)/Math.abs(previousELBO);
+
+            if (iteration==1) {
+                previousELBO=value.getValue();
+                return false;
+            }else if (percentage<0 && percentage < -threshold){
+                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +", " + value.getValue() +" < " + previousELBO);
+                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +", "+ (value.getValue() +">" + previousELBO));
+                //this.previousELBO=value.getValue();
+                //return true;
+            }else if (percentage>0 && percentage>threshold) {
+                System.out.println("Global bound is monotonically increasing: "+ iteration +","+percentage+ ", " + (value.getValue() +">" + previousELBO));
+                this.previousELBO=value.getValue();
+                return false;
+            }else {
+                System.out.println("Global Convergence: "+ iteration +", " + percentage + ", " + value.getValue());
                 return true;
             }
         }

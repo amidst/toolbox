@@ -309,7 +309,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
      * {@inheritDoc}
      */
     @Override
-    public double getLogProbabilityOfEvidence() {
+    public double   getLogProbabilityOfEvidence() {
         return this.probOfEvidence;
     }
 

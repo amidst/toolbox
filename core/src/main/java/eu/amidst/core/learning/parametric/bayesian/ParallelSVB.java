@@ -107,6 +107,7 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
 
         for (int i = 0; i < nCores; i++) {
             svbEngines[i] = Serialization.deepCopy(this.SVBEngine);
+            svbEngines[i].initLearning();
         }
 
         this.SVBEngine=svbEngines[0];

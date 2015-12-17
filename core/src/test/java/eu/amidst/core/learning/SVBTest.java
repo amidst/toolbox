@@ -150,7 +150,7 @@ public class SVBTest extends TestCase {
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        vmp.setThreshold(0.00001);
 
         svb.setDAG(bn.getDAG());
         svb.setDataStream(data);
@@ -444,7 +444,7 @@ public class SVBTest extends TestCase {
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        vmp.setThreshold(0.1);
 
         svb.setDAG(normalVarBN.getDAG());
         svb.setDataStream(data);
@@ -544,7 +544,7 @@ public class SVBTest extends TestCase {
             VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
-            vmp.setThreshold(0.0001);
+            vmp.setThreshold(0.000001);
 
             svb.setDAG(normalVarBN.getDAG());
             svb.setDataStream(data);
@@ -554,7 +554,7 @@ public class SVBTest extends TestCase {
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.25));
         }
     }
 
