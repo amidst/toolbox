@@ -369,7 +369,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         double[] theta_beta0beta = globalNaturalParameters.getXYbaseMatrix().toArray();
         double variance = getVariance();
         double beta0 = theta_beta0beta[0]*variance;
-        double[] beta = Arrays.stream(theta_beta0beta).map(w->-w*variance/beta0).toArray();
+
+        double[] beta = new double[this.nOfParents+1];
+        for (int k=0; k<this.nOfParents; k++){
+            beta[k+1] = globalNaturalParameters.getcovbaseMatrix().getEntry(0,k+1)*variance/0.5;
+        }
         beta[0] = beta0;
         return beta;
     }
