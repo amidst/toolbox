@@ -35,6 +35,8 @@ import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.types.DoubleValue;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -53,6 +55,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
+
+    static Logger logger = LoggerFactory.getLogger(ParallelVB.class);
 
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
@@ -447,15 +451,23 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 previousELBO=value.getValue();
                 return false;
             }else if (percentage<0 && percentage < -threshold){
-                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +", " + value.getValue() +" < " + previousELBO);
-                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +", "+ (value.getValue() +">" + previousELBO));
+                logger.info("Global bound is not monotonically increasing: {}, {}, {} < {}",iteration, percentage,
+                        value.getValue(), previousELBO);
+                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", "+
+                        percentage +", " + value.getValue() +" < " + previousELBO);
+                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
+                // ", "+ (value.getValue() +">" + previousELBO));
                 //this.previousELBO=value.getValue();
                 //return true;
             }else if (percentage>0 && percentage>threshold) {
-                System.out.println("Global bound is monotonically increasing: "+ iteration +","+percentage+ ", " + (value.getValue() +">" + previousELBO));
+                logger.info("Global bound is monotonically increasing: {}, {}, {} > {}",iteration, percentage,
+                        value.getValue(), previousELBO);
+                System.out.println("Global bound is monotonically increasing: "+ iteration +","+percentage+ ", "
+                        + (value.getValue() +">" + previousELBO));
                 this.previousELBO=value.getValue();
                 return false;
             }else {
+                logger.info("Global Convergence: {}, {}, {}",iteration,percentage,value.getValue());
                 System.out.println("Global Convergence: "+ iteration +", " + percentage + ", " + value.getValue());
                 return true;
             }

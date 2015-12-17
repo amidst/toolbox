@@ -26,7 +26,7 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,8 +122,8 @@ public class ParallelVMPExtended {
         /*
          * Logging
          */
-        //PropertyConfigurator.configure(args[6]);
-        BasicConfigurator.configure();
+        //BasicConfigurator.configure();
+        PropertyConfigurator.configure(args[6]);
 
         logger.info("Starting ParallelVMPExtended experiments");
 
@@ -177,7 +177,7 @@ public class ParallelVMPExtended {
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
         logger.info("Running time: {} seconds.", seconds);
-        logger.info("Global ELBO: {}", parallelVB.getLogMarginalProbability());
+        //logger.info("Global ELBO: {}", parallelVB.getLogMarginalProbability());
 
     }
 
