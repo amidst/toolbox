@@ -124,10 +124,7 @@ public class ParallelVMPExtended {
          * Logging
          */
         BasicConfigurator.configure();
-        //PropertyConfigurator.configure(args[6]);
-
-        logger.info("Starting ParallelVMPExtended experiments");
-
+        //PropertyConfigurator.configure(args[7]);
 
         String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
         //String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
