@@ -346,8 +346,8 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         BayesianNetworkGenerator.setSeed(0);
-        BayesianNetworkGenerator.setNumberOfGaussianVars(50);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(50, 2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(100, 2);
         BayesianNetwork asianet  = BayesianNetworkGenerator.generateBayesianNetwork();
 
         System.out.println("\nAsia network \n ");
@@ -358,7 +358,7 @@ public class ParallelVBTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
         //Load the sampled data
-        DataStream<DataInstance> data = sampler.sampleToDataStream(20000);
+        DataStream<DataInstance> data = sampler.sampleToDataStream(5000);
 
         DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
 
