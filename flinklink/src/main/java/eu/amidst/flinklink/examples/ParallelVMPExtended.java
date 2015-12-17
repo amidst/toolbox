@@ -118,6 +118,7 @@ public class ParallelVMPExtended {
         int windowSize = Integer.parseInt(args[3]);
         int globalIter = Integer.parseInt(args[4]);
         int localIter = Integer.parseInt(args[5]);
+        int seed = Integer.parseInt(args[6]);
 
         /*
          * Logging
@@ -131,13 +132,14 @@ public class ParallelVMPExtended {
         String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
 
         // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
+        BayesianNetworkGenerator.setSeed(seed);
         BayesianNetworkGenerator.setNumberOfGaussianVars(nCVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(nMVars, 2);
         BayesianNetwork originalBnet  = BayesianNetworkGenerator.generateBayesianNetwork();
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
-        sampler.setSeed(0);
+        sampler.setSeed(seed);
 
         //Load the sampled data
         DataFlink<DataInstance> data = sampler.sampleToDataFlink(nSamples);
@@ -158,6 +160,7 @@ public class ParallelVMPExtended {
 
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
+        parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(globalIter);
         parallelVB.setSeed(5);
 
@@ -166,7 +169,7 @@ public class ParallelVMPExtended {
         VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(localIter);
-        vmp.setThreshold(0.001);
+        vmp.setThreshold(0.1);
 
         parallelVB.setDAG(hiddenNB);
         parallelVB.setDataFlink(dataFlink);
