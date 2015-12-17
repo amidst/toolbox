@@ -27,7 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by Hanen on 08/10/15.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 public class DynamicParallelVMPExtended {
 
@@ -79,9 +85,10 @@ public class DynamicParallelVMPExtended {
 
         dag.getParentSetsTimeT()
                 .stream()
+                //.filter(w -> w.getMainVar() == classVar || w.getMainVar() == globalHiddenVar || w.getMainVar() == globalHiddenGaussian)
                 .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
 
-        dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
+        //dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
 
         // Return the DAG.
         return dag;
@@ -89,19 +96,9 @@ public class DynamicParallelVMPExtended {
 
       /**
      *
-     * ./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 5000 -c eu.amidst.flinklink.examples.ParallelVMPExtended ../flinklink.jar 50 50 10000 100 10 100
+     * ./bin/flink run -m yarn-cluster -yn 8 -ys 4 -yjm 1024 -ytm 9000
+     *              -c eu.amidst.flinklink.examples.DynamicParallelVMPExtended ../flinklink.jar 50 50 10000 100 2 100 3 0
      *
-     * yn  = 1, 2, 4, 8, 16
-     *
-     * samples = 100000
-     *
-     * windowSize = 100
-     *
-     * globalIter = 10
-     *
-     * localIter = 100
-     *
-     * Other test with windowSize = 100
      *
      * @param args
      * @throws Exception
@@ -126,14 +123,16 @@ public class DynamicParallelVMPExtended {
         logger.info("Starting DynamicVMPExtended experiments");
 
 
-        //String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
-        String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
+        String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
+        //String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,fileName+"_iter_"+0+".arff", false);
 
         DynamicDAG hiddenNB = getHiddenDynamicNaiveBayesStructure(data0.getAttributes());
+
+        System.out.println(hiddenNB.toString());
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning

@@ -130,6 +130,7 @@ public class ParallelVMPExtended {
 
 
         String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
+        //String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
 
         // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
         BayesianNetworkGenerator.setSeed(seed);

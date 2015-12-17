@@ -136,11 +136,11 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
         this.dataPosteriorDataSet = this.parallelVBTime0.computePosteriorAssignment(vars);
 
-        try {
+        /*try {
             this.dataPosteriorDataSet.first(100).print();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public DataSet<DataPosteriorAssignment> getDataPosteriorDataSet() {
@@ -208,7 +208,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                                         .withParameters(config);
             /**************************************************************************/
 
-            this.dataPosteriorDataSet.first(100).print();
+            //this.dataPosteriorDataSet.first(100).print();
 
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);
