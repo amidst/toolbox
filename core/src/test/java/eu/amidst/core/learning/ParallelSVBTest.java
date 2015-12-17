@@ -47,7 +47,7 @@ public class ParallelSVBTest extends TestCase {
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        vmp.setThreshold(0.1);
 
         ParallelSVB parallelSVB = new ParallelSVB();
         parallelSVB.setNCores(1);
@@ -82,7 +82,7 @@ public class ParallelSVBTest extends TestCase {
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        vmp.setThreshold(0.1);
 
         ParallelSVB parallelSVB = new ParallelSVB();
         parallelSVB.setSVBEngine(svb);
@@ -118,7 +118,7 @@ public class ParallelSVBTest extends TestCase {
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        vmp.setThreshold(0.1);
 
         ParallelSVB parallelSVB = new ParallelSVB();
         parallelSVB.setSVBEngine(svb);
@@ -156,7 +156,7 @@ public class ParallelSVBTest extends TestCase {
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(100);
-        vmp.setThreshold(0.0001);
+        vmp.setThreshold(0.1);
 
         ParallelSVB parallelSVB = new ParallelSVB();
         parallelSVB.setOutput(true);
@@ -205,7 +205,7 @@ public class ParallelSVBTest extends TestCase {
         VMP vmp = svb.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        vmp.setThreshold(0.01);
 
         ParallelSVB parallelSVB = new ParallelSVB();
         parallelSVB.setNCores(1);
@@ -267,7 +267,7 @@ public class ParallelSVBTest extends TestCase {
             VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
-            vmp.setThreshold(0.0001);
+            vmp.setThreshold(0.001);
 
             ParallelSVB parallelSVB = new ParallelSVB();
             parallelSVB.setOutput(true);
