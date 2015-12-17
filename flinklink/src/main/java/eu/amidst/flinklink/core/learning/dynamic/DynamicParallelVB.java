@@ -67,8 +67,10 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     int batchSize;
     boolean output;
     protected int maximumGlobalIterations = 10;
+    protected int maximumLocalIterations = 100;
 
     protected double globalThreshold = 0.0001;
+    protected double localThreshold = 0.0001;
 
     protected eu.amidst.flinklink.core.learning.parametric.ParallelVB parallelVBTime0;
     protected SVB svbTimeT;
@@ -83,6 +85,21 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     protected List<String> noLatentVariablesNames;
 
 
+    public int getMaximumLocalIterations() {
+        return maximumLocalIterations;
+    }
+
+    public void setMaximumLocalIterations(int maximumLocalIterations) {
+        this.maximumLocalIterations = maximumLocalIterations;
+    }
+
+    public double getLocalThreshold() {
+        return localThreshold;
+    }
+
+    public void setLocalThreshold(double localThreshold) {
+        this.localThreshold = localThreshold;
+    }
 
     public void setPlateuStructure(PlateuStructure plateuStructure){
         this.plateuStructure = plateuStructure;
@@ -314,7 +331,8 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.parallelVBTime0.setPlateuStructure(Serialization.deepCopy(plateuStructure));
         if (transitionMethod!=null)
             this.parallelVBTime0.setTransitionMethod(Serialization.deepCopy(transitionMethod));
-        this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setMaxIter(1000);
+        this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
+        this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.parallelVBTime0.setBatchSize(this.batchSize);
         this.parallelVBTime0.setGlobalThreshold(this.globalThreshold);
         this.parallelVBTime0.setMaximumGlobalIterations(this.maximumGlobalIterations);
@@ -327,7 +345,8 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         if (transitionMethod!=null)
             this.svbTimeT.setPlateuStructure(Serialization.deepCopy(plateuStructure));
         this.svbTimeT.setTransitionMethod(Serialization.deepCopy(transitionMethod));
-        this.svbTimeT.getPlateuStructure().getVMP().setMaxIter(1000);
+        this.svbTimeT.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
+        this.svbTimeT.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svbTimeT.setWindowsSize(this.batchSize);
         this.svbTimeT.setOutput(this.output);
         this.svbTimeT.setSeed(this.seed);
