@@ -10,6 +10,7 @@ package eu.amidst.dynamic.datastream;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.core.variables.Variable;
 
@@ -38,6 +39,9 @@ public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
 
     @Override
     default double getValue(Variable var) {
+        if (!var.isObservable())
+            return Utils.missingValue();
+
         if (var.isInterfaceVariable()) {
             return this.getValue(var.getAttribute(),false);
         } else {
@@ -47,6 +51,9 @@ public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
 
     @Override
     default void setValue(Variable var, double val) {
+        if (!var.isObservable())
+            throw new IllegalArgumentException("Chaning values of a non observable variable ");
+
         if (var.isInterfaceVariable()) {
             this.setValue(var.getAttribute(), val, false);
         } else {
