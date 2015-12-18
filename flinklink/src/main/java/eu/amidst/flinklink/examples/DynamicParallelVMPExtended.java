@@ -97,7 +97,7 @@ public class DynamicParallelVMPExtended {
       /**
      *
      * ./bin/flink run -m yarn-cluster -yn 8 -ys 4 -yjm 1024 -ytm 9000
-     *              -c eu.amidst.flinklink.examples.DynamicParallelVMPExtended ../flinklink.jar 50 50 10000 100 2 100 3 0
+     *              -c eu.amidst.flinklink.examples.DynamicParallelVMPExtended ../flinklink.jar 0 10 1000000 100 100 100 3 0
      *
      *
      * @param args
