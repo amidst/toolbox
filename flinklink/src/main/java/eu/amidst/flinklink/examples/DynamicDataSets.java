@@ -34,18 +34,7 @@ public class DynamicDataSets {
     static Logger logger = LoggerFactory.getLogger(DynamicDataSets.class);
 
 
-    /**
-     *
-     * ./bin/flink run -m yarn-cluster -yn 8 -ys 4 -yjm 1024 -ytm 9000
-     *              -c eu.amidst.flinklink.examples.DynamicDataSets ../flinklink.jar 0 0 1000000 100 3 0
-     *
-     *
-     *
-     * @param args
-     * @throws Exception
-     */
-
-    public static void main(String[] args) throws Exception {
+    public void generateDynamicDataset(String[] args) throws Exception {
         int nCVars = Integer.parseInt(args[0]);
         int nMVars = Integer.parseInt(args[1]);
         int nSamples = Integer.parseInt(args[2]);
@@ -94,6 +83,22 @@ public class DynamicDataSets {
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, fileName+"_iter_"+i+".arff", false);
             dataPrev = dataNew;
         }
+    }
+
+    /**
+     *
+     * ./bin/flink run -m yarn-cluster -yn 8 -ys 4 -yjm 1024 -ytm 9000
+     *              -c eu.amidst.flinklink.examples.DynamicDataSets ../flinklink.jar 0 0 1000000 100 3 0
+     *
+     *
+     *
+     * @param args
+     * @throws Exception
+     */
+
+    public static void main(String[] args) throws Exception {
+        DynamicDataSets dynamicDataSets = new DynamicDataSets();
+        dynamicDataSets.generateDynamicDataset(args);
     }
 
 
