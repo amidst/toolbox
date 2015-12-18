@@ -37,7 +37,7 @@ public class DynamicDataSets {
     /**
      *
      * ./bin/flink run -m yarn-cluster -yn 8 -ys 4 -yjm 1024 -ytm 9000
-     *              -c eu.amidst.flinklink.examples.DynamicDataSets ../flinklink.jar 5 5 10000 100 3 0
+     *              -c eu.amidst.flinklink.examples.DynamicDataSets ../flinklink.jar 0 0 1000000 100 3 0
      *
      *
      *
