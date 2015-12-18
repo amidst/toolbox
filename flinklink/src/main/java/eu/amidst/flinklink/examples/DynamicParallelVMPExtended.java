@@ -21,6 +21,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -113,6 +114,13 @@ public class DynamicParallelVMPExtended {
         int localIter = Integer.parseInt(args[5]);
         int nsets = Integer.parseInt(args[6]);
         int seed = Integer.parseInt(args[7]);
+
+        /*
+         * Generate dynamic datasets
+         */
+        String[] argsDatasets = ArrayUtils.addAll(ArrayUtils.subarray(args, 0, 4), ArrayUtils.subarray(args, 6, 8));
+        DynamicDataSets dynamicDataSets = new DynamicDataSets();
+        dynamicDataSets.generateDynamicDataset(argsDatasets);
 
         /*
          * Logging
