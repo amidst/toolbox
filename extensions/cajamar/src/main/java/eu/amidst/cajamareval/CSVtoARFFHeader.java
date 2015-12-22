@@ -110,13 +110,13 @@ public class CSVtoARFFHeader {
                                 if( !(dd == Math.floor(dd)) ) {
                                     isVariableContinuous[k]=true;
 
-                                    if (varStates.get(k).size()<=10) {
-                                        varStates.get(k).add(values[k]);
+                                    if (varStates.get(k).size()<=15) {
+                                        varStates.get(k).add(Double.toString(dd));
                                     }
                                 }
                                 else {
-                                    if (varStates.get(k).size()<=10) {
-                                        varStates.get(k).add(values[k]);
+                                    if (varStates.get(k).size()<=15) {
+                                        varStates.get(k).add(Integer.toString((int)dd));
                                     }
                                 }
                             }
@@ -130,7 +130,6 @@ public class CSVtoARFFHeader {
                                 varStates.get(k).add(values[k]);
                             }
                         }
-
 
                     });
                     newLine = reader.readLine();
@@ -164,9 +163,14 @@ public class CSVtoARFFHeader {
         IntStream.range(0, variableNames.size()).forEach(i -> {
             varStates.get(i).remove("?");
             String varValues;
-            if ( (!isVariableCategorical[i] && isVariableContinuous[i]) || (!isVariableCategorical[i] && varStates.get(i).size() > 10)) {
+
+            if ( !isVariableCategorical[i] && varStates.get(i).size() > 10 ) {
                 varValues = "real";
-            } else {
+            }
+//            if ( (!isVariableCategorical[i] && isVariableContinuous[i]) || (!isVariableCategorical[i] && varStates.get(i).size() > 10)) {
+//                varValues = "real";
+//            }
+            else {
 
                 try {
                     StringBuilder builder = new StringBuilder(2 + varStates.get(i).size() * 2);
