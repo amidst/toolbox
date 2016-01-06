@@ -396,6 +396,23 @@ public class PlateuStructure implements Serializable {
     }
 
 
+    public void updateNaturalParameterPosteriors(CompoundVector parameterVector) {
+
+        final int[] count = new int[1];
+        count[0] = 0;
+
+        ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .forEach(var -> {
+                    EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist();
+                    uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count[0]));
+                    uni.fixNumericalInstability();
+                    uni.updateMomentFromNaturalParameters();
+                    count[0]++;
+                });
+    }
+
     /**
      * Updates the Natural Parameter Prior from a given parameter vector.
      * @param parameterVector a {@link CompoundVector} object.

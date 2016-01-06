@@ -82,6 +82,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     protected double globalThreshold = 0.01;
 
+    protected double localThreshold = 0.1;
+
     protected double globalELBO = Double.NaN;
 
 
@@ -102,6 +104,10 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         this.globalThreshold = globalThreshold;
     }
 
+    public void setLocalThreshold(double localThreshold) {
+        this.localThreshold = localThreshold;
+    }
+
     public void setMaximumGlobalIterations(int maximumGlobalIterations) {
         this.maximumGlobalIterations = maximumGlobalIterations;
     }
@@ -118,7 +124,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
-        //this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
+        this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
+        this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svb.setDAG(this.dag);
         this.svb.setWindowsSize(batchSize);
         this.svb.initLearning(); //Init learning is peformed in each mapper.
@@ -211,7 +218,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     }
     public void updateModel(DataFlink<DataInstance> dataUpdate){
 
-        //try{
+        try{
             final ExecutionEnvironment env = dataUpdate.getDataSet().getExecutionEnvironment();
 
             // get input data
@@ -232,14 +239,10 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             DataOnMemory<DataInstance> emtpyBatch = new DataOnMemoryListContainer<DataInstance>(dataUpdate.getAttributes());
             DataSet<DataOnMemory<DataInstance>> unionData = null;
 
-            try{
-                unionData =
-                        dataUpdate.getBatchedDataSet(this.batchSize)
-                                .union(env.fromCollection(Arrays.asList(emtpyBatch),
-                                        TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
-            }catch(Exception ex){
-                throw new RuntimeException(ex.getMessage());
-            }
+            unionData =
+                    dataUpdate.getBatchedDataSet(this.batchSize)
+                            .union(env.fromCollection(Arrays.asList(emtpyBatch),
+                                    TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
 
             DataSet<CompoundVector> newparamSet =
                     unionData
@@ -251,17 +254,19 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
-            try {
-                parameterPrior.sum(finlparamSet.collect().get(0));
-            }catch(Exception ex){
-                throw new RuntimeException(ex.getMessage());
-            }
+            parameterPrior.sum(finlparamSet.collect().get(0));
+
+            this.svb.updateNaturalParameterPosteriors(parameterPrior);
 
             this.svb.updateNaturalParameterPrior(parameterPrior);
 
             this.globalELBO = ((ConvergenceELBO)loop.getAggregators().getConvergenceCriterion()).getELBO();
 
+            this.svb.applyTransition();
 
+        }catch(Exception ex){
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 
 

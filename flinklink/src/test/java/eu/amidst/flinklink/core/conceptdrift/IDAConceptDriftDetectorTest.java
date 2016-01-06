@@ -11,21 +11,20 @@
 
 package eu.amidst.flinklink.core.conceptdrift;
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.BayesianNetworkWriter;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
-import eu.amidst.flinklink.core.utils.DBNSampler;
+import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -41,90 +40,66 @@ public class IDAConceptDriftDetectorTest extends TestCase {
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
+        BayesianNetwork dbn = BayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DBNSampler sampler = new DBNSampler(dbn);
-        sampler.setNSamples(SAMPLESIZE);
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(dbn);
         sampler.setBatchSize(BATCHSIZE);
         sampler.setSeed(1);
 
         if (hiddenVars!=null) {
             for (String hiddenVar : hiddenVars) {
-                sampler.setHiddenVar(dbn.getDynamicVariables().getVariableByName(hiddenVar));
+                sampler.setHiddenVar(dbn.getVariables().getVariableByName(hiddenVar));
             }
         }
         if (noisyVars!=null){
             for (String noisyVar : noisyVars) {
-                sampler.setMARVar(dbn.getDynamicVariables().getVariableByName(noisyVar), 0.1);
+                sampler.setMARVar(dbn.getVariables().getVariableByName(noisyVar), 0.1);
             }
         }
-
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
-
-
-        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/dataFlink/conceptdrift/data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data0.arff", false);
-
-        List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
-        System.out.println(list);
-
-        HashSet<Long> noDupSet = new HashSet();
-        noDupSet.addAll(list);
-        assertEquals(SAMPLESIZE, noDupSet.size());
-        System.out.println(noDupSet);
-
-
-        DataFlink<DynamicDataInstance> dataPrev = data0;
-        for (int i = 1; i < NSETS; i++) {
+        for (int i = 0; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSampleConceptDrift(dataPrev, i%5==0);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/dataFlink/conceptdrift/data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
-            dataPrev = dataNew;
+            if (i%5==0){
+                dbn.randomInitialization(new Random(i));
+                sampler = new BayesianNetworkSampler(dbn);
+                sampler.setBatchSize(BATCHSIZE);
+                sampler.setSeed(1);
+            }
+            DataFlink<DataInstance> data0 = sampler.sampleToDataFlink(SAMPLESIZE);
+            DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/dataFlink/conceptdrift/data" + i + ".arff");
         }
     }
 
 
-    public static void createDBN1(boolean connect) throws Exception {
+    public static void createBN1(int nVars) throws Exception {
 
-        DynamicVariables dynamicVariables = new DynamicVariables();
-        Variable classVar = dynamicVariables.newMultinomialDynamicVariable("C", 2);
+        Variables dynamicVariables = new Variables();
+        Variable classVar = dynamicVariables.newMultionomialVariable("C", 2);
 
-        for (int i = 0; i < 2; i++) {
-            dynamicVariables.newGaussianDynamicVariable("A" + i);
+        for (int i = 0; i < nVars; i++) {
+            dynamicVariables.newGaussianVariable("A" + i);
         }
-        DynamicDAG dag = new DynamicDAG(dynamicVariables);
+        DAG dag = new DAG(dynamicVariables);
 
-        for (int i = 0; i < 2; i++) {
-            dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
-            if (connect) dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(dynamicVariables.getVariableByName("A" + i).getInterfaceVariable());
-
+        for (int i = 0; i < nVars; i++) {
+            dag.getParentSet(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
         }
 
-        dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
         dag.setName("dbn1");
-        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
+        BayesianNetwork dbn = new BayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "./networks/dbn1.dbn");
+        BayesianNetworkWriter.saveToFile(dbn, "./networks/dbn1.dbn");
     }
 
 
-    public static void testUpdateN(String networkName, double threshold) throws Exception {
+    public static void testUpdateN(String networkName) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName+".dbn");
-        dbn.randomInitialization(new Random(0));
-
-        System.out.println(dbn.toString());
-
-
-        DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
+        DataFlink<DataInstance> data0 = DataFlinkLoader.loadDataFromFolder(env,
                 "./datasets/dataFlink/conceptdrift/data0.arff", false);
-        dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
         learn.setBatchSize(100);
@@ -135,27 +110,34 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         learn.setSeed(0);
 
         learn.initLearning();
+        double[] output = new double[NSETS];
 
         System.out.println("--------------- DATA " + 0 + " --------------------------");
-        double[] out = learn.updateModelWithNewTimeSlice(0, data0);
-        System.out.println("E(H_"+0+") = " + out[0]);
+        double[] out = learn.updateModelWithNewTimeSlice(data0);
+        output[0] = out[0];
 
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
+            DataFlink<DataInstance> dataNew = DataFlinkLoader.loadDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
-            out = learn.updateModelWithNewTimeSlice(i, dataNew);
-            System.out.println("E(H_"+i+") = " + out[0]);
+            out = learn.updateModelWithNewTimeSlice(dataNew);
+            output[i] = out[0];
+
         }
 
         System.out.println(learn.getLearntDynamicBayesianNetwork());
+
+        for (int i = 0; i < NSETS; i++) {
+            System.out.println("E(H_"+i+") =\t" + output[i]);
+        }
+
     }
 
     public static void test1()  throws Exception {
         String networkName = "dbn1";
-        //createDBN1(true);
-        // createDataSets(networkName,null,null);
-        testUpdateN(networkName, 0.1);
+        //createBN1(2);
+        //createDataSets(networkName,null,null);
+        testUpdateN(networkName);
     }
 
 }

@@ -175,8 +175,9 @@ public class DBNSampler {
             return dataFlinkWrapper;
 
         }else{
-            if (drift)
+            if (drift) {
                 this.bnTimeT.randomInitialization(this.random);
+            }
 
             DataSet<DynamicDataInstance> data = previousSample.getDataSet().mapPartition(new MAPDynamicInstancesSampler(this.bnTimeT, newAttributes, this.hiddenVars, this.marNoise, seed));
 
