@@ -56,10 +56,6 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             if (!paramVariable.isNormalParameter())
                 continue;
 
-
-            //if (paramVariable.getName().contains("_Beta0_"))
-            //    continue;
-
             EF_Normal prior = bayesianNetwork.getDistribution(paramVariable);
 
             double varPrior = 1;
