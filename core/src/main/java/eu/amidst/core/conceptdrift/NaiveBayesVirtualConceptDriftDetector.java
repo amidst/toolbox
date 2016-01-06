@@ -161,7 +161,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
         DAG dag = new DAG(variables);
 
-        for (Attribute att : data.getAttributes()) {
+        for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
             if (att.getName().equals(className))
                 continue;
 
