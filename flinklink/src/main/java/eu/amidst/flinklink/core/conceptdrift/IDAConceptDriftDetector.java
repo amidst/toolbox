@@ -13,16 +13,16 @@ package eu.amidst.flinklink.core.conceptdrift;
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
+import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +59,7 @@ public class IDAConceptDriftDetector {
     int seed = 0;
 
     /** Represents the underlying learning engine*/
-    DynamicParallelVB svb;
+    ParallelVB svb;
 
     /** Represents the list of hidden vars modelling concept drift*/
     List<Variable> hiddenVars;
@@ -73,7 +73,7 @@ public class IDAConceptDriftDetector {
 
 
     /** **/
-    DynamicDAG globalDynamicDAG;
+    DAG globalDAG;
 
 
     public void setAttributes(Attributes attributes) {
@@ -85,7 +85,7 @@ public class IDAConceptDriftDetector {
      * @return A <code>Variable</code> object
      */
     public Variable getClassVariable(){
-        return this.svb.getLearntDynamicBayesianNetwork().getDynamicVariables().getVariableById(this.classIndex);
+        return this.svb.getLearntBayesianNetwork().getVariables().getVariableById(this.classIndex);
     }
 
     /**
@@ -139,7 +139,7 @@ public class IDAConceptDriftDetector {
      * Retuns the SVB learningn engine
      * @return A <code>SVB</code> object.
      */
-    public DynamicParallelVB getSvb() {
+    public ParallelVB getSvb() {
         return svb;
     }
 
@@ -147,26 +147,26 @@ public class IDAConceptDriftDetector {
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
     private void buildGlobalDAG(){
-        DynamicVariables variables = new DynamicVariables(attributes);
+        Variables variables = new Variables(attributes);
         String className = attributes.getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
         for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-            hiddenVars.add(variables.newGaussianDynamicVariable("GlobalHidden_"+i));
+            hiddenVars.add(variables.newGaussianVariable("GlobalHidden_"+i));
         }
 
         Variable classVariable = variables.getVariableByName(className);
 
-        this.globalDynamicDAG = new DynamicDAG(variables);
+        this.globalDAG = new DAG(variables);
 
         for (Attribute att : attributes.getListOfNonSpecialAttributes()) {
             if (att.getName().equals(className))
                 continue;
 
             Variable variable = variables.getVariableByName(att.getName());
-            globalDynamicDAG.getParentSetTimeT(variable).addParent(classVariable);
+            globalDAG.getParentSet(variable).addParent(classVariable);
             for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-                globalDynamicDAG.getParentSetTimeT(variable).addParent(hiddenVars.get(i));
+                globalDAG.getParentSet(variable).addParent(hiddenVars.get(i));
             }
         }
 
@@ -190,37 +190,34 @@ public class IDAConceptDriftDetector {
         }
 
 
-        svb = new DynamicParallelVB();
+        svb = new ParallelVB();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new PlateuStructure(hiddenVars));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(1.0);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setBatchSize(this.batchSize);
-        svb.setDAG(globalDynamicDAG);
+        svb.setDAG(globalDAG);
 
         svb.setOutput(false);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
-        svb.getPlateuStructure().getVMP().setThreshold(0.001);
+        svb.setMaximumGlobalIterations(100);
+        svb.setMaximumLocalIterations(100);
+        svb.setGlobalThreshold(0.1);
+        svb.setLocalThreshold(0.01);
 
         svb.initLearning();
     }
 
 
-    public double[] updateModelWithNewTimeSlice(int timeSlice, DataFlink<DynamicDataInstance> data){
+    public double[] updateModelWithNewTimeSlice(DataFlink<DataInstance> data){
 
-        svb.updateModelWithNewTimeSlice(timeSlice,data);
+        svb.updateModel(data);
 
         double[] out = new double[hiddenVars.size()];
         for (int i = 0; i < out.length; i++) {
             Variable hiddenVar = this.hiddenVars.get(i);
-            if (timeSlice == 0) {
-                Normal normal = svb.getParameterPosteriorTime0(hiddenVar);
-                out[i] = normal.getMean();
-            }else{
-                Normal normal = svb.getParameterPosteriorTimeT(hiddenVar);
-                out[i] = normal.getMean();
-            }
+            Normal normal = svb.getParameterPosterior(hiddenVar);
+            out[i] = normal.getMean();
         }
         return out;
     }
@@ -237,8 +234,8 @@ public class IDAConceptDriftDetector {
      * Returns the Dynamic Bayesian network learnt with the concept drift adaptation method.
      * @return A <code>DynamicBayesianNetwork</code> object.
      */
-    public DynamicBayesianNetwork getLearntDynamicBayesianNetwork(){
-        return svb.getLearntDynamicBayesianNetwork();
+    public BayesianNetwork getLearntDynamicBayesianNetwork(){
+        return svb.getLearntBayesianNetwork();
     }
 
 }

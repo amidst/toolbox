@@ -136,11 +136,6 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
         this.dataPosteriorDataSet = this.parallelVBTime0.computePosteriorAssignment(vars);
 
-        /*try {
-            this.dataPosteriorDataSet.first(100).print();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 
     public DataSet<DataPosteriorAssignment> getDataPosteriorDataSet() {
@@ -150,14 +145,9 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     private void updateTimeT(DataFlink<DynamicDataInstance> data){
         try{
 
-            //System.out.println("DATA SET: " + data.getDataSet().count());
-            //System.out.println("DATA POSTERIOR: " + dataPosteriorDataSet.count());
-
             /********************************  JOIN DATA ************************************/
             DataSet<DataPosteriorAssignment> dataPosteriorInstanceDataSet = this.joinData2(data.getDataSet());
             /**************************************************************************/
-
-            //System.out.println("DATA INSTANCE: " + dataPosteriorInstanceDataSet.count());
 
             /********************************  ITERATIVE VMP ************************************/
             CompoundVector parameterPrior = this.svbTimeT.getNaturalParameterPrior();
@@ -191,11 +181,15 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
             parameterPrior.sum(finlparamSet.collect().get(0));
+
+            this.svbTimeT.updateNaturalParameterPosteriors(parameterPrior);
+
             this.svbTimeT.updateNaturalParameterPrior(parameterPrior);
+
+            this.svbTimeT.applyTransition();
             /**************************************************************************/
 
             /******************************* UPDATE DATA POSTERIORS********************/
-
             config = new Configuration();
             config.setString(eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm.BN_NAME, this.dagTimeT.getName());
             config.setBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
@@ -207,8 +201,6 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                                         .flatMap(new CajaMarLearnMapInferenceAssignment(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables()))
                                         .withParameters(config);
             /**************************************************************************/
-
-            //this.dataPosteriorDataSet.first(100).print();
 
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);
@@ -245,7 +237,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
     protected DataSet<DataPosteriorAssignment> joinData2(DataSet<DynamicDataInstance> data){
         //TODO: Define which is the best join strategy!!!!
-        DataSet<DataPosteriorInstance>  dataJoined = dataPosteriorDataSet.join(data, JoinOperatorBase.JoinHint.REPARTITION_HASH_FIRST)
+        DataSet<DataPosteriorInstance>  dataJoined = dataPosteriorDataSet.join(data, JoinOperatorBase.JoinHint.REPARTITION_SORT_MERGE)
                 .where(new KeySelector<DataPosteriorAssignment, Long>() {
                     @Override
                     public Long getKey(DataPosteriorAssignment value) throws Exception {
@@ -280,14 +272,12 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
 
     public <E extends UnivariateDistribution> E getParameterPosteriorTime0(Variable parameter) {
-
         if (parameter.isParameterVariable()) {
             Variable newVar =this.parallelVBTime0.getSVB().getPlateuStructure().getEFLearningBN().getParametersVariables().getVariableByName(parameter.getName());
             return this.parallelVBTime0.getParameterPosterior(newVar);
         }else {
             Variable newVar =this.dagTime0.getVariables().getVariableByName(parameter.getName());
             return this.parallelVBTime0.getParameterPosterior(newVar);
-
         }
     }
 
@@ -331,8 +321,8 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.parallelVBTime0.setPlateuStructure(Serialization.deepCopy(plateuStructure));
         if (transitionMethod!=null)
             this.parallelVBTime0.setTransitionMethod(Serialization.deepCopy(transitionMethod));
-        this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
-        this.parallelVBTime0.getSVB().getPlateuStructure().getVMP().setThreshold(this.localThreshold);
+        this.parallelVBTime0.setLocalThreshold(this.localThreshold);
+        this.parallelVBTime0.setMaximumLocalIterations(this.maximumLocalIterations);
         this.parallelVBTime0.setBatchSize(this.batchSize);
         this.parallelVBTime0.setGlobalThreshold(this.globalThreshold);
         this.parallelVBTime0.setMaximumGlobalIterations(this.maximumGlobalIterations);
@@ -342,9 +332,9 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.parallelVBTime0.initLearning();
 
         this.svbTimeT = new SVB();
+        this.svbTimeT.setPlateuStructure(Serialization.deepCopy(plateuStructure));
         if (transitionMethod!=null)
-            this.svbTimeT.setPlateuStructure(Serialization.deepCopy(plateuStructure));
-        this.svbTimeT.setTransitionMethod(Serialization.deepCopy(transitionMethod));
+            this.svbTimeT.setTransitionMethod(Serialization.deepCopy(transitionMethod));
         this.svbTimeT.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svbTimeT.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svbTimeT.setWindowsSize(this.batchSize);

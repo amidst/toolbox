@@ -472,6 +472,14 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.naturalVectorPrior=this.computeNaturalParameterVectorPrior();
     }
 
+
+    /**
+     * Updas the parameters of the posteriors Qs distributions.
+     * @param parameterVector
+     */
+    public void updateNaturalParameterPosteriors(CompoundVector parameterVector){
+        this.plateuStructure.updateNaturalParameterPosteriors(parameterVector);
+    }
     /**
      * {@inheritDoc}
      */

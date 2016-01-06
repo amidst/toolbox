@@ -8,20 +8,21 @@
  * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package eu.amidst.core.conceptdrift;
+package eu.amidst.flinklink.core.conceptdrift;
 
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +37,14 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#nbconceptdriftexample"> http://amidst.github.io/toolbox/CodeExamples.html#nbconceptdriftexample </a>  </p>
  *
  */
-public class NaiveBayesVirtualConceptDriftDetector {
+public class IDAConceptDriftDetectorDBN {
 
     /** Represents the drift detection mode. Only the global mode is currently provided.*/
     public enum DriftDetector {GLOBAL};
 
-    /** Represents the data stream used for detecting the concepts drifts*/
-    DataStream<DataInstance> data;
 
-    /** Represents the size of the window used by the {@link SVB} class*/
-    int windowsSize;
+    /** Represents the size of the batch used by the {@link SVB} class*/
+    int batchSize = 1000;
 
     /** Represents the variance added when making a transition*/
     double transitionVariance;
@@ -60,26 +59,33 @@ public class NaiveBayesVirtualConceptDriftDetector {
     int seed = 0;
 
     /** Represents the underlying learning engine*/
-    SVB svb;
+    DynamicParallelVB svb;
 
     /** Represents the list of hidden vars modelling concept drift*/
     List<Variable> hiddenVars;
 
-    /** Represents the fading factor.*/
-    double fading = 1.0;
-
     /** Represents the number of global hidden variables*/
     int numberOfGlobalVars = 1;
 
-    /** Represents whether there is or not a global hidden variable modelling concept drift*/
-    boolean globalHidden = true;
+
+    /** Represents the attributes*/
+    Attributes attributes;
+
+
+    /** **/
+    DynamicDAG globalDynamicDAG;
+
+
+    public void setAttributes(Attributes attributes) {
+        this.attributes = attributes;
+    }
 
     /**
      * Returns the class variable of the classifier
      * @return A <code>Variable</code> object
      */
     public Variable getClassVariable(){
-        return this.svb.getLearntBayesianNetwork().getVariables().getVariableById(this.classIndex);
+        return this.svb.getLearntDynamicBayesianNetwork().getDynamicVariables().getVariableById(this.classIndex);
     }
 
     /**
@@ -106,19 +112,11 @@ public class NaiveBayesVirtualConceptDriftDetector {
     public int getClassIndex(){return classIndex;}
 
     /**
-     * Sets the data stream where the concept drift will be detected
-     * @param data, a <code>DataStream</code> object
+     * Sets the batch size of the concept drift detection model
+     * @param batchSize, a positive integer value
      */
-    public void setData(DataStream<DataInstance> data) {
-        this.data = data;
-    }
-
-    /**
-     * Sets the window size of the concept drift detection model
-     * @param windowsSize, a positive integer value
-     */
-    public void setWindowsSize(int windowsSize) {
-        this.windowsSize = windowsSize;
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
     }
 
     /**
@@ -141,7 +139,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
      * Retuns the SVB learningn engine
      * @return A <code>SVB</code> object.
      */
-    public SVB getSvb() {
+    public DynamicParallelVB getSvb() {
         return svb;
     }
 
@@ -149,47 +147,38 @@ public class NaiveBayesVirtualConceptDriftDetector {
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
     private void buildGlobalDAG(){
-        Variables variables = new Variables(data.getAttributes());
-        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
+        DynamicVariables variables = new DynamicVariables(attributes);
+        String className = attributes.getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
         for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-            hiddenVars.add(variables.newGaussianVariable("GlobalHidden_"+i));
+            hiddenVars.add(variables.newGaussianDynamicVariable("GlobalHidden_"+i));
         }
 
         Variable classVariable = variables.getVariableByName(className);
 
-        DAG dag = new DAG(variables);
+        this.globalDynamicDAG = new DynamicDAG(variables);
 
-        for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
+        for (Attribute att : attributes.getListOfNonSpecialAttributes()) {
             if (att.getName().equals(className))
                 continue;
 
             Variable variable = variables.getVariableByName(att.getName());
-            dag.getParentSet(variable).addParent(classVariable);
-            if (this.globalHidden) {
-                for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-                    dag.getParentSet(variable).addParent(hiddenVars.get(i));
-                }
+            globalDynamicDAG.getParentSetTimeT(variable).addParent(classVariable);
+            for (int i = 0; i < this.numberOfGlobalVars ; i++) {
+                globalDynamicDAG.getParentSetTimeT(variable).addParent(hiddenVars.get(i));
             }
+        }
+
+        for (Variable variable : variables) {
+            if (variable.getName().startsWith("GlobalHidden_"))
+                continue;
+            this.globalDynamicDAG.getParentSetTimeT(variable).addParent(variable.getInterfaceVariable());
         }
 
         //System.out.println(dag.toString());
 
-        svb = new SVB();
-        svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(fading);
-        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
-        svb.setWindowsSize(this.windowsSize);
-        svb.setDAG(dag);
 
-        svb.setOutput(false);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
-        svb.getPlateuStructure().getVMP().setThreshold(0.001);
-
-        svb.initLearning();
     }
 
     /**
@@ -197,7 +186,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
      */
     public void initLearning() {
         if (classIndex == -1)
-            classIndex = data.getAttributes().getNumberOfAttributes()-1;
+            classIndex = attributes.getNumberOfAttributes()-1;
 
 
         switch (this.conceptDriftDetector){
@@ -205,21 +194,41 @@ public class NaiveBayesVirtualConceptDriftDetector {
                 this.buildGlobalDAG();
                 break;
         }
+
+
+        svb = new DynamicParallelVB();
+        svb.setSeed(this.seed);
+        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
+        gaussianHiddenTransitionMethod.setFading(1.0);
+        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+        svb.setBatchSize(this.batchSize);
+        svb.setDAG(globalDynamicDAG);
+
+        svb.setOutput(false);
+        svb.setGlobalThreshold(0.05);
+        svb.setLocalThreshold(0.0001);
+        svb.setMaximumLocalIterations(100);
+        svb.setMaximumGlobalIterations(100);
+
+        svb.initLearning();
     }
 
-    /**
-     * Update the model with a new batch of instances. The size of the batch should be equal
-     * to the size of the window of the class
-     * @param batch, a <code>DataOnMemory</code> object containing a batch of data instances.
-     * @return An array of double values containing the expected value of the global hidden variables.
-     */
-    public double[] updateModel(DataOnMemory<DataInstance> batch){
-        svb.updateModel(batch);
+
+    public double[] updateModelWithNewTimeSlice(int timeSlice, DataFlink<DynamicDataInstance> data){
+
+        svb.updateModelWithNewTimeSlice(timeSlice,data);
+
         double[] out = new double[hiddenVars.size()];
         for (int i = 0; i < out.length; i++) {
             Variable hiddenVar = this.hiddenVars.get(i);
-            Normal normal = svb.getParameterPosterior(hiddenVar);
-            out[i] = normal.getMean();
+            if (timeSlice == 0) {
+                Normal normal = svb.getParameterPosteriorTime0(hiddenVar);
+                out[i] = normal.getMean();
+            }else{
+                Normal normal = svb.getParameterPosteriorTimeT(hiddenVar);
+                out[i] = normal.getMean();
+            }
         }
         return out;
     }
@@ -233,11 +242,11 @@ public class NaiveBayesVirtualConceptDriftDetector {
     }
 
     /**
-     * Returns the Bayesian network learnt with the concept drift adaptation method.
-     * @return A <code>BayesianNetwork</code> object.
+     * Returns the Dynamic Bayesian network learnt with the concept drift adaptation method.
+     * @return A <code>DynamicBayesianNetwork</code> object.
      */
-    public BayesianNetwork getLearntBayesianNetwork(){
-        return svb.getLearntBayesianNetwork();
+    public DynamicBayesianNetwork getLearntDynamicBayesianNetwork(){
+        return svb.getLearntDynamicBayesianNetwork();
     }
 
 }
