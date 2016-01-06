@@ -15,19 +15,30 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+//import org.apache.log4j.BasicConfigurator;
+//import org.apache.log4j.Logger;
+
 /**
  * Created by andresmasegosa on 1/9/15.
  */
 public class WordCountExample {
+    //static Logger logger = Logger.getLogger(WordCountExample.class);
+    static Logger logger = LoggerFactory.getLogger(WordCountExample.class);
+
     public static void main(String[] args) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        //BasicConfigurator.configure();
+
+        logger.info("Entering application.");
 
     DataSet<String> text = env.fromElements(
                 "Who's there?",
@@ -36,7 +47,6 @@ public class WordCountExample {
         List<Integer> elements = new ArrayList<Integer>();
         elements.add(0);
 
-        //elements = Collections.unmodifiableList(elements);
 
         DataSet<TestClass> set = env.fromElements(new TestClass(elements));
 
@@ -46,15 +56,18 @@ public class WordCountExample {
                 .groupBy(0)
                 .sum(1);
 
-        //wordCounts.print();
+        wordCounts.print();
 
-        wordCounts.writeAsText("./datasets/dataFlink/tmp.txt", FileSystem.WriteMode.OVERWRITE);
 
     }
 
     public static class LineSplitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
+
+        static Logger loggerLineSplitter = LoggerFactory.getLogger(LineSplitter.class);
+
         @Override
         public void flatMap(String line, Collector<Tuple2<String, Integer>> out) {
+            loggerLineSplitter.info("Logger in LineSplitter.flatMap");
             for (String word : line.split(" ")) {
                 out.collect(new Tuple2<String, Integer>(word, 1));
             }
@@ -64,9 +77,12 @@ public class WordCountExample {
     public static class TestClass implements Serializable {
         private static final long serialVersionUID = -2932037991574118651L;
 
+        static Logger loggerTestClass = LoggerFactory.getLogger("WordCountExample.TestClass");
+
         List<Integer> integerList;
         public TestClass(List<Integer> integerList){
             this.integerList=integerList;
+            loggerTestClass.info("Logger in TestClass");
         }
 
 
