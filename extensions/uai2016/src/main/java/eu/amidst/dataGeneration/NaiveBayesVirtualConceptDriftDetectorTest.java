@@ -39,8 +39,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         generateData.setRscriptsPath("./extensions/uai2016/doc-experiments/dataGenerationForFlink");
         generateData.setNumFiles(3);
         generateData.setNumSamplesPerFile(100);
-        generateData.setOutputFullPath("~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/" +
-                "withoutIndex");
+        generateData.setOutputFullPath("~/core/datasets/IDAlikeDataCD");
         generateData.setPrintINDEX(false);
         generateData.setAddConceptDrift(true);
         generateData.generateData();
@@ -52,7 +51,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
 
         //We can open the data stream using the static class DataStreamLoader
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(
-                "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withoutIndex/MONTH1.arff");
+                "./datasets/IDAlikeDataCD/MONTH1.arff");
 
         //We create a NaiveBayesVirtualConceptDriftDetector object
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
@@ -91,7 +90,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         for (int monthID = 1; monthID < 85; monthID++){
 
             DataOnMemory<DataInstance> dataMONTH = loadDataOnMemoryFromArffFolder(
-                    "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withoutIndex/MONTH"+monthID+".arff");
+                    "./datasets/IDAlikeDataCD/MONTH"+monthID+".arff");
             //We update the model by invoking this method. The output
             // is an array with a value associated
             // to each fo the global hidden variables
