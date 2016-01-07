@@ -27,13 +27,32 @@ import eu.amidst.core.variables.Variable;
  *
  * <i>Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.</i>
  *
+ * for IDA like Data (class copied-pasted from eu.amidst.core.conceptdrift.NaiveBayesVirtualConceptDriftDetectorTest.java)
  */
 public class NaiveBayesVirtualConceptDriftDetectorTest {
-    public static void main(String[] args) {
+
+    public static void generateIDAData() throws Exception{
+        GenerateCajaMarData generateData = new GenerateCajaMarData();
+        generateData.setSeed(0);
+        generateData.setIncludeSocioEconomicVars(false);
+        generateData.setBatchSize(1000);
+        generateData.setRscriptsPath("./extensions/uai2016/doc-experiments/dataGenerationForFlink");
+        generateData.setNumFiles(3);
+        generateData.setNumSamplesPerFile(100);
+        generateData.setOutputFullPath("~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/" +
+                "withoutIndex");
+        generateData.setPrintINDEX(false);
+        generateData.setAddConceptDrift(true);
+        generateData.generateData();
+    }
+
+    public static void main(String[] args) throws Exception{
+
+        generateIDAData();
 
         //We can open the data stream using the static class DataStreamLoader
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(
-                "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/MONTH1.arff");
+                "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withoutIndex/MONTH1.arff");
 
         //We create a NaiveBayesVirtualConceptDriftDetector object
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
@@ -72,7 +91,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         for (int monthID = 1; monthID < 85; monthID++){
 
             DataOnMemory<DataInstance> dataMONTH = loadDataOnMemoryFromArffFolder(
-                    "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/MONTH"+monthID+".arff");
+                    "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withoutIndex/MONTH"+monthID+".arff");
             //We update the model by invoking this method. The output
             // is an array with a value associated
             // to each fo the global hidden variables

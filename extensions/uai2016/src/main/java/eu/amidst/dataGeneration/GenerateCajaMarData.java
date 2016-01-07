@@ -26,7 +26,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
  *
  * Created by ana@cs.aau.dk on 08/12/15.
  */
-public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
+public class GenerateCajaMarData implements AmidstOptionsHandler {
 
     DynamicBayesianNetwork dbn = null;
 
@@ -39,6 +39,7 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
     private int batchSize = 1000;
     private boolean printINDEX = true;
     private int seed = 0;
+    private boolean addConceptDrift = false;
 
     public int getNumSamplesPerFile() {
         return numSamplesPerFile;
@@ -104,7 +105,15 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         this.seed = seed;
     }
 
-    public void generateIDADataFromRScript() throws Exception {
+    public boolean isAddConceptDrift() {
+        return addConceptDrift;
+    }
+
+    public void setAddConceptDrift(boolean addConceptDrift) {
+        this.addConceptDrift = addConceptDrift;
+    }
+
+    private void generateIDADataFromRScript() throws Exception {
         /*
          * The 1st parameter is the number of files (per month)
          * The 2nd parameter is the length of the sequence, i.e., # of clients
@@ -115,13 +124,18 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
         Process p = Runtime.getRuntime().exec("Rscript "+getRscriptsPath()+"/data_generator_IDA.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath() + " " +
-                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed());
+                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed()+ " " +
+                String.valueOf(isAddConceptDrift()).toUpperCase());
+        System.out.println("Rscript "+getRscriptsPath()+"/data_generator_IDA.R "+
+                getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath() + " " +
+                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed()+ " " +
+                String.valueOf(isAddConceptDrift()).toUpperCase());
         p.waitFor();
 
 
     }
 
-    public void generateSCAIDataFromRScript() throws Exception{
+    private void generateSCAIDataFromRScript() throws Exception{
         /*
          * The 1st parameter is the number of files (per month)
          * The 2nd parameter is the length of the sequence, i.e., # of clients
@@ -132,10 +146,11 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
         Process p = Runtime.getRuntime().exec("Rscript "+getRscriptsPath()+"/data_generator_SCAI.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath()  + " " +
-                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed());
+                String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed()+ " " +
+                String.valueOf(isAddConceptDrift()).toUpperCase());
         p.waitFor();
     }
-    public void generateStaticData() throws Exception{
+    public void generateData() throws Exception{
         if(this.isIncludeSocioEconomicVars())
             this.generateSCAIDataFromRScript();
         else
@@ -215,11 +230,11 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
 
     public static void main(String[] args) throws Exception{
 
-        GenerateCajaMarDataAndLearnDNB generateData = new GenerateCajaMarDataAndLearnDNB();
+        GenerateCajaMarData generateData = new GenerateCajaMarData();
 
         generateData.setOptions(args);
 
-        generateData.generateStaticData();
+        generateData.generateData();
         generateData.learnDynamicNB();
     }
 
@@ -230,11 +245,12 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
                 "-numFiles, 10, Number of files\\" +
                 "-RscriptsPath, ./, Path for the R script(s)\\" +
                 "-outputFullPath, ./, Path for the output files\\" +
-                "-includeSocioEconomicVars, false, If set, then socioeconoic vars are included, i.e., " +
+                "-includeSocioEconomicVars, false, If set then socioeconomic vars are included and " +
                 "data like the SCAI paper is generated.\\"+
                 "-batchSize, 1000, batchSize for learning the dbn.\\"+
                 "-printINDEX, true, print index in attribute arff header\\"+
-                "-seed, 0, set seed for data sample generation in Rscript";
+                "-seed, 0, set seed for data sample generation in Rscript\\"+
+                "-addConceptDrift, false, If set add concept drift at months 35 and 60";
     }
 
     @Override
@@ -252,5 +268,6 @@ public class GenerateCajaMarDataAndLearnDNB implements AmidstOptionsHandler {
         this.setBatchSize(this.getIntOption("-batchSize"));
         this.setPrintINDEX(this.getBooleanOption("-printINDEX"));
         this.setSeed(this.getIntOption("-seed"));
+        this.setAddConceptDrift(getBooleanOption("-addConceptDrift"));
     }
 }

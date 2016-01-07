@@ -1,25 +1,38 @@
-aws emr --region us-west-2 create-cluster --name "Cluster4Static" \
---no-auto-terminate   \
+aws emr --region us-west-2 create-cluster --name "ClusterTestLogger" \
+--no-auto-terminate \
 --use-default-roles \
 --release-label emr-4.2.0 \
+--termination-protected \
 --ec2-attributes KeyName=AmidstToolbox \
---instance-groups InstanceGroupType=MASTER,InstanceCount=1,InstanceType=c3.xlarge InstanceGroupType=CORE,InstanceCount=2,InstanceType=c3.xlarge \
+--instance-groups InstanceGroupType=MASTER,InstanceCount=1,InstanceType=m3.xlarge InstanceGroupType=CORE,InstanceCount=1,InstanceType=m3.xlarge \
 --bootstrap-action Path="s3://amidst/emr_bootstrap_java_8_emr400.sh"
 
-aws emr describe-cluster --cluster-id j-2KTH73QDP01JK
+aws emr describe-cluster --cluster-id j-1CRVHQP86WPBE 
 
-ssh hadoop@ec2-54-201-24-6.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+ssh hadoop@ec2-54-213-149-223.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
 
 wget http://ftp.download-by.net/apache/flink/flink-0.10.0/flink-0.10.0-bin-hadoop26-scala_2.10.tgz
 tar xzf flink-*.tgz
 export HADOOP\_CONF\_DIR=/etc/hadoop/conf
-sudo yum update
+#sudo yum update
 
-scp -i ~/key/AmidstToolbox.pem core/flinklink/target/flinklink-1.0.0-jar-with-dependencies.jar core/flinklink/log4j.properties hadoop@ec2-54-201-24-6.us-west-2.compute.amazonaws.com:
+scp -i ~/key/AmidstToolbox.pem core/classes/artifacts/flinklink_jar/flinklink.jar core/flinklink/log4j.properties hadoop@ec2-54-213-149-223.us-west-2.compute.amazonaws.com:
 
 
 cd flink-0.10.0
-./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 2000 -c eu.amidst.flinklink.examples.ParallelVMPExtended ../flinklink-1.0.0-jar-with-dependencies.jar 5 5 1000 10 2 2 ../log4j.properties > output_5_5_1000_10_2_2.txt 2>&1
+./bin/flink run -m yarn-cluster -yn 1 -ys 4 -yjm 1024 -ytm 9000 -c eu.amidst.flinklink.examples.DynamicParallelVMPExtended ../flinklink.jar 0 10 1000000 100 100 100 3 0 > output_0_10_1M_100_100_100_3_0.txt 2>&1
 
-aws emr terminate-clusters --cluster-ids j-2KTH73QDP01JK 
+#Logging
+yarn.log-aggregation-enable: true
+screen
+./bin/yarn-session.sh -n 1 -tm 2048 -s 4
+CTRL+a 
+d
+./bin/flink run -yn 1 -ys 4 -yjm 1024 -ytm 1024 -c eu.amidst.flinklink.examples.WordCountExample ../flinklink.jar
+screen -r
+stop
+
+
+aws emr modify-cluster-attributes --cluster-id j-3ADLFHRQTLB97 --no-termination-protected
+aws emr terminate-clusters --cluster-ids j-3ADLFHRQTLB97 --region us-east-1 
 
