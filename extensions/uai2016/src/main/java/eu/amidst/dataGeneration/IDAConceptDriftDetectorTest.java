@@ -32,8 +32,7 @@ public class IDAConceptDriftDetectorTest{
         generateData.setRscriptsPath("./extensions/uai2016/doc-experiments/dataGenerationForFlink");
         generateData.setNumFiles(3);
         generateData.setNumSamplesPerFile(1000);
-        generateData.setOutputFullPath("~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/" +
-                "withIndex");
+        generateData.setOutputFullPath("~/core/datasets/dataFlink/IDAlikeDataCD");
         generateData.setPrintINDEX(true);
         generateData.setAddConceptDrift(true);//At points 35 and 60
         generateData.generateData();
@@ -42,10 +41,10 @@ public class IDAConceptDriftDetectorTest{
     public static void testUpdateN_IDAData() throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        generateIDAData();
+        //generateIDAData();
 
         DataFlink<DataInstance> data0 = DataFlinkLoader.loadDataFromFolder(env,
-                "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withIndex/MONTH1.arff", true);
+                "./datasets/dataFlink/IDAlikeDataCD/MONTH1.arff", true);
 
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
         learn.setBatchSize(100);
@@ -65,8 +64,7 @@ public class IDAConceptDriftDetectorTest{
         for (int i = 1; i < NMONTHS; i++) {
             System.out.println("--------------- MONTH " + (i+1) + " --------------------------");
             DataFlink<DataInstance> dataNew = DataFlinkLoader.loadDataFromFolder(env,
-                    "./extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withIndex/MONTH" +
-                            (i+1) + ".arff", true);
+                    "./datasets/dataFlink/IDAlikeDataCD/MONTH" + (i+1) + ".arff", true);
             out = learn.updateModelWithNewTimeSlice(dataNew);
             output[i] = out[0];
 
