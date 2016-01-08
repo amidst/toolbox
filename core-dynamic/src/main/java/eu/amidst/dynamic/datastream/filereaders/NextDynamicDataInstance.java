@@ -27,25 +27,41 @@ import eu.amidst.core.datastream.filereaders.DataRowMissing;
 import java.util.Iterator;
 
 /**
- * Created by ana@cs.aau.dk on 13/11/14.
+ * The NextDynamicDataInstance class is used to load the next dynamic data instance.
  */
 public final class NextDynamicDataInstance {
 
+    /** Represents a {@link DataRow} object of the present time. */
     private DataRow present;
+
+    /** Represents a {@link DataRow} object of the past time. */
     private DataRow past;
 
-    /* Only used in case the sequenceID is not in the datafile */
+    /** Represents the sequence ID.It is only used in case that the sequenceID is not in the datafile.*/
     private int sequenceID;
-    /* timeIDcounter is used to keep track of missing values*/
+
+    /** Represents the timeIDcounter that is used to keep track of missing values. */
     private int timeIDcounter;
 
+    /**
+     * Creates a new NextDynamicDataInstance object.
+     * @param past a {@link DataRow} object of the past time.
+     * @param present a {@link DataRow} object of the present time.
+     * @param sequenceID the sequence ID.
+     * @param timeIDcounter the timeIDcounter.
+     */
     public NextDynamicDataInstance(DataRow past, DataRow present, int sequenceID, int timeIDcounter){
         this.past = past;
         this.present = present;
-
         this.sequenceID = sequenceID;
         this.timeIDcounter = timeIDcounter;
     }
+
+    /**
+     * Returns a {@link DynamicDataInstance} object in case no SequenceID or TimeID are provided.
+     * @param reader an Iterator<DataRow> object.
+     * @return a {@link DynamicDataInstance} object.
+     */
     public DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(Iterator<DataRow> reader){
         DynamicDataInstanceImpl dynDataInst = null;
         if(timeIDcounter == 0) {
@@ -58,10 +74,16 @@ public final class NextDynamicDataInstance {
         return dynDataInst;
     }
 
+    /**
+     * Returns a {@link DynamicDataInstance} object in case only a TimeID is provided.
+     * @param reader an Iterator<DataRow> object.
+     * @param attTimeID an {@link Attribute} object that represents the time ID.
+     * @return a {@link DynamicDataInstance} object.
+     */
     public DynamicDataInstance nextDataInstance_NoSeq(Iterator<DataRow> reader, Attribute attTimeID){
         double presentTimeID = present.getValue(attTimeID);
 
-        /*Missing values of the form (X,?), where X can also be ?*/
+        /* Missing values of the form (X,?), where X can also be ?. */
         if(timeIDcounter < present.getValue(attTimeID)){
             timeIDcounter++;
             DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, new DataRowMissing(), (int) sequenceID,
@@ -69,7 +91,7 @@ public final class NextDynamicDataInstance {
             past = new DataRowMissing(); //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
 
-        /*Missing values of the form (X,Y), where X can also be ? and Y is an observed (already read) instance*/
+        /* Missing values of the form (X,Y), where X can also be ? and Y is an observed (already read) instance. */
         }else if(timeIDcounter == present.getValue(attTimeID)) {
             timeIDcounter++;
             DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, present, (int) sequenceID,
@@ -77,7 +99,7 @@ public final class NextDynamicDataInstance {
             past = present; //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
 
-        /*Read a new DataRow*/
+        /* Read a new DataRow. */
         }else{
             present = reader.next();
             /*Recursive call to this method taking into account the past DataRow*/
@@ -86,6 +108,12 @@ public final class NextDynamicDataInstance {
 
     }
 
+    /**
+     * Returns a {@link DynamicDataInstance} object in case only a SequenceID is provided.
+     * @param reader an Iterator<DataRow> object.
+     * @param attSequenceID an {@link Attribute} object that represents the sequence ID.
+     * @return a {@link DynamicDataInstance} object.
+     */
     public DynamicDataInstance nextDataInstance_NoTimeID(Iterator<DataRow> reader, Attribute attSequenceID){
         DynamicDataInstanceImpl dynDataInst = null;
         if(timeIDcounter == 0) {
@@ -112,11 +140,18 @@ public final class NextDynamicDataInstance {
         }
     }
 
+    /**
+     * Returns a {@link DynamicDataInstance} object in case both a SequenceID  and a TimeID are provided.
+     * @param reader an Iterator<DataRow> object.
+     * @param attSequenceID an {@link Attribute} object that represents the sequence ID.
+     * @param attTimeID an {@link Attribute} object that represents the time ID.
+     * @return a {@link DynamicDataInstance} object.
+     */
     public DynamicDataInstance nextDataInstance(Iterator<DataRow> reader, Attribute attSequenceID, Attribute attTimeID){
         double pastSequenceID = past.getValue(attSequenceID);
         double presentTimeID = present.getValue(attTimeID);
 
-        /*Missing values of the form (X,?), where X can also be ?*/
+        /* Missing values of the form (X,?), where X can also be ?. */
         if(timeIDcounter < present.getValue(attTimeID)){
             timeIDcounter++;
             DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, new DataRowMissing(), (int) pastSequenceID,
@@ -124,7 +159,7 @@ public final class NextDynamicDataInstance {
             past = new DataRowMissing(); //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
 
-        /*Missing values of the form (X,Y), where X can also be ? and Y is an observed (already read) instance*/
+        /* Missing values of the form (X,Y), where X can also be ? and Y is an observed (already read) instance. */
         }else if(timeIDcounter == present.getValue(attTimeID)) {
             timeIDcounter++;
             DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, present, (int) pastSequenceID,
@@ -132,7 +167,7 @@ public final class NextDynamicDataInstance {
             past = present; //present is still the same instance, we need to fill in the missing instances
             return dynDataInst;
 
-        /*Read a new DataRow*/
+        /* Read a new DataRow. */
         }else{
             present = reader.next();
             double presentSequenceID = present.getValue(attSequenceID);
@@ -151,6 +186,4 @@ public final class NextDynamicDataInstance {
             }
         }
     }
-
-
 }

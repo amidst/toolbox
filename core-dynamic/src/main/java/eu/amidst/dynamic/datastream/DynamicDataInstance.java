@@ -15,28 +15,62 @@ import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.core.variables.Variable;
 
 /**
- * Created by andresmasegosa on 27/01/15.
+ *  The DynamicDataInstance interface represents a dynamic data sample.
+ *  It extends the {@link DataInstance} and {@link DynamicAssignment} interfaces.
+ *  Hence, it can be also interpreted as a dynamic assignment to a set of {@link Variable} objects.
+ *
+ * <p> An example of use of the DynamicDataInstance interface can be found in {@see eu.amidst.dynamic.examples.datastream} </p>
  */
+
 public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
 
+    /**
+     * Returns the sequence ID of this DynamicDataInstance.
+     * @return a {@code long} that represents the sequence ID.
+     */
     long getSequenceID();
 
+    /**
+     * Returns the time ID of this DynamicDataInstance.
+     * @return a {@code long} that represents the time ID.
+     */
     long getTimeID();
 
+    /**
+     * Returns the value of a given {@link Attribute} in this DynamicDataInstance.
+     * @param att an {@link Attribute} object.
+     * @param present a {@code boolean} that refers to either the present or past time.
+     * @return a {@code double} that represents the value of the attribute.
+     */
     double getValue(Attribute att, boolean present);
 
+    /**
+     * Sets the value of a given {@link Attribute} in this DynamicDataInstance.
+     * @param att an {@link Attribute} object.
+     * @param val a {@code double} that represents the value of the attribute.
+     * @param present a {@code boolean} that refers to either the present or past time.
+     */
     void setValue(Attribute att, double val, boolean present);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default double getValue(Attribute att){
         return this.getValue(att,true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default void setValue(Attribute att, double val){
         this.setValue(att,val,true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default double getValue(Variable var) {
         if (!var.isObservable())
@@ -49,10 +83,13 @@ public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default void setValue(Variable var, double val) {
         if (!var.isObservable())
-            throw new IllegalArgumentException("Chaning values of a non observable variable ");
+            throw new IllegalArgumentException("Changing values of a non observable variable!");
 
         if (var.isInterfaceVariable()) {
             this.setValue(var.getAttribute(), val, false);

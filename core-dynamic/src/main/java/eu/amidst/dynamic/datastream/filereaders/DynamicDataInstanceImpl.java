@@ -16,30 +16,42 @@ import eu.amidst.core.datastream.filereaders.DataRow;
 import java.io.Serializable;
 
 /**
- * Created by andresmasegosa on 11/11/14.
+ * The DynamicDataInstanceImpl class implements the {@link DynamicDataInstance} interface.
  */
 class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
 
+    /** Represents a {@link DataRow} object of the present time. */
     private DataRow dataRowPresent;
+
+    /** Represents a {@link DataRow} object of the past time. */
     private DataRow dataRowPast;
 
+    /** Represents the sequence ID. */
     private int sequenceID;
-    /**
-     * The timeID of the Present
-     */
+
+    /** Represents the time ID. */
     private int timeID;
 
-
-    public DynamicDataInstanceImpl(DataRow dataRowPast1, DataRow dataRowPresent1, int sequenceID1, int timeID1){
+    /**
+     * Creates a new DynamicDataInstance object.
+     * @param dataRowPast1 a {@link DataRow} object of the past time.
+     * @param dataRowPresent1 a {@link DataRow} object of the present time.
+     * @param sequenceID1 the sequence ID
+     * @param timeID1 the time ID.
+     */
+     public DynamicDataInstanceImpl(DataRow dataRowPast1, DataRow dataRowPresent1, int sequenceID1, int timeID1){
         dataRowPresent = dataRowPresent1;
         dataRowPast =  dataRowPast1;
         this.sequenceID = sequenceID1;
         this.timeID = timeID1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getValue(Attribute att, boolean present) {
         if (present){
@@ -49,6 +61,9 @@ class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setValue(Attribute att, double value, boolean present) {
         if (present){
@@ -58,31 +73,49 @@ class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Attributes getAttributes() {
         return dataRowPresent.getAttributes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getValue(Attribute att) {
         return this.dataRowPresent.getValue(att);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setValue(Attribute att, double val) {
         this.dataRowPresent.setValue(att,val);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double[] toArray() {
         return this.dataRowPresent.toArray();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getSequenceID() {
         return sequenceID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getTimeID() {
         return timeID;
