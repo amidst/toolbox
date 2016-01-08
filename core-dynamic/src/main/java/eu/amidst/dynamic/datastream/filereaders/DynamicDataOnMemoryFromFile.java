@@ -23,23 +23,38 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Created by ana@cs.aau.dk on 12/11/14.
+ * The DynamicDataStreamFromFile class implements the {@link DataOnMemory} interface and loads a dynamic data on memory from a given file.
  */
 public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInstance> {
 
+    /** Represents a {@link DataFileReader} object. */
     private DataFileReader reader;
+
+    /** Represents a {@link Iterator} over {@link DataRow}. */
     private Iterator<DataRow> dataRowIterator;
+
+    /** Represents the {@link Attribute} object defining the sequence ID. */
     private Attribute attSequenceID;
+
+    /** Represents the {@link Attribute} object defining the time ID. */
     private Attribute attTimeID;
+
+    /** Represents a {@link NextDynamicDataInstance} object. */
     private NextDynamicDataInstance nextDynamicDataInstance;
+
+    /** Represents an array of {@link DynamicDataInstance} objects. */
     private DynamicDataInstance[] dataInstances;
+
+    /** Represents a pointer initialized to 0. */
     private int pointer = 0;
 
-
+    /**
+     * Creates a new DynamicDataOnMemoryFromFile.
+     * @param reader1 a valid {@link DataFileReader} object.
+     */
     public DynamicDataOnMemoryFromFile(DataFileReader reader1) {
         this.reader = reader1;
         dataRowIterator = this.reader.iterator();
-
 
         List<DynamicDataInstance> dataInstancesList = new ArrayList<>();
 
@@ -68,10 +83,10 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInst
 
         while (dataRowIterator.hasNext()) {
 
-            /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
+            /* 0 = false, false, i.e., No sequenceID or TimeID are provided. */
             /* 1 = true,  false, i.e., TimeID is provided */
             /* 2 = false, true,  i.e., SequenceID is provided */
-            /* 3 = true,  true,  i.e., SequenceID is provided*/
+            /* 3 = true,  true,  i.e., Both SequenceID and TimeID are provided. */
             int option = (attTimeID == null) ? 0 : 1 + 2 * ((attSequenceID == null) ? 0 : 1);
 
             switch (option) {
@@ -108,44 +123,67 @@ public class DynamicDataOnMemoryFromFile implements DataOnMemory<DynamicDataInst
             dataInstances[counter] = inst;
             counter++;
         }
-
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumberOfDataInstances() {
         return dataInstances.length;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DynamicDataInstance getDataInstance(int i) {
         return dataInstances[i];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<DynamicDataInstance> getList() {
         return Arrays.asList(this.dataInstances);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Attributes getAttributes() {
         return reader.getAttributes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Stream<DynamicDataInstance> stream() {
         return Arrays.stream(this.dataInstances);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         this.reader.close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRestartable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void restart() {
     }

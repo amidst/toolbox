@@ -14,14 +14,24 @@ import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 19/02/15.
+ * The DataSequenceStream class defines a {@link Stream} of {@link DataSequence}.
  */
 public final class DataSequenceStream {
 
+    /**
+     * Returns a {@link Stream} of {@link DataSequence}.
+     * @param dataStream a DataStream<DynamicDataInstance> object.
+     * @return a Stream<DataSequence> object.
+     */
     public static Stream<DataSequence> streamOfDataSequences(DataStream<DynamicDataInstance> dataStream){
         return DataSequenceSpliterator.toDataSequenceStream(dataStream);
     }
 
+    /**
+     * Returns a parallel {@link Stream} of {@link DataSequence}.
+     * @param dataStream a DataStream<DynamicDataInstance> object.
+     * @return a Stream<DataSequence> object.
+     */
     public static Stream<DataSequence> parallelStreamOfDataSequences(DataStream<DynamicDataInstance> dataStream){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(DataSequenceStream.streamOfDataSequences(dataStream), 1);
     }
