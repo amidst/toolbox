@@ -11,25 +11,38 @@ package eu.amidst.dynamic.datastream;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
-
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
 import static java.util.Spliterators.spliterator;
 import static java.util.stream.StreamSupport.stream;
 
+/**
+ * The DataSequenceSpliterator class implements a {@link Spliterator} of {@link DataSequence}.
+ */
 public class DataSequenceSpliterator implements Spliterator<DataSequence> {
+
+    /** Represents a DataStream of DynamicDataInstance objects. */
     private final DataStream<DynamicDataInstance> dataStream;
 
+    /** Represents a Spliterator of DynamicDataInstance objects. */
     private final Spliterator<DynamicDataInstance> spliterator;
+
     private final int characteristics;
+
     private long est;
+
     private DynamicDataInstance tailInstance=null;
+
     private boolean advance = true;
 
+    /**
+     * Creates a new DataSequenceSpliterator.
+     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @param est the estimated size
+     */
     public DataSequenceSpliterator(DataStream<DynamicDataInstance> dataStream_, long est) {
         this.dataStream = dataStream_;
         this.spliterator = this.dataStream.stream().spliterator();
@@ -37,14 +50,27 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
         this.characteristics = (c & SIZED) != 0 ? c | SUBSIZED : c;
         this.est = est;
     }
+
+    /**
+     * Creates a new DataSequenceSpliterator.
+     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     */
     public DataSequenceSpliterator(DataStream<DynamicDataInstance> dataStream_) {
         this(dataStream_, dataStream_.stream().spliterator().estimateSize());
     }
 
+    /**
+     * Returns a {@link Stream} of {@link DataSequence} from a given a DataStream<DynamicDataInstance>.
+     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @return a Stream<DataSequence> object.
+     */
     public static Stream<DataSequence> toDataSequenceStream(DataStream<DynamicDataInstance> dataStream_) {
         return stream(new DataSequenceSpliterator(dataStream_), true);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public Spliterator<DataSequence> trySplit() {
         if (!advance) return null;
 
@@ -84,6 +110,9 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean tryAdvance(Consumer<? super DataSequence> action) {
         if (!advance) return false;
@@ -91,8 +120,6 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
         final HoldingConsumer<DynamicDataInstance> holder = new HoldingConsumer<>();
 
         final DataSequenceImpl container = new DataSequenceImpl(dataStream.getAttributes());
-
-
 
         if (tailInstance==null) {
             if (spliterator.tryAdvance(holder)) {
@@ -106,7 +133,6 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
         }
 
         container.setSeqId(tailInstance.getSequenceID());
-
 
         while ((advance=spliterator.tryAdvance(holder)) && holder.value.getSequenceID()==tailInstance.getSequenceID()){
             tailInstance=holder.value;
@@ -125,11 +151,22 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public Comparator<? super DataSequence> getComparator() {
         if (hasCharacteristics(SORTED)) return null;
         throw new IllegalStateException();
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public long estimateSize() { return est; }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override public int characteristics() { return characteristics; }
 
     static final class HoldingConsumer<T> implements Consumer<T> {

@@ -16,37 +16,56 @@ import eu.amidst.core.datastream.filereaders.DataFileReader;
 import java.util.stream.Stream;
 
 /**
- * Created by ana@cs.aau.dk on 12/11/14.
+ * The DynamicDataStreamFromFile class implements the {@link DataStream} interface and loads a dynamic data stream from a given file.
  */
 public class DynamicDataStreamFromFile implements DataStream<DynamicDataInstance> {
 
+    /** Represents a {@link DataFileReader} object. */
     private DataFileReader reader;
 
-
+    /**
+     * Creates a new DynamicDataStreamFromFile object.
+     * @param reader1 a valid {@link DataFileReader} object.
+     */
     public DynamicDataStreamFromFile(DataFileReader reader1){
         this.reader=reader1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Attributes getAttributes() {
         return reader.getAttributes();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         this.reader.close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRestartable() {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void restart() {
         this.reader.restart();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Stream<DynamicDataInstance> stream() {
         return DynamicDataInstanceSpliterator.toDynamicDataInstanceStream(reader);

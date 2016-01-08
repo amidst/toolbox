@@ -22,35 +22,51 @@ import java.util.stream.Stream;
 
 import static java.util.stream.StreamSupport.stream;
 
+/**
+ * The DynamicDataInstanceSpliterator class defines a {@link Spliterator} over {@link DynamicDataInstance} elements.
+ */
 public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataInstance> {
 
+    /** Represents a {@link DataFileReader} object. */
     private DataFileReader reader;
+
+    /** Represents a {@link Iterator} over {@link DataRow}. */
     private Iterator<DataRow> dataRowIterator;
+
+    /** Represents the {@link Attribute} object defining the sequence ID. */
     private Attribute attSequenceID;
+
+    /** Represents the {@link Attribute} object defining the time ID. */
     private Attribute attTimeID;
+
+    /** Represents a {@link NextDynamicDataInstance} object. */
     private NextDynamicDataInstance nextDynamicDataInstance;
 
+    /** Represents a {@link Spliterator} over {@link DataRow} elemenets. */
     private final Spliterator<DataRow> spliterator;
-    //private final int batchSize;
+
+    /** Represents the characteristics. */
     private final int characteristics;
+
+    /** Represents the estimated size. */
     private long est;
+
+    /** Represents the option whether SequenceID and TimeID are provided or not. */
     private int option;
 
-    //public DynamicDataInstanceFixedBatchParallelSpliteratorWrapper(DataFileReader reader1, long est, int batchSize) {
+    /**
+     * Creates a new DynamicDataInstanceSpliterator given a valid {@link DataFileReader} object.
+     * @param reader_ a valid {@link DataFileReader} object.
+     */
     public DynamicDataInstanceSpliterator(DataFileReader reader_) {
         this.reader=reader_;
         dataRowIterator = this.reader.iterator();
         this.spliterator = this.reader.spliterator();
-
         final int c = spliterator.characteristics();
         this.characteristics = (c & SIZED) != 0 ? c | SUBSIZED : c;
         this.est = spliterator.estimateSize();
-        //this.batchSize = batchSize;
 
-
-        /**
-         * We read the two first rows now, to create the first couple in next
-         */
+        /** We read the two first rows now, to create the first couple in next. */
         DataRow present;
         DataRow past = new DataRowMissing();
 
@@ -71,31 +87,27 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
         if (attTimeID!=null)
             timeID = (int)present.getValue(attTimeID);
 
-
         nextDynamicDataInstance = new NextDynamicDataInstance(past, present, sequenceID, timeID);
 
-
-        /* 0 = false, false, i.e., Not sequenceID nor TimeID are provided */
-        /* 1 = true,  false, i.e., TimeID is provided */
-        /* 2 = false, true,  i.e., SequenceID is provided */
-        /* 3 = true,  true,  i.e., SequenceID is provided*/
+        /* 0 = false, false, i.e., No sequenceID or TimeID are provided. */
+        /* 1 = true,  false, i.e., TimeID is provided. */
+        /* 2 = false, true,  i.e., SequenceID is provided. */
+        /* 3 = true,  true,  i.e., Both SequenceID and TimeID are provided. */
         option = ((attTimeID == null) ? 0 : 1) + 2 * ((attSequenceID == null) ? 0 : 1);
-
     }
 
-
-    //public DynamicDataInstanceFixedBatchParallelSpliteratorWrapper(Spliterator<DataRow> toWrap, int batchSize) {
-    //    this(toWrap, toWrap.estimateSize(), batchSize);
-    //}
-
-    //public static Stream<DynamicDataInstance> toFixedBatchStream(Stream<DataRow> in, int batchSize) {
-    //    return stream(new DynamicDataInstanceFixedBatchParallelSpliteratorWrapper(in.spliterator(), batchSize), true);
-    //}
-
+    /**
+     * Returns a {@link Stream} of {@link DynamicDataInstance} given a valid {@link DataFileReader} object.
+     * @param reader a valid {@link DataFileReader} object.
+     * @return a Stream<DynamicDataInstance> object.
+     */
     public static Stream<DynamicDataInstance> toDynamicDataInstanceStream(DataFileReader reader) {
         return stream(new DynamicDataInstanceSpliterator(reader), false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override public Spliterator<DynamicDataInstance> trySplit() {
         //this.reader.spliterator().trySplit()
         return null;
@@ -110,6 +122,9 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
         */
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean tryAdvance(Consumer<? super DynamicDataInstance> action) {
 
@@ -118,47 +133,59 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
 
         switch (option) {
 
-            /* Not sequenceID nor TimeID are provided*/
+            /* No sequenceID or TimeID are provided. */
             case 0:
                 action.accept(nextDynamicDataInstance.nextDataInstance_NoTimeID_NoSeq(dataRowIterator));
                 return true;
 
-             /* Only TimeID is provided*/
+             /* Only a TimeID is provided. */
             case 1:
                 action.accept(nextDynamicDataInstance.nextDataInstance_NoSeq(dataRowIterator, attTimeID));
                 return true;
 
-             /* Only SequenceID is provided*/
+             /* Only a SequenceID is provided. */
             case 2:
                 action.accept(nextDynamicDataInstance.nextDataInstance_NoTimeID(dataRowIterator, attSequenceID));
                 return true;
 
-             /* SequenceID and TimeID are provided*/
+             /* Both SequenceID and TimeID are provided. */
             case 3:
                 action.accept(nextDynamicDataInstance.nextDataInstance(dataRowIterator, attSequenceID, attTimeID));
                 return true;
 
             default:
                 throw new IllegalArgumentException();
-
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void forEachRemaining(Consumer<? super DynamicDataInstance> action) {
         while(this.dataRowIterator.hasNext()){
             this.tryAdvance(action);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Comparator<DynamicDataInstance> getComparator() {
         if (hasCharacteristics(SORTED)) return null;
         throw new IllegalStateException();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long estimateSize() { return est; }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int characteristics() { return characteristics; }
 
