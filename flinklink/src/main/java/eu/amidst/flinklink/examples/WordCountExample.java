@@ -12,6 +12,7 @@ package eu.amidst.flinklink.examples;
 
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -46,36 +47,43 @@ public class WordCountExample {
 
         DataSet<TestClass> set = env.fromElements(new TestClass(elements));
 
-        try {
-            DataSet<Tuple2<String, Integer>> wordCounts = text
-                    .flatMap(new LineSplitter())
-                    .withBroadcastSet(set, "set")
-                    .groupBy(0)
-                    .sum(1);
-        }catch (RuntimeException e){
-            System.out.println("Exc");
-        };
+
+        DataSet<Tuple2<String, Integer>> wordCounts = text
+                .flatMap(new LineSplitter())
+                .withBroadcastSet(set, "set")
+                .groupBy(0)
+                .sum(1);
+
 
         //wordCounts.writeAsText("output.txt", FileSystem.WriteMode.OVERWRITE);
-        /*wordCounts.map(t -> {
-            System.out.println(t.f0 + "\t" + t.f1);
-            return t;
-        }).count();*/
+        wordCounts.map(new PrintTuple()).count();
 
     }
 
+    public static class PrintTuple extends RichMapFunction<Tuple2<String, Integer>, Integer> {
+
+        @Override
+        public Integer map(Tuple2<String, Integer> t) throws Exception {
+
+            System.out.println(t.f0 + "\t" + t.f1);
+            return 0;
+
+        }
+
+
+    }
 
     public static class LineSplitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
 
         static Logger loggerLineSplitter = LoggerFactory.getLogger(LineSplitter.class);
 
         @Override
-        public void flatMap(String line, Collector<Tuple2<String, Integer>> out) throws RuntimeException{
+        public void flatMap(String line, Collector<Tuple2<String, Integer>> out){
 
             loggerLineSplitter.info("Logger in LineSplitter.flatMap");
             for (String word : line.split(" ")) {
                 out.collect(new Tuple2<String, Integer>(word, 1));
-                throw new RuntimeException("LineSplitter class called");
+                //throw new RuntimeException("LineSplitter class called");
             }
 
         }
