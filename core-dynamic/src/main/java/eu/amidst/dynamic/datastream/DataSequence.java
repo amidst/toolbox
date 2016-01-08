@@ -11,8 +11,14 @@ package eu.amidst.dynamic.datastream;
 import eu.amidst.core.datastream.DataStream;
 
 /**
- * Created by andresmasegosa on 19/02/15.
+ * The DataSequence interface represents a data sequence.
+ * It extends a {@link DataStream} of {@link DynamicDataInstance}.
  */
 public interface DataSequence extends DataStream<DynamicDataInstance> {
+
+    /**
+     * Returns the sequence ID of this DataSequence.
+     * @return a {@code long} that represents the sequence ID of this DataSequence.
+     */
     long getSequenceID();
 }
