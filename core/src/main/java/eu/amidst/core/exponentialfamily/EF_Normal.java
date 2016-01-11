@@ -427,7 +427,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
                 this.array[INDEX_MEAN] = newmean;
                 this.array[INDEX_PRECISION] = newprecision;
             }else{
-                this.array[INDEX_MEAN] = mean1-mean2;
+                this.array[INDEX_MEAN] = 0;
                 this.array[INDEX_PRECISION] = 0;
             }
         }

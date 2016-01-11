@@ -191,12 +191,6 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
             double Y_i = momentChildCoParents.get(this.realYVariables.get(parentID)).get(0);
 
 
-            naturalParameters.set(0, -beta0 * beta_i * invVariance +
-                    beta_i * X * invVariance - (dotProductBetaY-beta_i*Y_i) * (beta_i*invVariance));
-
-            naturalParameters.set(1, -0.5*beta_iSquared*invVariance);
-
-
             double factor = beta_i/beta_iSquared;
 
             double mean = factor*(-beta0 + X - (dotProductBetaY-beta_i*Y_i));

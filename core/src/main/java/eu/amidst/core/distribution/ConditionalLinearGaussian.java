@@ -25,7 +25,6 @@ import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -302,31 +301,10 @@ public class ConditionalLinearGaussian extends ConditionalDistribution {
 
         EF_Normal_NormalParents ef_normal_normalParents = new EF_Normal_NormalParents(this.getVariable(), this.getConditioningVariables());
 
-        EF_Normal_NormalParents.CompoundVector naturalParameters = ef_normal_normalParents.createEmtpyCompoundVector();
+        ef_normal_normalParents.setBeta0(this.getIntercept());
+        ef_normal_normalParents.setBetas(this.coeffParents);
+        ef_normal_normalParents.setVariance(this.getVariance());
 
-        double beta_0 = this.getIntercept();
-        double[] coeffParents = this.getCoeffParents();
-        double sd = this.getSd();
-
-        double variance = sd*sd;
-
-        /* 1) theta_0  */
-        double theta_0 = beta_0 / variance;
-        naturalParameters.setThetaBeta0_NatParam(theta_0);
-
-        /* 2) theta_0Theta */
-        double variance2Inv =  1.0/(2*variance);
-        //IntStream.range(0,coeffParents.length).forEach(i-> coeffParents[i]*=(beta_0*variance2Inv));
-        double[] theta0_beta = Arrays.stream(coeffParents).map(w->-w*beta_0/variance).toArray();
-        naturalParameters.setThetaBeta0Beta_NatParam(theta0_beta);
-
-        /* 3) theta_Minus1 */
-        double theta_Minus1 = -variance2Inv;
-
-        /* 4) theta_beta & 5) theta_betaBeta */
-        naturalParameters.setThetaCov_NatParam(theta_Minus1,coeffParents, variance2Inv);
-
-        ef_normal_normalParents.setNaturalParameters(naturalParameters);
         return ef_normal_normalParents;
 
     }

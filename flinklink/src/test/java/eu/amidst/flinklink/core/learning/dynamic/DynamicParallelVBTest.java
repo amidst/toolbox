@@ -328,9 +328,9 @@ public class DynamicParallelVBTest extends TestCase {
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         DynamicParallelVB learn = new DynamicParallelVB();
-        learn.setMaximumGlobalIterations(10);
-        learn.setGlobalThreshold(0.05);
-        learn.setLocalThreshold(0.01);
+        learn.setMaximumGlobalIterations(20);
+        learn.setGlobalThreshold(0.0001);
+        learn.setLocalThreshold(0.0001);
         learn.setMaximumLocalIterations(100);
         learn.setBatchSize(BATCHSIZE);
         learn.setDAG(dbn.getDynamicDAG());
@@ -356,7 +356,7 @@ public class DynamicParallelVBTest extends TestCase {
     public static void testHuginCajaMar() throws Exception {
         String networkName = "HuginCajaMarDefaulterPredictor";
         createDataSets(networkName,null,null);
-        testUpdateN(networkName, 0.2);
+        testUpdateN(networkName, 0.3);
     }
 
     public static void testDBN1() throws Exception {
