@@ -77,8 +77,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             double mean = meanStart;
             double var = 1;
 
-            normal.getNaturalParameters().set(0, mean / (var));
-            normal.getNaturalParameters().set(1, -1 / (2 * var));
+            normal.setNaturalWithMeanPrecision(mean,1/var);
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
 
@@ -101,8 +100,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             double variance = normalGlobalHiddenPreviousTimeStep.getVariance() + this.transtionVariance;
             double mean = normalGlobalHiddenPreviousTimeStep.getMean();
 
-            normal.getNaturalParameters().set(0, mean / (variance));
-            normal.getNaturalParameters().set(1, -1 / (2 * variance));
+            normal.setNaturalWithMeanPrecision(mean,1/variance);
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
         }

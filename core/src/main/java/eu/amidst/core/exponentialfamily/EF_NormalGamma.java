@@ -98,13 +98,14 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
 
-        NaturalParameters naturalParameters = new ArrayVector(2);
 
         double mean = momentParents.get(meanParameterVariable).get(0);
         double invVariance = momentParents.get(gammaParameterVariable).get(1);
 
-        naturalParameters.set(0,mean*invVariance);
-        naturalParameters.set(1,-0.5*invVariance);
+        NaturalParameters naturalParameters = new EF_Normal.ArrayVectorParameter(2);
+
+        naturalParameters.set(0,mean);
+        naturalParameters.set(1,invVariance);
 
         return naturalParameters;
     }

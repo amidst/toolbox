@@ -133,7 +133,6 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
 
         int nOfBetas = this.betasVariables.size();
-        NaturalParameters naturalParameters = new ArrayVector(2);
 
         //From Beta_0, Beta, gamma and Y parents to variable X.
         double beta0;
@@ -148,9 +147,11 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
         beta0 = momentParents.get(beta0Variable).get(0);
         invVariance = momentParents.get(gammaVariable).get(1);
 
-        naturalParameters.set(0, beta0 * invVariance + dotProductBetaY * invVariance);
 
-        naturalParameters.set(1,-0.5*invVariance);
+        NaturalParameters naturalParameters = new EF_Normal.ArrayVectorParameter(2);
+
+        naturalParameters.set(0, beta0 + dotProductBetaY);
+        naturalParameters.set(1, invVariance);
 
         return naturalParameters;
     }
@@ -194,6 +195,16 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
                     beta_i * X * invVariance - (dotProductBetaY-beta_i*Y_i) * (beta_i*invVariance));
 
             naturalParameters.set(1, -0.5*beta_iSquared*invVariance);
+
+
+            double factor = beta_i/beta_iSquared;
+
+            double mean = factor*(-beta0 + X - (dotProductBetaY-beta_i*Y_i));
+            double precision = beta_iSquared*invVariance;
+
+            naturalParameters = new EF_Normal.ArrayVectorParameter(2);
+            naturalParameters.set(0,mean);
+            naturalParameters.set(1,precision);
 
         // Message to a Beta variable
         }else if(betasVariables.contains(parent)){
