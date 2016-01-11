@@ -203,16 +203,28 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
             double beta_i = momentChildCoParents.get(this.betasVariables.get(parentID)).get(0);
             double Y_i = momentChildCoParents.get(this.realYVariables.get(parentID)).get(0);
 
-            naturalParameters.set(0, -beta0 * Y_i * invVariance +
-                    Y_i * X * invVariance - (dotProductBetaY-beta_i*Y_i) * (Y_i*invVariance));
-            naturalParameters.set(1, -0.5*Y_iSquared*invVariance);
+            //naturalParameters.set(0, -beta0 * Y_i * invVariance +
+            //        Y_i * X * invVariance - (dotProductBetaY-beta_i*Y_i) * (Y_i*invVariance));
+            //naturalParameters.set(1, -0.5*Y_iSquared*invVariance);
 
+            double factor = Y_i/Y_iSquared;
 
-        // Message to the Beta0 variable
+            double mean = factor*(-beta0 + X - (dotProductBetaY-beta_i*Y_i));
+            double precision = Y_iSquared*invVariance;
+
+            naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
+            naturalParameters.set(0,mean);
+            naturalParameters.set(1,precision);
+
+            // Message to the Beta0 variable
         }else if(beta0Variable == parent){
 
-            naturalParameters.set(0, X * invVariance - dotProductBetaY * invVariance);
-            naturalParameters.set(1, -0.5*invVariance);
+            //naturalParameters.set(0, X * invVariance - dotProductBetaY * invVariance);
+            //naturalParameters.set(1, -0.5*invVariance);
+
+            naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
+            naturalParameters.set(0, X - dotProductBetaY);
+            naturalParameters.set(1, invVariance);
 
         // Message to the inv-Gamma variable
         }else if (gammaVariable==parent){

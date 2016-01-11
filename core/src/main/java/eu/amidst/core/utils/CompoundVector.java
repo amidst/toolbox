@@ -57,16 +57,6 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
         }
     }
 
-    public static CompoundVector newZeroedVector(CompoundVector vector){
-        List<Vector> newvectors  = new ArrayList(vector.baseVectors.size());
-
-        for (int i = 0; i < vector.baseVectors.size(); i++) {
-            newvectors.add(new ArrayVector(vector.baseVectors.get(i).getVector().size()));
-        }
-
-        return new CompoundVector(newvectors);
-    }
-
     /**
      * Returns the number of base vectors
      * @return a positive integer number.
@@ -157,6 +147,14 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
      * {@inheritDoc}
      */
     @Override
+    public void substract(Vector vector) {
+        this.substract((CompoundVector) vector);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void copy(Vector vector) {
         this.copy((CompoundVector) vector);
     }
@@ -204,6 +202,14 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
      */
     public void sum(CompoundVector vector) {
         this.baseVectors.stream().forEach(w -> w.getVector().sum(vector.getVectorByPosition(w.getIndex())));
+    }
+
+    /**
+     * Updates the values of this CompoundVector as a substractNonStateless of its initial values and the input CompoundVector values.
+     * @param vector an input CompoundVector.
+     */
+    public void substract(CompoundVector vector) {
+        this.baseVectors.stream().forEach(w -> w.getVector().substract(vector.getVectorByPosition(w.getIndex())));
     }
 
     /**

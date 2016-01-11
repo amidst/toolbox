@@ -329,6 +329,9 @@ public class DynamicParallelVBTest extends TestCase {
 
         DynamicParallelVB learn = new DynamicParallelVB();
         learn.setMaximumGlobalIterations(10);
+        learn.setGlobalThreshold(0.05);
+        learn.setLocalThreshold(0.01);
+        learn.setMaximumLocalIterations(100);
         learn.setBatchSize(BATCHSIZE);
         learn.setDAG(dbn.getDynamicDAG());
         learn.setOutput(true);
@@ -389,5 +392,12 @@ public class DynamicParallelVBTest extends TestCase {
         createDBN1(true);
         createDataSets(networkName, null, Arrays.asList("C"));
         testUpdateN(networkName, 0.1);
+    }
+
+    public static void testDBN3Hidden() throws Exception {
+        String networkName = "dbn3";
+        createDBN3();
+        createDataSets(networkName, Arrays.asList("A0"),null);
+        testUpdateN(networkName, 0.0);
     }
 }

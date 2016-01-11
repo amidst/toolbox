@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.hugin</groupId>
             <artifactId>hugin</artifactId>
-            <version>8.2</version>
+            <version>8.3</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/huginlib/hgapi83_amidst-64.jar</systemPath>
         </dependency>
