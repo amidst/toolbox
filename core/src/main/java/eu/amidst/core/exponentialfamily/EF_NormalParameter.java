@@ -12,6 +12,7 @@
 package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -55,7 +56,7 @@ public class EF_NormalParameter extends EF_UnivariateDistribution {
 
         this.var = var1;
         this.naturalParameters = new ArrayVectorParameter(2);
-        this.momentParameters = new ArrayVectorParameter(2);
+        this.momentParameters = new ArrayVector(2);
 
         this.momentParameters.set(EXPECTED_MEAN, 0);
         this.momentParameters.set(EXPECTED_SQUARE, 1);
