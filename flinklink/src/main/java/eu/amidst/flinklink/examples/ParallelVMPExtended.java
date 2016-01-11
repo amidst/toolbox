@@ -14,7 +14,6 @@ package eu.amidst.flinklink.examples;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -85,11 +84,6 @@ public class ParallelVMPExtended {
         return dag;
     }
 
-    public static void main2(String[] args) throws Exception {
-
-
-
-    }
 
     /**
      *
@@ -160,14 +154,13 @@ public class ParallelVMPExtended {
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(globalIter);
+        parallelVB.setLocalThreshold(0.1);
+        parallelVB.setMaximumLocalIterations(localIter);
         parallelVB.setSeed(5);
 
         //Set the window size
         parallelVB.setBatchSize(windowSize);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(localIter);
-        vmp.setThreshold(0.1);
+
 
         parallelVB.setDAG(hiddenNB);
         parallelVB.setDataFlink(dataFlink);

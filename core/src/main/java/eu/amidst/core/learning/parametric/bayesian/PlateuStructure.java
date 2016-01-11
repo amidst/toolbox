@@ -16,7 +16,6 @@ import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
@@ -372,7 +371,7 @@ public class PlateuStructure implements Serializable {
                 .filter(var -> isNonReplicatedVar(var))
                 .map(var -> {
                     NaturalParameters parameter = this.ef_learningmodel.getDistribution(var).getNaturalParameters();
-                    NaturalParameters copy = new ArrayVector(parameter.size());
+                    NaturalParameters copy = this.ef_learningmodel.getDistribution(var).createZeroNaturalParameters();
                     copy.copy(parameter);
                     return copy;
                 }).collect(Collectors.toList());
@@ -386,8 +385,9 @@ public class PlateuStructure implements Serializable {
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
                 .map(var -> {
-                    NaturalParameters parameter =this.getNodeOfNonReplicatedVar(var).getQDist().getNaturalParameters();
-                    NaturalParameters copy = new ArrayVector(parameter.size());
+                    EF_UnivariateDistribution qDist = this.getNodeOfNonReplicatedVar(var).getQDist();
+                    NaturalParameters parameter = qDist.getNaturalParameters();
+                    NaturalParameters copy = qDist.createZeroNaturalParameters();
                     copy.copy(parameter);
                     return copy;
                 }).collect(Collectors.toList());

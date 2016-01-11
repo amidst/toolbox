@@ -90,6 +90,9 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
      */
     @Override
     public void sum(Vector vector) {
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors has different sizes");
+
         for (int i = 0; i < vector.size(); i++) {
             this.array[i]+=vector.get(i);
         }
@@ -100,6 +103,9 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
      */
     @Override
     public void substract(Vector vector) {
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors has different sizes");
+
         for (int i = 0; i < vector.size(); i++) {
             this.array[i]-=vector.get(i);
         }
@@ -139,6 +145,9 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
      */
     @Override
     public double dotProduct(Vector vector) {
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors has different sizes");
+
         double sum=0;
         for (int i = 0; i < vector.size(); i++) {
             sum+=this.array[i]*vector.get(i);

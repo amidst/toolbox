@@ -16,7 +16,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
@@ -66,10 +65,10 @@ public class ParallelVBTest extends TestCase {
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(batchSize);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(100);
-        vmp.setThreshold(0.0001);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
 
         parallelVB.setDAG(network.getDAG());
@@ -207,14 +206,12 @@ public class ParallelVBTest extends TestCase {
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
-        parallelVB.setMaximumGlobalIterations(10);
-        parallelVB.setGlobalThreshold(0.01);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(1000);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(1000);
-        vmp.setThreshold(0.01);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
 
         parallelVB.setDAG(asianet.getDAG());
@@ -261,13 +258,12 @@ public class ParallelVBTest extends TestCase {
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
-        parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(1000);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
 
         parallelVB.setDAG(asianet.getDAG());
@@ -316,15 +312,12 @@ public class ParallelVBTest extends TestCase {
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
-        parallelVB.setMaximumGlobalIterations(10);
-        parallelVB.setGlobalThreshold(0.001);
-
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(1000);
-        vmp.setThreshold(0.0001);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
 
         parallelVB.setDAG(asianet.getDAG());
@@ -346,8 +339,8 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         BayesianNetworkGenerator.setSeed(0);
-        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(100, 2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(10, 2);
         BayesianNetwork asianet  = BayesianNetworkGenerator.generateBayesianNetwork();
 
         System.out.println("\nAsia network \n ");
@@ -379,16 +372,12 @@ public class ParallelVBTest extends TestCase {
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
-        parallelVB.setMaximumGlobalIterations(100);
-        parallelVB.setGlobalThreshold(0.1);
-
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(1000);
-        vmp.setThreshold(0.1);
-
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
         parallelVB.setDAG(hiddenNB);
         parallelVB.setDataFlink(dataFlink);
@@ -432,19 +421,10 @@ public class ParallelVBTest extends TestCase {
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
-        parallelVB.setGlobalThreshold(0.01);
-
-
-        //Defining the finishing condition for global iterations
-        parallelVB.setMaximumGlobalIterations(20);
+        parallelVB.setLocalThreshold(0.001);
         parallelVB.setGlobalThreshold(0.001);
-
-        //Defining the finishing condition for local iterations
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(100);
-        vmp.setThreshold(0.01);
-
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
         //Setting DAG
         parallelVB.setDAG(wasteIncinerator.getDAG());
@@ -494,15 +474,13 @@ public class ParallelVBTest extends TestCase {
 
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
-        parallelVB.setMaximumGlobalIterations(10);
-        parallelVB.setGlobalThreshold(0.01);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(1000);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setOutput(true);
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(1000);
-        vmp.setThreshold(0.01);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
+
 
         parallelVB.setDAG(asianet.getDAG());
         parallelVB.setDataFlink(dataFlink);
@@ -525,8 +503,10 @@ public class ParallelVBTest extends TestCase {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
-                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
+                "./datasets/dataFlink/test_not_modify/MONTH1.arff", true);
+        //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
+        //        "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -534,15 +514,12 @@ public class ParallelVBTest extends TestCase {
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
-        parallelVB.setMaximumGlobalIterations(10);
-        parallelVB.setGlobalThreshold(0.001);
-
         parallelVB.setSeed(5);
-        parallelVB.setBatchSize(5);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(100);
-        vmp.setThreshold(0.0001);
+        parallelVB.setBatchSize(100);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
         System.out.println(dag.toString());
@@ -570,21 +547,19 @@ public class ParallelVBTest extends TestCase {
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
 
+
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
 
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
-        parallelVB.setMaximumGlobalIterations(10);
-        parallelVB.setGlobalThreshold(0.001);
-
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(5);
-        VMP vmp = parallelVB.getSVB().getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(100);
-        vmp.setThreshold(0.0001);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.05);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
 
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
         System.out.println(dag.toString());

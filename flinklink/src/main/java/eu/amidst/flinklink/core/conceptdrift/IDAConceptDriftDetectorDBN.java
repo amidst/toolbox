@@ -206,9 +206,9 @@ public class IDAConceptDriftDetectorDBN {
         svb.setDAG(globalDynamicDAG);
 
         svb.setOutput(false);
-        svb.setGlobalThreshold(0.05);
+        svb.setGlobalThreshold(0.01);
         svb.setLocalThreshold(0.0001);
-        svb.setMaximumLocalIterations(100);
+        svb.setMaximumLocalIterations(1000);
         svb.setMaximumGlobalIterations(100);
 
         svb.initLearning();
