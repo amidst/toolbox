@@ -11,12 +11,21 @@ package eu.amidst.dynamic.variables;
 import eu.amidst.core.variables.Assignment;
 
 /**
- * Created by andresmasegosa on 12/02/15.
+ * This interface extends the interface {@link Assignment}
+ * and defines a collection of assignments to dynamic variables.
  */
 public interface DynamicAssignment extends Assignment {
 
+    /**
+     * Returns the SequenceID of this DynamicAssignment.
+     * @return the SequenceID of this DynamicAssignment.
+     */
     long getSequenceID();
 
+    /**
+     * Returns the TimeID of this DynamicAssignment.
+     * @return the TimeID of this DynamicAssignment.
+     */
     long getTimeID();
 
     //@TODO: Problems if we try to print a DynamicAssignment as the outputString method in DataInstance is invoked

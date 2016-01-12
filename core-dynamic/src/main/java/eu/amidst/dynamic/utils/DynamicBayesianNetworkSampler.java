@@ -28,34 +28,58 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 /**
- * Created by Hanen on 14/01/15.
+ * This class implements the interface {@link eu.amidst.core.utils.AmidstOptionsHandler}.
+ * It defines a sampler of data from a {@link DynamicBayesianNetwork}.
  */
 public class DynamicBayesianNetworkSampler {
 
+    /** Represents the {@link DynamicBayesianNetwork} object from which the data will be sampled. */
     private DynamicBayesianNetwork network;
+
+    /** Represents the list of variables given in a causal order at Time 0. */
     private List<Variable> causalOrderTime0;
+
+    /** Represents the list of variables given in a causal order at Time T. */
     private List<Variable> causalOrderTimeT;
+
+    /** Represents the initial seed for random sampling. */
     private int seed = 0;
+
+    /** Represents a {@code Map} containing the hidden variables. */
     private Map<Variable, Boolean> hiddenVars = new HashMap();
+
+    /** Represents a {@link java.util.Random} object. */
     private Random random = new Random(seed);
 
+    /** Represents a {@code Map} containing the noisy variables. */
     private Map<Variable, Double> marNoise = new HashMap();
 
+    /**
+     * Creates a new DynamicBayesianNetworkSampler given an input {@link DynamicBayesianNetwork} object.
+     * @param network1 an input {@link DynamicBayesianNetwork} object.
+     */
     public DynamicBayesianNetworkSampler(DynamicBayesianNetwork network1){
         network=network1;
         this.causalOrderTime0 = eu.amidst.dynamic.utils.Utils.getCausalOrderTime0(network.getDynamicDAG());
         this.causalOrderTimeT = eu.amidst.dynamic.utils.Utils.getCausalOrderTimeT(network.getDynamicDAG());
     }
 
-
+    /**
+     * Sets a given {@link Variable} object as hidden.
+     * @param var a given {@link Variable} object.
+     */
     public void setHiddenVar(Variable var) {
         if (var.isInterfaceVariable())
             throw new IllegalArgumentException();
         this.hiddenVars.put(var,true);
     }
 
+    /**
+     * Sets a given {@link Variable} object as noisy.
+     * @param var a given {@link Variable} object.
+     * @param noiseProb a double that represents the noise probability.
+     */
     public void setMARVar(Variable var, double noiseProb){
         if (var.isInterfaceVariable())
             throw new IllegalArgumentException();
@@ -63,36 +87,63 @@ public class DynamicBayesianNetworkSampler {
         this.marNoise.put(var,noiseProb);
     }
 
+    /**
+     * Filters a given {@link HashMapAssignment} object, i.e., sets the values assigned to either missing or noisy variables to Double.NaN.
+     * @param assignment a given {@link HashMapAssignment} object.
+     * @return a filtered {@link HashMapAssignment} object.
+     */
     private HashMapAssignment filter(HashMapAssignment assignment){
         hiddenVars.keySet().stream().forEach(var -> assignment.setValue(var,Utils.missingValue()));
         marNoise.entrySet().forEach(e -> {
             if (random.nextDouble()<e.getValue())
                 assignment.setValue(e.getKey(),Utils.missingValue());
         });
-
         return assignment;
     }
 
+    /**
+     * Returns a {@code Stream} of randomly sampled {@link DynamicAssignment}s.
+     * @param nSequences an {@code int} that represents the number of sequences.
+     * @param sequenceLength an {@code int} that represents the length of each sequence.
+     * @return a {@code Stream} of randomly sampled {@link DynamicAssignment}s.
+     */
     private Stream<DynamicAssignment> getSampleStream(int nSequences, int sequenceLength) {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         return IntStream.range(0,nSequences).mapToObj(Integer::new)
                 .flatMap(i -> sample(network, causalOrderTime0, causalOrderTimeT, randomGenerator.current(), i, sequenceLength));
     }
 
+    /**
+     * Sets the seed.
+     * @param seed an {@code int} that represents the seed value.
+     */
     public void setSeed(int seed) {
         this.seed = seed;
         random = new Random(seed);
     }
 
+    /**
+     * Returns a {@code DataStream} of randomly sampled {@link DynamicAssignment}s.
+     * @param nSequences an {@code int} that represents the number of sequences.
+     * @param sequenceLength an {@code int} that represents the length of each sequence.
+     * @return a {@code DataStream} of randomly sampled {@link DynamicAssignment}s.
+     */
     public DataStream<DynamicDataInstance> sampleToDataBase(int nSequences, int sequenceLength){
         random = new Random(seed);
         return new TemporalDataStream(this,nSequences,sequenceLength);
     }
 
-
-    // Sample a stream of assignments of length "sequenceLength" for a given sequence "sequenceID"
+    /**
+     * Returns a {@code Stream} of randomly sampled {@link DynamicDataInstance} for a given sequence sequenceID of length sequenceLength.
+     * @param network a {@link DynamicBayesianNetwork} object.
+     * @param causalOrderTime0 a list of variables given in a causal order at Time 0.
+     * @param causalOrderTimeT a list of variables given in a causal order at Time T.
+     * @param random an object of type {@link java.util.Random}.
+     * @param sequenceID an {@code int} that represents the sequence ID.
+     * @param sequenceLength an {@code int} that represents the length of the sequence.
+     * @return
+     */
     private Stream<DynamicDataInstance> sample(DynamicBayesianNetwork network, List<Variable> causalOrderTime0, List<Variable> causalOrderTimeT, Random random, int sequenceID, int sequenceLength) {
-
 
         final HashMapAssignment[] data = new HashMapAssignment[2];
 
@@ -130,6 +181,11 @@ public class DynamicBayesianNetworkSampler {
         });
     }
 
+    /**
+     * Replicates the present data in the past time.
+     * @param dataPresent a {@link HashMapAssignment} object that represents the present data.
+     * @return a {@link HashMapAssignment} object that represents the past data.
+     */
     private HashMapAssignment replicateOnPast(HashMapAssignment dataPresent){
         HashMapAssignment dataPast = new HashMapAssignment(network.getNumberOfVars());
         for (Variable var : network.getDynamicVariables().getListOfDynamicVariables()) {
@@ -138,12 +194,21 @@ public class DynamicBayesianNetworkSampler {
         return dataPast;
     }
 
+    /**
+     * This class defines Temporal Data Stream and implements the {@link DataStream} interface.
+     */
     static class TemporalDataStream implements DataStream {
         Attributes atts;
         DynamicBayesianNetworkSampler sampler;
         int sequenceLength;
         int nSequences;
 
+        /**
+         * Creates a new temporal data stream.
+         * @param sampler1 a {@link DynamicBayesianNetworkSampler} object.
+         * @param nSequences1 an {@code int} that represents the number of sequences in the data stream to be sampled.
+         * @param sequenceLength1 an {@code int} that represents the length of each sequence.
+         */
         TemporalDataStream(DynamicBayesianNetworkSampler sampler1, int nSequences1, int sequenceLength1){
             this.sampler=sampler1;
             this.nSequences = nSequences1;
@@ -157,32 +222,50 @@ public class DynamicBayesianNetworkSampler {
             this.atts= new Attributes(list);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Attributes getAttributes() {
             return atts;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Stream<DynamicDataInstance> stream() {
             return this.sampler.getSampleStream(this.nSequences,this.sequenceLength).map( e -> (DynamicDataInstanceImpl)e);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void close() {
 
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean isRestartable() {
             return false;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void restart() {
 
         }
     }
 
+    /**
+     * This class implements the {@link DynamicDataInstance} interface.
+     */
     static class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
 
         DynamicBayesianNetwork dbn;
@@ -191,6 +274,14 @@ public class DynamicBayesianNetworkSampler {
         private long sequenceID;
         private long timeID;
 
+        /**
+         * Creates a new DynamicDataInstance.
+         * @param dbn_ a {@link DynamicBayesianNetwork} object.
+         * @param dataPast1 a {@link HashMapAssignment} object representing the past data.
+         * @param dataPresent1 a {@link HashMapAssignment} object representing the present data.
+         * @param sequenceID1 an {@code int} that represents the sequence ID.
+         * @param timeID1 an {@code int} that represents the time ID.
+         */
         public DynamicDataInstanceImpl(DynamicBayesianNetwork dbn_, HashMapAssignment dataPast1, HashMapAssignment dataPresent1, int sequenceID1, int timeID1){
             this.dbn=dbn_;
             dataPresent = dataPresent1;
@@ -199,16 +290,25 @@ public class DynamicBayesianNetworkSampler {
             this.timeID = timeID1;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public long getSequenceID() {
             return sequenceID;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public long getTimeID() {
             return timeID;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public double getValue(Variable var) {
             if (var.isInterfaceVariable()) {
@@ -218,6 +318,9 @@ public class DynamicBayesianNetworkSampler {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void setValue(Variable var, double val) {
             if (var.isInterfaceVariable()) {
@@ -227,21 +330,33 @@ public class DynamicBayesianNetworkSampler {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Attributes getAttributes() {
             return null;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public double[] toArray() {
             throw new UnsupportedOperationException("Method not currently supported for (HashMap)Assigment objects");
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Set<Variable> getVariables(){
             return Sets.union(dataPresent.getVariables(), dataPast.getVariables());
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public double getValue(Attribute att, boolean present) {
             if (att.getIndex() == 0) {
@@ -253,6 +368,9 @@ public class DynamicBayesianNetworkSampler {
             }
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void setValue(Attribute att, double val, boolean present) {
             if (att.getIndex() == 0) {
@@ -285,10 +403,9 @@ public class DynamicBayesianNetworkSampler {
 
         System.out.println(watch.stop());
 
-
         for (DynamicAssignment dynamicdataassignment : sampler.sampleToDataBase(3, 2)){
-            System.out.println("\nSequence ID" + dynamicdataassignment.getSequenceID());
-            System.out.println("\nTime ID" + dynamicdataassignment.getTimeID());
+            System.out.println("\n Sequence ID" + dynamicdataassignment.getSequenceID());
+            System.out.println("\n Time ID" + dynamicdataassignment.getTimeID());
             System.out.println(dynamicdataassignment.outputString());
         }
 

@@ -21,32 +21,61 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
- * Created by Hanen on 16/01/15.
+ * This class defines a random {@link DynamicBayesianNetwork} generator.
  */
 public class DynamicBayesianNetworkGenerator {
 
+    /** Represents the number of Multinomial variables in the {@link DynamicBayesianNetwork} to be generated. */
     private static int numberOfDiscreteVars = 10;
+
+    /** Represents the number of states for each Multinomial variables in the {@link DynamicBayesianNetwork} to be generated. */
     private static int numberOfStates = 2;
+
+    /** Represents the number of Gaussian variables in the {@link DynamicBayesianNetwork} to be generated. */
     private static int numberOfContinuousVars = 0;
+
+    /** Represents the number of links in the {@link DynamicBayesianNetwork} to be generated. */
     private static int numberOfLinks = 3;
 
+    /**
+     * Sets the number of links for this DynamicBayesianNetworkGenerator.
+     * @param numberOfLinks an {@code int} that represents the number of links.
+     */
     public static void setNumberOfLinks(int numberOfLinks) {
         DynamicBayesianNetworkGenerator.numberOfLinks = numberOfLinks;
     }
 
+    /**
+     * Sets the number of Multinomial variables for this DynamicBayesianNetworkGenerator.
+     * @param numberOfDiscreteVars an {@code int} that represents the number of Multinomial variables.
+     */
     public static void setNumberOfDiscreteVars(int numberOfDiscreteVars) {
         DynamicBayesianNetworkGenerator.numberOfDiscreteVars = numberOfDiscreteVars;
     }
 
+    /**
+     * Sets the number of Gaussian variables for this DynamicBayesianNetworkGenerator.
+     * @param numberOfContinuousVars an {@code int} that represents the number of Gaussian variables.
+     */
     public static void setNumberOfContinuousVars(int numberOfContinuousVars) {
         DynamicBayesianNetworkGenerator.numberOfContinuousVars = numberOfContinuousVars;
     }
 
+    /**
+     * Sets the number of the number of states of the Multinomial variables.
+     * @param numberOfStates an {@code int} that represents the number of states.
+     */
     public static void setNumberOfStates(int numberOfStates) {
         //the same number of states is assigned for each discrete variable
         DynamicBayesianNetworkGenerator.numberOfStates = numberOfStates;
     }
 
+    /**
+     * Generates a Dynamic Naive Bayes DAG with a Multinomial class variable.
+     * @param numberClassStates the number of states for the class variable.
+     * @param connectChildrenTemporally a {@code boolean} that indicates whether the children are connected temporally or not.
+     * @return a {@link DynamicDAG} object.
+     */
     public static DynamicDAG generateDynamicNaiveBayesDAG(int numberClassStates, boolean connectChildrenTemporally){
         DynamicVariables dynamicVariables  = new DynamicVariables();
 
@@ -79,11 +108,15 @@ public class DynamicBayesianNetworkGenerator {
         return dag;
     }
 
+    /**
+     * Generates a Dynamic Naive Bayes model with randomly initialized distributions.
+     * @param random an object of type {@link java.util.Random}.
+     * @param numberClassStates the number of states for the class variable.
+     * @param connectChildrenTemporally a {@code boolean} that indicates whether the children are connected temporally or not.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
     public static DynamicBayesianNetwork generateDynamicNaiveBayes(Random random, int numberClassStates,
                                                                    boolean connectChildrenTemporally){
-
-
-
         DynamicBayesianNetwork network = new DynamicBayesianNetwork(
                 DynamicBayesianNetworkGenerator.generateDynamicNaiveBayesDAG(numberClassStates,
                         connectChildrenTemporally));
@@ -94,6 +127,13 @@ public class DynamicBayesianNetworkGenerator {
     }
 
 
+    /**
+     * Generates a Dynamic TAN model with randomly initialized distributions.
+     * @param random an object of type {@link java.util.Random}.
+     * @param numberClassStates the number of states for the class variable.
+     * @param connectChildrenTemporally a {@code boolean} that indicates whether the children are connected temporally or not.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
     public static DynamicBayesianNetwork generateDynamicTAN(Random random, int numberClassStates, boolean connectChildrenTemporally) {
 
         DynamicBayesianNetwork dynamicNB = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random, numberClassStates, connectChildrenTemporally);
@@ -102,16 +142,12 @@ public class DynamicBayesianNetworkGenerator {
         DynamicDAG dynamicDAG = Serialization.deepCopy(dynamicNB.getDynamicDAG());
 
         int numberOfVariables = variables.getNumberOfVars();
-        int numberOfCurrentLinks = numberOfVariables-1;
-
-        //int [] levelVariables = new int[numberOfVariables];
 
         Variable treeRoot;
         do {
             treeRoot = variables.getVariableById(random.nextInt(numberOfVariables));
         } while (!treeRoot.isMultinomial() || treeRoot.getName().equals("ClassVar"));
 
-        //levelVariables[treeRoot.getVarID()]=1;
         List<Variable> variablesLevel2 = new ArrayList<>(0);
 
         Variable level2Var;
@@ -166,7 +202,13 @@ public class DynamicBayesianNetworkGenerator {
         return dynamicTAN;
     }
 
-
+    /**
+     * Generates a Dynamic FAN model with randomly initialized distributions.
+     * @param random an object of type {@link java.util.Random}.
+     * @param numberClassStates the number of states for the class variable.
+     * @param connectChildrenTemporally a {@code boolean} that indicates whether the children are connected temporally or not.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
     public static DynamicBayesianNetwork generateDynamicFAN(Random random, int numberClassStates, boolean connectChildrenTemporally) {
 
         DynamicBayesianNetwork dynamicNB = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random, numberClassStates, connectChildrenTemporally);
@@ -238,7 +280,6 @@ public class DynamicBayesianNetworkGenerator {
         }
 
         if (dynamicDAG.toDAGTime0().containCycles() || dynamicDAG.toDAGTimeT().containCycles()) {
-
             System.out.println("ERROR: DAG WITH CYCLES");
             System.out.println(dynamicDAG.toString());
             System.exit(-1);
@@ -248,7 +289,6 @@ public class DynamicBayesianNetworkGenerator {
         dynamicFAN.randomInitialization(random);
         return dynamicFAN;
     }
-
 
     public static void main(String[] agrs) throws IOException, ClassNotFoundException {
 
@@ -268,11 +308,6 @@ public class DynamicBayesianNetworkGenerator {
         dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicTAN(new Random(0), 2, true);
         System.out.println("DYNAMIC TAN");
         System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
-
-
-        //System.out.println(dynamicBayesianNetwork.toString());
-
-        //DynamicBayesianNetworkWriter.saveToFile(dynamicNaiveBayes, "networks/DynamicNB-10.dbn");
 
     }
 }
