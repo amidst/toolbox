@@ -31,7 +31,7 @@ import java.util.Random;
  * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
-public class EF_Normal extends EF_UnivariateDistribution {
+public class EF_NormalParameter extends EF_UnivariateDistribution {
 
 
     public static final int EXPECTED_MEAN = 0;
@@ -47,7 +47,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
      *
      * @param var1 a {@link Variable} object with a Normal distribution type.
      */
-    public EF_Normal(Variable var1) {
+    public EF_NormalParameter(Variable var1) {
         if (!var1.isNormal() && !var1.isParameterVariable()) {
             throw new UnsupportedOperationException("Creating a Gaussian EF distribution for a non-gaussian variable.");
         }
@@ -84,8 +84,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public void fixNumericalInstability() {
 
         //if (this.getPrecision()>100000) {
-        //System.out.println("hola");
-        //this.naturalParameters.set(INDEX_PRECISION,100000);
+            //System.out.println("hola");
+            //this.naturalParameters.set(INDEX_PRECISION,100000);
         //}
         /*if (this.naturalParameters.get(1)<(-0.5*LIMIT)){ //To avoid numerical problems!
             double x = -0.5*this.naturalParameters.get(0)/this.getNaturalParameters().get(1);
@@ -115,7 +115,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
      */
     @Override
     public Vector createZeroVector() {
-        return new ArrayVector(2);
+        return new ArrayVectorParameter(2);
     }
 
     /**
@@ -175,7 +175,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
     @Override
     public EF_UnivariateDistribution deepCopy(Variable var) {
 
-        EF_Normal copy = new EF_Normal(var);
+        EF_NormalParameter copy = new EF_NormalParameter(var);
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
 
@@ -283,19 +283,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
      */
     @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
-        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
-
-        Variable varGamma = variables.newGammaParameter(this.var.getName()+"_Gamma_Parameter_"+variables.getNumberOfVars());
-        Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+variables.getNumberOfVars());
-
-        conditionalDistributions.add(varGamma.getDistributionType().newEFUnivariateDistribution());
-
-        conditionalDistributions.add(normalMean.getDistributionType().newEFUnivariateDistribution());
-
-        EF_NormalGamma dist = new EF_NormalGamma(this.var, normalMean, varGamma);
-        conditionalDistributions.add(dist);
-
-        return conditionalDistributions;
+        throw new UnsupportedOperationException("No valid operation for a normal parameter distribution");
     }
 
     /**

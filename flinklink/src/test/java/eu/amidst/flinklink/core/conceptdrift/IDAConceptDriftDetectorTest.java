@@ -135,8 +135,8 @@ public class IDAConceptDriftDetectorTest extends TestCase {
 
     public static void test1()  throws Exception {
         String networkName = "dbn1";
-        //createBN1(2);
-        //createDataSets(networkName,null,null);
+        createBN1(2);
+        createDataSets(networkName,null,null);
         testUpdateN(networkName);
     }
 

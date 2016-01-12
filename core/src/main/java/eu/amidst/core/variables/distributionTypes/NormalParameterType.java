@@ -10,9 +10,10 @@ package eu.amidst.core.variables.distributionTypes;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.exponentialfamily.EF_Normal;
+import eu.amidst.core.exponentialfamily.EF_NormalParameter;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
+
 import java.util.List;
 
 /**
@@ -53,10 +54,13 @@ public class NormalParameterType  extends DistributionType {
      * @return an exponential family normal distribution.
      */
     @Override
-    public EF_Normal newEFUnivariateDistribution() {
-        Normal normal = this.newUnivariateDistribution();
-        EF_Normal ef_normal = normal.toEFUnivariateDistribution();
+    public EF_NormalParameter newEFUnivariateDistribution() {
+        EF_NormalParameter ef_normal = new EF_NormalParameter(variable);
+        ef_normal.setNaturalWithMeanPrecision(0,1e-10);
+        ef_normal.fixNumericalInstability();
+        ef_normal.updateMomentFromNaturalParameters();
         return ef_normal;
+       //      //return this.newUnivariateDistribution().toEFUnivariateDistribution();
     }
 
     /**

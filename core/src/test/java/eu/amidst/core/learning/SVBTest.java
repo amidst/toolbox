@@ -416,49 +416,57 @@ public class SVBTest extends TestCase {
 
     public static void testWasteIncinerator() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
-
-        //normalVarBN.randomInitialization(new Random(0));
-        System.out.println("\n Waste Incinerator \n ");
-
-
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
-        sampler.setSeed(1);
-        DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+        String[] bns = {"networks/Normal.bn",
+                "networks/Normal_1NormalParents.bn",
+                "networks/Normal_NormalParents.bn",
+                "networks/Normal_MultinomialParents.bn",
+                "networks/WasteIncinerator.bn"
+        };
 
 
-        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-        parallelMaximumLikelihood.setBatchSize(1000);
-        parallelMaximumLikelihood.setParallelMode(true);
-        parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+        for (int i = 0; i < bns.length; i++) {
+            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + bns[i] + "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile(bns[i]);
+            //normalVarBN.randomInitialization(new Random(0));
 
-        System.out.println(normalVarBN.toString());
-        System.out.println(learntNormalVarBN.toString());
-        assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
-
-        SVB svb = new SVB();
-        svb.setWindowsSize(1000);
-        svb.setSeed(5);
-        VMP vmp = svb.getPlateuStructure().getVMP();
-        vmp.setTestELBO(true);
-        vmp.setMaxIter(1000);
-        vmp.setThreshold(0.1);
-
-        svb.setDAG(normalVarBN.getDAG());
-        svb.setDataStream(data);
-        svb.runLearning();
-
-        System.out.println(svb.getLogMarginalProbability());
-
-        learntNormalVarBN = svb.getLearntBayesianNetwork();
-
-        System.out.println(normalVarBN.toString());
-        System.out.println(learntNormalVarBN.toString());
-        assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
+            sampler.setSeed(1);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
 
+            ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setParallelMode(true);
+            parallelMaximumLikelihood.setLaplace(false);
+            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
+            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+
+            System.out.println(normalVarBN.toString());
+            System.out.println(learntNormalVarBN.toString());
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
+
+            SVB svb = new SVB();
+            svb.setWindowsSize(1000);
+            svb.setSeed(5);
+            VMP vmp = svb.getPlateuStructure().getVMP();
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(1000);
+            vmp.setThreshold(0.001);
+
+            svb.setDAG(normalVarBN.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
+
+            System.out.println(svb.getLogMarginalProbability());
+
+            learntNormalVarBN = svb.getLearntBayesianNetwork();
+
+            System.out.println(normalVarBN.toString());
+            System.out.println(learntNormalVarBN.toString());
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
+        }
     }
 
     public static void testGaussian1() throws IOException, ClassNotFoundException{
@@ -756,22 +764,19 @@ public class SVBTest extends TestCase {
             BayesianNetwork bn = new BayesianNetwork(dag);
             bn.randomInitialization(new Random(0));
 
-
-            bn.randomInitialization(new Random(0));
-
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setHiddenVar(varB);
-            DataStream<DataInstance> data = sampler.sampleToDataStream(10);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
 
             SVB svb = new SVB();
-            svb.setWindowsSize(10); //Set to 2 and an exception is raised. Numerical instability.
+            svb.setWindowsSize(1000); //Set to 2 and an exception is raised. Numerical instability.
             svb.setSeed(i);
             VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
-            vmp.setThreshold(0.0001);
+            vmp.setThreshold(0.01);
 
             svb.setDAG(bn.getDAG());
             svb.setDataStream(data);
@@ -841,5 +846,138 @@ public class SVBTest extends TestCase {
     }
 
 
+
+    public static void testGaussian9() throws IOException, ClassNotFoundException {
+        Variables variables = new Variables();
+        Variable varB = variables.newMultionomialVariable("B",2);
+        Variable varC = variables.newGaussianVariable("C");
+
+        DAG dag = new DAG(variables);
+        dag.getParentSet(varC).addParent(varB);
+
+
+        for (int i = 0; i < 10; i++) {
+
+
+            BayesianNetwork bn = new BayesianNetwork(dag);
+            bn.randomInitialization(new Random(0));
+
+
+            bn.randomInitialization(new Random(0));
+
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+            sampler.setSeed(i);
+            sampler.setHiddenVar(varB);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
+
+
+            SVB svb = new SVB();
+            svb.setWindowsSize(1000); //Set to 2 and an exception is raised. Numerical instability.
+            svb.setSeed(i);
+            VMP vmp = svb.getPlateuStructure().getVMP();
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(1000);
+            vmp.setThreshold(0.0001);
+
+            svb.setDAG(bn.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
+
+            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+
+
+            BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
+
+            System.out.println(bn.toString());
+            System.out.println(learnBN.toString());
+            //assertTrue(bn.equalBNs(learnBN, 0.5));
+        }
+    }
+
+    public static void testGaussian10() throws IOException, ClassNotFoundException {
+        Variables variables = new Variables();
+        Variable varB = variables.newMultionomialVariable("B",2);
+        Variable varC = variables.newGaussianVariable("C");
+
+        DAG dag = new DAG(variables);
+        dag.getParentSet(varC).addParent(varB);
+
+
+        for (int i = 0; i < 10; i++) {
+
+
+            BayesianNetwork bn = new BayesianNetwork(dag);
+            bn.randomInitialization(new Random(i));
+
+
+
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+            sampler.setSeed(i);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+
+
+            SVB svb = new SVB();
+            svb.setWindowsSize(1000); //Set to 2 and an exception is raised. Numerical instability.
+            //svb.setSeed(i);
+            VMP vmp = svb.getPlateuStructure().getVMP();
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(1000);
+            vmp.setThreshold(0.0001);
+
+            svb.setDAG(bn.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
+
+            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+
+
+            BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
+
+            System.out.println(bn.toString());
+            System.out.println(learnBN.toString());
+            assertTrue(bn.equalBNs(learnBN, 0.5));
+        }
+    }
+
+    public static void testGaussian11() throws IOException, ClassNotFoundException {
+        Variables variables = new Variables();
+        Variable varB = variables.newGaussianVariable("B");
+
+        DAG dag = new DAG(variables);
+
+
+        for (int i = 0; i < 10; i++) {
+
+
+            BayesianNetwork bn = new BayesianNetwork(dag);
+            bn.randomInitialization(new Random(0));
+
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+            sampler.setSeed(i);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+
+
+            SVB svb = new SVB();
+            svb.setWindowsSize(1000); //Set to 2 and an exception is raised. Numerical instability.
+            svb.setSeed(i);
+            VMP vmp = svb.getPlateuStructure().getVMP();
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(1000);
+            vmp.setThreshold(0.01);
+
+            svb.setDAG(bn.getDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
+
+            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+
+
+            BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
+
+            System.out.println(bn.toString());
+            System.out.println(learnBN.toString());
+            assertTrue(bn.equalBNs(learnBN, 0.2));
+        }
+    }
 
 }
