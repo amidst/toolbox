@@ -10,35 +10,23 @@ import eu.amidst.core.variables.Variables;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
- * Created by dario on 16/11/15.
+ * This class converts a {@link DynamicBayesianNetwork} to a static {@link BayesianNetwork}.
  */
 public class DynamicToStaticBNConverter {
 
-    DynamicBayesianNetwork dbn;
-    BayesianNetwork bn;
-    int nTimeSteps = 2;
-
-//    public void setDynamicBayesianNetwork(DynamicBayesianNetwork dbn) {
-//        this.dbn = dbn;
-//    }
-//
-//    public void setNumberOfTimeSteps(int nTimeSteps) {
-//        this.nTimeSteps = nTimeSteps;
-//    }
-//
-//    public BayesianNetwork getBayesianNetwork() {
-//        return bn;
-//    }
-
+    /**
+     * Converts a given {@link DynamicBayesianNetwork} to a static {@link BayesianNetwork}
+     * @param dbn a {@link DynamicBayesianNetwork} object.
+     * @param nTimeSteps an {@code int} that represents the number of time steps.
+     * @return  a {@link BayesianNetwork} object.
+     */
     public static BayesianNetwork convertDBNtoBN(DynamicBayesianNetwork dbn, int nTimeSteps) {
-
 
         if (dbn==null)
             return null;
@@ -48,10 +36,9 @@ public class DynamicToStaticBNConverter {
         DynamicDAG dynamicDAG = dbn.getDynamicDAG();
 
         /*
-         * CREATE STATIC DAG FROM THE DYNAMIC DAG
-         * 1st STEP: ADD REPLICATED VARIABLES
+         * 1st STEP: ADD REPLICATED VARIABLES.
+         * REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES).
          */
-        // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
         dynamicVariables.getListOfDynamicVariables().stream()
                 .forEach(dynVar ->
                                 IntStream.range(0, nTimeSteps).forEach(i -> {
@@ -63,8 +50,7 @@ public class DynamicToStaticBNConverter {
         DAG dag = new DAG(variables);
 
         /*
-         * CREATE STATIC DAG FROM THE DYNAMIC DAG
-         * 2nd STEP: ADD EDGES
+         * 2nd STEP: ADD ARCS BETWEEN VARIABLES, I.E. DEFINE THE STATIC DAG.
          */
         for (int i = 0; i < nTimeSteps; i++) {
             for (int j = 0; j < dynamicVariables.getNumberOfVars(); j++) {
@@ -81,11 +67,11 @@ public class DynamicToStaticBNConverter {
                 }
             }
         }
+
         BayesianNetwork bn = new BayesianNetwork(dag);
 
         /*
-         * CREATE STATIC BN FROM THE DYNAMIC BN
-         * 3nd STEP: ADD CONDITIONAL DISTRIBUTIONS
+         * 3rd STEP: ADD CONDITIONAL DISTRIBUTIONS, I.E. DEFINE THE STATIC BN.
          */
         for (int i = 0; i < nTimeSteps; i++) {
             for (int j = 0; j < dynamicVariables.getNumberOfVars(); j++) {

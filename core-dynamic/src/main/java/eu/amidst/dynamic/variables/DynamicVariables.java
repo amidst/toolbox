@@ -21,7 +21,6 @@
  */
 
 
-
 package eu.amidst.dynamic.variables;
 
 import eu.amidst.core.datastream.Attribute;
@@ -35,25 +34,40 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by afa on 02/07/14.
+ * The DynamicVariables class defines and handles the operations related to the set of variables of
+ * a {@link eu.amidst.dynamic.models.DynamicBayesianNetwork} model.
  */
 public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = -4959625141445606681L;
 
+    /** Represents a suffix used for the name of interface variable. */
     public static final String INTERFACE_SUFFIX = "_Interface";
-    
+
+    /** Represents the list of non interface variables. */
     private List<Variable> nonInterfaceVariables;
+
+    /** Represents the list of interface variables. */
     private List<Variable> interfaceVariables;
 
+    /** Represents the set of variables as a {@link java.util.Map} object
+     * that maps the Variable names ({@code String}) to their IDs ({@code Integer}). */
     private Map<String, Integer> mapping;
 
+    /**
+     * Creates a new DynamicVariables object.
+     */
     public DynamicVariables() {
         this.nonInterfaceVariables = new ArrayList();
         this.interfaceVariables = new ArrayList();
         this.mapping = new ConcurrentHashMap<>();
     }
 
+    /**
+     * Creates a new DynamicVariables object given a set of {@link Attributes}.
+     * @param atts a set of {@link Attributes}.
+     */
     public DynamicVariables(Attributes atts) {
 
         this.nonInterfaceVariables = new ArrayList<>();
@@ -69,7 +83,6 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             this.mapping.put(var.getName(), var.getVarID());
             nonInterfaceVariables.add(var.getVarID(), var);
 
-
             VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
             var.setInterfaceVariable(interfaceVariable);
             interfaceVariables.add(var.getVarID(), interfaceVariable);
@@ -77,14 +90,14 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     /**
-     * Constructor where the distribution type of random variables is provided as an argument.
-     *
+     * Creates a new DynamicVariables object given a list of Attributes and their corresponding distribution types.
+     * @param atts a set of {@link Attributes}.
+     * @param typeDists a {@link java.util.HashMap} object that maps the Attributes to their distribution types.
      */
     public DynamicVariables(Attributes atts, Map<Attribute, DistributionTypeEnum> typeDists) {
 
         this.nonInterfaceVariables = new ArrayList<>();
         this.interfaceVariables = new ArrayList<>();
-
 
         for (Attribute att : atts.getListOfNonSpecialAttributes()) {
             VariableBuilder builder;
@@ -104,21 +117,19 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
             var.setInterfaceVariable(interfaceVariable);
             interfaceVariables.add(var.getVarID(), interfaceVariable);
-
         }
     }
 
     /**
-     * Sets a new set of attributes. Links current variables with this new set by matching
+     * Sets a new set of attributes. It links current variables with this new set by matching
      * variable names with attributes names.
-     * @param attributes an object of class {@link Attributes}
+     * @param attributes an object of class {@link Attributes}.
      */
     public void setAttributes(Attributes attributes){
         for (Variable variable : nonInterfaceVariables) {
             VariableImplementation variableImplementation = (VariableImplementation)variable;
             variableImplementation.setAttribute(attributes.getAttributeByName(variable.getName()));
         }
-
         for (Variable variable : interfaceVariables) {
             VariableImplementation variableImplementation = (VariableImplementation)variable;
             variableImplementation.setAttribute(attributes.getAttributeByName(getVariableFromInterface(variable).getName()));
@@ -126,10 +137,20 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
 
     }
 
+    /**
+     * Returns the interface variable of a corresponding given variable.
+     * @param var a {@link Variable} object.
+     * @return a {@link Variable} object.
+     */
     public Variable getInterfaceVariable(Variable var){
         return interfaceVariables.get(var.getVarID());
     }
 
+    /**
+     * Returns the variable of a coressponding interface variable.
+     * @param var a {@link Variable} object.
+     * @return a {@link Variable} object.
+     */
     public Variable getVariableFromInterface(Variable var){
         return nonInterfaceVariables.get(var.getVarID()-this.getNumberOfVars());
     }
@@ -160,43 +181,72 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         interfaceVariables.add(varNew.getVarID(),interfaceVariable);
 
         return varNew;
-
     }
-*/
+    */
 
-    public Variable newMultinomialLogisticDynamicVariable(Attribute att) {
-        return this.newDynamicVariable(att, DistributionTypeEnum.MULTINOMIAL_LOGISTIC);
-    }
-
+    /**
+     * Creates a new multionomial logistic dynamic Variable from a given name and number of states.
+     * @param name a {@code String} that represents the name of the dynamic variable.
+     * @param nOfStates an {@code int} that represents the number of states of the dynamic variable.
+     * @return a {@link Variable} object.
+     */
     public Variable newMultinomialLogisticDynamicVariable(String name, int nOfStates) {
         return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(nOfStates));
     }
 
+    /**
+     * Creates a new multionomial logistic dynamic Variable from a given name and a list of states.
+     * @param name a {@code String} that represents the name of the dynamic variable.
+     * @param states a {@code List} of {@code String} that represents the different states of the dynamic variable.
+     * @return a {@link Variable} object.
+     */
     public Variable newMultinomialLogisticDynamicVariable(String name, List<String> states) {
         return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL_LOGISTIC, new FiniteStateSpace(states));
     }
 
-    public Variable newMultionomialDynamicVariable(Attribute att) {
-        return this.newDynamicVariable(att, DistributionTypeEnum.MULTINOMIAL);
-    }
-
+    /**
+     * Creates a new multionomial dynamic Variable from a given name and number of states.
+     * @param name a {@code String} that represents the name of the dynamic variable.
+     * @param nOfStates an {@code int} that represents the number of states of the dynamic variable.
+     * @return a {@link Variable} object.
+     */
     public Variable newMultinomialDynamicVariable(String name, int nOfStates) {
         return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(nOfStates));
     }
 
+    /**
+     * Creates a new multionomial dynamic Variable from a given name and a list of states.
+     * @param name a {@code String} that represents the name of the dynamic variable.
+     * @param states a {@code List} of {@code String} that represents the different states of the dynamic variable.
+     * @return a {@link Variable} object.
+     */
     public Variable newMultinomialDynamicVariable(String name, List<String> states) {
         return this.newDynamicVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(states));
     }
 
+    /**
+     * Creates a new gaussian dynamic Variable from a given Attribute.
+     * @param att a given {@link Attribute}.
+     * @return a new gaussian {@link Variable} object.
+     */
     public Variable newGaussianDynamicVariable(Attribute att) {
         return this.newDynamicVariable(att, DistributionTypeEnum.NORMAL);
     }
 
+    /**
+     * Creates a new gaussian dynamic Variable from a given Attribute.
+     * @param name a given {@code String} that represents the name of the dynamic variable.
+     * @return a new gaussian {@link Variable} object.
+     */
     public Variable newGaussianDynamicVariable(String name) {
         return this.newDynamicVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
     }
 
-
+    /**
+     * Creates a new dynamic Variable from a given Attribute.
+     * @param att a given {@link Attribute}.
+     * @return a new {@link Variable} object.
+     */
     public Variable newDynamicVariable(Attribute att) {
 
         VariableImplementation var = new VariableImplementation(new VariableBuilder(att), nonInterfaceVariables.size());
@@ -213,6 +263,13 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return var;
     }
 
+    /**
+     * Creates a new dynamic Variable given a name, a distribution type, and a state space type.
+     * @param name a given {@code String} that represents the name of the dynamic variable.
+     * @param distributionTypeEnum a {@link DistributionTypeEnum} object.
+     * @param stateSpaceType a {@link StateSpaceType} object.
+     * @return a new dynamic {@link Variable} object.
+     */
     public Variable newDynamicVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setName(name);
@@ -233,6 +290,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return var;
     }
 
+    /**
+     * Creates a new dynamic Variable given an {@link Attribute} object and a distribution type.
+     * @param att a given {@link Attribute}.
+     * @param distributionTypeEnum a {@link DistributionTypeEnum} object.
+     * @return a new dynamic {@link Variable} object.
+     */
     public Variable newDynamicVariable(Attribute att, DistributionTypeEnum distributionTypeEnum) {
         VariableBuilder variableBuilder = new VariableBuilder(att);
         variableBuilder.setDistributionType(distributionTypeEnum);
@@ -250,21 +313,11 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return var;
     }
 
-    public Variable newDynamicVariable(VariableBuilder builder) {
-
-        VariableImplementation var = new VariableImplementation(builder, nonInterfaceVariables.size());
-        if (mapping.containsKey(var.getName())) {
-            throw new IllegalArgumentException("Attribute list contains duplicated names");
-        }
-        this.mapping.put(var.getName(), var.getVarID());
-        nonInterfaceVariables.add(var);
-
-        VariableImplementation interfaceVariable = VariableImplementation.newInterfaceVariable(var);
-        interfaceVariables.add(var.getVarID(), interfaceVariable);
-
-        return var;
-    }
-
+    /**
+     * Creates a new real dynamic Variable given an {@link Variable} object.
+     * @param var a given {@link Variable} object.
+     * @return a new dynamic {@link Variable} object.
+     */
     public Variable newRealDynamicVariable(Variable var){
         if (!var.isObservable()) {
             throw new IllegalArgumentException("A Real variable should be created from an observed variable");
@@ -291,23 +344,36 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         return varNew;
     }
 
+    /**
+     * Returns the list of Dynamic Variables.
+     * @return a list of {@link Variable} objects.
+     */
     public List<Variable> getListOfDynamicVariables() {
         return this.nonInterfaceVariables;
     }
 
+    /**
+     * Returns the list of Interface Variables.
+     * @return a list of {@link Variable} objects.
+     */
     public List<Variable> getListOfInterfaceVariables() {
         return this.interfaceVariables;
     }
 
+    /**
+     * Returns a variable given its ID.
+     * @param varID an {@code int} that represents a valid variable ID.
+     * @return a {@link Variable} object.
+     */
     public Variable getVariableById(int varID) {
        return this.nonInterfaceVariables.get(varID);
     }
 
-
-    //public Variable getInterfaceVariablesById(int varID) {
-    //    return this.interfaceVariables.get(varID);
-    //}
-
+    /**
+     * Returns a variable given its name.
+     * @param name a {@code String} that represents a valid variable name.
+     * @return a {@link Variable} object.
+     */
     public Variable getVariableByName(String name) {
         Integer index = this.mapping.get(name);
         if (index==null) {
@@ -318,56 +384,46 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
     }
 
+    /**
+     * Returns an interface variable given its name.
+     * @param name a {@code String} that represents a valid interface variable name.
+     * @return a {@link Variable} object.
+     */
     public Variable getInterfaceVariableByName(String name) {
         return this.getInterfaceVariable(this.getVariableByName(name));
     }
 
+    /**
+     * Returns the total number of variables.
+     * @return the total number of variables.
+     */
     public int getNumberOfVars() {
         return this.nonInterfaceVariables.size();
     }
 
+    /**
+     * Blocks this DynamicVariables.
+     */
     public void block(){
 
         for (int i = 0; i < this.interfaceVariables.size(); i++) {
             VariableImplementation var = (VariableImplementation)this.interfaceVariables.get(i);
             var.setVarID(i+this.getNumberOfVars());
         }
-
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Iterator<Variable> iterator() {
         return this.nonInterfaceVariables.iterator();
     }
 
-    public Variables toVariablesTimeT(){
-
-        Variables variables = new Variables();
-
-        for (Variable nonInterfaceVariable : nonInterfaceVariables) {
-            variables.newVariable(nonInterfaceVariable.getVariableBuilder());
-        }
-
-        for (Variable interfaceVariable : interfaceVariables) {
-            variables.newVariable(interfaceVariable.getVariableBuilder());
-        }
-
-        return variables;
-    }
-
-
-    public Variables toVariablesTime0(){
-
-        Variables variables = new Variables();
-
-        for (Variable nonInterfaceVariable : nonInterfaceVariables) {
-            variables.newVariable(nonInterfaceVariable.getVariableBuilder());
-        }
-
-        return variables;
-    }
-
-    //TODO Implements hashCode method!!
+    /**
+     * This class implements the interface {@link Variable}.
+     * TODO: Implements hashCode method!!
+     */
     private static class VariableImplementation implements Variable, Serializable {
 
         private static final long serialVersionUID = 7934186475276412196L;
@@ -402,7 +458,6 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 
-
         /*
          * Constructor for an Interface (based on a variable)
          */
@@ -420,13 +475,11 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             }
 
             this.distributionType=distributionTypeEnum.newDistributionType(this);
-
         }
 
         public static VariableImplementation newInterfaceVariable(Variable variable){
             return new VariableImplementation(variable);
         }
-
 
         public void setVarID(int varID) {
             this.varID = varID;
@@ -444,11 +497,17 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return observable;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public <E extends StateSpaceType> E getStateSpaceType() {
             return (E) stateSpaceType;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int getNumberOfStates() {
             return this.numberOfStates;
@@ -458,16 +517,25 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return distributionTypeEnum;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public <E extends DistributionType> E getDistributionType() {
             return (E)this.distributionType;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean isInterfaceVariable(){
             return isInterfaceVariable;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Variable getInterfaceVariable(){
             return this.interfaceVariable;
@@ -506,6 +574,9 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return true;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean equals(Object o) {
             if (this == o){
@@ -520,13 +591,17 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
             return this.isInterfaceVariable()==var.isInterfaceVariable() && this.getVarID()==var.getVarID();
         }
 
-
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode(){
             return this.name.hashCode();
         }
 
-
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean isParameterVariable() {
             return false;
