@@ -169,4 +169,28 @@ public abstract class EF_UnivariateDistribution extends EF_ConditionalDistributi
     public <E extends ConditionalDistribution> E toConditionalDistribution() {
         return (E)this.toUnivariateDistribution();
     }
+
+    /**
+     * Compute the kullback-leibler distance between two distributions of the same
+     * kind in exponential family form, KL(P,Q), where P is the object invoking the method
+     * and Q is provided by argument.
+     * @param naturalParameters, the natural parameter of the Q distribution.
+     * @param logNormalizer, the logNormalizer of the Q distribution.
+     * @return A positive double value
+     */
+    public double kl(NaturalParameters naturalParameters, double logNormalizer){
+        double kl = 0;
+        NaturalParameters copy = this.createZeroNaturalParameters();
+        copy.copy(this.naturalParameters);
+        copy.substract(naturalParameters);
+        kl+=copy.dotProduct(momentParameters);
+        kl-=this.computeLogNormalizer();
+        kl+=logNormalizer;
+
+        //if (kl<0)
+        //    throw new IllegalStateException("Negative KL: " + kl);
+
+        return kl;
+    }
+
 }
