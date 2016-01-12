@@ -16,17 +16,30 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Created by ana@cs.aau.dk on 03/11/14.
+ * This class implements the interface {@link DynamicAssignment} and handles the dynamic assignments using a HashMap.
  */
 public class HashMapDynamicAssignment implements DynamicAssignment {
+
+    /** Represents an assignment as a {@link java.util.Map} object that maps variables to values. */
     private Map<Variable,Double> assignment;
+
+    /** Represents the sequence ID. */
     long sequenceID;
+
+    /** Represents the time ID. */
     long timeID;
 
+    /**
+     * Creates a new HashMapDynamicAssignment given the number of variables.
+     * @param nOfVars the number of dynamic variables.
+     */
     public HashMapDynamicAssignment(int nOfVars){
         assignment = new ConcurrentHashMap(nOfVars);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getValue(Variable key){
         Double val = assignment.get(key);
@@ -34,20 +47,29 @@ public class HashMapDynamicAssignment implements DynamicAssignment {
             return val.doubleValue();
         }
         else {
-            //throw new IllegalArgumentException("No value stored for the requested variable: "+key.getName());
             return Utils.missingValue();
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setValue(Variable var, double val) {
         this.assignment.put(var,val);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<Variable> getVariables() {
         return assignment.keySet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getSequenceID() {
         return sequenceID;
@@ -57,20 +79,20 @@ public class HashMapDynamicAssignment implements DynamicAssignment {
         this.sequenceID = sequenceID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getTimeID() {
         return timeID;
     }
 
+    /**
+     * Sets the TimeID.
+     * @param timeID an {@code int} that represents the time ID.
+     */
     public void setTimeID(int timeID) {
         this.timeID = timeID;
-    }
-
-
-    // Now you can use the following loop to iterate over all assignments:
-    // for (Map.Entry<Variable, Double> entry : assignment.entrySet()) return entry;
-    public Set<Map.Entry<Variable,Double>> entrySet(){
-        return assignment.entrySet();
     }
 
 }
