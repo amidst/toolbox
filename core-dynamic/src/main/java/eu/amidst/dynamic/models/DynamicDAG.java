@@ -27,30 +27,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Hanen on 13/11/14.
+ * The DynamicDAG class defines the graphical structure a {@link DynamicBayesianNetwork}.
  */
 public class DynamicDAG implements Serializable {
 
-
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 123181485615649547L;
 
-    /**
-     * It contains a pointer to the variables (list of variables).
-     */
+    /** Represents the set of dynamic variables. */
     private DynamicVariables dynamicVariables;
 
-    /**
-     * It contains the ParentSets for all variables at time 0.
-     */
+
+    /** Represents the list of parents for all variables at time 0. */
     private List<ParentSet> parentSetTime0;
 
-    /**
-     * It contains the ParentSets for all variables at time T.
-     */
+    /** Represents the list of parents for all variables at time T. */
     private List<ParentSet> parentSetTimeT;
+
+    /** Represents the name of the dynamic DAG. **/
     private String name = "DynamicDAG";
 
-
+    /**
+     * Creates a new DynamicDAG from a set of given dynamic variables.
+     * @param dynamicVariables1 a set of variables of type {@link DynamicVariables}.
+     */
     public DynamicDAG(DynamicVariables dynamicVariables1) {
         this.dynamicVariables = dynamicVariables1;
         this.parentSetTime0 = new ArrayList(dynamicVariables.getNumberOfVars());
@@ -60,17 +60,22 @@ public class DynamicDAG implements Serializable {
             parentSetTime0.add(var.getVarID(), new ParentSetImpl(var));
             parentSetTimeT.add(var.getVarID(), new ParentSetImpl(var));
         }
-
-        //this.parentSetTime0 = Collections.unmodifiableList(this.parentSetTime0);
-        //this.parentSetTimeT = Collections.unmodifiableList(this.parentSetTimeT);
         this.dynamicVariables.block();
     }
 
+    /**
+     * Returns the set of dynamic variables in this DynamicDAG.
+     * @return {@link DynamicVariables} object containing the set of dynamic variables in this DynmaicDAG.
+     */
     public DynamicVariables getDynamicVariables() {
         return this.dynamicVariables;
     }
 
-    /* Methods accessing structure at time T*/
+    /**
+     * Returns the parent set of a given variable at time T.
+     * @param var a variable of type {@link Variable}.
+     * @return a {@link ParentSet} object containing the set of parents of the given variable.
+     */
     public ParentSet getParentSetTimeT(Variable var) {
         if (var.isInterfaceVariable()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
@@ -79,6 +84,11 @@ public class DynamicDAG implements Serializable {
         return this.parentSetTimeT.get(var.getVarID());
     }
 
+    /**
+     * Returns the parent set of a given variable at time 0.
+     * @param var a variable of type {@link Variable}.
+     * @return a {@link ParentSet} object containing the set of parents of the given variable.
+     */
     public ParentSet getParentSetTime0(Variable var) {
         if (var.isInterfaceVariable()) {
             throw new UnsupportedOperationException("Parents of clone variables can not be queried. Just query the parents" +
@@ -87,6 +97,10 @@ public class DynamicDAG implements Serializable {
         return this.parentSetTime0.get(var.getVarID());
     }
 
+    /**
+     * Returns the DAG at time T of this DynamicDAG.
+     * @return a {@link DAG} object.
+     */
     public DAG toDAGTimeT(){
         List<Variable> allVariables = new ArrayList<>();
         allVariables.addAll(this.getDynamicVariables().getListOfDynamicVariables());
@@ -103,6 +117,10 @@ public class DynamicDAG implements Serializable {
         return dag;
     }
 
+    /**
+     * Returns the DAG at time 0 of this DynamicDAG.
+     * @return a {@link DAG} object.
+     */
     public DAG toDAGTime0(){
         Variables staticVariables = Variables.auxiliarBuilder(this.getDynamicVariables().getListOfDynamicVariables());
         DAG dag = new DAG(staticVariables);
@@ -117,19 +135,19 @@ public class DynamicDAG implements Serializable {
         return dag;
     }
 
+    /**
+     * Tests if this DynamicDAG contains cycles.
+     * @return a boolean indicating if this DynamicDAG contains cycles (true) or not (false).
+     */
     public boolean containCycles() {
 
         boolean[] bDone = new boolean[2*this.dynamicVariables.getNumberOfVars()];
-
 
         for (int i = 0; i < bDone.length; i++) {
             bDone[i] = false;
         }
 
-
-
         for (Variable var : this.dynamicVariables) {
-
             // find a node for which all parents are 'done'
             boolean bFound = false;
 
@@ -155,18 +173,29 @@ public class DynamicDAG implements Serializable {
                 return true;
             }
         }
-
         return false;
     }
 
+    /**
+     * Returns a list of parents at time T.
+     * @return the list of parents.
+     */
     public List<ParentSet> getParentSetsTimeT() {
         return this.parentSetTimeT;
     }
 
+    /**
+     * Returns a list of parents at time 0.
+     * @return the list of parents.
+     */
     public List<ParentSet> getParentSetsTime0() {
         return this.parentSetTime0;
     }
 
+    /**
+     * Returns a textual representation of the parent set of this DynamicDAG.
+     * @return a String description of the parent set of this DynamicDAG.
+     */
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("\nDynamic DAG at Time 0\n");
@@ -181,16 +210,27 @@ public class DynamicDAG implements Serializable {
         return str.toString();
     }
 
+    /**
+     * Sets the name of this DynamicDAG.
+     * @param name, a String object.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Returns the name of this DynamicDAG.
+     * @return a String object.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * This class implements the interface {@link ParentSet}.
+     * It is used to handle the parent set operations.
+     */
     private final class ParentSetImpl implements ParentSet, Serializable {
-
 
         private static final long serialVersionUID = 7416827986614255621L;
 
@@ -269,6 +309,9 @@ public class DynamicDAG implements Serializable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -33,40 +33,47 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
- * <h2>This class implements a dynamic Bayesian network.</h2>
- *
- * @author afalvarez@ual.es, andres@cs.aau.dk & ana@cs.aau.dk
- * @version 1.0
- * @since 2014-07-3
- *
+ * The DynamicBayesianNetwork class represents a Bayesian network model.
  */
 public final class DynamicBayesianNetwork implements Serializable {
 
-
+    /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4968590066969071698L;
-    /**
-     * It contains the distributions for all variables at time 0.
-     */
+
+    /** Represents the list of conditional probability distributions defining the Dynamic Bayesian network parameters at Time 0. */
     private List<ConditionalDistribution> distributionsTime0;
 
-    /**
-     * It contains the distributions for all variables at time T.
-     */
+    /** Represents the list of conditional probability distributions defining the Dynamic Bayesian network parameters at Time T. */
     private List<ConditionalDistribution> distributionsTimeT;
 
+    /** Represents the Dynamic Directed Acyclic Graph ({@link DynamicDAG}) defining the Dynamic Bayesian network graphical structure. */
     private DynamicDAG dynamicDAG;
 
+    /**
+     * Creates a new DynamicBayesianNetwork from a DynamicDAG object.
+     * @param dynamicDAG1 a Dynamic directed acyclic graph.
+     */
     public DynamicBayesianNetwork(DynamicDAG dynamicDAG1){
         dynamicDAG = dynamicDAG1;
         this.initializeDistributions();
     }
 
+    /**
+     * Creates a new DynamicBayesianNetwork from a DynamicDAG and a list of distributions for both at Time 0 and T.
+     * @param dynamicDAG1 a Dynamic directed acyclic graph.
+     * @param distsTime0 a list of conditional probability distributions at Time 0.
+     * @param distsTimeT a list of conditional probability distributions at Time T.
+     */
     public DynamicBayesianNetwork(DynamicDAG dynamicDAG1, List<ConditionalDistribution> distsTime0, List<ConditionalDistribution> distsTimeT){
         dynamicDAG = dynamicDAG1;
         this.distributionsTime0=distsTime0;
         this.distributionsTimeT=distsTimeT;
     }
 
+    /**
+     * Returns the Bayesian network at Time 0.
+     * @return a {@link BayesianNetwork} object.
+     */
     public BayesianNetwork toBayesianNetworkTime0(){
         DAG dagTime0 = this.getDynamicDAG().toDAGTime0();
         BayesianNetwork bnTime0 = new BayesianNetwork(dagTime0);
@@ -81,6 +88,10 @@ public final class DynamicBayesianNetwork implements Serializable {
         return bnTime0;
     }
 
+    /**
+     * Returns the Bayesian network at Time T.
+     * @return a {@link BayesianNetwork} object.
+     */
     public BayesianNetwork toBayesianNetworkTimeT(){
         DAG dagTimeT = this.getDynamicDAG().toDAGTimeT();
         BayesianNetwork bnTimeT = new BayesianNetwork(dagTimeT);
@@ -95,9 +106,14 @@ public final class DynamicBayesianNetwork implements Serializable {
         return bnTimeT;
     }
 
+    /**
+     * Initializes the distributions of this DynamicBayesianNetwork.
+     * The initialization is performed for each variable at time ) and T depending on its distribution type
+     * as well as the distribution type of its parent set (if that variable has parents).
+     */
     private void initializeDistributions() {
-        //Parents should have been assigned before calling this method (from dynamicmodelling.models)
 
+        //Parents should have been assigned before calling this method (from dynamicmodelling.models)
         this.distributionsTime0 = new ArrayList(this.getDynamicVariables().getNumberOfVars());
         this.distributionsTimeT = new ArrayList(this.getDynamicVariables().getNumberOfVars());
 
@@ -115,53 +131,99 @@ public final class DynamicBayesianNetwork implements Serializable {
 
         //distributionsTimeT = Collections.unmodifiableList(this.distributionsTimeT);
         //distributionsTime0 = Collections.unmodifiableList(this.distributionsTime0);
-
     }
 
+    /**
+     * Sets the conditional probability distribution of a variable at Time 0.
+     * @param var a variable of type {@link Variable}.
+     * @param dist a Conditional probability distribution of type {@link ConditionalDistribution}.
+     */
     public void setConditionalDistributionTime0(Variable var, ConditionalDistribution dist){
         this.distributionsTime0.set(var.getVarID(),dist);
     }
 
+    /**
+     * Sets the conditional probability distribution of a variable at Time T.
+     * @param var a variable of type {@link Variable}.
+     * @param dist a Conditional probability distribution of type {@link ConditionalDistribution}.
+     */
     public void setConditionalDistributionTimeT(Variable var, ConditionalDistribution dist){
         this.distributionsTimeT.set(var.getVarID(),dist);
     }
 
+    /**
+     * Sets the name of the dynamic BN.
+     * @param name a {@code String} object.
+     */
     public void setName(String name) {
         this.dynamicDAG.setName(name);
     }
 
+    /**
+     * Returns the name of the dynamic BN.
+     * @return a {@code String} object.
+     */
     public String getName() {
         return this.dynamicDAG.getName();
     }
 
+    /**
+     * Returns the total number of variables in this DynamicBayesianNetwork.
+     * @return an {@code int} that represents the number of variables.
+     */
     public int getNumberOfDynamicVars() {
         return this.getDynamicVariables().getNumberOfVars();
     }
 
+    /**
+     * Returns the set of dynamic variables in this DynamicBayesianNetwork.
+     * @return set of variables of type {@link DynamicVariables}.
+     */
     public DynamicVariables getDynamicVariables() {
         return this.dynamicDAG.getDynamicVariables();
     }
 
+    /**
+     * Returns the conditional probability distribution at Time T of a given {@link Variable}.
+     * @param var a variable of type {@link Variable}.
+     * @param <E> a class extending {@link ConditionalDistribution}.
+     * @return a conditional probability distribution.
+     */
     public <E extends ConditionalDistribution> E getConditionalDistributionTimeT(Variable var) {
         return (E) this.distributionsTimeT.get(var.getVarID());
     }
 
+    /**
+     * Returns the conditional probability distribution at Time 0 of a given {@link Variable}.
+     * @param var a variable of type {@link Variable}.
+     * @param <E> a class extending {@link ConditionalDistribution}.
+     * @return a conditional probability distribution.
+     */
     public <E extends ConditionalDistribution> E getConditionalDistributionTime0(Variable var) {
         return (E) this.distributionsTime0.get(var.getVarID());
     }
 
+    /**
+     * Returns the dynamic directed acyclic graph of this DynamicBayesianNetwork.
+     * @return a dynamic directed acyclic graph of type {@link DynamicDAG}.
+     */
     public DynamicDAG getDynamicDAG (){
         return this.dynamicDAG;
     }
 
+    /**
+     * Returns the total number of variables in this DynamicBayesianNetwork.
+     * @return an {@code int} that represents the number of variables.
+     */
     public int getNumberOfVars() {
         return this.getDynamicVariables().getNumberOfVars();
     }
 
-    //public List<Variable> getListOfDynamicVariables() {
-    //    return this.getDynamicVariables().getListOfDynamicVariables();
-    //}
-
+    /**
+     * Returns the log probability of a valid assignment at Time T.
+     * @param assignment an object of type {@link Assignment}.
+     * @return a {@code double} that represents the log probability of the assignment.
+     */
     public double getLogProbabiltyOfFullAssignmentTimeT(Assignment assignment){
         double logProb = 0;
         for (Variable var: this.getDynamicVariables()){
@@ -173,6 +235,11 @@ public final class DynamicBayesianNetwork implements Serializable {
         return logProb;
     }
 
+    /**
+     * Returns the log probability of a valid assignment at Time 0.
+     * @param assignment an object of type {@link Assignment}.
+     * @return a {@code double} that represents the log probability of the assignment.
+     */
     public double getLogProbabiltyOfFullAssignmentTime0(Assignment assignment){
         double logProb = 0;
         for (Variable var: this.getDynamicVariables()){
@@ -184,29 +251,26 @@ public final class DynamicBayesianNetwork implements Serializable {
         return logProb;
     }
 
-
-    /*
-    public Variable getVariableById(int varID) {
-        return this.getListOfDynamicVariables().getVariableById(varID);
-    }
-
-    public Variable getTemporalCloneById(int varID) {
-        return this.getListOfDynamicVariables().getTemporalCloneById(varID);
-    }
-
-    public Variable getInterfaceVariable(Variable variable) {
-        return this.getListOfDynamicVariables().getInterfaceVariable(variable);
-    }
-    */
-
+    /**
+     * Returns the list of the conditional probability distributions at Time T of this DynamicBayesianNetwork.
+     * @return a list of {@link ConditionalDistribution}.
+     */
     public List<ConditionalDistribution> getConditionalDistributionsTimeT(){
         return this.distributionsTimeT;
     }
 
+    /**
+     * Returns the list of the conditional probability distributions at Time 0 of this DynamicBayesianNetwork.
+     * @return a list of {@link ConditionalDistribution}.
+     */
     public List<ConditionalDistribution> getConditionalDistributionsTime0(){
         return this.distributionsTime0;
     }
 
+    /**
+     * Returns a textual representation of this DynamicBayesianNetwork.
+     * @return a String description of this DynamicBayesianNetwork.
+     */
     public String toString(){
         StringBuilder str = new StringBuilder();
         str.append("Dynamic Bayesian Network Time 0:\n");
@@ -256,11 +320,22 @@ public final class DynamicBayesianNetwork implements Serializable {
         return str.toString();
     }
 
+    /**
+     * Initializes the distributions of this DynamicBayesianNetwork randomly.
+     * @param random an object of type {@link java.util.Random}.
+     */
     public void randomInitialization(Random random){
         this.distributionsTimeT.stream().forEach(w -> w.randomInitialization(random));
         this.distributionsTime0.stream().forEach(w -> w.randomInitialization(random));
     }
 
+    /**
+     * Tests if two Dynamic Bayesian networks are equals.
+     * Two Dynamic Bayesian networks are considered equals if they have an equal conditional distribution for each variable at both Time 0 and T.
+     * @param bnet a given DynamicBayesianNetwork to be compared with this DynamicBayesianNetwork.
+     * @param threshold a threshold value.
+     * @return a boolean indicating if the two DynamicBNs are equals or not.
+     */
     public boolean equalDBNs(DynamicBayesianNetwork bnet, double threshold) {
         boolean equals = true;
         if (this.getDynamicDAG().equals(bnet.getDynamicDAG())){

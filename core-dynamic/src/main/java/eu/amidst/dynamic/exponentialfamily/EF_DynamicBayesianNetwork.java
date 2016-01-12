@@ -17,30 +17,43 @@ import eu.amidst.core.utils.Vector;
 import java.util.stream.Collectors;
 
 /**
- * Created by andresmasegosa on 13/01/15.
+ * This class extends the abstract class {@link EF_DynamicDistribution} and defines a {@link DynamicBayesianNetwork} as a
+ * conjugate exponential family (EF) model, consisting of EF distributions in canonical form.
  */
+
 public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
 
+    /** Represents an {@link EF_BayesianNetwork} object at Time 0. */
     EF_BayesianNetwork bayesianNetworkTime0;
 
+    /** Represents an {@link EF_BayesianNetwork} object at Time T. */
     EF_BayesianNetwork bayesianNetworkTimeT;
 
 
+    /**
+     * Creates a new EF_BayesianNetwork object given a {@link DynamicDAG} object.
+     * @param dag a {@link DynamicDAG} object.
+     */
     public EF_DynamicBayesianNetwork(DynamicDAG dag) {
         this.bayesianNetworkTime0 = new EF_BayesianNetwork(dag.getParentSetsTime0());
         this.bayesianNetworkTimeT = new EF_BayesianNetwork(dag.getParentSetsTimeT());
     }
 
+    /**
+     * Creates a new EF_BayesianNetwork object given a {@link DynamicBayesianNetwork} object.
+     * @param dbn a {@link DynamicBayesianNetwork} object.
+     */
     public EF_DynamicBayesianNetwork(DynamicBayesianNetwork dbn){
         this.bayesianNetworkTime0 = new EF_BayesianNetwork();
         this.bayesianNetworkTimeT = new EF_BayesianNetwork();
 
         this.bayesianNetworkTime0.setDistributionList(dbn.getConditionalDistributionsTime0().stream().map(dist -> dist.<EF_ConditionalDistribution>toEFConditionalDistribution()).collect(Collectors.toList()));
         this.bayesianNetworkTimeT.setDistributionList(dbn.getConditionalDistributionsTimeT().stream().map(dist -> dist.<EF_ConditionalDistribution>toEFConditionalDistribution()).collect(Collectors.toList()));
-
-
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateNaturalFromMomentParameters() {
 
@@ -59,6 +72,9 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
         this.naturalParameters=vectorNatural;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateMomentFromNaturalParameters() {
         CompoundVector globalNaturalParam = (CompoundVector)this.naturalParameters;
@@ -74,6 +90,9 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
         this.momentParameters=vectorMoments;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SufficientStatistics getSufficientStatistics(DynamicDataInstance data) {
         CompoundVector vectorSS = this.createEmtpyCompoundVector();
@@ -90,16 +109,25 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
     }
 
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int sizeOfSufficientStatistics() {
         return this.bayesianNetworkTimeT.sizeOfSufficientStatistics() + this.bayesianNetworkTime0.sizeOfSufficientStatistics();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogBaseMeasure(DynamicDataInstance dataInstance) {
         throw new UnsupportedOperationException("No make sense for dynamic BNs");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double computeLogNormalizer() {
         throw new UnsupportedOperationException("No make sense for dynamic BNs");
@@ -113,37 +141,69 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
             return this.bayesianNetworkTimeT.computeLogProbabilityOf(dataInstance);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Vector createZeroedVector() {
         return this.createCompoundVector();
     }
 
+    /**
+     * Returns an empty zeroed parameter vector (i.e., a vector filled with zeros).
+     * @return a {@link Vector} object.
+     */
     public Vector createEmptyZeroedVector() {
         return this.createEmtpyCompoundVector();
     }
 
+    /**
+     * Returns an empty compound parameter vector.
+     * @return a {@link CompoundVector} object.
+     */
     private CompoundVector createEmtpyCompoundVector() {
         return new CompoundVector(this.bayesianNetworkTime0.sizeOfSufficientStatistics() + this.bayesianNetworkTimeT.sizeOfSufficientStatistics());
     }
 
+    /**
+     * Returns a compound parameter vector.
+     * @return a {@link CompoundVector} object.
+     */
     private CompoundVector createCompoundVector() {
         return new CompoundVector(this.bayesianNetworkTime0.createZeroVector(), this.bayesianNetworkTimeT.createZeroVector());
     }
 
+    /**
+     * Returns the {@link EF_BayesianNetwork} at Time 0 of this EF_DynamicBayesianNetwork.
+     * @return an {@link EF_BayesianNetwork} object.
+     */
     public EF_BayesianNetwork getBayesianNetworkTime0() {
         return bayesianNetworkTime0;
     }
 
+    /**
+     * Returns the {@link EF_BayesianNetwork} at Time T of this EF_DynamicBayesianNetwork.
+     * @return an {@link EF_BayesianNetwork} object.
+     */
     public EF_BayesianNetwork getBayesianNetworkTimeT() {
         return bayesianNetworkTimeT;
     }
 
+    /**
+     * Converts this EF_DynamicBayesianNetwork to an equivalent {@link DynamicBayesianNetwork} object.
+     * @param dag a {@link DynamicDAG} object defining the graphical structure.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
     public DynamicBayesianNetwork toDynamicBayesianNetwork(DynamicDAG dag) {
         return new DynamicBayesianNetwork(dag,
                 EF_BayesianNetwork.toConditionalDistribution(this.bayesianNetworkTime0.getDistributionList()),
                 EF_BayesianNetwork.toConditionalDistribution(this.bayesianNetworkTimeT.getDistributionList()));
     }
 
+    /**
+     * The class CompoundVector implements the interfaces {@link SufficientStatistics}, {@link MomentParameters}, and {@link NaturalParameters},
+     * and it handles some utility methods of compound parameter vector for EF_DynamicBayesianNetwork.
+     */
     class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
         double indicatorTime0;
         double indicatorTimeT;
