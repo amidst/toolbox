@@ -14,12 +14,14 @@ package eu.amidst.core.conceptdrift;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 /**
  * Created by andresmasegosa on 1/7/15.
@@ -32,7 +34,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
      * @throws ClassNotFoundException
      */
     @Test
-    public void testNoFading() throws IOException, ClassNotFoundException {
+    public void testSea() throws IOException, ClassNotFoundException {
         int windowSize = 1000;
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/sea.arff");
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
@@ -58,6 +60,43 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
             }
             System.out.println();
             countBatch++;
+        }
+    }
+
+
+    /**
+     * There should be a change in the hidden output for sea level every 15000 samples.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @Test
+    public void testBCC() throws IOException, ClassNotFoundException {
+        int windowSize = 3000;
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/dataFlink/IDAlikeDataCD/MONTH1.arff");
+        NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+        virtualDriftDetector.setClassIndex(-1);
+        virtualDriftDetector.setData(data);
+        virtualDriftDetector.setWindowsSize(windowSize);
+        virtualDriftDetector.setTransitionVariance(0.1);
+        virtualDriftDetector.setNumberOfGlobalVars(1);
+        virtualDriftDetector.initLearning();
+
+        System.out.print("Batch");
+        for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
+            System.out.print("\t" + hiddenVar.getName());
+        }
+
+        System.out.println();
+        int countBatch = 0;
+        for (int k = 1; k <= 84; k++) {
+            data = DataStreamLoader.openFromFile("./datasets/dataFlink/IDAlikeDataCD/MONTH"+k+".arff");
+            DataOnMemory<DataInstance> batch = new DataOnMemoryListContainer<DataInstance>(data.getAttributes(),data.stream().collect(Collectors.toList()));
+            double[] out = virtualDriftDetector.updateModel(batch);
+            System.out.print(countBatch + "\t");
+            for (int i = 0; i < out.length; i++) {
+                System.out.print(out[i]+"\t");
+            }
+            System.out.println();
         }
     }
 }

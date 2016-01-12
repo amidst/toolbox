@@ -304,11 +304,16 @@ public class EF_NormalParameter extends EF_UnivariateDistribution {
         double meanQ = naturalParameters.get(INDEX_MEAN);
         double precisionQ = naturalParameters.get(INDEX_PRECISION);
 
-        double kl =  0.5*Math.log(this.getPrecision()) - 0.5*Math.log(precisionQ) + 0.5*precisionQ/this.getPrecision()
-                + 0.5*precisionQ*Math.pow(this.getMean()-meanQ,2) -0.5;
 
-        //if (kl<0)
-        //    throw new IllegalStateException("Negative KL: " + kl);
+        //double kl =  0.5*Math.log(this.getPrecision()) - 0.5*Math.log(precisionQ) + 0.5*precisionQ/this.getPrecision()
+        //        + 0.5*precisionQ*Math.pow(this.getMean()-meanQ,2) -0.5;
+
+        double factor = precisionQ/this.getPrecision();
+        double kl = 0.5*(-Math.log(factor) + factor + precisionQ*Math.pow(this.getMean()-meanQ,2) -1);
+
+        if (kl<0) {
+            kl=0;
+        }
 
         return kl;
     }
