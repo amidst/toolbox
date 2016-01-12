@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -73,7 +72,7 @@ public class ARFFDataFolderReader implements DataFileReader {
                     .filter(line -> line.startsWith("@attribute"))
                     .collect(Collectors.toList());
 
-            /*
+
             List<Attribute> atts = attLines.stream()
                     .map(line -> {
                         String[] parts = line.split(" |\t");
@@ -88,13 +87,13 @@ public class ARFFDataFolderReader implements DataFileReader {
                         return ARFFDataReader.createAttributeFromLine(index, builder.toString());
                     })
                     .collect(Collectors.toList());
-            */
 
 
+/*
             List<Attribute> atts = IntStream.range(0, attLines.size())
                     .mapToObj(i -> ARFFDataReader.createAttributeFromLine(i, attLines.get(i)))
                     .collect(Collectors.toList());
-
+*/
 
             Collections.sort(atts, (a, b) -> a.getIndex() - b.getIndex());
             attributes = new Attributes(atts);
