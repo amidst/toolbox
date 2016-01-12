@@ -35,8 +35,8 @@ import java.util.Random;
 public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
     public static int NSETS = 11;
-    public static int SAMPLESIZE = 4000;
-    public static int BATCHSIZE = 1000;
+    public static int SAMPLESIZE = 5000;
+    public static int BATCHSIZE = 500;
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -48,7 +48,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(SAMPLESIZE);
         sampler.setBatchSize(BATCHSIZE);
-        sampler.setSeed(1);
+        sampler.setSeed(0);
 
         if (hiddenVars!=null) {
             for (String hiddenVar : hiddenVars) {
@@ -92,12 +92,12 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         DynamicVariables dynamicVariables = new DynamicVariables();
         Variable classVar = dynamicVariables.newMultinomialDynamicVariable("C", 2);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             dynamicVariables.newGaussianDynamicVariable("A" + i);
         }
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
             if (connect) dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(dynamicVariables.getVariableByName("A" + i).getInterfaceVariable());
 
@@ -163,8 +163,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
     public static void test1()  throws Exception {
         String networkName = "dbn1";
-        createDBN1(true);
-        createDataSets(networkName,null,null);
+        //createDBN1(true);
+        //createDataSets(networkName,null,null);
         testUpdateN(networkName, 0.1);
     }
 

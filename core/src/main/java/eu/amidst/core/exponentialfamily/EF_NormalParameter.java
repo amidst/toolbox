@@ -297,6 +297,23 @@ public class EF_NormalParameter extends EF_UnivariateDistribution {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double kl(NaturalParameters naturalParameters, double logNormalizer) {
+        double meanQ = naturalParameters.get(INDEX_MEAN);
+        double precisionQ = naturalParameters.get(INDEX_PRECISION);
+
+        double kl =  0.5*Math.log(this.getPrecision()) - 0.5*Math.log(precisionQ) + 0.5*precisionQ/this.getPrecision()
+                + 0.5*precisionQ*Math.pow(this.getMean()-meanQ,2) -0.5;
+
+        //if (kl<0)
+        //    throw new IllegalStateException("Negative KL: " + kl);
+
+        return kl;
+    }
+
+    /**
      * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
      * It handles some array vector utility methods.
      */
