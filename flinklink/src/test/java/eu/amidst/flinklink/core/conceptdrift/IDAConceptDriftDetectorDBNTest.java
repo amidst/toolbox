@@ -35,8 +35,8 @@ import java.util.Random;
 public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
     public static int NSETS = 11;
-    public static int SAMPLESIZE = 5000;
-    public static int BATCHSIZE = 100;
+    public static int SAMPLESIZE = 4000;
+    public static int BATCHSIZE = 1000;
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();

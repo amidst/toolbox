@@ -84,7 +84,6 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
      */
     @Override
     public double getExpectedLogNormalizer(Map<Variable, MomentParameters> momentParents) {
-        double mean = momentParents.get(meanParameterVariable).get(0);
         double meansquare = momentParents.get(meanParameterVariable).get(1);
 
         double invVariance = momentParents.get(gammaParameterVariable).get(1);
@@ -99,13 +98,14 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
 
-        NaturalParameters naturalParameters = new ArrayVector(2);
 
         double mean = momentParents.get(meanParameterVariable).get(0);
         double invVariance = momentParents.get(gammaParameterVariable).get(1);
 
-        naturalParameters.set(0,mean*invVariance);
-        naturalParameters.set(1,-0.5*invVariance);
+        NaturalParameters naturalParameters = new EF_Normal.ArrayVectorParameter(2);
+
+        naturalParameters.set(0,mean);
+        naturalParameters.set(1,invVariance);
 
         return naturalParameters;
     }
@@ -124,8 +124,15 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
         if(meanParameterVariable == parent){
             double invVariance = momentChildCoParents.get(gammaParameterVariable).get(1);
 
-            naturalParameters.set(0, X*invVariance);
-            naturalParameters.set(1, -0.5*invVariance);
+/*
+            naturalParameters.set(0,invVariance*X);
+            naturalParameters.set(1,-0.5*invVariance);
+*/
+
+            naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
+            naturalParameters.set(0, X);
+            naturalParameters.set(1, invVariance);
+
         // Message to the gamma variable
         }else{
             double XSquare = momentChildCoParents.get(var).get(1);

@@ -56,14 +56,13 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             if (!paramVariable.isNormalParameter())
                 continue;
 
-            EF_Normal prior = bayesianNetwork.getDistribution(paramVariable);
+            EF_NormalParameter prior = bayesianNetwork.getDistribution(paramVariable);
 
             double varPrior = 1;
             double precisionPrior = 1/varPrior;
             double meanPrior = 0;
 
-            prior.getNaturalParameters().set(0, precisionPrior*meanPrior);
-            prior.getNaturalParameters().set(1, -0.5* precisionPrior);
+            prior.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
             prior.fixNumericalInstability();
             prior.updateMomentFromNaturalParameters();
 
@@ -78,8 +77,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             double mean = meanStart;
             double var = 1;
 
-            normal.getNaturalParameters().set(0, mean / (var));
-            normal.getNaturalParameters().set(1, -1 / (2 * var));
+            normal.setNaturalWithMeanPrecision(mean,1/var);
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
 
@@ -102,8 +100,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             double variance = normalGlobalHiddenPreviousTimeStep.getVariance() + this.transtionVariance;
             double mean = normalGlobalHiddenPreviousTimeStep.getMean();
 
-            normal.getNaturalParameters().set(0, mean / (variance));
-            normal.getNaturalParameters().set(1, -1 / (2 * variance));
+            normal.setNaturalWithMeanPrecision(mean,1/variance);
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
         }

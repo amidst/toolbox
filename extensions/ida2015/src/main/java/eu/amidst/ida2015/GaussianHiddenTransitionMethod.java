@@ -59,8 +59,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
             double precisionPrior = 1/varPrior;
             double meanPrior = 0;
 
-            prior.getNaturalParameters().set(0, precisionPrior*meanPrior);
-            prior.getNaturalParameters().set(1, -0.5*precisionPrior);
+            prior.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
             prior.fixNumericalInstability();
             prior.updateMomentFromNaturalParameters();
 
@@ -91,8 +90,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
             double mean = meanStart;
             double var = initVariance;
 
-            meanDist.getNaturalParameters().set(0, mean / (var));
-            meanDist.getNaturalParameters().set(1, -1 / (2 * var));
+            meanDist.setNaturalWithMeanPrecision(mean,1/var);
             meanDist.fixNumericalInstability();
             meanDist.updateMomentFromNaturalParameters();
 
@@ -132,8 +130,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
             double mean = normalGlobalHiddenPreviousTimeStep.getMean();
 
-            meanDist.getNaturalParameters().set(0, mean / (variance));
-            meanDist.getNaturalParameters().set(1, -1 / (2 * variance));
+            meanDist.setNaturalWithMeanPrecision(mean,1/variance);
             gamma.fixNumericalInstability();
             meanDist.updateMomentFromNaturalParameters();
         }
