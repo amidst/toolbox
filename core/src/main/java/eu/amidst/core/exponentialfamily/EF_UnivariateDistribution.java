@@ -187,9 +187,9 @@ public abstract class EF_UnivariateDistribution extends EF_ConditionalDistributi
         kl-=this.computeLogNormalizer();
         kl+=logNormalizer;
 
-        //if (kl<0)
-        //    throw new IllegalStateException("Negative KL: " + kl);
-
+        if (kl<0) {
+            kl=0;
+        }
         return kl;
     }
 
