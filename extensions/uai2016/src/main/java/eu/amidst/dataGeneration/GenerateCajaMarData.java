@@ -275,6 +275,11 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
             double[] min = new double[numAtts];
             double[] max = new double[numAtts];
 
+            for (int i = 0; i < numAtts; i++) {
+                min[i] = Double.MAX_VALUE;
+                max[i] = Double.MIN_VALUE;
+            }
+
             for(DataInstance instance: values){
                 instance.getAttributes().forEach(att -> {
                     if(instance.getValue(att)>max[att.getIndex()])
@@ -368,9 +373,9 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
 
         //generateData.generateData();
 
-        //generateData.assignRanges();
+        generateData.assignRanges();
 
-        generateData.learnDynamicNB();
+        //generateData.learnDynamicNB();
     }
 
     @Override
