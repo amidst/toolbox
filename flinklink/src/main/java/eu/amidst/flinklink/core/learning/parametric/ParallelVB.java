@@ -332,6 +332,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             }else {
                 SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
 
+                if (Double.isNaN(out.getElbo()))
+                    throw new IllegalStateException("NaN elbo");
+
                 elbo.aggregate(out.getElbo());
                 return out.getVector();
             }
@@ -425,30 +428,12 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public double getELBO() {
             return previousELBO;
         }
-/*
-        @Override
-        public boolean isConverged(int iteration, DoubleValue value) {
-            if (iteration==1) {
-                previousELBO=value.getValue();
-                return false;
-            }else if (value.getValue() < (previousELBO - threshold)){
-                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", " + value.getValue() +" < " + previousELBO);
-                System.out.println("Global bound is not monotonically increasing: "+ iteration +", " + (value.getValue() +">" + previousELBO));
-                this.previousELBO=value.getValue();
-                return true;
-            }else if (value.getValue()>(previousELBO+threshold)) {
-                System.out.println("Global bound is monotonically increasing: "+ iteration +", " + (value.getValue() +">" + previousELBO));
-                this.previousELBO=value.getValue();
-                return false;
-            }else {
-                System.out.println("Global Convergence: "+ iteration +", " + (value.getValue() -previousELBO) + ", " + value.getValue());
-                return true;
-            }
-        }
-        */
 
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
+
+            if (Double.isNaN(value.getValue()))
+                throw new IllegalStateException("A NaN elbo");
 
             double percentage = 100*(value.getValue() - previousELBO)/Math.abs(previousELBO);
 
@@ -463,7 +448,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
                 // ", "+ (value.getValue() +">" + previousELBO));
                 //this.previousELBO=value.getValue();
-                //return true;
+                //return false;
             }else if (percentage>0 && percentage>threshold) {
                 logger.info("Global bound is monotonically increasing: {}, {}, {} > {}",iteration, percentage,
                         value.getValue(), previousELBO);

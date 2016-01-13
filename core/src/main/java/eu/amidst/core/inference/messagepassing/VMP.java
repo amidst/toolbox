@@ -100,6 +100,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
     public boolean testConvergence(){
 
         boolean convergence = false;
+
         //Compute lower-bound
         double newelbo = this.computeLogProbabilityOfEvidence();
 
@@ -110,7 +111,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
         }
 
         if (testELBO && (!convergence && (newelbo/nodes.size() < (local_elbo/nodes.size() - 0.01)) && local_iter>-1) || Double.isNaN(local_elbo)){
-            throw new IllegalStateException("The elbo is not monotonically increasing at iter "+local_iter+": " + local_elbo/nodes.size() + ", "+ newelbo/nodes.size());
+            throw new IllegalStateException("The elbo is not monotonically increasing at iter "+local_iter+": "+percentage+", " + local_elbo + ", "+ newelbo);
         }
 
         //if (testELBO && !convergence && newelbo<local_elbo){
@@ -149,23 +150,15 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
             elbo += node.getQDist().computeLogNormalizer();*/
 
             elbo-=node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
-                                     node.getPDist().getExpectedLogNormalizer(momentParents));
+                                 node.getPDist().getExpectedLogNormalizer(momentParents));
 
         }else {
             NaturalParameters expectedNatural = node.getPDist().getExpectedNaturalFromParents(momentParents);
             elbo += expectedNatural.dotProduct(node.getSufficientStatistics());
             elbo -= node.getPDist().getExpectedLogNormalizer(momentParents);
             elbo += node.getPDist().computeLogBaseMeasure(this.assignment);
+
         }
-
-        //if (elbo>0 && !node.isObserved() && Math.abs(expectedNatural.sum())<0.01) {
-        //    elbo=0;
-        //}
-
-        //if (this.testELBO && ((elbo>2 && !node.isObserved()) || Double.isNaN(elbo))) {
-
-        //if (Math.abs(elbo)<1e-5)
-        //    elbo=0;
 
         if (this.testELBO && ((elbo>0.1 && !node.isObserved()) || Double.isNaN(elbo))) {
             throw new IllegalStateException("NUMERICAL ERROR!!!!!!!!: " + node.getMainVariable().getName() + ", " +  elbo);
