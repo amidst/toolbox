@@ -29,7 +29,7 @@ public class DataFlinkWriter {
 
         DataSet<T> dataSet = data.getDataSet();
 
-        DataFlinkWriter.writeHeader(dataSet.getExecutionEnvironment(), data, path);
+        DataFlinkWriter.writeHeader(dataSet.getExecutionEnvironment(), data, path, false);
 
         dataSet.writeAsFormattedText(path + "/data/", FileSystem.WriteMode.OVERWRITE, new TextOutputFormat.TextFormatter<T>() {
                     @Override
@@ -43,7 +43,8 @@ public class DataFlinkWriter {
 
     }
 
-    private static <T extends DataInstance> void writeHeader(ExecutionEnvironment env, DataFlink<T> data, String path) {
+    public static <T extends DataInstance> void writeHeader(ExecutionEnvironment env, DataFlink<T> data, String path,
+                                                             boolean includeRanges) {
 
         DataSource<String> name = env.fromElements("@relation " + data.getName());
         name.writeAsText(path + "/name.txt", FileSystem.WriteMode.OVERWRITE);
@@ -53,7 +54,7 @@ public class DataFlinkWriter {
         attData.writeAsFormattedText(path + "/attributes.txt", FileSystem.WriteMode.OVERWRITE, new TextOutputFormat.TextFormatter<Attribute>() {
             @Override
             public String format(Attribute att) {
-                return ARFFDataWriter.attributeToARFFStringWithIndex(att);
+                return ARFFDataWriter.attributeToARFFStringWithIndex(att,includeRanges);
             }
         });
     }

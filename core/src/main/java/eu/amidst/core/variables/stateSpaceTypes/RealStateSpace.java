@@ -52,6 +52,22 @@ public class RealStateSpace extends StateSpaceType {
     }
 
     /**
+     * Sets the maximum value of the interval.
+     * @param value the minimum value of the interval.
+     */
+    public void setMaxInterval(double value) {
+         maxInterval = value;
+    }
+
+    /**
+     * Sets the minimum value of the interval.
+     * @param value the maximum value of the interval.
+     */
+    public void setMinInterval(double value) {
+        minInterval = value;
+    }
+
+    /**
      * Returns the maximum value of the interval.
      * @return the maximum value of the interval.
      */
