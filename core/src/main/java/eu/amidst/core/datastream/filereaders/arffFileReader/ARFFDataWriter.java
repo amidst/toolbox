@@ -88,7 +88,7 @@ public class ARFFDataWriter implements DataFileWriter {
 
     public static String attributeToARFFStringWithIndex(Attribute att, boolean includeRanges){
         if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.REAL) {
-            if(includeRanges)
+            if(includeRanges && !att.getName().equalsIgnoreCase("SEQUENCE_ID") && !att.getName().equalsIgnoreCase("TIME_ID"))
                 return "@attribute " + att.getName() + " " +att.getIndex()+ " real ["+
                         ((RealStateSpace) att.getStateSpaceType()).getMinInterval() +","+
                         ((RealStateSpace) att.getStateSpaceType()).getMaxInterval() +"]";
