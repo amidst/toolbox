@@ -621,6 +621,9 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         public CompoundVector map(List<DataPosteriorAssignment> data) throws Exception {
 
             if (data.size()==0) {
+                //Variable var = this.svb.getDAG().getVariables().getVariableByName("GlobalHidden_0");
+                //EF_Normal nomrl = (EF_Normal)this.svb.getPlateuStructure().getNodeOfNonReplicatedVar(var).getPDist();
+                //System.out.println("Global Hidden: "+nomrl.getMean());
                 return this.svb.getNaturalParameterPrior();
             }else{
                 for (int i = 0; i < data.size(); i++) {
