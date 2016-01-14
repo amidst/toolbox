@@ -35,7 +35,7 @@ import java.util.Random;
 public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
     public static int NSETS = 11;
-    public static int SAMPLESIZE = 5000;
+    public static int SAMPLESIZE = 1000;
     public static int BATCHSIZE = 500;
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
@@ -87,17 +87,17 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
     }
 
 
-    public static void createDBN1(boolean connect) throws Exception {
+    public static void createDBN1(int nvars, boolean connect) throws Exception {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
         Variable classVar = dynamicVariables.newMultinomialDynamicVariable("C", 2);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < nvars; i++) {
             dynamicVariables.newGaussianDynamicVariable("A" + i);
         }
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < nvars; i++) {
             dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
             if (connect) dag.getParentSetTimeT(dynamicVariables.getVariableByName("A" + i)).addParent(dynamicVariables.getVariableByName("A" + i).getInterfaceVariable());
 
@@ -163,7 +163,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
     public static void test1()  throws Exception {
         String networkName = "dbn1";
-        createDBN1(true);
+        createDBN1(3,true);
         createDataSets(networkName,null,null);
         testUpdateN(networkName, 0.1);
     }

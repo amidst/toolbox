@@ -1,16 +1,23 @@
 package eu.amidst.dataGeneration;
 
+import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.utils.AmidstOptionsHandler;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
+import org.apache.flink.api.common.functions.RichMapPartitionFunction;
+import org.apache.flink.api.common.functions.RichReduceFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.util.Collector;
 
 /**
  * This class generates CajaMar-like data and learns a dynamic NB to test the process was succesfull.
@@ -23,6 +30,8 @@ import org.apache.flink.api.java.ExecutionEnvironment;
  * -outputFullPath "~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData"
  * -printINDEX -seed 0
  *
+ * The option p.waitFor(); might not work on all systems, so data may have to be generated and tested on
+ * different executions
  *
  * Created by ana@cs.aau.dk on 08/12/15.
  */
@@ -37,9 +46,12 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
     private String outputFullPath = "./";
     private boolean includeSocioEconomicVars = false;
     private int batchSize = 1000;
-    private boolean printINDEX = true;
+    private boolean printINDEX = false;
     private int seed = 0;
     private boolean addConceptDrift = false;
+    private boolean addRange = false;
+
+    int nMonths = 15;
 
     public int getNumSamplesPerFile() {
         return numSamplesPerFile;
@@ -113,6 +125,14 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         this.addConceptDrift = addConceptDrift;
     }
 
+    public boolean isAddRange() {
+        return addRange;
+    }
+
+    public void setAddRange(boolean addRange) {
+        this.addRange = addRange;
+    }
+
     private void generateIDADataFromRScript() throws Exception {
         /*
          * The 1st parameter is the number of files (per month)
@@ -125,11 +145,13 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         Process p = Runtime.getRuntime().exec("Rscript "+getRscriptsPath()+"/data_generator_IDA.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath() + " " +
                 String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed()+ " " +
-                String.valueOf(isAddConceptDrift()).toUpperCase());
+                String.valueOf(isAddConceptDrift()).toUpperCase()+ " " +
+                String.valueOf(isAddRange()).toUpperCase());
         System.out.println("Rscript "+getRscriptsPath()+"/data_generator_IDA.R "+
                 getNumFiles()+" "+getNumSamplesPerFile()+" "+ getOutputFullPath() + " " +
                 String.valueOf(isPrintINDEX()).toUpperCase()+" "+getSeed()+ " " +
-                String.valueOf(isAddConceptDrift()).toUpperCase());
+                String.valueOf(isAddConceptDrift()).toUpperCase()+ " " +
+                String.valueOf(isAddRange()).toUpperCase());
         p.waitFor();
 
 
@@ -156,6 +178,8 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         else
             this.generateIDADataFromRScript();
     }
+
+
 
     /**
      * This method returns a DynamicDAG object with naive Bayes structure for the given attributes.
@@ -189,6 +213,122 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         return dag;
     }
 
+    public void assignRanges() throws Exception{
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        /*
+         * Calculate max and min ranges for all attributes
+         */
+        System.out.println("--------------- Calculate max and min ranges for all attributes ---------------");
+        MinMaxValues globalResult = null;
+        for (int i = 1; i <= nMonths; i++) {
+            DataFlink<DynamicDataInstance> data = DataFlinkLoader.loadDynamicDataFromFolder(env,
+                    getOutputFullPath()+"/MONTH" + i + ".arff" ,false);
+            MinMaxValues monthResult = data.getDataSet()
+                    .mapPartition(new GetRange(data.getAttributes().getNumberOfAttributes()))
+                    .reduce(new ReduceMinMax())
+                    .collect().get(0);
+            if(i==1)
+                globalResult = monthResult;
+            else
+                globalResult = combineMonthlyResults(globalResult,monthResult);
+        }
+
+        /*
+         * Write header with ranges
+         */
+        System.out.println("--------------- Write header with ranges ---------------");
+        for (int i = 1; i <= nMonths; i++) {
+            System.out.println("++++++++++++"+i);
+            DataFlink<DynamicDataInstance> data = DataFlinkLoader.loadDynamicDataFromFolder(env,
+                    getOutputFullPath()+"/MONTH" + i + ".arff" ,false);
+            for (Attribute att: data.getAttributes()){
+                if(!att.getName().equalsIgnoreCase("DEFAULT")) {
+                    ((RealStateSpace) att.getStateSpaceType()).setMaxInterval(globalResult.max[att.getIndex()]);
+                    ((RealStateSpace) att.getStateSpaceType()).setMinInterval(globalResult.min[att.getIndex()]);
+                }
+            }
+
+            DataFlinkWriter.writeHeader(env,data, getOutputFullPath()+"/MONTH" + i + ".arff", true);
+        }
+
+
+    }
+
+    private MinMaxValues combineMonthlyResults(MinMaxValues globalResult, MinMaxValues monthResult){
+        for (int i = 0; i < globalResult.min.length; i++) {
+            if(monthResult.max[i]>globalResult.max[i])
+                globalResult.max[i] = monthResult.max[i];
+            if(monthResult.min[i]<globalResult.min[i])
+                globalResult.min[i] = monthResult.min[i];
+        }
+        return globalResult;
+    }
+
+    static class GetRange extends RichMapPartitionFunction<DynamicDataInstance, MinMaxValues> {
+
+        int numAtts;
+
+        public GetRange(int numAtts_){
+            numAtts = numAtts_;
+        }
+        @Override
+        public void mapPartition(Iterable<DynamicDataInstance> values, Collector<MinMaxValues> out){
+
+            double[] min = new double[numAtts];
+            double[] max = new double[numAtts];
+
+            for (int i = 0; i < numAtts; i++) {
+                min[i] = Double.MAX_VALUE;
+                max[i] = Double.MIN_VALUE;
+            }
+
+            for(DataInstance instance: values){
+                instance.getAttributes().forEach(att -> {
+                    if(instance.getValue(att)>max[att.getIndex()])
+                        max[att.getIndex()] = instance.getValue(att);
+                    if(instance.getValue(att)<min[att.getIndex()])
+                        min[att.getIndex()] = instance.getValue(att);
+                });
+            }
+
+            out.collect(new MinMaxValues(min,max));
+
+        }
+    }
+
+    static class ReduceMinMax extends RichReduceFunction<MinMaxValues> {
+
+        @Override
+        public MinMaxValues reduce(MinMaxValues set1, MinMaxValues set2) throws Exception {
+
+            double[] min = new double[set1.max.length];
+            double[] max = new double[set1.max.length];
+            for (int i = 0; i < min.length; i++) {
+                if(set1.max[i]>set2.max[i])
+                    max[i] = set1.max[i];
+                else
+                    max[i] = set2.max[i];
+                if(set1.min[i]<set2.min[i])
+                    min[i] = set1.min[i];
+                else
+                    min[i] = set2.min[i];
+
+            }
+            return new MinMaxValues(min, max);
+        }
+    }
+
+    public static class MinMaxValues {
+        double[] max;
+        double[] min;
+
+        public MinMaxValues(double[] min_, double[] max_){
+            max = max_;
+            min = min_;
+        }
+    }
+
     public void learnDynamicNB() throws Exception{
 
         /*
@@ -207,14 +347,14 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         learn.setMaximumGlobalIterations(10);
         learn.setBatchSize(getBatchSize());
         learn.setDAG(dynamicDAG);
-        learn.setOutput(true);
+        learn.setOutput(false);
         learn.initLearning();
 
         System.out.println("--------------- MONTH " + 1 + " --------------------------");
         learn.updateModelWithNewTimeSlice(0, data0);
 
 
-        for (int i = 2; i < 85; i++) {
+        for (int i = 2; i <= nMonths; i++) {
             System.out.println("--------------- MONTH " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     getOutputFullPath()+"/MONTH" + i + ".arff" ,true);
@@ -234,8 +374,11 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
 
         generateData.setOptions(args);
 
-        generateData.generateData();
-        generateData.learnDynamicNB();
+        //generateData.generateData();
+
+        generateData.assignRanges();
+
+        //generateData.learnDynamicNB();
     }
 
     @Override
@@ -248,9 +391,10 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
                 "-includeSocioEconomicVars, false, If set then socioeconomic vars are included and " +
                 "data like the SCAI paper is generated.\\"+
                 "-batchSize, 1000, batchSize for learning the dbn.\\"+
-                "-printINDEX, true, print index in attribute arff header\\"+
+                "-printINDEX, false, print index in attribute arff header\\"+
                 "-seed, 0, set seed for data sample generation in Rscript\\"+
-                "-addConceptDrift, false, If set add concept drift at months 35 and 60";
+                "-addConceptDrift, false, If set add concept drift at months 35 and 60\\"+
+                "-addRange, false, If set add range to attributes";
     }
 
     @Override
@@ -269,5 +413,6 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         this.setPrintINDEX(this.getBooleanOption("-printINDEX"));
         this.setSeed(this.getIntOption("-seed"));
         this.setAddConceptDrift(getBooleanOption("-addConceptDrift"));
+        this.setAddRange(getBooleanOption("-addRange"));
     }
 }

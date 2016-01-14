@@ -212,14 +212,20 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
             //        Y_i * X * invVariance - (dotProductBetaY-beta_i*Y_i) * (Y_i*invVariance));
             //naturalParameters.set(1, -0.5*Y_iSquared*invVariance);
 
-            double factor = Y_i/Y_iSquared;
+            if (Y_iSquared!=0) {
+                double factor = Y_i / Y_iSquared;
 
-            double mean = factor*(-beta0 + X - (dotProductBetaY-beta_i*Y_i));
-            double precision = Y_iSquared*invVariance;
+                double mean = factor * (-beta0 + X - (dotProductBetaY - beta_i * Y_i));
+                double precision = Y_iSquared * invVariance;
 
-            naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
-            naturalParameters.set(0,mean);
-            naturalParameters.set(1,precision);
+                naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
+                naturalParameters.set(0, mean);
+                naturalParameters.set(1, precision);
+            }else{
+                naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
+                naturalParameters.set(0, -beta0 + X - (dotProductBetaY - beta_i * Y_i));
+                naturalParameters.set(1, 0);
+            }
 
             // Message to the Beta0 variable
         }else if(beta0Variable == parent){
@@ -253,6 +259,7 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
         }else{
             throw new IllegalArgumentException("Error");
         }
+
 
         return naturalParameters;
     }

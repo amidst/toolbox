@@ -176,7 +176,7 @@ public class IDAConceptDriftDetectorDBN {
             this.globalDynamicDAG.getParentSetTimeT(variable).addParent(variable.getInterfaceVariable());
         }
 
-        //System.out.println(dag.toString());
+        System.out.println(globalDynamicDAG.toString());
 
 
     }
@@ -206,8 +206,8 @@ public class IDAConceptDriftDetectorDBN {
         svb.setDAG(globalDynamicDAG);
 
         svb.setOutput(false);
-        svb.setGlobalThreshold(0.01);
-        svb.setLocalThreshold(0.01);
+        svb.setGlobalThreshold(0.001);
+        svb.setLocalThreshold(0.001);
         svb.setMaximumLocalIterations(100);
         svb.setMaximumGlobalIterations(100);
 

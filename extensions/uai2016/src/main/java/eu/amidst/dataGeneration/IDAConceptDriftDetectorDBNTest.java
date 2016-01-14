@@ -38,13 +38,13 @@ public class IDAConceptDriftDetectorDBNTest{
         generateData.generateData();
     }
 
-    public static void testUpdateN_IDAData() throws Exception {
+    public static void testUpdateN_IDAData(String dataPath) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         //generateIDAData();
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/dataFlink/IDAlikeDataCD/MONTH1.arff", true);
+                dataPath+"/MONTH1.arff", true);
 
         IDAConceptDriftDetectorDBN learn = new IDAConceptDriftDetectorDBN();
         learn.setBatchSize(100);
@@ -64,7 +64,7 @@ public class IDAConceptDriftDetectorDBNTest{
         for (int i = 1; i < NMONTHS; i++) {
             System.out.println("--------------- MONTH " + (i+1) + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/dataFlink/IDAlikeDataCD/MONTH" + (i+1) + ".arff", true);
+                    dataPath+"/MONTH" + (i+1) + ".arff", true);
             out = learn.updateModelWithNewTimeSlice(i, dataNew);
             output[i] = out[0];
 
@@ -83,7 +83,8 @@ public class IDAConceptDriftDetectorDBNTest{
 
     public static void main(String[] args) throws Exception{
         //generateIDAlikeDAta();
-        testUpdateN_IDAData();
+        String dataPath = args[0];
+        testUpdateN_IDAData(dataPath);
     }
 
 }

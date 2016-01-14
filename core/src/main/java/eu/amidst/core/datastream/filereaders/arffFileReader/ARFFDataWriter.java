@@ -16,6 +16,7 @@ import eu.amidst.core.datastream.filereaders.DataFileWriter;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -85,8 +86,12 @@ public class ARFFDataWriter implements DataFileWriter {
         }
     }
 
-    public static String attributeToARFFStringWithIndex(Attribute att){
+    public static String attributeToARFFStringWithIndex(Attribute att, boolean includeRanges){
         if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.REAL) {
+            if(includeRanges && !att.getName().equalsIgnoreCase("SEQUENCE_ID") && !att.getName().equalsIgnoreCase("TIME_ID"))
+                return "@attribute " + att.getName() + " " +att.getIndex()+ " real ["+
+                        ((RealStateSpace) att.getStateSpaceType()).getMinInterval() +","+
+                        ((RealStateSpace) att.getStateSpaceType()).getMaxInterval() +"]";
             return "@attribute " + att.getName() + " " +att.getIndex()+ " real";
         } else if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
             StringBuilder stringBuilder = new StringBuilder("@attribute " + att.getName() + " " +att.getIndex()+ " {");
@@ -98,6 +103,7 @@ public class ARFFDataWriter implements DataFileWriter {
             throw new IllegalArgumentException("Unknown SateSapaceType");
         }
     }
+
     /**
      * Converts a {@link DataInstance} object to an ARFF format {@code String}.
      * @param assignment a {@link DataInstance} object.
