@@ -51,6 +51,8 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
     private boolean addConceptDrift = false;
     private boolean addRange = false;
 
+    int nMonths = 15;
+
     public int getNumSamplesPerFile() {
         return numSamplesPerFile;
     }
@@ -219,7 +221,7 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
          */
         System.out.println("--------------- Calculate max and min ranges for all attributes ---------------");
         MinMaxValues globalResult = null;
-        for (int i = 1; i < 85; i++) {
+        for (int i = 1; i <= nMonths; i++) {
             DataFlink<DynamicDataInstance> data = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     getOutputFullPath()+"/MONTH" + i + ".arff" ,false);
             MinMaxValues monthResult = data.getDataSet()
@@ -236,7 +238,8 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
          * Write header with ranges
          */
         System.out.println("--------------- Write header with ranges ---------------");
-        for (int i = 1; i < 85; i++) {
+        for (int i = 1; i <= nMonths; i++) {
+            System.out.println("++++++++++++"+i);
             DataFlink<DynamicDataInstance> data = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     getOutputFullPath()+"/MONTH" + i + ".arff" ,false);
             for (Attribute att: data.getAttributes()){
@@ -351,7 +354,7 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         learn.updateModelWithNewTimeSlice(0, data0);
 
 
-        for (int i = 2; i < 85; i++) {
+        for (int i = 2; i <= nMonths; i++) {
             System.out.println("--------------- MONTH " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     getOutputFullPath()+"/MONTH" + i + ".arff" ,true);
