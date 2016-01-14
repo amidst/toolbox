@@ -24,26 +24,41 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+
 /**
- * Created by ana@cs.aau.dk on 10/11/15.
+ * This class implements the interfaces {@link InferenceAlgorithmForDBN}.
+ * It handles and implements the Factored Frontier (FF) algorithm to perform inference on {@link DynamicBayesianNetwork} models.
  */
 public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
 
+    /** Represents the {@link InferenceAlgorithm} at time 0. */
     private InferenceAlgorithm infAlgTime0;
+
+    /** Represents the {@link InferenceAlgorithm} at time T. */
     private InferenceAlgorithm infAlgTimeT;
 
+    /** Represents the {@link BayesianNetwork} model at time 0. */
     private BayesianNetwork bnTime0;
+
+    /** Represents the {@link BayesianNetwork} model at time T. */
     private BayesianNetwork bnTimeT;
 
+    /** Represents the {@link DynamicBayesianNetwork} model. */
     private DynamicBayesianNetwork model;
 
-    // If it is Importance Sampling, data should not be kept on memory
-
+    /** Represents an {@link DynamicAssignment} object. */
     private DynamicAssignment assignment = new HashMapDynamicAssignment(0);
 
+    /** Represents the time ID. */
     private long timeID;
+
+    /** Represents the sequence ID. */
     private long sequenceID;
 
+    /**
+     * Creates a new FactoredFrontierForDBN object.
+     * @param inferenceAlgorithm an {@link InferenceAlgorithm} object.
+     */
     public FactoredFrontierForDBN(InferenceAlgorithm inferenceAlgorithm){
         infAlgTime0 = inferenceAlgorithm;
         infAlgTimeT = Serialization.deepCopy(inferenceAlgorithm);
@@ -51,13 +66,19 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         this.setSeed(0);
     }
 
+    /**
+     * Sets the seed.
+     * @param seed an {@code int} that represents the seed value to be set.
+     */
     public void setSeed(int seed) {
         infAlgTime0.setSeed(seed);
         infAlgTimeT.setSeed(seed);
     }
 
-    /*
-     * Return all non-observed and temporally connected variables for Time T
+
+    /**
+     * Return the list of non-observed and temporally connected variables for time T.
+     * @return a {@code List} of {@link Variable}.
      */
     private List<Variable> getTargetVarsTimeT(){
         return this.model.getDynamicVariables().getListOfDynamicVariables().stream()
@@ -67,8 +88,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 .collect(Collectors.toList());
     }
 
-    /*
-     * Return all non-observed variables for Time 0
+    /**
+     * Return the list of non-observed variables for Time 0.
+     * @return a {@code List} of {@link Variable}.
      */
     private List<Variable> getTargetVarsTime0(){
         return this.model.getDynamicVariables().getListOfDynamicVariables().stream()
@@ -76,6 +98,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runInference() {
 
@@ -103,13 +128,20 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
 
             this.timeID=this.assignment.getTimeID();
             this.infAlgTimeT.setModel(this.bnTimeT);
-            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(this.assignment,this.bnTimeT));
+            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(this.assignment));
             this.infAlgTimeT.runInference();
             this.getTargetVarsTimeT().stream()
                     .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.bnTimeT, this.bnTimeT, var));
         }
     }
 
+    /**
+     * Moves the posterior distribution of a given {@link Variable} from a {@link BayesianNetwork} object to another.
+     * @param infAlg an {@link InferenceAlgorithm} object.
+     * @param bnFrom a {@link BayesianNetwork} object from which we copy the posterior distribution.
+     * @param bnTo a {@link BayesianNetwork} object to which the posterior distribution should be moved.
+     * @param var a given {@link Variable}.
+     */
     private void moveNodeQDist(InferenceAlgorithm infAlg, BayesianNetwork bnFrom, BayesianNetwork bnTo, Variable var){
 
         //Recover original model and do the copy, then set again.
@@ -118,6 +150,10 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         bnTo.setConditionalDistribution(temporalClone, posteriorDist);
     }
 
+    /**
+     * Moves the window ahead for a given number of time steps.
+     * @param nsteps an {@link int} that represents a given number of time steps.
+     */
     private void moveWindow(int nsteps){
         //The first step we need to manually move the evidence from master to clone variables.
         HashMapDynamicAssignment newassignment =null;
@@ -130,10 +166,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
             }
         }
 
-
         for (int i = 0; i < nsteps; i++) {
             this.infAlgTimeT.setModel(this.bnTimeT);
-            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(newassignment,this.bnTimeT));
+            this.infAlgTimeT.setEvidence(updateDynamicAssignmentTimeT(newassignment));
             this.infAlgTimeT.runInference();
             this.getTargetVarsTimeT().stream()
                     .forEach(var -> moveNodeQDist(this.infAlgTimeT,this.bnTimeT, this.bnTimeT, var));
@@ -141,6 +176,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setModel(DynamicBayesianNetwork model_) {
         this.model = model_;
@@ -148,11 +186,17 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         this.bnTimeT = model.toBayesianNetworkTimeT();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DynamicBayesianNetwork getOriginalModel() {
         return this.model;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addDynamicEvidence(DynamicAssignment assignment_) {
         if (this.sequenceID!= -1 && this.sequenceID != assignment_.getSequenceID())
@@ -164,6 +208,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         this.assignment = assignment_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset() {
         this.timeID = -1;
@@ -178,6 +225,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         this.infAlgTimeT.setModel(this.model.toBayesianNetworkTimeT());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
         if(getTimeIDOfPosterior()==0){
@@ -187,6 +237,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
         if (timeID==-1){
@@ -219,11 +272,17 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getTimeIDOfLastEvidence() {
         return this.assignment.getTimeID();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getTimeIDOfPosterior() {
         return this.timeID;
@@ -244,7 +303,12 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
         return assignment;
     }
 
-    private Assignment updateDynamicAssignmentTimeT(DynamicAssignment dynamicAssignment, BayesianNetwork network){
+    /**
+     * Updates the {@link DynamicAssignment} at time T.
+     * @param dynamicAssignment a valid {@link DynamicAssignment} object.
+     * @return an {@link Assignment} object.
+     */
+    private Assignment updateDynamicAssignmentTimeT(DynamicAssignment dynamicAssignment){
 
         HashMapAssignment assignment = new HashMapAssignment();
 
@@ -263,8 +327,9 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
 
         return assignment;
     }
-    public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
+
+    public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
         /************** BANK DATA **************/
 
@@ -321,7 +386,6 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
             System.out.println(distAhead.toString());
         }
         //System.out.println("Right predictions for VMP = "+countRightPred.get());
-
 
         System.out.println("Importance Sampling");
 

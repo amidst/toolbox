@@ -15,14 +15,20 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 /**
- * Created by Hanen on 16/01/15.
+ * This class allows to save a {@link DynamicBayesianNetwork} model in a file.
  */
 public class DynamicBayesianNetworkWriter {
 
-    public static void saveToFile (DynamicBayesianNetwork bn, String fileName) throws IOException {
+    /**
+     * Saves a {@link DynamicBayesianNetwork} model in a file.
+     * @param dbn a {@link DynamicBayesianNetwork} model.
+     * @param fileName a name of a file where the Dynamic Bayesian network will be saved.
+     * @throws IOException in case of an error occurs while writing to the file.
+     */
+    public static void saveToFile (DynamicBayesianNetwork dbn, String fileName) throws IOException {
 
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName));
-        out.writeObject(bn);
+        out.writeObject(dbn);
         out.close();
     }
 }

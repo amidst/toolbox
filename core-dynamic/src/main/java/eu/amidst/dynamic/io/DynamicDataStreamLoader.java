@@ -15,17 +15,18 @@ import eu.amidst.dynamic.datastream.filereaders.DynamicDataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
 /**
- * Created by andresmasegosa on 23/02/15.
+ * This class allows to load a Dynamic Data Stream from disk.
  */
 public class DynamicDataStreamLoader {
 
+    /** Represents the data file reader. */
     private static DataFileReader dataFileReader = new ARFFDataReader();
 
-
-    public static void setDataFileReader(DataFileReader dataFileReader) {
-        dataFileReader = dataFileReader;
-    }
-
+    /**
+     * Loads a {@link DataStream} of {@link DynamicDataInstance} from a given file.
+     * @param path the path of the file from which the dynamic data stream will be loaded.
+     * @return a {@link DataStream} of {@link DynamicDataInstance}.
+     */
     public static DataStream<DynamicDataInstance> loadFromFile(String path){
         dataFileReader.loadFromFile(path);
         return new DynamicDataStreamFromFile(dataFileReader);
