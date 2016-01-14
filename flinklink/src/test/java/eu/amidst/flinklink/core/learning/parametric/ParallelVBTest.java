@@ -12,6 +12,7 @@ package eu.amidst.flinklink.core.learning.parametric;
  *
  */
 
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
@@ -544,8 +545,11 @@ public class ParallelVBTest extends TestCase {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
-                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
+                "./datasets/dataFlink/test_not_modify/MONTH1.arff", true);
+
+        //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
+        //        "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
 
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
@@ -555,7 +559,7 @@ public class ParallelVBTest extends TestCase {
         ParallelVB parallelVB = new ParallelVB();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
-        parallelVB.setBatchSize(5);
+        parallelVB.setBatchSize(100);
         parallelVB.setLocalThreshold(0.001);
         parallelVB.setGlobalThreshold(0.05);
         parallelVB.setMaximumLocalIterations(100);
@@ -580,6 +584,126 @@ public class ParallelVBTest extends TestCase {
 
         dataPosteriorDataSet.print();
     }
+
+    public void testParallelVBExtended() throws Exception {
+
+        int nCVars = 50;//Integer.parseInt(args[0]);
+        int nMVars = 50;//Integer.parseInt(args[1]);
+        int nSamples = 1000;//Integer.parseInt(args[2]);
+        int windowSize = 100;//Integer.parseInt(args[3]);
+        int globalIter = 10;//Integer.parseInt(args[4]);
+        int localIter = 100;//Integer.parseInt(args[5]);
+        int seed = 0;//Integer.parseInt(args[6]);
+
+        /*
+         * Logging
+         */
+        //BasicConfigurator.configure();
+        //PropertyConfigurator.configure(args[7]);
+
+        //String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
+        String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
+
+        // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
+        BayesianNetworkGenerator.setSeed(seed);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(nCVars);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(nMVars, 2);
+        BayesianNetwork originalBnet  = BayesianNetworkGenerator.generateBayesianNetwork();
+
+        //Sampling from Asia BN
+        eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(originalBnet);
+        sampler.setSeed(seed);
+
+        //Load the sampled data
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(nSamples);
+
+        DataFlinkWriter.writeDataToARFFFolder(data,fileName);
+
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
+
+        DAG hiddenNB = getHiddenNaiveBayesStructure(dataFlink.getAttributes());
+
+
+        //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
+        // and just learn then test the parameter learning
+
+        long start = System.nanoTime();
+
+        //Parameter Learning
+        ParallelVB parallelVB = new ParallelVB();
+        parallelVB.setGlobalThreshold(0.1);
+        parallelVB.setMaximumGlobalIterations(globalIter);
+        parallelVB.setLocalThreshold(0.1);
+        parallelVB.setMaximumLocalIterations(localIter);
+        parallelVB.setSeed(5);
+
+        //Set the window size
+        parallelVB.setBatchSize(windowSize);
+
+
+        parallelVB.setDAG(hiddenNB);
+        parallelVB.setDataFlink(dataFlink);
+        parallelVB.runLearning();
+        BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
+        System.out.println(LearnedBnet.toString());
+
+        long duration = (System.nanoTime() - start) / 1;
+        double seconds = duration / 1000000000.0;
+        //logger.info("Global ELBO: {}", parallelVB.getLogMarginalProbability());
+
+    }
+
+
+    /**
+     * Creates a {@link DAG} object with a naive Bayes structure from a given {@link DataStream}.
+     * The main variable is defined as a latent binary variable which is set as a parent of all the observed variables.
+     * @return a {@link DAG} object.
+     */
+    public static DAG getHiddenNaiveBayesStructure(Attributes attributes) {
+
+        // Create a Variables object from the attributes of the input data stream.
+        Variables modelHeader = new Variables(attributes);
+
+        // Define the global latent binary variable.
+        Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
+
+        // Define the global Gaussian latent binary variable.
+        Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");
+
+        // Define the class variable.
+        Variable classVar = modelHeader.getVariableById(0);
+
+        // Create a DAG object with the defined model header.
+        DAG dag = new DAG(modelHeader);
+
+        // Define the structure of the DAG, i.e., set the links between the variables.
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .filter(w -> w.getMainVar() != globalHiddenGaussian)
+                .filter(w -> w.getMainVar().isMultinomial())
+                .forEach(w -> w.addParent(globalHiddenVar));
+
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .filter(w -> w.getMainVar() != globalHiddenGaussian)
+                .filter(w -> w.getMainVar().isNormal())
+                .forEach(w -> w.addParent(globalHiddenGaussian));
+
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .forEach(w -> w.addParent(classVar));
+
+        // Return the DAG.
+        return dag;
+    }
+
 
 
 }

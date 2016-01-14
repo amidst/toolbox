@@ -86,10 +86,11 @@ public class DynamicParallelVMPExtended {
 
         dag.getParentSetsTimeT()
                 .stream()
-                //.filter(w -> w.getMainVar() == classVar || w.getMainVar() == globalHiddenVar || w.getMainVar() == globalHiddenGaussian)
+                .filter(w -> w.getMainVar() == classVar || w.getMainVar() == globalHiddenVar || w.getMainVar() == globalHiddenGaussian)
                 .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
 
-        //dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
+
+        dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
 
         // Return the DAG.
         return dag;
