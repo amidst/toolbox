@@ -28,24 +28,42 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Created by andresmasegosa on 12/02/15.
+ * This class implements the interfaces {@link InferenceAlgorithmForDBN}.
+ * It handles and implements the Variational message passing (VMP) algorithm to perform inference on {@link DynamicBayesianNetwork} models.
+ * Winn, J.M., Bishop, C.M.: Variational message passing. Journal of Machine Learning Research 6 (2005) 661–694.
  */
 public class DynamicVMP implements InferenceAlgorithmForDBN {
 
-
+    /** Represents the {@link DynamicBayesianNetwork} model. */
     DynamicBayesianNetwork model;
+
+    /** Represents the {@link EF_DynamicBayesianNetwork} model. */
     EF_DynamicBayesianNetwork ef_model;
+
+    /** Represents an {@link DynamicAssignment} object. */
     DynamicAssignment assignment = new HashMapDynamicAssignment(0);
 
-    List<Node>  nodesTimeT;
-    List<Node>  nodesClone;
+    /** Represents the list of {@link Node}s at time T. */
+    List<Node> nodesTimeT;
 
+    /** Represents the list of clone {@link Node}s. */
+    List<Node> nodesClone;
+
+    /** Represents a {@link VMP} object for time 0. */
     VMP vmpTime0;
+
+    /** Represents a {@link VMP} object for time 0. */
     VMP vmpTimeT;
 
+    /** Represents the time ID. */
     long timeID;
+
+    /** Represents the sequence ID. */
     long sequenceID;
 
+    /**
+     * Creates a new DynamicVMP object.
+     */
     public DynamicVMP(){
         this.vmpTime0 = new VMP();
         this.vmpTimeT = new VMP();
@@ -53,11 +71,18 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         this.timeID=-1;
     }
 
+    /**
+     * Sets the seed.
+     * @param seed an {@code int} that represents the seed value to be set.
+     */
     public void setSeed(int seed) {
         this.vmpTime0.setSeed(seed);
         this.vmpTimeT.setSeed(seed);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setModel(DynamicBayesianNetwork model_) {
         model = model_;
@@ -89,11 +114,17 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DynamicBayesianNetwork getOriginalModel() {
         return this.model;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset() {
         this.timeID = -1;
@@ -102,6 +133,9 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         this.vmpTimeT.resetQs();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addDynamicEvidence(DynamicAssignment assignment_) {
         if (this.sequenceID!= -1 && this.sequenceID != assignment_.getSequenceID())
@@ -113,6 +147,9 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         this.assignment = assignment_;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
         return (getTimeIDOfPosterior()==0)? this.vmpTime0.getPosterior(var): this.vmpTimeT.getPosterior(var);
@@ -124,6 +161,9 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
             toTemporalCloneNode.setQDist(uni);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
 
@@ -157,16 +197,25 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getTimeIDOfPosterior() {
         return this.timeID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getTimeIDOfLastEvidence(){
         return this.assignment.getTimeID();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void runInference(){
 
@@ -212,9 +261,13 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     }
 
+    /**
+     * Moves the window ahead for a given number of time steps.
+     * @param nsteps an {@link int} that represents a given number of time steps.
+     */
     private void moveWindow(int nsteps){
         //The first step we need to manually move the evidence from master to clone variables.
-        HashMapDynamicAssignment newassignment =null;
+        HashMapDynamicAssignment newassignment = null;
 
         if (this.assignment!=null) {
             newassignment=new HashMapDynamicAssignment(this.model.getNumberOfDynamicVars());
@@ -252,7 +305,6 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
         file = "./datasets/bank_data_predict.arff";
         data = DynamicDataStreamLoader.loadFromFile(file);
-
 
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new DynamicVMP());
         InferenceEngineForDBN.setModel(bn);

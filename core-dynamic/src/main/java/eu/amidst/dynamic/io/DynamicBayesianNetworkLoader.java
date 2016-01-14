@@ -15,12 +15,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 /**
- * Created by Hanen on 15/01/15.
+ * This class allows to load a {@link DynamicBayesianNetwork} model from a file.
  */
 public class DynamicBayesianNetworkLoader {
 
+    /**
+     * Loads a {@link DynamicBayesianNetwork} from a file.
+     * @param fileName a name of the file from which the Dynamic Bayesian network will be loaded.
+     * @return a {@link DynamicBayesianNetwork} model.
+     * @throws ClassNotFoundException in case the class is not found.
+     * @throws IOException in case of an error occurs while reading the file.
+     */
     public static DynamicBayesianNetwork loadFromFile(String fileName) throws ClassNotFoundException, IOException {
-
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
         Object obj = ois.readObject();
         ois.close();

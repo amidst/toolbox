@@ -49,13 +49,6 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
         this.testELBO = testELBO;
     }
 
-    /**
-     * Returns the testELBO value.
-     * @return the testELBO value.
-     */
-    public boolean getTestELBO() {
-        return testELBO;
-    }
 
     /**
      * {@inheritDoc}
