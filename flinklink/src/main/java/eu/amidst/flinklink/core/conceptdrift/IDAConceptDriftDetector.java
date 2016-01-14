@@ -170,7 +170,7 @@ public class IDAConceptDriftDetector {
             }
         }
 
-        //System.out.println(dag.toString());
+        System.out.println(globalDAG.toString());
 
 
     }
@@ -202,7 +202,7 @@ public class IDAConceptDriftDetector {
         svb.setOutput(false);
         svb.setMaximumGlobalIterations(100);
         svb.setMaximumLocalIterations(100);
-        svb.setGlobalThreshold(0.1);
+        svb.setGlobalThreshold(0.00001);
         svb.setLocalThreshold(0.01);
 
         svb.initLearning();
