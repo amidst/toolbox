@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class defines a Plateu Structure.
@@ -106,6 +107,15 @@ public class PlateuStructure implements Serializable {
     public PlateuStructure(List<Variable> initialNonReplicatedVariablesList) {
         this.initialNonReplicatedVariablesList = new ArrayList<>();
         this.initialNonReplicatedVariablesList.addAll(initialNonReplicatedVariablesList);
+    }
+
+
+    public Stream<Node> getNonReplictedNodes() {
+        return nonReplictedNodes.stream();
+    }
+
+    public Stream<Node> getReplicatedNodes() {
+        return replicatedNodes.stream().flatMap(l -> l.stream());
     }
 
     /**

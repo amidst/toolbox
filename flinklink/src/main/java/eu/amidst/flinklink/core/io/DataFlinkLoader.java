@@ -237,11 +237,16 @@ public class DataFlinkLoader implements Serializable{
             DataInstance dataInstance = new DataInstanceFromDataRow(new DataRowWeka(attributes,value));
             if(normalize) {
                 attributesToNormalize.stream()
-                        .forEach(att ->
-                                dataInstance.setValue(att, (dataInstance.getValue(att) -
-                                        ((RealStateSpace) att.getStateSpaceType()).getMinInterval())
-                                        / (((RealStateSpace) att.getStateSpaceType()).getMaxInterval() -
-                                        ((RealStateSpace) att.getStateSpaceType()).getMinInterval()))
+                        .forEach(att -> {
+                                    double factor = 1000;
+                                    double interval = factor*(((RealStateSpace) att.getStateSpaceType()).getMaxInterval() -
+                                            ((RealStateSpace) att.getStateSpaceType()).getMinInterval());
+                                    double Nvalue = (dataInstance.getValue(att) -
+                                            ((RealStateSpace) att.getStateSpaceType()).getMinInterval())/interval;
+                                    if (Double.isNaN(Nvalue)|| Nvalue<0 || Nvalue>factor)
+                                        throw new IllegalStateException("Non proper normalization");
+                                    dataInstance.setValue(att, Nvalue);
+                                }
                         );
             }
             return dataInstance;

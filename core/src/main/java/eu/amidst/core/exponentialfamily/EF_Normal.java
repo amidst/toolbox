@@ -40,7 +40,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public static final int INDEX_MEAN = 0;
     public static final int INDEX_PRECISION = 1;
 
-    private static final double LIMIT = 1000000;
+    private static final double LIMIT = 100000;
 
     /**
      * Creates a new EF_Normal distribution for a given variable.
@@ -83,11 +83,12 @@ public class EF_Normal extends EF_UnivariateDistribution {
     @Override
     public void fixNumericalInstability() {
 
-        //if (this.getPrecision()>100000) {
-        //System.out.println("hola");
-        //this.naturalParameters.set(INDEX_PRECISION,100000);
-        //}
-        /*if (this.naturalParameters.get(1)<(-0.5*LIMIT)){ //To avoid numerical problems!
+        /*
+        if (this.getPrecision()>LIMIT) {
+            this.naturalParameters.set(INDEX_PRECISION,LIMIT);
+        }
+
+        if (this.naturalParameters.get(1)<(-0.5*LIMIT)){ //To avoid numerical problems!
             double x = -0.5*this.naturalParameters.get(0)/this.getNaturalParameters().get(1);
             this.naturalParameters.set(0,x*LIMIT);
             this.naturalParameters.set(1,-0.5*LIMIT);
@@ -248,8 +249,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
         this.momentParameters.set(EXPECTED_MEAN, this.getMean());
         double expt_square = 1 / this.getPrecision() + Math.pow(this.getMean(), 2);
 
-        if (expt_square < 0)
-            throw new IllegalStateException("Negative expected square value");
+        if (expt_square <= 0)
+            throw new IllegalStateException("Zero or Negative expected square value");
 
         this.momentParameters.set(EXPECTED_SQUARE, expt_square);
     }
@@ -318,15 +319,20 @@ public class EF_Normal extends EF_UnivariateDistribution {
         double meanQ = naturalParameters.get(INDEX_MEAN);
         double precisionQ = naturalParameters.get(INDEX_PRECISION);
 
-        //double kl =  0.5*Math.log(this.getPrecision()) - 0.5*Math.log(precisionQ) + 0.5*precisionQ/this.getPrecision()
-        //        + 0.5*precisionQ*Math.pow(this.getMean()-meanQ,2) -0.5;
+        double kl =  0.5*Math.log(this.getPrecision()) - 0.5*Math.log(precisionQ) + 0.5*precisionQ/this.getPrecision()
+                + 0.5*precisionQ*Math.pow(this.getMean()-meanQ,2) -0.5;
 
-        double factor = precisionQ/this.getPrecision();
-        double kl = 0.5*(-Math.log(factor) + factor + precisionQ*Math.pow(this.getMean()-meanQ,2) -1);
+        //double factor = precisionQ/this.getPrecision();
+        //double kl = 0.5*(-Math.log(factor) + factor + precisionQ*Math.pow(this.getMean()-meanQ,2) -1);
+
+        if (Double.isNaN(kl)){
+            throw new IllegalStateException("NaN KL");
+        }
 
         if (kl<0) {
             kl=0;
         }
+
 
         return kl;
     }

@@ -180,7 +180,9 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
-            parameterPrior.sum(finlparamSet.collect().get(0));
+            //parameterPrior.sum(finlparamSet.collect().get(0));
+
+            parameterPrior = finlparamSet.collect().get(0);
 
             this.svbTimeT.updateNaturalParameterPosteriors(parameterPrior);
 
@@ -605,12 +607,13 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
     }
     public static class ParallelVBMap extends RichMapFunction<List<DataPosteriorAssignment>, CompoundVector> {
-
+        double basedELBO = 0;
         DoubleSumAggregator elbo;
         SVB svb;
         List<Variable> latentInterfaceVariables;
         Attributes attributes;
         List<Variable> variables;
+        CompoundVector prior;
 
         public ParallelVBMap(Attributes attributes, List<Variable> variables) {
             this.attributes = attributes;
@@ -621,7 +624,11 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         public CompoundVector map(List<DataPosteriorAssignment> data) throws Exception {
 
             if (data.size()==0) {
-                return this.svb.getNaturalParameterPrior();
+                //Variable var = this.svb.getDAG().getVariables().getVariableByName("GlobalHidden_0");
+                //EF_Normal nomrl = (EF_Normal)this.svb.getPlateuStructure().getNodeOfNonReplicatedVar(var).getPDist();
+                //System.out.println("Global Hidden: "+nomrl.getMean());
+                elbo.aggregate(basedELBO);
+                return prior;//this.svb.getNaturalParameterPrior();
             }else{
                 for (int i = 0; i < data.size(); i++) {
                     for (Variable latentVariable : latentInterfaceVariables) {
@@ -645,7 +652,10 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                                 .collect(Collectors.toList())
                 );
                 SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
-                elbo.aggregate(out.getElbo());
+                //elbo.aggregate(out.getElbo());
+
+                elbo.aggregate(svb.getPlateuStructure().getReplicatedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum());
+
                 return out.getVector();
             }
         }
@@ -658,12 +668,28 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             svb.initLearning();
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
+
+            if (prior!=null) {
+                svb.updateNaturalParameterPrior(prior);
+                svb.updateNaturalParameterPosteriors(updatedPrior);
+                basedELBO = svb.getPlateuStructure().getNonReplictedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
+                svb.initLearning();
+                //System.out.println("BaseELBO:"+ basedELBO);
+            }else{
+                basedELBO=-Double.MAX_VALUE;
+            }
+
+
             svb.updateNaturalParameterPrior(updatedPrior);
 
             List<String> names = Serialization.deserializeObject(parameters.getBytes(LATENT_INTERFACE_VARIABLE_NAMES, null));
             latentInterfaceVariables = names.stream().map(name -> svb.getDAG().getVariables().getVariableByName(name)).collect(Collectors.toList());
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_" + bnName);
+
+            if (this.prior==null){
+                this.prior=Serialization.deepCopy(svb.getNaturalParameterPrior());
+            }
 
         }
     }

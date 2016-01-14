@@ -187,9 +187,15 @@ public abstract class EF_UnivariateDistribution extends EF_ConditionalDistributi
         kl-=this.computeLogNormalizer();
         kl+=logNormalizer;
 
+        if (Double.isNaN(kl)){
+            throw new IllegalStateException("NaN KL");
+        }
+
         if (kl<0) {
             kl=0;
         }
+
+
         return kl;
     }
 

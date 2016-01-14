@@ -254,7 +254,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
-            parameterPrior.sum(finlparamSet.collect().get(0));
+            //parameterPrior.sum(finlparamSet.collect().get(0));
+
+            parameterPrior = finlparamSet.collect().get(0);
 
             this.svb.updateNaturalParameterPosteriors(parameterPrior);
 
@@ -324,15 +326,28 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         SVB svb;
 
+        CompoundVector prior;
+
+        double basedELBO = -Double.MAX_VALUE;
+
+        String bnName;
+
         @Override
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
 
             if (dataBatch.getNumberOfDataInstances()==0){
-                return this.svb.getNaturalParameterPrior();
+                elbo.aggregate(basedELBO);
+                return prior;//this.svb.getNaturalParameterPrior();
             }else {
                 SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
 
-                elbo.aggregate(out.getElbo());
+                if (Double.isNaN(out.getElbo()))
+                    throw new IllegalStateException("NaN elbo");
+
+                //elbo.aggregate(out.getElbo());
+
+                elbo.aggregate(svb.getPlateuStructure().getReplicatedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum());
+
                 return out.getVector();
             }
 
@@ -342,16 +357,31 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
-            String bnName = parameters.getString(BN_NAME, "");
+            bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             svb.initLearning();
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
             CompoundVector updatedPrior = collection.iterator().next();
 
+
+            if (prior!=null) {
+                svb.updateNaturalParameterPrior(prior);
+                svb.updateNaturalParameterPosteriors(updatedPrior);
+                basedELBO = svb.getPlateuStructure().getNonReplictedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
+                svb.initLearning();
+                //System.out.println("BaseELBO:"+ basedELBO);
+            }else{
+                basedELBO=-Double.MAX_VALUE;
+            }
+
             svb.updateNaturalParameterPrior(updatedPrior);
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
+
+            if (this.prior==null){
+                this.prior=Serialization.deepCopy(svb.getNaturalParameterPrior());
+            }
         }
     }
 
@@ -407,8 +437,13 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     public static class ParallelVBReduce extends RichReduceFunction<CompoundVector> {
         @Override
         public CompoundVector reduce(CompoundVector value1, CompoundVector value2) throws Exception {
-            value2.sum(value1);
+/*            value2.sum(value1);
             return value2;
+*/
+
+            CompoundVector newValue  = Serialization.deepCopy(value1);
+            newValue.sum(value2);
+            return newValue;
         }
     }
 
@@ -425,45 +460,33 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public double getELBO() {
             return previousELBO;
         }
-/*
-        @Override
-        public boolean isConverged(int iteration, DoubleValue value) {
-            if (iteration==1) {
-                previousELBO=value.getValue();
-                return false;
-            }else if (value.getValue() < (previousELBO - threshold)){
-                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", " + value.getValue() +" < " + previousELBO);
-                System.out.println("Global bound is not monotonically increasing: "+ iteration +", " + (value.getValue() +">" + previousELBO));
-                this.previousELBO=value.getValue();
-                return true;
-            }else if (value.getValue()>(previousELBO+threshold)) {
-                System.out.println("Global bound is monotonically increasing: "+ iteration +", " + (value.getValue() +">" + previousELBO));
-                this.previousELBO=value.getValue();
-                return false;
-            }else {
-                System.out.println("Global Convergence: "+ iteration +", " + (value.getValue() -previousELBO) + ", " + value.getValue());
-                return true;
-            }
-        }
-        */
 
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
+
+            if (Double.isNaN(value.getValue()))
+                throw new IllegalStateException("A NaN elbo");
 
             double percentage = 100*(value.getValue() - previousELBO)/Math.abs(previousELBO);
 
             if (iteration==1) {
                 previousELBO=value.getValue();
+
+                logger.info("Global bound is monotonically increasing: {}, {}, {} > {}",iteration, 100,
+                        value.getValue(), previousELBO);
+                System.out.println("Global bound is monotonically increasing: "+ iteration +","+100+ ", "
+                        + (value.getValue() +">" + previousELBO));
+
                 return false;
             }else if (percentage<0 && percentage < -threshold){
                 logger.info("Global bound is not monotonically increasing: {}, {}, {} < {}",iteration, percentage,
                         value.getValue(), previousELBO);
-                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", "+
-                        percentage +", " + value.getValue() +" < " + previousELBO);
-                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
-                // ", "+ (value.getValue() +">" + previousELBO));
-                //this.previousELBO=value.getValue();
-                //return true;
+                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", "+
+                //       percentage +", " + value.getValue() +" < " + previousELBO);
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
+                 ", "+ (value.getValue() +">" + previousELBO));
+                this.previousELBO=value.getValue();
+                return true;
             }else if (percentage>0 && percentage>threshold) {
                 logger.info("Global bound is monotonically increasing: {}, {}, {} > {}",iteration, percentage,
                         value.getValue(), previousELBO);
