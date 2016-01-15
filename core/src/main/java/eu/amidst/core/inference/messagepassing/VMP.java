@@ -103,7 +103,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
             convergence = true;
         }
 
-        if ((!convergence && (newelbo/nodes.size() < (local_elbo/nodes.size() - 0.0)) && local_iter>-1) || Double.isNaN(local_elbo)){
+        if (testELBO && (!convergence && (newelbo/nodes.size() < (local_elbo/nodes.size() - 0.01)) && local_iter>-1) || Double.isNaN(local_elbo)){
             throw new IllegalStateException("The elbo is not monotonically increasing at iter "+local_iter+": "+percentage+", " + local_elbo + ", "+ newelbo);
         }
 
