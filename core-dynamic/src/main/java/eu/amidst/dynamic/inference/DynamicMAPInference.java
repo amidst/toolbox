@@ -24,39 +24,58 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 /**
- * Created by dario on 11/11/15.
+ * This class implements the MAP Inference algorithm for {@link DynamicBayesianNetwork} models.
  */
 public class DynamicMAPInference {
 
+    /**
+     * Represents the search algorithm to be used.
+     */
     public enum SearchAlgorithm {
         VMP, IS
     }
 
+    /** Represents the {@link DynamicBayesianNetwork} model. */
     private DynamicBayesianNetwork model;
+
+    /** Represents a {@link BayesianNetwork} object. */
     private BayesianNetwork staticEvenModel, staticOddModel, staticModel;
 
+    /** Represents the number of time steps. */
     private int nTimeSteps = 2;
 
+    /** Represents the MAP {@link Variable}. */
     private Variable MAPvariable;
+
+    /** Represents the name of the MAP {@link Variable}. */
     private String MAPvarName;
 
+    /** Represents a dynamic evidence defined as a list of {@link DynamicAssignment} objects. */
     private List<DynamicAssignment> evidence;
+
+    /** Represents a static evidence defined as an {@link Assignment} object. */
     private Assignment staticEvidence;
 
+    /** Represents the processing mode, either parallel (i.e., true) or not. */
     private boolean parallelMode = true;
+
+    /** Represents the initial seed. */
     private int seed = 125123;
 
+    /** Represents the MAP estimate defined as an {@link Assignment} object. */
     private Assignment MAPestimate;
+
+    /** Represents the Log Probability of the MAP estimate. */
     private double MAPestimateLogProbability;
 
     String groupedClassName = "==GROUPED_CLASS==";
 
+    /**
+     * Sets the evidence for this DynamicMAPInference.
+     * @param evidence a list of {@link DynamicAssignment} objects.
+     */
     public void setEvidence(List<DynamicAssignment> evidence) {
 
-//        if (staticEvenModel==null || staticOddModel==null) {
-//            System.out.println("Error: Even and/or odd model have not been initialized");
-//            System.exit(-25);
-//        }
         long sequenceID = evidence.get(0).getSequenceID();
         for(DynamicAssignment dynAssig : evidence) {
             if (dynAssig.getSequenceID()!=sequenceID) {
@@ -88,17 +107,28 @@ public class DynamicMAPInference {
 
             });
         }
-//                System.out.println(staticEvidence.outputString(staticEvenModel.getVariables().getListOfVariables()));
     }
 
+    /**
+     * Sets the model for this DynamicMAPInference.
+     * @param model a {@link DynamicBayesianNetwork} object.
+     */
     public void setModel(DynamicBayesianNetwork model) {
         this.model = model;
     }
 
+    /**
+     * Sets the parallel mode for this DynamicMAPInference.
+     * @param parallelMode true if the parallel mode is activated, false otherwise.
+     */
     public void setParallelMode(boolean parallelMode) {
         this.parallelMode = parallelMode;
     }
 
+    /**
+     * Sets the MAP variable for this DynamicMAPInference.
+     * @param MAPvariable a valid {@link Variable} object.
+     */
     public void setMAPvariable(Variable MAPvariable) {
 
         boolean parents0 = model.getDynamicDAG().getParentSetTime0(MAPvariable).getNumberOfParents()>0;
@@ -117,6 +147,10 @@ public class DynamicMAPInference {
         this.MAPvarName = MAPvariable.getName();
     }
 
+    /**
+     * Sets the number of time steps.
+     * @param ntimeSteps an {@code int} that represents the number of time steps.
+     */
     public void setNumberOfTimeSteps(int ntimeSteps) {
         if(ntimeSteps<2) {
             System.out.println("Error: The number of time steps should be at least 2");
@@ -125,6 +159,10 @@ public class DynamicMAPInference {
         nTimeSteps = ntimeSteps;
     }
 
+    /**
+     *
+     * @return
+     */
     public Assignment getMAPestimate() {
         return MAPestimate;
     }
@@ -137,15 +175,26 @@ public class DynamicMAPInference {
         return Math.exp(MAPestimateLogProbability);
     }
 
-
+    /**
+     * returns the static even model.
+     * @return a {@link BayesianNetwork} object.
+     */
     public BayesianNetwork getStaticEvenModel() {
         return staticEvenModel;
     }
 
+    /**
+     * returns the static odd model.
+     * @return a {@link BayesianNetwork} object.
+     */
     public BayesianNetwork getStaticOddModel() {
         return staticOddModel;
     }
 
+    /**
+     * Returns replicated MAP variables.
+     * @return a {@code List} of {@link Variable}.
+     */
     public List<Variable> getReplicatedMAPVariables() {
         if (MAPestimate==null) {
             return null;
@@ -153,7 +202,9 @@ public class DynamicMAPInference {
         return getMAPestimate().getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID() ? 1 : -1)).collect(Collectors.toList());
     }
 
-
+    /**
+     * Computes Dynamic MAP for the even static model.
+     */
     public void computeDynamicMAPEvenModel() {
 
         Variables variables;
@@ -171,7 +222,9 @@ public class DynamicMAPInference {
         this.staticEvenModel = bn;
     }
 
-
+    /**
+     * Computes Dynamic MAP for the odd static model.
+     */
     public void computeDynamicMAPOddModel() {
 
         Variables variables;
@@ -190,7 +243,9 @@ public class DynamicMAPInference {
         this.staticOddModel = bn;
     }
 
-
+    /**
+     * Runs the inference algorithm.
+     */
     public void runInference() {
 
         if (MAPvariable==null || MAPvarName==null) {
@@ -220,15 +275,13 @@ public class DynamicMAPInference {
 
             });
         }
-
         this.runInference(SearchAlgorithm.VMP);
-
-
-//        timeStop = System.nanoTime();
-//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("Time Distibutions" + execTime);
     }
 
+    /**
+     * Runs the inference given an input search algorithm.
+     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
+     */
     public void runInference(SearchAlgorithm searchAlgorithm) {
 
         if (MAPvariable==null || MAPvarName==null) {
@@ -267,28 +320,6 @@ public class DynamicMAPInference {
                 oddModelInference = new VMP();
 
                 break;
-
-//                IntStream.range(0, 2).parallel().forEach(i -> {
-//                    if (i == 0) {
-//                        evenModelInference.setModel(staticEvenModel);
-//                        if (evidence != null) {
-//                            evenModelInference.setEvidence(staticEvidence);
-//                        }
-//                        evenModelInference.runInference();
-//                    } else {
-//                        oddModelInference.setModel(staticOddModel);
-//                        if (evidence != null) {
-//                            oddModelInference.setEvidence(staticEvidence);
-//                        }
-//                        oddModelInference.runInference();
-//                    }
-//                });
-
-//        long timeStop = System.nanoTime();
-//        double execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("Time VMP" + execTime);
-
-//        timeStart = System.nanoTime();
 
             case IS:
             default:
@@ -331,19 +362,15 @@ public class DynamicMAPInference {
         int replicationsMAPVariableOddModel = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
         IntStream.range(0,replicationsMAPVariableOddModel).forEachOrdered(i -> posteriorMAPDistributionsOddModel.add(oddModelInference.getPosterior(i)));
 
-//        System.out.println("Even model distributions \n");
-//        posteriorMAPDistributionsEvenModel.forEach(dist -> System.out.println(dist.toString()));
-//
-//        System.out.println("\nOdd model distributions \n");
-//        posteriorMAPDistributionsOddModel.forEach(dist -> System.out.println(dist.toString()));
-//        System.out.println();
-
         List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributionsEvenModel, posteriorMAPDistributionsOddModel);
         computeMostProbableSequence(conditionalDistributionsMAPvariable);
 
     }
 
-
+    /**
+     * Runs the inference for Ungrouped MAP variable given an input search algorithm.
+     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
+     */
     public void runInferenceUngroupedMAPVariable(SearchAlgorithm searchAlgorithm) {
 
         if (MAPvariable==null || MAPvarName==null) {
@@ -396,7 +423,6 @@ public class DynamicMAPInference {
         }
         staticModelInference.runInference();
 
-
         List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
         IntStream.range(0,nTimeSteps).forEachOrdered(i -> posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i)));
 
@@ -416,12 +442,15 @@ public class DynamicMAPInference {
                 currentVar  = variables.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
             }
 
-
             MAPestimate.setValue(currentVar,MAPsequence[t]);
         });
         MAPestimateLogProbability = Math.log(MAPsequenceProbability);
     }
 
+    /**
+     * Computes the Most Probable Sequence given the conditional distributions of the MAP variable.
+     * @param conditionalDistributionsMAPvariable a {@code List} of conditional distribution values.
+     */
     private void computeMostProbableSequence(List<double[]> conditionalDistributionsMAPvariable) {
         int[] MAPsequence = new int[nTimeSteps];
         int MAPvarNStates = MAPvariable.getNumberOfStates();
@@ -433,17 +462,12 @@ public class DynamicMAPInference {
         double [] current_max_probs;
         double [] previous_max_probs = new double[MAPvarNStates];;
 
-        //System.out.println(" *** ");
         for (int t = nTimeSteps-1; t >= 0; t--) {
 
-//            System.out.println("Time " + t);
             current_probs = conditionalDistributionsMAPvariable.get(t);
-//            System.out.println(Arrays.toString(current_probs));
-
             double maxProb=-1;
 
             current_max_probs = new double[MAPvarNStates];
-
 
             if (t==(nTimeSteps-1)) { // There are no previous_max_probs
                 for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
@@ -458,8 +482,6 @@ public class DynamicMAPInference {
                 }
                 argMaxValues[t] = (int)argMax(current_max_probs)[1];
                 previous_max_probs = current_max_probs;
-
-//                System.out.println(Arrays.toString(current_max_probs));
             }
             else if (t>0 && t<(nTimeSteps-1)) {
                 for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
@@ -473,8 +495,6 @@ public class DynamicMAPInference {
                 }
                 argMaxValues[t] = (int)argMax(current_max_probs)[1];
                 previous_max_probs = current_max_probs;
-
-//                System.out.println(Arrays.toString(current_max_probs));
             }
             else { // Here, t=0
                 for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_0
@@ -489,23 +509,15 @@ public class DynamicMAPInference {
                 MAPsequenceProbability =  argMax(current_max_probs)[0];
                 argMaxValues[t] = (int)argMax(current_max_probs)[1];
                 previous_max_probs = current_max_probs;
-
-//                System.out.println(Arrays.toString(current_max_probs));
             }
         }
-//        System.out.println(Arrays.toString(argMaxValues));
-
 
         int previousVarMAPState = argMaxValues[0];
         MAPsequence[0] = argMaxValues[0];
 
         int thisVarMAPState = 0;
         for (int t = 1; t < nTimeSteps; t++) {
-
-//            System.out.println("Time" + t);
             current_probs = conditionalDistributionsMAPvariable.get(t);
-//            System.out.println(Arrays.toString(current_probs));
-
             previousVarMAPState = argMaxValues[t-1];
 
             double maxProb = -1;
@@ -514,14 +526,10 @@ public class DynamicMAPInference {
                 if (current_probs[previousVarMAPState * MAPvarNStates + j] >= maxProb) {
                     maxProb = current_probs[previousVarMAPState * MAPvarNStates + j];
                     thisVarMAPState = j;
-//                    System.out.println("This prob " + maxProb + ", with index " + j);
                 }
             }
             MAPsequence[t]=thisVarMAPState;
         }
-
-
-//        System.out.println(Arrays.toString(MAPsequence) + ", with prob. " + MAPsequenceProbability);
 
         MAPestimate = new HashMapAssignment(nTimeSteps);
 
@@ -537,6 +545,12 @@ public class DynamicMAPInference {
         }
     }
 
+    /**
+     * Returns Combined Conditional Distributions for both even and odd models.
+     * @param posteriorMAPDistributionsEvenModel a {@code List} of {@link UnivariateDistribution} of the even model.
+     * @param posteriorMAPDistributionsOddModel a {@code List} of {@link UnivariateDistribution} of the odd model.
+     * @return a {@code List} of conditional distributions values.
+     */
     private List<double[]> getCombinedConditionalDistributions( List<UnivariateDistribution> posteriorMAPDistributionsEvenModel , List<UnivariateDistribution> posteriorMAPDistributionsOddModel) {
 
         List<double[]> listCondDistributions = new ArrayList<>(nTimeSteps);
@@ -544,17 +558,12 @@ public class DynamicMAPInference {
         int MAPvarNStates = MAPvariable.getNumberOfStates();
 
         // Univariate distribution Y_0
-//        System.out.println("Time 0");
         UnivariateDistribution dist0_1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
         UnivariateDistribution dist0 = posteriorMAPDistributionsOddModel.get(0); // This variable is just Y_0 (not a group)
-
-//        System.out.println("Odd: " + Integer.toString(0) + ", even:" + Integer.toString(0));
 
         double[] dist0_probs = new double[MAPvariable.getNumberOfStates()];
 
         dist0_probs = dist0.getParameters();
-//        System.out.println(Arrays.toString(dist0_probs));
-//        System.out.println(Arrays.toString(dist0_1.getParameters()));
         for (int i = 0; i < MAPvarNStates; i++) {
             dist0_probs[i] = (double) 1/2 * dist0_probs[i];
 
@@ -562,47 +571,34 @@ public class DynamicMAPInference {
                 dist0_probs[i] = dist0_probs[i] + (double) 1/2 * dist0_1.getProbability(i*MAPvarNStates + j);
             }
         }
-//        System.out.println(Arrays.toString(dist0_probs));
         listCondDistributions.add(dist0_probs);
 
-
-
         // Conditional distribution Y_1 | Y_0;
-//        System.out.println("Time 1");
         UnivariateDistribution dist_paired1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
         UnivariateDistribution dist_unpaired_1 = posteriorMAPDistributionsOddModel.get(1); // This variable groups Y_1 and Y_2 (if nTimeSteps>2)
-
-//        System.out.println("Even: " + Integer.toString(0) + ", odd:" + Integer.toString(1));
 
         double[] dist_probs1 = dist_paired1.getParameters();
 
         for (int i = 0; i < MAPvarNStates; i++) { // To go over all values of Y_0
             for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_1
                 int index = i * MAPvarNStates + j;
-//                System.out.println("i,j:" + i + "," + j + ", index:" + index);
                 dist_probs1[index] = (double) 1/2 * dist_probs1[index];
 
                 if (nTimeSteps>2) {
                     for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
-//                    System.out.println("k:" + k + "index aux:" + Integer.toString(j*MAPvarNStates+k) );
                         dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j * MAPvarNStates + k);
                     }
                 }
                 else {
                     for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
-//                    System.out.println("k:" + k + "index aux:" + Integer.toString(j*MAPvarNStates+k) );
                         dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j);
                     }
                 }
             }
         }
-//        System.out.println(Arrays.toString(dist_probs1));
         listCondDistributions.add(dist_probs1);
 
-
-        // Conditional distributions Y_t | Y_{t-1}, with 2 < = t < = nTimeSteps-2
         IntStream.range(2, nTimeSteps - 1).forEachOrdered(t -> {
-//            System.out.println("Time " + t);
             if (t % 2 == 0) {
                 int idxOdd = 1 + (t - 2) / 2;
                 UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
@@ -610,27 +606,21 @@ public class DynamicMAPInference {
                 UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1); // This variable groups Y_{t-2} and Y_{t-1}
                 UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable groups Y_t and Y_{t+1}
 
-//                System.out.println("Odd: " + Integer.toString( idxOdd ) + ", even:" + Integer.toString( idxOdd-1 ) + ", " + Integer.toString( idxOdd ));
-
                 double[] dist_probs = dist_paired.getParameters();
 
                 for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
                     for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
 
                         int index = i * MAPvarNStates + j;
-//                        System.out.println("i,j:" + i + "," + j + ", index:" + index);
                         dist_probs[index] = (double) 1 / 2 * dist_probs[index];
 
                         for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
                             for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
-//                                System.out.println("k:" + k + ", index aux k:" + Integer.toString(k*MAPvarNStates + i) );
-//                                System.out.println("m:" + m + ", index aux m:" + Integer.toString(j*MAPvarNStates + m) );
                                 dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
                             }
                         }
                     }
                 }
-//                System.out.println(Arrays.toString(dist_probs));
                 listCondDistributions.add(dist_probs);
             } else {
                 int idxEven = (t - 1) / 2;
@@ -639,36 +629,28 @@ public class DynamicMAPInference {
                 UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven); // This variable groups Y_{t-2} and Y_{t-1}
                 UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsOddModel.get(idxEven + 1); // This variable groups Y_t and Y_{t+1}
 
-//                System.out.println("Even: " + Integer.toString(idxEven) + ", odd:" + Integer.toString( idxEven ) + ", " + Integer.toString( idxEven+1 ));
-
                 double[] dist_probs = dist_paired.getParameters();
 
                 for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
                     for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
 
                         int index = i * MAPvarNStates + j;
-//                        System.out.println("i,j:" + i + "," + j + ", index:" + index);
                         dist_probs[index] = (double) 1 / 2 * dist_probs[index];
 
                         for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
                             for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
-//                                System.out.println("k:" + k + ", index aux k:" + Integer.toString(k*MAPvarNStates + i) );
-//                                System.out.println("m:" + m + ", index aux m:" + Integer.toString(j*MAPvarNStates + m) );
                                 dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
                             }
                         }
                     }
                 }
-//                System.out.println(Arrays.toString(dist_probs));
                 listCondDistributions.add(dist_probs);
             }
         });
 
-
         if (nTimeSteps>2) {
             // Conditional distribution Y_t | Y_{t-1},  with  t = nTimeSteps-1
             int t = (nTimeSteps - 1);
-//            System.out.println("Time " + t);
             if (t % 2 == 0) {
                 int idxOdd = 1 + (t - 2) / 2;
                 UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
@@ -676,25 +658,20 @@ public class DynamicMAPInference {
                 UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1);  // This variable groups Y_{t-2} and Y_{t-1}
                 UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable is just Y_t (not a group)
 
-//                System.out.println("Odd: " + Integer.toString( idxOdd ) + ", even:" + Integer.toString( idxOdd-1 ) + ", " + Integer.toString( idxOdd ));
-
                 double[] dist_probs = dist_paired.getParameters();
 
                 for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
                     for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
 
                         int index = i * MAPvarNStates + j;
-//                        System.out.println("i,j:" + i + "," + j + ", index:" + index);
                         dist_probs[index] = (double) 1 / 2 * dist_probs[index];
 
                         for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
 
-//                        System.out.println("k:" + k + ", index aux k:" + Integer.toString(k*MAPvarNStates + i) );
                             dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j);
                         }
                     }
                 }
-//                System.out.println(Arrays.toString(dist_probs));
                 listCondDistributions.add(dist_probs);
             }
             else {
@@ -703,34 +680,31 @@ public class DynamicMAPInference {
 
                 UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven);  // This variable groups Y_{t-2} and Y_{t-1}
 
-//                System.out.println("Even: " + Integer.toString(idxEven) + ", odd:" + Integer.toString( idxEven ) + ", " + Integer.toString( idxEven+1 ));
-
                 double[] dist_probs = dist_paired.getParameters();
 
                 for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
                     for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
 
                         int index = i * MAPvarNStates + j;
-//                        System.out.println("i,j:" + i + "," + j + ", index:" + index);
                         dist_probs[index] = (double) 1 / 2 * dist_probs[index];
 
                         for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-//                        System.out.println("k:" + k + ", index aux k:" + Integer.toString(k*MAPvarNStates + i) );
                             dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i);
-
                         }
                     }
                 }
-//                System.out.println(Arrays.toString(dist_probs));
                 listCondDistributions.add(dist_probs);
             }
         }
 
-//        System.out.println();
-//        listCondDistributions.forEach(distProbs -> System.out.println(Arrays.toString(distProbs)));
         return listCondDistributions;
     }
 
+    /**
+     * Returns the max value and its corresponding index.
+     * @param values an array of {@code double} values.
+     * @return the max value and its corresponding index.
+     */
     private double[] argMax(double[] values) {
 
         double maxValue = Arrays.stream(values).max().getAsDouble();
@@ -744,6 +718,12 @@ public class DynamicMAPInference {
         return new double[]{maxValue, indexMaxValue};
     }
 
+    /**
+     * Returns the replicated static set of variables
+     * @param dynamicVariables a {@link DynamicVariables} object.
+     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @return a {@link Variables} object.
+     */
     private Variables obtainReplicatedStaticVariables(DynamicVariables dynamicVariables, boolean even_partition) {
 
         Variables variables = new Variables();
@@ -794,6 +774,13 @@ public class DynamicMAPInference {
         return variables;
     }
 
+    /**
+     * Returns the static DAG structure.
+     * @param dynamicDAG a {@link DynamicDAG} object.
+     * @param variables a {@link Variables} object.
+     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @return a {@link DAG} object.
+     */
     private DAG obtainStaticDAG(DynamicDAG dynamicDAG, Variables variables, boolean even_partition) {
 
         DAG dag = new DAG(variables);
@@ -862,6 +849,14 @@ public class DynamicMAPInference {
         return dag;
     }
 
+    /**
+     * Returns the grouped Distribution of the MAP Variable at Time 0.
+     * @param dynVar the dynamic {@link Variable} object.
+     * @param staticVar the static {@link Variable} object.
+     * @param conDist0 the {@link ConditionalDistribution} at time 0.
+     * @param conDistT the {@link ConditionalDistribution} at time T.
+     * @return a {@link Multinomial} distribution.
+     */
     private Multinomial groupedDistributionMAPVariableTime0(Variable dynVar, Variable staticVar, ConditionalDistribution conDist0, ConditionalDistribution conDistT) {
 
         Assignment assignment0, assignment1;
@@ -886,6 +881,15 @@ public class DynamicMAPInference {
         return multinomial;
     }
 
+    /**
+     * Returns the grouped Distribution of the MAP Variable at Time 0.
+     * @param dynVar the dynamic {@link Variable} object.
+     * @param staticVar the static {@link Variable} object.
+     * @param nStatesStaticVarParent the number of static variable parents.
+     * @param parents the {@code List} of parent {@link Variable}s.
+     * @param conDistT the {@link ConditionalDistribution} at time T.
+     * @return a {@link Multinomial_MultinomialParents} distribution.
+     */
     private Multinomial_MultinomialParents groupedDistributionMAPVariableTimeT(Variable dynVar, Variable staticVar, int nStatesStaticVarParent, List<Variable> parents, ConditionalDistribution conDistT) {
 
         Multinomial_MultinomialParents multinomial_multinomialParents = new Multinomial_MultinomialParents(staticVar, parents);
@@ -935,6 +939,13 @@ public class DynamicMAPInference {
         return multinomial_multinomialParents;
     }
 
+    /**
+     * Returns the {@link BayesianNetwork} related to the static grouped class.
+     * @param dag a {@link DAG} object.
+     * @param variables a {@link Variables} obejct.
+     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @return a {@link BayesianNetwork} object.
+     */
     private BayesianNetwork obtainStaticGroupedClassBayesianNetwork(DAG dag, Variables variables, boolean even_partition) {
 
         DynamicDAG dynamicDAG = model.getDynamicDAG();
@@ -969,7 +980,6 @@ public class DynamicMAPInference {
             multinomial.setVar(staticVar);
         }
         bn.setConditionalDistribution(staticVar, multinomial);
-
 
         /*
          * CREATE THE GENERAL (TIME T) CONDITIONAL DISTRIBUTION OF THE GROUPED MAP/CLASS VARIABLE, IF NEEDED
@@ -1201,6 +1211,15 @@ public class DynamicMAPInference {
         return bn;
     }
 
+    /**
+     * Returns the distribution of MAP Children at time T.
+     * @param staticVariable the static {@link Variable} object.
+     * @param dynamicConditionalDistribution the dynamic {@link ConditionalDistribution} at time T.
+     * @param parentList the {@code List} of parent {@link Variable}s.
+     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @param time_step the time step.
+     * @return a {@link BaseDistribution_MultinomialParents} distribution.
+     */
     private BaseDistribution_MultinomialParents distributionMAPChildrenTimeT(Variable staticVariable, ConditionalDistribution dynamicConditionalDistribution, List<Variable> parentList, boolean even_partition, int time_step) {
 
         boolean allParentsMultinomial = parentList.stream().allMatch(parent -> parent.isMultinomial());
@@ -1282,8 +1301,6 @@ public class DynamicMAPInference {
         return staticVarConDist;
     }
 
-
-
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
 //        String file = "./networks/CajamarDBN.dbn";
@@ -1310,9 +1327,6 @@ public class DynamicMAPInference {
 //        System.out.println(cajamarDBN.toString());
 //
 //        dynMAP.runInference();
-
-
-
 
         DynamicMAPInference dynMAP;
         Variable mapVariable;
@@ -1354,8 +1368,6 @@ public class DynamicMAPInference {
 
         System.out.println(oddModel.toString());
         System.out.println();
-
-
 
         /*
          * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1

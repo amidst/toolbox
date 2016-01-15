@@ -14,9 +14,16 @@ import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ * This interface defines the Algorithm for learning the {@link DynamicBayesianNetwork} parameters.
  */
 @FunctionalInterface
 public interface DynamicParameterLearningAlgorithm {
-       public DynamicBayesianNetwork learn(DynamicDAG dag, DataStream<DynamicDataInstance> dataStream);
+
+       /**
+        * Learns the parameters of a given {@link DynamicDAG} from data stream.
+        * @param dag a {@link DynamicDAG} object.
+        * @param dataStream a {@link DataStream} of {@link DynamicDataInstance}s.
+        * @return the learned {@link DynamicBayesianNetwork} model.
+        */
+       DynamicBayesianNetwork learn(DynamicDAG dag, DataStream<DynamicDataInstance> dataStream);
 }
