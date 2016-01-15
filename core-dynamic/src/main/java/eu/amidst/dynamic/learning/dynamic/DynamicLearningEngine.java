@@ -17,14 +17,21 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.core.variables.Variable;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ * This class defines the dynamic learning engine for {@link DynamicBayesianNetwork} models.
  */
 public final class DynamicLearningEngine {
+
+    /** Represents the used dynamic parameter learning algorithm, initialized to the {@link DynamicMaximumLikelihood} algorithm. */
     private static DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm = DynamicMaximumLikelihood::learnDynamic;
 
+    /** Represents the used dynamic structure learning algorithm, initialized to the dynamic Naive Bayes Structure. */
     private static DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm = DynamicLearningEngine::dynamicNaiveBayesStructure;
 
-
+    /**
+     * Returns a dynamic Naive Bayes structure for a given {@link DataStream} of {@link DynamicDataInstance}s.
+     * @param dataStream a given {@link DataStream} of {@link DynamicDataInstance}s.
+     * @return a {@link DynamicDAG} object.
+     */
     private static DynamicDAG dynamicNaiveBayesStructure(DataStream<DynamicDataInstance> dataStream){
         DynamicVariables modelHeader = new DynamicVariables(dataStream.getAttributes());
         DynamicDAG dag = new DynamicDAG(modelHeader);
@@ -41,56 +48,36 @@ public final class DynamicLearningEngine {
         return dag;
     }
 
-
+    /**
+     * Sets the dynamic parameter learning Algorithm.
+     * @param dynamicParameterLearningAlgorithm a {@link DynamicParameterLearningAlgorithm} object.
+     */
     public static void setDynamicParameterLearningAlgorithm(DynamicParameterLearningAlgorithm dynamicParameterLearningAlgorithm) {
         DynamicLearningEngine.dynamicParameterLearningAlgorithm = dynamicParameterLearningAlgorithm;
     }
 
-
+    /**
+     * Sets the dynamic structure learning Algorithm.
+     * @param dynamicStructuralLearningAlgorithm a {@link DynamicStructuralLearningAlgorithm} object.
+     */
     public static void setDynamicStructuralLearningAlgorithm(DynamicStructuralLearningAlgorithm dynamicStructuralLearningAlgorithm) {
         DynamicLearningEngine.dynamicStructuralLearningAlgorithm = dynamicStructuralLearningAlgorithm;
     }
 
-
-    public static DynamicBayesianNetwork learnParameters(DynamicDAG dag, DataStream<DynamicDataInstance> dataStream){
-        return dynamicParameterLearningAlgorithm.learn(dag, dataStream);
-    }
-
-
-    public static DynamicDAG learnDynamicDAG(DataStream<DynamicDataInstance> dataStream){
-        return dynamicStructuralLearningAlgorithm.learn(dataStream);
-    }
-
-    public static DynamicBayesianNetwork learnDynamicModel(DataStream<DynamicDataInstance> database){
+    /**
+     * Learns both the structure and parameters of the dynamic model.
+     * @param dataStream a given {@link DataStream} of {@link DynamicDataInstance}s.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
+    public static DynamicBayesianNetwork learnDynamicModel(DataStream<DynamicDataInstance> dataStream){
         Stopwatch watch = Stopwatch.createStarted();
-        DynamicDAG dag = dynamicStructuralLearningAlgorithm.learn(database);
+        DynamicDAG dag = dynamicStructuralLearningAlgorithm.learn(dataStream);
         System.out.println("Structural Learning : " + watch.stop());
 
         watch = Stopwatch.createStarted();
-        DynamicBayesianNetwork network = dynamicParameterLearningAlgorithm.learn(dag,database);
+        DynamicBayesianNetwork network = dynamicParameterLearningAlgorithm.learn(dag,dataStream);
         System.out.println("Parameter Learning: " + watch.stop());
 
         return network;
     }
-
-
-    public static void main(String[] args) throws Exception{
-
-//        String dataFile = new String("./datasets/Pigs.arff");
-//        DataStream<StaticDataInstance> data = new StaticDataOnDiskFromFile(new ARFFDataReader(dataFile));
-//
-//        ParallelTAN tan= new ParallelTAN();
-//        tan.setNumCores(4);
-//        tan.setNumSamplesOnMemory(1000);
-//        tan.setNameRoot("p630400490");
-//        tan.setNameTarget("p48124091");
-//        LearningEngine.setStaticStructuralLearningAlgorithm(tan::learnDAG);
-//
-//        ParallelMaximumLikelihood.setBatchSize(1000);
-//        LearningEngine.setStaticParameterLearningAlgorithm(ParallelMaximumLikelihood::learnParametersStaticModel);
-//
-//        BayesianNetwork tanModel = LearningEngine.learnStaticModel(data);
-
-    }
-
 }
