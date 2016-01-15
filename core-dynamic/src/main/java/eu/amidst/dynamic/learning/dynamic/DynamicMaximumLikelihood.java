@@ -19,29 +19,46 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ * This class defines the Dynamic Maximum Likelihood algorithm.
  */
 public final class DynamicMaximumLikelihood {
 
+    /** Represents the batch size used for learning the parameters, initialized to 1000. */
     private static int batchSize = 1000;
+
+    /** Indicates the parallel processing mode, initialized to {@code true}. */
     private static boolean parallelMode = true;
 
+    /**
+     * Returns the batch size.
+     * @return an {@int} that represents the the batch size.
+     */
     public static int getBatchSize() {
         return batchSize;
     }
 
+    /**
+     * Sets the batch size.
+     * @param batchSize an {@int} that represents the the batch size.
+     */
     public static void setBatchSize(int batchSize) {
         DynamicMaximumLikelihood.batchSize = batchSize;
     }
 
-    public static boolean isParallelMode() {
-        return parallelMode;
-    }
-
+    /**
+     * Sets the parallel processing mode.
+     * @param parallelMode {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
     public static void setParallelMode(boolean parallelMode) {
         DynamicMaximumLikelihood.parallelMode = parallelMode;
     }
 
+    /**
+     * Learns the parameters of the dynamic model from data stream.
+     * @param dag a given {@link DynamicDAG} object.
+     * @param dataStream a given {@link DataStream} of {@link DynamicDataInstance}s.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
     public static DynamicBayesianNetwork learnDynamic(DynamicDAG dag, DataStream<DynamicDataInstance> dataStream) {
 
         EF_DynamicBayesianNetwork efDynamicBayesianNetwork = new EF_DynamicBayesianNetwork(dag);
