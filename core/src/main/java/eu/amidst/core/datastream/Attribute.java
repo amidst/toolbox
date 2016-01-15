@@ -54,7 +54,7 @@ public final class Attribute implements Serializable {
     private boolean time_id = false;
 
     /** Represents the number format used to write the values of this attribute*/
-    private NumberFormat numberFormat=null;
+    //private NumberFormat numberFormat=null;
 
     /**
      * Creates a new Attribute.
@@ -72,18 +72,18 @@ public final class Attribute implements Serializable {
      * Set number the number format of the attribute used to write values to a String.
      * @param numberFormat, a valid {@link NumberFormat} object.
      */
-    public void setNumberFormat(NumberFormat numberFormat) {
-        this.numberFormat = numberFormat;
-    }
+    //public void setNumberFormat(NumberFormat numberFormat) {
+    //    this.numberFormat = numberFormat;
+    //}
 
     /**
      * Returns number the number format of the attribute used to write values to a String.
      * if null, there is non specific number format.
      * @return a valid {@link NumberFormat} object.
      */
-    public NumberFormat getNumberFormat() {
-        return numberFormat;
-    }
+    //public NumberFormat getNumberFormat() {
+    //    return numberFormat;
+    //}
 
     /**
      * Indicates whether the attribute is a special one (e.g. an id, date, etc).

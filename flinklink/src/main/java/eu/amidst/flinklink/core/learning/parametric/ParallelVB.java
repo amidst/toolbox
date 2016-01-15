@@ -40,9 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class implements the {@link ParameterLearningAlgorithm} interface, and defines the parallel Maximum Likelihood algorithm.
@@ -328,9 +326,13 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         CompoundVector prior;
 
+        CompoundVector updatedPrior;
+
         double basedELBO = -Double.MAX_VALUE;
 
         String bnName;
+
+        Map<Double,CompoundVector> partialVectors;
 
         @Override
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
@@ -339,14 +341,37 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 elbo.aggregate(basedELBO);
                 return prior;//this.svb.getNaturalParameterPrior();
             }else {
+                this.svb.updateNaturalParameterPrior(updatedPrior);
+                this.svb.updateNaturalParameterPosteriors(updatedPrior);
+                svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
                 SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
+
 
                 if (Double.isNaN(out.getElbo()))
                     throw new IllegalStateException("NaN elbo");
 
-                //elbo.aggregate(out.getElbo());
+                elbo.aggregate(out.getElbo());
 
-                elbo.aggregate(svb.getPlateuStructure().getReplicatedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum());
+                //elbo.aggregate(svb.getPlateuStructure().getReplicatedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum());
+
+                svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(true));
+
+
+                if (partialVectors.containsKey(dataBatch.getBatchID())) {
+                    CompoundVector newVector = Serialization.deepCopy(updatedPrior);
+                    newVector.substract(partialVectors.get(dataBatch.getBatchID()));
+                    this.svb.updateNaturalParameterPrior(newVector);
+                    this.svb.updateNaturalParameterPosteriors(newVector);
+                }else {
+                    this.svb.updateNaturalParameterPrior(this.prior);
+                    this.svb.getPlateuStructure().setSeed(this.svb.getSeed());
+                    this.svb.getPlateuStructure().resetQs();
+                }
+
+
+                out = svb.updateModelOnBatchParallel(dataBatch);
+
+                partialVectors.put(dataBatch.getBatchID(),out.getVector());
 
                 return out.getVector();
             }
@@ -362,23 +387,27 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             svb.initLearning();
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
-            CompoundVector updatedPrior = collection.iterator().next();
+            updatedPrior = collection.iterator().next();
 
 
             if (prior!=null) {
                 svb.updateNaturalParameterPrior(prior);
                 svb.updateNaturalParameterPosteriors(updatedPrior);
                 basedELBO = svb.getPlateuStructure().getNonReplictedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
-                svb.initLearning();
+                //svb.initLearning();
                 //System.out.println("BaseELBO:"+ basedELBO);
             }else{
-                basedELBO=-Double.MAX_VALUE;
+                basedELBO=0;//-Double.MAX_VALUE;
             }
 
             svb.updateNaturalParameterPrior(updatedPrior);
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
 
+
+            if (partialVectors==null){
+                partialVectors = new HashMap();
+            }
             if (this.prior==null){
                 this.prior=Serialization.deepCopy(svb.getNaturalParameterPrior());
             }
@@ -467,6 +496,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 
+            if (value.getValue()==Double.NEGATIVE_INFINITY)
+                value.setValue(-Double.MAX_VALUE);
+
             double percentage = 100*(value.getValue() - previousELBO)/Math.abs(previousELBO);
 
             if (iteration==1) {
@@ -479,14 +511,14 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
                 return false;
             }else if (percentage<0 && percentage < -threshold){
-                logger.info("Global bound is not monotonically increasing: {}, {}, {} < {}",iteration, percentage,
-                        value.getValue(), previousELBO);
+                //logger.info("Global bound is not monotonically increasing: {}, {}, {} < {}",iteration, percentage,
+                //        value.getValue(), previousELBO);
                 //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", "+
                 //       percentage +", " + value.getValue() +" < " + previousELBO);
                 System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
                  ", "+ (value.getValue() +">" + previousELBO));
                 this.previousELBO=value.getValue();
-                return true;
+                return false;
             }else if (percentage>0 && percentage>threshold) {
                 logger.info("Global bound is monotonically increasing: {}, {}, {} > {}",iteration, percentage,
                         value.getValue(), previousELBO);

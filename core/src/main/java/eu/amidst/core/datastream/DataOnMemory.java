@@ -36,5 +36,12 @@ public interface DataOnMemory<E extends DataInstance> extends DataStream<E> {
      */
     List<E> getList();
 
+
+    /**
+     * Returns an ID for the data set.
+     */
+    default double getBatchID(){
+        return Double.NaN;
+    }
 }
 

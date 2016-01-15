@@ -11,7 +11,6 @@ package eu.amidst.core.datastream;
 import org.apache.commons.lang3.text.WordUtils;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,12 +55,12 @@ public class Attributes implements Serializable, Iterable<Attribute> {
                 this.time_id = att;
                 this.time_id.setSpecialAttribute(true);
                 this.time_id.setTimeId(true);
-                this.time_id.setNumberFormat(new DecimalFormat("#"));
+                //this.time_id.setNumberFormat(new DecimalFormat("#"));
             }else if (name.equals(Attributes.SEQUENCE_ID_ATT_NAME)){
                 this.seq_id = att;
                 this.seq_id.setSpecialAttribute(true);
                 this.seq_id.setSeqId(true);
-                this.seq_id.setNumberFormat(new DecimalFormat("#"));
+                //this.seq_id.setNumberFormat(new DecimalFormat("#"));
             }
         }
     }

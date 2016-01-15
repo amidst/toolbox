@@ -12,15 +12,20 @@ package eu.amidst.flinklink.core.learning.parametric;
  *
  */
 
+import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
 import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
+import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
@@ -28,6 +33,8 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.DAGGenerator;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
+import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetectorTest;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
@@ -705,5 +712,156 @@ public class ParallelVBTest extends TestCase {
     }
 
 
+    public static void testGaussianCompareSVBvsParralelVB() throws Exception {
+
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+
+
+        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+
+        eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
+        sampler.setSeed(2);
+        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(10000),"./datasets/dataFlink/tmp.arff");
+
+
+
+
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "./datasets/dataFlink/tmp.arff", false);
+
+        network.getDAG().getVariables().setAttributes(dataFlink.getAttributes());
+
+        //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
+        // and just learn then test the parameter learning
+
+        //Parameter Learning
+        ParallelVB parallelVB = new ParallelVB();
+        parallelVB.setOutput(false);
+        parallelVB.setMaximumGlobalIterations(10);
+        parallelVB.setSeed(5);
+        parallelVB.setBatchSize(5000);
+        parallelVB.setLocalThreshold(0.001);
+        parallelVB.setGlobalThreshold(0.001);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
+
+
+        parallelVB.setDAG(network.getDAG());
+        parallelVB.setDataFlink(dataFlink);
+        parallelVB.runLearning();
+        BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
+
+
+
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/dataFlink/tmp.arff");
+
+        SVB svb = new SVB();
+        svb.setWindowsSize(10000);
+        svb.setSeed(5);
+        VMP vmp = svb.getPlateuStructure().getVMP();
+        vmp.setOutput(false);
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.001);
+
+        svb.setDAG(network.getDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
+
+        System.out.println(network.toString());
+        System.out.println(bnet.toString());
+        System.out.println(parallelVB.getLogMarginalProbability());
+
+        System.out.println(svb.getLearntBayesianNetwork().toString());
+        System.out.println(svb.getLogMarginalProbability());
+
+    }
+
+
+    public static void testGaussianCompareSVBvsParralelVB2() throws Exception {
+
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //env.setParallelism(1);
+
+        int SAMPLES = 8000;
+
+        IDAConceptDriftDetectorTest.createBN1(1);
+        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("./networks/dbn1.dbn");
+        network.randomInitialization(new Random(0));
+        System.out.println(network.toString());
+
+        //String dataset= "./datasets/dataFlink/conceptdrift/data0.arff";
+        String dataset= "./datasets/dataFlink/tmp.arff";
+        eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
+        sampler.setSeed(1);
+        sampler.setBatchSize(500);
+        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(SAMPLES),dataset);
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, dataset, false);
+
+        IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
+        learn.setBatchSize(10);
+        learn.setClassIndex(0);
+        learn.setAttributes(dataFlink.getAttributes());
+        learn.setNumberOfGlobalVars(1);
+        learn.setTransitionVariance(0.1);
+        learn.setSeed(0);
+
+        learn.initLearning();
+
+        DAG dag = learn.getGlobalDAG();
+
+        //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
+        // and just learn then test the parameter learning
+
+        //Parameter Learning
+        ParallelVB parallelVB = new ParallelVB();
+        parallelVB.setOutput(false);
+        parallelVB.setMaximumGlobalIterations(10);
+        parallelVB.setSeed(0);
+        parallelVB.setBatchSize(2000);
+        parallelVB.setLocalThreshold(0.01);
+        parallelVB.setGlobalThreshold(0.01);
+        parallelVB.setMaximumLocalIterations(100);
+        parallelVB.setMaximumGlobalIterations(100);
+
+        List<Variable> hiddenVars = Arrays.asList(dag.getVariables().getVariableByName("GlobalHidden_0"));
+        parallelVB.setPlateuStructure(new PlateuStructure(hiddenVars));
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, 0.1);
+        gaussianHiddenTransitionMethod.setFading(1.0);
+        parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
+
+        parallelVB.setDAG(dag);
+        parallelVB.setDataFlink(dataFlink);
+        parallelVB.runLearning();
+        BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
+
+
+
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(dataset);
+
+        SVB svb = new SVB();
+        svb.setWindowsSize(SAMPLES);
+        svb.setSeed(0);
+        svb.setPlateuStructure(parallelVB.getSVB().getPlateuStructure());
+        VMP vmp = svb.getPlateuStructure().getVMP();
+        vmp.setOutput(false);
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(100);
+        vmp.setThreshold(0.01);
+
+        svb.setDAG(dag);
+        svb.setDataStream(data);
+        svb.runLearning();
+
+        System.out.println(network.toString());
+        System.out.println(bnet.toString());
+        System.out.println(parallelVB.getLogMarginalProbability());
+
+        System.out.println(svb.getLearntBayesianNetwork().toString());
+        System.out.println(svb.getLogMarginalProbability());
+
+    }
 
 }
