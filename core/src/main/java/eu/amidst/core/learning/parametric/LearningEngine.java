@@ -32,7 +32,7 @@ public final class LearningEngine {
     private static ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
 
     /**
-     * Sets theparameter learning Algorithm.
+     * Sets the parameter learning Algorithm.
      * @param parameterLearningAlgorithm the parameter learning Algorithm.
      */
     public static void setParameterLearningAlgorithm(ParameterLearningAlgorithm parameterLearningAlgorithm) {

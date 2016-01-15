@@ -14,9 +14,15 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
 
 /**
- * Created by andresmasegosa on 06/01/15.
+ * This interface defines the Algorithm for learning the Dynamic Bayesian Network graphical structure.
  */
 @FunctionalInterface
 public interface DynamicStructuralLearningAlgorithm {
-    public DynamicDAG learn(DataStream<DynamicDataInstance> dataStream);
+
+    /**
+     * Learns the graphical structure from a given data stream.
+     * @param dataStream a {@link DataStream} of {@link DynamicDataInstance}s.
+     * @return the learned {@link DynamicDAG}.
+     */
+    DynamicDAG learn(DataStream<DynamicDataInstance> dataStream);
 }

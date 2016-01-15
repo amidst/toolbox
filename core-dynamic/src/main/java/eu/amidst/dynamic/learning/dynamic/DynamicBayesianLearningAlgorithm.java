@@ -15,23 +15,50 @@ import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 
 /**
- * Created by ana@cs.aau.dk on 04/03/15.
+ * This interface defines the Dynamic Bayesian learning algorithm for {@link DynamicBayesianNetwork} models.
  */
 public interface DynamicBayesianLearningAlgorithm {
 
+    /**
+     * Updates the model using a given {@link DataOnMemory} of {@link DynamicDataInstance}s.
+     * @param batch a {@link DataOnMemory} of {@link DynamicDataInstance}s.
+     * @return a double value.
+     */
     double updateModel(DataOnMemory<DynamicDataInstance> batch);
 
+    /**
+     * Returns the log of the marginal probability.
+     * @return the log of the marginal probability.
+     */
     double getLogMarginalProbability();
 
+    /**
+     * Runs the learning process.
+     */
     void runLearning();
 
+    /**
+     * Sets the {@link DynamicDAG} for this DynamicBayesianLearningAlgorithm.
+     * @param dag a valid {@link DynamicDAG} object.
+     */
     void setDynamicDAG(DynamicDAG dag);
 
+    /**
+     * Sets the {@link DataStream} to be used by this DynamicBayesianLearningAlgorithm.
+     * @param data a {@link DataStream} of {@link DynamicDataInstance} objects.
+     */
     void setDataStream(DataStream<DynamicDataInstance> data);
 
+    /**
+     * Returns the learnt {@link DynamicBayesianNetwork}.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
     DynamicBayesianNetwork getLearntDBN();
 
-    public void setParallelMode(boolean parallelMode);
-
+    /**
+     * Sets the parallel processing mode.
+     * @param parallelMode {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
+    void setParallelMode(boolean parallelMode);
 
 }

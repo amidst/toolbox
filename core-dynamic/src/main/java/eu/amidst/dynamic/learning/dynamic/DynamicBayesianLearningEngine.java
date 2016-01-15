@@ -8,52 +8,65 @@
 
 package eu.amidst.dynamic.learning.dynamic;
 
-import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 
+
 /**
- * Created by ana@cs.aau.dk on 04/03/15.
+ * This class defines the dynamic Bayesian learning engine for {@link DynamicBayesianNetwork} models.
  */
 public final class DynamicBayesianLearningEngine {
 
+    /** Represents the used dynamic Bayesian learning Algorithm, initialized to the {@link DynamicSVB} algorithm. */
     private static DynamicBayesianLearningAlgorithm dynamicBayesianLearningAlgorithm = new DynamicSVB();
 
+    /**
+     * Sets the dynamic Bayesian learning Algorithm for this DynamicBayesianLearningEngine.
+     * @param dynamicBayesianLearningAlgorithm a {@link DynamicBayesianLearningAlgorithm} object.
+     */
     public static void setDynamicBayesianLearningAlgorithm(DynamicBayesianLearningAlgorithm dynamicBayesianLearningAlgorithm) {
         DynamicBayesianLearningEngine.dynamicBayesianLearningAlgorithm = dynamicBayesianLearningAlgorithm;
     }
 
-    public static double updateModel(DataOnMemory<DynamicDataInstance> batch){
-        return dynamicBayesianLearningAlgorithm.updateModel(batch);
-    }
-
+    /**
+     * Runs the learning process.
+     */
     public static void runLearning() {
         dynamicBayesianLearningAlgorithm.runLearning();
     }
 
-    public static double getLogMarginalProbability(){
-        return dynamicBayesianLearningAlgorithm.getLogMarginalProbability();
-    }
-
+    /**
+     * Sets the {@link DataStream} to be used for this DynamicBayesianLearningEngine.
+     * @param data a {@link DataStream} of {@link DynamicDataInstance} objects.
+     */
     public static void setDataStream(DataStream<DynamicDataInstance> data){
         dynamicBayesianLearningAlgorithm.setDataStream(data);
     }
 
+    /**
+     * Sets the parallel processing mode.
+     * @param parallelMode {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
     public void setParallelMode(boolean parallelMode) {
         dynamicBayesianLearningAlgorithm.setParallelMode(parallelMode);
     }
 
+    /**
+     * Sets the {@link DynamicDAG} for this DynamicBayesianLearningEngine.
+     * @param dag a valid {@link DynamicDAG} object.
+     */
     public static void setDynamicDAG(DynamicDAG dag){
         dynamicBayesianLearningAlgorithm.setDynamicDAG(dag);
     }
 
+    /**
+     * Returns the learnt {@link DynamicBayesianNetwork}.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
     public static DynamicBayesianNetwork getLearntDBN(){
         return dynamicBayesianLearningAlgorithm.getLearntDBN();
     }
 
-    public static void main(String[] args) throws Exception{
-
-    }
 }
