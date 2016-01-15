@@ -106,6 +106,10 @@ public class ConversionToBatches {
 
         @Override
         public void mapPartition(Iterable<T> values, Collector<DataOnMemory<T>> out) throws Exception {
+
+            int index = this.getRuntimeContext().getIndexOfThisSubtask()*100000;
+
+            int batchCount = 0;
             int count = 0;
             DataOnMemoryListContainer<T> batch = new DataOnMemoryListContainer<T>(this.attributes);
             for (T value : values) {
@@ -113,15 +117,19 @@ public class ConversionToBatches {
                     batch.add(value);
                     count++;
                  }else {
+                    batch.setId(batchCount+index);
                     out.collect(batch);
                     batch = new DataOnMemoryListContainer<T>(this.attributes);
                     batch.add(value);
                     count = 1;
+                    batchCount++;
                 }
             }
 
-            if (batch.getNumberOfDataInstances()>0)
+            if (batch.getNumberOfDataInstances()>0) {
+                batch.setId(batchCount+index);
                 out.collect(batch);
+            }
         }
     }
 }

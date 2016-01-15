@@ -21,6 +21,7 @@ import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.text.DecimalFormat;
 
 // TODO Write a quickARFFReader and quickARFFSaver
 
@@ -28,6 +29,9 @@ import java.io.UncheckedIOException;
  * This class implements the interface {@link DataFileWriter} and defines an ARFF (Weka Attribute-Relation File Format) data writer.
  */
 public class ARFFDataWriter implements DataFileWriter {
+
+    public static DecimalFormat decimalFormat = new DecimalFormat("#");
+
 
     /**
      * Saves a given data stream to an ARFF file.
@@ -143,8 +147,10 @@ public class ARFFDataWriter implements DataFileWriter {
             String nameState = stateSpace.getStatesName((int) assignment.getValue(att));
             builder.append(nameState + separator);
         } else if (att.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.REAL) {
-            if (att.getNumberFormat() != null) {
-                builder.append(att.getNumberFormat().format(assignment.getValue(att)) + separator);
+            //if (att.getNumberFormat() != null) {
+                //builder.append(att.getNumberFormat().format(assignment.getValue(att)) + separator);
+            if (att.isSpecialAttribute() || att.isTimeId()){
+                builder.append(decimalFormat.format(assignment.getValue(att)) + separator);
             } else {
                 builder.append(assignment.getValue(att) + separator);
             }

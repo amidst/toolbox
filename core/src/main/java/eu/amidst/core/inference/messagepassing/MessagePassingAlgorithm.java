@@ -74,7 +74,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     protected int nIter = 0;
 
     /** Represents the evidence lower bound. */
-    protected double local_elbo = Double.NEGATIVE_INFINITY;
+    protected double local_elbo = -Double.MAX_VALUE;
 
     /** Represents the number of local iterations. */
     protected int local_iter = 0;
