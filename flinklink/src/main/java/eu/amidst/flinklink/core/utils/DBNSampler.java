@@ -62,6 +62,12 @@ public class DBNSampler {
         this.random = new Random(seed);
     }
 
+    public void setDBN(DynamicBayesianNetwork dbn) {
+        this.dbn = dbn;
+        this.bnTime0 = dbn.toBayesianNetworkTime0();
+        this.bnTimeT = dbn.toBayesianNetworkTimeT();
+    }
+
     /**
      * Sets a given {@link Variable} object as hidden.
      * @param var a given {@link Variable} object.
