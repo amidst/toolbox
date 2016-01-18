@@ -782,11 +782,11 @@ public class ParallelVBTest extends TestCase {
     public static void testGaussianCompareSVBvsParralelVB2() throws Exception {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        //env.setParallelism(1);
+        env.setParallelism(1);
 
-        int SAMPLES = 8000;
+        int SAMPLES = 10000;
 
-        IDAConceptDriftDetectorTest.createBN1(1);
+        IDAConceptDriftDetectorTest.createBN1(10);
         BayesianNetwork network = BayesianNetworkLoader.loadFromFile("./networks/dbn1.dbn");
         network.randomInitialization(new Random(0));
         System.out.println(network.toString());
@@ -820,7 +820,7 @@ public class ParallelVBTest extends TestCase {
         parallelVB.setOutput(false);
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(0);
-        parallelVB.setBatchSize(2000);
+        parallelVB.setBatchSize(100);
         parallelVB.setLocalThreshold(0.01);
         parallelVB.setGlobalThreshold(0.01);
         parallelVB.setMaximumLocalIterations(100);
@@ -832,6 +832,7 @@ public class ParallelVBTest extends TestCase {
         gaussianHiddenTransitionMethod.setFading(1.0);
         parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
 
+        parallelVB.setIdenitifableModelling(new IDAConceptDriftDetector.IdentifiableIDAModel());
         parallelVB.setDAG(dag);
         parallelVB.setDataFlink(dataFlink);
         parallelVB.runLearning();
