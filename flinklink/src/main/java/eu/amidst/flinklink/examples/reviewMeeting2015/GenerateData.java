@@ -25,12 +25,9 @@ import java.util.Random;
  */
 public class GenerateData {
 
-    public static int NSETS = 15;
-    public static int SAMPLESIZE = 1000;
     public static int BATCHSIZE = 500;
-    public static boolean connectDBN = true;
 
-    public static int numVars = 10;
+    public static boolean connectDBN = true;
 
     public static BayesianNetwork createBN(int nVars) throws Exception {
 
@@ -53,7 +50,8 @@ public class GenerateData {
         return bn;
     }
 
-    public static void createDataSets(List<String> hiddenVars, List<String> noisyVars) throws Exception {
+    public static void createDataSets(List<String> hiddenVars, List<String> noisyVars, int numVars, int SAMPLESIZE,
+                                      int NSETS) throws Exception {
 
         BayesianNetwork bn = createBN(numVars);
 
@@ -84,7 +82,7 @@ public class GenerateData {
         }
     }
 
-    public static DynamicBayesianNetwork createDBN1() throws Exception {
+    public static DynamicBayesianNetwork createDBN1(int numVars) throws Exception {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
         Variable classVar = dynamicVariables.newMultinomialDynamicVariable("C", 2);
@@ -108,10 +106,11 @@ public class GenerateData {
         return dbn;
     }
 
-    public static void createDataSetsDBN(List<String> hiddenVars, List<String> noisyVars) throws Exception {
+    public static void createDataSetsDBN(List<String> hiddenVars, List<String> noisyVars, int numVars, int SAMPLESIZE,
+                                         int NSETS) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = createDBN1();
+        DynamicBayesianNetwork dbn = createDBN1(numVars);
 
         for (Variable variable : dbn.getDynamicVariables()) {
             if (!variable.getName().startsWith("A"))
@@ -147,6 +146,7 @@ public class GenerateData {
         DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
 
 
+        System.out.println("--------------- CREATING DATA 0 --------------------------");
         DataFlinkWriter.writeDataToARFFFolder(data0, "hdfs:///tmp_conceptdrift_data0.arff");
         data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "hdfs:///tmp_conceptdrift_data0.arff", false);
 
@@ -199,15 +199,15 @@ public class GenerateData {
 
     public static void main(String[] args) throws Exception {
 
-        numVars = Integer.parseInt(args[0]);
-        SAMPLESIZE = Integer.parseInt(args[1]);
-        NSETS = Integer.parseInt(args[2]);
+        int numVars = Integer.parseInt(args[0]);
+        int SAMPLESIZE = Integer.parseInt(args[1]);
+        int NSETS = Integer.parseInt(args[2]);
         boolean sampleFromDBN = Boolean.parseBoolean(args[3]);
 
         if (sampleFromDBN)
-            createDataSetsDBN(null, null);
+            createDataSetsDBN(null, null, numVars, SAMPLESIZE, NSETS);
         else
-            createDataSets(null, null);
+            createDataSets(null, null, numVars, SAMPLESIZE, NSETS);
 
     }
 }
