@@ -1,4 +1,4 @@
-package eu.amidst.flinklink.examples;
+package eu.amidst.flinklink.examples.reviewMeeting2015;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
@@ -10,7 +10,6 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
@@ -22,17 +21,16 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by ana@cs.aau.dk on 18/01/16.
+ * Created by ana@cs.aau.dk on 19/01/16.
  */
-public class ConceptDriftDetector {
+public class GenerateData {
 
     public static int NSETS = 15;
     public static int SAMPLESIZE = 1000;
     public static int BATCHSIZE = 500;
-    public static int numVars = 10;
     public static boolean connectDBN = true;
-    public static boolean dbn = true;
 
+    public static int numVars = 10;
 
     public static BayesianNetwork createBN(int nVars) throws Exception {
 
@@ -74,7 +72,7 @@ public class ConceptDriftDetector {
             }
         }
         for (int i = 0; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            System.out.println("--------------- CREATING DATA " + i + " --------------------------");
             if (i%5==0){
                 bn.randomInitialization(new Random((long)((i+10)%2)));
                 sampler = new BayesianNetworkSampler(bn);
@@ -128,7 +126,7 @@ public class ConceptDriftDetector {
             dist.getNormal_NormalParentsDistribution(1).setIntercept(1);
         }
 
-        System.out.println(dbn.toString());
+        //System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(SAMPLESIZE);
@@ -153,12 +151,12 @@ public class ConceptDriftDetector {
         data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "hdfs:///tmp_conceptdrift_data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
-        System.out.println(list);
+        //System.out.println(list);
 
 
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            System.out.println("--------------- CREATING DATA " + i + " --------------------------");
             if (i==5){
                 for (Variable variable : dbn.getDynamicVariables()) {
                     if (!variable.getName().startsWith("A"))
@@ -172,7 +170,7 @@ public class ConceptDriftDetector {
                     dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
                     dist.getNormal_NormalParentsDistribution(1).setIntercept(0);
                 }
-                System.out.println(dbn);
+                //System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
             if (i==10){
@@ -188,7 +186,7 @@ public class ConceptDriftDetector {
                     dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
                     dist.getNormal_NormalParentsDistribution(1).setIntercept(-1);
                 }
-                System.out.println(dbn);
+                //System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
@@ -198,68 +196,18 @@ public class ConceptDriftDetector {
         }
     }
 
-    public static void testUpdateN() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
-        DataFlink<DataInstance> data0 = DataFlinkLoader.loadDataFromFolder(env,
-                "hdfs:///tmp_conceptdrift_data0.arff", false);
-
-
-        long start = System.nanoTime();
-        IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
-        learn.setBatchSize(1000);
-        learn.setClassIndex(0);
-        learn.setAttributes(data0.getAttributes());
-        learn.setNumberOfGlobalVars(1);
-        learn.setTransitionVariance(0.1);
-        learn.setSeed(0);
-
-        learn.initLearning();
-        double[] output = new double[NSETS];
-
-        System.out.println("--------------- DATA " + 0 + " --------------------------");
-        double[] out = learn.updateModelWithNewTimeSlice(data0);
-        //System.out.println(learn.getLearntDynamicBayesianNetwork());
-        output[0] = out[0];
-
-        for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DataInstance> dataNew = DataFlinkLoader.loadDataFromFolder(env,
-                    "hdfs:///tmp_conceptdrift_data" + i + ".arff", false);
-            out = learn.updateModelWithNewTimeSlice(dataNew);
-            //System.out.println(learn.getLearntDynamicBayesianNetwork());
-            output[i] = out[0];
-
-        }
-        long duration = (System.nanoTime() - start) / 1;
-        double seconds = duration / 1000000000.0;
-
-        System.out.println("Running time" + seconds + " seconds");
-
-        System.out.println(learn.getLearntDynamicBayesianNetwork());
-
-        for (int i = 0; i < NSETS; i++) {
-            System.out.println("E(H_"+i+") =\t" + output[i]);
-        }
-
-    }
 
     public static void main(String[] args) throws Exception {
 
         numVars = Integer.parseInt(args[0]);
         SAMPLESIZE = Integer.parseInt(args[1]);
         NSETS = Integer.parseInt(args[2]);
-        boolean createDataSet = Boolean.parseBoolean(args[3]);
-        dbn = Boolean.parseBoolean(args[4]);
+        boolean sampleFromDBN = Boolean.parseBoolean(args[3]);
 
+        if (sampleFromDBN)
+            createDataSetsDBN(null, null);
+        else
+            createDataSets(null, null);
 
-        if(createDataSet) {
-            if(dbn)
-                createDataSetsDBN(null, null);
-            else
-                createDataSets(null,null);
-        }
-        testUpdateN();
     }
-
 }
