@@ -45,7 +45,7 @@ public class DynamicParallelVMPExtended {
      * The main variable is defined as a latent binary variable which is set as a parent of all the observed variables.
      * @return a {@link DAG} object.
      */
-    public static DynamicDAG getHiddenDynamicNaiveBayesStructure(Attributes attributes) {
+    public static DynamicDAG getHiddenDynamicNaiveBayesStructure(Attributes attributes, boolean includeHiddenVars) {
 
         // Create a Variables object from the attributes of the input data stream.
         DynamicVariables modelHeader = new DynamicVariables(attributes);
@@ -56,6 +56,7 @@ public class DynamicParallelVMPExtended {
         // Define the global Gaussian latent binary variable.
         Variable globalHiddenGaussian = modelHeader.newGaussianDynamicVariable("globalHiddenGaussian");
 
+
         // Define the class variable.
         Variable classVar = modelHeader.getVariableById(0);
 
@@ -63,35 +64,48 @@ public class DynamicParallelVMPExtended {
         DynamicDAG dag = new DynamicDAG(modelHeader);
 
         // Define the structure of the DAG, i.e., set the links between the variables.
-        dag.getParentSetsTimeT()
-                .stream()
-                .filter(w -> w.getMainVar() != classVar)
-                .filter(w -> w.getMainVar() != globalHiddenVar)
-                .filter(w -> w.getMainVar() != globalHiddenGaussian)
-                .filter(w -> w.getMainVar().isMultinomial())
-                .forEach(w -> w.addParent(globalHiddenVar));
 
-        dag.getParentSetsTimeT()
-                .stream()
-                .filter(w -> w.getMainVar() != classVar)
-                .filter(w -> w.getMainVar() != globalHiddenVar)
-                .filter(w -> w.getMainVar() != globalHiddenGaussian)
-                .filter(w -> w.getMainVar().isNormal())
-                .forEach(w -> w.addParent(globalHiddenGaussian));
+        if(includeHiddenVars) {
+            dag.getParentSetsTimeT()
+                    .stream()
+                    .filter(w -> w.getMainVar() != classVar)
+                    .filter(w -> w.getMainVar() != globalHiddenVar)
+                    .filter(w -> w.getMainVar() != globalHiddenGaussian)
+                    .filter(w -> w.getMainVar().isMultinomial())
+                    .forEach(w -> w.addParent(globalHiddenVar));
+
+            dag.getParentSetsTimeT()
+                    .stream()
+                    .filter(w -> w.getMainVar() != classVar)
+                    .filter(w -> w.getMainVar() != globalHiddenVar)
+                    .filter(w -> w.getMainVar() != globalHiddenGaussian)
+                    .filter(w -> w.getMainVar().isNormal())
+                    .forEach(w -> w.addParent(globalHiddenGaussian));
+        }
 
         dag.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
 
-        dag.getParentSetsTimeT()
-                .stream()
-                .filter(w -> w.getMainVar() == classVar || w.getMainVar() == globalHiddenVar || w.getMainVar() == globalHiddenGaussian)
-                .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
+        if(includeHiddenVars) {
+            dag.getParentSetsTimeT()
+                    .stream()
+                    .filter(w -> w.getMainVar() == classVar || w.getMainVar() == globalHiddenVar ||
+                            w.getMainVar() == globalHiddenGaussian)
+                    .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
+        }else{
+            dag.getParentSetsTimeT()
+                    .stream()
+                    .filter(w -> w.getMainVar() == classVar)
+                    .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
+        }
 
+        if(includeHiddenVars) {
+            dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
+        }
 
-        dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
-
+        System.out.println(dag);
         // Return the DAG.
         return dag;
     }
@@ -139,7 +153,7 @@ public class DynamicParallelVMPExtended {
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,fileName+"_iter_"+0+".arff", false);
 
-        DynamicDAG hiddenNB = getHiddenDynamicNaiveBayesStructure(data0.getAttributes());
+        DynamicDAG hiddenNB = getHiddenDynamicNaiveBayesStructure(data0.getAttributes(), false);
 
         System.out.println(hiddenNB.toString());
 
