@@ -68,7 +68,7 @@ public class DaimlerDemo {
 
         //Generate a dynamic naive Bayes structure
         DynamicDAG dynamicDAG = dynamicNaiveBayesStructure(data.getAttributes(),"MNVR_RuleLabeled");
-        System.out.println(dynamicDAG);
+        // System.out.println(dynamicDAG);    // Very talkative...
 
         //Parameter Learning with Streaming variational Bayes VMP
         DynamicSVB svb = new DynamicSVB();
@@ -77,8 +77,8 @@ public class DaimlerDemo {
         svb.setWindowsSize(1000);
         svb.setSeed(0);
         svb.setOutput(true);
-        svb.setMaxIter(1000);
-        svb.setThreshold(0.01);
+        svb.setMaxIter(100);
+        svb.setThreshold(0.0001);
 
         //We set the dynamicDAG, the data and start learning
         svb.setDynamicDAG(dynamicDAG);
@@ -88,8 +88,10 @@ public class DaimlerDemo {
         //Get the learnt DBN, and modify to include expert knowledge: LC is not followed by LF
         DynamicBayesianNetwork dbnLearnt = svb.getLearntDBN();
         Variable classVar = dbnLearnt.getDynamicVariables().getVariableByName("MNVR_RuleLabeled");
+        /*  This hurts our accuracy, it seems...
         Multinomial_MultinomialParents dist = dbnLearnt.getConditionalDistributionTimeT(classVar);
         dist.getMultinomial(0).setProbabilities(new double[]{1.0,0.0});
+        */
 
         //Print the dynamic model to screen
         System.out.println(dbnLearnt.toString());
@@ -105,7 +107,7 @@ public class DaimlerDemo {
         DataStream<DynamicDataInstance> dataTest = DynamicDataStreamLoader.loadFromFile("/Users/helgel/Desktop/DaimlerTest.arff");
 
         //We process the first few data sequences and show results
-        data.streamOfBatches(1000).limit(2).forEach( sequence -> {
+        data.streamOfBatches(1000).limit(200).forEach( sequence -> {
 
             //For each instance of the data sequence
             for (DynamicDataInstance instance : sequence) {
@@ -115,7 +117,9 @@ public class DaimlerDemo {
                     InferenceEngineForDBN.reset();
                 }
 
-                //Remove the class label
+                // Get class label
+                Double class_var = instance.getValue(classVar);
+                // Remove the class label
                 instance.setValue(classVar, Double.NaN);
 
                 //Set the evidence.
@@ -125,8 +129,10 @@ public class DaimlerDemo {
                 InferenceEngineForDBN.runInference();
 
                 //Query the posterior of the target variable and print output
+                // Also dump class. Last element for a sequence is the true class. Otherwise lots of NaNs
                 Multinomial posterior = InferenceEngineForDBN.getFilteredPosterior(classVar);
-                System.out.println(instance.getSequenceID() + "\t" + posterior.getProbabilityOfState("LANECHANGE"));
+                System.out.println(instance.getSequenceID() + "\t" +
+                        posterior.getProbabilityOfState("LANECHANGE") + "\t" + class_var);
             }
         });
 
