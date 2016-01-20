@@ -157,7 +157,7 @@ public class GenerateData {
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- CREATING DATA " + i + " --------------------------");
-            if (i==5){
+            if (i==3){
                 for (Variable variable : dbn.getDynamicVariables()) {
                     if (!variable.getName().startsWith("A"))
                         continue;
@@ -173,7 +173,7 @@ public class GenerateData {
                 //System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
-            if (i==10){
+            if (i==6){
                 for (Variable variable : dbn.getDynamicVariables()) {
                     if (!variable.getName().startsWith("A"))
                         continue;
