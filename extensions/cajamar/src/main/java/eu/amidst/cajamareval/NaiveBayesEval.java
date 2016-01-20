@@ -10,6 +10,7 @@
  */
 package eu.amidst.cajamareval;
 
+import COM.hugin.HAPI.Domain;
 import eu.amidst.core.classifiers.NaiveBayesClassifier;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
@@ -17,6 +18,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.utils.Utils;
+import eu.amidst.huginlink.converters.BNConverterToHugin;
 
 import java.io.FileWriter;
 
@@ -46,6 +48,9 @@ public class NaiveBayesEval {
         naiveBayesClassifier.learn(train, 10000);
 
         BayesianNetworkWriter.saveToFile(naiveBayesClassifier.getBNModel(), fileOutput + "_NB_model.bn");
+
+        Domain huginNetwork = BNConverterToHugin.convertToHugin(naiveBayesClassifier.getBNModel());
+        huginNetwork.saveAsNet(fileOutput + "_NB_model.net");
 
         System.out.println(naiveBayesClassifier.getBNModel());
 
