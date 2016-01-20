@@ -98,7 +98,7 @@ public class GenerateData {
 
         }
 
-        dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
+        //dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
         dag.setName("dbn1");
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(1));
@@ -173,7 +173,7 @@ public class GenerateData {
                 //System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
-            if (i==6){
+            if (i==7){
                 for (Variable variable : dbn.getDynamicVariables()) {
                     if (!variable.getName().startsWith("A"))
                         continue;
