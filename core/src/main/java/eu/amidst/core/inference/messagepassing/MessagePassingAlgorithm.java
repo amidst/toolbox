@@ -105,7 +105,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
     /**
      * Sets the maximum number of iterations for this MessagePassingAlgorithm.
-     * @param maxIter a {@code double} that represents the  maximum number of iterations to be set.
+     * @param maxIter a {@code int} that represents the  maximum number of iterations to be set.
      */
     public void setMaxIter(int maxIter) {
         this.maxIter = maxIter;
