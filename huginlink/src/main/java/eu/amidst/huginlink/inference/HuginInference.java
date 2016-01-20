@@ -126,6 +126,9 @@ public class HuginInference implements InferenceAlgorithm, Serializable {
     @Override
     public void setEvidence(Assignment assignment) {
 
+        if (assignment==null)
+            return;
+
         if (assignment.getVariables()!=null) {
             assignment.getVariables().stream().forEach(var -> {
                 try {

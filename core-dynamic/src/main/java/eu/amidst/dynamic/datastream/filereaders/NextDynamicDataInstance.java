@@ -43,6 +43,12 @@ public final class NextDynamicDataInstance {
     /** Represents the timeIDcounter that is used to keep track of missing values. */
     private int timeIDcounter;
 
+    /** Represents the start of a sequence*/
+    private boolean startOfSequence = false;
+
+    /** Represents the start of a sequence*/
+    private DynamicDataInstanceImpl dynDataInstStart;
+
     /**
      * Creates a new NextDynamicDataInstance object.
      * @param past a {@link DataRow} object of the past time.
@@ -169,6 +175,12 @@ public final class NextDynamicDataInstance {
 
         /* Read a new DataRow. */
         }else{
+
+            if (startOfSequence){
+                startOfSequence = false;
+                return dynDataInstStart;
+            }
+
             present = reader.next();
             double presentSequenceID = present.getValue(attSequenceID);
             if (pastSequenceID == presentSequenceID) {
@@ -177,12 +189,13 @@ public final class NextDynamicDataInstance {
             }else{
                 past = new DataRowMissing();
                 /* It oculd be a recursive call discarding the past DataRow, but this is slightly more efficient*/
-                DynamicDataInstanceImpl dynDataInst = new DynamicDataInstanceImpl(past, present, (int) presentSequenceID,
+                dynDataInstStart = new DynamicDataInstanceImpl(past, present, (int) presentSequenceID,
                         (int) present.getValue(attTimeID));
                 past = present;
-                present = reader.next();
+                //present = reader.next();
                 timeIDcounter = 1;
-                return dynDataInst;
+                startOfSequence=true;
+                return null;
             }
         }
     }

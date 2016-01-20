@@ -104,6 +104,35 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
     }
 
     /**
+     * Sets the maximum number of iterations for this MessagePassingAlgorithm.
+     * @param maxIter a {@code int} that represents the  maximum number of iterations to be set.
+     */
+    public void setMaxIter(int maxIter){
+        this.dynamicPlateauStructure.getVMPTime0().setMaxIter(maxIter);
+        this.dynamicPlateauStructure.getVMPTimeT().setMaxIter(maxIter);
+    }
+
+    /**
+     * Sets the threshold for this MessagePassingAlgorithm.
+     * @param threshold a {@code double} that represents the threshold value to be set.
+     */
+    public void setThreshold(double threshold) {
+        this.dynamicPlateauStructure.getVMPTime0().setThreshold(threshold);
+        this.dynamicPlateauStructure.getVMPTimeT().setThreshold(threshold);
+    }
+
+
+    /**
+     * Activate the output for the underlying MessagePassingAlgorithm.
+     * @param output a {@code boolean} that represents the output value to be set.
+     */
+    public void setOutput(boolean output){
+        this.dynamicPlateauStructure.getVMPTime0().setOutput(output);
+        this.dynamicPlateauStructure.getVMPTimeT().setOutput(output);
+    }
+
+
+    /**
      * {@inheritDoc}
      */
     @Override
