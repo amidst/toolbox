@@ -121,12 +121,8 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         learn.initLearning();
         double[] output = new double[NSETS];
 
-        System.out.println("--------------- DATA " + 0 + " --------------------------");
-        double[] out = learn.updateModelWithNewTimeSlice(data0);
-        System.out.println(learn.getLearntDynamicBayesianNetwork());
-        output[0] = out[0];
-
-        for (int i = 1; i < NSETS; i++) {
+        double[] out = null;
+        for (int i = 0; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DataInstance> dataNew = DataFlinkLoader.loadDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
@@ -174,7 +170,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
-        dbn.randomInitialization(new Random(1));
+        dbn.randomInitialization(new Random(0));
 
         for (Variable variable : dbn.getDynamicVariables()) {
             if (!variable.getName().startsWith("A"))
@@ -194,7 +190,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(SAMPLESIZE);
         sampler.setBatchSize(BATCHSIZE);
-        sampler.setSeed(0);
+        sampler.setSeed(1);
 
         if (hiddenVars!=null) {
             for (String hiddenVar : hiddenVars) {
