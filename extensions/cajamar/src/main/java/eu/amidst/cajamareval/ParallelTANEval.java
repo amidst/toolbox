@@ -11,6 +11,7 @@
 
 package eu.amidst.cajamareval;
 
+import COM.hugin.HAPI.Domain;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -18,6 +19,7 @@ import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Utils;
+import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.learning.ParallelTAN;
 
 import java.io.FileWriter;
@@ -43,6 +45,9 @@ public class ParallelTANEval {
 
         BayesianNetworkWriter.saveToFile(bn, fileOutput + "_TAN_model.bn");
 
+        Domain huginNetwork = BNConverterToHugin.convertToHugin(bn);
+        huginNetwork.saveAsNet(fileOutput + "_TAN_model.net");
+
         System.out.println(bn);
 
         Attribute seq_id = train.getAttributes().getSeq_id();
@@ -53,12 +58,10 @@ public class ParallelTANEval {
             try {
                 double pred = tan.predict(dataInstance)[1];
                 fw.write(dataInstance.getValue(seq_id) +"\t" + pred+"\n");
-            }catch (Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 nNontest++;
             }
-
-
         }
 
         System.out.println("Non tested clients: "+nNontest);
