@@ -157,7 +157,7 @@ public class GenerateData {
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- CREATING DATA " + i + " --------------------------");
-            if (i==3){
+            if (i==4){
                 for (Variable variable : dbn.getDynamicVariables()) {
                     if (!variable.getName().startsWith("A"))
                         continue;
@@ -181,10 +181,10 @@ public class GenerateData {
 
                     Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
                     dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
-                    dist.getNormal_NormalParentsDistribution(0).setIntercept(-1);
+                    dist.getNormal_NormalParentsDistribution(0).setIntercept(-10);
 
                     dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
-                    dist.getNormal_NormalParentsDistribution(1).setIntercept(-1);
+                    dist.getNormal_NormalParentsDistribution(1).setIntercept(-10);
                 }
                 //System.out.println(dbn);
                 sampler.setDBN(dbn);
