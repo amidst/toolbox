@@ -54,8 +54,6 @@ public class ClientsEvaluation {
                 ex.printStackTrace();
                 nNontest++;
             }
-
-
         }
 
         System.out.println("Non tested clients: " + nNontest);
