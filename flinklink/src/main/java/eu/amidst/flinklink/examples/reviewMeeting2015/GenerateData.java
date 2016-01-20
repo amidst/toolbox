@@ -119,10 +119,10 @@ public class GenerateData {
 
             Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
             dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
-            dist.getNormal_NormalParentsDistribution(0).setIntercept(1);
+            dist.getNormal_NormalParentsDistribution(0).setIntercept(10);
 
             dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
-            dist.getNormal_NormalParentsDistribution(1).setIntercept(1);
+            dist.getNormal_NormalParentsDistribution(1).setIntercept(10);
         }
 
         //System.out.println(dbn.toString());
