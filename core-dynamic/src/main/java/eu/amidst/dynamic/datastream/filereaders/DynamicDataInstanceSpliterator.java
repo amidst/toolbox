@@ -150,8 +150,13 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
 
              /* Both SequenceID and TimeID are provided. */
             case 3:
-                action.accept(nextDynamicDataInstance.nextDataInstance(dataRowIterator, attSequenceID, attTimeID));
-                return true;
+                DynamicDataInstance dynamicDataInstance = nextDynamicDataInstance.nextDataInstance(dataRowIterator, attSequenceID, attTimeID);
+                if (dynamicDataInstance!=null) {
+                    action.accept(dynamicDataInstance);
+                    return true;
+                }else{
+                    return false;
+                }
 
             default:
                 throw new IllegalArgumentException();
