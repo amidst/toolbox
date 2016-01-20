@@ -26,9 +26,8 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.huginlink.inference.HuginInference;
 
-/**
- * Created by andresmasegosa on 19/1/16.
- */
+// Created by andresmasegosa on 19/1/16.
+
 public class DaimlerDemo {
 
     /**
@@ -54,7 +53,6 @@ public class DaimlerDemo {
                 .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
                 .forEach(w -> {
                     w.addParent(classVar);
-                    //w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
                 });
         dag.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
@@ -64,11 +62,9 @@ public class DaimlerDemo {
     public static void main(String[] args) throws Exception {
 
         //--------------------- LEARNING PHASE --------------------------------------------------//
-        //String fileARFF = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTrain.arff";
-        String fileARFF = "/Users/helgel/Desktop/DaimlerFileTrain.arff";
 
         //Load the data in ARFF format
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(fileARFF);
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("/Users/helgel/Desktop/DaimlerTrain.arff");
 
         //Generate a dynamic naive Bayes structure
         DynamicDAG dynamicDAG = dynamicNaiveBayesStructure(data.getAttributes(),"MNVR_RuleLabeled");
@@ -89,38 +85,27 @@ public class DaimlerDemo {
         svb.setDataStream(data);
         svb.runLearning();
 
-        //Get the learnt DBN
+        //Get the learnt DBN, and modify to include expert knowledge: LC is not followed by LF
         DynamicBayesianNetwork dbnLearnt = svb.getLearntDBN();
+        Variable classVar = dbnLearnt.getDynamicVariables().getVariableByName("MNVR_RuleLabeled");
+        Multinomial_MultinomialParents dist = dbnLearnt.getConditionalDistributionTimeT(classVar);
+        dist.getMultinomial(0).setProbabilities(new double[]{1.0,0.0});
 
-        //Print the dynamic model
+        //Print the dynamic model to screen
         System.out.println(dbnLearnt.toString());
 
 
         //--------------------- PREDICTION PHASE --------------------------------------------------//
 
-        //We select VMP with the factored frontier algorithm as the Inference Algorithm
-        FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(new HuginInference());
-        InferenceEngineForDBN.setInferenceAlgorithmForDBN(FFalgorithm);
+        //We select HUGIN as the Inference Algorithm
+        InferenceEngineForDBN.setInferenceAlgorithmForDBN(new FactoredFrontierForDBN(new HuginInference()));
 
-        //Modify the DBN
-        Variable classVar = dbnLearnt.getDynamicVariables().getVariableByName("MNVR_RuleLabeled");
-        Multinomial_MultinomialParents dist = dbnLearnt.getConditionalDistributionTimeT(classVar);
-        dist.getMultinomial(0).setProbabilities(new double[]{1.0,0.0});
-        System.out.println(dbnLearnt.toString());
-
-        //Then, we set the DBN model
+        //Then, we set the DBN model and load the test-set
         InferenceEngineForDBN.setModel(dbnLearnt);
+        DataStream<DynamicDataInstance> dataTest = DynamicDataStreamLoader.loadFromFile("/Users/helgel/Desktop/DaimlerTest.arff");
 
-
-        String fileARFFTest = "/Users/helgel/Desktop/DaimlerFileTest.arff";
-        //String fileARFFTest = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTest.arff";
-
-        //Load the data in ARFF format
-        DataStream<DynamicDataInstance> dataTest = DynamicDataStreamLoader.loadFromFile(fileARFFTest);
-
-        //We process the first 50 data sequences
-        data.streamOfBatches(1000).limit(50).forEach( sequence -> {
-            int time = 0 ;
+        //We process the first few data sequences and show results
+        data.streamOfBatches(1000).limit(2).forEach( sequence -> {
 
             //For each instance of the data sequence
             for (DynamicDataInstance instance : sequence) {
@@ -128,10 +113,9 @@ public class DaimlerDemo {
                 //The InferenceEngineForDBN must be reset at the beginning of each sequence.
                 if (instance.getTimeID() == 0){
                     InferenceEngineForDBN.reset();
-                    time = 0;
                 }
 
-                //Remove the class label of the class variable
+                //Remove the class label
                 instance.setValue(classVar, Double.NaN);
 
                 //Set the evidence.
@@ -140,11 +124,9 @@ public class DaimlerDemo {
                 //Run inference
                 InferenceEngineForDBN.runInference();
 
-                //Query the posterior of the target variable
+                //Query the posterior of the target variable and print output
                 Multinomial posterior = InferenceEngineForDBN.getFilteredPosterior(classVar);
-
-                //Print the output
-                System.out.println(instance.getSequenceID() +"\t"+posterior.getProbabilityOfState("LANECHANGE"));
+                System.out.println(instance.getSequenceID() + "\t" + posterior.getProbabilityOfState("LANECHANGE"));
             }
         });
 
