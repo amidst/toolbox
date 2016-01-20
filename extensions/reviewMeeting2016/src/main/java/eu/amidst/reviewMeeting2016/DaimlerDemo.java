@@ -14,6 +14,7 @@ package eu.amidst.reviewMeeting2016;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
@@ -29,20 +30,6 @@ import eu.amidst.huginlink.inference.HuginInference;
  * Created by andresmasegosa on 19/1/16.
  */
 public class DaimlerDemo {
-
-
-
-    //static String fileARFF = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerFile.arff";
-
-    //static String inputARFF ="/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerDataBinaryClass.arff";
-    //static String networkFILE = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/AllLabels/dbn.bn";
-    //static String inputARFF ="/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/AllLabels/DaimlerDataAllLabelsBinaryClass.arff";
-    //static String fileARFF = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/AllLabels/DaimlerFile.arff";
-
-    //public static void preprocess() throws Exception {
-    //    DataStream<DataInstance> data = DataStreamLoader.openFromFile(inputARFF);
-    //    DataStreamWriter.writeDataToFile(data,fileARFF);
-    //}
 
     /**
      * This static method builds a dynamic Naive Bayes classifier for the given set of Attributes and the
@@ -77,7 +64,8 @@ public class DaimlerDemo {
     public static void main(String[] args) throws Exception {
 
         //--------------------- LEARNING PHASE --------------------------------------------------//
-        String fileARFF = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTrain.arff";
+        //String fileARFF = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTrain.arff";
+        String fileARFF = "/Users/helgel/Desktop/DaimlerFileTrain.arff";
 
         //Load the data in ARFF format
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(fileARFF);
@@ -108,40 +96,43 @@ public class DaimlerDemo {
         System.out.println(dbnLearnt.toString());
 
 
-
         //--------------------- PREDICTION PHASE --------------------------------------------------//
 
         //We select VMP with the factored frontier algorithm as the Inference Algorithm
         FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(new HuginInference());
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(FFalgorithm);
+
+        //Modify the DBN
+        Variable classVar = dbnLearnt.getDynamicVariables().getVariableByName("MNVR_RuleLabeled");
+        Multinomial_MultinomialParents dist = dbnLearnt.getConditionalDistributionTimeT(classVar);
+        dist.getMultinomial(0).setProbabilities(new double[]{1.0,0.0});
+        System.out.println(dbnLearnt.toString());
+
         //Then, we set the DBN model
         InferenceEngineForDBN.setModel(dbnLearnt);
 
 
-        //Get the class variable
-        Variable classVar = dbnLearnt.getDynamicVariables().getVariableByName("MNVR_RuleLabeled");
-
-        String fileARFFTest = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTest.arff";
+        String fileARFFTest = "/Users/helgel/Desktop/DaimlerFileTest.arff";
+        //String fileARFFTest = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTest.arff";
 
         //Load the data in ARFF format
         DataStream<DynamicDataInstance> dataTest = DynamicDataStreamLoader.loadFromFile(fileARFFTest);
 
-
         //We process the first 50 data sequences
-        dataTest.streamOfBatches(1000).limit(5).forEach( sequence -> {
+        data.streamOfBatches(1000).limit(50).forEach( sequence -> {
             int time = 0 ;
 
             //For each instance of the data sequence
             for (DynamicDataInstance instance : sequence) {
 
-                //The InferenceEngineForDBN must be reset at the begining of each sequence.
+                //The InferenceEngineForDBN must be reset at the beginning of each sequence.
                 if (instance.getTimeID() == 0){
                     InferenceEngineForDBN.reset();
                     time = 0;
                 }
 
                 //Remove the class label of the class variable
-                instance.setValue(classVar,Double.NaN);
+                instance.setValue(classVar, Double.NaN);
 
                 //Set the evidence.
                 InferenceEngineForDBN.addDynamicEvidence(instance);
