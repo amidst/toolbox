@@ -77,7 +77,7 @@ public class DaimlerDemo {
     public static void main(String[] args) throws Exception {
 
         //--------------------- LEARNING PHASE --------------------------------------------------//
-        String fileARFF = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerFile.arff";
+        String fileARFF = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTrain.arff";
 
         //Load the data in ARFF format
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(fileARFF);
@@ -121,9 +121,14 @@ public class DaimlerDemo {
         //Get the class variable
         Variable classVar = dbnLearnt.getDynamicVariables().getVariableByName("MNVR_RuleLabeled");
 
+        String fileARFFTest = "/Users/andresmasegosa/Desktop/DaimlerDataBinaryClass/2Labels/DaimlerTest.arff";
+
+        //Load the data in ARFF format
+        DataStream<DynamicDataInstance> dataTest = DynamicDataStreamLoader.loadFromFile(fileARFFTest);
+
 
         //We process the first 50 data sequences
-        data.streamOfBatches(1000).limit(5).forEach( sequence -> {
+        dataTest.streamOfBatches(1000).limit(5).forEach( sequence -> {
             int time = 0 ;
 
             //For each instance of the data sequence
