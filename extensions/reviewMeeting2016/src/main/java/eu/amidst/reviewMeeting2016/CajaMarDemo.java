@@ -44,8 +44,8 @@ public class CajaMarDemo {
 
         // The demo can be run on your local computer or a cluster with hadoop, (un)comment as appropriate
         //String fileName = "hdfs:///tmp_conceptdrift_data";
-        //String fileName = "./datasets/dataFlink/conceptdrift/data";
-        String fileName = "/Users/ana/Dropbox/amidst/datasets/dataFlink/IDAlikeDataCDranges5K_CD6_11/MONTH";
+        String fileName = "./datasets/dataFlink/conceptdrift/data";
+        //String fileName = "/Users/ana/Dropbox/amidst/datasets/dataFlink/IDAlikeDataCDranges5K_CD6_11/MONTH";
 
         // Load the first batch of data (first month) to get the model header (attributes) necessary to create
         // the dynamic DAG
@@ -157,11 +157,12 @@ public class CajaMarDemo {
                 new GaussianHiddenTransitionMethod(Arrays.asList(globalHiddenVar), 0, 0.1);
         gaussianHiddenTransitionMethod.setFading(1.0);
         parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
-        //Set the procedure to make the model identifiable
-        parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
 
         // Update the dynamic DAG to learn from
         parallelVB.setDAG(dynamicDAG);
+
+        //Set the procedure to make the model identifiable
+        parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
 
         //Init learning
         parallelVB.initLearning();
