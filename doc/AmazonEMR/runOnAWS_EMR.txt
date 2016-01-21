@@ -1,28 +1,48 @@
-aws emr --region us-west-2 create-cluster --name "ClusterTestLogger" \
+aws emr --region us-west-2 create-cluster --name "ClusterReviewMeeting-2xlarge_4nodes" \
 --no-auto-terminate \
 --use-default-roles \
 --release-label emr-4.2.0 \
 --termination-protected \
 --ec2-attributes KeyName=AmidstToolbox \
---instance-groups InstanceGroupType=MASTER,InstanceCount=1,InstanceType=m3.xlarge InstanceGroupType=CORE,InstanceCount=1,InstanceType=m3.xlarge \
+--instance-groups InstanceGroupType=MASTER,InstanceCount=1,InstanceType=m3.2xlarge InstanceGroupType=CORE,InstanceCount=2,InstanceType=m3.2xlarge \
 --bootstrap-action Path="s3://amidst/emr_bootstrap_java_8_emr400.sh"
 
-aws emr describe-cluster --cluster-id j-1CRVHQP86WPBE 
 
-ssh hadoop@ec2-54-213-149-223.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+aws emr describe-cluster --cluster-id j-YT8E2MAFY3VR
+ 
+ssh hadoop@ec2-54-200-200-223.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+
+ssh -i AmidstToolbox.pem hadoop@ec2-54-213-211-187.us-west-2.compute.amazonaws.com 
+
 
 wget http://ftp.download-by.net/apache/flink/flink-0.10.0/flink-0.10.0-bin-hadoop26-scala_2.10.tgz
 tar xzf flink-*.tgz
 export HADOOP\_CONF\_DIR=/etc/hadoop/conf
-#sudo yum update
+#sudo yum update -y
 
-scp -i ~/key/AmidstToolbox.pem core/classes/artifacts/flinklink_jar/flinklink.jar core/flinklink/log4j.properties hadoop@ec2-54-213-149-223.us-west-2.compute.amazonaws.com:
+scp -i ~/key/AmidstToolbox.pem core/classes/artifacts/flinklink_jar/flinklink.jar  hadoop@ec2-54-200-200-223.us-west-2.compute.amazonaws.com:
+
+scp -i ~/key/AmidstToolbox.pem ~/key/AmidstToolbox.pem hadoop@ec2-54-213-211-159.us-west-2.compute.amazonaws.com:
+
+scp -i AmidstToolbox.pem hadoop@ec2-54-200-200-223.us-west-2.compute.amazonaws.com:/home/hadoop/taskmanager.log ./salidasIOJarException/
+
+scp -i AmidstToolbox.pem hadoop@ec2-54-213-211-187.us-west-2.compute.amazonaws.com:/var/log/hadoop-yarn/containers/application_1453325855221_0001/container_1453325855221_0001_01_000003/taskmanager.log ./
+
+scp -i ~/key/AmidstToolbox.pem hadoop@ec2-54-200-40-212.us-west-2.compute.amazonaws.com:/home/hadoop/flink-0.10.0/tmp_* ./data10months/
 
 
 cd flink-0.10.0
-./bin/flink run -m yarn-cluster -yn 1 -ys 4 -yjm 1024 -ytm 9000 -c eu.amidst.flinklink.examples.DynamicParallelVMPExtended ../flinklink.jar 0 10 1000000 100 100 100 3 0 > output_0_10_1M_100_100_100_3_0.txt 2>&1
+./bin/flink run -m yarn-cluster -yn 1 -ys 8 -yjm 1024 -ytm 10000 -c eu.amidst.flinklink.examples.DynamicParallelVMPExtended ../flinklink.jar 10 10 1000000 100 10 100 2 0 true > output_10_10_1M_100_10_100_2_0_1nodes.txt 2>&1
+
+cd flink-0.10.0
+
+./bin/flink run -m yarn-cluster -yn 4 -ys 8 -yjm 1024 -ytm 19000 -c eu.amidst.flinklink.examples.reviewMeeting2015.GenerateData ../flinklink.jar 10 10000 15 true > output_10_10K_10_5_dynamic.txt 2>&1
+./bin/flink run -m yarn-cluster -yn 16 -ys 8 -yjm 1024 -ytm 19000 -c eu.amidst.flinklink.examples.reviewMeeting2015.ConceptDriftDetector ../flinklink.jar 10 > learning_10_100K_10_dynamic.txt 2>&1
 
 #Logging
+./bin/flink run -m yarn-cluster -yn 1 -ys 4 -yjm 1024 -ytm 1024 -c eu.amidst.flinklink.examples.WordCountExample ../flinklink.jar
+
+vi /etc/alternatives/hadoop-conf/yarn-site.xml
 yarn.log-aggregation-enable: true
 screen
 ./bin/yarn-session.sh -n 1 -tm 2048 -s 4
@@ -32,7 +52,73 @@ d
 screen -r
 stop
 
+yarn logs -applicationId application_1452499404221_0001
+/var/log/hadoop-yarn/containers/application_1452499404221_0001/container_1452499404221_0001_01_000002
+/usr/lib/hadoop-yarn/sbin/
+scp -i ~/key/AmidstToolbox.pem -r /Users/ana/Documents/hadoop-2.7.1/sbin/stop-yarn.sh /Users/ana/Documents/hadoop-2.7.1/sbin/start-yarn.sh hadoop@ec2-54-201-44-143.us-west-2.compute.amazonaws.com:
+##### Found online to test
+/usr/lib/hadoop/sbin/hadoop-daemons.sh stop datanode
+/usr/lib/hadoop-yarn/sbin/yarn-daemons.sh stop nodemanager
+/usr/lib/hadoop-yarn/sbin/hadoop-daemon.sh stop namenode
+/usr/lib/hadoop-yarn/sbin/yarn-daemon.sh stop resourcemanager
+/usr/lib/hadoop-mapreduce/sbin/mr-jobhistory-daemon.sh stop historyserver
+
 
 aws emr modify-cluster-attributes --cluster-id j-3ADLFHRQTLB97 --no-termination-protected
 aws emr terminate-clusters --cluster-ids j-3ADLFHRQTLB97 --region us-east-1 
 
+
+#File to hdfs
+/etc/hadoop/conf/hdfs-site.xml # change repetitions to 3
+sudo hdfs namenode -format
+scp -i ~/key/AmidstToolbox.pem /Users/ana/core/datasets/sampleBatchSize.arff  hadoop@ec2-54-213-80-95.us-west-2.compute.amazonaws.com:
+hadoop fs -copyFromLocal sampleBatchSize.arff /sampleBatchSize.arff
+hdfs fsck /sampleBatchSize.arff
+hdfs dfs -ls /
+hadoop fs -setrep -w 3 /sampleBatchSize.arff
+hadoop fs -rm /sampleBatchSize.arff
+
+#Hadoop file system
+
+hadoop fs -D fs.local.block.size=134217728 -put local_name remote_location
+#dfs.block.size
+
+yarn node -list|sed -n "s/^\(ip[^:]*\):.*/\1/p" | xargs -t -I{} -P10 scp -o StrictHostKeyChecking=no -i AmidstToolbox.pem /etc/alternatives/hadoop-conf/yarn-site.xml hadoop@{}://etc/hadoop/conf/
+
+yarn node -list|sed -n "s/^\(ip[^:]*\):.*/\1/p" | xargs -t -I{} -P10 ssh -o StrictHostKeyChecking=no -i AmidstToolbox.pem hadoop@{} "yarn resourcemanager stop"
+
+#Install R
+wget http://lib.stat.cmu.edu/R/CRAN/src/base/R-3/R-3.2.3.tar.gz
+tar xzf R-3.2.3.tar.gz
+cd R-3-2-3
+./configure --with-readline=no --with-x=no
+make
+
+scp -i ~/key/AmidstToolbox.pem  core/classes/artifacts/uai2016_jar/uai2016.jar /Users/ana/Dropbox/amidst/toolbox/data_generator_IDA.R /Users/ana/Dropbox/amidst/toolbox/data_generator_SCAI.R hadoop@ec2-54-201-246-216.us-west-2.compute.amazonaws.com:
+
+## NaiveBayesVirtualConceptDriftDetectorTest
+
+./bin/flink run -m yarn-cluster -yn 4 -ys 4 -yjm 1024 -ytm 9000 -c eu.amidst.dataGeneration.GenerateCajaMarData ../uai2016.jar -s 10 -numFiles 3 -RscriptsPath "/home/hadoop" -outputFullPath "/home/hadoop/dataset/noIndex" -seed 0 -addConceptDrift > output_generateDataset.txt 2>&1
+
+./bin/flink run -m yarn-cluster -yn 4 -ys 4 -yjm 1024 -ytm 9000 -c eu.amidst.dataGeneration.NaiveBayesVirtualConceptDriftDetectorTest ../uai2016.jar "/home/hadoop/dataset/noIndex" > output_NaiveBayesVirtualConceptDriftDetectorTest.txt 2>&1
+
+## 
+./bin/flink run -m yarn-cluster -yn 4 -ys 4 -yjm 1024 -ytm 9000 -c eu.amidst.dataGeneration.GenerateCajaMarData ../uai2016.jar -s 10 -numFiles 3 -RscriptsPath "/home/hadoop" -outputFullPath "/home/hadoop/dataset/withIndex" -printINDEX -seed 0 -addConceptDrift > output_generateDataset.txt 2>&1
+
+./bin/flink run -m yarn-cluster -yn 4 -ys 4 -yjm 1024 -ytm 9000 -c eu.amidst.dataGeneration.IDAConceptDriftDetectorTest ../uai2016.jar "hdfs:///50K" > output_IDAConceptDriftDetectorTest50K.txt 2>&1
+
+/etc/hadoop/conf/hdfs-site.xml # change repetitions to 3
+sudo hdfs namenode -format
+hadoop fs -copyFromLocal withIndex/ /withIndex
+hdfs fsck /withIndex
+
+
+-region us-west-2
+aws s3 mb s3://amidstdata
+aws s3 cp core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withoutIndex/  s3://amidstdata  --recursive
+hadoop distcp s3://amidstdata/50K hdfs:///data/50K
+hadoop S3DistCp s3://amidstdata/50K/MONTH1.arff/name.txt hdfs:///name.txt
+
+scp -i ~/key/AmidstToolbox.pem -r /Users/ana/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/withIndex/50K/ hadoop@ec2-54-201-44-143.us-west-2.compute.amazonaws.com:
+
+scp -i ~/key/AmidstToolbox.pem -r hadoop@ec2-54-213-123-199.us-west-2.compute.amazonaws.com:/home/hadoop/small ./

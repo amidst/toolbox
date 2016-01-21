@@ -37,7 +37,7 @@ public class ConversionToBatches {
     public static String BATCH_SIZE = "BATCH_SIZE";
 
 
-    public static <T> DataSet<List<T>> toBatches(DataSet<T> data, int batchSize){
+    public static <T> DataSet<Batch<T>> toBatches(DataSet<T> data, int batchSize){
 
         Configuration config = new Configuration();
         config.setInteger(BATCH_SIZE, batchSize);
@@ -60,7 +60,7 @@ public class ConversionToBatches {
 
 
 
-    static class BatchMAP<T> extends RichMapPartitionFunction<T, List<T>> {
+    static class BatchMAP<T> extends RichMapPartitionFunction<T, Batch<T>> {
 
 
         int batchSize=1000;
@@ -72,7 +72,11 @@ public class ConversionToBatches {
         }
 
         @Override
-        public void mapPartition(Iterable<T> values, Collector<List<T>> out) throws Exception {
+        public void mapPartition(Iterable<T> values, Collector<Batch<T>> out) throws Exception {
+
+            int index = this.getRuntimeContext().getIndexOfThisSubtask()*100000;
+
+            int batchCount = 0;
             int count = 0;
             List<T> batch = new ArrayList<>();
             for (T value : values) {
@@ -80,21 +84,22 @@ public class ConversionToBatches {
                     batch.add(value);
                     count++;
                 }else {
-                    out.collect(batch);
+                    out.collect(new Batch<T>(batchCount+index,batch));
                     batch = new ArrayList<>();
                     batch.add(value);
                     count = 1;
+                    batchCount++;
                 }
             }
             if (batch.size()>0)
-                out.collect(batch);
+                out.collect(new Batch<T>(batchCount+index,batch));
         }
     }
 
     static class DataBatch<T extends DataInstance> extends RichMapPartitionFunction<T, DataOnMemory<T>> {
 
 
-        int batchSize=1000;
+        int batchSize;
         Attributes attributes;
 
         @Override
