@@ -11,6 +11,7 @@
 
 package eu.amidst.flinklink.core.conceptdrift;
 
+import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
@@ -34,7 +35,7 @@ import java.util.Random;
  */
 public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
-    public static int NSETS = 11;
+    public static int NSETS = 15;
     public static int SAMPLESIZE = 1000;
     public static int BATCHSIZE = 500;
 
@@ -103,7 +104,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
         }
 
-        dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
+        //dag.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
+
         dag.setName("dbn1");
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
@@ -160,11 +162,104 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
     }
 
+    public static void createDataSetsDBN2(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
+        dbn.randomInitialization(new Random(0));
+
+        for (Variable variable : dbn.getDynamicVariables()) {
+            if (!variable.getName().startsWith("A"))
+                continue;
+
+
+            Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
+            dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+            dist.getNormal_NormalParentsDistribution(0).setIntercept(10);
+
+            dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+            dist.getNormal_NormalParentsDistribution(1).setIntercept(10);
+        }
+
+        System.out.println(dbn.toString());
+
+        DBNSampler sampler = new DBNSampler(dbn);
+        sampler.setNSamples(SAMPLESIZE);
+        sampler.setBatchSize(BATCHSIZE);
+        sampler.setSeed(1);
+
+        if (hiddenVars!=null) {
+            for (String hiddenVar : hiddenVars) {
+                sampler.setHiddenVar(dbn.getDynamicVariables().getVariableByName(hiddenVar));
+            }
+        }
+        if (noisyVars!=null){
+            for (String noisyVar : noisyVars) {
+                sampler.setMARVar(dbn.getDynamicVariables().getVariableByName(noisyVar), 0.1);
+            }
+        }
+
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+
+
+        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/dataFlink/conceptdrift/data0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data0.arff", false);
+
+        List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
+        System.out.println(list);
+
+        HashSet<Long> noDupSet = new HashSet();
+        noDupSet.addAll(list);
+        assertEquals(SAMPLESIZE, noDupSet.size());
+        System.out.println(noDupSet);
+
+
+        DataFlink<DynamicDataInstance> dataPrev = data0;
+        for (int i = 1; i < NSETS; i++) {
+            System.out.println("--------------- DATA " + i + " --------------------------");
+            if (i==5){
+                for (Variable variable : dbn.getDynamicVariables()) {
+                    if (!variable.getName().startsWith("A"))
+                        continue;
+
+
+                    Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
+                    dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(0).setIntercept(0);
+
+                    dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(1).setIntercept(0);
+                }
+                System.out.println(dbn);
+                sampler.setDBN(dbn);
+            }
+            if (i==10){
+                for (Variable variable : dbn.getDynamicVariables()) {
+                    if (!variable.getName().startsWith("A"))
+                        continue;
+
+
+                    Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
+                    dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(0).setIntercept(-10);
+
+                    dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(1).setIntercept(-10);
+                }
+                System.out.println(dbn);
+                sampler.setDBN(dbn);
+            }
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/dataFlink/conceptdrift/data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
+            dataPrev = dataNew;
+        }
+    }
 
     public static void test1()  throws Exception {
         String networkName = "dbn1";
-        createDBN1(3,true);
-        createDataSets(networkName,null,null);
+        createDBN1(10,true);
+        createDataSetsDBN2(networkName,null,null);
         testUpdateN(networkName, 0.1);
     }
 
