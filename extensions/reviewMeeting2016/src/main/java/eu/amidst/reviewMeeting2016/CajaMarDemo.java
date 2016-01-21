@@ -39,8 +39,8 @@ public class CajaMarDemo {
          *************************************************************************************/
 
         // The demo can be run on your local computer or a cluster with hadoop, (un)comment as appropriate
-        //String fileName = "hdfs:///tmp_conceptdrift_data";
-        String fileName = "./datasets/dataFlink/conceptdrift/data";
+        String fileName = "hdfs:///tmp_conceptdrift_data";
+        //String fileName = "./datasets/dataFlink/conceptdrift/data";
 
         // Load the first batch of data (first month) to get the model header (attributes) necessary to create
         // the dynamic DAG
@@ -178,11 +178,10 @@ public class CajaMarDemo {
             System.out.println("--------------- MONTH " + i + " --------------------------");
             //Load the data for that month
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
+                    fileName + i + ".arff", false);
             parallelVB.updateModelWithNewTimeSlice(i, dataNew);
             Normal normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
             //Compute expected value for H this month
-            normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
             output[i] = normal.getMean();
         }
 
