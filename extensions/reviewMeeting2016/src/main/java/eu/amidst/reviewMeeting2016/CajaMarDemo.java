@@ -60,7 +60,7 @@ public class CajaMarDemo {
         // Define the class variable.
         Variable classVar = variables.getVariableById(0);
 
-        // Create a DAG object with the defined variables.
+        // Create an empty DAG object with the defined variables.
         DynamicDAG dynamicDAG = new DynamicDAG(variables);
 
         // Link the class as parent of all attributes
@@ -69,10 +69,9 @@ public class CajaMarDemo {
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
 
-        // Link the class and the attributes through time
-        dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
+        // Link the class through time
+        dynamicDAG.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
+
 
         System.out.println(dynamicDAG.toString());
 
@@ -83,32 +82,30 @@ public class CajaMarDemo {
         // Set the number of available months for learning
         int nMonths = 10;
 
-
-        /*
         long start = System.nanoTime();
 
-        // Parameter Learning with DynamicParallelVB (parameter setting)
+        //Parallel Bayesian learning enging
         DynamicParallelVB parallelVB = new DynamicParallelVB();
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setLocalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(100);
-        parallelVB.setSeed(seed);
-        parallelVB.setBatchSize(batchSize);
-        parallelVB.setDAG(dynamicDAG);
+        parallelVB.setSeed(0);
+        parallelVB.setBatchSize(1000);
         parallelVB.setOutput(true);
+        parallelVB.setDAG(dynamicDAG);
 
         // Initiate learning
         parallelVB.initLearning();
 
-        System.out.println("--------------- MONTH " + 0 + " --------------------------");
-        parallelVB.updateModelWithNewTimeSlice(0, data0);
 
-
-        for (int i = 1; i < nMonths; i++) {
+        for (int i = 0; i < nMonths; i++) {
             logger.info("--------------- MONTH " + i + " --------------------------");
+            //Load the data for that month
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     fileName+i+".arff", false);
+
+            //Update the model with the provided data
             parallelVB.updateModelWithNewTimeSlice(i, dataNew);
         }
 
@@ -116,8 +113,9 @@ public class CajaMarDemo {
         double seconds = duration / 1000000000.0;
         logger.info("Running time: {} seconds.", seconds);
 
-        System.out.println(parallelVB.getLearntDynamicBayesianNetwork().toString());
-        */
+        //Show the learnt Dynamic Bayesian network
+        System.out.println(parallelVB.getLearntDynamicBayesianNetwork());
+
 
         /*************************************************************************************
          * 4.- INCLUDE LATENT VARIABLE (H) ON HNB AND LEARN (IDA-LIKE TRANSITION)
@@ -150,13 +148,8 @@ public class CajaMarDemo {
                 .filter(w -> w.getMainVar().isNormal())
                 .forEach(w -> w.addParent(globalHiddenVar));
 
-        /*
-        // Link the class as parent of the hidden variable.
-        dynamicDAG.getParentSetTimeT(globalHiddenVar).addParent(classVar);
 
-        // Link the hidden variable through time
-        dynamicDAG.getParentSetTimeT(globalHiddenVar).addParent(globalHiddenVar.getInterfaceVariable());
-        */
+
 
         System.out.println(dynamicDAG.toString());
 
