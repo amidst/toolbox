@@ -169,13 +169,14 @@ public class IDAConceptDriftDetectorDBN {
                 globalDynamicDAG.getParentSetTimeT(variable).addParent(hiddenVars.get(i));
             }
         }
-
+/*
         for (Variable variable : variables) {
             if (variable.getName().startsWith("GlobalHidden_"))
                 continue;
             this.globalDynamicDAG.getParentSetTimeT(variable).addParent(variable.getInterfaceVariable());
         }
-
+*/
+        this.globalDynamicDAG.getParentSetTimeT(classVariable).addParent(classVariable.getInterfaceVariable());
         System.out.println(globalDynamicDAG.toString());
 
 
@@ -204,6 +205,7 @@ public class IDAConceptDriftDetectorDBN {
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setBatchSize(this.batchSize);
         svb.setDAG(globalDynamicDAG);
+        svb.setIdenitifableModelling(new IdentifiableIDAModel());
 
         svb.setOutput(false);
         svb.setGlobalThreshold(0.001);

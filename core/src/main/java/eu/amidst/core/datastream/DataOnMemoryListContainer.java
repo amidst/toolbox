@@ -24,6 +24,9 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
     /** Represents a pointer to the attributes of the data set. */
     Attributes attributes;
 
+    /** Represents an ID*/
+    double id=Double.NaN;
+
     /**
      * Creates a new DataOnMemoryListContainer initialized with the Attributes object of the data set.
      * @param attributes_ a list of attributes
@@ -143,5 +146,17 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
             builder.append("\n");
         }
         return builder.toString();
+    }
+
+    public void setId(double id) {
+        this.id = id;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getBatchID() {
+        return id;
     }
 }

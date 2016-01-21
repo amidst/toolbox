@@ -12,6 +12,7 @@
 package eu.amidst.flinklink.core.conceptdrift;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
@@ -41,8 +42,8 @@ import java.util.Random;
  */
 public class IDAConceptDriftDetectorTest extends TestCase {
 
-    public static int NSETS = 20;
-    public static int SAMPLESIZE = 5000;
+    public static int NSETS = 15;
+    public static int SAMPLESIZE = 1000;
     public static int BATCHSIZE = 500;
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
@@ -69,7 +70,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         for (int i = 0; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             if (i%5==0){
-                dbn.randomInitialization(new Random(i));
+                dbn.randomInitialization(new Random((long)((i+10)%2)));
                 sampler = new BayesianNetworkSampler(dbn);
                 sampler.setBatchSize(BATCHSIZE);
                 sampler.setSeed(1);
@@ -110,7 +111,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
                 "./datasets/dataFlink/conceptdrift/data0.arff", false);
 
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
-        learn.setBatchSize(100);
+        learn.setBatchSize(1000);
         learn.setClassIndex(0);
         learn.setAttributes(data0.getAttributes());
         learn.setNumberOfGlobalVars(1);
@@ -120,11 +121,8 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         learn.initLearning();
         double[] output = new double[NSETS];
 
-        System.out.println("--------------- DATA " + 0 + " --------------------------");
-        double[] out = learn.updateModelWithNewTimeSlice(data0);
-        output[0] = out[0];
-
-        for (int i = 1; i < NSETS; i++) {
+        double[] out = null;
+        for (int i = 0; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DataInstance> dataNew = DataFlinkLoader.loadDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
@@ -172,13 +170,27 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
-        dbn.randomInitialization(new Random(1));
+        dbn.randomInitialization(new Random(0));
+
+        for (Variable variable : dbn.getDynamicVariables()) {
+            if (!variable.getName().startsWith("A"))
+                continue;
+
+
+            Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
+            dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+            dist.getNormal_NormalParentsDistribution(0).setIntercept(1);
+
+            dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+            dist.getNormal_NormalParentsDistribution(1).setIntercept(1);
+        }
+
         System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(SAMPLESIZE);
         sampler.setBatchSize(BATCHSIZE);
-        sampler.setSeed(0);
+        sampler.setSeed(1);
 
         if (hiddenVars!=null) {
             for (String hiddenVar : hiddenVars) {
@@ -209,7 +221,39 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSampleConceptDrift(dataPrev, i%4==1);
+            if (i==5){
+                for (Variable variable : dbn.getDynamicVariables()) {
+                    if (!variable.getName().startsWith("A"))
+                        continue;
+
+
+                    Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
+                    dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(0).setIntercept(0);
+
+                    dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(1).setIntercept(0);
+                }
+                System.out.println(dbn);
+                sampler.setDBN(dbn);
+            }
+            if (i==10){
+                for (Variable variable : dbn.getDynamicVariables()) {
+                    if (!variable.getName().startsWith("A"))
+                        continue;
+
+
+                    Normal_MultinomialNormalParents dist = dbn.getConditionalDistributionTimeT(variable);
+                    dist.getNormal_NormalParentsDistribution(0).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(0).setIntercept(-1);
+
+                    dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
+                    dist.getNormal_NormalParentsDistribution(1).setIntercept(-1);
+                }
+                System.out.println(dbn);
+                sampler.setDBN(dbn);
+            }
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/dataFlink/conceptdrift/data" + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
             dataPrev = dataNew;
@@ -224,8 +268,8 @@ public class IDAConceptDriftDetectorTest extends TestCase {
 
     public static void test2()  throws Exception {
         String networkName = "dbn1";
-        //createDBN1(10,true);
-        //createDataSetsDBN(networkName,null,null);
+        createDBN1(10,true);
+        createDataSetsDBN(networkName,null,null);
         testUpdateN(networkName);
     }
 }

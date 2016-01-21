@@ -61,6 +61,7 @@ public class IDAConceptDriftDetectorTest{
         System.out.println("--------------- MONTH " + 1 + " --------------------------");
         double[] out = learn.updateModelWithNewTimeSlice(data0);
         output[0] = out[0];
+        System.out.println(learn.getLearntDynamicBayesianNetwork());
 
         for (int i = 1; i < NMONTHS; i++) {
             System.out.println("--------------- MONTH " + (i+1) + " --------------------------");
@@ -68,7 +69,7 @@ public class IDAConceptDriftDetectorTest{
                     dataPath+"/MONTH" + (i+1) + ".arff", true);
             out = learn.updateModelWithNewTimeSlice(dataNew);
             output[i] = out[0];
-
+            System.out.println(learn.getLearntDynamicBayesianNetwork());
         }
 
         System.out.println(learn.getLearntDynamicBayesianNetwork());
