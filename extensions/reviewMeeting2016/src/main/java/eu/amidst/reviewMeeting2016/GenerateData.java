@@ -1,11 +1,7 @@
 package eu.amidst.reviewMeeting2016;
 
-import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -13,11 +9,9 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
-import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import eu.amidst.flinklink.core.utils.DBNSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -26,61 +20,11 @@ import java.util.Random;
 public class GenerateData {
 
     public static int BATCHSIZE = 500;
-
     public static boolean connectDBN = true;
 
-    public static BayesianNetwork createBN(int nVars) throws Exception {
+    public static String path = "./datasets/dataFlink/conceptdrift/data";
+    //String path = "hdfs:///tmp_conceptdrift_data";
 
-        Variables dynamicVariables = new Variables();
-        Variable classVar = dynamicVariables.newMultionomialVariable("C", 2);
-
-        for (int i = 0; i < nVars; i++) {
-            dynamicVariables.newGaussianVariable("A" + i);
-        }
-        DAG dag = new DAG(dynamicVariables);
-
-        for (int i = 0; i < nVars; i++) {
-            dag.getParentSet(dynamicVariables.getVariableByName("A" + i)).addParent(classVar);
-        }
-
-        dag.setName("dbn1");
-        BayesianNetwork bn = new BayesianNetwork(dag);
-        bn.randomInitialization(new Random(1));
-
-        return bn;
-    }
-
-    public static void createDataSets(List<String> hiddenVars, List<String> noisyVars, int numVars, int SAMPLESIZE,
-                                      int NSETS) throws Exception {
-
-        BayesianNetwork bn = createBN(numVars);
-
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        sampler.setBatchSize(BATCHSIZE);
-        sampler.setSeed(1);
-
-        if (hiddenVars!=null) {
-            for (String hiddenVar : hiddenVars) {
-                sampler.setHiddenVar(bn.getVariables().getVariableByName(hiddenVar));
-            }
-        }
-        if (noisyVars!=null){
-            for (String noisyVar : noisyVars) {
-                sampler.setMARVar(bn.getVariables().getVariableByName(noisyVar), 0.1);
-            }
-        }
-        for (int i = 0; i < NSETS; i++) {
-            System.out.println("--------------- CREATING DATA " + i + " --------------------------");
-            if (i%5==0){
-                bn.randomInitialization(new Random((long)((i+10)%2)));
-                sampler = new BayesianNetworkSampler(bn);
-                sampler.setBatchSize(BATCHSIZE);
-                sampler.setSeed(1);
-            }
-            DataFlink<DataInstance> data0 = sampler.sampleToDataFlink(SAMPLESIZE);
-            DataFlinkWriter.writeDataToARFFFolder(data0, "hdfs:///tmp_conceptdrift_data" + i + ".arff");
-        }
-    }
 
     public static DynamicBayesianNetwork createDBN1(int numVars) throws Exception {
 
@@ -106,7 +50,7 @@ public class GenerateData {
         return dbn;
     }
 
-    public static void createDataSetsDBN(List<String> hiddenVars, List<String> noisyVars, int numVars, int SAMPLESIZE,
+    public static void createDataSetsDBN(int numVars, int SAMPLESIZE,
                                          int NSETS) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
@@ -132,26 +76,12 @@ public class GenerateData {
         sampler.setBatchSize(BATCHSIZE);
         sampler.setSeed(0);
 
-        if (hiddenVars!=null) {
-            for (String hiddenVar : hiddenVars) {
-                sampler.setHiddenVar(dbn.getDynamicVariables().getVariableByName(hiddenVar));
-            }
-        }
-        if (noisyVars!=null){
-            for (String noisyVar : noisyVars) {
-                sampler.setMARVar(dbn.getDynamicVariables().getVariableByName(noisyVar), 0.1);
-            }
-        }
-
         DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
 
 
         System.out.println("--------------- CREATING DATA 0 --------------------------");
-        DataFlinkWriter.writeDataToARFFFolder(data0, "hdfs:///tmp_conceptdrift_data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "hdfs:///tmp_conceptdrift_data0.arff", false);
-
-        List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
-        //System.out.println(list);
+        DataFlinkWriter.writeDataToARFFFolder(data0, path+"0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, path+"0.arff", false);
 
 
         DataFlink<DynamicDataInstance> dataPrev = data0;
@@ -190,8 +120,8 @@ public class GenerateData {
                 sampler.setDBN(dbn);
             }
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "hdfs:///tmp_conceptdrift_data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "hdfs:///tmp_conceptdrift_data" + i + ".arff", false);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, path + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, path + i + ".arff", false);
             dataPrev = dataNew;
         }
     }
@@ -202,12 +132,8 @@ public class GenerateData {
         int numVars = Integer.parseInt(args[0]);
         int SAMPLESIZE = Integer.parseInt(args[1]);
         int NSETS = Integer.parseInt(args[2]);
-        boolean sampleFromDBN = Boolean.parseBoolean(args[3]);
 
-        if (sampleFromDBN)
-            createDataSetsDBN(null, null, numVars, SAMPLESIZE, NSETS);
-        else
-            createDataSets(null, null, numVars, SAMPLESIZE, NSETS);
+        createDataSetsDBN(numVars, SAMPLESIZE, NSETS);
 
     }
 }
