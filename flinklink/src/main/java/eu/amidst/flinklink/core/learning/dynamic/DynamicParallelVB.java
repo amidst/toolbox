@@ -340,6 +340,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.parallelVBTime0.setOutput(this.output);
         this.parallelVBTime0.setSeed(this.seed);
         this.parallelVBTime0.setDAG(this.dagTime0);
+        this.parallelVBTime0.setIdenitifableModelling(this.idenitifableModelling);
         this.parallelVBTime0.initLearning();
 
         this.svbTimeT = new SVB();
