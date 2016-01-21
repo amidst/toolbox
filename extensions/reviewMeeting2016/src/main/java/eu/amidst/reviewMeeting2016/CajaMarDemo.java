@@ -43,11 +43,14 @@ public class CajaMarDemo {
          * 1.- READ DATA TO GET MODEL HEADER (ATTRIBUTES)
          *************************************************************************************/
 
+        // The demo can be run on your local computer or a cluster with hadoop, (un)comment as appropriate
         //String fileName = "hdfs:///tmp_conceptdrift_data";
-        String fileName = "./datasets/dataFlink/conceptdrift/data";
+        //String fileName = "./datasets/dataFlink/conceptdrift/data";
+        String fileName = "/Users/ana/Dropbox/amidst/datasets/dataFlink/IDAlikeDataCDranges5K_CD6_11/MONTH";
 
+        // Load the first batch of data (first month) to get the model header (attributes) necessary to create
+        // the dynamic DAG
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,fileName+0+".arff", false);
-
         Attributes attributes = data0.getAttributes();
 
         /*************************************************************************************
@@ -72,7 +75,7 @@ public class CajaMarDemo {
         // Link the class through time
         dynamicDAG.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
 
-
+        // Show the dynamic DAG structure
         System.out.println(dynamicDAG.toString());
 
         /*************************************************************************************
@@ -84,18 +87,23 @@ public class CajaMarDemo {
 
         long start = System.nanoTime();
 
-        //Parallel Bayesian learning enging
+        //Parallel Bayesian learning engine - parameters
         DynamicParallelVB parallelVB = new DynamicParallelVB();
+        // Convergence parameters
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setLocalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(100);
+        // Set the seed
         parallelVB.setSeed(0);
+        // Set the batch/window size or level of parallelization (result is independent of this parameter)
         parallelVB.setBatchSize(1000);
-        parallelVB.setOutput(true);
+        // Set the dynamic DAG to learn from (resulting DAG is nVariables*nSamples*nMonths)
         parallelVB.setDAG(dynamicDAG);
+        // Show debugging output for VB
+        parallelVB.setOutput(true);
 
-        // Initiate learning
+        // Initiate parallel VB learning (set all necessary parameters prior to learning)
         parallelVB.initLearning();
 
 
@@ -148,33 +156,42 @@ public class CajaMarDemo {
                 .filter(w -> w.getMainVar().isNormal())
                 .forEach(w -> w.addParent(globalHiddenVar));
 
-
-
-
+        // Show the new dynamic DAG structure
         System.out.println(dynamicDAG.toString());
 
         /*************************************************************************************
          * 5.- LEARN DYNAMIC NAIVE BAYES WITH HIDDEN VARIABLE AND SHOW EXPECTED VALUE OF H
          *************************************************************************************/
-        List<Variable> hiddenVars = new ArrayList<Variable>();
-        hiddenVars.add(globalHiddenVar);
+
+        // Create a list with the hidden variables (in this case it only contains the global hidden)
+        List<Variable> hiddenVars = new ArrayList<Variable>(){{add(globalHiddenVar);}};
 
         DynamicParallelVB svb = new DynamicParallelVB();
-        svb.setSeed(seed);
-        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod =
-                new GaussianHiddenTransitionMethod(hiddenVars, 0, transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(1.0);
-        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
-        svb.setBatchSize(batchSize);
-        svb.setDAG(dynamicDAG);
-        svb.setIdenitifableModelling(new IdentifiableIDAModel());
-
-        svb.setOutput(false);
+        // Convergence parameters
         svb.setGlobalThreshold(0.001);
         svb.setLocalThreshold(0.001);
         svb.setMaximumLocalIterations(100);
         svb.setMaximumGlobalIterations(100);
+        // Set the seed
+        svb.setSeed(seed);
+        // Set the batch/window size or level of parallelization
+        svb.setBatchSize(batchSize);
+        // Set the dynamic DAG to learn from
+        svb.setDAG(dynamicDAG);
+
+        // Parameters specific to dynamicParallelVB
+        // Create the plateu structure to replicate with the global hidden variable
+        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
+        // The transition method for the global hidden variable is deterministic, starting with a standard N(0,1)
+        // Gaussian and transition variance (that is summed to that of the previous step) 1.
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod =
+                new GaussianHiddenTransitionMethod(hiddenVars, 0, transitionVariance);
+        gaussianHiddenTransitionMethod.setFading(1.0);
+        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+        svb.setIdenitifableModelling(new IdentifiableIDAModel());
+
+        svb.setOutput(false);
+
 
         svb.initLearning();
 
