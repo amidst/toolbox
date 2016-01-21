@@ -8,6 +8,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
@@ -150,6 +151,7 @@ public class CajaMarDemo {
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setBatchSize(batchSize);
         svb.setDAG(dynamicDAG);
+        svb.setIdenitifableModelling(new IdentifiableIDAModel());
 
         svb.setOutput(false);
         svb.setGlobalThreshold(0.001);

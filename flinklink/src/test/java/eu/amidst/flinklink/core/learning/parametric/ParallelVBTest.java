@@ -35,6 +35,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
 import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetectorTest;
+import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
@@ -832,7 +833,7 @@ public class ParallelVBTest extends TestCase {
         gaussianHiddenTransitionMethod.setFading(1.0);
         parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
 
-        parallelVB.setIdenitifableModelling(new IDAConceptDriftDetector.IdentifiableIDAModel());
+        parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
         parallelVB.setDAG(dag);
         parallelVB.setDataFlink(dataFlink);
         parallelVB.runLearning();
