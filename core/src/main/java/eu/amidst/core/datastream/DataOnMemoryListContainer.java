@@ -25,7 +25,7 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
     Attributes attributes;
 
     /** Represents an ID*/
-    double id;
+    double id=Double.NaN;
 
     /**
      * Creates a new DataOnMemoryListContainer initialized with the Attributes object of the data set.

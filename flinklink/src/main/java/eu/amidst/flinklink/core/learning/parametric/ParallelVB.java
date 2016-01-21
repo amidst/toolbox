@@ -260,8 +260,6 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
-            //parameterPrior.sum(finlparamSet.collect().get(0));
-
             parameterPrior = finlparamSet.collect().get(0);
 
             this.svb.updateNaturalParameterPosteriors(parameterPrior);
@@ -334,6 +332,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         DoubleSumAggregator elbo;
 
+        double basedELBO = -Double.MAX_VALUE;
+
         SVB svb;
 
         CompoundVector prior;
@@ -342,7 +342,6 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         CompoundVector updatedPrior;
 
-        double basedELBO = -Double.MAX_VALUE;
 
         String bnName;
 

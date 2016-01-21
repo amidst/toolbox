@@ -9,27 +9,27 @@
  *
  */
 
-package eu.amidst.flinklink.core.learning.parametric;
+package eu.amidst.flinklink.core.utils;
 
-import eu.amidst.core.variables.Variable;
-
-import java.io.Serializable;
+import java.util.List;
 
 /**
- * Created by andresmasegosa on 18/1/16.
+ * Created by andresmasegosa on 21/1/16.
  */
-public class ParameterIdentifiableModel implements IdenitifableModelling, Serializable {
+public class Batch<T> {
+    double batchID;
+    List<T> elements;
 
-    /** Represents the serial version ID for serializing the object. */
-    private static final long serialVersionUID = 4107783324901370839L;
-
-    @Override
-    public int getNumberOfEpochs() {
-        return 1;
+    public Batch(double batchID, List<T> elements) {
+        this.batchID = batchID;
+        this.elements = elements;
     }
 
-    @Override
-    public boolean isActiveAtEpoch(Variable variable, int epoch) {
-        return true;
+    public double getBatchID() {
+        return batchID;
+    }
+
+    public List<T> getElements() {
+        return elements;
     }
 }
