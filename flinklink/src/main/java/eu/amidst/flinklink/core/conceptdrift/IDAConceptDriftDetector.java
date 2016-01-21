@@ -76,6 +76,10 @@ public class IDAConceptDriftDetector {
     DAG globalDAG;
 
 
+    public DAG getGlobalDAG() {
+        return globalDAG;
+    }
+
     public void setAttributes(Attributes attributes) {
         this.attributes = attributes;
     }
@@ -198,12 +202,13 @@ public class IDAConceptDriftDetector {
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setBatchSize(this.batchSize);
         svb.setDAG(globalDAG);
+        svb.setIdenitifableModelling(new IdentifiableIDAModel());
 
         svb.setOutput(false);
         svb.setMaximumGlobalIterations(100);
         svb.setMaximumLocalIterations(100);
-        svb.setGlobalThreshold(0.00001);
-        svb.setLocalThreshold(0.01);
+        svb.setGlobalThreshold(0.001);
+        svb.setLocalThreshold(0.001);
 
         svb.initLearning();
     }
@@ -237,5 +242,6 @@ public class IDAConceptDriftDetector {
     public BayesianNetwork getLearntDynamicBayesianNetwork(){
         return svb.getLearntBayesianNetwork();
     }
+
 
 }

@@ -23,6 +23,7 @@ import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -99,6 +100,16 @@ public class Multinomial extends UnivariateDistribution  {
      */
     public double getProbabilityOfState(int state) {
         return this.probabilities[state];
+    }
+
+    /**
+     * Returns the probability value of a given multinomial state.
+     * @param name the name of the state.
+     * @return a probability value.
+     */
+    public double getProbabilityOfState(String name) {
+        FiniteStateSpace stateSpace = this.var.getStateSpaceType();
+        return this.probabilities[stateSpace.getIndexOfState(name)];
     }
 
     /**

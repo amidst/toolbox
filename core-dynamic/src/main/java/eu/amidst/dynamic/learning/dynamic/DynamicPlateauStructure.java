@@ -99,6 +99,14 @@ public class DynamicPlateauStructure {
     }
 
     /**
+     * Returns the {@link VMP} object at time 0 of this DynamicPlateauStructure.
+     * @return a {@link VMP} object.
+     */
+    public VMP getVMPTime0() {
+        return vmpTime0;
+    }
+
+    /**
      * Returns the {@link VMP} object at time T of this DynamicPlateauStructure.
      * @return a {@link VMP} object.
      */
@@ -323,11 +331,23 @@ public class DynamicPlateauStructure {
 
         for (int i = 0; i < nRepetitions && i<data.size(); i++) {
             final int slice = i;
-            this.plateuNodesTimeT.get(i).forEach(node -> node.setAssignment(data.get(slice)));
+            this.plateuNodesTimeT.get(i).forEach(node -> {
+                node.setAssignment(data.get(slice));
+                node.setActive(true);
+
+                //No barrent nodes
+                if (!node.isObserved() && node.getChildren().isEmpty())
+                    node.setActive(false);
+
+
+            });
         }
 
         for (int i = data.size(); i < nRepetitions; i++) {
-            this.plateuNodesTimeT.get(i).forEach(node -> node.setAssignment(null));
+            this.plateuNodesTimeT.get(i).forEach(node -> {
+                node.setAssignment(null);
+                node.setActive(false);
+            });
         }
     }
 
