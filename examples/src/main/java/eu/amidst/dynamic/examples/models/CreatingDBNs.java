@@ -18,13 +18,13 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 
 /**
- * Created by afa on 13/1/15.
+ * This example creates a dynamic BN from a dynamic data stream, with randomly generated probability distributions, then saves it to a file.
  */
 public class CreatingDBNs {
 
     public static void main(String[] args) throws Exception{
 
-        //We can open the data stream using the static class DynamicDataStreamLoader
+        //Open the data stream using the static class DynamicDataStreamLoader
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(
                 "datasets/syntheticDataDiscrete.arff");
 
@@ -58,30 +58,8 @@ public class CreatingDBNs {
         Variable E_Interface = dynamicVariables.getInterfaceVariable(E);
         Variable G_Interface = dynamicVariables.getInterfaceVariable(G);
 
-        // EXAMPLE OF THE DAG STRUCTURE
-
-        /*
-
-        DAG Time 0
-        A : {  }
-        B : { A }
-        C : { A }
-        D : { A }
-        E : { A }
-        G : { A }
-
-        DAG Time T
-        A : { A_Interface }
-        B : { A, B_Interface }
-        C : { A }
-        D : { A }
-        E : { A, E_Interface }
-        G : { A, G_Interface }
-
-        */
-
+        // Example of the dynamic DAG structure
         // Time 0: Parents at time 0 are automatically created when adding parents at time T
-        // Time t
         dynamicDAG.getParentSetTimeT(B).addParent(A);
         dynamicDAG.getParentSetTimeT(C).addParent(A);
         dynamicDAG.getParentSetTimeT(D).addParent(A);
