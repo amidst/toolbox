@@ -24,10 +24,6 @@ import java.util.Arrays;
 public class CajaMarDemo {
 
     static Logger logger = LoggerFactory.getLogger(CajaMarDemo.class);
-    public static int seed = 5;
-    public static int batchSize = 500;
-
-    public static double transitionVariance = 0.1;
 
     public static void main(String[] args) throws Exception {
 
