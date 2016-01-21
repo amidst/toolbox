@@ -42,11 +42,14 @@ public class CajaMarDemo {
          * 1.- READ DATA TO GET MODEL HEADER (ATTRIBUTES)
          *************************************************************************************/
 
+        // The demo can be run on your local computer or a cluster with hadoop, (un)comment as appropriate
         //String fileName = "hdfs:///tmp_conceptdrift_data";
         String fileName = "./datasets/dataFlink/conceptdrift/data";
+        //String fileName = "/Users/ana/Dropbox/amidst/datasets/dataFlink/IDAlikeDataCDranges5K_CD6_11/MONTH";
 
+        // Load the first batch of data (first month) to get the model header (attributes) necessary to create
+        // the dynamic DAG
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,fileName+0+".arff", false);
-
         Attributes attributes = data0.getAttributes();
 
         System.out.println(attributes);
@@ -79,7 +82,7 @@ public class CajaMarDemo {
         // Link the class through time
         dynamicDAG.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
 
-
+        // Show the dynamic DAG structure
         System.out.println(dynamicDAG.toString());
 
         /*************************************************************************************
@@ -91,18 +94,26 @@ public class CajaMarDemo {
 
         long start = System.nanoTime();
 
-        //Parallel Bayesian learning enging
+        //Parallel Bayesian learning engine - parameters
         DynamicParallelVB parallelVB = new DynamicParallelVB();
+
+        //
         parallelVB.setPlateuStructure(new PlateuStructure());
+        // Convergence parameters
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(100);
         parallelVB.setLocalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(100);
+        // Set the seed
         parallelVB.setSeed(0);
+        // Set the batch/window size or level of parallelization (result is independent of this parameter)
         parallelVB.setBatchSize(1000);
+        // Set the dynamic DAG to learn from (resulting DAG is nVariables*nSamples*nMonths)
         parallelVB.setDAG(dynamicDAG);
+        // Show debugging output for VB
+        parallelVB.setOutput(true);
 
-        // Initiate learning
+        // Initiate parallel VB learning (set all necessary parameters prior to learning)
         parallelVB.initLearning();
 
 
@@ -140,40 +151,43 @@ public class CajaMarDemo {
                 .filter(w -> w.getMainVar() != globalHiddenVar)
                 .forEach(w -> w.addParent(globalHiddenVar));
 
-
+        // Show the new dynamic DAG structure
         System.out.println(dynamicDAG.toString());
 
         /*************************************************************************************
          * 5.- LEARN DYNAMIC NAIVE BAYES WITH HIDDEN VARIABLE AND SHOW EXPECTED VALUE OF H
          *************************************************************************************/
 
-        //Update the Plateu Structure
+        // Create the plateu structure to replicate with the global hidden variable
         parallelVB.setPlateuStructure(new PlateuStructure(Arrays.asList(globalHiddenVar)));
 
-        //Define the transition for the global hidden
+        // Define the transition for the global hidden variable, starting with a standard N(0,1)
+        // Gaussian and transition variance (that is summed to that of the previous step) 1.
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod =
                 new GaussianHiddenTransitionMethod(Arrays.asList(globalHiddenVar), 0, 0.1);
         parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
 
-        //Update the Dynamic DAG
+        // Update the dynamic DAG to learn from
         parallelVB.setDAG(dynamicDAG);
 
         //Set the procedure to make the model identifiable
         parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
 
-
         //Init learning
         parallelVB.initLearning();
 
+        //Collect expected output for the global variable each month
         double[] output = new double[nMonths];
-
 
         for (int i = 0; i < nMonths; i++) {
             System.out.println("--------------- MONTH " + i + " --------------------------");
+            //Load the data for that month
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
             parallelVB.updateModelWithNewTimeSlice(i, dataNew);
             Normal normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
+            //Compute expected value for H this month
+            normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
             output[i] = normal.getMean();
         }
 

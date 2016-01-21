@@ -14,17 +14,17 @@ import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 public class DataStreamsExample {
     public static void main(String[] args) throws Exception {
 
-        //We can open the data stream using the static class DynamicDataStreamLoader
+        //Open the data stream using the class DynamicDataStreamLoader
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/dynamicNB-samples.arff");
 
-        //Access to the attributes defining the data set
+        //Access the attributes defining the data stream
         System.out.println("Attributes defining the data set");
         for (Attribute attribute : data.getAttributes()) {
             System.out.println(attribute.getName());
         }
         Attribute classVar = data.getAttributes().getAttributeByName("ClassVar");
 
-        //1. Iterating over samples using a for loop
+        //Iterate over dynamic data instances
         System.out.println("1. Iterating over samples using a for loop");
         for (DynamicDataInstance dataInstance : data) {
             System.out.println("SequenceID = "+dataInstance.getSequenceID()+", TimeID = "+dataInstance.getTimeID());
