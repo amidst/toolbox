@@ -45,7 +45,6 @@ public class CajaMarDemo {
         // The demo can be run on your local computer or a cluster with hadoop, (un)comment as appropriate
         //String fileName = "hdfs:///tmp_conceptdrift_data";
         String fileName = "./datasets/dataFlink/conceptdrift/data";
-        //String fileName = "/Users/ana/Dropbox/amidst/datasets/dataFlink/IDAlikeDataCDranges5K_CD6_11/MONTH";
 
         // Load the first batch of data (first month) to get the model header (attributes) necessary to create
         // the dynamic DAG
@@ -148,7 +147,7 @@ public class CajaMarDemo {
          * 5.- LEARN DYNAMIC NAIVE BAYES WITH HIDDEN VARIABLE AND SHOW EXPECTED VALUE OF H
          *************************************************************************************/
 
-        // Create the plateu structure to replicate with the global hidden variable
+        // Create the plateu structure to replicate
         parallelVB.setPlateuStructure(new PlateuStructure(Arrays.asList(globalHiddenVar)));
 
         // Define the transition for the global hidden variable, starting with a standard N(0,1)
