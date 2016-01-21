@@ -178,18 +178,23 @@ public class CajaMarDemo {
         //Init learning
         parallelVB.initLearning();
 
+        //Collect expected output for the global variable each month
         double[] output = new double[nMonths];
 
         System.out.println("--------------- MONTH " + 0 + " --------------------------");
+        //Load the data for the first month
         parallelVB.updateModelWithNewTimeSlice(0, data0);
+        //Compute expected value for H the first month
         Normal normal = parallelVB.getParameterPosteriorTime0(globalHiddenVar);
         output[0] = normal.getMean();
 
         for (int i = 1; i < nMonths; i++) {
             System.out.println("--------------- MONTH " + i + " --------------------------");
+            //Load the data for that month
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
             parallelVB.updateModelWithNewTimeSlice(i, dataNew);
+            //Compute expected value for H this month
             normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
             output[i] = normal.getMean();
         }
