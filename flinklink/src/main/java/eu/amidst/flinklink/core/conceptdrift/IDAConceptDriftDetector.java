@@ -209,8 +209,8 @@ public class IDAConceptDriftDetector {
         svb.setOutput(false);
         svb.setMaximumGlobalIterations(100);
         svb.setMaximumLocalIterations(100);
-        svb.setGlobalThreshold(0.01);
-        svb.setLocalThreshold(0.01);
+        svb.setGlobalThreshold(0.001);
+        svb.setLocalThreshold(0.001);
 
         svb.initLearning();
     }
