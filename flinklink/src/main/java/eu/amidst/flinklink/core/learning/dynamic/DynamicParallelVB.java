@@ -28,6 +28,9 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.data.DataFlinkConverter;
+import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.ParameterIdentifiableModel;
+import eu.amidst.flinklink.core.utils.Batch;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.JoinFunction;
@@ -84,6 +87,14 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     protected List<String> latentInterfaceVariablesNames;
     protected List<String> noLatentVariablesNames;
 
+    IdenitifableModelling idenitifableModelling = new ParameterIdentifiableModel();
+
+    boolean randomStart = true;
+
+
+    public void setIdenitifableModelling(IdenitifableModelling idenitifableModelling) {
+        this.idenitifableModelling = idenitifableModelling;
+    }
 
     public int getMaximumLocalIterations() {
         return maximumLocalIterations;
@@ -164,23 +175,21 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             config.setBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
             config.setBytes(LATENT_INTERFACE_VARIABLE_NAMES, Serialization.serializeObject(this.latentInterfaceVariablesNames));
 
-            List<DataPosteriorAssignment> emtpyBatch = new ArrayList<DataPosteriorAssignment>();
-            DataSet<List<DataPosteriorAssignment>> unionData =
+            Batch<DataPosteriorAssignment> emtpyBatch = new Batch(Double.NaN, new ArrayList<DataPosteriorAssignment>());
+            DataSet<Batch<DataPosteriorAssignment>> unionData =
                     ConversionToBatches.toBatches(dataPosteriorInstanceDataSet, this.batchSize)
                             .union(data.getDataSet().getExecutionEnvironment().fromCollection(Arrays.asList(emtpyBatch),
-                                    TypeExtractor.getForClass((Class<List<DataPosteriorAssignment>>) Class.forName("java.util.List"))));
+                                    TypeExtractor.getForClass((Class<Batch<DataPosteriorAssignment>>) Class.forName("eu.amidst.flinklink.core.utils.Batch"))));
 
 
             DataSet<CompoundVector> newparamSet = unionData
-                    .map(new DynamicParallelVB.ParallelVBMap(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables()))
+                    .map(new DynamicParallelVB.ParallelVBMap(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables(),randomStart, idenitifableModelling))
                     .withParameters(config)
                     .withBroadcastSet(loop, "VB_PARAMS_" + this.dagTimeT.getName())
                     .reduce(new eu.amidst.flinklink.core.learning.parametric.ParallelVB.ParallelVBReduce());
 
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
-
-            //parameterPrior.sum(finlparamSet.collect().get(0));
 
             parameterPrior = finlparamSet.collect().get(0);
 
@@ -430,7 +439,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         return assignmentnew;
     }
 
-    public static class CajaMarLearnMapInferenceAssignment extends RichFlatMapFunction<List<DataPosteriorAssignment>, DataPosteriorAssignment> {
+    public static class CajaMarLearnMapInferenceAssignment extends RichFlatMapFunction<Batch<DataPosteriorAssignment>, DataPosteriorAssignment> {
 
         List<Variable> latentVariables;
         List<Variable> latentInterfaceVariables;
@@ -446,11 +455,11 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         }
 
         @Override
-        public void flatMap(List<DataPosteriorAssignment> data, Collector<DataPosteriorAssignment> out) {
+        public void flatMap(Batch<DataPosteriorAssignment> data, Collector<DataPosteriorAssignment> out) {
 
-            for (int i = 0; i < data.size(); i++) {
+            for (int i = 0; i < data.getElements().size(); i++) {
                 for (Variable latentVariable : latentInterfaceVariables) {
-                    DataPosteriorAssignment dataPosteriorAssignment = data.get(i);
+                    DataPosteriorAssignment dataPosteriorAssignment = data.getElements().get(i);
                     if (!dataPosteriorAssignment.isObserved(latentVariable)){
                         UnivariateDistribution dist = dataPosteriorAssignment.getPosterior().getPosterior(latentVariable);
                         Variable interfaceVariable = this.svb.getDAG().getVariables().getVariableByName(latentVariable.getName() + DynamicVariables.INTERFACE_SUFFIX);
@@ -462,7 +471,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
             DataOnMemory<DataInstance> dataBatch = new DataOnMemoryListContainer<DataInstance>(
                     attributes,
-                    data.stream()
+                    data.getElements().stream()
                             .map(d ->
                                     new DataInstanceFromAssignment(d.getPosterior().getId(), d.getAssignment(), attributes, variables))
                             .collect(Collectors.toList())
@@ -606,33 +615,53 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         }
 
     }
-    public static class ParallelVBMap extends RichMapFunction<List<DataPosteriorAssignment>, CompoundVector> {
+    public static class ParallelVBMap extends RichMapFunction<Batch<DataPosteriorAssignment>, CompoundVector> {
         double basedELBO = 0;
         DoubleSumAggregator elbo;
         SVB svb;
+
         List<Variable> latentInterfaceVariables;
         Attributes attributes;
         List<Variable> variables;
+
+
+
         CompoundVector prior;
 
-        public ParallelVBMap(Attributes attributes, List<Variable> variables) {
+        CompoundVector initialPosterior;
+
+        CompoundVector updatedPrior;
+
+        Map<Double,CompoundVector> partialVectors;
+
+        IdenitifableModelling idenitifableModelling;
+
+        boolean randomStart;
+
+
+        public ParallelVBMap(Attributes attributes, List<Variable> variables, boolean randomStart, IdenitifableModelling idenitifableModelling) {
             this.attributes = attributes;
             this.variables = variables;
+            this.randomStart = randomStart;
+            this.idenitifableModelling = idenitifableModelling;
         }
 
         @Override
-        public CompoundVector map(List<DataPosteriorAssignment> data) throws Exception {
+        public CompoundVector map(Batch<DataPosteriorAssignment> data) throws Exception {
 
-            if (data.size()==0) {
-                //Variable var = this.svb.getDAG().getVariables().getVariableByName("GlobalHidden_0");
-                //EF_Normal nomrl = (EF_Normal)this.svb.getPlateuStructure().getNodeOfNonReplicatedVar(var).getPDist();
-                //System.out.println("Global Hidden: "+nomrl.getMean());
+            int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
+
+            double batchID = data.getBatchID();
+
+            if (data.getElements().size()==0) {
                 elbo.aggregate(basedELBO);
-                return prior;//this.svb.getNaturalParameterPrior();
+                return prior;
             }else{
-                for (int i = 0; i < data.size(); i++) {
+
+                //Prepare the data
+                for (int i = 0; i < data.getElements().size(); i++) {
                     for (Variable latentVariable : latentInterfaceVariables) {
-                        DataPosteriorAssignment dataPosteriorAssignment = data.get(i);
+                        DataPosteriorAssignment dataPosteriorAssignment = data.getElements().get(i);
                         if (!dataPosteriorAssignment.isObserved(latentVariable)) {
                             UnivariateDistribution dist = dataPosteriorAssignment.getPosterior().getPosterior(latentVariable);
                             Variable interfaceVariable = this.svb.getDAG().getVariables().getVariableByName(latentVariable.getName() + DynamicVariables.INTERFACE_SUFFIX);
@@ -642,19 +671,68 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                     }
                 }
 
-                data.get(0).getAssignment().getVariables();
-
                 DataOnMemory<DataInstance> dataBatch = new DataOnMemoryListContainer<DataInstance>(
                         attributes,
-                        data.stream()
+                        data.getElements().stream()
                                 .map(d ->
                                         new DataInstanceFromAssignment(d.getPosterior().getId(), d.getAssignment(), attributes, variables))
                                 .collect(Collectors.toList())
                 );
-                SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
-                //elbo.aggregate(out.getElbo());
+                ///////////////////
 
-                elbo.aggregate(svb.getPlateuStructure().getReplicatedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum());
+
+
+
+                //Compute ELBO
+                this.svb.updateNaturalParameterPrior(updatedPrior);
+                this.svb.updateNaturalParameterPosteriors(updatedPrior);
+                svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
+                SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
+
+
+                if (Double.isNaN(outElbo.getElbo()))
+                    throw new IllegalStateException("NaN elbo");
+
+                elbo.aggregate(outElbo.getElbo());
+
+
+                //elbo.aggregate(svb.getPlateuStructure().getReplicatedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum());
+
+
+                //Set Active Parameters
+                svb.getPlateuStructure()
+                        .getNonReplictedNodes()
+                        .filter(node -> this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep%this.idenitifableModelling.getNumberOfEpochs()))
+                        .forEach(node -> node.setActive(true));
+
+
+                if (partialVectors.containsKey(batchID)) {
+                    CompoundVector newVector = Serialization.deepCopy(updatedPrior);
+                    newVector.substract(partialVectors.get(batchID));
+                    this.svb.updateNaturalParameterPrior(newVector);
+                    this.svb.updateNaturalParameterPosteriors(updatedPrior);
+                }else {
+                    this.svb.updateNaturalParameterPrior(this.prior);
+                    this.svb.updateNaturalParameterPosteriors(this.initialPosterior);
+                }
+
+                //System.out.println("PRIOR");
+                //System.out.println(svb.getLearntBayesianNetwork());
+
+                SVB.BatchOutput out = svb.updateModelOnBatchParallel(dataBatch);
+
+
+
+                partialVectors.put(batchID,out.getVector());
+
+                //this.svb.updateNaturalParameterPrior(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+                //System.out.println("POSTERIOR");
+                //System.out.println(svb.getLearntBayesianNetwork());
+
+                //System.out.println(out.getVector().getVectorByPosition(0).get(0));
+
+                svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(true));
+
 
                 return out.getVector();
             }
@@ -667,18 +745,31 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             svb = Serialization.deserializeObject(parameters.getBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, null));
             svb.initLearning();
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
-            CompoundVector updatedPrior = collection.iterator().next();
+            updatedPrior = collection.iterator().next();
 
             if (prior!=null) {
                 svb.updateNaturalParameterPrior(prior);
                 svb.updateNaturalParameterPosteriors(updatedPrior);
-                basedELBO = svb.getPlateuStructure().getNonReplictedNodes().filter(node-> node.isActive()).mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
-                svb.initLearning();
+                basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
+                //svb.initLearning();
                 //System.out.println("BaseELBO:"+ basedELBO);
             }else{
-                basedELBO=-Double.MAX_VALUE;
-            }
+                this.prior=Serialization.deepCopy(updatedPrior);
+                this.svb.updateNaturalParameterPrior(prior);
+                if (randomStart) {
+                    this.svb.getPlateuStructure().setSeed(this.svb.getSeed());
+                    this.svb.getPlateuStructure().resetQs();
+                    initialPosterior = Serialization.deepCopy(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+                    initialPosterior.sum(prior);
+                }else{
+                    initialPosterior=Serialization.deepCopy(svb.getNaturalParameterPrior());
+                }
 
+                this.svb.updateNaturalParameterPosteriors(initialPosterior);
+
+                basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
+
+            }
 
             svb.updateNaturalParameterPrior(updatedPrior);
 
@@ -687,11 +778,15 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_" + bnName);
 
-            if (this.prior==null){
-                this.prior=Serialization.deepCopy(svb.getNaturalParameterPrior());
+            if (partialVectors==null){
+                partialVectors = new HashMap();
             }
 
         }
     }
+
+
+
+
 
 }
