@@ -51,10 +51,10 @@ public class DynamicParallelVMPExtended {
         DynamicVariables modelHeader = new DynamicVariables(attributes);
 
         // Define the global latent binary variable.
-        Variable globalHiddenVar = modelHeader.newMultinomialDynamicVariable("GlobalHidden", 2);
+        //Variable globalHiddenVar = modelHeader.newMultinomialDynamicVariable("GlobalHidden", 2);
 
         // Define the global Gaussian latent binary variable.
-        Variable globalHiddenGaussian = modelHeader.newGaussianDynamicVariable("globalHiddenGaussian");
+        //Variable globalHiddenGaussian = modelHeader.newGaussianDynamicVariable("globalHiddenGaussian");
 
 
         // Define the class variable.
@@ -65,6 +65,7 @@ public class DynamicParallelVMPExtended {
 
         // Define the structure of the DAG, i.e., set the links between the variables.
 
+        /*
         if(includeHiddenVars) {
             dag.getParentSetsTimeT()
                     .stream()
@@ -81,29 +82,33 @@ public class DynamicParallelVMPExtended {
                     .filter(w -> w.getMainVar() != globalHiddenGaussian)
                     .filter(w -> w.getMainVar().isNormal())
                     .forEach(w -> w.addParent(globalHiddenGaussian));
-        }
+        }*/
 
         dag.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
 
+        /*
         if(includeHiddenVars) {
             dag.getParentSetsTimeT()
                     .stream()
                     .filter(w -> w.getMainVar() == classVar || w.getMainVar() == globalHiddenVar ||
                             w.getMainVar() == globalHiddenGaussian)
                     .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
-        }else{
-            dag.getParentSetsTimeT()
-                    .stream()
-                    .filter(w -> w.getMainVar() == classVar)
-                    .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
         }
+        */
+        dag.getParentSetsTimeT()
+                .stream()
+                .filter(w -> w.getMainVar() == classVar)
+                .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
 
+
+        /*
         if(includeHiddenVars) {
             dag.getParentSetTimeT(globalHiddenGaussian).addParent(globalHiddenVar);
         }
+        */
 
         System.out.println(dag);
         // Return the DAG.
@@ -129,13 +134,16 @@ public class DynamicParallelVMPExtended {
         int localIter = Integer.parseInt(args[5]);
         int nsets = Integer.parseInt(args[6]);
         int seed = Integer.parseInt(args[7]);
+        boolean generateData = Boolean.parseBoolean(args[8]);
 
         /*
          * Generate dynamic datasets
          */
-        String[] argsDatasets = ArrayUtils.addAll(ArrayUtils.subarray(args, 0, 4), ArrayUtils.subarray(args, 6, 8));
-        DynamicDataSets dynamicDataSets = new DynamicDataSets();
-        dynamicDataSets.generateDynamicDataset(argsDatasets);
+        if(generateData) {
+            String[] argsDatasets = ArrayUtils.addAll(ArrayUtils.subarray(args, 0, 4), ArrayUtils.subarray(args, 6, 8));
+            DynamicDataSets dynamicDataSets = new DynamicDataSets();
+            dynamicDataSets.generateDynamicDataset(argsDatasets);
+        }
 
         /*
          * Logging

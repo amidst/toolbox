@@ -63,6 +63,25 @@ public class DynamicDAG implements Serializable {
         this.dynamicVariables.block();
     }
 
+
+    /**
+     * Update the DAG with a new DynamicVariables. This must be the same object passed to
+     * the builder, but with new variables created.
+     * @param dynamicVariables1
+     */
+    public void updateDynamicVariables(DynamicVariables dynamicVariables1){
+        this.dynamicVariables = dynamicVariables1;
+        this.dynamicVariables.block();
+
+        for (Variable var : dynamicVariables) {
+            if (var.getVarID()<this.parentSetTime0.size())
+                continue;
+            this.parentSetTime0.add(var.getVarID(),new ParentSetImpl(var));
+            this.parentSetTimeT.add(var.getVarID(),new ParentSetImpl(var));
+        }
+    }
+
+
     /**
      * Returns the set of dynamic variables in this DynamicDAG.
      * @return {@link DynamicVariables} object containing the set of dynamic variables in this DynmaicDAG.

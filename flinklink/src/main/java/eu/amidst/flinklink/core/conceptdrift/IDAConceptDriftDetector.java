@@ -22,10 +22,8 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -209,8 +207,8 @@ public class IDAConceptDriftDetector {
         svb.setOutput(false);
         svb.setMaximumGlobalIterations(100);
         svb.setMaximumLocalIterations(100);
-        svb.setGlobalThreshold(0.01);
-        svb.setLocalThreshold(0.01);
+        svb.setGlobalThreshold(0.001);
+        svb.setLocalThreshold(0.001);
 
         svb.initLearning();
     }
@@ -246,27 +244,4 @@ public class IDAConceptDriftDetector {
     }
 
 
-
-    public static class IdentifiableIDAModel implements IdenitifableModelling, Serializable{
-
-        /** Represents the serial version ID for serializing the object. */
-        private static final long serialVersionUID = 4107783324901370839L;
-
-        @Override
-        public int getNumberOfEpochs() {
-            return 3;
-        }
-
-        @Override
-        public boolean isActiveAtEpoch(Variable variable, int epoch) {
-            if (variable.getName().startsWith("GlobalHidden"))
-                return epoch==0;
-            else if (variable.getName().contains("Beta0"))
-                return epoch==1;
-            else if (variable.getName().contains("Beta_GlobalHidden"))
-                return epoch==2;
-            else
-                return true;
-        }
-    }
 }

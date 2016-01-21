@@ -260,8 +260,6 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             // feed new centroids back into next iteration
             DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
 
-            //parameterPrior.sum(finlparamSet.collect().get(0));
-
             parameterPrior = finlparamSet.collect().get(0);
 
             this.svb.updateNaturalParameterPosteriors(parameterPrior);
@@ -334,6 +332,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         DoubleSumAggregator elbo;
 
+        double basedELBO = -Double.MAX_VALUE;
+
         SVB svb;
 
         CompoundVector prior;
@@ -342,7 +342,6 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         CompoundVector updatedPrior;
 
-        double basedELBO = -Double.MAX_VALUE;
 
         String bnName;
 
@@ -549,6 +548,11 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         public boolean isConverged(int iteration, DoubleValue value) {
 
 
+            if (iteration==1)
+                return false;
+
+            iteration--;
+
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 
@@ -559,11 +563,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             if (iteration==1) {
                 previousELBO=value.getValue();
-
-                logger.info("Global bound is monotonically increasing: {}, {}, {} > {}",iteration, 100,
-                        value.getValue(), previousELBO);
-                System.out.println("Global bound is monotonically increasing: "+ iteration +","+100+ ", "
-                        + (value.getValue() +">" + previousELBO));
+                logger.info("Global bound at first iteration: {}",value.getValue());
+                System.out.println("Global bound at first iteration: " + value.getValue());
 
                 return false;
             }else if (percentage<0 && percentage < -threshold){
