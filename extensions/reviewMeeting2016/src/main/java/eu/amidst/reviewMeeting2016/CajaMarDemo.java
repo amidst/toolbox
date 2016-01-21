@@ -24,7 +24,7 @@ import java.util.List;
 public class CajaMarDemo {
 
     static Logger logger = LoggerFactory.getLogger(CajaMarDemo.class);
-    public static int seed = 0;
+    public static int seed = 5;
     public static int batchSize = 500;
 
     public static double transitionVariance = 0.1;
@@ -32,7 +32,9 @@ public class CajaMarDemo {
     public static void main(String[] args) throws Exception {
 
         /*
-         * Create flink ExecutionEnvironment variable
+         * Create flink ExecutionEnvironment variable:
+         * The ExecutionEnviroment is the context in which a program is executed. A local environment will cause
+         * execution in the current JVM, a remote environment will cause execution on a remote cluster installation.
          */
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
@@ -80,6 +82,8 @@ public class CajaMarDemo {
         // Set the number of available months for learning
         int nMonths = 10;
 
+
+        /*
         long start = System.nanoTime();
 
         // Parameter Learning with DynamicParallelVB (parameter setting)
@@ -112,26 +116,46 @@ public class CajaMarDemo {
         logger.info("Running time: {} seconds.", seconds);
 
         System.out.println(parallelVB.getLearntDynamicBayesianNetwork().toString());
-
+        */
 
         /*************************************************************************************
          * 4.- INCLUDE LATENT VARIABLE (H) ON HNB AND LEARN (IDA-LIKE TRANSITION)
          *************************************************************************************/
 
         // Define the global latent binary variable.
-        Variable globalHiddenVar = variables.newMultinomialDynamicVariable("GlobalHidden", 2);
+        Variable globalHiddenVar = variables.newGaussianDynamicVariable("GlobalHidden");
 
-        // Link the class as parent of the hidden variable.
-        dynamicDAG.getParentSetTimeT(globalHiddenVar).addParent(classVar);
+        dynamicDAG = new DynamicDAG(variables);
 
-        // Link the hidden as parent of all attributes
+        // Link the class as parent of all attributes
         dynamicDAG.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .forEach(w -> w.addParent(classVar));
+
+        // Link the class, the hidden and the attributes through time
+        dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
+
+
+        // Link the hidden as parent of all (continuous) attributes
+        dynamicDAG.getParentSetsTimeT()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .filter(w -> w.getMainVar().isNormal())
                 .forEach(w -> w.addParent(globalHiddenVar));
+
+        /*
+        // Link the class as parent of the hidden variable.
+        dynamicDAG.getParentSetTimeT(globalHiddenVar).addParent(classVar);
 
         // Link the hidden variable through time
         dynamicDAG.getParentSetTimeT(globalHiddenVar).addParent(globalHiddenVar.getInterfaceVariable());
+        */
 
         System.out.println(dynamicDAG.toString());
 
@@ -161,13 +185,13 @@ public class CajaMarDemo {
 
         double[] output = new double[nMonths];
 
-        System.out.println("--------------- DATA " + 0 + " --------------------------");
+        System.out.println("--------------- MONTH " + 0 + " --------------------------");
         svb.updateModelWithNewTimeSlice(0, data0);
         Normal normal = svb.getParameterPosteriorTime0(globalHiddenVar);
         output[0] = normal.getMean();
 
         for (int i = 1; i < nMonths; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            System.out.println("--------------- MONTH " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
             svb.updateModelWithNewTimeSlice(i, dataNew);
