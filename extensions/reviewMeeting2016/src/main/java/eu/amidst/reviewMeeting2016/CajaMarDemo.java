@@ -68,7 +68,14 @@ public class CajaMarDemo {
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
+/*
+        for (Variable var: variables){
+            if (var==classVar)
+                continue;
 
+            dynamicDAG.getParentSetTimeT(var).addParent(classVar);
+        }
+  */
         // Link the class through time
         dynamicDAG.getParentSetTimeT(classVar).addParent(classVar.getInterfaceVariable());
 
@@ -86,6 +93,7 @@ public class CajaMarDemo {
 
         //Parallel Bayesian learning enging
         DynamicParallelVB parallelVB = new DynamicParallelVB();
+        parallelVB.setPlateuStructure(new PlateuStructure());
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(100);
         parallelVB.setLocalThreshold(0.1);
@@ -145,7 +153,6 @@ public class CajaMarDemo {
         //Define the transition for the global hidden
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod =
                 new GaussianHiddenTransitionMethod(Arrays.asList(globalHiddenVar), 0, 0.1);
-        gaussianHiddenTransitionMethod.setFading(1.0);
         parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
 
         //Update the Dynamic DAG
@@ -160,17 +167,13 @@ public class CajaMarDemo {
 
         double[] output = new double[nMonths];
 
-        System.out.println("--------------- MONTH " + 0 + " --------------------------");
-        parallelVB.updateModelWithNewTimeSlice(0, data0);
-        Normal normal = parallelVB.getParameterPosteriorTime0(globalHiddenVar);
-        output[0] = normal.getMean();
 
-        for (int i = 1; i < nMonths; i++) {
+        for (int i = 0; i < nMonths; i++) {
             System.out.println("--------------- MONTH " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
             parallelVB.updateModelWithNewTimeSlice(i, dataNew);
-            normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
+            Normal normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
             output[i] = normal.getMean();
         }
 
