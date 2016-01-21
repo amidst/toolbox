@@ -16,8 +16,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Created by ana@cs.aau.dk on 21/01/16.
@@ -53,6 +52,7 @@ public class CajaMarDemo {
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,fileName+0+".arff", false);
         Attributes attributes = data0.getAttributes();
 
+        System.out.println(attributes);
         /*************************************************************************************
          * 2. - CREATE A DYNAMIC NAIVE BAYES DAG
          *************************************************************************************/
@@ -83,7 +83,7 @@ public class CajaMarDemo {
          *************************************************************************************/
 
         // Set the number of available months for learning
-        int nMonths = 10;
+        int nMonths = 5;
 
         long start = System.nanoTime();
 
@@ -91,7 +91,7 @@ public class CajaMarDemo {
         DynamicParallelVB parallelVB = new DynamicParallelVB();
         // Convergence parameters
         parallelVB.setGlobalThreshold(0.1);
-        parallelVB.setMaximumGlobalIterations(10);
+        parallelVB.setMaximumGlobalIterations(100);
         parallelVB.setLocalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(100);
         // Set the seed
@@ -132,28 +132,13 @@ public class CajaMarDemo {
         // Define the global latent binary variable.
         Variable globalHiddenVar = variables.newGaussianDynamicVariable("GlobalHidden");
 
-        dynamicDAG = new DynamicDAG(variables);
+        dynamicDAG.updateDynamicVariables(variables);
 
-        // Link the class as parent of all attributes
+        // Link the hidden as parent of all predictive attributes
         dynamicDAG.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .filter(w -> w.getMainVar() != globalHiddenVar)
-                .forEach(w -> w.addParent(classVar));
-
-        // Link the class, the hidden and the attributes through time
-        dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .filter(w -> w.getMainVar() != globalHiddenVar)
-                .forEach(w -> w.addParent(w.getMainVar().getInterfaceVariable()));
-
-
-        // Link the hidden as parent of all (continuous) attributes
-        dynamicDAG.getParentSetsTimeT()
-                .stream()
-                .filter(w -> w.getMainVar() != classVar)
-                .filter(w -> w.getMainVar() != globalHiddenVar)
-                .filter(w -> w.getMainVar().isNormal())
                 .forEach(w -> w.addParent(globalHiddenVar));
 
         // Show the new dynamic DAG structure
@@ -162,9 +147,6 @@ public class CajaMarDemo {
         /*************************************************************************************
          * 5.- LEARN DYNAMIC NAIVE BAYES WITH HIDDEN VARIABLE AND SHOW EXPECTED VALUE OF H
          *************************************************************************************/
-
-        // Create a list with the hidden variables (in this case it only contains the global hidden)
-        List<Variable> hiddenVars = new ArrayList<Variable>(){{add(globalHiddenVar);}};
 
         DynamicParallelVB svb = new DynamicParallelVB();
         // Convergence parameters
@@ -178,43 +160,41 @@ public class CajaMarDemo {
         svb.setBatchSize(batchSize);
         // Set the dynamic DAG to learn from
         svb.setDAG(dynamicDAG);
+        // Show debugging output for VB
+        svb.setOutput(false);
 
         // Parameters specific to dynamicParallelVB
         // Create the plateu structure to replicate with the global hidden variable
-        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
-        // The transition method for the global hidden variable is deterministic, starting with a standard N(0,1)
+        parallelVB.setPlateuStructure(new PlateuStructure(Arrays.asList(globalHiddenVar)));
+        // Define the transition for the global hidden variable, starting with a standard N(0,1)
         // Gaussian and transition variance (that is summed to that of the previous step) 1.
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod =
-                new GaussianHiddenTransitionMethod(hiddenVars, 0, transitionVariance);
+                new GaussianHiddenTransitionMethod(Arrays.asList(globalHiddenVar), 0, 0.1);
         gaussianHiddenTransitionMethod.setFading(1.0);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+        //Set the procedure to make the model identifiable
         svb.setIdenitifableModelling(new IdentifiableIDAModel());
 
-        svb.setOutput(false);
-
-
-        svb.initLearning();
+        //Init learning
+        parallelVB.initLearning();
 
         double[] output = new double[nMonths];
 
         System.out.println("--------------- MONTH " + 0 + " --------------------------");
-        svb.updateModelWithNewTimeSlice(0, data0);
-        Normal normal = svb.getParameterPosteriorTime0(globalHiddenVar);
+        parallelVB.updateModelWithNewTimeSlice(0, data0);
+        Normal normal = parallelVB.getParameterPosteriorTime0(globalHiddenVar);
         output[0] = normal.getMean();
 
         for (int i = 1; i < nMonths; i++) {
             System.out.println("--------------- MONTH " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
-            svb.updateModelWithNewTimeSlice(i, dataNew);
-            normal = svb.getParameterPosteriorTimeT(globalHiddenVar);
+            parallelVB.updateModelWithNewTimeSlice(i, dataNew);
+            normal = parallelVB.getParameterPosteriorTimeT(globalHiddenVar);
             output[i] = normal.getMean();
-
-            System.out.println(svb.getLearntDynamicBayesianNetwork());
-
         }
 
-        System.out.println(svb.getLearntDynamicBayesianNetwork());
+        System.out.println(parallelVB.getLearntDynamicBayesianNetwork());
 
         for (int i = 0; i < nMonths; i++) {
             System.out.println("E(H_"+i+") =\t" + output[i]);
