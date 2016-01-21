@@ -148,32 +148,20 @@ public class CajaMarDemo {
          * 5.- LEARN DYNAMIC NAIVE BAYES WITH HIDDEN VARIABLE AND SHOW EXPECTED VALUE OF H
          *************************************************************************************/
 
-        DynamicParallelVB svb = new DynamicParallelVB();
-        // Convergence parameters
-        svb.setGlobalThreshold(0.001);
-        svb.setLocalThreshold(0.001);
-        svb.setMaximumLocalIterations(100);
-        svb.setMaximumGlobalIterations(100);
-        // Set the seed
-        svb.setSeed(seed);
-        // Set the batch/window size or level of parallelization
-        svb.setBatchSize(batchSize);
-        // Set the dynamic DAG to learn from
-        svb.setDAG(dynamicDAG);
-        // Show debugging output for VB
-        svb.setOutput(false);
-
-        // Parameters specific to dynamicParallelVB
         // Create the plateu structure to replicate with the global hidden variable
         parallelVB.setPlateuStructure(new PlateuStructure(Arrays.asList(globalHiddenVar)));
+
         // Define the transition for the global hidden variable, starting with a standard N(0,1)
         // Gaussian and transition variance (that is summed to that of the previous step) 1.
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod =
                 new GaussianHiddenTransitionMethod(Arrays.asList(globalHiddenVar), 0, 0.1);
         gaussianHiddenTransitionMethod.setFading(1.0);
-        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+        parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
         //Set the procedure to make the model identifiable
-        svb.setIdenitifableModelling(new IdentifiableIDAModel());
+        parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
+
+        // Update the dynamic DAG to learn from
+        parallelVB.setDAG(dynamicDAG);
 
         //Init learning
         parallelVB.initLearning();
