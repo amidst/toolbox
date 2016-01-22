@@ -124,7 +124,7 @@ public class CajaMarDemoNB {
         System.out.println(parallelVB.getLearntDynamicBayesianNetwork());
 
 
-        DBNWriterToHugin.saveToHuginFile(parallelVB.getLearntDynamicBayesianNetwork(),"networks/DNB.oobn");
+        DBNWriterToHugin.saveToHuginFile(parallelVB.getLearntDynamicBayesianNetwork(),"networks/DNB.net");
 
     }
 }
