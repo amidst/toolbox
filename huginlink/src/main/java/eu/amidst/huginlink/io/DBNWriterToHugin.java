@@ -1,9 +1,7 @@
 package eu.amidst.huginlink.io;
 
 import COM.hugin.HAPI.ExceptionHugin;
-import COM.hugin.HAPI.Class;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.huginlink.converters.DBNConverterToHugin;
 
 /**
  * This class is a writer of dynamic Bayesian networks in AMIDST format to Hugin files.
@@ -19,6 +17,9 @@ public class DBNWriterToHugin {
      */
     public static void saveToHuginFile(DynamicBayesianNetwork amidstDBN, String file) throws ExceptionHugin {
 
+        BNWriterToHugin.saveToHuginFile(amidstDBN.toBayesianNetworkTimeT(),file);
+
+        /*
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
 
         //The network name must be the same as the file name (without .dbn)
@@ -30,6 +31,7 @@ public class DBNWriterToHugin {
         huginDBN.setName(networkName);
 
         huginDBN.saveAsNet(file);
+        */
 
     }
 }
