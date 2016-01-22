@@ -160,6 +160,6 @@ public class CajaMarDemoHNB {
             System.out.println("E(H_"+i+") =\t" + output[i]);
         }
 
-        DBNWriterToHugin.saveToHuginFile(parallelVB.getLearntDynamicBayesianNetwork(),"networks/DNB_withH.oobn");
+        DBNWriterToHugin.saveToHuginFile(parallelVB.getLearntDynamicBayesianNetwork(),"networks/DNB_withH.net");
     }
 }
