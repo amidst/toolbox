@@ -22,8 +22,8 @@ public class GenerateData {
     public static int BATCHSIZE = 500;
     public static boolean connectDBN = true;
 
-    public static String path = "./datasets/dataFlink/conceptdrift/data";
-    //String path = "hdfs:///tmp_conceptdrift_data";
+    //public static String path = "./datasets/dataFlink/conceptdrift/data";
+    String path = "hdfs:///tmp_conceptdrift_data";
 
 
     public static DynamicBayesianNetwork createDBN1(int numVars) throws Exception {
