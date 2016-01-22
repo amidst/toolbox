@@ -66,7 +66,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     DynamicDAG dynamicDAG;
     DAG dagTimeT;
     DAG dagTime0;
-    int seed;
+    int seed = 5;
     int batchSize;
     boolean output;
     protected int maximumGlobalIterations = 10;

@@ -93,8 +93,6 @@ public class CajaMarDemoNB {
         parallelVB.setMaximumGlobalIterations(100);
         parallelVB.setLocalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(100);
-        // Set the seed
-        parallelVB.setSeed(5);
         // Set the batch/window size or level of parallelization (result is independent of this parameter)
         parallelVB.setBatchSize(1000);
         // Set the dynamic DAG to learn from (resulting DAG is nVariables*nSamples*nMonths)
