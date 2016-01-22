@@ -13,8 +13,6 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
@@ -23,7 +21,7 @@ import java.util.Arrays;
  */
 public class CajaMarDemo {
 
-    static Logger logger = LoggerFactory.getLogger(CajaMarDemo.class);
+    //static Logger logger = LoggerFactory.getLogger(CajaMarDemo.class);
 
     public static void main(String[] args) throws Exception {
 
@@ -85,7 +83,7 @@ public class CajaMarDemo {
          *************************************************************************************/
 
         // Set the number of available months for learning
-        int nMonths = 5;
+        int nMonths = Integer.parseInt(args[0]);
 
         long start = System.nanoTime();
 
@@ -99,8 +97,6 @@ public class CajaMarDemo {
         parallelVB.setMaximumGlobalIterations(100);
         parallelVB.setLocalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(100);
-        // Set the seed
-        parallelVB.setSeed(0);
         // Set the batch/window size or level of parallelization (result is independent of this parameter)
         parallelVB.setBatchSize(1000);
         // Set the dynamic DAG to learn from (resulting DAG is nVariables*nSamples*nMonths)
@@ -113,7 +109,7 @@ public class CajaMarDemo {
 
 
         for (int i = 0; i < nMonths; i++) {
-            logger.info("--------------- MONTH " + i + " --------------------------");
+            System.out.println("--------------- MONTH " + i + " --------------------------");
             //Load the data for that month
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     fileName+i+".arff", false);
@@ -124,7 +120,7 @@ public class CajaMarDemo {
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
-        logger.info("Running time: {} seconds.", seconds);
+        System.out.println("Running time (DNB): "+seconds+" seconds.");
 
         //Show the learnt Dynamic Bayesian network
         System.out.println(parallelVB.getLearntDynamicBayesianNetwork());
@@ -152,6 +148,8 @@ public class CajaMarDemo {
         /*************************************************************************************
          * 5.- LEARN DYNAMIC NAIVE BAYES WITH HIDDEN VARIABLE AND SHOW EXPECTED VALUE OF H
          *************************************************************************************/
+
+        start = System.nanoTime();
 
         // Create the plateu structure to replicate
         parallelVB.setPlateuStructure(new PlateuStructure(Arrays.asList(globalHiddenVar)));
@@ -184,6 +182,10 @@ public class CajaMarDemo {
             //Compute expected value for H this month
             output[i] = normal.getMean();
         }
+
+        duration = (System.nanoTime() - start) / 1;
+        seconds = duration / 1000000000.0;
+        System.out.println("Running time (DNB with hidden): "+seconds+" seconds.");
 
         System.out.println(parallelVB.getLearntDynamicBayesianNetwork());
 
