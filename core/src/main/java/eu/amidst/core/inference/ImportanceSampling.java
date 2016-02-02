@@ -50,15 +50,20 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
 
     private BayesianNetwork model;
     private BayesianNetwork samplingModel;
-    private int sampleSize = 10000;
+    private boolean sameSamplingModel;
+
     private List<Variable> causalOrder;
+
+    private int seed = 0;
+    private int sampleSize = 1000;
 
     private boolean keepDataOnMemory = true;
     private List<ImportanceSampling.WeightedAssignment> weightedSampleList;
     private Stream<ImportanceSampling.WeightedAssignment> weightedSampleStream;
-    private int seed = 0;
+
     private Assignment evidence;
     private boolean parallelMode = true;
+
 
     private class WeightedAssignment {
         private HashMapAssignment assignment;
@@ -82,6 +87,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         }
     }
 
+
     /**
      * {@inheritDoc}
      */
@@ -103,8 +109,15 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
      */
     @Override
     public void setModel(BayesianNetwork model_) {
-        this.model = model_;
-        this.setSamplingModel(model_);
+        this.model = Serialization.deepCopy(model_);
+        //setSamplingModel(model_);
+        this.samplingModel = model;
+        this.causalOrder = Utils.getTopologicalOrder(model.getDAG());
+        this.sameSamplingModel=true;
+
+        evidence=null;
+        weightedSampleList=null;
+        weightedSampleStream=null;
     }
 
     /**
@@ -113,16 +126,25 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
     @Override
     public void setEvidence(Assignment evidence_) {
         this.evidence = evidence_;
+        weightedSampleList=null;
+        weightedSampleStream=null;
     }
 
     /**
      * Sets the sampling model for this ImportanceSampling.
-     * @param samplingModel_ a {@link BayesianNetwork} model according to which samples will be taken.
+     * @param samplingModel_ a {@link BayesianNetwork} model according to which samples will be simulated.
      */
     public void setSamplingModel(BayesianNetwork samplingModel_) {
         this.samplingModel = new BayesianNetwork(samplingModel_.getDAG(),
                 Serialization.deepCopy(samplingModel_.getConditionalDistributions()));
         this.causalOrder = Utils.getTopologicalOrder(samplingModel.getDAG());
+
+        if (this.samplingModel.equalBNs(this.model,1E-10)) {
+            this.sameSamplingModel=true;
+        }
+        else {
+            this.sameSamplingModel=false;
+        }
     }
 
     /**
@@ -158,14 +180,14 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
 
         if(keepDataOnMemory) {
             weightedSampleStream = weightedSampleList.stream().sequential();
-        }else{
+        } else {
             computeWeightedSampleStream(false);
         }
         if(parallelMode) {
             weightedSampleStream.parallel();
         }
 
-        return Math.log(weightedSampleStream.mapToDouble(ws -> ws.weight).average().getAsDouble());
+        return Math.log(weightedSampleStream.mapToDouble(ws -> Math.exp(ws.weight)).filter(Double::isFinite).average().getAsDouble());
     }
 
     /**
@@ -183,13 +205,42 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         return weightedSampleStream.map(wsl -> wsl.assignment);
     }
 
+    private WeightedAssignment getWeightedAssignmentSameModel(Random random) {
+
+        HashMapAssignment sample = new HashMapAssignment(this.model.getNumberOfVars());;
+
+        double logWeight = 0.0;
+
+        for (Variable samplingVar : causalOrder) {
+
+            double simulatedValue;
+
+            ConditionalDistribution samplingDistribution = this.model.getConditionalDistribution(samplingVar);
+            UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(sample);
+
+            if( evidence!=null && !Double.isNaN(evidence.getValue(samplingVar))) {
+                simulatedValue=evidence.getValue(samplingVar);
+                logWeight = logWeight + univariateSamplingDistribution.getLogProbability(simulatedValue);
+            }
+            else {
+                simulatedValue = univariateSamplingDistribution.sample(random);
+            }
+            sample.setValue(samplingVar,simulatedValue);
+        }
+        //double weight = Math.exp(logWeight);
+        return new WeightedAssignment(sample,logWeight);
+    }
 
     private WeightedAssignment getWeightedAssignment(Random random) {
 
+        if(this.sameSamplingModel) {
+            return getWeightedAssignmentSameModel(random);
+        }
+
         HashMapAssignment samplingAssignment = new HashMapAssignment(1);
         HashMapAssignment modelAssignment = new HashMapAssignment(1);
-        double numerator = 1.0;
-        double denominator = 1.0;
+        double numerator = 0.0;
+        double denominator = 0.0;
 
         for (Variable samplingVar : causalOrder) {
 
@@ -200,24 +251,24 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
                 simulatedValue=evidence.getValue(samplingVar);
 
                 UnivariateDistribution univariateModelDistribution = this.model.getConditionalDistribution(modelVar).getUnivariateDistribution(modelAssignment);
-                numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
+                numerator = numerator + univariateModelDistribution.getLogProbability(simulatedValue);
             }
             else {
                 ConditionalDistribution samplingDistribution = this.samplingModel.getConditionalDistribution(samplingVar);
                 UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(samplingAssignment);
 
                 simulatedValue = univariateSamplingDistribution.sample(random);
-                denominator = denominator / univariateSamplingDistribution.getProbability(simulatedValue);
+                denominator = denominator + univariateSamplingDistribution.getLogProbability(simulatedValue);
 
                 UnivariateDistribution univariateModelDistribution = this.model.getConditionalDistribution(modelVar).getUnivariateDistribution(modelAssignment);
-                numerator = numerator * univariateModelDistribution.getProbability(simulatedValue);
+                numerator = numerator + univariateModelDistribution.getLogProbability(simulatedValue);
 
             }
             modelAssignment.setValue(modelVar,simulatedValue);
             samplingAssignment.setValue(samplingVar, simulatedValue);
         }
-        double weight = numerator*denominator;
-        return new WeightedAssignment(samplingAssignment,weight);
+        double logWeight = numerator-denominator;
+        return new WeightedAssignment(samplingAssignment,logWeight);
     }
 
 
@@ -237,7 +288,8 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
             weightedSampleStream.parallel();
         }
         List<Double> sum = weightedSampleStream
-                .map(ws -> Arrays.asList(ws.weight, ws.weight * function.apply(ws.assignment.getValue(var))))
+                .map(ws -> Arrays.asList(Math.exp(ws.weight), Math.exp(ws.weight) * function.apply(ws.assignment.getValue(var))))
+                .filter(array -> (Double.isFinite(array.get(0)) && Double.isFinite(array.get(1)) ))
                 .reduce(Arrays.asList(new Double(0.0), new Double(0.0)), (e1, e2) -> Arrays.asList(e1.get(0) + e2.get(0), e1.get(1) + e2.get(1)));
 
         return sum.get(1)/sum.get(0);
@@ -258,7 +310,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
 
         if(keepDataOnMemory) {
             weightedSampleStream = weightedSampleList.stream().sequential();
-        }else{
+        } else {
             computeWeightedSampleStream(false);
         }
 
@@ -266,6 +318,14 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
             weightedSampleStream.parallel();
         }
 
+        if (!keepDataOnMemory) {
+            weightedSampleList = weightedSampleStream.collect(Collectors.toList());
+        }
+
+        double maxLogWeight = weightedSampleList.stream()
+                .mapToDouble(weightetAssignment -> weightetAssignment.weight)
+                .filter(Double::isFinite)
+                .max().getAsDouble();
 
         SufficientStatistics sumSS = weightedSampleStream
                 .peek(w -> {
@@ -273,11 +333,13 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
                 })
                 .map(e -> {
                     SufficientStatistics SS = ef_univariateDistribution.getSufficientStatistics(e.assignment);
-                    SS.multiplyBy(e.weight);
+                    SS.multiplyBy(Math.exp(e.weight-maxLogWeight));
                     return SS;
                 })
+                .filter(ss-> Double.isFinite(ss.sum()))
                 .reduce(SufficientStatistics::sumVectorNonStateless).get();
 
+        sumSS.multiplyBy(Math.exp(maxLogWeight));
         sumSS.divideBy(dataInstanceCount.get());
 
         ef_univariateDistribution.setMomentParameters(sumSS);
@@ -286,8 +348,14 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
 
         //Normalize Multinomial distributions
         if(var.isMultinomial()) {
-            ((Multinomial) posteriorDistribution).
-                    setProbabilities(Utils.normalize(((Multinomial) posteriorDistribution).getProbabilities()));
+
+            double[] probabilities = ((Multinomial) posteriorDistribution).getProbabilities();
+            double probMax = Arrays.stream(probabilities).max().getAsDouble();
+            Arrays.stream(probabilities).map(prob -> prob/probMax);
+
+            ((Multinomial) posteriorDistribution).setProbabilities(Utils.normalize(probabilities));
+//            ((Multinomial) posteriorDistribution).
+//                    setProbabilities(Utils.normalize(((Multinomial) posteriorDistribution).getProbabilities()));
         }
 
         return (E)posteriorDistribution;
@@ -304,8 +372,8 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
                     .mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
         }
 
-        if(saveDataOnMemory_){
-                weightedSampleList = weightedSampleStream.collect(Collectors.toList());
+        if(saveDataOnMemory_) {
+            weightedSampleList = weightedSampleStream.collect(Collectors.toList());
         }
     }
 
@@ -315,6 +383,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
     @Override
     public void runInference() {
         if(keepDataOnMemory) computeWeightedSampleStream(true);
+        //computeWeightedSampleStream(keepDataOnMemory);
     }
 
 
