@@ -105,6 +105,16 @@ public interface Vector {
     }
 
     /**
+     * Updates the values of this Vector via summing its initial values by an input {@code double} value.
+     * @param val an input {@code double} value.
+     */
+    default void sumConstant(double val){
+        for (int i = 0; i < this.size(); i++) {
+            this.set(i,this.get(i)+val);
+        }
+    }
+
+    /**
      * Returns the dot product of this Vector and an input vector, defined as
      * the sumNonStateless of the pairwise products of the values of the two vectors.
      * @param vector an input vector.
