@@ -73,8 +73,9 @@ public class ParallelTAN implements AmidstOptionsHandler {
      */
     public void setParallelMode(boolean parallelMode) {
         this.parallelMode = parallelMode;
-        if (parallelMode)
-            this.numCores = Runtime.getRuntime().availableProcessors();
+        if (parallelMode) {
+            //this.numCores = Runtime.getRuntime().availableProcessors();
+        }
         else
             this.numCores=1;
 
@@ -125,7 +126,12 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * @param numCores_ the number of cores.
      */
     public void setNumCores(int numCores_) {
-        this.numCores = numCores_;
+        if(numCores_>Runtime.getRuntime().availableProcessors()) {
+            this.numCores = Runtime.getRuntime().availableProcessors();
+        }
+        else {
+            this.numCores = numCores_;
+        }
     }
 
     /**
@@ -198,6 +204,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         int numCases = dataOnMemory.getNumberOfDataInstances();
         try {
             huginNetwork.setNumberOfCases(numCases);
+            System.out.println("Learning DAG with " + this.numCores + " cores.");
             huginNetwork.setConcurrencyLevel(this.numCores);
         } catch (ExceptionHugin exceptionHugin) {
             System.out.println("ParallelTan LearnDAG Error 2");
