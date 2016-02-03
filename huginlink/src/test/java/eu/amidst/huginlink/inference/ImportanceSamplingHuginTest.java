@@ -4,12 +4,13 @@ import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -27,7 +28,7 @@ public class ImportanceSamplingHuginTest {
     public void test() throws IOException, ClassNotFoundException {
 
         BayesianNetwork model = BayesianNetworkLoader.loadFromFile("networks/IS.bn");
-
+        System.out.println(model.toString());
         //**************************************************************************************************************
         // MODEL DISTRIBUTIONS
         //**************************************************************************************************************
@@ -72,18 +73,33 @@ public class ImportanceSamplingHuginTest {
         IS.setSampleSize(200000);
         IS.setEvidence(evidence);
         IS.setParallelMode(true);
-
+        IS.setKeepDataOnMemory(true);
         //**************************************************************************************************************
 
         double threshold = 0.005;
 
         /* runInference() method must be called each time we compute a posterior because the Stream of Weighted
            Assignments is closed (reduced) in method getPosterior(var).*/
-        IS.runInference(); assertTrue(IS.getPosterior(varA).equalDist(huginInferenceForBN.getPosterior(varA),threshold));
-        IS.runInference(); assertTrue(IS.getPosterior(varB).equalDist(huginInferenceForBN.getPosterior(varB),threshold));
-        IS.runInference(); assertTrue(IS.getPosterior(varC).equalDist(huginInferenceForBN.getPosterior(varC),threshold));
-        IS.runInference(); assertTrue(IS.getPosterior(varD).equalDist(huginInferenceForBN.getPosterior(varD),threshold));
-        IS.runInference(); assertTrue(IS.getPosterior(varE).equalDist(huginInferenceForBN.getPosterior(varE),threshold));
+        IS.runInference();
+        System.out.println("Posterior IS: "+IS.getPosterior(varA).toString());
+        System.out.println("Posterior Hugin: "+huginInferenceForBN.getPosterior(varA).toString());
+        assertTrue(IS.getPosterior(varA).equalDist(huginInferenceForBN.getPosterior(varA),threshold));
+
+        System.out.println("Posterior IS: "+IS.getPosterior(varB).toString());
+        System.out.println("Posterior Hugin: "+huginInferenceForBN.getPosterior(varB).toString());
+        assertTrue(IS.getPosterior(varB).equalDist(huginInferenceForBN.getPosterior(varB),threshold));
+
+        System.out.println("Posterior IS: "+IS.getPosterior(varC).toString());
+        System.out.println("Posterior Hugin: "+huginInferenceForBN.getPosterior(varC).toString());
+        assertTrue(IS.getPosterior(varC).equalDist(huginInferenceForBN.getPosterior(varC),threshold));
+
+        System.out.println("Posterior IS: "+IS.getPosterior(varD).toString());
+        System.out.println("Posterior Hugin: "+huginInferenceForBN.getPosterior(varD).toString());
+        assertTrue(IS.getPosterior(varD).equalDist(huginInferenceForBN.getPosterior(varD),threshold));
+
+        System.out.println("Posterior IS: "+IS.getPosterior(varE).toString());
+        System.out.println("Posterior Hugin: "+huginInferenceForBN.getPosterior(varE).toString());
+        assertTrue(IS.getPosterior(varE).equalDist(huginInferenceForBN.getPosterior(varE),threshold));
 
         }
 
