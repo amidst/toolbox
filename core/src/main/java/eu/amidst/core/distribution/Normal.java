@@ -180,7 +180,7 @@ public class Normal extends UnivariateDistribution {
      * @return true if the two Normal distributions are equal, false otherwise.
      */
     public boolean equalDist(Normal dist, double threshold){
-        return Math.abs(this.getMean() - dist.getMean()) <= threshold && Math.abs(this.getVariance() - dist.getVariance()) <= threshold;
+        return Math.abs(this.getMean() - dist.getMean()) <= threshold && Math.abs(this.getSd() - dist.getSd()) <= threshold;
     }
 
     /**
