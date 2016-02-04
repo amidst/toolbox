@@ -17,6 +17,7 @@ public class DBNWriterToHugin {
      */
     public static void saveToHuginFile(DynamicBayesianNetwork amidstDBN, String file) throws ExceptionHugin {
 
+
         BNWriterToHugin.saveToHuginFile(amidstDBN.toBayesianNetworkTimeT(),file);
 
         /*
