@@ -28,7 +28,7 @@ public class IdentifiableIDAModel implements IdenitifableModelling, Serializable
 
     @Override
     public int getNumberOfEpochs() {
-        return 3;
+        return 4;
     }
 
     @Override
@@ -39,6 +39,8 @@ public class IdentifiableIDAModel implements IdenitifableModelling, Serializable
             return epoch == 1;
         else if (variable.getName().contains("Beta_GlobalHidden"))
             return epoch == 2;
+        else if (variable.getName().contains("Gamma"))
+            return epoch == 3;
         else
             return true;
     }
