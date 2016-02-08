@@ -703,7 +703,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                 //Set Active Parameters
                 svb.getPlateuStructure()
                         .getNonReplictedNodes()
-                        .filter(node -> this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep%this.idenitifableModelling.getNumberOfEpochs()))
+                        .filter(node -> this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
                         .forEach(node -> node.setActive(true));
 
 
