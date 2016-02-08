@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.dataGeneration;
+package eu.amidst.modelExperiments;
 
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;

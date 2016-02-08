@@ -563,8 +563,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             if (iteration==1) {
                 previousELBO=value.getValue();
-                logger.info("Global bound at first iteration: {}",value.getValue());
-                System.out.println("Global bound at first iteration: " + value.getValue());
+                logger.info("Global bound at first iteration: 1, {}",value.getValue());
+                System.out.println("Global bound at first iteration: 1, " + value.getValue());
 
                 return false;
             }else if (percentage<0 && percentage < -threshold){

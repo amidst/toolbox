@@ -27,14 +27,18 @@ public class StreamWordCountExample {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         DataStream<Tuple2<String, Integer>> dataStream = env
-                .socketTextStream("localhost", 9999)
+                .fromElements("Who's there?",
+                        "I think I hear them. Stand, ho! Who's there?")
+                //.socketTextStream("localhost", 9999)
                 .flatMap(new Splitter())
-                .groupBy(0)
+                .keyBy(0)
                 .sum(1);
 
         dataStream.print();
 
-        env.execute("Socket Stream WordCount");
+        env.execute();
+
+        //env.execute("Socket Stream WordCount");
     }
 
     public static class Splitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
