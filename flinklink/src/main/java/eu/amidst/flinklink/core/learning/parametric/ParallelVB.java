@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -232,7 +233,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             DataSet<CompoundVector> paramSet = env.fromElements(parameterPrior);
 
-            ConvergenceELBO convergenceELBO = new ConvergenceELBO(this.globalThreshold);
+            ConvergenceELBO convergenceELBO = new ConvergenceELBO(this.globalThreshold, System.nanoTime());
             // set number of bulk iterations for KMeans algorithm
             IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
                     .registerAggregationConvergenceCriterion("ELBO_" + this.dag.getName(), new DoubleSumAggregator(),convergenceELBO);
@@ -535,9 +536,11 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
         final double threshold;
         double previousELBO = Double.NaN;
+        long start;
 
-        public ConvergenceELBO(double threshold){
+        public ConvergenceELBO(double threshold, long start){
             this.threshold=threshold;
+            this.start = start;
         }
 
         public double getELBO() {
@@ -561,31 +564,40 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             double percentage = 100*(value.getValue() - previousELBO)/Math.abs(previousELBO);
 
+            DecimalFormat df = new DecimalFormat("0.0000");
+
             if (iteration==1) {
                 previousELBO=value.getValue();
-                logger.info("Global bound at first iteration: 1, {}",value.getValue());
-                System.out.println("Global bound at first iteration: 1, " + value.getValue());
+                logger.info("Global bound at first iteration: 1,{},{} seconds",df.format(value.getValue()),
+                        df.format((System.nanoTime() - start) / 1000000000.0));
+                //System.out.println("Global bound at first iteration: 1," + df.format(value.getValue())+ "," +
+                //        df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
 
                 return false;
             }else if (percentage<0 && percentage < -threshold){
-                logger.info("Global bound is not monotonically increasing: {}, {}, {} < {}",iteration, percentage,
-                        value.getValue(), previousELBO);
-                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +", "+
-                       percentage +", " + value.getValue() +" < " + previousELBO);
+                logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
+                        percentage), df.format(value.getValue()), df.format(previousELBO));
+                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
                 //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
                 // ", "+ (value.getValue() +">" + previousELBO));
                 //this.previousELBO=value.getValue();
                 //return false;
             }else if (percentage>0 && percentage>threshold) {
-                logger.info("Global bound is monotonically increasing: {}, {}, {} > {}",iteration, percentage,
-                        value.getValue(), previousELBO);
-                System.out.println("Global bound is monotonically increasing: "+ iteration +","+percentage+ ", "
-                        + (value.getValue() +">" + previousELBO));
+                logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
+                        df.format(percentage), df.format(value.getValue()), df.format(previousELBO),
+                        df.format((System.nanoTime() - start) / 1000000000.0));
+                //System.out.println("Global bound is monotonically increasing: "+ iteration +","+df.format(percentage)+
+                //        "," + (df.format(value.getValue()) +">" + df.format(previousELBO))+ ","+
+                //        df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
                 this.previousELBO=value.getValue();
                 return false;
             }else {
-                logger.info("Global Convergence: {}, {}, {}",iteration,percentage,value.getValue());
-                System.out.println("Global Convergence: "+ iteration +", " + percentage + ", " + value.getValue());
+                logger.info("Global bound Convergence: {},{},{},{} seconds",iteration,df.format(percentage),
+                        df.format(value.getValue()), df.format((System.nanoTime() - start) / 1000000000.0));
+                //System.out.println("Global bound Convergence: "+ iteration +"," + df.format(percentage) + "," +
+                //        df.format(value.getValue())+ "," + df.format((System.nanoTime() - start) / 1000000000.0) +
+                //        " seconds");
                 return true;
             }
         }

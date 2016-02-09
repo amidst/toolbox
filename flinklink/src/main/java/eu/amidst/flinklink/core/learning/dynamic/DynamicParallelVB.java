@@ -168,7 +168,9 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
             // set number of bulk iterations for KMeans algorithm
             IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
-                    .registerAggregationConvergenceCriterion("ELBO_" + this.dagTimeT.getName(), new DoubleSumAggregator(), new eu.amidst.flinklink.core.learning.parametric.ParallelVB.ConvergenceELBO(this.globalThreshold));
+                    .registerAggregationConvergenceCriterion("ELBO_" + this.dagTimeT.getName(), new DoubleSumAggregator(),
+                            new eu.amidst.flinklink.core.learning.parametric.ParallelVB.ConvergenceELBO(
+                                    this.globalThreshold, System.nanoTime()));
 
             Configuration config = new Configuration();
             config.setString(eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm.BN_NAME, this.dagTimeT.getName());

@@ -70,18 +70,22 @@ public class IDAmodelDistributedVMP {
 
     public static void main(String[] args) throws Exception {
 
-        int windowSize = Integer.parseInt(args[0]);
-        int globalIter = Integer.parseInt(args[1]);
-        int localIter = Integer.parseInt(args[2]);
-        int seed = Integer.parseInt(args[3]);
+        //String fileName = "hdfs:///tmp_uai100K.arff";
+        //String fileName = "./datasets/dataFlink/uai1K.arff";
+        String fileName = args[0];
+
+        int windowSize = Integer.parseInt(args[1]);
+        int globalIter = Integer.parseInt(args[2]);
+        int localIter = Integer.parseInt(args[3]);
+        int seed = Integer.parseInt(args[4]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
 
-        //String fileName = "hdfs:///tmp_uai100K.arff";
-        String fileName = "./datasets/dataFlink/uai1K.arff";
-
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        //env.setParallelism(1);
+
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, true);
 
