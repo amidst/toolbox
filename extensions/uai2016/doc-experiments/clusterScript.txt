@@ -1,0 +1,29 @@
+aws emr create-cluster --termination-protected --applications Name=Hadoop --bootstrap-actions '[{"Path":"s3://amidst2/emr_bootstrap_java_8_emr400.sh","Name":"Bootstrap action"}]' --ec2-attributes '{"KeyName":"AmidstToolbox","InstanceProfile":"EMR_EC2_DefaultRole","SubnetId":"subnet-0e205679","EmrManagedSlaveSecurityGroup":"sg-e07dea84","EmrManagedMasterSecurityGroup":"sg-e77dea83"}' --service-role EMR_DefaultRole --enable-debugging --release-label emr-4.3.0 --log-uri 's3n://amidst2/logsForClusters/' --name 'TestCluster4_2onlyAggTrue' --instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m3.xlarge","Name":"MASTER"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m3.xlarge","Name":"CORE"}]' --region us-west-2
+
+
+aws emr describe-cluster --cluster-id j-28GP6VSDGF5IA
+
+ssh hadoop@ec2-54-200-118-231.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+
+wget http://ftp.download-by.net/apache/flink/flink-0.10.0/flink-0.10.0-bin-hadoop26-scala_2.10.tgz
+tar xzf flink-*.tgz
+export HADOOP\_CONF\_DIR=/etc/hadoop/conf
+
+scp -i ~/key/AmidstToolbox.pem core/classes/artifacts/uai2016_jar/uai2016.jar  hadoop@ec2-54-200-118-231.us-west-2.compute.amazonaws.com:
+
+aws s3 cp s3://amidstdata/uai100M.arff.tar.gz /home/hadoop/
+tar -xvzf uai100Marff.tar.gz
+hadoop fs -copyFromLocal uai100M.arff /uai100M.arff
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 4024 -c eu.amidst.modelExperiments.IDAmodelDistributedVMP uai2016.jar hdfs:///uai100M.arff 1000 100 10 0 > output.txt 2>&1
+
+yarn logs -applicationId 
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 4024 -c eu.amidst.modelExperiments.ParseOutput uai2016.jar output.txt parsedOutput.txt
+
+————————
+# Data generation
+#tar -czf uai100M.arff.tar.gz uai100M.arff/
+#This command in local, it does not work on the cluster
+#./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 1024 -c eu.amidst.dataGeneration.NormalizeData ../uai2016.jar hdfs:///uai1K.arff
+

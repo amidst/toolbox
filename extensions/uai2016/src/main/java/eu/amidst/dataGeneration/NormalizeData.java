@@ -26,8 +26,7 @@ public class NormalizeData {
         }
     }
 
-    public static void assignRanges(DataFlink<DataInstance> dataFlink, String fileName) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+    public static void assignRanges(DataFlink<DataInstance> dataFlink, String fileName, ExecutionEnvironment env) throws Exception {
 
         /*
          * Calculate max and min ranges for all attributes
@@ -56,7 +55,7 @@ public class NormalizeData {
         DataFlinkWriter.writeHeader(env, dataFlink, fileName, true);
 
         //TODO: Strange behaviour, the header is only written if loadDataFromFolder is invoked afterwards, OMG!!
-        dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
+        DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
     }
 
@@ -114,15 +113,24 @@ public class NormalizeData {
         }
     }
 
+    public static void normalizeWithFlinkML(DataFlink<DataInstance> dataFlink, String fileName) throws Exception {
+
+    }
+
 
     public static void main(String[] args) throws Exception{
-        String fileName = "./datasets/dataFlink/uai1K.arff";
+        //String fileName = "./datasets/dataFlink/uai1K.arff";
+
+
+        String fileName = args[0];
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
-        assignRanges(dataFlink, fileName);
+        assignRanges(dataFlink, fileName, env);
+
+        //normalizeWithFlinkML(dataFlink, fileName);
 
     }
 }
