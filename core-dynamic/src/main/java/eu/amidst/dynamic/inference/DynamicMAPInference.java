@@ -1,31 +1,25 @@
 package eu.amidst.dynamic.inference;
 
-import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.inference.ImportanceSampling;
-import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Serialization;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.*;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
-import eu.amidst.dynamic.utils.DynamicToStaticBNConverter;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 /**
@@ -44,10 +38,16 @@ public class DynamicMAPInference {
     private DynamicBayesianNetwork model;
 
     /** Represents a {@link BayesianNetwork} object. */
-    private BayesianNetwork staticEvenModel, staticOddModel, staticModel;
+    private BayesianNetwork staticModel;
+
+    /** Represents a {@link BayesianNetwork} object. */
+    private List<BayesianNetwork> mergedClassVarModels;
 
     /** Represents the number of time steps. */
     private int nTimeSteps = 2;
+
+    /** Represents the number of consecutive class variables to merge */
+    private int nMergedClassVars = 2;
 
     /** Represents the sample size when using IS. */
     private int sampleSize = 1000;
@@ -82,90 +82,90 @@ public class DynamicMAPInference {
     String groupedClassName = "__GROUPED_CLASS__";
 
 
-    /**
-     * Sets the evidence for this DynamicMAPInference.
-     * @param evidence a list of {@link DynamicAssignment} objects.
-     */
-    public void setEvidence(List<DynamicAssignment> evidence) {
-
-        long sequenceID = evidence.get(0).getSequenceID();
-        for(DynamicAssignment dynAssig : evidence) {
-            if (dynAssig.getSequenceID()!=sequenceID) {
-                System.out.println("Error: Different sequence IDs in the evidence");
-                System.exit(-15);
-            }
-            if (dynAssig.getTimeID()>=nTimeSteps || dynAssig.getTimeID()<0) {
-                System.out.println("Error: Evidence time ID out of the range");
-                System.exit(-20);
-            }
-            if (!Double.isNaN(dynAssig.getValue(MAPvariable))) {
-                System.out.println("Error: MAP variable should not be in the evidence");
-                System.exit(-30);
-            }
-        }
-        this.evidence = evidence;
-
-        if (staticEvenModel!=null) {
-            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
-
-            evidence.stream().forEach(dynamicAssignment -> {
-                int time = (int) dynamicAssignment.getTimeID();
-                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-                for (Variable dynVariable : dynAssigVariables) {
-                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-                    double varValue = dynamicAssignment.getValue(dynVariable);
-                    staticEvidence.setValue(staticVariable, varValue);
-                }
-
-            });
-        }
-    }
-
-    public void setEvidence(DataStream<DynamicDataInstance> evidence1) {
-
-        DynamicDataInstance currentDataInstance = evidence1.stream().findFirst().get();
-        long sequenceID = currentDataInstance.getSequenceID();
-
-        List<DynamicAssignment> evidence2 = new ArrayList<>(1);
-        for(DynamicDataInstance instance : evidence1) {
-            if(instance.getSequenceID()!=sequenceID) {
-                continue;
-            }
-            instance.setValue(this.MAPvariable, Utils.missingValue());
-
-            DynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(this.model.getNumberOfVars());
-            this.model.getDynamicVariables().getListOfDynamicVariables().stream().filter(var -> !(var.getName()==this.MAPvarName)).forEach(var -> {
-                dynamicAssignment.setValue(var,instance.getValue(var));
-            });
-            evidence2.add(dynamicAssignment);
-        }
-
-        //evidence2.sort( (l1,l2) -> (l1.getTimeID()<l2.getTimeID() ? 1 : -1) ) ;
-
-//        evidence2.forEach(evid -> {
-//            System.out.println(evid.outputString(this.model.getDynamicVariables().getListOfDynamicVariables()));
-////            System.out.println(evid.getSequenceID());
-////            System.out.println(evid.getTimeID());
-//        });
-
-
-        this.evidence = evidence2;
-
-        if (staticEvenModel!=null) {
-            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
-
-            evidence.stream().forEach(dynamicAssignment -> {
-                int time = (int) dynamicAssignment.getTimeID();
-                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-                for (Variable dynVariable : dynAssigVariables) {
-                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-                    double varValue = dynamicAssignment.getValue(dynVariable);
-                    staticEvidence.setValue(staticVariable, varValue);
-                }
-
-            });
-        }
-    }
+//    /**
+//     * Sets the evidence for this DynamicMAPInference.
+//     * @param evidence a list of {@link DynamicAssignment} objects.
+//     */
+//    public void setEvidence(List<DynamicAssignment> evidence) {
+//
+//        long sequenceID = evidence.get(0).getSequenceID();
+//        for(DynamicAssignment dynAssig : evidence) {
+//            if (dynAssig.getSequenceID()!=sequenceID) {
+//                System.out.println("Error: Different sequence IDs in the evidence");
+//                System.exit(-15);
+//            }
+//            if (dynAssig.getTimeID()>=nTimeSteps || dynAssig.getTimeID()<0) {
+//                System.out.println("Error: Evidence time ID out of the range");
+//                System.exit(-20);
+//            }
+//            if (!Double.isNaN(dynAssig.getValue(MAPvariable))) {
+//                System.out.println("Error: MAP variable should not be in the evidence");
+//                System.exit(-30);
+//            }
+//        }
+//        this.evidence = evidence;
+//
+//        if (staticEvenModel!=null) {
+//            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+//
+//            evidence.stream().forEach(dynamicAssignment -> {
+//                int time = (int) dynamicAssignment.getTimeID();
+//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+//                for (Variable dynVariable : dynAssigVariables) {
+//                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+//                    double varValue = dynamicAssignment.getValue(dynVariable);
+//                    staticEvidence.setValue(staticVariable, varValue);
+//                }
+//
+//            });
+//        }
+//    }
+//
+//    public void setEvidence(DataStream<DynamicDataInstance> evidence1) {
+//
+//        DynamicDataInstance currentDataInstance = evidence1.stream().findFirst().get();
+//        long sequenceID = currentDataInstance.getSequenceID();
+//
+//        List<DynamicAssignment> evidence2 = new ArrayList<>(1);
+//        for(DynamicDataInstance instance : evidence1) {
+//            if(instance.getSequenceID()!=sequenceID) {
+//                continue;
+//            }
+//            instance.setValue(this.MAPvariable, Utils.missingValue());
+//
+//            DynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(this.model.getNumberOfVars());
+//            this.model.getDynamicVariables().getListOfDynamicVariables().stream().filter(var -> !(var.getName()==this.MAPvarName)).forEach(var -> {
+//                dynamicAssignment.setValue(var,instance.getValue(var));
+//            });
+//            evidence2.add(dynamicAssignment);
+//        }
+//
+//        //evidence2.sort( (l1,l2) -> (l1.getTimeID()<l2.getTimeID() ? 1 : -1) ) ;
+//
+////        evidence2.forEach(evid -> {
+////            System.out.println(evid.outputString(this.model.getDynamicVariables().getListOfDynamicVariables()));
+//////            System.out.println(evid.getSequenceID());
+//////            System.out.println(evid.getTimeID());
+////        });
+//
+//
+//        this.evidence = evidence2;
+//
+//        if (staticEvenModel!=null) {
+//            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+//
+//            evidence.stream().forEach(dynamicAssignment -> {
+//                int time = (int) dynamicAssignment.getTimeID();
+//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+//                for (Variable dynVariable : dynAssigVariables) {
+//                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+//                    double varValue = dynamicAssignment.getValue(dynVariable);
+//                    staticEvidence.setValue(staticVariable, varValue);
+//                }
+//
+//            });
+//        }
+//    }
 
     /**
      * Sets the model for this DynamicMAPInference.
@@ -193,12 +193,12 @@ public class DynamicMAPInference {
         boolean parentsT = model.getDynamicDAG().getParentSetTimeT(MAPvariable).getParents().stream().anyMatch(parent -> !parent.isInterfaceVariable());
 
         if (parents0 || parentsT) {
-            System.out.println("Error: The dynamic MAP Variable must not have parents");
+            System.out.println("Error: The dynamic MAP variable must not have parents");
             System.exit(-5);
         }
 
         if (!MAPvariable.isMultinomial()) {
-            System.out.println("Error: The dynamic MAP Variable must be multinomial");
+            System.out.println("Error: The dynamic MAP variable must be multinomial");
             System.exit(-10);
         }
         this.MAPvariable = MAPvariable;
@@ -212,9 +212,22 @@ public class DynamicMAPInference {
     public void setNumberOfTimeSteps(int ntimeSteps) {
         if(ntimeSteps<2) {
             System.out.println("Error: The number of time steps should be at least 2");
-            System.exit(-10);
+            System.exit(-12);
         }
         nTimeSteps = ntimeSteps;
+    }
+
+    /**
+     * Sets the number of consecutive copies of the class variable to merge.
+     * Should be less than or equal to the number of time steps.
+     * @param nMergedClassVars an {@code int} that represents the number of class variable copies to merge.
+     */
+    public void setNumberOfMergedClassVars(int nMergedClassVars) {
+        if (nMergedClassVars > nTimeSteps) {
+            System.out.println("Error: The number of merged class variables should be less or equal than the number of time steps");
+            System.exit(-13);
+        }
+        this.nMergedClassVars = nMergedClassVars;
     }
 
     /**
@@ -246,7 +259,6 @@ public class DynamicMAPInference {
      * @return an array of integers representing the MAP sequence
      */
     public int[] getMAPsequence() {
-
         return MAPsequence;
     }
 
@@ -259,20 +271,14 @@ public class DynamicMAPInference {
     }
 
     /**
-     * Returns the static even model.
-     * @return a {@link BayesianNetwork} object.
+     * Returns the list of models with merged class variable.
+     * @return a List of {@link BayesianNetwork} objects.
      */
-    public BayesianNetwork getStaticEvenModel() {
-        return staticEvenModel;
+    public List<BayesianNetwork> getMergedClassVarModels() {
+        return mergedClassVarModels;
     }
 
-    /**
-     * Returns the static odd model.
-     * @return a {@link BayesianNetwork} object.
-     */
-    public BayesianNetwork getStaticOddModel() {
-        return staticOddModel;
-    }
+
 
     /**
      * Returns replicated MAP variables.
@@ -288,591 +294,576 @@ public class DynamicMAPInference {
     /**
      * Computes Dynamic MAP for the even static model.
      */
-    public void computeDynamicMAPEvenModel() {
+    public void computeMergedClassVarModels() {
 
-        Variables variables;
-        DynamicDAG dynamicDAG;
-        DAG dag;
-        BayesianNetwork bn;
+        DynamicDAG dynamicDAG = model.getDynamicDAG();
         DynamicVariables dynamicVariables = model.getDynamicVariables();
 
-        variables = obtainReplicatedStaticVariables(dynamicVariables, true);
+        mergedClassVarModels = new ArrayList<>(nMergedClassVars);
 
-        dynamicDAG = model.getDynamicDAG();
-        dag = obtainStaticDAG(dynamicDAG, variables, true);
-        bn = this.obtainStaticGroupedClassBayesianNetwork(dag, variables, true);
+        IntStream.range(0,nMergedClassVars).forEachOrdered(modelNumber -> {
 
-        this.staticEvenModel = bn;
-    }
+            System.out.println("Model number " + modelNumber);
+            Variables variables = obtainReplicatedStaticVariables(dynamicVariables, modelNumber);
 
-    /**
-     * Computes Dynamic MAP for the odd static model.
-     */
-    public void computeDynamicMAPOddModel() {
+            DAG dag = obtainStaticDAG(dynamicDAG,variables,modelNumber);
+            //System.out.println(dag.toString());
 
-        Variables variables;
-        DynamicDAG dynamicDAG;
-        DAG dag;
-        BayesianNetwork bn;
-        DynamicVariables dynamicVariables = model.getDynamicVariables();
+            BayesianNetwork bn = obtainStaticMergedClassVarNetwork(dag,variables,modelNumber);
+            System.out.println(bn.toString());
 
-        variables = obtainReplicatedStaticVariables(dynamicVariables, false);
 
-        dynamicDAG = model.getDynamicDAG();
-        dag = obtainStaticDAG(dynamicDAG, variables, false);
+            int replicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
 
-        bn = this.obtainStaticGroupedClassBayesianNetwork(dag, variables, false);
+//            IntStream.range(0,replicationsMAPVariable).forEach(i-> {
+//                System.out.println("Variable " + groupedClassName + "_t" + i);
+//                System.out.println(bn.getConditionalDistribution(bn.getVariables().getVariableByName(groupedClassName + "_t" + i)).toString());
+//                System.out.println();
+//            });
 
-        this.staticOddModel = bn;
-    }
-
-    /**
-     * Runs the inference algorithm.
-     */
-    public void runInference() {
-
-        if (MAPvariable==null || MAPvarName==null) {
-            System.out.println("Error: The MAP variable has not been set");
-            System.exit(-30);
-        }
-
-        if (this.staticOddModel == null) {
-            this.computeDynamicMAPOddModel();
-        }
-        if (this.staticEvenModel == null) {
-            this.computeDynamicMAPEvenModel();
-        }
-
-        if (evidence!=null && staticEvidence==null) {
-
-            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
-
-            evidence.stream().forEach(dynamicAssignment -> {
-                int time = (int) dynamicAssignment.getTimeID();
-                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-                for (Variable dynVariable : dynAssigVariables) {
-                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-                    double varValue = dynamicAssignment.getValue(dynVariable);
-                    staticEvidence.setValue(staticVariable, varValue);
-                }
-
-            });
-        }
-        this.runInference(SearchAlgorithm.VMP);
-    }
-
-    /**
-     * Runs the inference given an input search algorithm.
-     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
-     */
-    public void runInference(SearchAlgorithm searchAlgorithm) {
-
-        if (MAPvariable==null || MAPvarName==null) {
-            System.out.println("Error: The MAP variable has not been set");
-            System.exit(-30);
-        }
-
-        if (this.staticOddModel == null) {
-            this.computeDynamicMAPOddModel();
-        }
-        if (this.staticEvenModel == null) {
-            this.computeDynamicMAPEvenModel();
-        }
-
-        if (evidence!=null && staticEvidence==null) {
-
-            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
-
-            evidence.stream().forEach(dynamicAssignment -> {
-                int time = (int) dynamicAssignment.getTimeID();
-                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-                for (Variable dynVariable : dynAssigVariables) {
-                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-                    double varValue = dynamicAssignment.getValue(dynVariable);
-                    staticEvidence.setValue(staticVariable, varValue);
-                }
-
-            });
-        }
-
-        InferenceAlgorithm evenModelInference, oddModelInference;
-        switch(searchAlgorithm) {
-            case VMP:
-                //        long timeStart = System.nanoTime();
-                evenModelInference = new VMP();
-                oddModelInference = new VMP();
-
-                break;
-
-            case IS:
-            default:
-
-                evenModelInference = new ImportanceSampling();
-                oddModelInference = new ImportanceSampling();
-
-                Random random = new Random((this.seed));
-                oddModelInference.setSeed(random.nextInt());
-                evenModelInference.setSeed(random.nextInt());
-                this.seed = random.nextInt();
-
-                ((ImportanceSampling)oddModelInference).setKeepDataOnMemory(true);
-                ((ImportanceSampling)evenModelInference).setKeepDataOnMemory(true);
-
-                ((ImportanceSampling)oddModelInference).setSampleSize(sampleSize);
-                ((ImportanceSampling)evenModelInference).setSampleSize(sampleSize);
-
-                break;
-        }
-
-        IntStream.range(0, 2).parallel().forEach(i -> {
-            if (i == 0) {
-                evenModelInference.setParallelMode(this.parallelMode);
-                evenModelInference.setModel(staticEvenModel);
-                if (evidence != null) {
-                    evenModelInference.setEvidence(staticEvidence);
-                }
-                evenModelInference.runInference();
-            }
-            else {
-                oddModelInference.setParallelMode(this.parallelMode);
-                oddModelInference.setModel(staticOddModel);
-                if (evidence != null) {
-                    oddModelInference.setEvidence(staticEvidence);
-                }
-                oddModelInference.runInference();
-            }
+//            System.out.println(bn.getConditionalDistribution(bn.getVariables().getVariableByName(groupedClassName + "_t1")).toString());
+//            System.out.println();
+//            System.out.println(bn.getConditionalDistribution(bn.getVariables().getVariableByName(groupedClassName + "_t2")).toString());
+//            System.out.println();
+//            System.out.println(bn.getConditionalDistribution(bn.getVariables().getVariableByName(groupedClassName + "_t3")).toString());
+//            System.out.println();
         });
-
-        List<UnivariateDistribution> posteriorMAPDistributionsEvenModel = new ArrayList<>();
-        List<UnivariateDistribution> posteriorMAPDistributionsOddModel = new ArrayList<>();
-
-        int replicationsMAPVariableEvenModel = nTimeSteps/2 + nTimeSteps%2;
-        IntStream.range(0,replicationsMAPVariableEvenModel).forEachOrdered(i -> posteriorMAPDistributionsEvenModel.add(evenModelInference.getPosterior(i)));
-
-        int replicationsMAPVariableOddModel = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
-        IntStream.range(0,replicationsMAPVariableOddModel).forEachOrdered(i -> posteriorMAPDistributionsOddModel.add(oddModelInference.getPosterior(i)));
-
-        List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributionsEvenModel, posteriorMAPDistributionsOddModel);
-        computeMostProbableSequence(conditionalDistributionsMAPvariable);
-
     }
 
-    /**
-     * Runs the inference for Ungrouped MAP variable given an input search algorithm.
-     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
-     */
-    public void runInferenceUngroupedMAPVariable(SearchAlgorithm searchAlgorithm) {
-
-        if (MAPvariable==null || MAPvarName==null) {
-            System.out.println("Error: The MAP variable has not been set");
-            System.exit(-30);
-        }
-
-        if (this.staticModel == null) {
-            staticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
-        }
-
-        if (evidence!=null && staticEvidence==null) {
-
-            staticEvidence = new HashMapAssignment(staticModel.getNumberOfVars());
-
-            evidence.stream().forEach(dynamicAssignment -> {
-                int time = (int) dynamicAssignment.getTimeID();
-                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-                for (Variable dynVariable : dynAssigVariables) {
-                    Variable staticVariable = staticModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-                    double varValue = dynamicAssignment.getValue(dynVariable);
-                    staticEvidence.setValue(staticVariable, varValue);
-                }
-
-            });
-        }
-
-        InferenceAlgorithm staticModelInference;
-        switch(searchAlgorithm) {
-            case VMP:
-                staticModelInference = new VMP();
-                break;
-
-            case IS:
-            default:
-                ImportanceSampling importanceSampling =  new ImportanceSampling();
-                importanceSampling.setSampleSize(15*staticModel.getNumberOfVars());
-                importanceSampling.setKeepDataOnMemory(true);
-                Random random = new Random((this.seed));
-                importanceSampling.setSeed(random.nextInt());
-                staticModelInference=importanceSampling;
-                break;
-        }
-
-
-        staticModelInference.setParallelMode(this.parallelMode);
-        staticModelInference.setModel(staticModel);
-        if (evidence != null) {
-            staticModelInference.setEvidence(staticEvidence);
-        }
-        staticModelInference.runInference();
-
-        List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
-        IntStream.range(0,nTimeSteps).forEachOrdered(i -> posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i)));
-
-        double [] probabilities = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToDouble(array -> array[0]).toArray();
-        double MAPsequenceProbability = Math.exp(Arrays.stream(probabilities).map(prob -> Math.log(prob)).sum());
-
-        int [] MAPsequence = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToInt(array -> (int) array[1]).toArray();
-
-        MAPestimate = new HashMapAssignment(nTimeSteps);
-        IntStream.range(0,nTimeSteps).forEach(t-> {
-            Variables variables = Serialization.deepCopy(this.staticModel.getVariables());
-            Variable currentVar;
-            if (variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t))!=null) {
-                currentVar  = variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
-            }
-            else {
-                currentVar  = variables.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
-            }
-
-            MAPestimate.setValue(currentVar,MAPsequence[t]);
-        });
-        MAPestimateLogProbability = Math.log(MAPsequenceProbability);
-        this.MAPsequence = MAPsequence;
-    }
-
-    /**
-     * Computes the Most Probable Sequence given the conditional distributions of the MAP variable.
-     * @param conditionalDistributionsMAPvariable a {@code List} of conditional distribution values.
-     */
-    private void computeMostProbableSequence(List<double[]> conditionalDistributionsMAPvariable) {
-        int[] MAPsequence = new int[nTimeSteps];
-        int MAPvarNStates = MAPvariable.getNumberOfStates();
-
-        int[] argMaxValues = new int[nTimeSteps];
-
-        double MAPsequenceProbability=-1;
-        double [] current_probs;
-        double [] current_max_probs;
-        double [] previous_max_probs = new double[MAPvarNStates];;
-
-        for (int t = nTimeSteps-1; t >= 0; t--) {
-
-            current_probs = conditionalDistributionsMAPvariable.get(t);
-            double maxProb=-1;
-
-            current_max_probs = new double[MAPvarNStates];
-
-            if (t==(nTimeSteps-1)) { // There are no previous_max_probs
-                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
-                    maxProb=-1;
-                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_t
-                        if (current_probs[j * MAPvarNStates + k] > maxProb) {
-                            maxProb = current_probs[j * MAPvarNStates + k];
-
-                        }
-                    }
-                    current_max_probs[j]=maxProb;
-                }
-                argMaxValues[t] = (int)argMax(current_max_probs)[1];
-                previous_max_probs = current_max_probs;
-            }
-            else if (t>0 && t<(nTimeSteps-1)) {
-                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
-                    maxProb=-1;
-                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_t
-                        if (current_probs[j * MAPvarNStates + k]*previous_max_probs[j] > maxProb) {
-                            maxProb = current_probs[j * MAPvarNStates + k]*previous_max_probs[k];
-                        }
-                    }
-                    current_max_probs[j]=maxProb;
-                }
-                argMaxValues[t] = (int)argMax(current_max_probs)[1];
-                previous_max_probs = current_max_probs;
-            }
-            else { // Here, t=0
-                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_0
-                    maxProb=-1;
-                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_1
-                        if (current_probs[j]*previous_max_probs[j] > maxProb) {
-                            maxProb = current_probs[j]*previous_max_probs[j];
-                        }
-                    }
-                    current_max_probs[j]=maxProb;
-                }
-                MAPsequenceProbability =  argMax(current_max_probs)[0];
-                argMaxValues[t] = (int)argMax(current_max_probs)[1];
-                previous_max_probs = current_max_probs;
-            }
-        }
-
-        int previousVarMAPState = argMaxValues[0];
-        MAPsequence[0] = argMaxValues[0];
-
-        int thisVarMAPState = 0;
-        for (int t = 1; t < nTimeSteps; t++) {
-            current_probs = conditionalDistributionsMAPvariable.get(t);
-            previousVarMAPState = argMaxValues[t-1];
-
-            double maxProb = -1;
-            for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_t
-
-                if (current_probs[previousVarMAPState * MAPvarNStates + j] >= maxProb) {
-                    maxProb = current_probs[previousVarMAPState * MAPvarNStates + j];
-                    thisVarMAPState = j;
-                }
-            }
-            MAPsequence[t]=thisVarMAPState;
-        }
-
-        MAPestimate = new HashMapAssignment(nTimeSteps);
-
-        if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
-            MAPestimateLogProbability=Double.NaN;
-        }
-        else {
-            IntStream.range(0, nTimeSteps).forEach(t -> {
-//                Variables varsAux = Serialization.deepCopy(this.staticEvenModel.getVariables());
-//                Variable currentVar = varsAux.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
-                Variable currentVar;
-                try {
-                    currentVar = this.staticEvenModel.getVariables().getVariableByName(MAPvarName + "_t" + Integer.toString(t));
-                }
-                catch (Exception e) {
-                    Variables copy = Serialization.deepCopy(this.staticEvenModel.getVariables());
-                    currentVar = copy.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
-                }
-                MAPestimate.setValue(currentVar, MAPsequence[t]);
-            });
-            MAPestimateLogProbability = Math.log(MAPsequenceProbability);
-        }
-
-        this.MAPsequence = MAPsequence;
-    }
-
-    /**
-     * Returns Combined Conditional Distributions for both even and odd models.
-     * @param posteriorMAPDistributionsEvenModel a {@code List} of {@link UnivariateDistribution} of the even model.
-     * @param posteriorMAPDistributionsOddModel a {@code List} of {@link UnivariateDistribution} of the odd model.
-     * @return a {@code List} of conditional distributions values.
-     */
-    private List<double[]> getCombinedConditionalDistributions( List<UnivariateDistribution> posteriorMAPDistributionsEvenModel , List<UnivariateDistribution> posteriorMAPDistributionsOddModel) {
-
-        List<double[]> listCondDistributions = new ArrayList<>(nTimeSteps);
-
-        int MAPvarNStates = MAPvariable.getNumberOfStates();
-
-        // Univariate distribution Y_0
-        UnivariateDistribution dist0_1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
-        UnivariateDistribution dist0 = posteriorMAPDistributionsOddModel.get(0); // This variable is just Y_0 (not a group)
-
-        double[] dist0_probs = new double[MAPvariable.getNumberOfStates()];
-
-        dist0_probs = dist0.getParameters();
-        for (int i = 0; i < MAPvarNStates; i++) {
-            dist0_probs[i] = (double) 1/2 * dist0_probs[i];
-
-            for (int j = 0; j < MAPvarNStates; j++) {
-                dist0_probs[i] = dist0_probs[i] + (double) 1/2 * dist0_1.getProbability(i*MAPvarNStates + j);
-            }
-        }
-        listCondDistributions.add(dist0_probs);
-
-        // Conditional distribution Y_1 | Y_0;
-        UnivariateDistribution dist_paired1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
-        UnivariateDistribution dist_unpaired_1 = posteriorMAPDistributionsOddModel.get(1); // This variable groups Y_1 and Y_2 (if nTimeSteps>2)
-
-        double[] dist_probs1 = dist_paired1.getParameters();
-
-        for (int i = 0; i < MAPvarNStates; i++) { // To go over all values of Y_0
-            for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_1
-                int index = i * MAPvarNStates + j;
-                dist_probs1[index] = (double) 1/2 * dist_probs1[index];
-
-                if (nTimeSteps>2) {
-                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
-                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j * MAPvarNStates + k);
-                    }
-                }
-                else {
-                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
-                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j);
-                    }
-                }
-            }
-        }
-        listCondDistributions.add(dist_probs1);
-
-        IntStream.range(2, nTimeSteps - 1).forEachOrdered(t -> {
-            if (t % 2 == 0) {
-                int idxOdd = 1 + (t - 2) / 2;
-                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
-
-                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1); // This variable groups Y_{t-2} and Y_{t-1}
-                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable groups Y_t and Y_{t+1}
-
-                double[] dist_probs = dist_paired.getParameters();
-
-                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
-
-                        int index = i * MAPvarNStates + j;
-                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
-
-                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
-                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
-                            }
-                        }
-                    }
-                }
-                listCondDistributions.add(dist_probs);
-            } else {
-                int idxEven = (t - 1) / 2;
-                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
-
-                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven); // This variable groups Y_{t-2} and Y_{t-1}
-                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsOddModel.get(idxEven + 1); // This variable groups Y_t and Y_{t+1}
-
-                double[] dist_probs = dist_paired.getParameters();
-
-                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
-
-                        int index = i * MAPvarNStates + j;
-                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
-
-                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
-                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
-                            }
-                        }
-                    }
-                }
-                listCondDistributions.add(dist_probs);
-            }
-        });
-
-        if (nTimeSteps>2) {
-            // Conditional distribution Y_t | Y_{t-1},  with  t = nTimeSteps-1
-            int t = (nTimeSteps - 1);
-            if (t % 2 == 0) {
-                int idxOdd = 1 + (t - 2) / 2;
-                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
-
-                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1);  // This variable groups Y_{t-2} and Y_{t-1}
-                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable is just Y_t (not a group)
-
-                double[] dist_probs = dist_paired.getParameters();
-
-                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
-
-                        int index = i * MAPvarNStates + j;
-                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
-
-                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-
-                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j);
-                        }
-                    }
-                }
-                listCondDistributions.add(dist_probs);
-            }
-            else {
-                int idxEven = (t - 1) / 2;
-                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
-
-                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven);  // This variable groups Y_{t-2} and Y_{t-1}
-
-                double[] dist_probs = dist_paired.getParameters();
-
-                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
-
-                        int index = i * MAPvarNStates + j;
-                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
-
-                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i);
-                        }
-                    }
-                }
-                listCondDistributions.add(dist_probs);
-            }
-        }
-
-        return listCondDistributions;
-    }
-
-    /**
-     * Returns the max value and its corresponding index.
-     * @param values an array of {@code double} values.
-     * @return the max value and its corresponding index.
-     */
-    private double[] argMax(double[] values) {
-
-        double maxValue = Arrays.stream(values).max().getAsDouble();
-        double indexMaxValue=-1;
-
-        for (int i = 0; i < values.length; i++) {
-            if (values[i]==maxValue) {
-                indexMaxValue=i;
-            }
-        }
-        return new double[]{maxValue, indexMaxValue};
-    }
+//
+//    /**
+//     * Runs the inference algorithm.
+//     */
+//    public void runInference() {
+//
+//        if (MAPvariable==null || MAPvarName==null) {
+//            System.out.println("Error: The MAP variable has not been set");
+//            System.exit(-30);
+//        }
+//
+//        if (this.staticOddModel == null) {
+//            this.computeDynamicMAPOddModel();
+//        }
+//        if (this.staticEvenModel == null) {
+//            this.computeDynamicMAPEvenModel();
+//        }
+//
+//        if (evidence!=null && staticEvidence==null) {
+//
+//            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+//
+//            evidence.stream().forEach(dynamicAssignment -> {
+//                int time = (int) dynamicAssignment.getTimeID();
+//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+//                for (Variable dynVariable : dynAssigVariables) {
+//                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+//                    double varValue = dynamicAssignment.getValue(dynVariable);
+//                    staticEvidence.setValue(staticVariable, varValue);
+//                }
+//
+//            });
+//        }
+//        this.runInference(SearchAlgorithm.VMP);
+//    }
+//
+//    /**
+//     * Runs the inference given an input search algorithm.
+//     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
+//     */
+//    public void runInference(SearchAlgorithm searchAlgorithm) {
+//
+//        if (MAPvariable==null || MAPvarName==null) {
+//            System.out.println("Error: The MAP variable has not been set");
+//            System.exit(-30);
+//        }
+//
+//        if (this.staticOddModel == null) {
+//            this.computeDynamicMAPOddModel();
+//        }
+//        if (this.staticEvenModel == null) {
+//            this.computeDynamicMAPEvenModel();
+//        }
+//
+//        if (evidence!=null && staticEvidence==null) {
+//
+//            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+//
+//            evidence.stream().forEach(dynamicAssignment -> {
+//                int time = (int) dynamicAssignment.getTimeID();
+//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+//                for (Variable dynVariable : dynAssigVariables) {
+//                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+//                    double varValue = dynamicAssignment.getValue(dynVariable);
+//                    staticEvidence.setValue(staticVariable, varValue);
+//                }
+//
+//            });
+//        }
+//
+//        InferenceAlgorithm evenModelInference, oddModelInference;
+//        switch(searchAlgorithm) {
+//            case VMP:
+//                //        long timeStart = System.nanoTime();
+//                evenModelInference = new VMP();
+//                oddModelInference = new VMP();
+//
+//                break;
+//
+//            case IS:
+//            default:
+//
+//                evenModelInference = new ImportanceSampling();
+//                oddModelInference = new ImportanceSampling();
+//
+//                Random random = new Random((this.seed));
+//                oddModelInference.setSeed(random.nextInt());
+//                evenModelInference.setSeed(random.nextInt());
+//                this.seed = random.nextInt();
+//
+//                ((ImportanceSampling)oddModelInference).setKeepDataOnMemory(true);
+//                ((ImportanceSampling)evenModelInference).setKeepDataOnMemory(true);
+//
+//                ((ImportanceSampling)oddModelInference).setSampleSize(sampleSize);
+//                ((ImportanceSampling)evenModelInference).setSampleSize(sampleSize);
+//
+//                break;
+//        }
+//
+//        IntStream.range(0, 2).parallel().forEach(i -> {
+//            if (i == 0) {
+//                evenModelInference.setParallelMode(this.parallelMode);
+//                evenModelInference.setModel(staticEvenModel);
+//                if (evidence != null) {
+//                    evenModelInference.setEvidence(staticEvidence);
+//                }
+//                evenModelInference.runInference();
+//            }
+//            else {
+//                oddModelInference.setParallelMode(this.parallelMode);
+//                oddModelInference.setModel(staticOddModel);
+//                if (evidence != null) {
+//                    oddModelInference.setEvidence(staticEvidence);
+//                }
+//                oddModelInference.runInference();
+//            }
+//        });
+//
+//        List<UnivariateDistribution> posteriorMAPDistributionsEvenModel = new ArrayList<>();
+//        List<UnivariateDistribution> posteriorMAPDistributionsOddModel = new ArrayList<>();
+//
+//        int replicationsMAPVariableEvenModel = nTimeSteps/2 + nTimeSteps%2;
+//        IntStream.range(0,replicationsMAPVariableEvenModel).forEachOrdered(i -> posteriorMAPDistributionsEvenModel.add(evenModelInference.getPosterior(i)));
+//
+//        int replicationsMAPVariableOddModel = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
+//        IntStream.range(0,replicationsMAPVariableOddModel).forEachOrdered(i -> posteriorMAPDistributionsOddModel.add(oddModelInference.getPosterior(i)));
+//
+//        List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributionsEvenModel, posteriorMAPDistributionsOddModel);
+//        computeMostProbableSequence(conditionalDistributionsMAPvariable);
+//
+//    }
+//
+//    /**
+//     * Runs the inference for Ungrouped MAP variable given an input search algorithm.
+//     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
+//     */
+//    public void runInferenceUngroupedMAPVariable(SearchAlgorithm searchAlgorithm) {
+//
+//        if (MAPvariable==null || MAPvarName==null) {
+//            System.out.println("Error: The MAP variable has not been set");
+//            System.exit(-30);
+//        }
+//
+//        if (this.staticModel == null) {
+//            staticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
+//        }
+//
+//        if (evidence!=null && staticEvidence==null) {
+//
+//            staticEvidence = new HashMapAssignment(staticModel.getNumberOfVars());
+//
+//            evidence.stream().forEach(dynamicAssignment -> {
+//                int time = (int) dynamicAssignment.getTimeID();
+//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+//                for (Variable dynVariable : dynAssigVariables) {
+//                    Variable staticVariable = staticModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+//                    double varValue = dynamicAssignment.getValue(dynVariable);
+//                    staticEvidence.setValue(staticVariable, varValue);
+//                }
+//
+//            });
+//        }
+//
+//        InferenceAlgorithm staticModelInference;
+//        switch(searchAlgorithm) {
+//            case VMP:
+//                staticModelInference = new VMP();
+//                break;
+//
+//            case IS:
+//            default:
+//                ImportanceSampling importanceSampling =  new ImportanceSampling();
+//                importanceSampling.setSampleSize(15*staticModel.getNumberOfVars());
+//                importanceSampling.setKeepDataOnMemory(true);
+//                Random random = new Random((this.seed));
+//                importanceSampling.setSeed(random.nextInt());
+//                staticModelInference=importanceSampling;
+//                break;
+//        }
+//
+//
+//        staticModelInference.setParallelMode(this.parallelMode);
+//        staticModelInference.setModel(staticModel);
+//        if (evidence != null) {
+//            staticModelInference.setEvidence(staticEvidence);
+//        }
+//        staticModelInference.runInference();
+//
+//        List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
+//        IntStream.range(0,nTimeSteps).forEachOrdered(i -> posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i)));
+//
+//        double [] probabilities = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToDouble(array -> array[0]).toArray();
+//        double MAPsequenceProbability = Math.exp(Arrays.stream(probabilities).map(prob -> Math.log(prob)).sum());
+//
+//        int [] MAPsequence = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToInt(array -> (int) array[1]).toArray();
+//
+//        MAPestimate = new HashMapAssignment(nTimeSteps);
+//        IntStream.range(0,nTimeSteps).forEach(t-> {
+//            Variables variables = Serialization.deepCopy(this.staticModel.getVariables());
+//            Variable currentVar;
+//            if (variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t))!=null) {
+//                currentVar  = variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
+//            }
+//            else {
+//                currentVar  = variables.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+//            }
+//
+//            MAPestimate.setValue(currentVar,MAPsequence[t]);
+//        });
+//        MAPestimateLogProbability = Math.log(MAPsequenceProbability);
+//        this.MAPsequence = MAPsequence;
+//    }
+//
+//    /**
+//     * Computes the Most Probable Sequence given the conditional distributions of the MAP variable.
+//     * @param conditionalDistributionsMAPvariable a {@code List} of conditional distribution values.
+//     */
+//    private void computeMostProbableSequence(List<double[]> conditionalDistributionsMAPvariable) {
+//        int[] MAPsequence = new int[nTimeSteps];
+//        int MAPvarNStates = MAPvariable.getNumberOfStates();
+//
+//        int[] argMaxValues = new int[nTimeSteps];
+//
+//        double MAPsequenceProbability=-1;
+//        double [] current_probs;
+//        double [] current_max_probs;
+//        double [] previous_max_probs = new double[MAPvarNStates];;
+//
+//        for (int t = nTimeSteps-1; t >= 0; t--) {
+//
+//            current_probs = conditionalDistributionsMAPvariable.get(t);
+//            double maxProb=-1;
+//
+//            current_max_probs = new double[MAPvarNStates];
+//
+//            if (t==(nTimeSteps-1)) { // There are no previous_max_probs
+//                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
+//                    maxProb=-1;
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_t
+//                        if (current_probs[j * MAPvarNStates + k] > maxProb) {
+//                            maxProb = current_probs[j * MAPvarNStates + k];
+//
+//                        }
+//                    }
+//                    current_max_probs[j]=maxProb;
+//                }
+//                argMaxValues[t] = (int)argMax(current_max_probs)[1];
+//                previous_max_probs = current_max_probs;
+//            }
+//            else if (t>0 && t<(nTimeSteps-1)) {
+//                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
+//                    maxProb=-1;
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_t
+//                        if (current_probs[j * MAPvarNStates + k]*previous_max_probs[j] > maxProb) {
+//                            maxProb = current_probs[j * MAPvarNStates + k]*previous_max_probs[k];
+//                        }
+//                    }
+//                    current_max_probs[j]=maxProb;
+//                }
+//                argMaxValues[t] = (int)argMax(current_max_probs)[1];
+//                previous_max_probs = current_max_probs;
+//            }
+//            else { // Here, t=0
+//                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_0
+//                    maxProb=-1;
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_1
+//                        if (current_probs[j]*previous_max_probs[j] > maxProb) {
+//                            maxProb = current_probs[j]*previous_max_probs[j];
+//                        }
+//                    }
+//                    current_max_probs[j]=maxProb;
+//                }
+//                MAPsequenceProbability =  argMax(current_max_probs)[0];
+//                argMaxValues[t] = (int)argMax(current_max_probs)[1];
+//                previous_max_probs = current_max_probs;
+//            }
+//        }
+//
+//        int previousVarMAPState = argMaxValues[0];
+//        MAPsequence[0] = argMaxValues[0];
+//
+//        int thisVarMAPState = 0;
+//        for (int t = 1; t < nTimeSteps; t++) {
+//            current_probs = conditionalDistributionsMAPvariable.get(t);
+//            previousVarMAPState = argMaxValues[t-1];
+//
+//            double maxProb = -1;
+//            for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_t
+//
+//                if (current_probs[previousVarMAPState * MAPvarNStates + j] >= maxProb) {
+//                    maxProb = current_probs[previousVarMAPState * MAPvarNStates + j];
+//                    thisVarMAPState = j;
+//                }
+//            }
+//            MAPsequence[t]=thisVarMAPState;
+//        }
+//
+//        MAPestimate = new HashMapAssignment(nTimeSteps);
+//
+//        if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
+//            MAPestimateLogProbability=Double.NaN;
+//        }
+//        else {
+//            IntStream.range(0, nTimeSteps).forEach(t -> {
+////                Variables varsAux = Serialization.deepCopy(this.staticEvenModel.getVariables());
+////                Variable currentVar = varsAux.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+//                Variable currentVar;
+//                try {
+//                    currentVar = this.staticEvenModel.getVariables().getVariableByName(MAPvarName + "_t" + Integer.toString(t));
+//                }
+//                catch (Exception e) {
+//                    Variables copy = Serialization.deepCopy(this.staticEvenModel.getVariables());
+//                    currentVar = copy.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+//                }
+//                MAPestimate.setValue(currentVar, MAPsequence[t]);
+//            });
+//            MAPestimateLogProbability = Math.log(MAPsequenceProbability);
+//        }
+//
+//        this.MAPsequence = MAPsequence;
+//    }
+//
+//    /**
+//     * Returns Combined Conditional Distributions for both even and odd models.
+//     * @param posteriorMAPDistributionsEvenModel a {@code List} of {@link UnivariateDistribution} of the even model.
+//     * @param posteriorMAPDistributionsOddModel a {@code List} of {@link UnivariateDistribution} of the odd model.
+//     * @return a {@code List} of conditional distributions values.
+//     */
+//    private List<double[]> getCombinedConditionalDistributions( List<UnivariateDistribution> posteriorMAPDistributionsEvenModel , List<UnivariateDistribution> posteriorMAPDistributionsOddModel) {
+//
+//        List<double[]> listCondDistributions = new ArrayList<>(nTimeSteps);
+//
+//        int MAPvarNStates = MAPvariable.getNumberOfStates();
+//
+//        // Univariate distribution Y_0
+//        UnivariateDistribution dist0_1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
+//        UnivariateDistribution dist0 = posteriorMAPDistributionsOddModel.get(0); // This variable is just Y_0 (not a group)
+//
+//        double[] dist0_probs = new double[MAPvariable.getNumberOfStates()];
+//
+//        dist0_probs = dist0.getParameters();
+//        for (int i = 0; i < MAPvarNStates; i++) {
+//            dist0_probs[i] = (double) 1/2 * dist0_probs[i];
+//
+//            for (int j = 0; j < MAPvarNStates; j++) {
+//                dist0_probs[i] = dist0_probs[i] + (double) 1/2 * dist0_1.getProbability(i*MAPvarNStates + j);
+//            }
+//        }
+//        listCondDistributions.add(dist0_probs);
+//
+//        // Conditional distribution Y_1 | Y_0;
+//        UnivariateDistribution dist_paired1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
+//        UnivariateDistribution dist_unpaired_1 = posteriorMAPDistributionsOddModel.get(1); // This variable groups Y_1 and Y_2 (if nTimeSteps>2)
+//
+//        double[] dist_probs1 = dist_paired1.getParameters();
+//
+//        for (int i = 0; i < MAPvarNStates; i++) { // To go over all values of Y_0
+//            for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_1
+//                int index = i * MAPvarNStates + j;
+//                dist_probs1[index] = (double) 1/2 * dist_probs1[index];
+//
+//                if (nTimeSteps>2) {
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
+//                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j * MAPvarNStates + k);
+//                    }
+//                }
+//                else {
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
+//                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j);
+//                    }
+//                }
+//            }
+//        }
+//        listCondDistributions.add(dist_probs1);
+//
+//        IntStream.range(2, nTimeSteps - 1).forEachOrdered(t -> {
+//            if (t % 2 == 0) {
+//                int idxOdd = 1 + (t - 2) / 2;
+//                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
+//
+//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1); // This variable groups Y_{t-2} and Y_{t-1}
+//                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable groups Y_t and Y_{t+1}
+//
+//                double[] dist_probs = dist_paired.getParameters();
+//
+//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+//
+//                        int index = i * MAPvarNStates + j;
+//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+//
+//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+//                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
+//                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
+//                            }
+//                        }
+//                    }
+//                }
+//                listCondDistributions.add(dist_probs);
+//            } else {
+//                int idxEven = (t - 1) / 2;
+//                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
+//
+//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven); // This variable groups Y_{t-2} and Y_{t-1}
+//                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsOddModel.get(idxEven + 1); // This variable groups Y_t and Y_{t+1}
+//
+//                double[] dist_probs = dist_paired.getParameters();
+//
+//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+//
+//                        int index = i * MAPvarNStates + j;
+//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+//
+//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+//                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
+//                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
+//                            }
+//                        }
+//                    }
+//                }
+//                listCondDistributions.add(dist_probs);
+//            }
+//        });
+//
+//        if (nTimeSteps>2) {
+//            // Conditional distribution Y_t | Y_{t-1},  with  t = nTimeSteps-1
+//            int t = (nTimeSteps - 1);
+//            if (t % 2 == 0) {
+//                int idxOdd = 1 + (t - 2) / 2;
+//                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
+//
+//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1);  // This variable groups Y_{t-2} and Y_{t-1}
+//                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable is just Y_t (not a group)
+//
+//                double[] dist_probs = dist_paired.getParameters();
+//
+//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+//
+//                        int index = i * MAPvarNStates + j;
+//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+//
+//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+//
+//                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j);
+//                        }
+//                    }
+//                }
+//                listCondDistributions.add(dist_probs);
+//            }
+//            else {
+//                int idxEven = (t - 1) / 2;
+//                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
+//
+//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven);  // This variable groups Y_{t-2} and Y_{t-1}
+//
+//                double[] dist_probs = dist_paired.getParameters();
+//
+//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+//
+//                        int index = i * MAPvarNStates + j;
+//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+//
+//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+//                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i);
+//                        }
+//                    }
+//                }
+//                listCondDistributions.add(dist_probs);
+//            }
+//        }
+//
+//        return listCondDistributions;
+//    }
+//
+//    /**
+//     * Returns the max value and its corresponding index.
+//     * @param values an array of {@code double} values.
+//     * @return the max value and its corresponding index.
+//     */
+//    private double[] argMax(double[] values) {
+//
+//        double maxValue = Arrays.stream(values).max().getAsDouble();
+//        double indexMaxValue=-1;
+//
+//        for (int i = 0; i < values.length; i++) {
+//            if (values[i]==maxValue) {
+//                indexMaxValue=i;
+//            }
+//        }
+//        return new double[]{maxValue, indexMaxValue};
+//    }
 
     /**
      * Returns the replicated static set of variables
      * @param dynamicVariables a {@link DynamicVariables} object.
-     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @param modelNumber a {@code int} that indicates the number of the model being constructed.
      * @return a {@link Variables} object.
      */
-    private Variables obtainReplicatedStaticVariables(DynamicVariables dynamicVariables, boolean even_partition) {
+    private Variables obtainReplicatedStaticVariables(DynamicVariables dynamicVariables, int modelNumber) {
 
         Variables variables = new Variables();
 
-        // REPLICATIONS OF THE MAP VARIABLE (EACH CONSECUTIVE 2 ARE GROUPED)
-        int replicationsMAPVariable;
+        // REPLICATIONS OF THE MAP VARIABLE (EACH 'nMergedClassVars' CONSECUTIVE ARE GROUPED)
+        int replicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
 
-        if (even_partition) {
-            replicationsMAPVariable = nTimeSteps/2 + nTimeSteps%2;
-        }
-        else {
-            replicationsMAPVariable = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
-        }
+        IntStream.range(0, replicationsMAPVariable).forEach(mergedClassVarIndex -> {
 
-        int nStatesMAPVariable = (int) Math.pow(MAPvariable.getNumberOfStates(),2);
+            int nStatesMAPVariable = (int) Math.pow(MAPvariable.getNumberOfStates(),nMergedClassVars);
 
-        if (even_partition) {
-            if (nTimeSteps%2 == 0) {
-                IntStream.range(0, replicationsMAPVariable).forEach(i -> variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(i), nStatesMAPVariable));
+            // If it is the first merged variable and not the first model (not 'complete')
+            if ( (modelNumber!=0) && (mergedClassVarIndex==0) ) {
+                nStatesMAPVariable = (int) Math.pow(MAPvariable.getNumberOfStates(),modelNumber);
             }
-            else {
-                IntStream.range(0, replicationsMAPVariable-1).forEach(i -> variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(i), nStatesMAPVariable));
-                variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable-1), MAPvariable.getNumberOfStates());
+            // If it is the last merged variable and not 'complete'
+            if ( ((nTimeSteps-modelNumber)%nMergedClassVars!=0) && (mergedClassVarIndex==replicationsMAPVariable-1) ) {
+                nStatesMAPVariable = (int) Math.pow(MAPvariable.getNumberOfStates(),(nTimeSteps-modelNumber)%nMergedClassVars);
             }
-        }
-        else {
-            variables.newMultionomialVariable(groupedClassName + "_t0", MAPvariable.getNumberOfStates());
-            if (nTimeSteps%2 == 1) {
-                IntStream.range(1, replicationsMAPVariable).forEach(i -> variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(i), nStatesMAPVariable));
-            }
-            else {
-                IntStream.range(1, replicationsMAPVariable-1).forEach(i -> variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(i), nStatesMAPVariable));
-                variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable-1), MAPvariable.getNumberOfStates());
-            }
-        }
+
+            variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(mergedClassVarIndex), nStatesMAPVariable);
+        });
 
         // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)
         dynamicVariables.getListOfDynamicVariables().stream()
-            .filter(var -> !var.equals(MAPvariable))
-            .forEach(dynVar ->
-                            IntStream.range(0, nTimeSteps).forEach(i -> {
-                                VariableBuilder aux = dynVar.getVariableBuilder();
-                                aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
-                                variables.newVariable(aux);
-                            })
-            );
-
+                .filter(var -> !var.equals(MAPvariable))
+                .forEach(dynVar ->
+                        IntStream.range(0, nTimeSteps).forEach(i -> {
+                            VariableBuilder aux = dynVar.getVariableBuilder();
+                            aux.setName(dynVar.getName() + "_t" + Integer.toString(i));
+                            variables.newVariable(aux);
+                        })
+                );
         return variables;
     }
 
@@ -880,10 +871,10 @@ public class DynamicMAPInference {
      * Returns the static DAG structure.
      * @param dynamicDAG a {@link DynamicDAG} object.
      * @param variables a {@link Variables} object.
-     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @param modelNumber
      * @return a {@link DAG} object.
      */
-    private DAG obtainStaticDAG(DynamicDAG dynamicDAG, Variables variables, boolean even_partition) {
+    private DAG obtainStaticDAG(DynamicDAG dynamicDAG, Variables variables, int modelNumber) {
 
         DAG dag = new DAG(variables);
         DynamicVariables dynamicVariables = dynamicDAG.getDynamicVariables();
@@ -891,63 +882,56 @@ public class DynamicMAPInference {
         /*
          * PARENTS OF THE MAP VARIABLE (ONLY THE PREVIOUS TEMPORAL COPY OF ITSELF)
          */
-        int replicationsMAPVariable;
+        int replicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
 
-        if (even_partition) {
-            replicationsMAPVariable = nTimeSteps/2 + nTimeSteps%2;
-        }
-        else {
-            replicationsMAPVariable = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
-        }
-
-        IntStream.range(1, replicationsMAPVariable).forEach(i -> {
-            Variable staticVar = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(i));
-            dag.getParentSet(staticVar).addParent(variables.getVariableByName(groupedClassName + "_t" + Integer.toString(i - 1)));
+        IntStream.range(1, replicationsMAPVariable).forEach(mergedClassVarIndex -> {
+            Variable staticVar = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(mergedClassVarIndex));
+            dag.getParentSet(staticVar).addParent(variables.getVariableByName(groupedClassName + "_t" + Integer.toString(mergedClassVarIndex - 1)));
         });
 
         /*
          * PARENTS OF THE REST OF VARIABLES
          */
         dynamicVariables.getListOfDynamicVariables().stream()
-            .filter(var -> !var.equals(MAPvariable))
-            .forEach(dynVar -> {
+                .filter(var -> !var.equals(MAPvariable))
+                .forEach(dynVar -> {
 
-                // ADD PARENTS AT TIME T=0
-                Variable staticVar0 = variables.getVariableByName(dynVar.getName() + "_t0");
+                    // ADD PARENTS AT TIME T=0
+                    Variable staticVar0 = variables.getVariableByName(dynVar.getName() + "_t0");
 
-                List<Variable> parents0 = dynamicDAG.getParentSetTime0(dynVar).getParents();
+                    List<Variable> parents0 = dynamicDAG.getParentSetTime0(dynVar).getParents();
 
-                parents0.stream().filter(parent -> parent.equals(MAPvariable)).forEach(parentaux2 -> dag.getParentSet(staticVar0).addParent(variables.getVariableByName(groupedClassName + "_t0")));
-                parents0.stream().filter(parent -> !parent.equals(MAPvariable)).forEach(parentaux2 -> dag.getParentSet(staticVar0).addParent(variables.getVariableByName(parentaux2.getName() + "_t0")));
+                    parents0.stream().filter(parent -> parent.equals(MAPvariable)).forEach(parentaux2 -> dag.getParentSet(staticVar0).addParent(variables.getVariableByName(groupedClassName + "_t0")));
+                    parents0.stream().filter(parent -> !parent.equals(MAPvariable)).forEach(parentaux2 -> dag.getParentSet(staticVar0).addParent(variables.getVariableByName(parentaux2.getName() + "_t0")));
 
-                // ADD PARENTS AT TIMES T>0
-                IntStream.range(1, nTimeSteps).forEach(i -> {
+                    // ADD PARENTS AT TIMES T>0
+                    IntStream.range(1, nTimeSteps).forEach(timeStep -> {
 
-                    Variable staticVar = variables.getVariableByName(dynVar.getName() + "_t" + Integer.toString(i));
+                        Variable staticVar = variables.getVariableByName(dynVar.getName() + "_t" + Integer.toString(timeStep));
 
-                    List<Variable> parents = dynamicDAG.getParentSetTimeT(dynVar).getParents();
+                        List<Variable> parents = dynamicDAG.getParentSetTimeT(dynVar).getParents();
 
-                    int indexMAPReplication;
-                    if (even_partition) {
-                        indexMAPReplication = i / 2;
-                    } else {
-                        indexMAPReplication = 1 + (i - 1) / 2;
-                    }
+                        int indexMAPReplication = (timeStep>=modelNumber) ? (modelNumber==0 ? 0 : 1) + (timeStep-modelNumber)/nMergedClassVars : (timeStep-modelNumber)/nMergedClassVars;
 
-                    // PARENTS WHICH ARE INTERFACE VARIABLES
-                    List<Variable> parentsInterface = parents.stream().filter(parentVar -> parentVar.isInterfaceVariable()).collect(Collectors.toList());
+                        if (indexMAPReplication>=replicationsMAPVariable) {
+                            System.out.println("Error in obtainStaticDAG: Bad MAP variable index");
+                            System.exit(-50);
+                        }
 
-                    parentsInterface.stream().filter(parent -> parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(groupedClassName + "_t" + Integer.toString(indexMAPReplication - 1))));
-                    parentsInterface.stream().filter(parent -> !parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentVar.getName().replace("_Interface", "_t" + Integer.toString(i - 1)))));
+                        // PARENTS WHICH ARE INTERFACE VARIABLES
+                        List<Variable> parentsInterface = parents.stream().filter(parentVar -> parentVar.isInterfaceVariable()).collect(Collectors.toList());
 
-                    // PARENTS WHICH ARE NOT INTERFACE VARIABLES
-                    List<Variable> parentsNotInterface = parents.stream().filter(parentVar -> !parentVar.isInterfaceVariable()).collect(Collectors.toList());
+                        parentsInterface.stream().filter(parent -> parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(groupedClassName + "_t" + Integer.toString(indexMAPReplication - 1))));
+                        parentsInterface.stream().filter(parent -> !parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentVar.getName().replace("_Interface", "_t" + Integer.toString(timeStep - 1)))));
 
-                    parentsNotInterface.stream().filter(parent -> parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(groupedClassName + "_t" + Integer.toString(indexMAPReplication))));
-                    parentsNotInterface.stream().filter(parent -> !parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentVar.getName() + "_t" + Integer.toString(i))));
+                        // PARENTS WHICH ARE NOT INTERFACE VARIABLES
+                        List<Variable> parentsNotInterface = parents.stream().filter(parentVar -> !parentVar.isInterfaceVariable()).collect(Collectors.toList());
 
+                        parentsNotInterface.stream().filter(parent -> parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(groupedClassName + "_t" + Integer.toString(indexMAPReplication))));
+                        parentsNotInterface.stream().filter(parent -> !parent.equals(MAPvariable)).forEach(parentVar -> dag.getParentSet(staticVar).addParent(variables.getVariableByName(parentVar.getName() + "_t" + Integer.toString(timeStep))));
+
+                    });
                 });
-            });
         return dag;
     }
 
@@ -959,24 +943,55 @@ public class DynamicMAPInference {
      * @param conDistT the {@link ConditionalDistribution} at time T.
      * @return a {@link Multinomial} distribution.
      */
-    private Multinomial groupedDistributionMAPVariableTime0(Variable dynVar, Variable staticVar, ConditionalDistribution conDist0, ConditionalDistribution conDistT) {
+    private Multinomial groupedDistributionMAPVariableTime0(Variable dynVar, Variable staticVar, ConditionalDistribution conDist0, ConditionalDistribution conDistT, int modelNumber) {
 
-        Assignment assignment0, assignment1;
+        if(modelNumber == 1) {
+            return (Multinomial) conDist0;
+        }
+
+        Assignment assignment0;
         assignment0 = new HashMapAssignment(1);
-        assignment1 = new HashMapAssignment(2);
+
+        int nStates = dynVar.getNumberOfStates();
+        int nMergedStates = staticVar.getNumberOfStates();
 
         Multinomial multinomial = new Multinomial(staticVar);
 
-        double[] probs = new double[staticVar.getNumberOfStates()];
+        double[] probs = new double[nMergedStates];
         int probs_index=0;
 
-        for (int k = 0; k < dynVar.getNumberOfStates(); k++) {
+        int repetitionsConDistT = (int)Math.round(Math.log(nMergedStates)/Math.log(nStates)-1);
+
+        Assignment assignment1;
+        for (int k = 0; k < nStates; k++) {
+
+            // Probabilities at t=0
             assignment0.setValue(dynVar, k);
-            for (int l = 0; l < dynVar.getNumberOfStates(); l++) {
-                assignment1.setValue(dynVar.getInterfaceVariable(), k);
-                assignment1.setValue(dynVar, l);
-                probs[probs_index] = conDist0.getConditionalProbability(assignment0) * conDistT.getConditionalProbability(assignment1);
+            double prob0 = conDist0.getConditionalProbability(assignment0);
+
+            for (int m = 0; m < Math.pow(nStates,repetitionsConDistT); m++) {
+                String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+                m_base_nStates = StringUtils.leftPad(m_base_nStates, repetitionsConDistT, '0');
+                //System.out.println(m_base_nStates);
+
+                double probT=1;
+                for ( int n=0; n < m_base_nStates.length(); n++) {
+                    int currentState = Integer.parseInt(m_base_nStates.substring(n,n+1));
+
+                    int previousState;
+                    if(n>=1)
+                        previousState = Integer.parseInt(m_base_nStates.substring(n-1,n));
+                    else
+                        previousState = k;
+
+                    assignment1 = new HashMapAssignment(2);
+                    assignment1.setValue(dynVar.getInterfaceVariable(), previousState);
+                    assignment1.setValue(dynVar,currentState);
+                    probT = probT * conDistT.getConditionalProbability(assignment1);
+                }
+                probs[probs_index] =  prob0 * probT;
                 probs_index++;
+
             }
         }
         multinomial.setProbabilities(probs);
@@ -992,51 +1007,51 @@ public class DynamicMAPInference {
      * @param conDistT the {@link ConditionalDistribution} at time T.
      * @return a {@link Multinomial_MultinomialParents} distribution.
      */
-    private Multinomial_MultinomialParents groupedDistributionMAPVariableTimeT(Variable dynVar, Variable staticVar, int nStatesStaticVarParent, List<Variable> parents, ConditionalDistribution conDistT) {
+    private Multinomial_MultinomialParents groupedDistributionMAPVariableTimeT(Variable dynVar, Variable staticVar, int nStatesStaticVarParent, List<Variable> parents, ConditionalDistribution conDistT, int modelNumber) {
 
         Multinomial_MultinomialParents multinomial_multinomialParents = new Multinomial_MultinomialParents(staticVar, parents);
-        Assignment assignment0, assignment1;
+        Assignment assignment1;
         Multinomial multinomial;
 
-        for (int m = 0; m < nStatesStaticVarParent; m++) {
-            double y_jminus2 = m % dynVar.getNumberOfStates();
+        int nStates = dynVar.getNumberOfStates();
+        int nMergedStates = staticVar.getNumberOfStates();
 
-            double[] probs1  = new double[staticVar.getNumberOfStates()];
+        int repetitionsConDistT = (int)Math.round(Math.log(nMergedStates)/Math.log(nStates));
 
+        for (int s = 0; s < nStatesStaticVarParent; s++) {
+            int parentState = s % nStates;
+
+            double[] probs1  = new double[nMergedStates];
             int probs_index1 = 0;
 
-            assignment0 = new HashMapAssignment(1);
-            assignment1 = new HashMapAssignment(1);
-            UnivariateDistribution uniDist_y_jminus1, uniDist_uniDist_y_j;
+            for (int m = 0; m < Math.pow(nStates,repetitionsConDistT); m++) {
+                String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+                m_base_nStates = StringUtils.leftPad(m_base_nStates, repetitionsConDistT, '0');
 
-            assignment0.setValue(dynVar.getInterfaceVariable(), y_jminus2);
-            uniDist_y_jminus1 = conDistT.getUnivariateDistribution(assignment0);
+                double probT=1;
+                for ( int n=0; n < m_base_nStates.length(); n++) {
+                    int currentState = Integer.parseInt(m_base_nStates.substring(n,n+1));
 
-            for (int k = 0; k < dynVar.getNumberOfStates(); k++) {
+                    int previousState;
+                    if(n>=1)
+                        previousState = Integer.parseInt(m_base_nStates.substring(n-1,n));
+                    else
+                        previousState = parentState;
 
-                double y_jminus1 = k;
-                double prob1 = uniDist_y_jminus1.getProbability(y_jminus1);
+                    assignment1 = new HashMapAssignment(2);
+                    assignment1.setValue(dynVar.getInterfaceVariable(), previousState);
+                    assignment1.setValue(dynVar,currentState);
 
-                assignment1.setValue(dynVar.getInterfaceVariable(), y_jminus1);
-                uniDist_uniDist_y_j = conDistT.getUnivariateDistribution(assignment1);
 
-                if (staticVar.getNumberOfStates() >= nStatesStaticVarParent && nTimeSteps>2) {
-                    for (int l = 0; l < dynVar.getNumberOfStates(); l++) {
-                        double y_j = l;
-
-                        double prob2 = uniDist_uniDist_y_j.getProbability(y_j);
-                        probs1[probs_index1] = prob1 * prob2;
-                        probs_index1++;
-                    }
+                    probT = probT * conDistT.getConditionalProbability(assignment1);
                 }
-                else {
-                    probs1[probs_index1] = prob1;
-                    probs_index1++;
-                }
+                probs1[probs_index1] =  probT;
+                probs_index1++;
             }
+
             multinomial = new Multinomial(staticVar);
             multinomial.setProbabilities(probs1);
-            multinomial_multinomialParents.setMultinomial(m, multinomial);
+            multinomial_multinomialParents.setMultinomial(s, multinomial);
         }
         return multinomial_multinomialParents;
     }
@@ -1045,169 +1060,106 @@ public class DynamicMAPInference {
      * Returns the {@link BayesianNetwork} related to the static grouped class.
      * @param dag a {@link DAG} object.
      * @param variables a {@link Variables} obejct.
-     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @param modelNumber
      * @return a {@link BayesianNetwork} object.
      */
-    private BayesianNetwork obtainStaticGroupedClassBayesianNetwork(DAG dag, Variables variables, boolean even_partition) {
+    private BayesianNetwork obtainStaticMergedClassVarNetwork(DAG dag, Variables variables, int modelNumber) {
 
         DynamicDAG dynamicDAG = model.getDynamicDAG();
         BayesianNetwork bn = new BayesianNetwork(dag);
         Variable staticVar, dynVar;
-        ConditionalDistribution conDist0, conDist1;
+        ConditionalDistribution conDist0, conDistT;
 
-        int replicationsMAPVariable;
+        int replicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
 
-        if (even_partition) {
-            replicationsMAPVariable = nTimeSteps/2 + nTimeSteps%2;
-        }
-        else {
-            replicationsMAPVariable = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
-        }
 
         /*
-         * ADD CONDITIONAL (UNIVARIATE) DISTRIBUTION FOR THE GROUPED MAP/CLASS VARIABLE AT TIME T=0
+         * OBTAIN AND SET THE CONDITIONAL (UNIVARIATE) DISTRIBUTION FOR THE GROUPED MAP/CLASS VARIABLE AT TIME T=0
          */
         staticVar = variables.getVariableByName(groupedClassName + "_t0");
         dynVar = model.getDynamicVariables().getVariableByName(MAPvarName);
 
         conDist0 = Serialization.deepCopy(model.getConditionalDistributionsTime0().get(dynVar.getVarID()));
-        conDist1 = Serialization.deepCopy(model.getConditionalDistributionsTimeT().get(dynVar.getVarID()));
+        conDistT = Serialization.deepCopy(model.getConditionalDistributionsTimeT().get(dynVar.getVarID()));
 
-        Multinomial multinomial;
-        if (even_partition) {
-            multinomial = groupedDistributionMAPVariableTime0(dynVar, staticVar, conDist0, conDist1);
-        }
-        else {
-            multinomial = (Multinomial) conDist0;
-            multinomial.setVar(staticVar);
-        }
+        Multinomial multinomial = groupedDistributionMAPVariableTime0(dynVar, staticVar, conDist0, conDistT, modelNumber);
+
+        multinomial.setVar(staticVar);
         bn.setConditionalDistribution(staticVar, multinomial);
+
 
         /*
          * CREATE THE GENERAL (TIME T) CONDITIONAL DISTRIBUTION OF THE GROUPED MAP/CLASS VARIABLE, IF NEEDED
          */
         Multinomial_MultinomialParents generalConditionalDistTimeT;
 
-        if ( even_partition && (replicationsMAPVariable>2 || (replicationsMAPVariable==2 && nTimeSteps>=4))) {
-
+        // ToDo: Review Condition: nTimeSteps>= 4,5
+        if (modelNumber==0 && (replicationsMAPVariable>2 || (replicationsMAPVariable==2 && nTimeSteps>=4))) {
             Variable staticVar_current = variables.getVariableByName(groupedClassName + "_t1");
             Variable staticVar_interface = variables.getVariableByName(groupedClassName + "_t0");
             List<Variable> parents = bn.getDAG().getParentSet(staticVar_current).getParents();
-            ConditionalDistribution conDist_dynamic = Serialization.deepCopy(model.getConditionalDistributionsTimeT().get(dynVar.getVarID()));
+            ConditionalDistribution conDist_dynamic = Serialization.deepCopy(conDistT);
 
-            generalConditionalDistTimeT = groupedDistributionMAPVariableTimeT(dynVar, staticVar_current, staticVar_interface.getNumberOfStates(), parents, conDist_dynamic);
+            generalConditionalDistTimeT = groupedDistributionMAPVariableTimeT(dynVar, staticVar_current, staticVar_interface.getNumberOfStates(), parents, conDist_dynamic, modelNumber);
 
         }
-        else if (!even_partition &&  (replicationsMAPVariable>=3 && nTimeSteps>=5) ) {
-
+        else if (modelNumber>0 && (replicationsMAPVariable>3 || replicationsMAPVariable==3 && nTimeSteps>=5)) {
             Variable staticVar_current = variables.getVariableByName(groupedClassName + "_t2");
             Variable staticVar_interface = variables.getVariableByName(groupedClassName + "_t1");
             List<Variable> parents = bn.getDAG().getParentSet(staticVar_current).getParents();
-            ConditionalDistribution conDist_dynamic = Serialization.deepCopy(model.getConditionalDistributionsTimeT().get(dynVar.getVarID()));
+            ConditionalDistribution conDist_dynamic = Serialization.deepCopy(conDistT);
 
-            generalConditionalDistTimeT = groupedDistributionMAPVariableTimeT(dynVar, staticVar_current, staticVar_interface.getNumberOfStates(), parents, conDist_dynamic);
+            generalConditionalDistTimeT = groupedDistributionMAPVariableTimeT(dynVar, staticVar_current, staticVar_interface.getNumberOfStates(), parents, conDist_dynamic, modelNumber);
 
         }
         else { // In this case, 'generalConditionalDistTimeT' will never be used.
             generalConditionalDistTimeT = new Multinomial_MultinomialParents(staticVar, bn.getDAG().getParentSet(staticVar).getParents());
         }
 
+
         /*
          * ADD CONDITIONAL DISTRIBUTIONS FOR THE REPLICATIONS OF THE GROUPED MAP/CLASS VARIABLE
          */
-        if (even_partition) {
-            if (nTimeSteps % 2 == 0) {
-                IntStream.range(1, replicationsMAPVariable).forEach(i -> {
-                    Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(i));
-                    ConditionalDistribution conditionalDistribution = Serialization.deepCopy(generalConditionalDistTimeT);
-                    conditionalDistribution.setConditioningVariables(dag.getParentSet(staticVar1).getParents());
-                    conditionalDistribution.setVar(staticVar1);
-                    bn.setConditionalDistribution(staticVar1, conditionalDistribution);
-
-                });
-            }
-            else {
-                IntStream.range(1, replicationsMAPVariable - 1).forEach(i -> {
-                    Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(i));
-                    ConditionalDistribution conditionalDistribution = Serialization.deepCopy(generalConditionalDistTimeT);
-                    conditionalDistribution.setVar(staticVar1);
-                    conditionalDistribution.setConditioningVariables(dag.getParentSet(staticVar1).getParents());
-                    bn.setConditionalDistribution(staticVar1, conditionalDistribution);
-
-                });
-
-                // For an even partition with odd nTimeSteps, the last distribution is different
-                Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable - 1));
-                Variable staticVar1_interface = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable - 2));
-                Multinomial_MultinomialParents lastConDist = new Multinomial_MultinomialParents(staticVar1, dag.getParentSet(staticVar1).getParents());
-                for (int m = 0; m < staticVar1_interface.getNumberOfStates(); m++) {
-                    ConditionalDistribution dynConDist = model.getConditionalDistributionTimeT(MAPvariable);
-                    Assignment assignment = new HashMapAssignment(1);
-                    assignment.setValue(dynVar.getInterfaceVariable(), m % dynVar.getNumberOfStates());
-                    Multinomial multinomial1 = (Multinomial) dynConDist.getUnivariateDistribution(assignment);
-                    multinomial1.setVar(staticVar1);
-                    lastConDist.setMultinomial(m, multinomial1);
-                }
-                bn.setConditionalDistribution(staticVar1, lastConDist);
-            }
+        // FIRST CONDITIONAL DISTRIBUTION, t_1 | t_0, IF IT'S NOT THE GENERAL ONE
+        if (modelNumber!=0) {
+            Variable staticVar0 = variables.getVariableByName(groupedClassName + "_t1");
+            Variable staticVar0_interface = variables.getVariableByName(groupedClassName + "_t0");
+            List<Variable> parents = bn.getDAG().getParentSet(staticVar0).getParents();
+            ConditionalDistribution conDist_dynamic = Serialization.deepCopy(model.getConditionalDistributionsTimeT().get(dynVar.getVarID()));
+            ConditionalDistribution conditionalDistTime1 = groupedDistributionMAPVariableTimeT(dynVar, staticVar0, staticVar0_interface.getNumberOfStates(), parents, conDist_dynamic, modelNumber);
+            conditionalDistTime1.setVar(staticVar0);
+            bn.setConditionalDistribution(staticVar0, conditionalDistTime1);
         }
-        else {
-            if (nTimeSteps % 2 == 1) {
 
-                // For an odd partition, the first conditional distribution is different
-                Variable staticVar0 = variables.getVariableByName(groupedClassName + "_t1");
-                Variable staticVar0_interface = variables.getVariableByName(groupedClassName + "_t0");
-                List<Variable> parents = bn.getDAG().getParentSet(staticVar0).getParents();
-                ConditionalDistribution conDist_dynamic = Serialization.deepCopy(model.getConditionalDistributionsTimeT().get(dynVar.getVarID()));
-                ConditionalDistribution conditionalDistTime1 = groupedDistributionMAPVariableTimeT(dynVar, staticVar0, staticVar0_interface.getNumberOfStates(), parents, conDist_dynamic);
-                conditionalDistTime1.setVar(staticVar0);
-                bn.setConditionalDistribution(staticVar0, conditionalDistTime1);
+        // INTERMEDIATE COMPLETE CONDITIONAL DISTRIBUTIONS, t_i | t_{i-1}, FOLLOWING THE GENERAL CONDITIONAL DISTRIBUTION
+        int initialTimeStep=2;
+        int finalTimeStep=replicationsMAPVariable-1;
 
-                // Add the rest of conditional distributions, copies of 'generalConditionalDistTimeT'
-                IntStream.range(2, replicationsMAPVariable).forEach(i -> {
-                    Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(i));
-                    ConditionalDistribution conditionalDistribution = Serialization.deepCopy(generalConditionalDistTimeT);
-                    conditionalDistribution.setConditioningVariables(dag.getParentSet(staticVar1).getParents());
-                    conditionalDistribution.setVar(staticVar1);
-                    bn.setConditionalDistribution(staticVar1, conditionalDistribution);
+        if (modelNumber==0)
+            initialTimeStep = 1;
+        if ((nTimeSteps-modelNumber)%nMergedClassVars==0)
+            finalTimeStep = replicationsMAPVariable;
 
-                });
-            }
-            else {
+        IntStream.range(initialTimeStep, finalTimeStep).forEach(timeStep -> {
+            Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(timeStep));
+            ConditionalDistribution conditionalDistribution = Serialization.deepCopy(generalConditionalDistTimeT);
+            conditionalDistribution.setConditioningVariables(dag.getParentSet(staticVar1).getParents());
+            conditionalDistribution.setVar(staticVar1);
+            bn.setConditionalDistribution(staticVar1, conditionalDistribution);
 
-                // For an odd partition, the first conditional distribution is different
-                Variable staticVar0 = variables.getVariableByName(groupedClassName + "_t1");
-                Variable staticVar0_interface = variables.getVariableByName(groupedClassName + "_t0");
-                List<Variable> parents = bn.getDAG().getParentSet(staticVar0).getParents();
-                ConditionalDistribution conDist_dynamic = Serialization.deepCopy(model.getConditionalDistributionsTimeT().get(dynVar.getVarID()));
-                ConditionalDistribution conditionalDistTime1 = groupedDistributionMAPVariableTimeT(dynVar, staticVar0, staticVar0_interface.getNumberOfStates(), parents, conDist_dynamic);
-                conditionalDistTime1.setVar(staticVar0);
-                bn.setConditionalDistribution(staticVar0, conditionalDistTime1);
+        });
 
-                // Add the intermediate conditional distributions, copies of 'generalConditionalDistTimeT'
-                IntStream.range(2, replicationsMAPVariable - 1).forEach(i -> {
-                    Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(i));
-                    ConditionalDistribution conditionalDistribution = Serialization.deepCopy(generalConditionalDistTimeT);
-                    conditionalDistribution.setConditioningVariables(dag.getParentSet(staticVar1).getParents());
-                    conditionalDistribution.setVar(staticVar1);
-                    bn.setConditionalDistribution(staticVar1, conditionalDistribution);
 
-                });
+        // LAST CONDITIONAL DISTRIBUTION, t_{nTimeSteps} | t_{nTimeSteps-1}, IF IT'S NOT THE GENERAL ONE
+        if ((nTimeSteps-modelNumber)%nMergedClassVars!=0 ) {
 
-                // For an odd partition with even nTimeSteps, the last distribution is also different
-                Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable - 1));
-                Variable staticVar1_interface = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable - 2));
-                Multinomial_MultinomialParents lastConDist = new Multinomial_MultinomialParents(staticVar1, dag.getParentSet(staticVar1).getParents());
-                for (int m = 0; m < staticVar1_interface.getNumberOfStates(); m++) {
-                    ConditionalDistribution dynConDist = model.getConditionalDistributionTimeT(MAPvariable);
-                    Assignment assignment = new HashMapAssignment(1);
-                    assignment.setValue(dynVar.getInterfaceVariable(), m % dynVar.getNumberOfStates());
-                    Multinomial multinomial1 = (Multinomial) dynConDist.getUnivariateDistribution(assignment);
-                    multinomial1.setVar(staticVar1);
-                    lastConDist.setMultinomial(m, multinomial1);
-                }
-                bn.setConditionalDistribution(staticVar1, lastConDist);
-            }
+            Variable staticVar1 = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable - 1));
+            Variable staticVar1_interface = variables.getVariableByName(groupedClassName + "_t" + Integer.toString(replicationsMAPVariable - 2));
+            List<Variable> parents1 = bn.getDAG().getParentSet(staticVar1).getParents();
+
+            Multinomial_MultinomialParents lastConDist = groupedDistributionMAPVariableTimeT(dynVar, staticVar1, staticVar1_interface.getNumberOfStates(), parents1, conDistT, modelNumber);
+
+            bn.setConditionalDistribution(staticVar1, lastConDist);
         }
 
         /*
@@ -1217,68 +1169,50 @@ public class DynamicMAPInference {
         List<Variable> dynVariablesWithClassParent = dynVariables.stream().filter(var -> !var.equals(MAPvariable)).filter(var -> dynamicDAG.getParentSetTime0(var).contains(MAPvariable)).collect(Collectors.toList());
         List<Variable> dynVariablesNoClassParent = dynVariables.stream().filter(var -> !var.equals(MAPvariable)).filter(var -> !dynamicDAG.getParentSetTime0(var).contains(MAPvariable)).collect(Collectors.toList());
 
-        if (even_partition) {
-            dynVariablesWithClassParent.stream().forEach(dynVariable -> {
-                ConditionalDistribution conditionalDistribution = Serialization.deepCopy(model.getConditionalDistributionTime0(dynVariable));
 
-                Variable staticMAPVar1 = variables.getVariableByName(groupedClassName + "_t0");
-                Variable staticVar1 = variables.getVariableByName(dynVariable.getName() + "_t0");
-                List<Variable> thisVarParents = conditionalDistribution.getConditioningVariables();
-                List<Variable> parentList0 = bn.getDAG().getParentSet(staticVar1).getParents();
-                int indexMAPvariable = thisVarParents.indexOf(MAPvariable);
-                //thisVarParents.remove(indexMAPvariable);
-                thisVarParents.set(indexMAPvariable, staticMAPVar1);
-
-                BaseDistribution_MultinomialParents staticVar2Distribution = distributionMAPChildrenTimeT(staticVar1, conditionalDistribution, parentList0, even_partition, 0);
-                bn.setConditionalDistribution(staticVar1, staticVar2Distribution);
-//                BaseDistribution_MultinomialParents baseDist = new BaseDistribution_MultinomialParents(staticVar1,thisVarParents);
-//                boolean allParentsMultinomial = thisVarParents.stream().allMatch(parent -> parent.isMultinomial());
+//        dynVariablesWithClassParent.stream().forEach(dynVariable -> {
+//            ConditionalDistribution conditionalDistribution = Serialization.deepCopy(model.getConditionalDistributionTime0(dynVariable));
 //
-//                for (int m = 0; m < baseDist.getNumberOfBaseDistributions(); m++) {
-//                    Assignment assignment = new HashMapAssignment(1);
-//                    assignment.setValue(MAPvariable, m / MAPvariable.getNumberOfStates());
-//                    UnivariateDistribution uniDist = conditionalDistribution.getUnivariateDistribution(assignment);
-//                    uniDist.setVar(staticVar1);
-//                    uniDist.setConditioningVariables(parentList0);
-//                    baseDist.setBaseDistribution(m, uniDist);
-//                }
-//                conditionalDistribution.setConditioningVariables(parentList0);
-//                conditionalDistribution.setVar(staticVar1);
+//            Variable staticMAPVar1 = variables.getVariableByName(groupedClassName + "_t0");
+//            Variable staticVar1 = variables.getVariableByName(dynVariable.getName() + "_t0");
+//            List<Variable> thisVarParents = conditionalDistribution.getConditioningVariables();
+//            List<Variable> parentList0 = bn.getDAG().getParentSet(staticVar1).getParents();
+//            int indexMAPvariable = thisVarParents.indexOf(MAPvariable);
 //
-//                bn.setConditionalDistribution(staticVar1, conditionalDistribution);
-//                bn.setConditionalDistribution(staticVar1, baseDist);
-            });
-        }
-        else {
-            dynVariablesWithClassParent.stream().forEach(dynVariable -> {
-                ConditionalDistribution conditionalDistribution = Serialization.deepCopy(model.getConditionalDistributionTime0(dynVariable));
+//            thisVarParents.set(indexMAPvariable, staticMAPVar1);
+//
+//
+//            conditionalDistribution.setConditioningVariables(parentList0);
+//            conditionalDistribution.setVar(staticVar1);
+//
+////            if(modelNumber==1)
+////                bn.setConditionalDistribution(staticVar1, conditionalDistribution);
+////            else {
+//            BaseDistribution_MultinomialParents staticVar2Distribution = obtainDistributionOfMAPChildren(staticVar1, conditionalDistribution, parentList0, modelNumber, 0);
+//            bn.setConditionalDistribution(staticVar1, staticVar2Distribution);
+////            }
+//
+//        });
 
-                Variable staticMAPVar1 = variables.getVariableByName(groupedClassName + "_t0");
-                Variable staticVar1 = variables.getVariableByName(dynVariable.getName() + "_t0");
-                List<Variable> thisVarParents = conditionalDistribution.getConditioningVariables();
-                List<Variable> parentList0 = bn.getDAG().getParentSet(staticVar1).getParents();
-                int indexMAPvariable = thisVarParents.indexOf(MAPvariable);
-                //thisVarParents.remove(indexMAPvariable);
-                thisVarParents.set(indexMAPvariable, staticMAPVar1);
-
-                conditionalDistribution.setConditioningVariables(parentList0);
-                conditionalDistribution.setVar(staticVar1);
-
-                bn.setConditionalDistribution(staticVar1, conditionalDistribution);
-            });
-        }
 
         /*
-         * ADD CONDITIONAL DISTRIBUTIONS FOR VARIABLES HAVING AS A PARENT THE GROUPED MAP/CLASS VARIABLE, AT TIMES T>0
+         * ADD CONDITIONAL DISTRIBUTIONS FOR VARIABLES HAVING AS A PARENT THE GROUPED MAP/CLASS VARIABLE, AT ANY TIME T
          */
         dynVariablesWithClassParent.stream().forEach(dynVariable -> {
-            IntStream.range(1, nTimeSteps).forEachOrdered(i -> {
+            IntStream.range(0, nTimeSteps).forEachOrdered(timeStep -> {
 
-                ConditionalDistribution dynamicConDist = Serialization.deepCopy(model.getConditionalDistributionTimeT(dynVariable));
-                Variable staticVar2 = variables.getVariableByName(dynVariable.getName() + "_t" + Integer.toString(i));
+                ConditionalDistribution dynamicConDist;
+                dynamicConDist = Serialization.deepCopy( timeStep==0 ? model.getConditionalDistributionTime0(dynVariable) : model.getConditionalDistributionTimeT(dynVariable) );
+//                )if(timeStep==0) {
+//                     = Serialization.deepCopy(model.getConditionalDistributionTime0(dynVariable));
+//                }
+//                else {
+//                    dynamicConDist = Serialization.deepCopy(model.getConditionalDistributionTimeT(dynVariable));
+//                }
+                Variable staticVar2 = variables.getVariableByName(dynVariable.getName() + "_t" + Integer.toString(timeStep));
                 List<Variable> parentList = bn.getDAG().getParentSet(staticVar2).getParents();
 
-                BaseDistribution_MultinomialParents staticVar2Distribution = distributionMAPChildrenTimeT(staticVar2, dynamicConDist, parentList, even_partition, i);
+                BaseDistribution_MultinomialParents staticVar2Distribution = obtainDistributionOfMAPChildren(staticVar2, dynamicConDist, parentList, modelNumber, timeStep);
                 bn.setConditionalDistribution(staticVar2, staticVar2Distribution);
             });
         });
@@ -1318,11 +1252,11 @@ public class DynamicMAPInference {
      * @param staticVariable the static {@link Variable} object.
      * @param dynamicConditionalDistribution the dynamic {@link ConditionalDistribution} at time T.
      * @param parentList the {@code List} of parent {@link Variable}s.
-     * @param even_partition a {@code boolean} that indicates whether the partition is even or not.
+     * @param
      * @param time_step the time step.
      * @return a {@link BaseDistribution_MultinomialParents} distribution.
      */
-    private BaseDistribution_MultinomialParents distributionMAPChildrenTimeT(Variable staticVariable, ConditionalDistribution dynamicConditionalDistribution, List<Variable> parentList, boolean even_partition, int time_step) {
+    private BaseDistribution_MultinomialParents obtainDistributionOfMAPChildren(Variable staticVariable, ConditionalDistribution dynamicConditionalDistribution, List<Variable> parentList, int modelNumber, int time_step) {
 
         boolean allParentsMultinomial = parentList.stream().allMatch(parent -> parent.isMultinomial());
         List<Variable> multinomialParents = parentList.stream().filter(parent -> parent.isMultinomial()).collect(Collectors.toList());
@@ -1331,42 +1265,93 @@ public class DynamicMAPInference {
         BaseDistribution_MultinomialParents staticVarConDist = new BaseDistribution_MultinomialParents(staticVariable, parentList);
 
         int nStatesMultinomialParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
+        int nStatesMAPVariable = MAPvariable.getNumberOfStates();
 
         for (int m = 0; m < nStatesMultinomialParents; m++) {
             Assignment staticParentsConfiguration = MultinomialIndex.getVariableAssignmentFromIndex(multinomialParents, m);
             Assignment dynamicParentsConfiguration = new HashMapAssignment(multinomialParents.size());
 
             IntStream.range(0, multinomialParents.size()).forEach(k -> {
-                double parentValue = staticParentsConfiguration.getValue(multinomialParents.get(k));
+                Variable currentParent = multinomialParents.get(k);
+                int parentValue = (int)staticParentsConfiguration.getValue(currentParent);
                 String parentName;
-                if (multinomialParents.get(k).getName().contains(groupedClassName)) {
-                    parentName = multinomialParents.get(k).getName().replace(groupedClassName, MAPvarName).replaceAll("_t\\d+", "");
-                    Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
 
-                    double dynParentValue;
+                if (currentParent.getName().contains(groupedClassName)) {
+                    parentName = currentParent.getName().replace(groupedClassName, MAPvarName).replaceAll("_t\\d+", "");
+                    Variable dynCurrentParent = model.getDynamicVariables().getVariableByName(parentName);
 
-                    if (time_step==0) {
-                        dynParentValue = parentValue / MAPvariable.getNumberOfStates();;
-                    }
-                    else {
-                        if ((!even_partition && nTimeSteps % 2 == 0 && (time_step == nTimeSteps - 1)) || (even_partition && nTimeSteps % 2 == 1 && (time_step == nTimeSteps - 1))) {
-                            dynParentValue = parentValue;
-                        } else {
-                            if ((!even_partition && (time_step % 2 == 1)) || (even_partition && (time_step % 2 == 0))) {
-                                dynParentValue = parentValue / MAPvariable.getNumberOfStates();
-                            } else {
-                                dynParentValue = parentValue % MAPvariable.getNumberOfStates();
-                            }
-                        }
-                    }
-                    dynamicParentsConfiguration.setValue(dynParent, dynParentValue);
-                } else {
+                    int dynParentValue;
+
+
+                    int nMergedStates = currentParent.getNumberOfStates();
+                    int repetitionsConDistT = (int)Math.round(Math.log(nMergedStates)/Math.log(nStatesMAPVariable));
+                    int indexCurrentParentState;
+                    if(time_step>=modelNumber)
+                        indexCurrentParentState = (time_step - modelNumber)%nMergedClassVars;
+                    else
+                        indexCurrentParentState = time_step;
+
+                    String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(parentValue), 10), nStatesMAPVariable);
+                    m_base_nStates = StringUtils.leftPad(m_base_nStates, repetitionsConDistT, '0');
+
+                    int dynamicParentState = Integer.parseInt(m_base_nStates.substring(indexCurrentParentState,indexCurrentParentState+1));
+
+
+                    dynParentValue = dynamicParentState;
+                    dynamicParentsConfiguration.setValue(dynCurrentParent, dynParentValue);
+
+//                    System.out.println("Variable: " + staticVariable.getName() + " with " + staticVariable.getNumberOfStates() + " states and " + parentList.size() + " parents");
+//                    System.out.println("Parent " + parentName + " with " + nMergedStates + " states");
+//                    System.out.println("Time step " + time_step + " and model number " + modelNumber);
+//                    System.out.println("Parent state number " + parentValue + " which is " + m_base_nStates);
+//                    System.out.println("Index parent state " + indexCurrentParentState);
+//                    System.out.println("Dynamic parent state number " + dynamicParentState);
+//                    System.out.println();
+//                    if (time_step==0) { // Variable at time t=0
+//                        if(modelNumber!=1) {
+//                            //dynParentValue = parentValue / (int) Math.pow(nStatesMAPVariable, nMergedClassVars - 1);
+////                            System.out.println(currentParent.getNumberOfStates());
+////                            System.out.println(nStatesMAPVariable);
+////                            System.out.println(parentValue);
+////                            System.out.println(parentValue / (currentParent.getNumberOfStates()/nStatesMAPVariable));
+//                            dynParentValue = parentValue / (int) Math.pow(nStatesMAPVariable, nMergedClassVars - 1);
+//                        }
+//                        else {
+//                            dynParentValue = parentValue;
+//                        }
+//                    } // Variable at time t=nTimeSteps-1 (last copy) and not complete
+//                    else {
+//
+//
+//                        if ((time_step - modelNumber) % nMergedClassVars != 0 && (time_step == nTimeSteps - 1)) {
+//                            dynParentValue = parentValue % nStatesMAPVariable;
+//                        } else {
+//                            if ((time_step - modelNumber) % nMergedClassVars == 0) {
+//                                dynParentValue = parentValue / (currentParent.getNumberOfStates() / nStatesMAPVariable);
+//                                ;
+//                            } else {
+//                                dynParentValue = parentValue % nStatesMAPVariable;
+//                            }
+//                        }
+//                    }
+//                        if ((!even_partition && nTimeSteps % 2 == 0 && (time_step == nTimeSteps - 1)) || (even_partition && nTimeSteps % 2 == 1 && (time_step == nTimeSteps - 1))) {
+//                            dynParentValue = parentValue;
+//                        } else {
+//                            if ((!even_partition && (time_step % 2 == 1)) || (even_partition && (time_step % 2 == 0))) {
+//                                dynParentValue = parentValue / MAPvariable.getNumberOfStates();
+//                            } else {
+//                                dynParentValue = parentValue % MAPvariable.getNumberOfStates();
+//                            }
+//                        }
+                }
+                else {
 
                     if (multinomialParents.get(k).getName().endsWith("_t" + Integer.toString(time_step - 1))) {
                         parentName = multinomialParents.get(k).getName().replaceFirst("_t\\d+", "");
                         Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
                         dynamicParentsConfiguration.setValue(dynParent.getInterfaceVariable(), parentValue);
-                    } else {
+                    }
+                    else {
                         parentName = multinomialParents.get(k).getName().replaceFirst("_t\\d+", "");
                         Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
                         dynamicParentsConfiguration.setValue(dynParent, parentValue);
@@ -1374,16 +1359,30 @@ public class DynamicMAPInference {
                 }
             });
 
+//            System.out.println(dynamicParentsConfiguration.outputString());
+
             if (allParentsMultinomial && staticVariable.isMultinomial()) {
-                Multinomial multinomial1 = (Multinomial) dynamicConditionalDistribution.getUnivariateDistribution(dynamicParentsConfiguration);
+//                try {
+
+                Multinomial_MultinomialParents multinomial_multinomialParents = (Multinomial_MultinomialParents) dynamicConditionalDistribution;
+                Multinomial multinomial1 = (Multinomial) multinomial_multinomialParents.getMultinomial(dynamicParentsConfiguration);
+
                 multinomial1.setVar(staticVariable);
                 multinomial1.setConditioningVariables(multinomialParents);
 
+//                System.out.println(multinomial1.toString()+"\n\n");
                 staticVarConDist.setBaseDistribution(m, multinomial1);
+//                }
+//                catch(Exception e) {
+//                    System.out.println("Exception");
+//                    System.out.println(e.getMessage());
+//                    System.out.println(staticVariable.getName());
+//                    System.out.println(dynamicParentsConfiguration.outputString());
+//                }
             }
             else if (allParentsMultinomial && staticVariable.isNormal() ){
                 Normal_MultinomialParents normal_multinomialParents = (Normal_MultinomialParents) dynamicConditionalDistribution;
-                Normal clg = normal_multinomialParents.getNormal(m/MAPvariable.getNumberOfStates());
+                Normal clg = normal_multinomialParents.getNormal(dynamicParentsConfiguration);
                 clg.setConditioningVariables(multinomialParents);
                 //clg.setConditioningVariables(continuousParents);
                 clg.setVar(staticVariable);
@@ -1491,10 +1490,6 @@ public class DynamicMAPInference {
             System.out.println();
 
 
-
-
-
-
             evidences.add(evidence);
         }
 
@@ -1530,100 +1525,110 @@ public class DynamicMAPInference {
 //
 //        dynMAP.runInference();
 
-        DynamicMAPInference dynMAP;
+        DynamicMAPInferenceNew dynMAP;
         Variable mapVariable;
 
 
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(3);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(5);
         DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
-        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(3);
         DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
 
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 3, true);
+//
+//        System.out.println("ORIGINAL DYNAMIC NETWORK:");
+//
+//        System.out.println(dynamicBayesianNetwork.toString());
+//        System.out.println();
 
-        System.out.println("ORIGINAL DYNAMIC NETWORK:");
-
-        System.out.println(dynamicBayesianNetwork.toString());
-        System.out.println();
 
 
-
-        dynMAP = new DynamicMAPInference();
+        dynMAP = new DynamicMAPInferenceNew();
         dynMAP.setModel(dynamicBayesianNetwork);
 
         // INITIALIZE THE MODEL
-        int nTimeSteps = 10;
+        int nTimeSteps = 20;
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
+        int nMergedClassVars = 4;
+        dynMAP.setNumberOfMergedClassVars(nMergedClassVars);
+
         mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
         dynMAP.setMAPvariable(mapVariable);
 
-        dynMAP.computeDynamicMAPEvenModel();
-        BayesianNetwork evenModel = dynMAP.getStaticEvenModel();
-//        BayesianNetworkWriter.saveToFile(evenModel,"dynamicMAPhybridEvenModel.bn");
+        System.out.println(dynamicBayesianNetwork.toString());
+//        System.out.println("ORIGINAL COND DISTRIBUTIONS MAP VARIABLE:");
+//        System.out.println(dynamicBayesianNetwork.getConditionalDistributionTime0(mapVariable).toString());
+//        System.out.println(dynamicBayesianNetwork.getConditionalDistributionTimeT(mapVariable).toString());
+//        System.out.println();
 
-        dynMAP.computeDynamicMAPOddModel();
-        BayesianNetwork oddModel = dynMAP.getStaticOddModel();
-//        BayesianNetworkWriter.saveToFile(oddModel,"dynamicMAPhybridOddModel.bn");
+        dynMAP.computeMergedClassVarModels();
 
-        System.out.println(evenModel.toString());
-        System.out.println();
-
-        System.out.println(oddModel.toString());
-        System.out.println();
-
-        /*
-         * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
-         */
-        List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
-
-        varsDynamicModel.forEach(var -> System.out.println("Var ID " + var.getVarID() + ": " + var.getName()));
-        int indexVarEvidence1 = 2;
-        int indexVarEvidence2 = 3;
-        int indexVarEvidence3 = 8;
-        Variable varEvidence1 = varsDynamicModel.get(indexVarEvidence1);
-        Variable varEvidence2 = varsDynamicModel.get(indexVarEvidence2);
-        Variable varEvidence3 = varsDynamicModel.get(indexVarEvidence3);
-
-        List<Variable> varsEvidence = new ArrayList<>(3);
-        varsEvidence.add(0,varEvidence1);
-        varsEvidence.add(1,varEvidence2);
-        varsEvidence.add(2,varEvidence3);
-
-        double varEvidenceValue;
-
-        Random random = new Random(931234662);
-
-        List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
-
-        for (int t = 0; t < nTimeSteps; t++) {
-            HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
-
-            for (int i = 0; i < varsEvidence.size(); i++) {
-
-                dynAssignment.setSequenceID(2343253);
-                dynAssignment.setTimeID(t);
-                Variable varEvidence = varsEvidence.get(i);
-
-                if (varEvidence.isMultinomial()) {
-                    varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
-                } else {
-                    varEvidenceValue = -5 + 10 * random.nextDouble();
-                }
-                dynAssignment.setValue(varEvidence, varEvidenceValue);
-            }
-            evidence.add(dynAssignment);
-        }
-
-        dynMAP.setEvidence(evidence);
-        dynMAP.runInference();
-
-        System.out.println("\nMAP sequence: " + Arrays.toString(dynMAP.getMAPsequence()) + " with probability " + dynMAP.getMAPestimateProbability());
-
-//        Iterator<List<DynamicAssignment>> iterator = DynamicMAPInference.generateEvidence(dynamicBayesianNetwork,mapVariable.getName(),5,nTimeSteps,0.50,3634);
-//        while(iterator.hasNext()) {
-//            List<DynamicAssignment> evidence1 = iterator.next();
-//            evidence1.forEach(assign -> System.out.println(assign.outputString()));
+//
+//        /*
+//         * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
+//         */
+//        List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
+//
+//        varsDynamicModel.forEach(var -> System.out.println("Var ID " + var.getVarID() + ": " + var.getName()));
+//        int indexVarEvidence1 = 2;
+//        int indexVarEvidence2 = 3;
+//        int indexVarEvidence3 = 8;
+//        Variable varEvidence1 = varsDynamicModel.get(indexVarEvidence1);
+//        Variable varEvidence2 = varsDynamicModel.get(indexVarEvidence2);
+//        Variable varEvidence3 = varsDynamicModel.get(indexVarEvidence3);
+//
+//        List<Variable> varsEvidence = new ArrayList<>(3);
+//        varsEvidence.add(0,varEvidence1);
+//        varsEvidence.add(1,varEvidence2);
+//        varsEvidence.add(2,varEvidence3);
+//
+//        double varEvidenceValue;
+//
+//        Random random = new Random(931234662);
+//
+//        List<DynamicAssignment> evidence = new ArrayList<>(nTimeSteps);
+//
+//        for (int t = 0; t < nTimeSteps; t++) {
+//            HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+//
+//            for (int i = 0; i < varsEvidence.size(); i++) {
+//
+//                dynAssignment.setSequenceID(2343253);
+//                dynAssignment.setTimeID(t);
+//                Variable varEvidence = varsEvidence.get(i);
+//
+//                if (varEvidence.isMultinomial()) {
+//                    varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
+//                } else {
+//                    varEvidenceValue = -5 + 10 * random.nextDouble();
+//                }
+//                dynAssignment.setValue(varEvidence, varEvidenceValue);
+//            }
+//            evidence.add(dynAssignment);
 //        }
+//
+//        dynMAP.setEvidence(evidence);
+//        dynMAP.runInference();
+//
+//        System.out.println("\nMAP sequence: " + Arrays.toString(dynMAP.getMAPsequence()) + " with probability " + dynMAP.getMAPestimateProbability());
+//
+////        Iterator<List<DynamicAssignment>> iterator = DynamicMAPInference.generateEvidence(dynamicBayesianNetwork,mapVariable.getName(),5,nTimeSteps,0.50,3634);
+////        while(iterator.hasNext()) {
+////            List<DynamicAssignment> evidence1 = iterator.next();
+////            evidence1.forEach(assign -> System.out.println(assign.outputString()));
+////        }
+
+
+//        int nStates = 3;
+//        int nRepets = 5;
+//
+//        for (int m = 0; m < Math.pow(nStates,nRepets); m++) {
+//            String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+//            m_base_nStates = StringUtils.leftPad(m_base_nStates, nRepets, '0');
+//            System.out.println(m_base_nStates);
+//            //System.out.println(String.format("%0" + nRepets + "d",m));
+//        }
+
 
     }
 
