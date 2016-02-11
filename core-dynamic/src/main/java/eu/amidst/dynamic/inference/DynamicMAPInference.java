@@ -1525,7 +1525,7 @@ public class DynamicMAPInference {
 //
 //        dynMAP.runInference();
 
-        DynamicMAPInferenceNew dynMAP;
+        DynamicMAPInference dynMAP;
         Variable mapVariable;
 
 
@@ -1543,7 +1543,7 @@ public class DynamicMAPInference {
 
 
 
-        dynMAP = new DynamicMAPInferenceNew();
+        dynMAP = new DynamicMAPInference();
         dynMAP.setModel(dynamicBayesianNetwork);
 
         // INITIALIZE THE MODEL
