@@ -6,6 +6,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Serialization;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.*;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -82,29 +83,29 @@ public class DynamicMAPInference {
     String groupedClassName = "__GROUPED_CLASS__";
 
 
-//    /**
-//     * Sets the evidence for this DynamicMAPInference.
-//     * @param evidence a list of {@link DynamicAssignment} objects.
-//     */
-//    public void setEvidence(List<DynamicAssignment> evidence) {
-//
-//        long sequenceID = evidence.get(0).getSequenceID();
-//        for(DynamicAssignment dynAssig : evidence) {
-//            if (dynAssig.getSequenceID()!=sequenceID) {
-//                System.out.println("Error: Different sequence IDs in the evidence");
-//                System.exit(-15);
-//            }
-//            if (dynAssig.getTimeID()>=nTimeSteps || dynAssig.getTimeID()<0) {
-//                System.out.println("Error: Evidence time ID out of the range");
-//                System.exit(-20);
-//            }
-//            if (!Double.isNaN(dynAssig.getValue(MAPvariable))) {
-//                System.out.println("Error: MAP variable should not be in the evidence");
-//                System.exit(-30);
-//            }
-//        }
-//        this.evidence = evidence;
-//
+    /**
+     * Sets the evidence for this DynamicMAPInference.
+     * @param evidence a list of {@link DynamicAssignment} objects.
+     */
+    public void setEvidence(List<DynamicAssignment> evidence) {
+
+        long sequenceID = evidence.get(0).getSequenceID();
+        for(DynamicAssignment dynAssig : evidence) {
+            if (dynAssig.getSequenceID()!=sequenceID) {
+                System.out.println("Error: Different sequence IDs in the evidence");
+                System.exit(-15);
+            }
+            if (dynAssig.getTimeID()>=nTimeSteps || dynAssig.getTimeID()<0) {
+                System.out.println("Error: Evidence time ID out of the range");
+                System.exit(-20);
+            }
+            if (!Double.isNaN(dynAssig.getValue(MAPvariable))) {
+                System.out.println("Error: MAP variable should not be in the evidence");
+                System.exit(-30);
+            }
+        }
+        this.evidence = evidence;
+
 //        if (staticEvenModel!=null) {
 //            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
 //
@@ -119,38 +120,38 @@ public class DynamicMAPInference {
 //
 //            });
 //        }
-//    }
-//
-//    public void setEvidence(DataStream<DynamicDataInstance> evidence1) {
-//
-//        DynamicDataInstance currentDataInstance = evidence1.stream().findFirst().get();
-//        long sequenceID = currentDataInstance.getSequenceID();
-//
-//        List<DynamicAssignment> evidence2 = new ArrayList<>(1);
-//        for(DynamicDataInstance instance : evidence1) {
-//            if(instance.getSequenceID()!=sequenceID) {
-//                continue;
-//            }
-//            instance.setValue(this.MAPvariable, Utils.missingValue());
-//
-//            DynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(this.model.getNumberOfVars());
-//            this.model.getDynamicVariables().getListOfDynamicVariables().stream().filter(var -> !(var.getName()==this.MAPvarName)).forEach(var -> {
-//                dynamicAssignment.setValue(var,instance.getValue(var));
-//            });
-//            evidence2.add(dynamicAssignment);
-//        }
-//
-//        //evidence2.sort( (l1,l2) -> (l1.getTimeID()<l2.getTimeID() ? 1 : -1) ) ;
-//
-////        evidence2.forEach(evid -> {
-////            System.out.println(evid.outputString(this.model.getDynamicVariables().getListOfDynamicVariables()));
-//////            System.out.println(evid.getSequenceID());
-//////            System.out.println(evid.getTimeID());
-////        });
-//
-//
-//        this.evidence = evidence2;
-//
+    }
+
+    public void setEvidence(DataStream<DynamicDataInstance> evidence1) {
+
+        DynamicDataInstance currentDataInstance = evidence1.stream().findFirst().get();
+        long sequenceID = currentDataInstance.getSequenceID();
+
+        List<DynamicAssignment> evidence2 = new ArrayList<>(1);
+        for(DynamicDataInstance instance : evidence1) {
+            if(instance.getSequenceID()!=sequenceID) {
+                continue;
+            }
+            instance.setValue(this.MAPvariable, Utils.missingValue());
+
+            DynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(this.model.getNumberOfVars());
+            this.model.getDynamicVariables().getListOfDynamicVariables().stream().filter(var -> !(var.getName()==this.MAPvarName)).forEach(var -> {
+                dynamicAssignment.setValue(var,instance.getValue(var));
+            });
+            evidence2.add(dynamicAssignment);
+        }
+
+        //evidence2.sort( (l1,l2) -> (l1.getTimeID()<l2.getTimeID() ? 1 : -1) ) ;
+
+//        evidence2.forEach(evid -> {
+//            System.out.println(evid.outputString(this.model.getDynamicVariables().getListOfDynamicVariables()));
+////            System.out.println(evid.getSequenceID());
+////            System.out.println(evid.getTimeID());
+//        });
+
+
+        this.evidence = evidence2;
+
 //        if (staticEvenModel!=null) {
 //            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
 //
@@ -165,7 +166,7 @@ public class DynamicMAPInference {
 //
 //            });
 //        }
-//    }
+    }
 
     /**
      * Sets the model for this DynamicMAPInference.
@@ -330,17 +331,18 @@ public class DynamicMAPInference {
         });
     }
 
-//
-//    /**
-//     * Runs the inference algorithm.
-//     */
-//    public void runInference() {
-//
-//        if (MAPvariable==null || MAPvarName==null) {
-//            System.out.println("Error: The MAP variable has not been set");
-//            System.exit(-30);
-//        }
-//
+
+    /**
+     * Runs the inference algorithm.
+     */
+    public void runInference() {
+
+        if (MAPvariable == null || MAPvarName == null) {
+            System.out.println("Error: The MAP variable has not been set");
+            System.exit(-30);
+        }
+    }
+
 //        if (this.staticOddModel == null) {
 //            this.computeDynamicMAPOddModel();
 //        }
@@ -365,18 +367,18 @@ public class DynamicMAPInference {
 //        }
 //        this.runInference(SearchAlgorithm.VMP);
 //    }
-//
-//    /**
-//     * Runs the inference given an input search algorithm.
-//     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
-//     */
-//    public void runInference(SearchAlgorithm searchAlgorithm) {
-//
-//        if (MAPvariable==null || MAPvarName==null) {
-//            System.out.println("Error: The MAP variable has not been set");
-//            System.exit(-30);
-//        }
-//
+
+    /**
+     * Runs the inference given an input search algorithm.
+     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
+     */
+    public void runInference(SearchAlgorithm searchAlgorithm) {
+
+        if (MAPvariable == null || MAPvarName == null) {
+            System.out.println("Error: The MAP variable has not been set");
+            System.exit(-30);
+        }
+    }
 //        if (this.staticOddModel == null) {
 //            this.computeDynamicMAPOddModel();
 //        }
@@ -461,18 +463,19 @@ public class DynamicMAPInference {
 //        computeMostProbableSequence(conditionalDistributionsMAPvariable);
 //
 //    }
-//
-//    /**
-//     * Runs the inference for Ungrouped MAP variable given an input search algorithm.
-//     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
-//     */
-//    public void runInferenceUngroupedMAPVariable(SearchAlgorithm searchAlgorithm) {
-//
-//        if (MAPvariable==null || MAPvarName==null) {
-//            System.out.println("Error: The MAP variable has not been set");
-//            System.exit(-30);
-//        }
-//
+
+    /**
+     * Runs the inference for Ungrouped MAP variable given an input search algorithm.
+     * @param searchAlgorithm a valid {@link SearchAlgorithm} value.
+     */
+    public void runInferenceUngroupedMAPVariable(SearchAlgorithm searchAlgorithm) {
+
+        if (MAPvariable == null || MAPvarName == null) {
+            System.out.println("Error: The MAP variable has not been set");
+            System.exit(-30);
+        }
+    }
+
 //        if (this.staticModel == null) {
 //            staticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
 //        }
