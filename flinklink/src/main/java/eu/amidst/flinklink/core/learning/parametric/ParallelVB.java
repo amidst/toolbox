@@ -83,7 +83,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     protected double localThreshold = 0.1;
 
-    protected double timeLimit = -1;
+    protected long timeLimit = -1;
 
     protected double globalELBO = Double.NaN;
 
@@ -126,7 +126,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         this.maximumLocalIterations = maximumLocalIterations;
     }
 
-    public void setTimeLimit(double timeLimit){
+    public void setTimeLimit(long timeLimit){
         this.timeLimit = timeLimit;
     }
 
