@@ -171,6 +171,14 @@ public class CompoundVector implements MomentParameters, NaturalParameters, Suff
      * {@inheritDoc}
      */
     @Override
+    public void multiplyBy(double val){
+        this.baseVectors.stream().forEach(w -> w.getVector().multiplyBy(val));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double dotProduct(Vector vec) {
         return this.dotProduct((CompoundVector) vec);
     }
