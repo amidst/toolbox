@@ -83,6 +83,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     protected double localThreshold = 0.1;
 
+    protected double timeLimit = -1;
+
     protected double globalELBO = Double.NaN;
 
     IdenitifableModelling idenitifableModelling = new ParameterIdentifiableModel();
@@ -115,6 +117,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         this.localThreshold = localThreshold;
     }
 
+
     public void setMaximumGlobalIterations(int maximumGlobalIterations) {
         this.maximumGlobalIterations = maximumGlobalIterations;
     }
@@ -122,6 +125,11 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     public void setMaximumLocalIterations(int maximumLocalIterations) {
         this.maximumLocalIterations = maximumLocalIterations;
     }
+
+    public void setTimeLimit(double timeLimit){
+        this.timeLimit = timeLimit;
+    }
+
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
@@ -233,7 +241,14 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             DataSet<CompoundVector> paramSet = env.fromElements(parameterPrior);
 
-            ConvergenceELBO convergenceELBO = new ConvergenceELBO(this.globalThreshold, System.nanoTime());
+            ConvergenceCriterion convergenceELBO;
+            if(timeLimit == -1) {
+                convergenceELBO = new ConvergenceELBO(this.globalThreshold, System.nanoTime());
+            }
+            else {
+                convergenceELBO = new ConvergenceELBObyTime(this.timeLimit, System.nanoTime());
+                this.setMaximumGlobalIterations(5000);
+            }
             // set number of bulk iterations for KMeans algorithm
             IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
                     .registerAggregationConvergenceCriterion("ELBO_" + this.dag.getName(), new DoubleSumAggregator(),convergenceELBO);
@@ -267,7 +282,10 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
             this.svb.updateNaturalParameterPrior(parameterPrior);
 
-            this.globalELBO = ((ConvergenceELBO)loop.getAggregators().getConvergenceCriterion()).getELBO();
+            if(timeLimit == -1)
+                this.globalELBO = ((ConvergenceELBO)loop.getAggregators().getConvergenceCriterion()).getELBO();
+            else
+                this.globalELBO = ((ConvergenceELBObyTime)loop.getAggregators().getConvergenceCriterion()).getELBO();
 
             this.svb.applyTransition();
 
@@ -598,6 +616,66 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 //System.out.println("Global bound Convergence: "+ iteration +"," + df.format(percentage) + "," +
                 //        df.format(value.getValue())+ "," + df.format((System.nanoTime() - start) / 1000000000.0) +
                 //        " seconds");
+                return true;
+            }
+        }
+    }
+
+    public static class ConvergenceELBObyTime implements ConvergenceCriterion<DoubleValue>{
+
+        double previousELBO = Double.NaN;
+        final double timeLimit;
+        long start;
+
+        public ConvergenceELBObyTime(double timeLimit, long start){
+            this.start = start;
+            this.timeLimit = timeLimit;
+        }
+
+        public double getELBO() {
+            return previousELBO;
+        }
+
+        @Override
+        public boolean isConverged(int iteration, DoubleValue value) {
+
+
+            if (iteration==1)
+                return false;
+
+            iteration--;
+
+            if (Double.isNaN(value.getValue()))
+                throw new IllegalStateException("A NaN elbo");
+
+            if (value.getValue()==Double.NEGATIVE_INFINITY)
+                value.setValue(-Double.MAX_VALUE);
+
+            double percentage = 100*(value.getValue() - previousELBO)/Math.abs(previousELBO);
+
+            double timeIteration = (System.nanoTime() - start) / 1000000000.0;
+
+            DecimalFormat df = new DecimalFormat("0.0000");
+
+            if (iteration==1) {
+                previousELBO=value.getValue();
+                logger.info("Global bound at first iteration: 1,{},{} seconds",df.format(value.getValue()),
+                        df.format((System.nanoTime() - start) / 1000000000.0));
+                return false;
+            }else if (percentage<-1){
+                logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
+                        percentage), df.format(value.getValue()), df.format(previousELBO));
+                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+            }else if (percentage>-1 && timeIteration < timeLimit) {
+                logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
+                        df.format(percentage), df.format(value.getValue()), df.format(previousELBO),
+                        df.format((System.nanoTime() - start) / 1000000000.0));
+                this.previousELBO=value.getValue();
+                return false;
+            }else {
+                logger.info("Global bound Convergence: {},{},{},{} seconds",iteration,df.format(percentage),
+                        df.format(value.getValue()), df.format((System.nanoTime() - start) / 1000000000.0));
                 return true;
             }
         }
