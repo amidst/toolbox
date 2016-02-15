@@ -90,7 +90,7 @@ public class IDAmodelDistributedVMP {
         double globalThreshold = Double.parseDouble(args[3]);
         int localIter = Integer.parseInt(args[4]);
         double localThreshold = Double.parseDouble(args[5]);
-        double timeLimit = Double.parseDouble(args[6]);
+        long timeLimit = Long.parseLong(args[6]);
         int seed = Integer.parseInt(args[7]);
 
         //BasicConfigurator.configure();
