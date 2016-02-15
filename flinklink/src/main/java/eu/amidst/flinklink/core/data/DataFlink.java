@@ -16,6 +16,10 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.utils.DataSetUtils;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa on 8/9/15.
@@ -30,5 +34,57 @@ public interface DataFlink<T extends DataInstance> {
 
     default DataSet<DataOnMemory<T>> getBatchedDataSet(int batchSize){
         return ConversionToBatches.toBatches(this,batchSize);
+    }
+
+    default DataOnMemory<T> subsample(long seed, int samples) {
+
+        try {
+            List<T> subsample = DataSetUtils.sampleWithSize(this.getDataSet(), true, samples, seed).collect();
+
+            return new DataOnMemory<T>() {
+                @Override
+                public int getNumberOfDataInstances() {
+                    return subsample.size();
+                }
+
+                @Override
+                public T getDataInstance(int i) {
+                    return subsample.get(i);
+                }
+
+                @Override
+                public List<T> getList() {
+                    return subsample;
+                }
+
+                @Override
+                public Attributes getAttributes() {
+                    return this.getAttributes();
+                }
+
+                @Override
+                public void close() {
+
+                }
+
+                @Override
+                public boolean isRestartable() {
+                    return true;
+                }
+
+                @Override
+                public void restart() {
+
+                }
+
+                @Override
+                public Stream<T> stream() {
+                    return subsample.stream();
+                }
+            };
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
