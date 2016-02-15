@@ -588,8 +588,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 previousELBO=value.getValue();
                 logger.info("Global bound at first iteration: 1,{},{} seconds",df.format(value.getValue()),
                         df.format((System.nanoTime() - start) / 1000000000.0));
-                //System.out.println("Global bound at first iteration: 1," + df.format(value.getValue())+ "," +
-                //        df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
+                System.out.println("Global bound at first iteration: 1," + df.format(value.getValue())+ "," +
+                        df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
 
                 return false;
             }else if (percentage<0 && percentage < -threshold){
@@ -605,17 +605,17 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
                         df.format(percentage), df.format(value.getValue()), df.format(previousELBO),
                         df.format((System.nanoTime() - start) / 1000000000.0));
-                //System.out.println("Global bound is monotonically increasing: "+ iteration +","+df.format(percentage)+
-                //        "," + (df.format(value.getValue()) +">" + df.format(previousELBO))+ ","+
-                //        df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
+                System.out.println("Global bound is monotonically increasing: "+ iteration +","+df.format(percentage)+
+                        "," + (df.format(value.getValue()) +">" + df.format(previousELBO))+ ","+
+                        df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
                 this.previousELBO=value.getValue();
                 return false;
             }else {
                 logger.info("Global bound Convergence: {},{},{},{} seconds",iteration,df.format(percentage),
                         df.format(value.getValue()), df.format((System.nanoTime() - start) / 1000000000.0));
-                //System.out.println("Global bound Convergence: "+ iteration +"," + df.format(percentage) + "," +
-                //        df.format(value.getValue())+ "," + df.format((System.nanoTime() - start) / 1000000000.0) +
-                //        " seconds");
+                System.out.println("Global bound Convergence: "+ iteration +"," + df.format(percentage) + "," +
+                        df.format(value.getValue())+ "," + df.format((System.nanoTime() - start) / 1000000000.0) +
+                        " seconds");
                 return true;
             }
         }
