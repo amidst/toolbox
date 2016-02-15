@@ -76,8 +76,11 @@ public class IDAmodelDistributedVMP {
 
         int windowSize = Integer.parseInt(args[1]);
         int globalIter = Integer.parseInt(args[2]);
-        int localIter = Integer.parseInt(args[3]);
-        int seed = Integer.parseInt(args[4]);
+        double globalThreshold = Double.parseDouble(args[3]);
+        int localIter = Integer.parseInt(args[4]);
+        double localThreshold = Double.parseDouble(args[5]);
+        double timeLimit = Double.parseDouble(args[6]);
+        int seed = Integer.parseInt(args[7]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -95,10 +98,11 @@ public class IDAmodelDistributedVMP {
 
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
-        parallelVB.setGlobalThreshold(0.1);
+        parallelVB.setGlobalThreshold(globalThreshold);
         parallelVB.setMaximumGlobalIterations(globalIter);
-        parallelVB.setLocalThreshold(0.1);
+        parallelVB.setLocalThreshold(localThreshold);
         parallelVB.setMaximumLocalIterations(localIter);
+        parallelVB.setTimeLimit(timeLimit);
         parallelVB.setSeed(seed);
 
         //Set the window size
@@ -115,6 +119,7 @@ public class IDAmodelDistributedVMP {
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
+        System.out.println("Total running time:" + seconds+ "seconds.");
         logger.info("Total running time: {} seconds.", seconds);
 
     }
