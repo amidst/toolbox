@@ -56,6 +56,18 @@ public class ParseOutput {
                     output = "";
                     continue;
                 }
+                if(line.contains("SVI ELBO")) {
+                    line = line.substring(line.indexOf("ELBO:")+6,line.length()-8);
+                    line = line.replaceAll("\\s+","");
+                    String[] parts = line.split(",");
+                    output += parts[0]+"\t"; // Iteration
+                    output += parts[1]+"\t"; //Stepsize
+                    output += parts[2]+"\t"; //Global bound
+                    output += parts[3]; //Time
+                    out.println(output);
+                    output = "";
+                    continue;
+                }
             }
             out.close();
         }
