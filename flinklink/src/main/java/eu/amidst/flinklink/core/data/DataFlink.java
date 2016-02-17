@@ -40,7 +40,7 @@ public interface DataFlink<T extends DataInstance> {
 
         try {
             List<T> subsample = DataSetUtils.sampleWithSize(this.getDataSet(), true, samples, seed).collect();
-
+            Attributes atts = this.getAttributes();
             return new DataOnMemory<T>() {
                 @Override
                 public int getNumberOfDataInstances() {
@@ -59,7 +59,7 @@ public interface DataFlink<T extends DataInstance> {
 
                 @Override
                 public Attributes getAttributes() {
-                    return this.getAttributes();
+                    return atts;
                 }
 
                 @Override
