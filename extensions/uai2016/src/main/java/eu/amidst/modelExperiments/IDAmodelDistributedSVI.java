@@ -76,10 +76,11 @@ public class IDAmodelDistributedSVI {
 
         int windowSize = Integer.parseInt(args[1]);
         int localIter = Integer.parseInt(args[2]);
-        long timeLimit = Long.parseLong(args[3]);
-        int seed = Integer.parseInt(args[4]);
-        int dataSetSize = Integer.parseInt(args[5]);
-        double learningRate = Double.parseDouble(args[6]);
+        double localThreshold = Double.parseDouble(args[3]);
+        long timeLimit = Long.parseLong(args[4]);
+        int seed = Integer.parseInt(args[5]);
+        int dataSetSize = Integer.parseInt(args[6]);
+        double learningRate = Double.parseDouble(args[7]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -97,7 +98,7 @@ public class IDAmodelDistributedSVI {
 
         //Parameter Learning
         StochasticVI stochasticVI = new StochasticVI();
-        stochasticVI.setLocalThreshold(0.1);
+        stochasticVI.setLocalThreshold(localThreshold);
         stochasticVI.setMaximumLocalIterations(localIter);
         stochasticVI.setSeed(seed);
         //Set the window size
