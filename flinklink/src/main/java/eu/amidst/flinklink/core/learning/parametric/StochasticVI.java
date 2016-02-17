@@ -147,11 +147,14 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
         DecimalFormat df = new DecimalFormat("0.0000");
 
-        double prob = this.batchSize/(double)this.dataSetSize;
-
         boolean convergence=false;
 
         CompoundVector prior = svb.getNaturalParameterPrior();
+
+        CompoundVector initialPosterior = Serialization.deepCopy(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+        initialPosterior.sum(prior);
+
+        this.svb.updateNaturalParameterPosteriors(initialPosterior);
 
         CompoundVector currentParam =  svb.getNaturalParameterPrior();
 
