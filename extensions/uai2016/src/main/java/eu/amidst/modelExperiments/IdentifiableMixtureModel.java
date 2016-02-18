@@ -36,7 +36,7 @@ public class IdentifiableMixtureModel implements IdenitifableModelling, Serializ
 
     @Override
     public int getNumberOfEpochs() {
-        return numLocalHiddenVariables+2;
+        return (numLocalHiddenVariables+2)*nStates;
     }
 
 
@@ -57,21 +57,21 @@ public class IdentifiableMixtureModel implements IdenitifableModelling, Serializ
         }
 
         if (multinomialIndex==-1){
-
+            return true;
         }
 
         if (variable.getName().contains("Beta0"))
-            return epoch%getNumberOfEpochs() ==0;
+            return epoch%getNumberOfEpochs() == (multinomialIndex+1)*0;
         else if (variable.getName().contains("Gamma"))
-            return epoch%getNumberOfEpochs() ==1;
+            return epoch%getNumberOfEpochs() ==(multinomialIndex+1)*1;
         else if (variable.getName().contains("Beta_LocalHidden")) {
             for (int i = 0; i < this.numLocalHiddenVariables; i++) {
                 if (variable.getName().contains("Beta_LocalHidden_"+i))
-                    return epoch % getNumberOfEpochs() == i+2;
+                    return epoch % getNumberOfEpochs() == (multinomialIndex+1)*(i+2);
             }
             return true;
         }else if (variable.getName().contains("_Mean_Parameter_")){
-            return epoch%getNumberOfEpochs()==0;
+            return epoch%getNumberOfEpochs()==(multinomialIndex+1)*0;
         }
         else
             return true;
