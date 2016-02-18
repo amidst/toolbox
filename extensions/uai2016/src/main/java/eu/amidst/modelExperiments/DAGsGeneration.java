@@ -36,7 +36,7 @@ public class DAGsGeneration {
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULT");
+        Variable classVar = variables.getVariableByName("Default");
 
         // Define a local hidden variable.
         List<Variable> localHiddenVars = new ArrayList<>();
@@ -128,7 +128,7 @@ public class DAGsGeneration {
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULT");
+        Variable classVar = variables.getVariableByName("Default");
 
         // Define a local hidden variable.
         Variable localHiddenVar = variables.newGaussianVariable("LocalHidden");
@@ -175,7 +175,7 @@ public class DAGsGeneration {
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULT");
+        Variable classVar = variables.getVariableByName("Default");
 
         // Define the global hidden variable.
         Variable globalHiddenVar = variables.newGaussianVariable("GlobalHidden");
@@ -208,7 +208,7 @@ public class DAGsGeneration {
 
         Variables variables = new Variables();
 
-        variables.newMultionomialVariable("DEFAULT", 2);
+        variables.newMultionomialVariable("Default", 2);
 
         for (int i = 0; i < n; i++) {
             variables.newGaussianVariable("G_" + i);
@@ -216,7 +216,7 @@ public class DAGsGeneration {
 
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULT");
+        Variable classVar = variables.getVariableByName("Default");
 
 
         // Create an empty DAG object with the defined variables.
