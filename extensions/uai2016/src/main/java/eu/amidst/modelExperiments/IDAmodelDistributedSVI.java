@@ -1,10 +1,8 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
@@ -12,10 +10,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static eu.amidst.modelExperiments.DAGsGeneration.getIDALocalGlobalDAG;
+import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultiLocalDAG;
 
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
@@ -29,7 +24,7 @@ public class IDAmodelDistributedSVI {
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
         //args= new String[]{" " +
-        //        "./datasets/dataFlink/uai10K.arff", "10", "1000", "50", "0", "10000", "0.75"};
+        //        "./datasets/dataFlink/uai10K_Month1.arff", "100", "100", "0.01", "150", "0", "10000", "0.75"};
 
         String fileName = args[0];
 
@@ -40,6 +35,8 @@ public class IDAmodelDistributedSVI {
         int seed = Integer.parseInt(args[5]);
         int dataSetSize = Integer.parseInt(args[6]);
         double learningRate = Double.parseDouble(args[7]);
+        int nHidden = Integer.parseInt(args[8]);
+
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -51,7 +48,8 @@ public class IDAmodelDistributedSVI {
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
-        DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
+        //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
+        DAG hiddenNB = getIDAMultiLocalDAG(dataFlink.getAttributes(),nHidden);
         long start = System.nanoTime();
 
         //Parameter Learning
@@ -67,9 +65,9 @@ public class IDAmodelDistributedSVI {
         stochasticVI.setTimiLimit(timeLimit);
 
 
-        List<Variable> hiddenVars = new ArrayList<>();
-        hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));
-        stochasticVI.setPlateuStructure(new PlateuStructure(hiddenVars));
+        //List<Variable> hiddenVars = new ArrayList<>();
+        //hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));
+        //stochasticVI.setPlateuStructure(new PlateuStructure(hiddenVars));
         //GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, 1);
         //gaussianHiddenTransitionMethod.setFading(1.0);
         //stochasticVI.setTransitionMethod(gaussianHiddenTransitionMethod);

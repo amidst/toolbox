@@ -21,6 +21,8 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -28,6 +30,98 @@ import java.util.Random;
  */
 public class DAGsGeneration {
 
+
+    public static DAG getIDAMultiLocalGlobalDAG(Attributes attributes, int nlocals) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("DEFAULT");
+
+        // Define a local hidden variable.
+        List<Variable> localHiddenVars = new ArrayList<>();
+        for (int i = 0; i < nlocals; i++) {
+            localHiddenVars.add(variables.newGaussianVariable("LocalHidden_"+i));
+        }
+
+        // Define the global hidden variable.
+        Variable globalHiddenVar = variables.newGaussianVariable("GlobalHidden");
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                .forEach(w -> w.addParent(classVar));
+
+        // Link the global hidden as parent of all predictive attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                .forEach(w -> w.addParent(globalHiddenVar));
+
+        // Link the local hidden as parent of all predictive attributes
+        for (Variable localHiddenVar : localHiddenVars) {
+            dag.getParentSets()
+                    .stream()
+                    .filter(w -> w.getMainVar() != classVar)
+                    .filter(w -> w.getMainVar() != globalHiddenVar)
+                    .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                    .forEach(w -> w.addParent(localHiddenVar));
+        }
+
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
+    public static DAG getIDAMultiLocalDAG(Attributes attributes, int nlocals) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("DEFAULT");
+
+        // Define a local hidden variable.
+        List<Variable> localHiddenVars = new ArrayList<>();
+        for (int i = 0; i < nlocals; i++) {
+            localHiddenVars.add(variables.newGaussianVariable("LocalHidden_"+i));
+        }
+
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                .forEach(w -> w.addParent(classVar));
+
+        // Link the local hidden as parent of all predictive attributes
+        for (Variable localHiddenVar : localHiddenVars) {
+            dag.getParentSets()
+                    .stream()
+                    .filter(w -> w.getMainVar() != classVar)
+                    .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                    .forEach(w -> w.addParent(localHiddenVar));
+        }
+
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
 
     public static DAG getIDALocalGlobalDAG(Attributes attributes) {
         // Create a Variables object from the attributes of the input data stream.
@@ -165,8 +259,8 @@ public class DAGsGeneration {
 
 
     public static void main(String[] args) throws Exception {
-        int nVars = 2;
-        int dataSetSize=10000;
+        int nVars = 20;
+        int dataSetSize=4000;
         int windowSize = 1000;
         generateData(nVars,dataSetSize, windowSize);
 
