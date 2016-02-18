@@ -158,6 +158,8 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
         CompoundVector currentParam =  svb.getNaturalParameterPrior();
 
+        double totalTimeElbo=0;
+
         double totalTime=0;
         double t = 0;
         while(!convergence){
@@ -187,16 +189,20 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
                 convergence=true;
             }
 
+            long startBatchELBO= System.nanoTime();
             //Compute ELBO
             double elbo = this.computeELBO(svb, prior, currentParam);
+            totalTimeElbo += System.nanoTime() - startBatchELBO;
+
+            System.out.println("TIME ELBO:" + totalTimeElbo/1e9);
 
             long endBatch= System.nanoTime();
             totalTime+=endBatch-startBatch;
 
-            logger.info("SVI ELBO: {},{},{},{} seconds",t,0,
-                    df.format(elbo), df.format(totalTime/1e9));
+            logger.info("SVI ELBO: {},{},{},{} seconds, {} seconds",t,0,
+                    df.format(elbo), df.format(totalTime/1e9), df.format(totalTimeElbo/1e9));
 
-            System.out.println("SVI ELBO: "+t+", "+stepSize+", "+elbo+", "+totalTime/1e9+" seconds");
+            System.out.println("SVI ELBO: "+t+", "+stepSize+", "+elbo+", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds");
 
 
             t++;
@@ -208,6 +214,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
     private double computeELBO(SVB svb, CompoundVector orginialPrior, CompoundVector newPrior){
 
+        svb.setOutput(false);
         svb.updateNaturalParameterPrior(orginialPrior);
         svb.updateNaturalParameterPosteriors(newPrior);
         double elbo =  svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
@@ -234,6 +241,8 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
 
         svb.updateNaturalParameterPrior(newPrior);
+
+        svb.setOutput(true);
 
         return elbo;
     }

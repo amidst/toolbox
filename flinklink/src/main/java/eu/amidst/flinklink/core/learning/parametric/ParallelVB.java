@@ -388,8 +388,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 this.svb.updateNaturalParameterPrior(updatedPrior);
                 this.svb.updateNaturalParameterPosteriors(updatedPrior);
                 svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
+                svb.setOutput(false);
                 SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
-
+                svb.setOutput(true);
 
                 if (Double.isNaN(outElbo.getElbo()))
                     throw new IllegalStateException("NaN elbo");

@@ -12,9 +12,10 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.io.DataStreamWriter;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.io.DataFlinkWriter;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
  * Created by andresmasegosa on 18/2/16.
@@ -42,9 +43,13 @@ public class AddIndex {
         fw.close();
 */
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/test.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReduced.arff");
 
-        DataStreamWriter.writeDataToFile(data,"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/testWeka.arff");
+        //DataStreamWriter.writeDataToFile(data,"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/testWeka.arff");
+
+        DataFlink<DataInstance> data =DataFlinkLoader.loadDataFromFile(ExecutionEnvironment.getExecutionEnvironment(),"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReduced.arff", false);
+
+        DataFlinkWriter.writeDataToARFFFolder(data,"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff");
     }
 
 }

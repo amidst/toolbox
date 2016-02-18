@@ -40,14 +40,20 @@ public class IdentifiableIDAUAIModelLocalHidden implements IdenitifableModelling
 
     @Override
     public boolean isActiveAtEpoch(Variable variable,int epoch) {
+
+        if (epoch==0)
+            return true;
+
         if (variable.getName().contains("Beta0"))
             return epoch%getNumberOfEpochs() ==0;
         else if (variable.getName().contains("Gamma"))
             return epoch%getNumberOfEpochs() ==1;
         else if (variable.getName().contains("Beta_LocalHidden")) {
-            int length = variable.getName().length();
-            int index = variable.getName().charAt(length);
-            return epoch % getNumberOfEpochs() == index+2;
+            for (int i = 0; i < this.numLocalHiddenVariables; i++) {
+                if (variable.getName().contains("Beta_LocalHidden_"+i))
+                    return epoch % getNumberOfEpochs() == i+2;
+            }
+            return true;
         }else if (variable.getName().contains("_Mean_Parameter_")){
             return epoch%getNumberOfEpochs()==0;
         }
