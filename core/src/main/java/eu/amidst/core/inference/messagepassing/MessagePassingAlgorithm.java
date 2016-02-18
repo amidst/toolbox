@@ -20,6 +20,7 @@ import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,6 +34,8 @@ import java.util.stream.Collectors;
  * This class implements the interface {@link InferenceAlgorithm} and defines the Message Passing algorithm.
  */
 public abstract class MessagePassingAlgorithm<E extends Vector> implements InferenceAlgorithm, Serializable{
+
+    static org.slf4j.Logger logger = LoggerFactory.getLogger(MessagePassingAlgorithm.class);
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -183,6 +186,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
         probOfEvidence = local_elbo;
         if (output){
             System.out.println("N Iter: "+local_iter +", elbo:"+local_elbo);
+            logger.info("N Iter: {}, elbo: {}",local_iter, local_elbo);
         }
         nIter=local_iter;
     }
