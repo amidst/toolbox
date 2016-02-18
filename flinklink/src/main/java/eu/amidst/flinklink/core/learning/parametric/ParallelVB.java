@@ -664,7 +664,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 logger.info("Global bound at first iteration: 1,{},{} seconds",df.format(value.getValue()),
                         df.format((System.nanoTime() - start) / 1000000000.0));
                 System.out.println("Global bound at first iteration: 1," + value.getValue()+ "," +
-                        (System.nanoTime() - start / 1000000000.0) + " seconds");
+                        ((System.nanoTime() - start) / 1000000000.0) + " seconds");
                 return false;
             }else if (percentage<-1){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
