@@ -182,14 +182,17 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
             this.svb.updateNaturalParameterPrior(currentParam);
 
-            long endBatch= System.nanoTime();
-            totalTime+=endBatch-startBatch;
+
             if (totalTime/1e9>timiLimit){
                 convergence=true;
             }
 
             //Compute ELBO
             double elbo = this.computeELBO(svb, prior, currentParam);
+
+            long endBatch= System.nanoTime();
+            totalTime+=endBatch-startBatch;
+
             logger.info("SVI ELBO: {},{},{},{} seconds",t,0,
                     df.format(elbo), df.format(totalTime/1e9));
 

@@ -12,10 +12,8 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
@@ -23,10 +21,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static eu.amidst.modelExperiments.DAGsGeneration.getIDALocalGlobalDAG;
+import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultiLocalDAG;
 
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
@@ -51,6 +46,7 @@ public class IDAmodelDistributedVMP {
         double localThreshold = Double.parseDouble(args[5]);
         long timeLimit = Long.parseLong(args[6]);
         int seed = Integer.parseInt(args[7]);
+        int nHidden = Integer.parseInt(args[8]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -62,7 +58,8 @@ public class IDAmodelDistributedVMP {
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
-        DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
+        //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
+        DAG hiddenNB = getIDAMultiLocalDAG(dataFlink.getAttributes(),nHidden);
 
         long start = System.nanoTime();
 
@@ -79,11 +76,11 @@ public class IDAmodelDistributedVMP {
         //Set the window size
         parallelVB.setBatchSize(windowSize);
 
-        parallelVB.setIdenitifableModelling(new IdentifiableIDAUAIModelQuick());
+        parallelVB.setIdenitifableModelling(new IdentifiableIDAUAIModelLocalHidden(nHidden));
 
-        List<Variable> hiddenVars = new ArrayList<>();
-        hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));
-        parallelVB.setPlateuStructure(new PlateuStructure(hiddenVars));
+        //List<Variable> hiddenVars = new ArrayList<>();
+        //hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));
+        //parallelVB.setPlateuStructure(new PlateuStructure(hiddenVars));
         //GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, 1);
         //gaussianHiddenTransitionMethod.setFading(1.0);
         //parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
