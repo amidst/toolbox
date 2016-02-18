@@ -10,7 +10,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultiLocalDAG;
+import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultiLocalGaussianDAG;
 
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
@@ -24,7 +24,8 @@ public class IDAmodelDistributedSVI {
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
         //args= new String[]{" " +
-        //        "./datasets/dataFlink/uai10K_Month1.arff", "100", "100", "0.01", "150", "0", "10000", "0.75"};
+        //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
+        //        "1000", "100", "1", "1000", "0", "55000", "0.75", "1"};
 
         String fileName = args[0];
 
@@ -49,7 +50,7 @@ public class IDAmodelDistributedSVI {
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
         //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
-        DAG hiddenNB = getIDAMultiLocalDAG(dataFlink.getAttributes(),nHidden);
+        DAG hiddenNB = getIDAMultiLocalGaussianDAG(dataFlink.getAttributes(),nHidden);
         long start = System.nanoTime();
 
         //Parameter Learning
@@ -72,6 +73,7 @@ public class IDAmodelDistributedSVI {
         //gaussianHiddenTransitionMethod.setFading(1.0);
         //stochasticVI.setTransitionMethod(gaussianHiddenTransitionMethod);
 
+        stochasticVI.setOutput(true);
         stochasticVI.setDAG(hiddenNB);
         stochasticVI.setDataFlink(dataFlink);
         stochasticVI.runLearning();

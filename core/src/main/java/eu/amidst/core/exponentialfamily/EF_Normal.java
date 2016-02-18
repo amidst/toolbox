@@ -286,11 +286,11 @@ public class EF_Normal extends EF_UnivariateDistribution {
      * {@inheritDoc}
      */
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
-        Variable varGamma = variables.newGammaParameter(this.var.getName()+"_Gamma_Parameter_"+variables.getNumberOfVars());
-        Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+variables.getNumberOfVars());
+        Variable varGamma = variables.newGammaParameter(this.var.getName()+"_Gamma_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
+        Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
 
         conditionalDistributions.add(varGamma.getDistributionType().newEFUnivariateDistribution());
 

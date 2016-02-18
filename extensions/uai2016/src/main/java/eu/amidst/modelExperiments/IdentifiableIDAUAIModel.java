@@ -33,6 +33,10 @@ public class IdentifiableIDAUAIModel implements IdenitifableModelling, Serializa
 
     @Override
     public boolean isActiveAtEpoch(Variable variable, int epoch) {
+
+        if (epoch==0)
+            return true;
+
         if (variable.getName().startsWith("GlobalHidden"))
             return epoch%getNumberOfEpochs() == 0;
         else if (variable.getName().startsWith("LocalHidden_Mean_Parameter_"))

@@ -180,10 +180,30 @@ public abstract class EF_Distribution implements Serializable {
      *
      * @param variables a {@link ParameterVariables} object which allow to access to all the parameter prior variables
      *                   of the newly created model.
+     * @param nameSuffix
      * @return a non-empty {@code List} of {@link EF_ConditionalDistribution} objects.
      */
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables){
+    protected List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix){
         throw new UnsupportedOperationException("Not convertible to Learning distribution");
     }
 
+
+    /**
+     * Converts this EF_ConditionalDistribution to an extended learning distribution.
+     * This new extended conditional distribution is a part of an extended Bayesian network, which is the result of adding
+     * extra variables modelling the Bayesian prior probabilities for each of the parameters of the distribution.
+     * This method can be then seen as a part of the model pre-processing for performing Bayesian learning.
+     *
+     * <p> For example, if applied to a Multinomial distribution, this method will return a new conditional distribution with a
+     * Dirichlet parent variable and an unconditional Dirichlet distribution. If applied to a Normal distribution, it
+     * will return a new conditional distribution with Normal and Gamma parent variables and the associated Normal and
+     * Gamma unconditional distributions.</p>
+     *
+     * @param variables a {@link ParameterVariables} object which allow to access to all the parameter prior variables
+     *                   of the newly created model.
+     * @return a non-empty {@code List} of {@link EF_ConditionalDistribution} objects.
+     */
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables){
+        return this.toExtendedLearningDistribution(variables,"");
+    }
 }

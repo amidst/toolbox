@@ -283,7 +283,7 @@ public class EF_NormalParameter extends EF_UnivariateDistribution {
      * {@inheritDoc}
      */
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         throw new UnsupportedOperationException("No valid operation for a normal parameter distribution");
     }
 
