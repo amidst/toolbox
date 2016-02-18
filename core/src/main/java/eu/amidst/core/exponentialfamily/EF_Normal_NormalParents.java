@@ -400,21 +400,21 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
      * {@inheritDoc}
      */
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
-        Variable varGamma = variables.newGammaParameter(this.var.getName() + "_Gamma_Parameter_" + variables.getNumberOfVars());
+        Variable varGamma = variables.newGammaParameter(this.var.getName() + "_Gamma_Parameter_"+nameSuffix+"_" + variables.getNumberOfVars());
 
         conditionalDistributions.add(varGamma.getDistributionType().newEFUnivariateDistribution());
 
-        Variable normalBeta0 = variables.newGaussianParameter(this.var.getName() + "_Beta0_Parameter_"+variables.getNumberOfVars());
+        Variable normalBeta0 = variables.newGaussianParameter(this.var.getName() + "_Beta0_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
 
 
         conditionalDistributions.add(normalBeta0.getDistributionType().newEFUnivariateDistribution());
 
         List<Variable> betas = new ArrayList<>();
         for (Variable variableParent: this.parents){
-            Variable normalBetai = variables.newGaussianParameter(this.var.getName() + "_Beta_" + variableParent.getName() + "_Parameter_"+variables.getNumberOfVars());
+            Variable normalBetai = variables.newGaussianParameter(this.var.getName() + "_Beta_"+ variableParent.getName() + "_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
             betas.add(normalBetai);
             conditionalDistributions.add(normalBetai.getDistributionType().newEFUnivariateDistribution());
         }

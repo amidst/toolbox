@@ -33,6 +33,9 @@ public class IdentifiableIDAModel implements IdenitifableModelling, Serializable
 
     @Override
     public boolean isActiveAtEpoch(Variable variable, int epoch) {
+        if (epoch==0)
+            return true;
+
         if (variable.getName().startsWith("GlobalHidden"))
             return epoch == 0;
         else if (variable.getName().contains("Beta0"))

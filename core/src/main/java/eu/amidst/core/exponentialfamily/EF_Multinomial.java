@@ -199,9 +199,9 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
      * {@inheritDoc}
      */
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables){
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix){
 
-        Variable varDirichlet = variables.newDirichletParameter(this.var.getName()+"_DirichletParameter_"+variables.getNumberOfVars(), this.var.getNumberOfStates());
+        Variable varDirichlet = variables.newDirichletParameter(this.var.getName()+"_DirichletParameter_"+nameSuffix+"_"+variables.getNumberOfVars(), this.var.getNumberOfStates());
 
         EF_Dirichlet uni = varDirichlet.getDistributionType().newEFUnivariateDistribution();
 

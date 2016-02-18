@@ -486,14 +486,22 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
      * {@inheritDoc}
      */
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables parameters) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables parameters, String nameSuffix) {
 
         if (this.getConditioningVariables().size()==0){
             return this.getBaseEFDistribution(0).toExtendedLearningDistribution(parameters);
         }else {
-            List<EF_ConditionalDistribution> totalDists = this.distributions.stream()
-                    .flatMap(dist -> dist.toExtendedLearningDistribution(parameters).stream())
-                    .collect(Collectors.toList());
+
+            List<EF_ConditionalDistribution> totalDists = new ArrayList<>();
+            for (int i = 0; i < this.distributions.size(); i++) {
+                Assignment assignment =  MultinomialIndex.getVariableAssignmentFromIndex(this.multinomialParents,i);
+                String conf = assignment.outputString(this.multinomialParents);
+                totalDists.addAll(this.distributions.get(i).toExtendedLearningDistribution(parameters,nameSuffix+conf));
+            }
+
+            //List<EF_ConditionalDistribution> totalDists = this.distributions.stream()
+            //        .flatMap(dist -> dist.toExtendedLearningDistribution(parameters,nameSuffix).stream())
+            //        .collect(Collectors.toList());
 
             List<EF_ConditionalDistribution> dist_NoParameter = totalDists.stream()
                     .filter(dist -> !dist.getVariable().isParameterVariable())

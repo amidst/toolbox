@@ -21,20 +21,21 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultiLocalGaussianDAG;
+import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultinomialMultiLocalGaussianDAG;
 
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
  */
-public class IDAmodelDistributedVMP {
+public class MixtureModelDistributedVMP {
 
-    static Logger logger = LoggerFactory.getLogger(IDAmodelDistributedVMP.class);
+    static Logger logger = LoggerFactory.getLogger(MixtureModelDistributedVMP.class);
 
     public static void main(String[] args) throws Exception {
 
-        //args= new String[]{" " +
-        //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
-        //        "100", "1000", "0.00001", "100", "1", "200", "0", "1"};
+        args= new String[]{" " +
+                //"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
+                "./datasets/dataFlink/data.arff",
+                "100", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
@@ -48,19 +49,20 @@ public class IDAmodelDistributedVMP {
         long timeLimit = Long.parseLong(args[6]);
         int seed = Integer.parseInt(args[7]);
         int nHidden = Integer.parseInt(args[8]);
+        int nStates = Integer.parseInt(args[9]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        //env.setParallelism(1);
+        env.setParallelism(1);
 
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
         //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
-        DAG hiddenNB = getIDAMultiLocalGaussianDAG(dataFlink.getAttributes(),nHidden);
+        DAG hiddenNB = getIDAMultinomialMultiLocalGaussianDAG(dataFlink.getAttributes(), nStates, nHidden);
 
         long start = System.nanoTime();
 
@@ -77,7 +79,7 @@ public class IDAmodelDistributedVMP {
         //Set the window size
         parallelVB.setBatchSize(windowSize);
 
-        parallelVB.setIdenitifableModelling(new IdentifiableIDAUAIModelLocalHidden(nHidden));
+        parallelVB.setIdenitifableModelling(new IdentifiableMixtureModel(nHidden, nStates));
 
         //List<Variable> hiddenVars = new ArrayList<>();
         //hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));

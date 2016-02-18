@@ -33,6 +33,9 @@ public class IdentifiableIDAUAIModelQuick implements IdenitifableModelling, Seri
 
     @Override
     public boolean isActiveAtEpoch(Variable variable, int epoch) {
+        if (epoch==0)
+            return true;
+
         if (variable.getName().startsWith("GlobalHidden"))
             return epoch%getNumberOfEpochs() == 2;
         else if (variable.getName().contains("Beta0"))
