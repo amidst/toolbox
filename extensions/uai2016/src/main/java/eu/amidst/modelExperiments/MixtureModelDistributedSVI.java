@@ -34,9 +34,9 @@ public class MixtureModelDistributedSVI {
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
-        args= new String[]{" " +
-                "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
-                "1000", "100", "1", "1000", "0", "55000", "0.75", "1"};
+        //args= new String[]{" " +
+        //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
+        //        "1000", "100", "1", "1000", "0", "55000", "0.75", "1"};
 
         String fileName = args[0];
 
