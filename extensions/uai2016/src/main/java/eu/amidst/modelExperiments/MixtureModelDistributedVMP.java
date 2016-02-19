@@ -32,10 +32,10 @@ public class MixtureModelDistributedVMP {
 
     public static void main(String[] args) throws Exception {
 
-        args= new String[]{" " +
-                //"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
-                "./datasets/dataFlink/data.arff",
-                "100", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
+        //args= new String[]{" " +
+        //        //"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
+        //        "./datasets/dataFlink/data.arff",
+        //        "100", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
@@ -56,7 +56,7 @@ public class MixtureModelDistributedVMP {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        env.setParallelism(1);
+        ///env.setParallelism(1);
 
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
