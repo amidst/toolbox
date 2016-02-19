@@ -60,18 +60,20 @@ public class IdentifiableMixtureModel implements IdenitifableModelling, Serializ
             return true;
         }
 
+        int delay = (numLocalHiddenVariables+2)*multinomialIndex;
+
         if (variable.getName().contains("Beta0"))
-            return epoch%getNumberOfEpochs() == (multinomialIndex+1)*0;
+            return epoch%getNumberOfEpochs() == 0 + delay;
         else if (variable.getName().contains("Gamma"))
-            return epoch%getNumberOfEpochs() ==(multinomialIndex+1)*1;
+            return epoch%getNumberOfEpochs() == 1 + delay;
         else if (variable.getName().contains("Beta_LocalHidden")) {
             for (int i = 0; i < this.numLocalHiddenVariables; i++) {
                 if (variable.getName().contains("Beta_LocalHidden_"+i))
-                    return epoch % getNumberOfEpochs() == (multinomialIndex+1)*(i+2);
+                    return epoch % getNumberOfEpochs() == (i+2) + delay;
             }
             return true;
         }else if (variable.getName().contains("_Mean_Parameter_")){
-            return epoch%getNumberOfEpochs()==(multinomialIndex+1)*0;
+            return epoch%getNumberOfEpochs()==0+delay;
         }
         else
             return true;
