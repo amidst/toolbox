@@ -128,7 +128,7 @@ public class DAGsGeneration {
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULT");
+        Variable classVar = variables.getVariableByName("Default");
 
         // Define a local hidden variable.
         List<Variable> localHiddenVars = new ArrayList<>();
