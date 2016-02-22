@@ -2,6 +2,9 @@ package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
@@ -26,7 +29,7 @@ import java.util.stream.IntStream;
 /**
  * This class implements the MAP Inference algorithm for {@link DynamicBayesianNetwork} models.
  */
-public class DynamicMAPInference {
+public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
     /**
      * Represents the search algorithm to be used.
@@ -82,6 +85,78 @@ public class DynamicMAPInference {
 
     String groupedClassName = "__GROUPED_CLASS__";
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addDynamicEvidence(DynamicAssignment assignment) {
+        throw new UnsupportedOperationException("Operation not supported in Dynamic MAP Inference");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reset() {
+
+        seed=125123;
+        parallelMode = true;
+        sampleSize=1000;
+        nMergedClassVars = 2;
+        nTimeSteps = 2;
+
+        model=null;
+        staticModel=null;
+        mergedClassVarModels=null;
+
+        evidence=null;
+        MAPvarName=null;
+        MAPvariable=null;
+        MAPestimate=null;
+        MAPsequence=null;
+        MAPestimateLogProbability=Double.NaN;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <E extends UnivariateDistribution> E getFilteredPosterior(Variable var) {
+        throw new UnsupportedOperationException("Operation not supported in Dynamic MAP Inference");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <E extends UnivariateDistribution> E getPredictivePosterior(Variable var, int nTimesAhead) {
+        throw new UnsupportedOperationException("Operation not supported in Dynamic MAP Inference");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getTimeIDOfLastEvidence() {
+        return (long)this.evidence.stream().mapToDouble(DynamicAssignment::getTimeID).max().getAsDouble();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getTimeIDOfPosterior() {
+        throw new UnsupportedOperationException("Operation not supported in Dynamic MAP Inference");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DynamicBayesianNetwork getOriginalModel() {
+        return this.model;
+    }
 
     /**
      * Sets the evidence for this DynamicMAPInference.
@@ -328,6 +403,7 @@ public class DynamicMAPInference {
 //            System.out.println();
 //            System.out.println(bn.getConditionalDistribution(bn.getVariables().getVariableByName(groupedClassName + "_t3")).toString());
 //            System.out.println();
+            mergedClassVarModels.add(bn);
         });
     }
 
@@ -341,11 +417,11 @@ public class DynamicMAPInference {
             System.out.println("Error: The MAP variable has not been set");
             System.exit(-30);
         }
-    }
 
-//        if (this.staticOddModel == null) {
-//            this.computeDynamicMAPOddModel();
-//        }
+
+        if (this.mergedClassVarModels == null) {
+            this.computeMergedClassVarModels();
+        }
 //        if (this.staticEvenModel == null) {
 //            this.computeDynamicMAPEvenModel();
 //        }
@@ -365,8 +441,8 @@ public class DynamicMAPInference {
 //
 //            });
 //        }
-//        this.runInference(SearchAlgorithm.VMP);
-//    }
+        this.runInference(SearchAlgorithm.VMP);
+    }
 
     /**
      * Runs the inference given an input search algorithm.
@@ -378,13 +454,11 @@ public class DynamicMAPInference {
             System.out.println("Error: The MAP variable has not been set");
             System.exit(-30);
         }
-    }
-//        if (this.staticOddModel == null) {
-//            this.computeDynamicMAPOddModel();
-//        }
-//        if (this.staticEvenModel == null) {
-//            this.computeDynamicMAPEvenModel();
-//        }
+
+        if (this.mergedClassVarModels == null) {
+            this.computeMergedClassVarModels();
+        }
+
 //
 //        if (evidence!=null && staticEvidence==null) {
 //
@@ -402,34 +476,38 @@ public class DynamicMAPInference {
 //            });
 //        }
 //
-//        InferenceAlgorithm evenModelInference, oddModelInference;
-//        switch(searchAlgorithm) {
-//            case VMP:
-//                //        long timeStart = System.nanoTime();
-//                evenModelInference = new VMP();
-//                oddModelInference = new VMP();
-//
-//                break;
-//
-//            case IS:
-//            default:
-//
-//                evenModelInference = new ImportanceSampling();
-//                oddModelInference = new ImportanceSampling();
-//
-//                Random random = new Random((this.seed));
-//                oddModelInference.setSeed(random.nextInt());
-//                evenModelInference.setSeed(random.nextInt());
-//                this.seed = random.nextInt();
-//
-//                ((ImportanceSampling)oddModelInference).setKeepDataOnMemory(true);
-//                ((ImportanceSampling)evenModelInference).setKeepDataOnMemory(true);
-//
-//                ((ImportanceSampling)oddModelInference).setSampleSize(sampleSize);
-//                ((ImportanceSampling)evenModelInference).setSampleSize(sampleSize);
-//
-//                break;
-//        }
+
+        List<InferenceAlgorithm> staticModelsInference = new ArrayList<>(nMergedClassVars);
+        IntStream.range(0,nMergedClassVars).forEachOrdered(i -> {
+            InferenceAlgorithm currentModelInference;
+            switch (searchAlgorithm) {
+                case VMP:
+                    currentModelInference = new VMP();
+                    ((VMP) currentModelInference).setMaxIter(3000);
+                    break;
+
+                case IS:
+                default:
+
+                    currentModelInference = new ImportanceSampling();
+
+                    Random random = new Random((this.seed));
+                    currentModelInference.setSeed(random.nextInt());
+
+                    this.seed = random.nextInt();
+
+                    ((ImportanceSampling) currentModelInference).setKeepDataOnMemory(true);
+                    ((ImportanceSampling) currentModelInference).setSampleSize(sampleSize);
+
+                    break;
+            }
+            currentModelInference.setParallelMode(this.parallelMode);
+            currentModelInference.setModel(mergedClassVarModels.get(i));
+            //currentModelInference.setEvidence();
+            currentModelInference.runInference();
+
+            staticModelsInference.add(currentModelInference);
+        });
 //
 //        IntStream.range(0, 2).parallel().forEach(i -> {
 //            if (i == 0) {
@@ -449,20 +527,39 @@ public class DynamicMAPInference {
 //                oddModelInference.runInference();
 //            }
 //        });
-//
-//        List<UnivariateDistribution> posteriorMAPDistributionsEvenModel = new ArrayList<>();
-//        List<UnivariateDistribution> posteriorMAPDistributionsOddModel = new ArrayList<>();
-//
+
+        List<List<UnivariateDistribution>> posteriorMAPDistributions = new ArrayList<>();
+        IntStream.range(0,nMergedClassVars).forEachOrdered(modelNumber -> {
+
+            List<UnivariateDistribution> currentModelPosteriorMAPDistributions = new ArrayList<>();
+            int nReplicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
+
+            IntStream.range(0,nReplicationsMAPVariable).forEachOrdered(i -> currentModelPosteriorMAPDistributions.add(staticModelsInference.get(modelNumber).getPosterior(i)));
+
+            posteriorMAPDistributions.add(currentModelPosteriorMAPDistributions);
+        });
+
 //        int replicationsMAPVariableEvenModel = nTimeSteps/2 + nTimeSteps%2;
 //        IntStream.range(0,replicationsMAPVariableEvenModel).forEachOrdered(i -> posteriorMAPDistributionsEvenModel.add(evenModelInference.getPosterior(i)));
 //
 //        int replicationsMAPVariableOddModel = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
 //        IntStream.range(0,replicationsMAPVariableOddModel).forEachOrdered(i -> posteriorMAPDistributionsOddModel.add(oddModelInference.getPosterior(i)));
-//
-//        List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributionsEvenModel, posteriorMAPDistributionsOddModel);
-//        computeMostProbableSequence(conditionalDistributionsMAPvariable);
-//
-//    }
+
+        posteriorMAPDistributions.forEach(list -> {
+            System.out.println("Model number " + posteriorMAPDistributions.indexOf(list));
+            StringBuilder stringBuilder = new StringBuilder();
+
+            list.forEach(uniDist -> {
+                stringBuilder.append(Arrays.toString(uniDist.getParameters()));
+                stringBuilder.append(" ,  ");
+            });
+            System.out.println(stringBuilder.toString());
+        });
+
+        List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributions);
+        computeMostProbableSequence(conditionalDistributionsMAPvariable);
+
+    }
 
     /**
      * Runs the inference for Ungrouped MAP variable given an input search algorithm.
@@ -546,11 +643,385 @@ public class DynamicMAPInference {
 //        this.MAPsequence = MAPsequence;
 //    }
 //
+
+
+    private List<double[]> getCombinedConditionalDistributions( List<List<UnivariateDistribution>> posteriorMAPVariableDistributions ) {
+
+        List<double[]> listCondDistributions = new ArrayList<>(nTimeSteps);
+
+        int nStates = MAPvariable.getNumberOfStates();
+
+        // Univariate distribution Y_0
+        // UnivariateDistribution dist0_1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
+        // UnivariateDistribution dist0 = posteriorMAPDistributionsOddModel.get(0); // This variable is just Y_0 (not a group)
+//        double[] dist0_probs = new double[nStates];
+
+//        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        IntStream.range(0, nTimeSteps).forEachOrdered(timeStep -> {
+
+            System.out.println("\n\nTime step " + timeStep);
+            double[] combinedConditionalDistributionProbabilities, baseDistributionProbabilities;
+
+            int baseModelIndex = (timeStep+1)%nMergedClassVars;
+            int baseDistributionIndex = (timeStep >= baseModelIndex) ? (baseModelIndex == 0 ? 0 : 1) + (timeStep - baseModelIndex) / nMergedClassVars : (timeStep - baseModelIndex) / nMergedClassVars;
+            baseDistributionProbabilities = posteriorMAPVariableDistributions.get(baseModelIndex).get(baseDistributionIndex).getParameters();
+            int nStatesBaseDistribution = baseDistributionProbabilities.length;
+            int baseDistrib_nMergedVars = (int) Math.round(Math.log(nStatesBaseDistribution) / Math.log(nStates));
+
+            combinedConditionalDistributionProbabilities =
+
+                    IntStream.range(0, nMergedClassVars).mapToObj(modelNumber -> {
+
+                        if (modelNumber==baseModelIndex) {
+//                            System.out.println("\nModel number " + modelNumber);
+                            //System.out.println(Arrays.toString(baseDistributionProbabilities));
+                            return baseDistributionProbabilities;
+                        }
+
+//                        System.out.println("\nModel number " + modelNumber);
+
+                        int distributionIndex = (timeStep >= modelNumber) ? (modelNumber == 0 ? 0 : 1) + (timeStep - modelNumber) / nMergedClassVars : (timeStep - modelNumber) / nMergedClassVars;
+                        int currentVarIndex = (timeStep >= modelNumber) ? (timeStep - modelNumber) % nMergedClassVars : timeStep;
+//                        System.out.println("CurrentVarIndex " + currentVarIndex);
+
+                        UnivariateDistribution currentDistrib = posteriorMAPVariableDistributions.get(modelNumber).get(distributionIndex);
+                        //System.out.println(currentDistrib.toString());
+
+
+                        double[] probabilities = new double[nStatesBaseDistribution];
+
+                        int currentDistrib_nMergedVars = (int) Math.round(Math.log(currentDistrib.getVariable().getNumberOfStates()) / Math.log(nStates));
+                        int current_nMergedVarsBaseDist = (int) Math.round(Math.log(baseDistributionProbabilities.length) / Math.log(nStates));
+
+
+                        if (distributionIndex==0) {
+
+//                            System.out.println("Current nMergedVars " + currentDistrib_nMergedVars + ", current nMergedVarsBaseDist " + current_nMergedVarsBaseDist);
+                            for (int m = 0; m < Math.pow(nStates, currentDistrib_nMergedVars); m++) {
+
+                                String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+                                m_base_nStates = StringUtils.leftPad(m_base_nStates, currentDistrib_nMergedVars, '0');
+
+//                                int index_init = currentVarIndex - ((timeStep >= nMergedClassVars) ? nMergedClassVars : timeStep);
+                                int index_init = currentVarIndex + 1 - baseDistrib_nMergedVars;
+                                int index_end = currentVarIndex + 1;
+
+//                                String statesSequence = m_base_nStates.substring(currentVarIndex, currentVarIndex + current_nMergedVarsBaseDist);
+                                String statesSequence = m_base_nStates.substring(index_init, index_end);
+                                int currentState = Integer.parseInt(statesSequence, nStates);
+
+//                                System.out.println("Current state " + currentState);
+
+                                probabilities[currentState] += currentDistrib.getParameters()[m];
+                            }
+                        }
+                        else {
+                            UnivariateDistribution previousDistrib = posteriorMAPVariableDistributions.get(modelNumber).get(distributionIndex - 1);
+                            int previousDistrib_nMergedVars = (int) Math.round(Math.log(previousDistrib.getVariable().getNumberOfStates()) / Math.log(nStates));
+
+//                            System.out.println("Current nMergedVars " + currentDistrib_nMergedVars + ", previous nMergedVars " + previousDistrib_nMergedVars + ", current nMergedVarsBaseDist " + current_nMergedVarsBaseDist);
+
+                            for (int n = 0; n < Math.pow(nStates, previousDistrib_nMergedVars); n++) {
+
+                                String n_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(n), 10), nStates);
+                                n_base_nStates = StringUtils.leftPad(n_base_nStates, previousDistrib_nMergedVars, '0');
+
+                                for (int m = 0; m < Math.pow(nStates, currentDistrib_nMergedVars); m++) {
+
+                                    String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+                                    m_base_nStates = StringUtils.leftPad(m_base_nStates, currentDistrib_nMergedVars, '0');
+
+//                                    String statesSequence = m_base_nStates.substring(currentVarIndex, currentVarIndex + current_nMergedVarsBaseDist);
+//                                    int currentState = Integer.parseInt(statesSequence, nStates);
+
+
+                                    String n_concat_m_base_nStates = n_base_nStates.concat(m_base_nStates);
+                                    int index_init = previousDistrib_nMergedVars + currentVarIndex + 1 - baseDistrib_nMergedVars;
+                                    int index_end = previousDistrib_nMergedVars + currentVarIndex + 1;
+                                    String statesSequence = n_concat_m_base_nStates.substring( index_init, index_end);
+//                                    System.out.println("Complete sequence: " + n_concat_m_base_nStates + ", statesSequence:" + statesSequence);
+
+//                                    int subIndices_m = currentVarIndex;
+//                                    int subIndices_n = 1 + ((timeStep >= nMergedClassVars) ? (previousDistrib_nMergedVars - nMergedClassVars + currentVarIndex) : (previousDistrib_nMergedVars - (nMergedClassVars-timeStep) + currentVarIndex));
+//
+//                                    System.out.println("n_base_nStates: " + n_base_nStates + "m_base_nStates: " + m_base_nStates );
+//
+//                                    System.out.println("subIndices_m: " + Integer.toString(subIndices_m));
+//                                    System.out.println("subIndices_n: " + Integer.toString(subIndices_n));
+//
+//                                    String statesSequence_m = m_base_nStates.substring(0, subIndices_m);
+//                                    String statesSequence_n = n_base_nStates.substring(subIndices_n, previousDistrib_nMergedVars);
+//
+//
+//                                    System.out.println("statesSequence n: " + statesSequence_n + ", statesSequence m: " + statesSequence_m );
+//
+//                                    String statesSequence = statesSequence_n.concat(statesSequence_m);
+//                                    System.out.println("States sequence length: " + statesSequence.length() + ", sequence: " + statesSequence);
+
+                                    int currentState = Integer.parseInt(statesSequence, nStates);
+//                                    System.out.println("Current state " + currentState);
+
+                                    probabilities[currentState] += previousDistrib.getParameters()[n] * currentDistrib.getParameters()[m];
+                                }
+                            }
+                        }
+//                        System.out.println("Model distribution: " + Arrays.toString(probabilities));
+                        return probabilities;
+                    })
+                    .reduce(new double[baseDistributionProbabilities.length], (doubleArray1, doubleArray2) -> {
+                        if (doubleArray1.length != doubleArray2.length) {
+                            System.out.println("Problem with lengths");
+                            System.exit(-40);
+                        }
+                        for (int i = 0; i < doubleArray1.length; i++)
+                            doubleArray1[i] += ((double) 1 / nMergedClassVars) * doubleArray2[i];
+                        return doubleArray1;
+                    });
+
+            System.out.println("Combined distribution " + Arrays.toString(combinedConditionalDistributionProbabilities));
+            listCondDistributions.add(combinedConditionalDistributionProbabilities);
+        });
+
+//        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        return listCondDistributions;
+    }
+
+    /**
+     * Computes the Most Probable Sequence given the posterior distributions of the MAP variable.
+     * @param posteriorDistributionsMAPvariable a {@code List} of conditional distribution values.
+     */
+    private void computeMostProbableSequence(List<double[]> posteriorDistributionsMAPvariable) {
+
+        int[] MAPsequence = new int[nTimeSteps];
+        int nStates = MAPvariable.getNumberOfStates();
+
+        int[] argMaxValues = new int[nTimeSteps-1];
+
+        double MAPsequenceProbability=-1;
+        double [] current_probs;
+        double [] current_max_probs = new double[(int)Math.pow(nStates,nMergedClassVars-1)];
+        double [] previous_max_probs = new double[(int)Math.pow(nStates,nMergedClassVars-1)];
+
+
+        for (int t = nTimeSteps-1; t >= 1; t--) {
+
+            System.out.println("Time:" + t);
+            double [] currentDistProbabilities = posteriorDistributionsMAPvariable.get(t);
+            int currentDistrib_nMergedVars = (int) Math.round(Math.log(currentDistProbabilities.length)/Math.log(nStates));
+
+            System.out.println("Current Probabilities:" + Arrays.toString(currentDistProbabilities));
+            current_max_probs = new double[(int)Math.pow(nStates, currentDistrib_nMergedVars-1)];
+
+            if (t==nTimeSteps-1) {
+                previous_max_probs = Arrays.stream(previous_max_probs).map(d -> 1).toArray();
+            }
+            System.out.println("Current Max Probs Length: " + current_max_probs.length);
+            System.out.println("Previoius Max Probs: " + Arrays.toString(previous_max_probs));
+
+            for (int m = 0; m < Math.pow(nStates, currentDistrib_nMergedVars); m++) {
+
+                System.out.println("State: " + m );
+                String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+                m_base_nStates = StringUtils.leftPad(m_base_nStates, currentDistrib_nMergedVars, '0');
+
+
+                int currentStateFirstVars;
+                int currentStateLastVars;
+                if (t>0) {
+                    String stateFirstVars = m_base_nStates.substring(0, currentDistrib_nMergedVars-1);
+                    currentStateFirstVars = Integer.parseInt(stateFirstVars, nStates);
+
+                    String stateLastVars = m_base_nStates.substring(1,currentDistrib_nMergedVars);
+                    currentStateLastVars = Integer.parseInt(stateLastVars, nStates);
+                }
+                else {
+                    currentStateFirstVars=0;
+                    currentStateLastVars= Integer.parseInt(m_base_nStates, nStates);
+                }
+
+                System.out.println("FirstVars:" + currentStateFirstVars + ", LastVars:" + currentStateLastVars);
+
+                double currentProb = currentDistProbabilities[m] * previous_max_probs[currentStateLastVars];
+                double maxProb = current_max_probs[currentStateFirstVars];
+
+                if (currentProb > maxProb) {
+                    current_max_probs[currentStateFirstVars] = currentProb;
+                }
+            }
+
+            System.out.println("Current Max Probabilities:" + Arrays.toString(current_max_probs));
+
+            argMaxValues[t-1] = (int)argMax(current_max_probs)[1];
+            previous_max_probs = current_max_probs;
+
+            System.out.println("Arg Max Value: " + argMaxValues[t-1]+ "\n\n\n");
+
+        }
+
+//        for (int t = nTimeSteps-1; t >= 0; t--) {
+//
+//            current_probs = posteriorDistributionsMAPvariable.get(t);
+//            double maxProb=-1;
+//
+//            current_max_probs = new double[MAPvarNStates];
+//
+//            if (t==(nTimeSteps-1)) { // There are no previous_max_probs
+//                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
+//                    maxProb=-1;
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_t
+//                        if (current_probs[j * MAPvarNStates + k] > maxProb) {
+//                            maxProb = current_probs[j * MAPvarNStates + k];
+//
+//                        }
+//                    }
+//                    current_max_probs[j]=maxProb;
+//                }
+//                argMaxValues[t] = (int)argMax(current_max_probs)[1];
+//                previous_max_probs = current_max_probs;
+//            }
+//            else if (t>0 && t<(nTimeSteps-1)) {
+//                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_{t-1}
+//                    maxProb=-1;
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_t
+//                        if (current_probs[j * MAPvarNStates + k]*previous_max_probs[j] > maxProb) {
+//                            maxProb = current_probs[j * MAPvarNStates + k]*previous_max_probs[k];
+//                        }
+//                    }
+//                    current_max_probs[j]=maxProb;
+//                }
+//                argMaxValues[t] = (int)argMax(current_max_probs)[1];
+//                previous_max_probs = current_max_probs;
+//            }
+//            else { // Here, t=0
+//                for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_0
+//                    maxProb=-1;
+//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_1
+//                        if (current_probs[j]*previous_max_probs[j] > maxProb) {
+//                            maxProb = current_probs[j]*previous_max_probs[j];
+//                        }
+//                    }
+//                    current_max_probs[j]=maxProb;
+//                }
+//                MAPsequenceProbability =  argMax(current_max_probs)[0];
+//                argMaxValues[t] = (int)argMax(current_max_probs)[1];
+//                previous_max_probs = current_max_probs;
+//            }
+//        }
+
+        System.out.println("\n\n TRACEBACK \n\n");
+
+        //int previousVarMAPState = argMaxValues[0];
+        MAPsequence[0] = argMaxValues[0];
+
+        int thisVarMAPState = 0;
+        for (int t = 1; t < nTimeSteps; t++) {
+
+            System.out.println("Time Step: " + t);
+            current_probs = posteriorDistributionsMAPvariable.get(t);
+
+            StringBuilder prevVarsStateBuilder = new StringBuilder();
+
+            for (int j = 0; j < Math.min(nMergedClassVars-1, t); j++) {
+                System.out.println("Append: " + Integer.toString(MAPsequence[t-j]) );
+                prevVarsStateBuilder.append( Integer.toString(MAPsequence[t-j]) );
+            }
+            //previousVarMAPState = argMaxValues[t-1];
+
+            System.out.println("PrevVarsState: " + prevVarsStateBuilder.toString());
+//            String prevVarsState = Integer.toString(Integer.parseInt(prevVarsStateBuilder.toString()), nStates);
+            String prevVarsState = prevVarsStateBuilder.toString();
+
+            System.out.println("Prev Vars State:" + prevVarsState);
+
+//            String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(previousVarMAPState), 10), nStates);
+//            m_base_nStates = StringUtils.leftPad(m_base_nStates, currentDistrib_nMergedVars, '0');
+//
+//            String stateConditioningVars = m_base_nStates.substring(0, currentDistrib_nMergedVars-1);
+//            int currentStateConditioningVars = Integer.parseInt(stateConditioningVars, nStates);
+//
+//            String stateLastVar = m_base_nStates.substring(currentDistrib_nMergedVars-1, currentDistrib_nMergedVars);
+//            int currentStateLastVar = Integer.parseInt(stateLastVar, nStates);
+//
+//            double currentProb=currentDistProbabilities[m] * previous_max_probs[currentStateLastVar];
+//            double maxProb=current_max_probs[currentStateConditioningVars];
+//
+//            if (currentProb>maxProb) {
+//                current_max_probs[currentStateConditioningVars] = currentProb ;
+//            }
+
+            double maxProb = -1;
+            for (int j = 0; j < nStates; j++) { // To go over all values of Y_t
+
+                int currentState = Integer.parseInt(prevVarsState.concat(Integer.toString(j)),nStates);
+                System.out.println("Current state:" + currentState);
+
+                if (current_probs[currentState] > maxProb) {
+                    maxProb = current_probs[currentState];
+                    thisVarMAPState = j;
+                }
+            }
+            MAPsequence[t]=thisVarMAPState;
+            System.out.println("Currente Sequence Value: " + MAPsequence[t] + "\n\n");
+        }
+
+//        int previousVarMAPState = argMaxValues[0];
+//        MAPsequence[0] = argMaxValues[0];
+//
+//        int thisVarMAPState = 0;
+//        for (int t = 1; t < nTimeSteps; t++) {
+//            current_probs = posteriorDistributionsMAPvariable.get(t);
+//            previousVarMAPState = argMaxValues[t-1];
+//
+//            double maxProb = -1;
+//            for (int j = 0; j < nStates; j++) { // To go over all values of Y_t
+//
+//                if (current_probs[previousVarMAPState * nStates + j] >= maxProb) {
+//                    maxProb = current_probs[previousVarMAPState * nStates + j];
+//                    thisVarMAPState = j;
+//                }
+//            }
+//            MAPsequence[t]=thisVarMAPState;
+//        }
+
+
+
+
+
+
+//        MAPestimate = new HashMapAssignment(nTimeSteps);
+//
+//        if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
+//            MAPestimateLogProbability=Double.NaN;
+//        }
+//        else {
+//            IntStream.range(0, nTimeSteps).forEach(t -> {
+////                Variables varsAux = Serialization.deepCopy(this.staticEvenModel.getVariables());
+////                Variable currentVar = varsAux.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+//                Variable currentVar;
+//                try {
+//                    currentVar = this.staticEvenModel.getVariables().getVariableByName(MAPvarName + "_t" + Integer.toString(t));
+//                }
+//                catch (Exception e) {
+//                    Variables copy = Serialization.deepCopy(this.staticEvenModel.getVariables());
+//                    currentVar = copy.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+//                }
+//                MAPestimate.setValue(currentVar, MAPsequence[t]);
+//            });
+//            MAPestimateLogProbability = Math.log(MAPsequenceProbability);
+//        }
+
+
+        this.MAPsequence = MAPsequence;
+
+        System.out.println("FINAL SEQUENCE: " + Arrays.toString(MAPsequence));
+    }
+
 //    /**
-//     * Computes the Most Probable Sequence given the conditional distributions of the MAP variable.
-//     * @param conditionalDistributionsMAPvariable a {@code List} of conditional distribution values.
+//     * Computes the Most Probable Sequence given the posterior distributions of the MAP variable.
+//     * @param posteriorDistributionsMAPvariable a {@code List} of conditional distribution values.
 //     */
-//    private void computeMostProbableSequence(List<double[]> conditionalDistributionsMAPvariable) {
+//    private void computeMostProbableSequence(List<double[]> posteriorDistributionsMAPvariable) {
+//
 //        int[] MAPsequence = new int[nTimeSteps];
 //        int MAPvarNStates = MAPvariable.getNumberOfStates();
 //
@@ -563,7 +1034,7 @@ public class DynamicMAPInference {
 //
 //        for (int t = nTimeSteps-1; t >= 0; t--) {
 //
-//            current_probs = conditionalDistributionsMAPvariable.get(t);
+//            current_probs = posteriorDistributionsMAPvariable.get(t);
 //            double maxProb=-1;
 //
 //            current_max_probs = new double[MAPvarNStates];
@@ -616,7 +1087,7 @@ public class DynamicMAPInference {
 //
 //        int thisVarMAPState = 0;
 //        for (int t = 1; t < nTimeSteps; t++) {
-//            current_probs = conditionalDistributionsMAPvariable.get(t);
+//            current_probs = posteriorDistributionsMAPvariable.get(t);
 //            previousVarMAPState = argMaxValues[t-1];
 //
 //            double maxProb = -1;
@@ -654,179 +1125,264 @@ public class DynamicMAPInference {
 //
 //        this.MAPsequence = MAPsequence;
 //    }
-//
+
+
+
 //    /**
 //     * Returns Combined Conditional Distributions for both even and odd models.
-//     * @param posteriorMAPDistributionsEvenModel a {@code List} of {@link UnivariateDistribution} of the even model.
-//     * @param posteriorMAPDistributionsOddModel a {@code List} of {@link UnivariateDistribution} of the odd model.
+//     * @param posteriorMAPVariableDistributions a {@code List} of {@code List} of {@link UnivariateDistribution} for each model.
 //     * @return a {@code List} of conditional distributions values.
 //     */
-//    private List<double[]> getCombinedConditionalDistributions( List<UnivariateDistribution> posteriorMAPDistributionsEvenModel , List<UnivariateDistribution> posteriorMAPDistributionsOddModel) {
+//    private List<double[]> combinePosteriorConditionalDistributions(List<List<UnivariateDistribution>> posteriorMAPVariableDistributions) {
 //
 //        List<double[]> listCondDistributions = new ArrayList<>(nTimeSteps);
 //
-//        int MAPvarNStates = MAPvariable.getNumberOfStates();
+//        int nStates = MAPvariable.getNumberOfStates();
 //
 //        // Univariate distribution Y_0
-//        UnivariateDistribution dist0_1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
-//        UnivariateDistribution dist0 = posteriorMAPDistributionsOddModel.get(0); // This variable is just Y_0 (not a group)
+//        // UnivariateDistribution dist0_1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
+//        // UnivariateDistribution dist0 = posteriorMAPDistributionsOddModel.get(0); // This variable is just Y_0 (not a group)
+////        double[] dist0_probs = new double[nStates];
 //
-//        double[] dist0_probs = new double[MAPvariable.getNumberOfStates()];
+//        IntStream.range(0, nTimeSteps).forEachOrdered(timeStep -> {
 //
-//        dist0_probs = dist0.getParameters();
-//        for (int i = 0; i < MAPvarNStates; i++) {
-//            dist0_probs[i] = (double) 1/2 * dist0_probs[i];
+////            System.out.println("\n\nTime step " + timeStep);
+//            double [] combinedConditionalDistributionProbabilities;
 //
-//            for (int j = 0; j < MAPvarNStates; j++) {
-//                dist0_probs[i] = dist0_probs[i] + (double) 1/2 * dist0_1.getProbability(i*MAPvarNStates + j);
-//            }
-//        }
-//        listCondDistributions.add(dist0_probs);
+//            combinedConditionalDistributionProbabilities =
 //
-//        // Conditional distribution Y_1 | Y_0;
-//        UnivariateDistribution dist_paired1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
-//        UnivariateDistribution dist_unpaired_1 = posteriorMAPDistributionsOddModel.get(1); // This variable groups Y_1 and Y_2 (if nTimeSteps>2)
+//            IntStream.range(0, nMergedClassVars).mapToObj(modelNumber -> {
 //
-//        double[] dist_probs1 = dist_paired1.getParameters();
+////                System.out.println("\nModel number " + modelNumber);
 //
-//        for (int i = 0; i < MAPvarNStates; i++) { // To go over all values of Y_0
-//            for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_1
-//                int index = i * MAPvarNStates + j;
-//                dist_probs1[index] = (double) 1/2 * dist_probs1[index];
+//                int distributionIndex = (timeStep>=modelNumber) ? (modelNumber==0 ? 0 : 1) + (timeStep-modelNumber)/nMergedClassVars : (timeStep-modelNumber)/nMergedClassVars;
 //
-//                if (nTimeSteps>2) {
-//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
-//                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j * MAPvarNStates + k);
-//                    }
+//                UnivariateDistribution dist0 = posteriorMAPVariableDistributions.get(modelNumber).get(distributionIndex);
+////                System.out.println(dist0.toString());
+//
+//                double[] probabilities  = new double[nStates];
+//
+//                int current_nMergedVars = (int)Math.round(Math.log(dist0.getVariable().getNumberOfStates())/Math.log(nStates));
+//
+//                for (int m = 0; m < Math.pow(nStates,current_nMergedVars); m++) {
+//                    String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+//                    m_base_nStates = StringUtils.leftPad(m_base_nStates, current_nMergedVars, '0');
+//                    int currentVarIndex = (timeStep>=modelNumber) ? (timeStep-modelNumber)%nMergedClassVars : timeStep;
+//                    int currentState = Integer.parseInt(m_base_nStates.substring(currentVarIndex,currentVarIndex+1));
+//
+//                    probabilities[currentState] += dist0.getParameters()[m];
 //                }
-//                else {
-//                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
-//                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j);
-//                    }
-//                }
-//            }
-//        }
-//        listCondDistributions.add(dist_probs1);
+////                System.out.println(Arrays.toString(probabilities));
+//                return probabilities;
 //
-//        IntStream.range(2, nTimeSteps - 1).forEachOrdered(t -> {
-//            if (t % 2 == 0) {
-//                int idxOdd = 1 + (t - 2) / 2;
-//                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
+//            })
+//            .reduce(new double[nStates], (doubleArray1, doubleArray2)-> {
+//                for (int i=0; i<doubleArray1.length; i++)
+//                    doubleArray1[i] += ((double)1/nMergedClassVars) * doubleArray2[i];
+//                return doubleArray1;
+//            });
 //
-//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1); // This variable groups Y_{t-2} and Y_{t-1}
-//                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable groups Y_t and Y_{t+1}
-//
-//                double[] dist_probs = dist_paired.getParameters();
-//
-//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
-//
-//                        int index = i * MAPvarNStates + j;
-//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
-//
-//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-//                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
-//                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
-//                            }
-//                        }
-//                    }
-//                }
-//                listCondDistributions.add(dist_probs);
-//            } else {
-//                int idxEven = (t - 1) / 2;
-//                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
-//
-//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven); // This variable groups Y_{t-2} and Y_{t-1}
-//                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsOddModel.get(idxEven + 1); // This variable groups Y_t and Y_{t+1}
-//
-//                double[] dist_probs = dist_paired.getParameters();
-//
-//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
-//
-//                        int index = i * MAPvarNStates + j;
-//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
-//
-//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-//                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
-//                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
-//                            }
-//                        }
-//                    }
-//                }
-//                listCondDistributions.add(dist_probs);
-//            }
+////            System.out.println("Combined distribution " + Arrays.toString(combinedConditionalDistributionProbabilities));
+//            listCondDistributions.add(combinedConditionalDistributionProbabilities);
 //        });
 //
-//        if (nTimeSteps>2) {
-//            // Conditional distribution Y_t | Y_{t-1},  with  t = nTimeSteps-1
-//            int t = (nTimeSteps - 1);
-//            if (t % 2 == 0) {
-//                int idxOdd = 1 + (t - 2) / 2;
-//                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
 //
-//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1);  // This variable groups Y_{t-2} and Y_{t-1}
-//                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable is just Y_t (not a group)
 //
-//                double[] dist_probs = dist_paired.getParameters();
 //
-//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+////
+////        double[] probs1  = new double[nMergedStates];
+////        int probs_index1 = 0;
+////
+////        for (int m = 0; m < Math.pow(nStates,repetitionsConDistT); m++) {
+////            String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
+////            m_base_nStates = StringUtils.leftPad(m_base_nStates, repetitionsConDistT, '0');
+////
+////            double probT=1;
+////            for ( int n=0; n < m_base_nStates.length(); n++) {
+////                int currentState = Integer.parseInt(m_base_nStates.substring(n,n+1));
+////
+////                int previousState;
+////                if(n>=1)
+////                    previousState = Integer.parseInt(m_base_nStates.substring(n-1,n));
+////                else
+////                    previousState = parentState;
+////
+////                assignment1 = new HashMapAssignment(2);
+////                assignment1.setValue(dynVar.getInterfaceVariable(), previousState);
+////                assignment1.setValue(dynVar,currentState);
+////
+////
+////                probT = probT * conDistT.getConditionalProbability(assignment1);
+////            }
+////            probs1[probs_index1] =  probT;
+////            probs_index1++;
+////        }
+////
+////
+////
+////
+////
+////        dist0_probs = dist0.getParameters();
+////        for (int i = 0; i < MAPvarNStates; i++) {
+////            dist0_probs[i] = (double) 1/2 * dist0_probs[i];
+////
+////            for (int j = 0; j < MAPvarNStates; j++) {
+////                dist0_probs[i] = dist0_probs[i] + (double) 1/2 * dist0_1.getProbability(i*MAPvarNStates + j);
+////            }
+////        }
+////        listCondDistributions.add(dist0_probs);
+////
+////
 //
-//                        int index = i * MAPvarNStates + j;
-//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
 //
-//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
 //
-//                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j);
-//                        }
-//                    }
-//                }
-//                listCondDistributions.add(dist_probs);
-//            }
-//            else {
-//                int idxEven = (t - 1) / 2;
-//                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
 //
-//                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven);  // This variable groups Y_{t-2} and Y_{t-1}
 //
-//                double[] dist_probs = dist_paired.getParameters();
-//
-//                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
-//                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
-//
-//                        int index = i * MAPvarNStates + j;
-//                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
-//
-//                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
-//                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i);
-//                        }
-//                    }
-//                }
-//                listCondDistributions.add(dist_probs);
-//            }
-//        }
+////
+////        // Conditional distribution Y_1 | Y_0;
+////        UnivariateDistribution dist_paired1 = posteriorMAPDistributionsEvenModel.get(0); // This variable Z_0 groups Y_0 and Y_1
+////        UnivariateDistribution dist_unpaired_1 = posteriorMAPDistributionsOddModel.get(1); // This variable groups Y_1 and Y_2 (if nTimeSteps>2)
+////
+////        double[] dist_probs1 = dist_paired1.getParameters();
+////
+////        for (int i = 0; i < MAPvarNStates; i++) { // To go over all values of Y_0
+////            for (int j = 0; j < MAPvarNStates; j++) { // To go over all values of Y_1
+////                int index = i * MAPvarNStates + j;
+////                dist_probs1[index] = (double) 1/2 * dist_probs1[index];
+////
+////                if (nTimeSteps>2) {
+////                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
+////                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j * MAPvarNStates + k);
+////                    }
+////                }
+////                else {
+////                    for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_2 in the distrib of (Y_1,Y_2)
+////                        dist_probs1[index] = dist_probs1[index] + (double) 1 / 2 * dist_unpaired_1.getProbability(j);
+////                    }
+////                }
+////            }
+////        }
+////        listCondDistributions.add(dist_probs1);
+////
+////        IntStream.range(2, nTimeSteps - 1).forEachOrdered(t -> {
+////            if (t % 2 == 0) {
+////                int idxOdd = 1 + (t - 2) / 2;
+////                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
+////
+////                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1); // This variable groups Y_{t-2} and Y_{t-1}
+////                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable groups Y_t and Y_{t+1}
+////
+////                double[] dist_probs = dist_paired.getParameters();
+////
+////                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+////                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+////
+////                        int index = i * MAPvarNStates + j;
+////                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+////
+////                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+////                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
+////                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
+////                            }
+////                        }
+////                    }
+////                }
+////                listCondDistributions.add(dist_probs);
+////            } else {
+////                int idxEven = (t - 1) / 2;
+////                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
+////
+////                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven); // This variable groups Y_{t-2} and Y_{t-1}
+////                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsOddModel.get(idxEven + 1); // This variable groups Y_t and Y_{t+1}
+////
+////                double[] dist_probs = dist_paired.getParameters();
+////
+////                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+////                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+////
+////                        int index = i * MAPvarNStates + j;
+////                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+////
+////                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+////                            for (int m = 0; m < MAPvarNStates; m++) {  // To go over all values of Y_{t+1}
+////                                dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j * MAPvarNStates + m);
+////                            }
+////                        }
+////                    }
+////                }
+////                listCondDistributions.add(dist_probs);
+////            }
+////        });
+////
+////        if (nTimeSteps>2) {
+////            // Conditional distribution Y_t | Y_{t-1},  with  t = nTimeSteps-1
+////            int t = (nTimeSteps - 1);
+////            if (t % 2 == 0) {
+////                int idxOdd = 1 + (t - 2) / 2;
+////                UnivariateDistribution dist_paired = posteriorMAPDistributionsOddModel.get(idxOdd); // This variable groups Y_t and Y_{t-1}
+////
+////                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsEvenModel.get(idxOdd - 1);  // This variable groups Y_{t-2} and Y_{t-1}
+////                UnivariateDistribution dist_unpaired_post = posteriorMAPDistributionsEvenModel.get(idxOdd); // This variable is just Y_t (not a group)
+////
+////                double[] dist_probs = dist_paired.getParameters();
+////
+////                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+////                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+////
+////                        int index = i * MAPvarNStates + j;
+////                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+////
+////                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+////
+////                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i) * dist_unpaired_post.getProbability(j);
+////                        }
+////                    }
+////                }
+////                listCondDistributions.add(dist_probs);
+////            }
+////            else {
+////                int idxEven = (t - 1) / 2;
+////                UnivariateDistribution dist_paired = posteriorMAPDistributionsEvenModel.get(idxEven); // This variable groups Y_t and Y_{t-1}
+////
+////                UnivariateDistribution dist_unpaired_pre = posteriorMAPDistributionsOddModel.get(idxEven);  // This variable groups Y_{t-2} and Y_{t-1}
+////
+////                double[] dist_probs = dist_paired.getParameters();
+////
+////                for (int i = 0; i < MAPvarNStates; i++) {  // To go over all values of Y_{t-1}
+////                    for (int j = 0; j < MAPvarNStates; j++) {  // To go over all values of Y_t
+////
+////                        int index = i * MAPvarNStates + j;
+////                        dist_probs[index] = (double) 1 / 2 * dist_probs[index];
+////
+////                        for (int k = 0; k < MAPvarNStates; k++) { // To go over all values of Y_{t-2}
+////                            dist_probs[index] = dist_probs[index] + (double) 1 / 2 * dist_unpaired_pre.getProbability(k * MAPvarNStates + i);
+////                        }
+////                    }
+////                }
+////                listCondDistributions.add(dist_probs);
+////            }
+////        }
 //
 //        return listCondDistributions;
 //    }
-//
-//    /**
-//     * Returns the max value and its corresponding index.
-//     * @param values an array of {@code double} values.
-//     * @return the max value and its corresponding index.
-//     */
-//    private double[] argMax(double[] values) {
-//
-//        double maxValue = Arrays.stream(values).max().getAsDouble();
-//        double indexMaxValue=-1;
-//
-//        for (int i = 0; i < values.length; i++) {
-//            if (values[i]==maxValue) {
-//                indexMaxValue=i;
-//            }
-//        }
-//        return new double[]{maxValue, indexMaxValue};
-//    }
+
+    /**
+     * Returns the max value and its corresponding index.
+     * @param values an array of {@code double} values.
+     * @return the max value and its corresponding index.
+     */
+    private double[] argMax(double[] values) {
+
+        double maxValue = Arrays.stream(values).max().getAsDouble();
+        double indexMaxValue=-1;
+
+        for (int i = 0; i < values.length; i++) {
+            if (values[i]==maxValue) {
+                indexMaxValue=i;
+            }
+        }
+        return new double[]{maxValue, indexMaxValue};
+    }
 
     /**
      * Returns the replicated static set of variables
@@ -1532,12 +2088,12 @@ public class DynamicMAPInference {
         Variable mapVariable;
 
 
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(5);
-        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(7);
         DynamicBayesianNetworkGenerator.setNumberOfStates(3);
         DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
 
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 3, true);
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(50), 4, true);
 //
 //        System.out.println("ORIGINAL DYNAMIC NETWORK:");
 //
@@ -1552,7 +2108,7 @@ public class DynamicMAPInference {
         // INITIALIZE THE MODEL
         int nTimeSteps = 20;
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
-        int nMergedClassVars = 4;
+        int nMergedClassVars = 3;
         dynMAP.setNumberOfMergedClassVars(nMergedClassVars);
 
         mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
@@ -1611,7 +2167,9 @@ public class DynamicMAPInference {
 //        }
 //
 //        dynMAP.setEvidence(evidence);
-//        dynMAP.runInference();
+
+        dynMAP.runInference();
+
 //
 //        System.out.println("\nMAP sequence: " + Arrays.toString(dynMAP.getMAPsequence()) + " with probability " + dynMAP.getMAPestimateProbability());
 //
