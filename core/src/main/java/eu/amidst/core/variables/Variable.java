@@ -189,6 +189,14 @@ public interface Variable {
     }
 
     /**
+     * Tests whether this Variable follows a gamma parameter distribution.
+     * @return true if this Variable follows a gamma parameter distribution, false otherwise.
+     */
+    default boolean isNormalGammaParameter(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.NORMAL_GAMMA_PARAMETER)==0);
+    }
+
+    /**
      * Tests whether this Variable follows a Dirichlet parameter distribution.
      * @return true if this Variable follows a Dirichlet parameter distribution, false otherwise.
      */

@@ -68,7 +68,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
 
         for (Variable localVar : this.localHiddenVars) {
 
-            EF_NormalGamma normal = (EF_NormalGamma) bayesianNetwork.getDistribution(localVar);
+            EF_NormalGivenIndependentNormalGamma normal = (EF_NormalGivenIndependentNormalGamma) bayesianNetwork.getDistribution(localVar);
 
 
             Variable gammaVar = normal.getGammaParameterVariable();
@@ -108,7 +108,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod{
         for (Variable localVar : this.localHiddenVars) {
             Normal normalGlobalHiddenPreviousTimeStep = plateuStructure.getEFVariablePosterior(localVar, 0).toUnivariateDistribution();
 
-            EF_NormalGamma normal = (EF_NormalGamma) bayesianNetwork.getDistribution(localVar);
+            EF_NormalGivenIndependentNormalGamma normal = (EF_NormalGivenIndependentNormalGamma) bayesianNetwork.getDistribution(localVar);
 
             Variable gammaVar = normal.getGammaParameterVariable();
 
