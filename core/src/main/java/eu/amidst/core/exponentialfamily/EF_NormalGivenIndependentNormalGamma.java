@@ -27,7 +27,7 @@ import java.util.Map;
  * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
-public class EF_NormalGamma extends EF_ConditionalDistribution{
+public class EF_NormalGivenIndependentNormalGamma extends EF_ConditionalDistribution{
 
     /** Represents the Normal parameter variable for the mean value. */
     Variable meanParameterVariable;
@@ -41,7 +41,7 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
      * @param mean the Normal parameter variable for the mean value.
      * @param gamma the Gamma parameter variable for the variance value.
      */
-    public EF_NormalGamma(Variable var_, Variable mean, Variable gamma){
+    public EF_NormalGivenIndependentNormalGamma(Variable var_, Variable mean, Variable gamma){
         this.var = var_;
         this.meanParameterVariable = mean;
         this.gammaParameterVariable = gamma;
@@ -133,7 +133,7 @@ public class EF_NormalGamma extends EF_ConditionalDistribution{
             naturalParameters.set(0, X);
             naturalParameters.set(1, invVariance);
 
-        // Message to the gamma variable
+            // Message to the gamma variable
         }else{
             double XSquare = momentChildCoParents.get(var).get(1);
 

@@ -58,6 +58,16 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
         this.baseIndex=numberOfVariables;
     }
 
+
+    /**
+     * Creates a new parameter NormalGamma Variable from a given name.
+     * @param name a given name.
+     * @return a new gaussian {@link Variable}.
+     */
+    public Variable newNormalGamma(String name) {
+        return this.newVariable(name, DistributionTypeEnum.NORMAL_GAMMA_PARAMETER, new RealStateSpace());
+    }
+
     /**
      * Creates a new parameter Gaussian Variable from a given name.
      * @param name a given name.

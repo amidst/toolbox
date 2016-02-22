@@ -289,6 +289,21 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
+        Variable varNormalGamma = variables.newNormalGamma(this.var.getName()+"_NormalGamma_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
+
+        conditionalDistributions.add(varNormalGamma.getDistributionType().newEFUnivariateDistribution());
+
+
+        EF_NormalGivenJointNormalGamma dist = new EF_NormalGivenJointNormalGamma(this.var,varNormalGamma);
+        conditionalDistributions.add(dist);
+
+        return conditionalDistributions;
+    }
+
+    /*
+        public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
+        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
+
         Variable varGamma = variables.newGammaParameter(this.var.getName()+"_Gamma_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
         Variable normalMean = variables.newGaussianParameter(this.var.getName() + "_Mean_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
 
@@ -296,12 +311,13 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         conditionalDistributions.add(normalMean.getDistributionType().newEFUnivariateDistribution());
 
-        EF_NormalGamma dist = new EF_NormalGamma(this.var, normalMean, varGamma);
+        EF_NormalGivenIndependentNormalGamma dist = new EF_NormalGivenIndependentNormalGamma(this.var, normalMean, varGamma);
         conditionalDistributions.add(dist);
 
         return conditionalDistributions;
     }
 
+     */
     /**
      * {@inheritDoc}
      */
