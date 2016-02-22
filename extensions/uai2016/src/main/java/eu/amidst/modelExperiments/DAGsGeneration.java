@@ -128,7 +128,7 @@ public class DAGsGeneration {
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULT");
+        Variable classVar = variables.getVariableByName("Default");
 
         // Define a local hidden variable.
         List<Variable> localHiddenVars = new ArrayList<>();
@@ -212,6 +212,40 @@ public class DAGsGeneration {
                 .filter(w -> w.getMainVar() != localHiddenVar)
                 .forEach(w -> w.addParent(localHiddenVar));
 
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
+
+    public static DAG getIDAGlobalMultinomialDAG(Attributes attributes, int states) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("Default");
+
+        // Define the global hidden variable.
+        Variable globalHiddenVar = variables.newMultionomialVariable("GlobalHidden",states);
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .forEach(w -> w.addParent(classVar));
+
+        // Link the global hidden as parent of all predictive attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .forEach(w -> w.addParent(globalHiddenVar));
 
         // Show the new dynamic DAG structure
         System.out.println(dag.toString());
@@ -308,7 +342,7 @@ public class DAGsGeneration {
 
 
     public static void main(String[] args) throws Exception {
-        int nVars = 2;
+        int nVars = 5;
         int dataSetSize=4000;
         int windowSize = 1000;
         generateData(nVars,dataSetSize, windowSize);
