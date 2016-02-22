@@ -15,6 +15,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.inference.messagepassing.VMPParameter;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
@@ -113,6 +114,8 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
+        VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
+        this.svb.getPlateuStructure().setVmp(vmpParameter);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svb.setDAG(this.dag);
@@ -170,8 +173,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
             NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
 
-
-
             newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
             newParam.sum(prior);
 
@@ -182,7 +183,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
             currentParam.multiplyBy((1-stepSize));
             currentParam.sum(newParam);
 
-            this.svb.updateNaturalParameterPrior(currentParam);
+            this.svb.updateNaturalParameterPosteriors(currentParam);
 
 
             if (totalTime/1e9>timiLimit){
@@ -295,7 +296,8 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         @Override
         public Double map(DataOnMemory<DataInstance> dataBatch) throws Exception {
                 //Compute ELBO
-                svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
+            System.out.println("BATCH: "+dataBatch.getNumberOfDataInstances());
+                this.svb.setOutput(true);
                 SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
 
                 if (Double.isNaN(outElbo.getElbo()))
@@ -316,7 +318,10 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
             this.svb.updateNaturalParameterPrior(prior);
             this.svb.updateNaturalParameterPosteriors(prior);
 
+            svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
+
         }
+
     }
 
 }
