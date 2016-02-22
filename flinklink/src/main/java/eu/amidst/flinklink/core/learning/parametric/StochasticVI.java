@@ -296,8 +296,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         @Override
         public Double map(DataOnMemory<DataInstance> dataBatch) throws Exception {
                 //Compute ELBO
-            System.out.println("BATCH: "+dataBatch.getNumberOfDataInstances());
-                this.svb.setOutput(true);
+                this.svb.setOutput(false);
                 SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
 
                 if (Double.isNaN(outElbo.getElbo()))

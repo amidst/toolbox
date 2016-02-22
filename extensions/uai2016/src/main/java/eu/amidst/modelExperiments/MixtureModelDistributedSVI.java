@@ -21,7 +21,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultinomialMultiLocalGaussianDAG;
+import static eu.amidst.modelExperiments.DAGsGeneration.getUAIMultiLocalGlobalDAG;
 
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
@@ -36,7 +36,7 @@ public class MixtureModelDistributedSVI {
         //String fileName = "./datasets/dataFlink/uai1K.arff";
         //args= new String[]{" " +
         //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
-        //        "1000", "100", "1", "1000", "0", "55000", "0.75", "1"};
+        //        "1000", "100", "1", "1000", "0", "55000", "0.75", "1", "2"};
 
         String fileName = args[0];
 
@@ -47,8 +47,7 @@ public class MixtureModelDistributedSVI {
         int seed = Integer.parseInt(args[5]);
         int dataSetSize = Integer.parseInt(args[6]);
         double learningRate = Double.parseDouble(args[7]);
-        int nHidden = Integer.parseInt(args[8]);
-        int nStates = Integer.parseInt(args[9]);
+        int nStates = Integer.parseInt(args[8]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -60,7 +59,7 @@ public class MixtureModelDistributedSVI {
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
-        DAG hiddenNB = getIDAMultinomialMultiLocalGaussianDAG(dataFlink.getAttributes(), nStates, nHidden);
+        DAG hiddenNB = getUAIMultiLocalGlobalDAG(dataFlink.getAttributes(), nStates);
         long start = System.nanoTime();
 
         //Parameter Learning

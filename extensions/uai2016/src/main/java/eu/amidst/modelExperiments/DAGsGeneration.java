@@ -11,6 +11,7 @@
 
 package eu.amidst.modelExperiments;
 
+import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.models.BayesianNetwork;
@@ -30,6 +31,58 @@ import java.util.Random;
  */
 public class DAGsGeneration {
 
+    public static DAG getUAIMultiLocalGlobalDAG(Attributes attributes, int nstates) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("Default");
+
+        // Define a local hidden variable.
+        List<Variable> localHiddenVars = new ArrayList<>();
+        List<Attribute> attributesList = attributes.getListOfNonSpecialAttributes();
+        for (Attribute attribute : attributesList) {
+            if (attribute.getName().compareTo("Default")==0)
+                continue;
+            localHiddenVars.add(variables.newMultionomialVariable("LocalHidden_"+attribute.getName(),nstates));
+        }
+
+        // Define the global hidden variable.
+        Variable globalHiddenVar = variables.newMultionomialVariable("GlobalHidden",nstates);
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                //.filter(w -> w.getMainVar() != globalHiddenVar)
+                .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                .forEach(w -> w.addParent(classVar));
+
+        // Link the global hidden as parent of all predictive attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                .forEach(w -> w.addParent(globalHiddenVar));
+
+        // Link the local hidden as parent of all predictive attributes
+
+        for (Attribute attribute : attributesList) {
+            if (attribute.getName().compareTo("Default")==0)
+                continue;
+
+            dag.getParentSet(variables.getVariableByName(attribute.getName())).addParent(variables.getVariableByName("LocalHidden_"+attribute.getName()));
+        }
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
 
     public static DAG getIDAMultiLocalGlobalDAG(Attributes attributes, int nlocals) {
         // Create a Variables object from the attributes of the input data stream.
@@ -336,6 +389,8 @@ public class DAGsGeneration {
 
         DataFlink<DataInstance> data = sampler.sampleToDataFlink(nsamples);
 
+        System.out.println(getUAIMultiLocalGlobalDAG(data.getAttributes(),2));
+
         DataFlinkWriter.writeDataToARFFFolder(data, "./datasets/dataFlink/data.arff");
 
     }
@@ -346,6 +401,7 @@ public class DAGsGeneration {
         int dataSetSize=4000;
         int windowSize = 1000;
         generateData(nVars,dataSetSize, windowSize);
+
 
     }
 

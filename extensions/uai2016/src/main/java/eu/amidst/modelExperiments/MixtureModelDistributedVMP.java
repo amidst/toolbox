@@ -21,7 +21,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultinomialMultiLocalGaussianDAG;
+import static eu.amidst.modelExperiments.DAGsGeneration.getUAIMultiLocalGlobalDAG;
 
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
@@ -33,9 +33,9 @@ public class MixtureModelDistributedVMP {
     public static void main(String[] args) throws Exception {
 
         //args= new String[]{" " +
-        //        //"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
+        //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
         //        "./datasets/dataFlink/data.arff",
-        //        "100", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
+        //        "1000", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
@@ -48,8 +48,7 @@ public class MixtureModelDistributedVMP {
         double localThreshold = Double.parseDouble(args[5]);
         long timeLimit = Long.parseLong(args[6]);
         int seed = Integer.parseInt(args[7]);
-        int nHidden = Integer.parseInt(args[8]);
-        int nStates = Integer.parseInt(args[9]);
+        int nStates = Integer.parseInt(args[8]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -62,13 +61,13 @@ public class MixtureModelDistributedVMP {
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
         //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
-        DAG hiddenNB = getIDAMultinomialMultiLocalGaussianDAG(dataFlink.getAttributes(), nStates, nHidden);
+        DAG hiddenNB = getUAIMultiLocalGlobalDAG(dataFlink.getAttributes(), nStates);
 
         long start = System.nanoTime();
 
         //Parameter Learning
         ParallelVB parallelVB = new ParallelVB();
-        //parallelVB.setOutput(true);
+        parallelVB.setOutput(true);
         parallelVB.setGlobalThreshold(globalThreshold);
         parallelVB.setMaximumGlobalIterations(globalIter);
         parallelVB.setLocalThreshold(localThreshold);
@@ -79,7 +78,7 @@ public class MixtureModelDistributedVMP {
         //Set the window size
         parallelVB.setBatchSize(windowSize);
 
-        parallelVB.setIdenitifableModelling(new IdentifiableMixtureModel(nHidden, nStates));
+        //parallelVB.setIdenitifableModelling(new IdentifiableMixtureModel(nHidden, nStates));
 
         //List<Variable> hiddenVars = new ArrayList<>();
         //hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));
