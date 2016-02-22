@@ -136,6 +136,11 @@ public class PlateuStructure implements Serializable {
         return vmp;
     }
 
+
+    public void setVmp(VMP vmp) {
+        this.vmp = vmp;
+    }
+
     /**
      * Resets the exponential family distributions of all nodes for the {@link VMP} object of this PlateuStructure.
      */

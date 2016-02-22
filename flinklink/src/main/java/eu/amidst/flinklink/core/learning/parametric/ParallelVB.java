@@ -458,8 +458,6 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 svb.updateNaturalParameterPrior(prior);
                 svb.updateNaturalParameterPosteriors(updatedPrior);
                 basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
-                //svb.initLearning();
-                //System.out.println("BaseELBO:"+ basedELBO);
             }else{
                 this.prior=Serialization.deepCopy(updatedPrior);
                 this.svb.updateNaturalParameterPrior(prior);

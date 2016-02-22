@@ -86,6 +86,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the natural vector posterior. */
     BatchOutput naturalVectorPosterior = null;
+    private boolean activateOutput = false;
 
     /**
      * Returns the window size.
@@ -227,6 +228,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public void setOutput(boolean activateOutput) {
+        this.activateOutput=activateOutput;
         this.getPlateuStructure().getVMP().setOutput(activateOutput);
         this.getPlateuStructure().getVMP().setTestELBO(activateOutput);
     }
@@ -430,6 +432,9 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public void initLearning(){
+
+        this.getPlateuStructure().getVMP().setOutput(activateOutput);
+        this.getPlateuStructure().getVMP().setTestELBO(activateOutput);
 
         plateuStructure.setNRepetitions(windowsSize);
 
