@@ -16,7 +16,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
+import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class MixtureModelDistributedVMP {
         //args= new String[]{" " +
         //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
         //        "./datasets/dataFlink/data.arff",
-        //        "1000", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
+        //        "550", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
@@ -74,7 +74,7 @@ public class MixtureModelDistributedVMP {
         long start = System.nanoTime();
 
         //Parameter Learning
-        ParallelVB parallelVB = new ParallelVB();
+        dVMP parallelVB = new dVMP();
         parallelVB.setOutput(true);
         parallelVB.setGlobalThreshold(globalThreshold);
         parallelVB.setMaximumGlobalIterations(globalIter);
