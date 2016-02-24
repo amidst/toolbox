@@ -15,6 +15,7 @@ import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.Sampler;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.utils.CompoundVector;
 
 import java.util.Optional;
 
@@ -96,10 +97,15 @@ public class VMPParameter extends VMP {
 
             }
 
+            CompoundVector posteriorOLD = this.plateuStructure.getPlateauNaturalParameterPosterior();
+            CompoundVector posteriorNew = this.plateuStructure.getPlateauNaturalParameterPosterior();
+
             //Collect messages from active nodes to non-active nodes.
+            int count = 0;
             for (Node node : nodes) {
                 if (!node.isActive() || node.isObserved() || plateuStructure.isReplicatedVar(node.getMainVariable()))
                     continue;
+
 
                 Message<NaturalParameters> selfMessage = newSelfMessage(node);
 
@@ -117,7 +123,17 @@ public class VMPParameter extends VMP {
                 //}
 
                 updateCombinedMessage(node, selfMessage);
+
+
+                posteriorNew.setVectorByPosition(count,node.getQDist().getNaturalParameters());
+                node.getQDist().setNaturalParameters((NaturalParameters)posteriorOLD.getVectorByPosition(count));
+                node.getQDist().fixNumericalInstability();
+                node.getQDist().updateMomentFromNaturalParameters();
+
+                count++;
             }
+
+            this.plateuStructure.updateNaturalParameterPosteriors(posteriorNew);
 
             //probOfEvidence = local_elbo;
 
