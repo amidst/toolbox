@@ -286,7 +286,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
      * {@inheritDoc}
      */
     @Override
-    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
+ /*   public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
         Variable varNormalGamma = variables.newNormalGamma(this.var.getName()+"_NormalGamma_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
@@ -299,9 +299,9 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         return conditionalDistributions;
     }
+*/
 
-    /*
-        public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
         Variable varGamma = variables.newGammaParameter(this.var.getName()+"_Gamma_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
@@ -317,7 +317,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
         return conditionalDistributions;
     }
 
-     */
+
     /**
      * {@inheritDoc}
      */
