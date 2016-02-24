@@ -29,10 +29,10 @@ public class ParseOutput {
                 if(line.contains("Global bound at")) {
                     line = line.substring(line.indexOf("iteration:")+11);
                     String[] parts = line.split(" |,|>");
-                    output += parts[0]+"\t"; // Iteration
-                    output += "0\t"; //Percentage
-                    output += parts[1]+"\t"; //Global bound
-                    output += parts[2]; //Time
+                    //output += parts[0]+"\t"; // Iteration
+                    //output += "0\t"; //Percentage
+                    output += parts[2]+"\t"; //Time
+                    output += parts[1]; //Global bound
                     if(printer!=null)printer.println(output);
                     else System.out.println(output);
                     output = "";
@@ -41,10 +41,10 @@ public class ParseOutput {
                 if(line.contains("Global bound is")) {
                     line = line.substring(line.indexOf("increasing:")+12);
                     String[] parts = line.split(" |,|>");
-                    output += parts[0]+"\t"; // Iteration
-                    output += parts[1]+"\t"; //Percentage
-                    output += parts[2]+"\t"; //Global bound
-                    output += parts[4]; //Time
+                    //output += parts[0]+"\t"; // Iteration
+                    //output += parts[1]+"\t"; //Percentage
+                    output += parts[4]+"\t"; //Time
+                    output += parts[2]; //Global bound
                     if(printer!=null)printer.println(output);
                     else System.out.println(output);
                     output = "";
@@ -53,10 +53,10 @@ public class ParseOutput {
                 if(line.contains("Global bound Conv")) {
                     line = line.substring(line.indexOf("Convergence:")+13);
                     String[] parts = line.split(" |,|>");
-                    output += parts[0]+"\t"; // Iteration
-                    output += parts[1]+"\t"; //Percentage
-                    output += parts[2]+"\t"; //Global bound
-                    output += parts[3]; //Time
+                    //output += parts[0]+"\t"; // Iteration
+                    //output += parts[1]+"\t"; //Percentage
+                    output += parts[3]+"\t"; //Time
+                    output += parts[2]; //Global bound Time
                     if(printer!=null)printer.println(output);
                     else System.out.println(output);
                     output = "";
@@ -67,11 +67,11 @@ public class ParseOutput {
                     line = line.replaceAll("\\s+","");
                     line = line.replaceAll("seconds",",");
                     String[] parts = line.split(",");
-                    output += parts[0]+"\t"; // Iteration
-                    output += parts[1]+"\t"; //Stepsize
+                    //output += parts[0]+"\t"; // Iteration
+                    //output += parts[1]+"\t"; //Stepsize
+                    output += parts[5]+"\t"; //Time without global bound calculation
                     output += parts[2]+"\t"; //Global bound
-                    output += parts[3]+"\t"; //Time with global bound calculation
-                    output += parts[4]; //Time without global bound calculation
+                    //output += parts[4]; //Time without global bound calculation
                     if(printer!=null)printer.println(output);
                     else System.out.println(output);
                     output = "";

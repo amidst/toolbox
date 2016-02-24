@@ -49,6 +49,33 @@ public class AddMissingValues {
         }, outputFileName);
     }
 
+    public static void addMissingValuesToFile (String inputFileName,String outputFileName)  throws Exception {
+
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,inputFileName, false);
+
+        DataSet<DataInstance> dataFlinkWithMissing = dataFlink.getDataSet().
+                map(new MissValuesMap(dataFlink.getAttributes()));
+
+        DataFlinkWriter.writeDataToARFFFolder(new DataFlink<DataInstance>() {
+            @Override
+            public String getName() {
+                return dataFlink.getName();
+            }
+
+            @Override
+            public Attributes getAttributes() {
+                return dataFlink.getAttributes();
+            }
+
+            @Override
+            public DataSet<DataInstance> getDataSet() {
+                return dataFlinkWithMissing;
+            }
+        }, outputFileName);
+    }
+
     public static class MissValuesMap extends RichMapFunction<DataInstance, DataInstance> {
 
         Random random;
