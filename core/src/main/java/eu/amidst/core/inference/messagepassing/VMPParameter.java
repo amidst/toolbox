@@ -60,7 +60,7 @@ public class VMPParameter extends VMP {
         local_iter = 0;
         int global_iter = 0;
 
-        while (!globalconvergence && (global_iter++)<maxGlobaIter) {
+//        while (!globalconvergence && (global_iter++)<maxGlobaIter) {
 
             while (!convergence && (local_iter++) < maxIter) {
 
@@ -119,20 +119,20 @@ public class VMPParameter extends VMP {
                 updateCombinedMessage(node, selfMessage);
             }
 
-            probOfEvidence = local_elbo;
+            //probOfEvidence = local_elbo;
 
             this.testConvergence();
 
-            double percentage = 100 * Math.abs(local_elbo - probOfEvidence) / Math.abs(probOfEvidence);
+            /*double percentage = 100 * Math.abs(local_elbo - probOfEvidence) / Math.abs(probOfEvidence);
             if (percentage < threshold) {
                 globalconvergence = true;
             }else{
                 System.out.println();
-            }
+            }*/
 
 
             probOfEvidence = local_elbo;
-        }
+ //       }
 
         probOfEvidence = local_elbo;
         if (output){
