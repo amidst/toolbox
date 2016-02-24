@@ -19,6 +19,7 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +54,18 @@ public class MixtureModelDistributedSVI {
         double learningRate = Double.parseDouble(args[7]);
         int nStates = 2;
         String fileTest = args[8];
+        int nParallelDegree = Integer.parseInt(args[9]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        // set up the execution environment
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 16000);
+        conf.setInteger("taskmanager.numberOfTaskSlots",nParallelDegree);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
 
-        //env.setParallelism(1);
+        env.setParallelism(nParallelDegree);
 
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
@@ -94,7 +100,7 @@ public class MixtureModelDistributedSVI {
         BayesianNetwork LearnedBnet = stochasticVI.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
-        for (int i = 1; i < args.length-1; i++) {
+        for (int i = 1; i <=7; i++) {
             builder.append(args[i]);
             builder.append("_");
         }

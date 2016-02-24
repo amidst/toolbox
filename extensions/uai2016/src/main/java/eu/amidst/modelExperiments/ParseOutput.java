@@ -16,9 +16,12 @@ public class ParseOutput {
          */
 
         String pathInput = args[0];
-        String pathOutput = args[1];
+        PrintWriter printer = null;
+        if(args.length==2) {
+            printer = new PrintWriter(args[1]);
+        }
 
-        PrintWriter out = new PrintWriter(pathOutput);
+
         try (BufferedReader br = new BufferedReader(new FileReader(pathInput))) {
             String line;
             String output = "";
@@ -30,7 +33,8 @@ public class ParseOutput {
                     output += "0\t"; //Percentage
                     output += parts[1]+"\t"; //Global bound
                     output += parts[2]; //Time
-                    out.println(output);
+                    if(printer!=null)printer.println(output);
+                    else System.out.println(output);
                     output = "";
                     continue;
                 }
@@ -41,7 +45,8 @@ public class ParseOutput {
                     output += parts[1]+"\t"; //Percentage
                     output += parts[2]+"\t"; //Global bound
                     output += parts[4]; //Time
-                    out.println(output);
+                    if(printer!=null)printer.println(output);
+                    else System.out.println(output);
                     output = "";
                     continue;
                 }
@@ -52,24 +57,28 @@ public class ParseOutput {
                     output += parts[1]+"\t"; //Percentage
                     output += parts[2]+"\t"; //Global bound
                     output += parts[3]; //Time
-                    out.println(output);
+                    if(printer!=null)printer.println(output);
+                    else System.out.println(output);
                     output = "";
                     continue;
                 }
                 if(line.contains("SVI ELBO")) {
                     line = line.substring(line.indexOf("ELBO:")+6,line.length()-8);
                     line = line.replaceAll("\\s+","");
+                    line = line.replaceAll("seconds",",");
                     String[] parts = line.split(",");
                     output += parts[0]+"\t"; // Iteration
                     output += parts[1]+"\t"; //Stepsize
                     output += parts[2]+"\t"; //Global bound
-                    output += parts[3]; //Time
-                    out.println(output);
+                    output += parts[3]+"\t"; //Time with global bound calculation
+                    output += parts[4]; //Time without global bound calculation
+                    if(printer!=null)printer.println(output);
+                    else System.out.println(output);
                     output = "";
                     continue;
                 }
             }
-            out.close();
+            if(printer!=null) printer.close();
         }
     }
 }
