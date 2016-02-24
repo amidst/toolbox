@@ -397,7 +397,7 @@ public class DAGsGeneration {
 
 
     public static void main(String[] args) throws Exception {
-        int nVars = 5;
+        int nVars = 0;
         int dataSetSize=4000;
         int windowSize = 1000;
         generateData(nVars,dataSetSize, windowSize);

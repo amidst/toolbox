@@ -12,6 +12,7 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.flinklink.core.data.DataFlink;
@@ -35,8 +36,11 @@ public class MixtureModelDistributedSVI {
         //String fileName = "hdfs:///tmp_uai100K.arff";
         //String fileName = "./datasets/dataFlink/uai1K.arff";
         //args= new String[]{" " +
-        //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
-        //        "1000", "100", "1", "1000", "0", "55000", "0.75", "1", "2"};
+                //"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
+        //        "./datasets/dataFlink/data.arff",
+        //        "550", "100", "1", "100", "0", "55000", "0.75",
+        //        "./datasets/dataFlink/data.arff"
+        //        };
 
         String fileName = args[0];
 
@@ -47,7 +51,8 @@ public class MixtureModelDistributedSVI {
         int seed = Integer.parseInt(args[5]);
         int dataSetSize = Integer.parseInt(args[6]);
         double learningRate = Double.parseDouble(args[7]);
-        int nStates = Integer.parseInt(args[8]);
+        int nStates = 2;
+        String fileTest = args[8];
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -87,7 +92,26 @@ public class MixtureModelDistributedSVI {
         stochasticVI.setDataFlink(dataFlink);
         stochasticVI.runLearning();
         BayesianNetwork LearnedBnet = stochasticVI.getLearntBayesianNetwork();
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 1; i < args.length-1; i++) {
+            builder.append(args[i]);
+            builder.append("_");
+        }
+
+        BayesianNetworkWriter.saveToFile(LearnedBnet, "./MixtureSVI_"+ builder.toString() +".bn");
         System.out.println(LearnedBnet.toString());
+
+
+
+        /// TEST
+
+        DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFolder(env,fileTest, false);
+
+        double elboTest = StochasticVI.computeELBO(dataTest,stochasticVI.getSVB());
+
+        System.out.println("Test Marginal-Loglikelihood:" + elboTest);
+
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;

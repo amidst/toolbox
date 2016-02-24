@@ -12,10 +12,12 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
 import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.slf4j.Logger;
@@ -48,8 +50,8 @@ public class MixtureModelDistributedVMP {
         double localThreshold = Double.parseDouble(args[5]);
         long timeLimit = Long.parseLong(args[6]);
         int seed = Integer.parseInt(args[7]);
-        int nStates = Integer.parseInt(args[8]);
-
+        int nStates = 2;
+        String fileTest = args[8];
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
 
@@ -92,7 +94,23 @@ public class MixtureModelDistributedVMP {
         parallelVB.setDataFlink(dataFlink);
         parallelVB.runLearning();
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 1; i < args.length-1; i++) {
+            builder.append(args[i]);
+            builder.append("_");
+        }
+        BayesianNetworkWriter.saveToFile(LearnedBnet, "./MixtureVMP_"+ builder.toString() +".bn");
         System.out.println(LearnedBnet.toString());
+
+        /// TEST
+
+        DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFolder(env,fileTest, false);
+
+        double elboTest = StochasticVI.computeELBO(dataTest,parallelVB.getSVB());
+
+        System.out.println("Test Marginal-Loglikelihood:" + elboTest);
+
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;

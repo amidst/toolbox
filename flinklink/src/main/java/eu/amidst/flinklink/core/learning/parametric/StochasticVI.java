@@ -186,18 +186,18 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
             this.svb.updateNaturalParameterPosteriors(currentParam);
 
 
-            if (totalTime/1e9>timiLimit){
-                convergence=true;
-            }
+
 
             long startBatchELBO= System.nanoTime();
             //Compute ELBO
-            double elbo = this.computeELBO(svb, prior, currentParam);
-            totalTimeElbo += System.nanoTime() - startBatchELBO;
+            double elbo = this.computeELBO(this.dataFlink, svb);
+
+            long endBatch= System.nanoTime();
+
+            totalTimeElbo += endBatch - startBatchELBO;
 
             System.out.println("TIME ELBO:" + totalTimeElbo/1e9);
 
-            long endBatch= System.nanoTime();
             totalTime+=endBatch-startBatch;
 
             logger.info("SVI ELBO: {},{},{},{} seconds, {} seconds",t,0,
@@ -206,6 +206,10 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
             System.out.println("SVI ELBO: "+t+", "+stepSize+", "+elbo+", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds");
 
 
+            if ((totalTime-totalTimeElbo)/1e9>timiLimit){
+                convergence=true;
+            }
+
             t++;
 
         }
@@ -213,22 +217,20 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     }
 
 
-    private double computeELBO(SVB svb, CompoundVector orginialPrior, CompoundVector newPrior){
+    public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb){
 
         svb.setOutput(false);
-        svb.updateNaturalParameterPrior(orginialPrior);
-        svb.updateNaturalParameterPosteriors(newPrior);
         double elbo =  svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
 
         try {
 
             Configuration config = new Configuration();
-            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setString(ParameterLearningAlgorithm.BN_NAME, svb.getDAG().getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
-            config.setBytes(PRIOR, Serialization.serializeObject(newPrior));
+            config.setBytes(PRIOR, Serialization.serializeObject(svb.getPlateuStructure().getPlateauNaturalParameterPosterior()));
 
 
-            elbo += this.dataFlink.getBatchedDataSet(this.batchSize).map(new ParallelVBMapELBO())
+            elbo += dataFlink.getBatchedDataSet(svb.getWindowsSize()).map(new ParallelVBMapELBO())
                     .withParameters(config)
                     .reduce(new ReduceFunction<Double>() {
                         @Override
@@ -239,9 +241,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        svb.updateNaturalParameterPrior(newPrior);
 
         svb.setOutput(true);
 
