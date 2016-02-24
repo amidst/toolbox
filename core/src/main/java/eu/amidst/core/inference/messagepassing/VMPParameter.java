@@ -137,7 +137,7 @@ public class VMPParameter extends VMP {
 
             //probOfEvidence = local_elbo;
 
-            this.testConvergence();
+            //this.testConvergence();
 
             /*double percentage = 100 * Math.abs(local_elbo - probOfEvidence) / Math.abs(probOfEvidence);
             if (percentage < threshold) {
