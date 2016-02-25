@@ -15,6 +15,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.dataGeneration.AddMissingValues;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
@@ -54,6 +55,7 @@ public class MixtureModelDistributedVMP {
         int nStates = 2;
         String fileTest = args[8];
         int nParallelDegree = Integer.parseInt(args[9]);
+        boolean addMissingValues = Boolean.parseBoolean(args[10]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -66,10 +68,17 @@ public class MixtureModelDistributedVMP {
 
         env.setParallelism(nParallelDegree);
 
-        ///env.setParallelism(1);
-
-
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
+        DataFlink<DataInstance> dataFlink;
+        /*
+         * Add Missing Values
+         */
+        if(addMissingValues){
+            AddMissingValues.addMissingValuesToFile(fileName,fileName.replace(".arff","withMissing.arff"));
+            dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName.replace(".arff","withMissing.arff"), false);
+        }
+        else {
+            dataFlink = DataFlinkLoader.loadDataFromFolder(env, fileName, false);
+        }
 
         //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
         DAG hiddenNB = getUAIMultiLocalGlobalDAG(dataFlink.getAttributes(), nStates);
