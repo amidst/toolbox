@@ -452,7 +452,16 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             svb.initLearning();
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
-            updatedPosterior = collection.iterator().next();
+
+            //if(updatedPosterior==null)
+                updatedPosterior = collection.iterator().next();
+            /*else{
+                double learningRate = 0.5;
+                updatedPosterior.multiplyBy(1-learningRate);
+                CompoundVector update= collection.iterator().next();
+                update.multiplyBy(learningRate);
+                updatedPosterior.sum(update);
+            }*/
 
 
             if (prior!=null) {
@@ -665,8 +674,14 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             }else if (percentage<-1){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
-                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
-                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +","+percentage+
+                        "," + (value.getValue()) +">" + previousELBO+ ","+
+                        (System.nanoTime() - start) / 1000000000.0 + " seconds");
+                this.previousELBO=value.getValue();
+                return false;
             }else if (percentage>-1 && timeIteration < timeLimit) {
                 logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
                         df.format(percentage), df.format(value.getValue()), df.format(previousELBO),

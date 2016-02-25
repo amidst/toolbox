@@ -218,6 +218,9 @@ public class PlateuStructure implements Serializable {
     }
 
 
+    public List<Variable> getReplicatedVariables() {
+        return this.replicatedVariables.entrySet().stream().filter(entry -> entry.getValue()).map(entry -> entry.getKey()).sorted((a,b) -> a.getVarID()-b.getVarID()).collect(Collectors.toList());
+    }
 
     /**
      * Sets the number of repetitions for this PlateuStructure.

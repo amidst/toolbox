@@ -63,7 +63,9 @@ public class VMPParameter extends VMP {
 
 //        while (!globalconvergence && (global_iter++)<maxGlobaIter) {
 
-            while (!convergence && (local_iter++) < maxIter) {
+        this.testConvergence();
+
+        while (!convergence && (local_iter++) < maxIter) {
 
                 boolean done = true;
                 for (Node node : nodes) {
