@@ -12,15 +12,13 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.dataGeneration.AddMissingValues;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
 import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ import static eu.amidst.modelExperiments.DAGsGeneration.getUAIMultiLocalGlobalDA
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
  */
-public class MixtureModelDistributedVMP {
+public class MixtureModelDistributedVMPAmazon {
 
     static Logger logger = LoggerFactory.getLogger(MixtureModelDistributedVMP.class);
 
@@ -52,22 +50,24 @@ public class MixtureModelDistributedVMP {
         long timeLimit = Long.parseLong(args[6]);
         int seed = Integer.parseInt(args[7]);
         int nStates = 2;
-        String fileTest = args[8];
-        int nParallelDegree = Integer.parseInt(args[9]);
-
+        boolean addMissingValues = Boolean.parseBoolean(args[8]);
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
 
-        // set up the execution environment
-        Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 16000);
-        conf.setInteger("taskmanager.numberOfTaskSlots",nParallelDegree);
-        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        env.setParallelism(nParallelDegree);
-
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, fileName, false);
+        DataFlink<DataInstance> dataFlink;
+        /*
+         * Add Missing Values
+         */
+        if(addMissingValues){
+            AddMissingValues.addMissingValuesToFile(fileName,fileName.replace(".arff","withMissing.arff"));
+            dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName.replace(".arff","withMissing.arff"), false);
+        }
+        else {
+            dataFlink = DataFlinkLoader.loadDataFromFolder(env, fileName, false);
+        }
 
         //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
         DAG hiddenNB = getUAIMultiLocalGlobalDAG(dataFlink.getAttributes(), nStates);
@@ -87,37 +87,13 @@ public class MixtureModelDistributedVMP {
         //Set the window size
         parallelVB.setBatchSize(windowSize);
 
-        //parallelVB.setIdenitifableModelling(new IdentifiableMixtureModel(nHidden, nStates));
-
-        //List<Variable> hiddenVars = new ArrayList<>();
-        //hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));
-        //parallelVB.setPlateuStructure(new PlateuStructure(hiddenVars));
-        //GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, 1);
-        //gaussianHiddenTransitionMethod.setFading(1.0);
-        //parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
-
         parallelVB.setOutput(true);
         parallelVB.setDAG(hiddenNB);
         parallelVB.setDataFlink(dataFlink);
         parallelVB.runLearning();
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
-        StringBuilder builder = new StringBuilder();
-        for (int i = 1; i <= 7; i++) {
-            builder.append(args[i]);
-            builder.append("_");
-        }
-        BayesianNetworkWriter.saveToFile(LearnedBnet, "./MixtureVMP_"+ builder.toString() +".bn");
         System.out.println(LearnedBnet.toString());
-
-        /// TEST
-
-        DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFolder(env,fileTest, false);
-
-        double elboTest = StochasticVI.computeELBO(dataTest,parallelVB.getSVB());
-
-        System.out.println("Test Marginal-Loglikelihood:" + elboTest);
-
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
