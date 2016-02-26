@@ -53,8 +53,8 @@ public class EvaluateAUC {
                     System.out.println("DATA FILE: " + dataFile.getFileName().toString());
                     DataStream<DataInstance> data = DataStreamLoader.openFromFile(dataFile.toString());
 
-                    InferenceAlgorithm inferenceAlgorithm = new VMP();
-                    InferenceAlgorithm inferenceAlgorithm1 = new ImportanceSampling();
+                    InferenceAlgorithm inferenceVMP = new VMP();
+                    InferenceAlgorithm inferenceIS = new ImportanceSampling();
 
                     ArrayList<Prediction> predictionsVMP = new ArrayList<>();
                     ArrayList<Prediction> predictionsIS = new ArrayList<>();
@@ -65,23 +65,23 @@ public class EvaluateAUC {
                         Prediction prediction;
                         Multinomial posterior;
 
-                        inferenceAlgorithm.setModel(model);
-                        inferenceAlgorithm1.setModel(model);
+                        inferenceVMP.setModel(model);
+                        inferenceIS.setModel(model);
 
                         MissingAssignment assignment = new MissingAssignment(instance);
                         assignment.addMissingVariable(classVariable);
 
                         // Inference with VMP:
-                        inferenceAlgorithm.setEvidence(assignment);
-                        inferenceAlgorithm.runInference();
-                        posterior = inferenceAlgorithm.getPosterior(classVariable);
+                        inferenceVMP.setEvidence(assignment);
+                        inferenceVMP.runInference();
+                        posterior = inferenceVMP.getPosterior(classVariable);
                         prediction = new NominalPrediction(classValue, posterior.getProbabilities());
                         predictionsVMP.add(prediction);
 
                         // Inference with IS:
-                        inferenceAlgorithm1.setEvidence(assignment);
-                        inferenceAlgorithm1.runInference();
-                        posterior = inferenceAlgorithm1.getPosterior(classVariable);
+                        inferenceIS.setEvidence(assignment);
+                        inferenceIS.runInference();
+                        posterior = inferenceIS.getPosterior(classVariable);
                         prediction = new NominalPrediction(classValue, posterior.getProbabilities());
                         predictionsIS.add(prediction);
                     }
