@@ -15,6 +15,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgorithm;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -26,30 +27,42 @@ import eu.amidst.flinklink.core.learning.parametric.dVMP;
  */
 public abstract class Model {
 
-    SVB svb;
+    BayesianParameterLearningAlgorithm learningAlgorithm;
 
     dVMP dvmp = new dVMP();
 
     DAG dag;
 
+    Attributes attributes;
+
+    public Model(Attributes attributes) {
+        this.attributes = attributes;
+        this.dag=buildDAG(attributes);
+    }
+
+    public DAG getDAG() {
+        return dag;
+    }
+
+    public void setLearningAlgorithm(BayesianParameterLearningAlgorithm learningAlgorithm) {
+        this.learningAlgorithm = learningAlgorithm;
+    }
 
     public void learnModel(DataOnMemory<DataInstance> datBatch){
         dvmp=null;
-        dag = this.buildDAG(datBatch.getAttributes());
-        svb = new SVB();
-        svb.setDAG(dag);
-        svb.initLearning();
-        svb.updateModel(datBatch);
+        learningAlgorithm = new SVB();
+        learningAlgorithm.setDAG(dag);
+        learningAlgorithm.initLearning();
+        learningAlgorithm.updateModel(datBatch);
     }
 
     public void learnModel(DataStream<DataInstance> dataStream){
         dvmp=null;
-        dag = this.buildDAG(dataStream.getAttributes());
-        svb = new SVB();
-        svb.setDAG(dag);
-        svb.setDataStream(dataStream);
-        svb.initLearning();
-        svb.runLearning();
+        learningAlgorithm = new SVB();
+        learningAlgorithm.setDAG(dag);
+        learningAlgorithm.setDataStream(dataStream);
+        learningAlgorithm.initLearning();
+        learningAlgorithm.runLearning();
     }
 
     public void learnModel(DataFlink<DataInstance> dataFlink){
@@ -62,21 +75,20 @@ public abstract class Model {
     }
 
     public void updateModel(DataOnMemory<DataInstance> datBatch){
-        if (svb==null) {
-            dag = this.buildDAG(datBatch.getAttributes());
-            svb = new SVB();
-            svb.setDAG(dag);
-            svb.initLearning();
+        if (learningAlgorithm ==null) {
+            learningAlgorithm = new SVB();
+            learningAlgorithm.setDAG(dag);
+            learningAlgorithm.initLearning();
             dvmp=null;
         }
 
-        svb.updateModel(datBatch);
+        learningAlgorithm.updateModel(datBatch);
     }
 
 
     public BayesianNetwork getModel(){
-        if (svb!=null){
-            return this.svb.getLearntBayesianNetwork();
+        if (learningAlgorithm !=null){
+            return this.learningAlgorithm.getLearntBayesianNetwork();
         }
 
         if (this.dvmp!=null)

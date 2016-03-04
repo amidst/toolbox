@@ -22,6 +22,10 @@ import eu.amidst.core.models.DAG;
  * Created by andresmasegosa on 4/3/16.
  */
 public class GaussianDiscriminativeAnalysis extends Model {
+    public GaussianDiscriminativeAnalysis(Attributes attributes) {
+        super(attributes);
+    }
+
     @Override
     protected DAG buildDAG(Attributes attributes) {
 
@@ -34,19 +38,18 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("tmp.arff");
 
-        Model model = new GaussianDiscriminativeAnalysis();
+        Model model = new GaussianDiscriminativeAnalysis(data.getAttributes());
+
+        System.out.println(model.getDAG());
 
         model.learnModel(data);
-
-        System.out.println(model);
-
 
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(1000)) {
             model.updateModel(batch);
         }
 
 
-        System.out.println(model);
+        System.out.println(model.getModel());
 
     }
 
