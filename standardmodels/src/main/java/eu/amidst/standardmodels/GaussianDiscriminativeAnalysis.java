@@ -30,13 +30,21 @@ import java.util.stream.Stream;
 public class GaussianDiscriminativeAnalysis extends Model {
 
 
-    private boolean diagonal = true;
+    private boolean diagonal;
     private Variable classVar = null;
 
 
 
     public GaussianDiscriminativeAnalysis(Attributes attributes) {
         super(attributes);
+
+
+        Variables vars = new Variables(attributes);
+
+        // default parameters
+        classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
+        diagonal = false;
+
     }
 
 
@@ -52,11 +60,6 @@ public class GaussianDiscriminativeAnalysis extends Model {
         Variables vars = new Variables(attributes);
         dag = new DAG(vars);
 
-
-
-        //sets the class variable , by default it is the first
-        classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
-        //classVar = vars.getListOfVariables().get(0);
         dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
 
 
@@ -64,7 +67,7 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
         // if it is not diagonal add the links between the attributes
         if(!isDiagonal()) {
-            List<Variable> attrVars = vars.getListOfVariables().stream().filter(v -> v != classVar).collect(Collectors.toList());
+            List<Variable> attrVars = vars.getListOfVariables().stream().filter(v -> !v.equals(classVar)).collect(Collectors.toList());
 
             for (int i=0; i<attrVars.size()-1; i++){
                 for(int j=i+1; j<attrVars.size(); j++) {
@@ -103,6 +106,13 @@ public class GaussianDiscriminativeAnalysis extends Model {
         this.classVar = classVar;
     }
 
+
+    public void setClassVar(int indexVar) {
+        Variables vars = new Variables(attributes);
+        classVar = vars.getListOfVariables().get(indexVar);
+    }
+
+
     ////////////
 
     public static void main(String[] args) {
@@ -112,18 +122,22 @@ public class GaussianDiscriminativeAnalysis extends Model {
         //file = "datasets/WasteIncineratorSample.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-        Model model = new GaussianDiscriminativeAnalysis(data.getAttributes());
+        GaussianDiscriminativeAnalysis gda = new GaussianDiscriminativeAnalysis(data.getAttributes());
 
-        System.out.println(model.getDAG());
+        gda.setDiagonal(true);
+        gda.setClassVar(3);
 
-        model.learnModel(data);
+        System.out.println(gda.getDAG());
 
-//        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(1000)) {
-//            model.updateModel(batch);
-//        }
+        gda.learnModel(data);
+
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+            System.out.println("update model");
+            gda.updateModel(batch);
+        }
 
 
-//        System.out.println(model.getModel());
+        System.out.println(gda.getModel());
 
     }
 
