@@ -20,18 +20,26 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Created by andresmasegosa on 4/3/16.
  */
 public class GaussianDiscriminativeAnalysis extends Model {
 
 
-    private boolean diagonal = false;
+    private boolean diagonal = true;
+    private Variable classVar = null;
+
 
 
     public GaussianDiscriminativeAnalysis(Attributes attributes) {
         super(attributes);
     }
+
+
 
     @Override
     protected void buildDAG(Attributes attributes) {
@@ -39,17 +47,36 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
 
 
-        Variable classVar = null; // DEFINIR !!!
 
         //We create a standard naive Bayes
         Variables vars = new Variables(attributes);
         dag = new DAG(vars);
+
+
+
+        //sets the class variable , by default it is the first
+        classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
+        //classVar = vars.getListOfVariables().get(0);
         dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
+
+
+
 
         // if it is not diagonal add the links between the attributes
         if(!isDiagonal()) {
+            List<Variable> attrVars = vars.getListOfVariables().stream().filter(v -> v != classVar).collect(Collectors.toList());
 
-            // completar ...
+            for (int i=0; i<attrVars.size()-1; i++){
+                for(int j=i+1; j<attrVars.size(); j++) {
+                    // Add the links
+                    dag.getParentSet(attrVars.get(i)).addParent(attrVars.get(j));
+
+
+
+                }
+
+            }
+
 
         }
 
@@ -68,12 +95,22 @@ public class GaussianDiscriminativeAnalysis extends Model {
         this.diagonal = diagonal;
     }
 
+    public Variable getClassVar() {
+        return classVar;
+    }
+
+    public void setClassVar(Variable classVar) {
+        this.classVar = classVar;
+    }
+
     ////////////
 
     public static void main(String[] args) {
 
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("tmp.arff");
+        String file = "datasets/tmp2.arff";
+        //file = "datasets/WasteIncineratorSample.arff";
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
         Model model = new GaussianDiscriminativeAnalysis(data.getAttributes());
 
@@ -81,12 +118,12 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
         model.learnModel(data);
 
-        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(1000)) {
-            model.updateModel(batch);
-        }
+//        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(1000)) {
+//            model.updateModel(batch);
+//        }
 
 
-        System.out.println(model.getModel());
+//        System.out.println(model.getModel());
 
     }
 
