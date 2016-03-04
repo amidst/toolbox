@@ -66,14 +66,6 @@ public class MixtureOfFactorAnalysers extends Model {
             latentVariables.forEach(latentVariable -> dag.getParentSet(variable).addParent(latentVariable));
         }
 
-        IntStream.range(0,numberOfLatentVariables).forEach(i -> {
-            Variable latentVarChildren = allVariables.getVariableByName("LatentVar" + i);
-            IntStream.range(0,i).forEach(j -> {
-                Variable latentVarParent = allVariables.getVariableByName("LatentVar" + j);
-                dag.getParentSet(latentVarChildren).addParent(latentVarParent);
-            });
-        });
-
     }
 
     public static void main(String[] args) {
