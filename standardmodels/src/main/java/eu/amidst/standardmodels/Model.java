@@ -31,13 +31,13 @@ public abstract class Model {
 
     dVMP dvmp = new dVMP();
 
-    DAG dag;
+    protected DAG dag;
 
     Attributes attributes;
 
     public Model(Attributes attributes) {
         this.attributes = attributes;
-        this.dag=buildDAG(attributes);
+        buildDAG(attributes);
     }
 
     public DAG getDAG() {
@@ -99,7 +99,7 @@ public abstract class Model {
 
 
 
-    protected abstract DAG buildDAG(Attributes attributes);
+    protected abstract void buildDAG(Attributes attributes);
 
 
     @Override

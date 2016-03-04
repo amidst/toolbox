@@ -17,21 +17,58 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 
 /**
  * Created by andresmasegosa on 4/3/16.
  */
 public class GaussianDiscriminativeAnalysis extends Model {
+
+
+    private boolean diagonal = false;
+
+
     public GaussianDiscriminativeAnalysis(Attributes attributes) {
         super(attributes);
     }
 
     @Override
-    protected DAG buildDAG(Attributes attributes) {
+    protected void buildDAG(Attributes attributes) {
 
 
-        return null;
+
+
+        Variable classVar = null; // DEFINIR !!!
+
+        //We create a standard naive Bayes
+        Variables vars = new Variables(attributes);
+        dag = new DAG(vars);
+        dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
+
+        // if it is not diagonal add the links between the attributes
+        if(!isDiagonal()) {
+
+            // completar ...
+
+        }
+
+
     }
+
+
+
+    /////// Getters and setters
+
+    public boolean isDiagonal() {
+        return diagonal;
+    }
+
+    public void setDiagonal(boolean diagonal) {
+        this.diagonal = diagonal;
+    }
+
+    ////////////
 
     public static void main(String[] args) {
 
@@ -52,5 +89,7 @@ public class GaussianDiscriminativeAnalysis extends Model {
         System.out.println(model.getModel());
 
     }
+
+
 
 }
