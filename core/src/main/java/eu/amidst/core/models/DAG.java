@@ -115,32 +115,30 @@ public class DAG implements Serializable {
             bDone[var.getVarID()] = false;
         }
 
-        for (Variable var : this.variables) {
 
-            // find a node for which all parents are 'done'
-            boolean bFound = false;
+        // find a node for which all parents are 'done'
+        boolean bFound = false;
 
-            for (Variable variable2 : this.variables) {
-                if (!bDone[variable2.getVarID()]) {
-                    boolean bHasNoParents = true;
+        for (Variable variable2 : this.variables) {
+            if (!bDone[variable2.getVarID()]) {
+                boolean bHasNoParents = true;
 
-                    for (Variable parent : this.getParentSet(variable2)) {
-                        if (!bDone[parent.getVarID()]) {
-                            bHasNoParents = false;
-                        }
-                    }
-
-                    if (bHasNoParents) {
-                        bDone[variable2.getVarID()] = true;
-                        bFound = true;
-                        break;
+                for (Variable parent : this.getParentSet(variable2)) {
+                    if (!bDone[parent.getVarID()]) {
+                        bHasNoParents = false;
                     }
                 }
-            }
 
-            if (!bFound) {
-                return true;
+                if (bHasNoParents) {
+                    bDone[variable2.getVarID()] = true;
+                    bFound = true;
+                    break;
+                }
             }
+        }
+
+        if (!bFound) {
+            return true;
         }
 
         return false;
