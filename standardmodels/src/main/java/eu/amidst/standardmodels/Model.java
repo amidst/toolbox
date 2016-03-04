@@ -37,10 +37,12 @@ public abstract class Model {
 
     public Model(Attributes attributes) {
         this.attributes = attributes;
-        buildDAG(attributes);
     }
 
     public DAG getDAG() {
+        if (dag==null){
+            buildDAG(this.attributes);
+        }
         return dag;
     }
 
@@ -51,7 +53,7 @@ public abstract class Model {
     public void learnModel(DataOnMemory<DataInstance> datBatch){
         dvmp=null;
         learningAlgorithm = new SVB();
-        learningAlgorithm.setDAG(dag);
+        learningAlgorithm.setDAG(this.getDAG());
         learningAlgorithm.initLearning();
         learningAlgorithm.updateModel(datBatch);
     }
@@ -59,7 +61,7 @@ public abstract class Model {
     public void learnModel(DataStream<DataInstance> dataStream){
         dvmp=null;
         learningAlgorithm = new SVB();
-        learningAlgorithm.setDAG(dag);
+        learningAlgorithm.setDAG(this.getDAG());
         learningAlgorithm.setDataStream(dataStream);
         learningAlgorithm.initLearning();
         learningAlgorithm.runLearning();
@@ -77,7 +79,7 @@ public abstract class Model {
     public void updateModel(DataOnMemory<DataInstance> datBatch){
         if (learningAlgorithm ==null) {
             learningAlgorithm = new SVB();
-            learningAlgorithm.setDAG(dag);
+            learningAlgorithm.setDAG(this.getDAG());
             learningAlgorithm.initLearning();
             dvmp=null;
         }
