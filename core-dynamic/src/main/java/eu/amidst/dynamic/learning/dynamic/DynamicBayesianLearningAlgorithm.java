@@ -33,6 +33,11 @@ public interface DynamicBayesianLearningAlgorithm {
     double getLogMarginalProbability();
 
     /**
+     * Initializes the parameter learning process.
+     */
+    void initLearning();
+
+    /**
      * Runs the learning process.
      */
     void runLearning();
