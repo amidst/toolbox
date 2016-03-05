@@ -56,6 +56,11 @@
             <artifactId>huginlink</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>3.7.12</version>
+        </dependency>
     </dependencies>
 
     <build>

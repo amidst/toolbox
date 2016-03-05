@@ -40,10 +40,10 @@ public class ParseOutput {
                 }
                 if(line.contains("Global bound is")) {
                     line = line.substring(line.indexOf("increasing:")+12);
-                    String[] parts = line.split(" |,|>");
+                    String[] parts = line.split(" |,|>|<");
                     //output += parts[0]+"\t"; // Iteration
                     //output += parts[1]+"\t"; //Percentage
-                    output += parts[4]+"\t"; //Time
+                    if(parts.length>4)output += parts[4]+"\t"; //Time
                     output += parts[2]; //Global bound
                     if(printer!=null)printer.println(output);
                     else System.out.println(output);
