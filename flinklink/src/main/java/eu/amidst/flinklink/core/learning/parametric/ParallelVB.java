@@ -668,6 +668,9 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
             }else if (percentage<-1){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +","+percentage+
+                        "," + (value.getValue()) +">" + previousELBO+ ","+
+                        (System.nanoTime() - start) / 1000000000.0 + " seconds");
                 //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
                 //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
                 return false;
