@@ -25,22 +25,32 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Created by andresmasegosa on 4/3/16.
+ * Created by andresmasegosa and rcabanas on 4/3/16.
+ *
+ * This class implements the model of Gaussian Discriminant Analysis
+ *
  */
 public class GaussianDiscriminativeAnalysis extends Model {
 
-
+    /* diagonal flag:
+    * If in the QDA model one assumes that the covariance matrices are diagonal,
+    * then this means that we assume the attributes are conditionally independent,
+    * and the resulting classifier is equivalent to the Gaussian Naive Bayes classifier
+    */
     private boolean diagonal;
+
+    /** class variable */
     private Variable classVar = null;
 
-
-
+    /**
+     * Constructor of classifier from a list of attributes (e.g. from a datastream).
+     * The default parameters are used: the class variable is the last one and the
+     * diagonal flag is set to false.
+     * @param attributes
+     */
     public GaussianDiscriminativeAnalysis(Attributes attributes) {
         super(attributes);
-
-
         Variables vars = new Variables(attributes);
-
         // default parameters
         classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
         diagonal = false;
@@ -52,18 +62,11 @@ public class GaussianDiscriminativeAnalysis extends Model {
     @Override
     protected void buildDAG(Attributes attributes) {
 
-
-
-
-
         //We create a standard naive Bayes
         Variables vars = new Variables(attributes);
         dag = new DAG(vars);
 
         dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
-
-
-
 
         // if it is not diagonal add the links between the attributes
         if(!isDiagonal()) {
@@ -90,33 +93,54 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
     /////// Getters and setters
 
+    /**
+     * Method to obtain the value of the diagonal flag.
+     * @return boolean value
+     */
     public boolean isDiagonal() {
         return diagonal;
     }
 
+
+    /**
+     * Sets the value of the diagonal flag.
+     * @param diagonal
+     */
     public void setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
     }
 
+    /**
+     * Method to obtain the class variable
+     * @return object of the type {@link Variable} indicating which is the class variable
+     */
     public Variable getClassVar() {
         return classVar;
     }
 
+    /**
+     * Sets the class variable
+     * @param classVar object of the class {@link Variable} indicating which is the class variable
+     */
     public void setClassVar(Variable classVar) {
         this.classVar = classVar;
     }
 
 
+    /**
+     * Sets the class variable
+     * @param indexVar integer indicating the position of the class variable in the attributes list. The first
+     *                 variable has the index 0
+     */
     public void setClassVar(int indexVar) {
         Variables vars = new Variables(attributes);
         classVar = vars.getListOfVariables().get(indexVar);
     }
 
 
-    ////////////
+    //////////// example of use
 
     public static void main(String[] args) {
-
 
         String file = "datasets/tmp2.arff";
         //file = "datasets/WasteIncineratorSample.arff";
@@ -135,7 +159,6 @@ public class GaussianDiscriminativeAnalysis extends Model {
             System.out.println("update model");
             gda.updateModel(batch);
         }
-
 
         System.out.println(gda.getModel());
 
