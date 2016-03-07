@@ -19,7 +19,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
-    <artifactId>ijcai2016</artifactId>
+    <artifactId>ecml2016</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <url>http://amidst.github.io/toolbox/</url>
