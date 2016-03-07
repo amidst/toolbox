@@ -58,6 +58,8 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
         //We create a standard naive Bayes
         Variables vars = new Variables(attributes);
+
+
         dag = new DAG(vars);
 
         dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
