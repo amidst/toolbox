@@ -1,21 +1,17 @@
-package eu.amidst.ijcai2016;
+package eu.amidst.ecml2016;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
