@@ -80,6 +80,7 @@ public abstract class DynamicModel {
 
     protected abstract void buildDAG(Attributes attributes);
 
+    public abstract boolean isValidConfiguration();
 
     @Override
     public String toString() {

@@ -17,12 +17,12 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by andresmasegosa and rcabanas on 4/3/16.
@@ -30,11 +30,11 @@ import java.util.stream.Stream;
  * This class implements the model of Gaussian Discriminant Analysis
  *
  */
-public class GaussianDiscriminativeAnalysis extends Model {
+public class GaussianDiscriminatAnalysis extends Model {
 
     /* diagonal flag:
-    * If in the QDA model one assumes that the covariance matrices are diagonal,
-    * then this means that we assume the attributes are conditionally independent,
+    * If in the  model one assumes that the covariance matrices are diagonal,
+    * then this means that we assume the features are conditionally independent,
     * and the resulting classifier is equivalent to the Gaussian Naive Bayes classifier
     */
     private boolean diagonal;
@@ -48,7 +48,7 @@ public class GaussianDiscriminativeAnalysis extends Model {
      * diagonal flag is set to false.
      * @param attributes
      */
-    public GaussianDiscriminativeAnalysis(Attributes attributes) {
+    public GaussianDiscriminatAnalysis(Attributes attributes) {
         super(attributes);
         Variables vars = new Variables(attributes);
         // default parameters
@@ -56,6 +56,8 @@ public class GaussianDiscriminativeAnalysis extends Model {
         diagonal = false;
 
     }
+
+
 
 
 
@@ -70,7 +72,7 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
         dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
 
-        // if it is not diagonal add the links between the attributes
+        // if it is not diagonal add the links between the attributes (features)
         if(!isDiagonal()) {
             List<Variable> attrVars = vars.getListOfVariables().stream().filter(v -> !v.equals(classVar)).collect(Collectors.toList());
 
@@ -91,6 +93,33 @@ public class GaussianDiscriminativeAnalysis extends Model {
 
     }
 
+    @Override
+    public boolean isValidConfiguration(){
+        Variables vars = new Variables(attributes);
+        boolean isValid = true;
+
+        if(!vars.getListOfVariables().stream()
+                .filter(v -> !v.equals(classVar))
+                .map( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
+                .reduce((n1,n2) -> n1 && n2).get().booleanValue()){
+
+            isValid = false;
+
+            System.err.println("Invalid configuration: all the features of the classifier should be real variables");
+
+        }
+
+
+        if(!classVar.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.FINITE_SET)) {
+
+            isValid = false;
+            System.err.println("Invalid configuration: the class should be a discrete variable");
+
+        }
+
+        return  isValid;
+
+    }
 
 
     /////// Getters and setters
@@ -148,21 +177,22 @@ public class GaussianDiscriminativeAnalysis extends Model {
         //file = "datasets/WasteIncineratorSample.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-        GaussianDiscriminativeAnalysis gda = new GaussianDiscriminativeAnalysis(data.getAttributes());
-
+        GaussianDiscriminatAnalysis gda = new GaussianDiscriminatAnalysis(data.getAttributes());
         gda.setDiagonal(true);
-        gda.setClassVar(3);
+        gda.setClassVar(1);
 
-        System.out.println(gda.getDAG());
 
-        gda.learnModel(data);
 
-        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-            System.out.println("update model");
-            gda.updateModel(batch);
+      //  System.out.println(gda.getDAG());
+
+        if(gda.isValidConfiguration()) {
+            gda.learnModel(data);
+            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+                System.out.println("update model");
+                gda.updateModel(batch);
+            }
+            System.out.println(gda.getModel());
         }
-
-        System.out.println(gda.getModel());
 
     }
 

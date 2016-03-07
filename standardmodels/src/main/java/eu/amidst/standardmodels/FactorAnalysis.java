@@ -19,6 +19,7 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,13 @@ public class FactorAnalysis extends Model {
             });
         });
 
+    }
+
+
+
+    @Override
+    public boolean isValidConfiguration(){
+        throw new NotImplementedException("The method isValidConfiguration() has not been implemented for the class "+this.getClass().getName());
     }
 
     public static void main(String[] args) {
