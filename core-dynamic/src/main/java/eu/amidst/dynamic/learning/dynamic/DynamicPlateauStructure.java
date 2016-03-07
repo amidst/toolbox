@@ -325,7 +325,7 @@ public class DynamicPlateauStructure {
      */
     public void setEvidenceTimeT(List<DynamicDataInstance> data) {
         if (data.size()>nRepetitions)
-            throw new IllegalArgumentException("The size of the data is bigger that the number of repetitions");
+            throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
 
         this.cloneNodesTimeT.forEach( node -> node.setAssignment(data.get(0)));
 
