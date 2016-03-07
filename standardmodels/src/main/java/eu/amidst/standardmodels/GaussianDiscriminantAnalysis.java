@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * This class implements the model of Gaussian Discriminant Analysis
  *
  */
-public class GaussianDiscriminatAnalysis extends Model {
+public class GaussianDiscriminantAnalysis extends Model {
 
     /* diagonal flag:
     * If in the  model one assumes that the covariance matrices are diagonal,
@@ -48,7 +48,7 @@ public class GaussianDiscriminatAnalysis extends Model {
      * diagonal flag is set to false.
      * @param attributes
      */
-    public GaussianDiscriminatAnalysis(Attributes attributes) {
+    public GaussianDiscriminantAnalysis(Attributes attributes) {
         super(attributes);
         Variables vars = new Variables(attributes);
         // default parameters
@@ -177,7 +177,7 @@ public class GaussianDiscriminatAnalysis extends Model {
         //file = "datasets/WasteIncineratorSample.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-        GaussianDiscriminatAnalysis gda = new GaussianDiscriminatAnalysis(data.getAttributes());
+        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
         gda.setDiagonal(true);
         gda.setClassVar(1);
 
