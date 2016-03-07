@@ -8,6 +8,7 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,6 +77,12 @@ public class HiddenMarkovModel extends DynamicModel{
             }
         }
 
+    }
+
+
+    @Override
+    public boolean isValidConfiguration(){
+        throw new NotImplementedException("The method isValidConfiguration() has not been implemented for the class "+this.getClass().getName());
     }
 
     public static void main(String[] args) {

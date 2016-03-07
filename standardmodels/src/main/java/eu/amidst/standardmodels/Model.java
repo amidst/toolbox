@@ -103,6 +103,8 @@ public abstract class Model {
 
     protected abstract void buildDAG(Attributes attributes);
 
+    public abstract boolean isValidConfiguration();
+
 
     @Override
     public String toString() {
