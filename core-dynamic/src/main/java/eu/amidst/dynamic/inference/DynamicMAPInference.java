@@ -59,6 +59,9 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
     /** Represents the MAP {@link Variable}. */
     private Variable MAPvariable;
 
+    /** As a {@link Variables} object, represents the MAP Variable temporal replications. */
+    private Variables MAPVarReplications;
+
     /** Represents the name of the MAP {@link Variable}. */
     private String MAPvarName;
 
@@ -279,6 +282,11 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         }
         this.MAPvariable = MAPvariable;
         this.MAPvarName = MAPvariable.getName();
+
+        MAPVarReplications = new Variables();
+        IntStream.range(0,nTimeSteps).forEach(t -> {
+            MAPVarReplications.newMultionomialVariable(this.MAPvarName + "_t" + Integer.toString(t), this.MAPvariable.getNumberOfStates());
+        });
     }
 
     /**
@@ -291,6 +299,13 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             System.exit(-12);
         }
         nTimeSteps = ntimeSteps;
+
+        if (MAPvariable!=null) {
+            MAPVarReplications = new Variables();
+            IntStream.range(0,nTimeSteps).forEach(t -> {
+                MAPVarReplications.newMultionomialVariable(this.MAPvarName + "_t" + Integer.toString(t), this.MAPvariable.getNumberOfStates());
+            });
+        }
     }
 
     /**
@@ -389,7 +404,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             System.out.println(bn.toString());
 
 
-            int replicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
+//            int replicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
 
 //            IntStream.range(0,replicationsMAPVariable).forEach(i-> {
 //                System.out.println("Variable " + groupedClassName + "_t" + i);
@@ -854,6 +869,10 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             argMaxValues[t-1] = (int)argMax(current_max_probs)[1];
             previous_max_probs = current_max_probs;
 
+            if (t==1) {
+                MAPsequenceProbability =  argMax(current_max_probs)[0];
+            }
+            System.out.println("MAP Sequence Prob:" + MAPsequenceProbability);
             System.out.println("Arg Max Value: " + argMaxValues[t-1]+ "\n\n\n");
 
         }
@@ -988,29 +1007,29 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
 
 
-//        MAPestimate = new HashMapAssignment(nTimeSteps);
-//
-//        if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
-//            MAPestimateLogProbability=Double.NaN;
-//        }
-//        else {
-//            IntStream.range(0, nTimeSteps).forEach(t -> {
-////                Variables varsAux = Serialization.deepCopy(this.staticEvenModel.getVariables());
-////                Variable currentVar = varsAux.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
-//                Variable currentVar;
+        MAPestimate = new HashMapAssignment(nTimeSteps);
+
+        if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
+            MAPestimateLogProbability=Double.NaN;
+        }
+        else {
+            IntStream.range(0, nTimeSteps).forEach(t -> {
+//                Variables varsAux = Serialization.deepCopy(this.staticEvenModel.getVariables());
+//                Variable currentVar = varsAux.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+                Variable currentVar;
 //                try {
-//                    currentVar = this.staticEvenModel.getVariables().getVariableByName(MAPvarName + "_t" + Integer.toString(t));
+                currentVar = this.MAPVarReplications.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
 //                }
 //                catch (Exception e) {
 //                    Variables copy = Serialization.deepCopy(this.staticEvenModel.getVariables());
 //                    currentVar = copy.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
 //                }
-//                MAPestimate.setValue(currentVar, MAPsequence[t]);
-//            });
-//            MAPestimateLogProbability = Math.log(MAPsequenceProbability);
-//        }
+                MAPestimate.setValue(currentVar, MAPsequence[t]);
+            });
+            MAPestimateLogProbability = Math.log(MAPsequenceProbability);
+        }
 
-
+//        System.out.println(MAPestimate.outputString(MAPVarReplications.getListOfVariables()));
         this.MAPsequence = MAPsequence;
 
         System.out.println("FINAL SEQUENCE: " + Arrays.toString(MAPsequence));
@@ -2088,12 +2107,13 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         Variable mapVariable;
 
 
-        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(0);
-        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(7);
-        DynamicBayesianNetworkGenerator.setNumberOfStates(3);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(10);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
         DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
+        int nStatesClassVar=2;
 
-        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(50), 4, true);
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(50), nStatesClassVar, true);
 //
 //        System.out.println("ORIGINAL DYNAMIC NETWORK:");
 //
@@ -2108,7 +2128,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         // INITIALIZE THE MODEL
         int nTimeSteps = 20;
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
-        int nMergedClassVars = 3;
+        int nMergedClassVars = 2;
         dynMAP.setNumberOfMergedClassVars(nMergedClassVars);
 
         mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
@@ -2189,6 +2209,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //            System.out.println(m_base_nStates);
 //            //System.out.println(String.format("%0" + nRepets + "d",m));
 //        }
+
+
 
 
     }

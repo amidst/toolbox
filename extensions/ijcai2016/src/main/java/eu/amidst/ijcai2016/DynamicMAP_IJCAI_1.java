@@ -356,9 +356,9 @@ public class DynamicMAP_IJCAI_1 {
         // NO ARGUMENTS, DEFAULT INITIALIZATION
         else if (args.length==0) {
 
-            nContVars = 2;
-            nDiscreteVars = 8;
-            nTimeSteps=20;
+            nContVars = 5;
+            nDiscreteVars = 5;
+            nTimeSteps=10;
 
             DBNtype="TAN";
             repetitions = 10;
@@ -473,7 +473,7 @@ public class DynamicMAP_IJCAI_1 {
 
             Multinomial_MultinomialParents mmT = dynamicBayesianNetwork.getConditionalDistributionTimeT(mapVariable);
 
-            double P_same_state=0.9;
+            double P_same_state=0.95;
             mmT.getMultinomial(0).setProbabilities(new double[]{P_same_state, 1-P_same_state});
             mmT.getMultinomial(1).setProbabilities(new double[]{1-P_same_state, P_same_state});
 
@@ -492,19 +492,19 @@ public class DynamicMAP_IJCAI_1 {
             /*
              * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
              */
-            int nVarsEvidence = 10;
+            int nVarsEvidence = 5;
 
             //List<DynamicAssignment> evidence = generateRandomEvidenceWithObservedLeaves(dynamicBayesianNetwork, mapVariable, nTimeSteps, nVarsEvidence, random);
             //List<DynamicAssignment> evidence = generateRandomEvidenceWithObservedLeavesBNSampler(dynamicBayesianNetwork, mapVariable, nTimeSteps, nVarsEvidence, random);
             List<DynamicAssignment> evidence = generateRandomEvidenceWithObservedLeavesDBNSampler(dynamicBayesianNetwork, mapVariable, nTimeSteps, nVarsEvidence, random);
 
 
-//                    System.out.println("EVIDENCE:");
-//        evidence.forEach(evid -> {
-//            System.out.println("Evidence at time " + evid.getTimeID());
-//            evid.getVariables().forEach(variable -> System.out.println(variable.getName() + ": " + Integer.toString((int) evid.getValue(variable))));
-//            System.out.println();
-//        });
+//            System.out.println("EVIDENCE:");
+//            evidence.forEach(evid -> {
+//                System.out.println("Evidence at time " + evid.getTimeID());
+//                evid.getVariables().forEach(variable -> System.out.println(variable.getName() + ": " + Integer.toString((int) evid.getValue(variable))));
+//                System.out.println();
+//            });
 
 
             Assignment staticEvidence = dynamicToStaticEvidence(dynamicVariables, evidence, staticVariables);
@@ -544,7 +544,7 @@ public class DynamicMAP_IJCAI_1 {
             dynMAP.setModel(dynamicBayesianNetwork);
             dynMAP.setMAPvariable(mapVariable);
             dynMAP.setNumberOfTimeSteps(nTimeSteps);
-            dynMAP.setSampleSize(2000);
+            dynMAP.setSampleSize(5000);
 
             timeStart = System.nanoTime();
 
@@ -593,7 +593,7 @@ public class DynamicMAP_IJCAI_1 {
             dynMAP.setModel(dynamicBayesianNetwork);
             dynMAP.setMAPvariable(mapVariable);
             dynMAP.setNumberOfTimeSteps(nTimeSteps);
-            dynMAP.setSampleSize(2000);
+            dynMAP.setSampleSize(5000);
 
             timeStart = System.nanoTime();
 
@@ -625,8 +625,8 @@ public class DynamicMAP_IJCAI_1 {
             mapInference.setModel(staticBN);
             mapInference.setParallelMode(true);
             mapInference.setSeed(random.nextInt());
-            mapInference.setSampleSize(20);
-            mapInference.setNumberOfIterations(100);
+            mapInference.setSampleSize(2);
+            mapInference.setNumberOfIterations(150);
             mapInference.setMAPVariables(mapVarReplications);
 
 
@@ -673,7 +673,7 @@ public class DynamicMAP_IJCAI_1 {
             importanceSampling.setKeepDataOnMemory(false);
             importanceSampling.setParallelMode(true);
             importanceSampling.setSeed(random.nextInt());
-            importanceSampling.setSampleSize(200000);
+            importanceSampling.setSampleSize(500000);
 
             System.out.println("Estimating probabilities with Importance Sampling");
 
