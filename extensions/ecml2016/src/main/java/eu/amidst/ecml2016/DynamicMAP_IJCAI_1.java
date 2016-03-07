@@ -1,4 +1,4 @@
-package eu.amidst.ijcai2016;
+package eu.amidst.ecml2016;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -6,7 +6,6 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.MAPInference;
-import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Assignment;
@@ -28,7 +27,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.StreamSupport;
 
 /**
  * Created by dario on 11/11/15.
