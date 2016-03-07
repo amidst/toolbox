@@ -13,10 +13,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk on 05/03/16.
+ * Created by ana@cs.aau.dk on 07/03/16.
  */
-public class KalmanFilter extends DynamicModel {
+public class SwitchingKalmanFilter  extends DynamicModel {
+
+    private int numStates = 2;
     private boolean diagonal = true;
+
+    public int getNumStates() {
+        return numStates;
+    }
+
+    public void setNumStates(int numStates) {
+        this.numStates = numStates;
+    }
 
     public boolean isDiagonal() {
         return diagonal;
@@ -26,7 +36,7 @@ public class KalmanFilter extends DynamicModel {
         this.diagonal = diagonal;
     }
 
-    public KalmanFilter(Attributes attributes) {
+    public SwitchingKalmanFilter(Attributes attributes) {
         super(attributes);
     }
 
@@ -34,14 +44,22 @@ public class KalmanFilter extends DynamicModel {
     protected void buildDAG(Attributes attributes) {
 
         DynamicVariables vars = new DynamicVariables(attributes);
+        Variable discreteHiddenVar = vars.newMultinomialDynamicVariable("discreteHiddenVar", getNumStates());
         Variable gaussianHiddenVar = vars.newGaussianDynamicVariable("gaussianHiddenVar");
+
         dynamicDAG = new DynamicDAG(vars);
         dynamicDAG.getParentSetsTimeT()
                 .stream()
+                .filter(w -> w.getMainVar() != discreteHiddenVar)
                 .filter(w -> w.getMainVar() != gaussianHiddenVar)
-                .forEach(w -> w.addParent(gaussianHiddenVar));
+                .forEach(w -> {
+                    w.addParent(discreteHiddenVar);
+                    w.addParent(gaussianHiddenVar);
+                });
 
+        dynamicDAG.getParentSetTimeT(gaussianHiddenVar).addParent(discreteHiddenVar);
         dynamicDAG.getParentSetTimeT(gaussianHiddenVar).addParent(gaussianHiddenVar.getInterfaceVariable());
+        dynamicDAG.getParentSetTimeT(discreteHiddenVar).addParent(discreteHiddenVar.getInterfaceVariable());
 
         /*
          * Learn full covariance matrix
@@ -49,6 +67,7 @@ public class KalmanFilter extends DynamicModel {
         if(!isDiagonal()) {
             List<Variable> attrVars = vars.getListOfDynamicVariables()
                     .stream()
+                    .filter(v -> !v.equals(discreteHiddenVar))
                     .filter(v -> !v.equals(gaussianHiddenVar))
                     .peek(v-> {
                         if(v.isMultinomial())
@@ -74,26 +93,26 @@ public class KalmanFilter extends DynamicModel {
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
                 .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
-        System.out.println("------------------KF (diagonal matrix) from streaming------------------");
-        KalmanFilter KF = new KalmanFilter(data.getAttributes());
-        System.out.println(KF.getDynamicDAG());
-        KF.learnModel(data);
-        System.out.println(KF.getModel());
+        System.out.println("------------------SKF (diagonal matrix) from streaming------------------");
+        SwitchingKalmanFilter SKF = new SwitchingKalmanFilter(data.getAttributes());
+        System.out.println(SKF.getDynamicDAG());
+        SKF.learnModel(data);
+        System.out.println(SKF.getModel());
 
-        System.out.println("------------------KF (full cov. matrix) from streaming------------------");
-        KF = new KalmanFilter(data.getAttributes());
-        KF.setDiagonal(false);
-        System.out.println(KF.getDynamicDAG());
-        KF.learnModel(data);
-        System.out.println(KF.getModel());
+        System.out.println("------------------SKF (full cov. matrix) from streaming------------------");
+        SKF = new SwitchingKalmanFilter(data.getAttributes());
+        SKF.setDiagonal(false);
+        System.out.println(SKF.getDynamicDAG());
+        SKF.learnModel(data);
+        System.out.println(SKF.getModel());
 
-        System.out.println("------------------KF (diagonal matrix) from batches------------------");
-        KF = new KalmanFilter(data.getAttributes());
-        System.out.println(KF.getDynamicDAG());
+        System.out.println("------------------SKF (diagonal matrix) from batches------------------");
+        SKF = new SwitchingKalmanFilter(data.getAttributes());
+        System.out.println(SKF.getDynamicDAG());
         for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
-            KF.updateModel(batch);
+            SKF.updateModel(batch);
         }
-        System.out.println(KF.getModel());
+        System.out.println(SKF.getModel());
 
     }
 }
