@@ -1,4 +1,4 @@
-package eu.amidst.ijcai2016;
+package eu.amidst.ecml2016;
 
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
