@@ -43,10 +43,12 @@ public class ObtainGaussianMixtures {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, ParseException {
 
-        //String networkFile = "/Users/dario/Desktop/UAI/networks/MixtureSVI_4129_100_1_2000_0_41293_0.55_.bn";
-        String networkFile2 = "/Users/dario/Desktop/UAI/networks/MixtureVMP_550_100_1_100_1_2000_0_.bn";
+        String networkFile = "/Users/dario/Desktop/UAI/networks_new/MixtureSVI_413_100_1_2000_0_41293_0.55_.bn";
+        String networkFile2 = "/Users/dario/Desktop/UAI/networks_new/MixtureSVI_2065_100_1_2000_0_41293_0.55_.bn";
+        String networkFile3 = "/Users/dario/Desktop/UAI/networks_new/MixtureSVI_4129_100_1_2000_0_41293_0.55_.bn";
+        String networkFile4 = "/Users/dario/Desktop/UAI/networks_new/MixtureVMP_413_100_1_100_1_2000_0_.bn";
 
-        BayesianNetwork model = BayesianNetworkLoader.loadFromFile(networkFile2);
+        BayesianNetwork model = BayesianNetworkLoader.loadFromFile(networkFile4);
 
         String dataFile = "/Users/dario/Desktop/UAI/data/totalWeka-ContinuousReducedFolderTrain.arff";
 
@@ -136,23 +138,23 @@ public class ObtainGaussianMixtures {
                 System.out.println("Variable " + variable.getName() + " for class = 1");
                 System.out.println(gaussianMixtureDistribution.toString());
 
-
-                ARFFDataFolderReader arffDataReader = new ARFFDataFolderReader();
-                arffDataReader.loadFromFile(dataFile);
-                double logLikelyhoodThisVariable = arffDataReader.stream().mapToDouble(dataRow -> {
-
-                    Assignment variableValueThisRow = new HashMapAssignment();
-                    variableValueThisRow.setValue(variable, dataRow.getValue(variable.getAttribute()));
-
-                    double totalDensity =  normalComponents.stream().mapToDouble(normalComponent -> {
-                        double weight = normalComponent.keySet().stream().findFirst().get();
-                        UnivariateDistribution thisComponent = normalComponent.entrySet().stream().findFirst().get().getValue();
-                        double density = thisComponent.getLogProbability(variableValueThisRow);
-                        return weight * Math.exp(density);
-                    }).sum();
-                    return Double.isFinite(Math.log(totalDensity)) ? Math.log(totalDensity) : 0;
-                }).sum();
-                System.out.println("logLikelyhoodThisVar: " + logLikelyhoodThisVariable + "\n");
+//
+//                ARFFDataFolderReader arffDataReader = new ARFFDataFolderReader();
+//                arffDataReader.loadFromFile(dataFile);
+//                double logLikelyhoodThisVariable = arffDataReader.stream().mapToDouble(dataRow -> {
+//
+//                    Assignment variableValueThisRow = new HashMapAssignment();
+//                    variableValueThisRow.setValue(variable, dataRow.getValue(variable.getAttribute()));
+//
+//                    double totalDensity =  normalComponents.stream().mapToDouble(normalComponent -> {
+//                        double weight = normalComponent.keySet().stream().findFirst().get();
+//                        UnivariateDistribution thisComponent = normalComponent.entrySet().stream().findFirst().get().getValue();
+//                        double density = thisComponent.getLogProbability(variableValueThisRow);
+//                        return weight * Math.exp(density);
+//                    }).sum();
+//                    return Double.isFinite(Math.log(totalDensity)) ? Math.log(totalDensity) : 0;
+//                }).sum();
+//                System.out.println("logLikelihoodThisVar: " + logLikelyhoodThisVariable + "\n");
 
             }
         });
