@@ -37,6 +37,20 @@ public class DynamicBayesianNetworkGenerator {
     /** Represents the number of links in the {@link DynamicBayesianNetwork} to be generated. */
     private static int numberOfLinks = 3;
 
+
+    private static String classVarName = "ClassVar";
+    private static String discreteVarName = "DiscreteVar";
+    private static String continuousVarName = "ContinuousVar";
+
+
+    public static void setClassVarName(String classVarName) {
+        DynamicBayesianNetworkGenerator.classVarName = classVarName;
+    }
+
+    public static void setDiscreteVarName(String discreteVarName) {
+        DynamicBayesianNetworkGenerator.discreteVarName = discreteVarName;
+    }
+
     /**
      * Sets the number of links for this DynamicBayesianNetworkGenerator.
      * @param numberOfLinks an {@code int} that represents the number of links.
@@ -80,16 +94,16 @@ public class DynamicBayesianNetworkGenerator {
         DynamicVariables dynamicVariables  = new DynamicVariables();
 
         //class variable which is always discrete
-        Variable classVar = dynamicVariables.newMultinomialDynamicVariable("ClassVar", numberClassStates);
+        Variable classVar = dynamicVariables.newMultinomialDynamicVariable(classVarName, numberClassStates);
 
         //Discrete variables
         IntStream.range(1, numberOfDiscreteVars+1)
-                .forEach(i -> dynamicVariables.newMultinomialDynamicVariable("DiscreteVar" + i,
+                .forEach(i -> dynamicVariables.newMultinomialDynamicVariable(discreteVarName + i,
                         DynamicBayesianNetworkGenerator.numberOfStates));
 
         //Continuous variables
         IntStream.range(1,numberOfContinuousVars+1)
-                .forEach(i -> dynamicVariables.newGaussianDynamicVariable("ContinuousVar" + i));
+                .forEach(i -> dynamicVariables.newGaussianDynamicVariable(continuousVarName + i));
 
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
 
@@ -143,53 +157,56 @@ public class DynamicBayesianNetworkGenerator {
 
         int numberOfVariables = variables.getNumberOfVars();
 
+        if(numberOfVariables>2) {
+
         Variable treeRoot;
         do {
             treeRoot = variables.getVariableById(random.nextInt(numberOfVariables));
-        } while (!treeRoot.isMultinomial() || treeRoot.getName().equals("ClassVar"));
+        } while (!treeRoot.isMultinomial() || treeRoot.getName().equals(classVarName));
 
         List<Variable> variablesLevel2 = new ArrayList<>(0);
 
-        Variable level2Var;
-        do {
-            level2Var = variables.getVariableById(random.nextInt(numberOfVariables));
-        } while (!level2Var.isMultinomial() || level2Var.getName().equals("ClassVar") || level2Var.equals(treeRoot));
 
-        dynamicDAG.getParentSetTime0(level2Var).addParent(treeRoot);
-        dynamicDAG.getParentSetTimeT(level2Var).addParent(treeRoot);
-        variablesLevel2.add(level2Var);
-
-        for(Variable currentVar : variables) {
-            if (currentVar.equals(treeRoot) || currentVar.getName().equals("ClassVar") || currentVar.equals(level2Var)) {
-                continue;
-            }
-
-            int aux = random.nextInt(10);
-            int currentVarLevel = (aux<5) ? 2 : 3;
-
-            if (currentVarLevel==3 && variablesLevel2.size()==0) {
-                currentVarLevel=2;
-            }
-
-            Variable possibleParent;
-
+            Variable level2Var;
             do {
-                if (currentVarLevel==2) {
-                    possibleParent = treeRoot;
-                }
-                else {
-                    possibleParent = variablesLevel2.get(random.nextInt(variablesLevel2.size()));
-                }
-            } while ( currentVar.isMultinomial() && possibleParent.isNormal());
+                level2Var = variables.getVariableById(random.nextInt(numberOfVariables));
+            }
+            while (!level2Var.isMultinomial() || level2Var.getName().equals(classVarName) || level2Var.equals(treeRoot));
 
-            dynamicDAG.getParentSetTime0(currentVar).addParent(possibleParent);
-            dynamicDAG.getParentSetTimeT(currentVar).addParent(possibleParent);
+            dynamicDAG.getParentSetTime0(level2Var).addParent(treeRoot);
+            dynamicDAG.getParentSetTimeT(level2Var).addParent(treeRoot);
+            variablesLevel2.add(level2Var);
 
-            if (currentVarLevel==2) {
-                variablesLevel2.add(currentVar);
+            for (Variable currentVar : variables) {
+                if (currentVar.equals(treeRoot) || currentVar.getName().equals(classVarName) || currentVar.equals(level2Var)) {
+                    continue;
+                }
+
+                int aux = random.nextInt(10);
+                int currentVarLevel = (aux < 5) ? 2 : 3;
+
+                if (currentVarLevel == 3 && variablesLevel2.size() == 0) {
+                    currentVarLevel = 2;
+                }
+
+                Variable possibleParent;
+
+                do {
+                    if (currentVarLevel == 2) {
+                        possibleParent = treeRoot;
+                    } else {
+                        possibleParent = variablesLevel2.get(random.nextInt(variablesLevel2.size()));
+                    }
+                } while (currentVar.isMultinomial() && possibleParent.isNormal());
+
+                dynamicDAG.getParentSetTime0(currentVar).addParent(possibleParent);
+                dynamicDAG.getParentSetTimeT(currentVar).addParent(possibleParent);
+
+                if (currentVarLevel == 2) {
+                    variablesLevel2.add(currentVar);
+                }
             }
         }
-
         if (dynamicDAG.toDAGTime0().containCycles() || dynamicDAG.toDAGTimeT().containCycles()) {
 
             System.out.println("ERROR: DAG WITH CYCLES");
@@ -221,7 +238,7 @@ public class DynamicBayesianNetworkGenerator {
         Variable level1Var;
         do {
             level1Var = variables.getVariableById(random.nextInt(numberOfVariables));
-        } while (!level1Var.isMultinomial() || level1Var.getName().equals("ClassVar"));
+        } while (!level1Var.isMultinomial() || level1Var.getName().equals(classVarName));
 
         List<Variable> variablesLevel1 = new ArrayList<>(0);
         List<Variable> variablesLevel2 = new ArrayList<>(0);
@@ -231,14 +248,14 @@ public class DynamicBayesianNetworkGenerator {
         Variable level2Var;
         do {
             level2Var = variables.getVariableById(random.nextInt(numberOfVariables));
-        } while (!level2Var.isMultinomial() || level2Var.getName().equals("ClassVar") || level2Var.equals(level1Var));
+        } while (!level2Var.isMultinomial() || level2Var.getName().equals(classVarName) || level2Var.equals(level1Var));
 
         dynamicDAG.getParentSetTime0(level2Var).addParent(level1Var);
         dynamicDAG.getParentSetTimeT(level2Var).addParent(level1Var);
         variablesLevel2.add(level2Var);
 
         for(Variable currentVar : variables) {
-            if (currentVar.equals(level1Var) || currentVar.getName().equals("ClassVar") || currentVar.equals(level2Var)) {
+            if (currentVar.equals(level1Var) || currentVar.getName().equals(classVarName) || currentVar.equals(level2Var)) {
                 continue;
             }
 
