@@ -1,4 +1,4 @@
-package eu.amidst.ijcai2016;
+package eu.amidst.ecml2016;
 
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.MAPInference;
