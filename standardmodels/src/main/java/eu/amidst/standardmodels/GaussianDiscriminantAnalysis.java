@@ -46,13 +46,13 @@ public class GaussianDiscriminantAnalysis extends Model {
 
     /**
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
-     * The default parameters are used: the class variable is the last one and the
-     * diagonal flag is set to false.
      * @param attributes
+     * @param classVarName
+     * @param diagonal
+     * @throws WrongConfigurationException
      */
     public GaussianDiscriminantAnalysis(Attributes attributes, String classVarName, boolean diagonal) throws WrongConfigurationException {
         super(attributes);
-        // default parameters
         classVar = vars.getVariableByName(classVarName);
         this.diagonal = diagonal;
 
@@ -148,7 +148,7 @@ public class GaussianDiscriminantAnalysis extends Model {
         //file = "datasets/syntheticDataDaimler.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes(), "default", false);
+        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes(), "default", true);
 
         if(gda.isValidConfiguration()) {
             gda.learnModel(data);
