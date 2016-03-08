@@ -19,6 +19,7 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class FactorAnalysis extends Model {
 
     private int numberOfLatentVariables = 5;
 
-    public FactorAnalysis(Attributes attributes) {
+    public FactorAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
     }
 
@@ -77,7 +78,7 @@ public class FactorAnalysis extends Model {
         throw new NotImplementedException("The method isValidConfiguration() has not been implemented for the class "+this.getClass().getName());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws WrongConfigurationException {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 

@@ -18,6 +18,7 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class MixtureOfFactorAnalysers extends Model {
     private int numberOfLatentVariables = 5;
     private int numberOfStatesLatentDiscreteVar = 2;
 
-    public MixtureOfFactorAnalysers(Attributes attributes) {
+    public MixtureOfFactorAnalysers(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
     }
 
@@ -75,7 +76,7 @@ public class MixtureOfFactorAnalysers extends Model {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws WrongConfigurationException {
 
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 

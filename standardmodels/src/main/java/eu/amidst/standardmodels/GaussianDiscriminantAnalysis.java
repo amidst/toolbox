@@ -20,8 +20,10 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +50,7 @@ public class GaussianDiscriminantAnalysis extends Model {
      * diagonal flag is set to false.
      * @param attributes
      */
-    public GaussianDiscriminantAnalysis(Attributes attributes) {
+    public GaussianDiscriminantAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
         Variables vars = new Variables(attributes);
         // default parameters
@@ -98,24 +100,24 @@ public class GaussianDiscriminantAnalysis extends Model {
         Variables vars = new Variables(attributes);
         boolean isValid = true;
 
-        if(!vars.getListOfVariables().stream()
-                .filter(v -> !v.equals(classVar))
-                .map( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
-                .reduce((n1,n2) -> n1 && n2).get().booleanValue()){
 
+        long numReal = vars.getListOfVariables().stream()
+                .filter( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
+                .count();
+
+        long numFinite = vars.getListOfVariables().stream()
+                .filter( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.FINITE_SET))
+                .count();
+
+
+
+        if(numFinite != 1 || numReal != attributes.getNumberOfAttributes()-1) {
             isValid = false;
-
-            System.err.println("Invalid configuration: all the features of the classifier should be real variables");
+            String errorMsg = "Invalid configuration: wrong number types of variables domains. It should contain 1 discrete variable and the rest shoud be real";
+            this.setErrorMessage(errorMsg);
 
         }
 
-
-        if(!classVar.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.FINITE_SET)) {
-
-            isValid = false;
-            System.err.println("Invalid configuration: the class should be a discrete variable");
-
-        }
 
         return  isValid;
 
@@ -171,9 +173,10 @@ public class GaussianDiscriminantAnalysis extends Model {
 
     //////////// example of use
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws WrongConfigurationException {
 
         String file = "datasets/tmp2.arff";
+        //file = "datasets/syntheticDataDaimler.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
         GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());

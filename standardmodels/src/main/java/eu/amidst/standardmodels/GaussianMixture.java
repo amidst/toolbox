@@ -9,6 +9,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class GaussianMixture extends Model {
      * Constructor for the gaussian mixture model from a list of attributes (e.g. from a datastream).
      * @param attributes
      */
-    public GaussianMixture(Attributes attributes) {
+    public GaussianMixture(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
     }
 
@@ -63,7 +64,7 @@ public class GaussianMixture extends Model {
     }
     //////////// example of use
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws WrongConfigurationException {
 
         String file = "datasets/syntheticDataDaimler.arff";
         //file = "datasets/tmp2.arff"; //example of inappropriate dataset
@@ -71,15 +72,14 @@ public class GaussianMixture extends Model {
 
         GaussianMixture GMM = new GaussianMixture(data.getAttributes());
 
-        if(GMM.isValidConfiguration()) {
-            GMM.learnModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                System.out.println("update model");
-                GMM.updateModel(batch);
-            }
-            System.out.println(GMM.getModel());
-            System.out.println(GMM.getDAG());
+        GMM.learnModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+            System.out.println("update model");
+            GMM.updateModel(batch);
         }
+        System.out.println(GMM.getModel());
+        System.out.println(GMM.getDAG());
+
     }
 }
 
