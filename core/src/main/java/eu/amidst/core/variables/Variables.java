@@ -16,6 +16,7 @@ import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 //TODO Remove method getVariableByVarID()!!
 
@@ -516,6 +517,12 @@ public class Variables implements Iterable<Variable>, Serializable {
         public int hashCode(){
             return this.name.hashCode();
         }
+    }
+
+    public List<Variable> getVariablesForListOfAttributes(List<Attribute> attributeList){
+        return attributeList.parallelStream()
+                .map(att->getVariableByName(att.getName()))
+                .collect(Collectors.toList());
     }
 
     /*  public Variable addIndicatorVariable(Variable var) {

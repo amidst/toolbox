@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk on 04/03/16.
+ * Created by ana@cs.aau.dk on 08/03/16.
  */
-public class HiddenMarkovModel extends DynamicModel{
+public class AutoRegressiveHMM extends DynamicModel  {
 
     private int numStates = 2;
     private boolean diagonal = true;
@@ -35,7 +35,7 @@ public class HiddenMarkovModel extends DynamicModel{
         this.diagonal = diagonal;
     }
 
-    public HiddenMarkovModel(Attributes attributes) {
+    public AutoRegressiveHMM(Attributes attributes) {
         super(attributes);
     }
 
@@ -47,7 +47,10 @@ public class HiddenMarkovModel extends DynamicModel{
         dynamicDAG.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != discreteHiddenVar)
-                .forEach(w -> w.addParent(discreteHiddenVar));
+                .forEach(w -> {
+                    w.addParent(discreteHiddenVar);
+                    w.addParent(w.getMainVar().getInterfaceVariable());
+                });
 
         dynamicDAG.getParentSetTimeT(discreteHiddenVar).addParent(discreteHiddenVar.getInterfaceVariable());
 
@@ -87,29 +90,26 @@ public class HiddenMarkovModel extends DynamicModel{
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
                 .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
-        System.out.println("------------------HMM (diagonal matrix) from streaming------------------");
-        HiddenMarkovModel HMM = new HiddenMarkovModel(data.getAttributes());
-        System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(data);
-        System.out.println(HMM.getModel());
+        System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from streaming------------------");
+        AutoRegressiveHMM autoRegressiveHMM = new AutoRegressiveHMM(data.getAttributes());
+        System.out.println(autoRegressiveHMM.getDynamicDAG());
+        autoRegressiveHMM.learnModel(data);
+        System.out.println(autoRegressiveHMM.getModel());
 
-        System.out.println("------------------HMM (full cov. matrix) from streaming------------------");
-        HMM = new HiddenMarkovModel(data.getAttributes());
-        HMM.setDiagonal(false);
-        System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(data);
-        System.out.println(HMM.getModel());
+        System.out.println("------------------Auto-Regressive HMM (full cov. matrix) from streaming------------------");
+        autoRegressiveHMM = new AutoRegressiveHMM(data.getAttributes());
+        autoRegressiveHMM.setDiagonal(false);
+        System.out.println(autoRegressiveHMM.getDynamicDAG());
+        autoRegressiveHMM.learnModel(data);
+        System.out.println(autoRegressiveHMM.getModel());
 
-        System.out.println("------------------HMM (diagonal matrix) from batches------------------");
-        HMM = new HiddenMarkovModel(data.getAttributes());
-        System.out.println(HMM.getDynamicDAG());
+        System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from batches------------------");
+        autoRegressiveHMM = new AutoRegressiveHMM(data.getAttributes());
+        System.out.println(autoRegressiveHMM.getDynamicDAG());
         for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
-            HMM.updateModel(batch);
+            autoRegressiveHMM.updateModel(batch);
         }
-        System.out.println(HMM.getModel());
+        System.out.println(autoRegressiveHMM.getModel());
 
     }
-
-
 }
-

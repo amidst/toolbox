@@ -8,6 +8,7 @@ import eu.amidst.dynamic.learning.dynamic.DynamicBayesianLearningAlgorithm;
 import eu.amidst.dynamic.learning.dynamic.DynamicSVB;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.variables.DynamicVariables;
 
 /**
  * Created by ana@cs.aau.dk on 04/03/16.
@@ -18,18 +19,18 @@ public abstract class DynamicModel {
 
     protected DynamicDAG dynamicDAG;
 
-    Attributes attributes;
+    DynamicVariables variables;
 
     protected int windowSize = 100;
 
     public DynamicModel(Attributes attributes) {
-        this.attributes = attributes;
+        this.variables = new DynamicVariables(attributes);
         this.isValidConfiguration();
     }
 
     public DynamicDAG getDynamicDAG() {
         if (dynamicDAG==null){
-            buildDAG(this.attributes);
+            buildDAG();
         }
         return dynamicDAG;
     }
@@ -79,7 +80,7 @@ public abstract class DynamicModel {
 
 
 
-    protected abstract void buildDAG(Attributes attributes);
+    protected abstract void buildDAG();
 
     public abstract void isValidConfiguration();
 
