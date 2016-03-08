@@ -17,6 +17,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
@@ -74,8 +75,17 @@ public class FactorAnalysis extends Model {
 
 
     @Override
-    public boolean isValidConfiguration(){
-        throw new NotImplementedException("The method isValidConfiguration() has not been implemented for the class "+this.getClass().getName());
+    public boolean isValidConfiguration() {
+
+        boolean isValid  = vars.getListOfVariables().stream()
+                .allMatch(Variable::isNormal);
+
+        if(!isValid) {
+            String errorMsg = "Invalid configuration: All variables must be real";
+            this.setErrorMessage(errorMsg);
+        }
+
+        return isValid;
     }
 
     public static void main(String[] args) throws WrongConfigurationException {

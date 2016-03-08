@@ -71,10 +71,18 @@ public class MixtureOfFactorAnalysers extends Model {
     }
 
     @Override
-    public boolean isValidConfiguration(){
-        throw new NotImplementedException("The method isValidConfiguration() has not been implemented for the class "+this.getClass().getName());
-    }
+    public boolean isValidConfiguration() {
 
+        boolean isValid  = vars.getListOfVariables().stream()
+                .allMatch(Variable::isNormal);
+
+        if(!isValid) {
+            String errorMsg = "Invalid configuration: All variables must be real";
+            this.setErrorMessage(errorMsg);
+        }
+
+        return isValid;
+    }
 
     public static void main(String[] args) throws WrongConfigurationException {
 
