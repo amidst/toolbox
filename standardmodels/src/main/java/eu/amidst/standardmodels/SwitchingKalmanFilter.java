@@ -3,12 +3,12 @@ package eu.amidst.standardmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,9 +89,13 @@ public class SwitchingKalmanFilter  extends DynamicModel {
     }
 
     @Override
-    public boolean isValidConfiguration(){
-        throw new NotImplementedException("The method isValidConfiguration() has not been implemented for the class "+this.getClass().getName());
-    }
+    public void isValidConfiguration(){
+        this.attributes.getListOfNonSpecialAttributes()
+                .stream()
+                .forEach(att -> {
+                    if (att.getStateSpaceType().getStateSpaceTypeEnum() != StateSpaceTypeEnum.REAL)
+                        throw new UnsupportedOperationException("Invalid configuration: all the variables must be real");
+                });    }
 
 
     public static void main(String[] args) {
