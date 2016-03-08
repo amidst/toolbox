@@ -21,6 +21,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.parametric.dVMP;
+import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
  * Created by andresmasegosa on 4/3/16.
@@ -35,8 +36,14 @@ public abstract class Model {
 
     Attributes attributes;
 
-    public Model(Attributes attributes) {
+    protected String errorMessage = "";
+
+    public Model(Attributes attributes) throws WrongConfigurationException {
         this.attributes = attributes;
+
+        if(!this.isValidConfiguration()) {
+            throw new WrongConfigurationException(getErrorMessage());
+        }
     }
 
     public DAG getDAG() {
@@ -100,6 +107,13 @@ public abstract class Model {
     }
 
 
+    protected String getErrorMessage() {
+        return errorMessage;
+    }
+
+    protected void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     protected abstract void buildDAG(Attributes attributes);
 
