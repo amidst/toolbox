@@ -157,11 +157,10 @@ public class GaussianDiscriminantAnalysis extends Model {
 
     /**
      * Sets the class variable
-     * @param indexVar integer indicating the position of the class variable in the attributes list. The first
-     *                 variable has the index 0
+     * @param className string with the name of the class variable
      */
-    public void setClassVar(int indexVar) {
-        classVar = vars.getListOfVariables().get(indexVar);
+    public void setClassName(String className) {
+        classVar = vars.getVariableByName(className);
     }
 
 
@@ -175,12 +174,11 @@ public class GaussianDiscriminantAnalysis extends Model {
 
         GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
         gda.setDiagonal(false);
-        gda.setClassVar(3);
+        gda.setClassName("default");
 
         if(gda.isValidConfiguration()) {
             gda.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                System.out.println("update model");
                 gda.updateModel(batch);
             }
             System.out.println(gda.getModel());
