@@ -39,10 +39,10 @@ public class GaussianDiscriminantAnalysis extends Model {
     * then this means that we assume the features are conditionally independent,
     * and the resulting classifier is equivalent to the Gaussian Naive Bayes classifier
     */
-    private boolean diagonal;
+    final private boolean diagonal;
 
     /** class variable */
-    private Variable classVar = null;
+    final private Variable classVar;
 
     /**
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
@@ -50,11 +50,11 @@ public class GaussianDiscriminantAnalysis extends Model {
      * diagonal flag is set to false.
      * @param attributes
      */
-    public GaussianDiscriminantAnalysis(Attributes attributes) throws WrongConfigurationException {
+    public GaussianDiscriminantAnalysis(Attributes attributes, String classVarName, boolean diagonal) throws WrongConfigurationException {
         super(attributes);
         // default parameters
-        classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
-        diagonal = false;
+        classVar = vars.getVariableByName(classVarName);
+        this.diagonal = diagonal;
 
     }
 
@@ -130,13 +130,6 @@ public class GaussianDiscriminantAnalysis extends Model {
     }
 
 
-    /**
-     * Sets the value of the diagonal flag.
-     * @param diagonal
-     */
-    public void setDiagonal(boolean diagonal) {
-        this.diagonal = diagonal;
-    }
 
     /**
      * Method to obtain the class variable
@@ -144,23 +137,6 @@ public class GaussianDiscriminantAnalysis extends Model {
      */
     public Variable getClassVar() {
         return classVar;
-    }
-
-    /**
-     * Sets the class variable
-     * @param classVar object of the class {@link Variable} indicating which is the class variable
-     */
-    public void setClassVar(Variable classVar) {
-        this.classVar = classVar;
-    }
-
-
-    /**
-     * Sets the class variable
-     * @param className string with the name of the class variable
-     */
-    public void setClassName(String className) {
-        classVar = vars.getVariableByName(className);
     }
 
 
@@ -172,9 +148,7 @@ public class GaussianDiscriminantAnalysis extends Model {
         //file = "datasets/syntheticDataDaimler.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
-        gda.setDiagonal(false);
-        gda.setClassName("default");
+        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes(), "default", false);
 
         if(gda.isValidConfiguration()) {
             gda.learnModel(data);
