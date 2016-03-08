@@ -24,6 +24,7 @@ public abstract class DynamicModel {
 
     public DynamicModel(Attributes attributes) {
         this.attributes = attributes;
+        this.isValidConfiguration();
     }
 
     public DynamicDAG getDynamicDAG() {
@@ -80,7 +81,7 @@ public abstract class DynamicModel {
 
     protected abstract void buildDAG(Attributes attributes);
 
-    public abstract boolean isValidConfiguration();
+    public abstract void isValidConfiguration();
 
     @Override
     public String toString() {
