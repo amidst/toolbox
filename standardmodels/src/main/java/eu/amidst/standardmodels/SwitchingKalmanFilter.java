@@ -3,12 +3,10 @@ package eu.amidst.standardmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,13 +40,12 @@ public class SwitchingKalmanFilter  extends DynamicModel {
     }
 
     @Override
-    protected void buildDAG(Attributes attributes) {
+    protected void buildDAG() {
 
-        DynamicVariables vars = new DynamicVariables(attributes);
-        Variable discreteHiddenVar = vars.newMultinomialDynamicVariable("discreteHiddenVar", getNumStates());
-        Variable gaussianHiddenVar = vars.newGaussianDynamicVariable("gaussianHiddenVar");
+        Variable discreteHiddenVar = this.variables.newMultinomialDynamicVariable("discreteHiddenVar", getNumStates());
+        Variable gaussianHiddenVar = this.variables.newGaussianDynamicVariable("gaussianHiddenVar");
 
-        dynamicDAG = new DynamicDAG(vars);
+        dynamicDAG = new DynamicDAG(this.variables);
         dynamicDAG.getParentSetsTimeT()
                 .stream()
                 .filter(w -> w.getMainVar() != discreteHiddenVar)
@@ -66,7 +63,7 @@ public class SwitchingKalmanFilter  extends DynamicModel {
          * Learn full covariance matrix
          */
         if(!isDiagonal()) {
-            List<Variable> attrVars = vars.getListOfDynamicVariables()
+            List<Variable> attrVars = this.variables.getListOfDynamicVariables()
                     .stream()
                     .filter(v -> !v.equals(discreteHiddenVar))
                     .filter(v -> !v.equals(gaussianHiddenVar))
@@ -90,12 +87,13 @@ public class SwitchingKalmanFilter  extends DynamicModel {
 
     @Override
     public void isValidConfiguration(){
-        this.attributes.getListOfNonSpecialAttributes()
+        this.variables.getListOfDynamicVariables()
                 .stream()
-                .forEach(att -> {
-                    if (att.getStateSpaceType().getStateSpaceTypeEnum() != StateSpaceTypeEnum.REAL)
+                .forEach(var -> {
+                    if (!var.isNormal())
                         throw new UnsupportedOperationException("Invalid configuration: all the variables must be real");
-                });    }
+                });
+    }
 
 
     public static void main(String[] args) {

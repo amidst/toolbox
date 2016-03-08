@@ -3,21 +3,22 @@ package eu.amidst.standardmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.dynamic.variables.DynamicVariables;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 05/03/16.
  */
 public class KalmanFilter extends DynamicModel {
     private boolean diagonal = true;
+    private int numHidden = 2;
 
     public boolean isDiagonal() {
         return diagonal;
@@ -27,30 +28,60 @@ public class KalmanFilter extends DynamicModel {
         this.diagonal = diagonal;
     }
 
+    public int getNumHidden() {
+        return numHidden;
+    }
+
+    public void setNumHidden(int numHidden) {
+        this.numHidden = numHidden;
+    }
+
     public KalmanFilter(Attributes attributes) {
         super(attributes);
     }
 
     @Override
-    protected void buildDAG(Attributes attributes) {
+    protected void buildDAG() {
 
-        DynamicVariables vars = new DynamicVariables(attributes);
-        Variable gaussianHiddenVar = vars.newGaussianDynamicVariable("gaussianHiddenVar");
-        dynamicDAG = new DynamicDAG(vars);
+        List<Variable> gaussianHiddenVars = new ArrayList<>();
+
+        IntStream.range(0,getNumHidden()).forEach(i -> {
+            Variable gaussianHiddenVar = this.variables.newGaussianDynamicVariable("gaussianHiddenVar" + i);
+            gaussianHiddenVars.add(gaussianHiddenVar);
+        });
+
+        dynamicDAG = new DynamicDAG(this.variables);
+
         dynamicDAG.getParentSetsTimeT()
                 .stream()
-                .filter(w -> w.getMainVar() != gaussianHiddenVar)
-                .forEach(w -> w.addParent(gaussianHiddenVar));
+                .filter(w -> !gaussianHiddenVars.contains(w.getMainVar()))
+                .forEach(y -> {
+                    gaussianHiddenVars.stream()
+                            .forEach(h -> y.addParent(h));
+                });
 
-        dynamicDAG.getParentSetTimeT(gaussianHiddenVar).addParent(gaussianHiddenVar.getInterfaceVariable());
+        for (Variable gaussianHiddenVar : gaussianHiddenVars) {
+            dynamicDAG.getParentSetTimeT(gaussianHiddenVar).addParent(gaussianHiddenVar.getInterfaceVariable());
+        }
+
+
+        for (int i=0; i<gaussianHiddenVars.size()-1; i++){
+            for(int j=i+1; j<gaussianHiddenVars.size(); j++) {
+                dynamicDAG.getParentSetTime0(gaussianHiddenVars.get(i)).addParent(gaussianHiddenVars.get(j));
+                dynamicDAG.getParentSetTimeT(gaussianHiddenVars.get(i)).addParent(gaussianHiddenVars.get(j));
+            }
+
+        }
+
+
 
         /*
          * Learn full covariance matrix
          */
         if(!isDiagonal()) {
-            List<Variable> attrVars = vars.getListOfDynamicVariables()
+            List<Variable> observedVars = this.variables.getListOfDynamicVariables()
                     .stream()
-                    .filter(v -> !v.equals(gaussianHiddenVar))
+                    .filter(w -> !gaussianHiddenVars.contains(w))
                     .peek(v-> {
                         if(v.isMultinomial())
                             throw new UnsupportedOperationException("Full covariance matrix cannot be used with" +
@@ -58,10 +89,10 @@ public class KalmanFilter extends DynamicModel {
                     })
                     .collect(Collectors.toList());
 
-            for (int i=0; i<attrVars.size()-1; i++){
-                for(int j=i+1; j<attrVars.size(); j++) {
-                    dynamicDAG.getParentSetTime0(attrVars.get(i)).addParent(attrVars.get(j));
-                    dynamicDAG.getParentSetTimeT(attrVars.get(i)).addParent(attrVars.get(j));
+            for (int i=0; i<observedVars.size()-1; i++){
+                for(int j=i+1; j<observedVars.size(); j++) {
+                    dynamicDAG.getParentSetTime0(observedVars.get(i)).addParent(observedVars.get(j));
+                    dynamicDAG.getParentSetTimeT(observedVars.get(i)).addParent(observedVars.get(j));
                 }
 
             }
@@ -72,10 +103,10 @@ public class KalmanFilter extends DynamicModel {
 
     @Override
     public void isValidConfiguration() {
-        this.attributes.getListOfNonSpecialAttributes()
+        this.variables.getListOfDynamicVariables()
                 .stream()
-                .forEach(att -> {
-                    if (att.getStateSpaceType().getStateSpaceTypeEnum() != StateSpaceTypeEnum.REAL)
+                .forEach(var -> {
+                    if (!var.isNormal())
                         throw new UnsupportedOperationException("Invalid configuration: all the variables must be real");
                 });
     }
@@ -88,6 +119,7 @@ public class KalmanFilter extends DynamicModel {
 
         System.out.println("------------------KF (diagonal matrix) from streaming------------------");
         KalmanFilter KF = new KalmanFilter(data.getAttributes());
+        KF.setNumHidden(2);
         System.out.println(KF.getDynamicDAG());
         KF.learnModel(data);
         System.out.println(KF.getModel());

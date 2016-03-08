@@ -32,6 +32,7 @@ import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * The DynamicVariables class defines and handles the operations related to the set of variables of
@@ -412,6 +413,12 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
         }
     }
 
+    public List<Variable> getVariablesForListOfAttributes(List<Attribute> attributeList){
+        return attributeList.parallelStream()
+                .map(att->getVariableByName(att.getName()))
+                .collect(Collectors.toList());
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -419,6 +426,8 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     public Iterator<Variable> iterator() {
         return this.nonInterfaceVariables.iterator();
     }
+
+
 
     /**
      * This class implements the interface {@link Variable}.
