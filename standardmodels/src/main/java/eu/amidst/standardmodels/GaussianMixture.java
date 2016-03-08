@@ -1,13 +1,16 @@
 package eu.amidst.standardmodels;
 
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by rcabanas on 07/03/16.
@@ -17,6 +20,10 @@ import java.util.stream.Collectors;
 public class GaussianMixture extends Model {
 
 
+    /**
+     * Constructor for the gaussian mixture model from a list of attributes (e.g. from a datastream).
+     * @param attributes
+     */
     public GaussianMixture(Attributes attributes) {
         super(attributes);
     }
@@ -40,8 +47,39 @@ public class GaussianMixture extends Model {
 
     }
 
+
     @Override
     public boolean isValidConfiguration(){
-        throw new NotImplementedException("The method isValidConfiguration() has not been implemented for the class "+this.getClass().getName());
+        Variables vars = new Variables(attributes);
+        boolean isValid = true;
+        if(!vars.getListOfVariables().stream()
+                .map( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
+                .reduce((n1,n2) -> n1 && n2).get().booleanValue()){
+            isValid = false;
+            System.err.println("Invalid configuration: all the variables must be real");
+        }
+        return  isValid;
+
+    }
+    //////////// example of use
+
+    public static void main(String[] args) {
+
+        String file = "datasets/syntheticDataDaimler.arff";
+        //file = "datasets/tmp2.arff"; //example of inappropriate dataset
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
+
+        GaussianMixture GMM = new GaussianMixture(data.getAttributes());
+
+        if(GMM.isValidConfiguration()) {
+            GMM.learnModel(data);
+            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+                System.out.println("update model");
+                GMM.updateModel(batch);
+            }
+            System.out.println(GMM.getModel());
+            System.out.println(GMM.getDAG());
+        }
     }
 }
+

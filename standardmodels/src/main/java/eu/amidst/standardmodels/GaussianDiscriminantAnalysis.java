@@ -70,7 +70,7 @@ public class GaussianDiscriminantAnalysis extends Model {
 
         dag = new DAG(vars);
 
-        dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
+        dag.getParentSets().stream().filter(w -> !w.getMainVar().equals(classVar)).forEach(w -> w.addParent(classVar));
 
         // if it is not diagonal add the links between the attributes (features)
         if(!isDiagonal()) {
@@ -174,16 +174,11 @@ public class GaussianDiscriminantAnalysis extends Model {
     public static void main(String[] args) {
 
         String file = "datasets/tmp2.arff";
-        //file = "datasets/WasteIncineratorSample.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
         GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
-        gda.setDiagonal(true);
-        gda.setClassVar(1);
-
-
-
-      //  System.out.println(gda.getDAG());
+        gda.setDiagonal(false);
+        gda.setClassVar(3);
 
         if(gda.isValidConfiguration()) {
             gda.learnModel(data);
@@ -192,10 +187,7 @@ public class GaussianDiscriminantAnalysis extends Model {
                 gda.updateModel(batch);
             }
             System.out.println(gda.getModel());
+            System.out.println(gda.getDAG());
         }
-
     }
-
-
-
 }
