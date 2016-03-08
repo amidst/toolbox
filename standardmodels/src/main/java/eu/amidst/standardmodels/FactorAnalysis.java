@@ -42,29 +42,29 @@ public class FactorAnalysis extends Model {
     }
 
     @Override
-    protected void buildDAG(Attributes attributes) {
+    protected void buildDAG() {
 
-        Variables allVariables = new Variables(attributes);
+
         List<Variable> observableVariables = new ArrayList<>();
         List<Variable> latentVariables = new ArrayList<>();
 
-        allVariables.forEach(observableVariables::add);
+        vars.forEach(observableVariables::add);
 
         IntStream.range(0,numberOfLatentVariables).forEach(i -> {
-            Variable latentVar = allVariables.newGaussianVariable("LatentVar" + i);
+            Variable latentVar = vars.newGaussianVariable("LatentVar" + i);
             latentVariables.add(latentVar);
         });
 
-        dag = new DAG(allVariables);
+        dag = new DAG(vars);
 
         for (Variable variable : observableVariables) {
             latentVariables.forEach(latentVariable -> dag.getParentSet(variable).addParent(latentVariable));
         }
 
         IntStream.range(0,numberOfLatentVariables).forEach(i -> {
-            Variable latentVarChildren = allVariables.getVariableByName("LatentVar" + i);
+            Variable latentVarChildren = vars.getVariableByName("LatentVar" + i);
             IntStream.range(0,i).forEach(j -> {
-                Variable latentVarParent = allVariables.getVariableByName("LatentVar" + j);
+                Variable latentVarParent = vars.getVariableByName("LatentVar" + j);
                 dag.getParentSet(latentVarChildren).addParent(latentVarParent);
             });
         });

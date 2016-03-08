@@ -30,9 +30,8 @@ public class GaussianMixture extends Model {
     }
 
     @Override
-    protected void buildDAG(Attributes attributes) {
+    protected void buildDAG() {
 
-        Variables vars = new Variables(attributes);
         dag = new DAG(vars);
 
         List<Variable> variableList = vars.getListOfVariables();
@@ -51,7 +50,7 @@ public class GaussianMixture extends Model {
 
     @Override
     public boolean isValidConfiguration(){
-        Variables vars = new Variables(attributes);
+
         boolean isValid = true;
         if(!vars.getListOfVariables().stream()
                 .map( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
