@@ -52,7 +52,6 @@ public class GaussianDiscriminantAnalysis extends Model {
      */
     public GaussianDiscriminantAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-        Variables vars = new Variables(attributes);
         // default parameters
         classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
         diagonal = false;
@@ -64,12 +63,9 @@ public class GaussianDiscriminantAnalysis extends Model {
 
 
     @Override
-    protected void buildDAG(Attributes attributes) {
+    protected void buildDAG() {
 
         //We create a standard naive Bayes
-        Variables vars = new Variables(attributes);
-
-
         dag = new DAG(vars);
 
         dag.getParentSets().stream().filter(w -> !w.getMainVar().equals(classVar)).forEach(w -> w.addParent(classVar));
@@ -97,7 +93,6 @@ public class GaussianDiscriminantAnalysis extends Model {
 
     @Override
     public boolean isValidConfiguration(){
-        Variables vars = new Variables(attributes);
         boolean isValid = true;
 
 
@@ -111,7 +106,7 @@ public class GaussianDiscriminantAnalysis extends Model {
 
 
 
-        if(numFinite != 1 || numReal != attributes.getNumberOfAttributes()-1) {
+        if(numFinite != 1 || numReal != vars.getNumberOfVars()-1) {
             isValid = false;
             String errorMsg = "Invalid configuration: wrong number types of variables domains. It should contain 1 discrete variable and the rest shoud be real";
             this.setErrorMessage(errorMsg);
@@ -162,12 +157,10 @@ public class GaussianDiscriminantAnalysis extends Model {
 
     /**
      * Sets the class variable
-     * @param indexVar integer indicating the position of the class variable in the attributes list. The first
-     *                 variable has the index 0
+     * @param className string with the name of the class variable
      */
-    public void setClassVar(int indexVar) {
-        Variables vars = new Variables(attributes);
-        classVar = vars.getListOfVariables().get(indexVar);
+    public void setClassName(String className) {
+        classVar = vars.getVariableByName(className);
     }
 
 
@@ -181,12 +174,11 @@ public class GaussianDiscriminantAnalysis extends Model {
 
         GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
         gda.setDiagonal(false);
-        gda.setClassVar(3);
+        gda.setClassName("default");
 
         if(gda.isValidConfiguration()) {
             gda.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                System.out.println("update model");
                 gda.updateModel(batch);
             }
             System.out.println(gda.getModel());

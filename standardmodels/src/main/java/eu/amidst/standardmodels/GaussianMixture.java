@@ -8,10 +8,10 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by rcabanas on 07/03/16.
@@ -21,37 +21,88 @@ import java.util.List;
 public class GaussianMixture extends Model {
 
 
+
+    /* diagonal flag*/
+    private final boolean diagonal;
+
+    /*number of states of the hidden variable*/
+    private final int numStatesHiddenVar;
+
+
+
     /**
-     * Constructor for the gaussian mixture model from a list of attributes (e.g. from a datastream).
+     * Constructor of classifier from a list of attributes (e.g. from a datastream).
+     *
      * @param attributes
+     * @param numStatesHiddenVar
+     * @param diagonal
      */
-    public GaussianMixture(Attributes attributes) throws WrongConfigurationException {
+    public GaussianMixture(Attributes attributes, int numStatesHiddenVar, boolean diagonal) throws WrongConfigurationException {
         super(attributes);
+        this.numStatesHiddenVar = numStatesHiddenVar;
+        this.diagonal = diagonal;
     }
 
-    @Override
-    protected void buildDAG(Attributes attributes) {
 
-        Variables vars = new Variables(attributes);
+
+
+
+    @Override
+    protected void buildDAG() {
+
+        Variable hiddenVar = vars.newMultionomialVariable("HiddenVar",numStatesHiddenVar);
+
+        //We create a standard naive Bayes
         dag = new DAG(vars);
 
-        List<Variable> variableList = vars.getListOfVariables();
+        dag.getParentSets().stream().filter(w -> !w.getMainVar().equals(hiddenVar)).forEach(w -> w.addParent(hiddenVar));
 
-        for (int i=0; i<variableList.size()-1; i++){
-            for(int j=i+1; j<variableList.size(); j++) {
-                // Add the links
-                dag.getParentSet(variableList.get(i)).addParent(variableList.get(j));
+        // if it is not diagonal add the links between the attributes (features)
+        if(!isDiagonal()) {
+            List<Variable> attrVars = vars.getListOfVariables().stream().filter(v -> !v.equals(hiddenVar)).collect(Collectors.toList());
+
+            for (int i=0; i<attrVars.size()-1; i++){
+                for(int j=i+1; j<attrVars.size(); j++) {
+                    // Add the links
+                    dag.getParentSet(attrVars.get(i)).addParent(attrVars.get(j));
+
+
+
+                }
 
             }
 
+
         }
+
 
     }
 
 
+
+
+    /////// Getters and setters
+
+    /**
+     * Method to obtain the value of the diagonal flag.
+     * @return boolean value
+     */
+    public boolean isDiagonal() {
+        return diagonal;
+    }
+
+    /**
+     * Method to obtain the number of states of the hidden (latent) variable
+     * @return integer value
+     */
+
+    public int getNumStatesHiddenVar() {
+        return numStatesHiddenVar;
+    }
+
     @Override
     public boolean isValidConfiguration(){
-        Variables vars = new Variables(attributes);
+
         boolean isValid = true;
         if(!vars.getListOfVariables().stream()
                 .map( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
@@ -62,6 +113,7 @@ public class GaussianMixture extends Model {
         return  isValid;
 
     }
+
     //////////// example of use
 
     public static void main(String[] args) throws WrongConfigurationException {
@@ -70,11 +122,12 @@ public class GaussianMixture extends Model {
         //file = "datasets/tmp2.arff"; //example of inappropriate dataset
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-        GaussianMixture GMM = new GaussianMixture(data.getAttributes());
+
+
+        GaussianMixture GMM = new GaussianMixture(data.getAttributes(), 2, true);
 
         GMM.learnModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-            System.out.println("update model");
             GMM.updateModel(batch);
         }
         System.out.println(GMM.getModel());
