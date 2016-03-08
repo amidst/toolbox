@@ -122,8 +122,6 @@ public class GaussianMixture extends Model {
         //file = "datasets/tmp2.arff"; //example of inappropriate dataset
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-
-
         GaussianMixture GMM = new GaussianMixture(data.getAttributes(), 2, true);
 
         GMM.learnModel(data);
