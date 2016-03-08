@@ -19,6 +19,7 @@ import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgo
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
@@ -34,12 +35,12 @@ public abstract class Model {
 
     protected DAG dag;
 
-    Attributes attributes;
+    protected Variables vars = null;
 
     protected String errorMessage = "";
 
     public Model(Attributes attributes) throws WrongConfigurationException {
-        this.attributes = attributes;
+        vars = new Variables(attributes);
 
         if(!this.isValidConfiguration()) {
             throw new WrongConfigurationException(getErrorMessage());
@@ -48,7 +49,7 @@ public abstract class Model {
 
     public DAG getDAG() {
         if (dag==null){
-            buildDAG(this.attributes);
+            buildDAG();
         }
         return dag;
     }
@@ -115,7 +116,7 @@ public abstract class Model {
         this.errorMessage = errorMessage;
     }
 
-    protected abstract void buildDAG(Attributes attributes);
+    protected abstract void buildDAG();
 
     public abstract boolean isValidConfiguration();
 
