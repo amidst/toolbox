@@ -16,6 +16,7 @@ import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
+import eu.amidst.dynamic.utils.DynamicToStaticBNConverter;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
@@ -42,7 +43,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
     private DynamicBayesianNetwork model;
 
     /** Represents a {@link BayesianNetwork} object. */
-    private BayesianNetwork staticModel;
+    private BayesianNetwork unfoldedStaticModel;
 
     /** Represents a {@link BayesianNetwork} object. */
     private List<BayesianNetwork> mergedClassVarModels;
@@ -110,7 +111,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         nTimeSteps = 2;
 
         model=null;
-        staticModel=null;
+        unfoldedStaticModel =null;
         mergedClassVarModels=null;
 
         evidence=null;
@@ -184,20 +185,20 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         }
         this.evidence = evidence;
 
-//        if (staticEvenModel!=null) {
-//            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
-//
-//            evidence.stream().forEach(dynamicAssignment -> {
-//                int time = (int) dynamicAssignment.getTimeID();
-//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-//                for (Variable dynVariable : dynAssigVariables) {
-//                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-//                    double varValue = dynamicAssignment.getValue(dynVariable);
-//                    staticEvidence.setValue(staticVariable, varValue);
-//                }
-//
-//            });
-//        }
+        if (unfoldedStaticModel!=null) {
+            staticEvidence = new HashMapAssignment(unfoldedStaticModel.getNumberOfVars());
+
+            evidence.stream().forEach(dynamicAssignment -> {
+                int time = (int) dynamicAssignment.getTimeID();
+                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+                for (Variable dynVariable : dynAssigVariables) {
+                    Variable staticVariable = unfoldedStaticModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+                    double varValue = dynamicAssignment.getValue(dynVariable);
+                    staticEvidence.setValue(staticVariable, varValue);
+                }
+
+            });
+        }
     }
 
     public void setEvidence(DataStream<DynamicDataInstance> evidence1) {
@@ -252,6 +253,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      */
     public void setModel(DynamicBayesianNetwork model) {
         this.model = model;
+        this.unfoldedStaticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
     }
 
     /**
@@ -299,6 +301,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             System.exit(-12);
         }
         nTimeSteps = ntimeSteps;
+
+        this.setModel(this.model);
 
         if (MAPvariable!=null) {
             MAPVarReplications = new Variables();
@@ -369,7 +373,18 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         return mergedClassVarModels;
     }
 
+    /**
+     * Returns a single {@link BayesianNetwork} object, corresponding to the unfolded dynamic network
+     * over the specified number of time steps.
+     * @return a {@link BayesianNetwork} object.
+     */
+    public BayesianNetwork getUnfoldedStaticModel() {
+        return unfoldedStaticModel;
+    }
 
+    public Assignment getUnfoldedEvidence() {
+        return staticEvidence;
+    }
 
     /**
      * Returns replicated MAP variables.
@@ -586,78 +601,78 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             System.out.println("Error: The MAP variable has not been set");
             System.exit(-30);
         }
+
+
+        if (this.unfoldedStaticModel == null) {
+            unfoldedStaticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
+        }
+
+        if (evidence!=null && staticEvidence==null) {
+
+            staticEvidence = new HashMapAssignment(unfoldedStaticModel.getNumberOfVars());
+
+            evidence.stream().forEach(dynamicAssignment -> {
+                int time = (int) dynamicAssignment.getTimeID();
+                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+                for (Variable dynVariable : dynAssigVariables) {
+                    Variable staticVariable = unfoldedStaticModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+                    double varValue = dynamicAssignment.getValue(dynVariable);
+                    staticEvidence.setValue(staticVariable, varValue);
+                }
+
+            });
+        }
+
+        InferenceAlgorithm staticModelInference;
+        switch(searchAlgorithm) {
+            case VMP:
+                staticModelInference = new VMP();
+                break;
+
+            case IS:
+            default:
+                ImportanceSampling importanceSampling =  new ImportanceSampling();
+                importanceSampling.setSampleSize(15* unfoldedStaticModel.getNumberOfVars());
+                importanceSampling.setKeepDataOnMemory(true);
+                Random random = new Random((this.seed));
+                importanceSampling.setSeed(random.nextInt());
+                staticModelInference=importanceSampling;
+                break;
+        }
+
+
+        staticModelInference.setParallelMode(this.parallelMode);
+        staticModelInference.setModel(unfoldedStaticModel);
+        if (evidence != null) {
+            staticModelInference.setEvidence(staticEvidence);
+        }
+        staticModelInference.runInference();
+
+        List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
+        IntStream.range(0,nTimeSteps).forEachOrdered(i -> posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i)));
+
+        double [] probabilities = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToDouble(array -> array[0]).toArray();
+        double MAPsequenceProbability = Math.exp(Arrays.stream(probabilities).map(prob -> Math.log(prob)).sum());
+
+        int [] MAPsequence = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToInt(array -> (int) array[1]).toArray();
+
+        MAPestimate = new HashMapAssignment(nTimeSteps);
+        IntStream.range(0,nTimeSteps).forEach(t-> {
+            Variables variables = Serialization.deepCopy(this.unfoldedStaticModel.getVariables());
+            Variable currentVar;
+            if (variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t))!=null) {
+                currentVar  = variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
+            }
+            else {
+                currentVar  = variables.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+            }
+
+            MAPestimate.setValue(currentVar,MAPsequence[t]);
+        });
+        MAPestimateLogProbability = Math.log(MAPsequenceProbability);
+        this.MAPsequence = MAPsequence;
     }
 
-//        if (this.staticModel == null) {
-//            staticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
-//        }
-//
-//        if (evidence!=null && staticEvidence==null) {
-//
-//            staticEvidence = new HashMapAssignment(staticModel.getNumberOfVars());
-//
-//            evidence.stream().forEach(dynamicAssignment -> {
-//                int time = (int) dynamicAssignment.getTimeID();
-//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-//                for (Variable dynVariable : dynAssigVariables) {
-//                    Variable staticVariable = staticModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-//                    double varValue = dynamicAssignment.getValue(dynVariable);
-//                    staticEvidence.setValue(staticVariable, varValue);
-//                }
-//
-//            });
-//        }
-//
-//        InferenceAlgorithm staticModelInference;
-//        switch(searchAlgorithm) {
-//            case VMP:
-//                staticModelInference = new VMP();
-//                break;
-//
-//            case IS:
-//            default:
-//                ImportanceSampling importanceSampling =  new ImportanceSampling();
-//                importanceSampling.setSampleSize(15*staticModel.getNumberOfVars());
-//                importanceSampling.setKeepDataOnMemory(true);
-//                Random random = new Random((this.seed));
-//                importanceSampling.setSeed(random.nextInt());
-//                staticModelInference=importanceSampling;
-//                break;
-//        }
-//
-//
-//        staticModelInference.setParallelMode(this.parallelMode);
-//        staticModelInference.setModel(staticModel);
-//        if (evidence != null) {
-//            staticModelInference.setEvidence(staticEvidence);
-//        }
-//        staticModelInference.runInference();
-//
-//        List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
-//        IntStream.range(0,nTimeSteps).forEachOrdered(i -> posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i)));
-//
-//        double [] probabilities = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToDouble(array -> array[0]).toArray();
-//        double MAPsequenceProbability = Math.exp(Arrays.stream(probabilities).map(prob -> Math.log(prob)).sum());
-//
-//        int [] MAPsequence = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToInt(array -> (int) array[1]).toArray();
-//
-//        MAPestimate = new HashMapAssignment(nTimeSteps);
-//        IntStream.range(0,nTimeSteps).forEach(t-> {
-//            Variables variables = Serialization.deepCopy(this.staticModel.getVariables());
-//            Variable currentVar;
-//            if (variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t))!=null) {
-//                currentVar  = variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
-//            }
-//            else {
-//                currentVar  = variables.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
-//            }
-//
-//            MAPestimate.setValue(currentVar,MAPsequence[t]);
-//        });
-//        MAPestimateLogProbability = Math.log(MAPsequenceProbability);
-//        this.MAPsequence = MAPsequence;
-//    }
-//
 
 
     private List<double[]> getCombinedConditionalDistributions( List<List<UnivariateDistribution>> posteriorMAPVariableDistributions ) {
@@ -1982,97 +1997,97 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
 
 
-    public static Iterator<List<DynamicAssignment>> generateEvidence(DynamicBayesianNetwork dynamicBayesianNetwork, String mapVariableName, int numberOfSequences, int sequenceLength, double percentageOfEvidence, int seed) {
-
-        Random random = new Random(seed);
-        Variable mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName(mapVariableName);
-        List<List<DynamicAssignment>> evidences = new ArrayList<>(numberOfSequences);
-
-        int nVarsEvidence = (int)(percentageOfEvidence * dynamicBayesianNetwork.getNumberOfVars());
-
-
-        //DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicBayesianNetwork);
-        //DataStream<DynamicDataInstance> sample = sampler.sampleToDataBase(numberOfSequences,sequenceLength);
-
-        for (int i = 0; i < numberOfSequences; i++) {
-
-
-            List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
-
-            if (nVarsEvidence > varsDynamicModel.size()-1) {
-                System.out.println("Too many variables to be observe");
-                return null;
-            }
-
-            List<Variable> varsEvidence = new ArrayList<>(nVarsEvidence);
-
-            int currentVarsEvidence=0;
-            while (currentVarsEvidence < nVarsEvidence) {
-                int indexVarEvidence = random.nextInt(dynamicBayesianNetwork.getNumberOfDynamicVars());
-                Variable varEvidence = varsDynamicModel.get(indexVarEvidence);
-
-                if (varEvidence.equals(mapVariable) || varsEvidence.contains(varEvidence)) {
-                    continue;
-                }
-                varsEvidence.add(varEvidence);
-                currentVarsEvidence++;
-            }
-
-            List<DynamicAssignment> fullEvidence, evidence;
-            evidence = new ArrayList<>(sequenceLength);
-
-            DynamicBayesianNetworkSampler bayesianNetworkSampler0 = new DynamicBayesianNetworkSampler(dynamicBayesianNetwork);
-            bayesianNetworkSampler0.setSeed(random.nextInt());
-            DataStream<DynamicDataInstance> sample = bayesianNetworkSampler0.sampleToDataBase(1,sequenceLength);
-
-            //sample.getAttributes().getFullListOfAttributes().forEach(attribute -> System.out.println(attribute.getName()));
-            fullEvidence = sample.stream().collect(Collectors.toList());
-
-//        System.out.println("Full Sample:");
-//        fullEvidence.stream().forEachOrdered(dynass -> System.out.println(dynass.outputString(dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables())));
-//        System.out.println();
-
-
-            // Evidence in t=0, 1, ..., nTimeSteps-2 for variables in 'varsEvidence'
-            IntStream.range(0,sequenceLength-1).forEachOrdered(t -> {
-                HashMapDynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(varsEvidence.size());
-                dynamicAssignment.setSequenceID(0);
-                dynamicAssignment.setTimeID(t);
-                varsDynamicModel.stream().filter(variable -> varsEvidence.contains(variable)).forEach( variable -> dynamicAssignment.setValue(variable,fullEvidence.get(t).getValue(variable)));
-                evidence.add(dynamicAssignment);
-            });
-
-            // Evidence in t=(nTimeSteps-1) for all variables that are leaves in the DAG.
-            for (Variable currentVar : varsDynamicModel) {
-                if (!varsDynamicModel.stream().anyMatch(var -> dynamicBayesianNetwork.getDynamicDAG().getParentSetTimeT(var).getParents().contains(currentVar))) {
-                    varsEvidence.add(currentVar);
-                }
-            }
-            HashMapDynamicAssignment dynamicAssignment1 = new HashMapDynamicAssignment(varsEvidence.size());
-            dynamicAssignment1.setSequenceID(0);
-            dynamicAssignment1.setTimeID(sequenceLength-1);
-            varsDynamicModel.stream().filter(variable -> varsEvidence.contains(variable)).forEach( variable -> dynamicAssignment1.setValue(variable,fullEvidence.get(sequenceLength-1).getValue(variable)));
-            evidence.add(dynamicAssignment1);
-
-//        System.out.println("Evidence:");
-//        evidence.stream().forEachOrdered(dynass -> System.out.println(dynass.outputString(dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables())));
-//        System.out.println();
-
-            StringBuilder classVarSequenceBuilder = new StringBuilder();
-            classVarSequenceBuilder.append("ClassVar: (");
-            fullEvidence.stream().forEachOrdered(dynass -> classVarSequenceBuilder.append( Integer.toString((int)dynass.getValue(mapVariable)) + ","));
-            classVarSequenceBuilder.replace(classVarSequenceBuilder.lastIndexOf(","),classVarSequenceBuilder.lastIndexOf(",")+1,"");
-            classVarSequenceBuilder.append(")");
-            System.out.println("Original sequence:");
-            System.out.println(classVarSequenceBuilder.toString());
-            System.out.println();
-
-
-            evidences.add(evidence);
-        }
-
-        return evidences.iterator();
-    }
+//    public static Iterator<List<DynamicAssignment>> generateEvidence(DynamicBayesianNetwork dynamicBayesianNetwork, String mapVariableName, int numberOfSequences, int sequenceLength, double percentageOfEvidence, int seed) {
+//
+//        Random random = new Random(seed);
+//        Variable mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName(mapVariableName);
+//        List<List<DynamicAssignment>> evidences = new ArrayList<>(numberOfSequences);
+//
+//        int nVarsEvidence = (int)(percentageOfEvidence * dynamicBayesianNetwork.getNumberOfVars());
+//
+//
+//        //DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dynamicBayesianNetwork);
+//        //DataStream<DynamicDataInstance> sample = sampler.sampleToDataBase(numberOfSequences,sequenceLength);
+//
+//        for (int i = 0; i < numberOfSequences; i++) {
+//
+//
+//            List<Variable> varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
+//
+//            if (nVarsEvidence > varsDynamicModel.size()-1) {
+//                System.out.println("Too many variables to be observe");
+//                return null;
+//            }
+//
+//            List<Variable> varsEvidence = new ArrayList<>(nVarsEvidence);
+//
+//            int currentVarsEvidence=0;
+//            while (currentVarsEvidence < nVarsEvidence) {
+//                int indexVarEvidence = random.nextInt(dynamicBayesianNetwork.getNumberOfDynamicVars());
+//                Variable varEvidence = varsDynamicModel.get(indexVarEvidence);
+//
+//                if (varEvidence.equals(mapVariable) || varsEvidence.contains(varEvidence)) {
+//                    continue;
+//                }
+//                varsEvidence.add(varEvidence);
+//                currentVarsEvidence++;
+//            }
+//
+//            List<DynamicAssignment> fullEvidence, evidence;
+//            evidence = new ArrayList<>(sequenceLength);
+//
+//            DynamicBayesianNetworkSampler bayesianNetworkSampler0 = new DynamicBayesianNetworkSampler(dynamicBayesianNetwork);
+//            bayesianNetworkSampler0.setSeed(random.nextInt());
+//            DataStream<DynamicDataInstance> sample = bayesianNetworkSampler0.sampleToDataBase(1,sequenceLength);
+//
+//            //sample.getAttributes().getFullListOfAttributes().forEach(attribute -> System.out.println(attribute.getName()));
+//            fullEvidence = sample.stream().collect(Collectors.toList());
+//
+////        System.out.println("Full Sample:");
+////        fullEvidence.stream().forEachOrdered(dynass -> System.out.println(dynass.outputString(dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables())));
+////        System.out.println();
+//
+//
+//            // Evidence in t=0, 1, ..., nTimeSteps-2 for variables in 'varsEvidence'
+//            IntStream.range(0,sequenceLength-1).forEachOrdered(t -> {
+//                HashMapDynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+//                dynamicAssignment.setSequenceID(0);
+//                dynamicAssignment.setTimeID(t);
+//                varsDynamicModel.stream().filter(variable -> varsEvidence.contains(variable)).forEach( variable -> dynamicAssignment.setValue(variable,fullEvidence.get(t).getValue(variable)));
+//                evidence.add(dynamicAssignment);
+//            });
+//
+//            // Evidence in t=(nTimeSteps-1) for all variables that are leaves in the DAG.
+//            for (Variable currentVar : varsDynamicModel) {
+//                if (!varsDynamicModel.stream().anyMatch(var -> dynamicBayesianNetwork.getDynamicDAG().getParentSetTimeT(var).getParents().contains(currentVar))) {
+//                    varsEvidence.add(currentVar);
+//                }
+//            }
+//            HashMapDynamicAssignment dynamicAssignment1 = new HashMapDynamicAssignment(varsEvidence.size());
+//            dynamicAssignment1.setSequenceID(0);
+//            dynamicAssignment1.setTimeID(sequenceLength-1);
+//            varsDynamicModel.stream().filter(variable -> varsEvidence.contains(variable)).forEach( variable -> dynamicAssignment1.setValue(variable,fullEvidence.get(sequenceLength-1).getValue(variable)));
+//            evidence.add(dynamicAssignment1);
+//
+////        System.out.println("Evidence:");
+////        evidence.stream().forEachOrdered(dynass -> System.out.println(dynass.outputString(dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables())));
+////        System.out.println();
+//
+//            StringBuilder classVarSequenceBuilder = new StringBuilder();
+//            classVarSequenceBuilder.append("ClassVar: (");
+//            fullEvidence.stream().forEachOrdered(dynass -> classVarSequenceBuilder.append( Integer.toString((int)dynass.getValue(mapVariable)) + ","));
+//            classVarSequenceBuilder.replace(classVarSequenceBuilder.lastIndexOf(","),classVarSequenceBuilder.lastIndexOf(",")+1,"");
+//            classVarSequenceBuilder.append(")");
+//            System.out.println("Original sequence:");
+//            System.out.println(classVarSequenceBuilder.toString());
+//            System.out.println();
+//
+//
+//            evidences.add(evidence);
+//        }
+//
+//        return evidences.iterator();
+//    }
 
 
 
@@ -2121,14 +2136,13 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //        System.out.println();
 
 
-
         dynMAP = new DynamicMAPInference();
         dynMAP.setModel(dynamicBayesianNetwork);
 
         // INITIALIZE THE MODEL
         int nTimeSteps = 20;
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
-        int nMergedClassVars = 2;
+        int nMergedClassVars = 4;
         dynMAP.setNumberOfMergedClassVars(nMergedClassVars);
 
         mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
@@ -2209,9 +2223,6 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //            System.out.println(m_base_nStates);
 //            //System.out.println(String.format("%0" + nRepets + "d",m));
 //        }
-
-
-
 
     }
 

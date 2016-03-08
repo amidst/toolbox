@@ -55,6 +55,9 @@ public class HiddenLayerDynamicModel {
 
     private String continuousVarName = "ContinuousVar";
 
+    private List<DynamicAssignment> lastEvidence;
+
+    private double probabilityKeepClassState;
 
     /**
      * Sets the seed for model generation repeatability.
@@ -296,7 +299,9 @@ public class HiddenLayerDynamicModel {
 
             });
         });
-
+        if(Double.isFinite(probabilityKeepClassState)) {
+            this.setProbabilityOfKeepingClass(probabilityKeepClassState);
+        }
 
         //System.out.println(model);
     }
@@ -318,6 +323,7 @@ public class HiddenLayerDynamicModel {
 
         fullSample.stream().forEachOrdered(dynamicDataInstance -> {
             DynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(observableVars.size());
+            ((HashMapDynamicAssignment)dynamicAssignment).setTimeID((int)dynamicDataInstance.getTimeID());
             observableVars.stream().forEach(var1 -> {
                 dynamicAssignment.setValue(var1,dynamicDataInstance.getValue(var1));
 //                System.out.println(dynamicDataInstance.getValue(var1));
@@ -325,12 +331,51 @@ public class HiddenLayerDynamicModel {
             sample.add(dynamicAssignment);
         });
 
+        this.lastEvidence=sample;
+
         return sample;
     }
 
-//    public List<DynamicAssignment> generateEvidence() {
-//
-//    }
+
+    public DynamicBayesianNetwork getModel() {
+        return model;
+    }
+
+    public List<DynamicAssignment> getEvidence() {
+        return lastEvidence;
+    }
+
+    public List<DynamicAssignment> getEvidenceNoClass() {
+
+        List<DynamicAssignment> evidenceNoClass = new ArrayList<>();
+
+        this.lastEvidence.forEach(dynamicAssignment -> {
+            DynamicAssignment dynamicAssignmentNoClass = new HashMapDynamicAssignment(dynamicAssignment.getVariables().size()-1);
+            ((HashMapDynamicAssignment)dynamicAssignmentNoClass).setTimeID((int)dynamicAssignment.getTimeID());
+            dynamicAssignment.getVariables().stream()
+                .filter(variable -> !variable.equals(this.getClassVariable()))
+                .forEach(variable -> dynamicAssignmentNoClass.setValue(variable,dynamicAssignment.getValue(variable)));
+            evidenceNoClass.add(dynamicAssignmentNoClass);
+        });
+
+        return evidenceNoClass;
+    }
+
+    public int[] getClassSequence() {
+
+        int[] classSequence = new int[lastEvidence.size()];
+
+        this.lastEvidence.forEach(dynamicAssignment -> {
+
+            classSequence[(int) dynamicAssignment.getTimeID()] = (int) dynamicAssignment.getValue(this.getClassVariable());
+
+        });
+        return classSequence;
+    }
+
+    public Variable getClassVariable() {
+        return model.getDynamicVariables().getVariableByName(classVarName);
+    }
 
     public void setProbabilityOfKeepingClass(double probKeeping) {
         if (model==null) {
@@ -354,8 +399,26 @@ public class HiddenLayerDynamicModel {
             }
             classVarCondDistribution.getMultinomial(k).setProbabilities(probabilities);
         });
+        this.probabilityKeepClassState=probKeeping;
     }
 
+    public void randomInitialization(Random random) {
+        if(model!=null) {
+            model.randomInitialization(random);
+            if(Double.isFinite(probabilityKeepClassState)) {
+                this.setProbabilityOfKeepingClass(probabilityKeepClassState);
+            }
+        }
+
+    }
+
+    public void printDAG() {
+        System.out.println(this.model.getDynamicDAG().toString());
+    }
+
+    public void printHiddenLayerModel() {
+        System.out.println(this.model.toString());
+    }
 
     public static void main(String[] args) {
         HiddenLayerDynamicModel hiddenModel = new HiddenLayerDynamicModel();

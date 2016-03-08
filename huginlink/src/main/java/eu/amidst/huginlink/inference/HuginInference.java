@@ -211,6 +211,9 @@ public class HuginInference implements InferenceAlgorithm, Serializable {
 
     }
 
+    public Domain getHuginBN() {
+        return huginBN;
+    }
     public static void main(String args[]) throws ExceptionHugin {
 
         BayesianNetworkGenerator.setNumberOfMultinomialVars(2, 2);
