@@ -27,17 +27,18 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.Model;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
+import javax.xml.crypto.Data;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
  */
-public class NaiveBayesClassifier extends Model implements Classifier{
+public class NaiveBayesClassifier extends Classifier{
 
 
-    /** class variable */
-    final private Variable classVar;
+
 
     /**
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
@@ -46,8 +47,8 @@ public class NaiveBayesClassifier extends Model implements Classifier{
      * @throws WrongConfigurationException
      */
     public NaiveBayesClassifier(Attributes attributes, String classVarName) throws WrongConfigurationException {
-        super(attributes);
-        classVar = vars.getVariableByName(classVarName);
+        super(attributes, classVarName);
+
 
     }
 
@@ -82,45 +83,21 @@ public class NaiveBayesClassifier extends Model implements Classifier{
     }
 
 
-    /**
-     * Predicts the class membership probabilities for a given instance.
-     * @param instance the data instance to be classified.
-     * @return an array of doubles containing the estimated membership probabilities of the data instance for each class label.
-     */
-    @Override
-    public double[] predict(DataInstance instance) {
-/*        if (!Utils.isMissingValue(instance.getValue(classVar)))
-            System.out.println("Class Variable can not be set.");
-        this.predictions.setEvidence(instance);
-        this.predictions.runInference();
-        Multinomial multinomial = this.predictions.getPosterior(classVar);
-        return multinomial.getParameters();
-
-  */
-    return null;
-    }
-
-
     /////// Getters and setters
 
-
-    /**
-     * Method to obtain the class variable
-     * @return object of the type {@link Variable} indicating which is the class variable
-     */
-    public Variable getClassVar() {
-        return classVar;
-    }
 
 
     //////////// example of use
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,1000, 2, 10);
+        //DataStream<DataInstance> data = DataSetGenerator.generate(1234,1000, 2, 10);
+
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 10);
+       // DataStream<DataInstance> dataTest = DataSetGenerator.generate(1234,100, 2, 10);
+
 
         System.out.println(data.getAttributes().toString());
-
 
         String classVarName = "DiscreteVar0";
 
@@ -129,11 +106,26 @@ public class NaiveBayesClassifier extends Model implements Classifier{
         if(nb.isValidConfiguration()) {
             nb.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+
                 nb.updateModel(batch);
             }
             System.out.println(nb.getModel());
             System.out.println(nb.getDAG());
         }
+
+        // predict the class of one instances
+
+        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
+
+        for(DataInstance d : dataTest) {
+            d.setValue(nb.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = nb.predict(d);
+            System.out.println(posteriorProb.toString());
+
+        }
+
+
+
     }
 }
 

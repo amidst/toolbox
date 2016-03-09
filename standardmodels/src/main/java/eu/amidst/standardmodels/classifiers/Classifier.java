@@ -9,27 +9,70 @@
 package eu.amidst.standardmodels.classifiers;
 
 
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.standardmodels.Model;
+import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
- * The Classifier interface is defined for Bayesian classification models.
+ * The Classifier abstract class is defined for Bayesian classification models.
  */
-public interface Classifier {
+public abstract class Classifier extends Model {
+
+    /** Represents the inference algorithm. */
+    private InferenceAlgorithm predictions;
+
+    /** class variable */
+    final protected Variable classVar;
+
+
+    public Classifier(Attributes attributes, String classVarName) throws WrongConfigurationException {
+        super(attributes);
+        classVar = vars.getVariableByName(classVarName);
+        predictions=new VMP();
+        predictions.setSeed(0);
+    }
+
 
     /**
      * Predicts the class membership probabilities for a given instance.
      * @param instance the data instance to be classified.
-     * @return an array of double containing the estimated membership probabilities of the data instance for each class label.
+     * @return an array of doubles containing the estimated membership probabilities of the data instance for each class label.
      */
-    double[] predict(DataInstance instance);
+    public Multinomial predict(DataInstance instance) {
+        if (!Utils.isMissingValue(instance.getValue(classVar)))
+            System.out.println("Class Variable can not be set.");
+
+        predictions.setModel(this.getModel());
+        this.predictions.setEvidence(instance);
+        this.predictions.runInference();
+
+
+        return this.predictions.getPosterior(classVar);
+
+
+
+    }
+
+
+
+    /////// getter and setters ///////
 
     /**
-     * Returns the class variable.
-     * @return the object of the class variable.
+     * Method to obtain the class variable
+     * @return object of the type {@link Variable} indicating which is the class variable
      */
-    public Variable getClassVar();
+    public Variable getClassVar() {
+        return classVar;
+    }
+
 
 
 
