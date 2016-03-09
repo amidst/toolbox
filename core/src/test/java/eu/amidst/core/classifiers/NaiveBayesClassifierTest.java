@@ -25,7 +25,9 @@ import junit.framework.TestCase;
 public class NaiveBayesClassifierTest extends TestCase {
 
     public static void test(){
-        BayesianNetworkGenerator.loadOptions();
+    /*   // TODO: move to standardmodels
+
+    BayesianNetworkGenerator.loadOptions();
 
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetworkGenerator.setNumberOfGaussianVars(3);
@@ -61,6 +63,8 @@ public class NaiveBayesClassifierTest extends TestCase {
         assertTrue(nb.equalBNs(nbClassifier, 0.1));
         assertTrue(bn.equalBNs(nbClassifier, 0.3));
         assertTrue(bn.equalBNs(nb, 0.3));
+
+        */
 
     }
 }
