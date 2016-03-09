@@ -6,11 +6,12 @@
  *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package eu.amidst.core.classifiers;
+package eu.amidst.standardmodels.classifiers;
 
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.variables.Variable;
 
 /**
  * The Classifier interface is defined for Bayesian classification models.
@@ -25,21 +26,12 @@ public interface Classifier {
     double[] predict(DataInstance instance);
 
     /**
-     * Returns the name of the class variable.
-     * @return the name of the class variable.
+     * Returns the class variable.
+     * @return the object of the class variable.
      */
-    String getClassName();
+    public Variable getClassVar();
 
-    /**
-     * Sets the name of the class variable.
-     * @param className the name of the class variable.
-     */
-    void setClassName(String className);
 
-    /**
-     * Trains the classifier using the input data streams.
-     * @param dataStream a data stream {@link DataStream}.
-     */
-    void learn(DataStream<DataInstance> dataStream);
+
 
 }
