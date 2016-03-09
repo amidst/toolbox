@@ -30,12 +30,13 @@ public abstract class Classifier extends Model {
     private InferenceAlgorithm predictions;
 
     /** class variable */
-    final protected Variable classVar;
+    protected Variable classVar;
 
 
-    public Classifier(Attributes attributes, String classVarName) throws WrongConfigurationException {
+    public Classifier(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-        classVar = vars.getVariableByName(classVarName);
+
+        classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
         predictions=new VMP();
         predictions.setSeed(0);
     }
@@ -63,7 +64,8 @@ public abstract class Classifier extends Model {
 
 
 
-    /////// getter and setters ///////
+    /////// getters and setters ///////
+
 
     /**
      * Method to obtain the class variable
@@ -73,8 +75,14 @@ public abstract class Classifier extends Model {
         return classVar;
     }
 
+    public void setClassVar(Variable classVar) {
+        this.classVar = classVar;
+        dag = null;
+    }
 
-
+    public void setClassName(String className) {
+        setClassVar(vars.getVariableByName(className));
+    }
 
 
 }

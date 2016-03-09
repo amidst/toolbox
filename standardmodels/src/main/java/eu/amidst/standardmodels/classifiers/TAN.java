@@ -9,29 +9,26 @@
  *
  */
 
-package eu.amidst.standardmodels;
+package eu.amidst.standardmodels.classifiers;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.huginlink.inference.HuginInference;
 import eu.amidst.huginlink.learning.ParallelTAN;
+import eu.amidst.standardmodels.Model;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Created by andresmasegosa on 4/3/16.
  */
+
+// TODO: change to extend Classifier class
 public class TAN extends Model {
 
     private ParallelTAN parallelTAN;

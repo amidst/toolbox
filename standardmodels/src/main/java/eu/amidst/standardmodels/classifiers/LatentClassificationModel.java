@@ -1,11 +1,13 @@
-package eu.amidst.standardmodels;
+package eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
@@ -17,20 +19,20 @@ import java.util.stream.Collectors;
 /**
  * Created by rcabanas on 09/03/16.
  */
-public class HTClassification extends Model {
+public class LatentClassificationModel extends Classifier {
 
 
-    private final int numContinuousHidden;
-    private final int numStatesHidden;
-    private final Variable classVar;
+    private int numContinuousHidden;
+    private int numStatesHidden;
 
 
-    public HTClassification(Attributes attributes, String classVarName, int numContinuousHidden, int numStatesHidden) throws WrongConfigurationException {
+
+    public LatentClassificationModel(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
 
-        this.numContinuousHidden = numContinuousHidden;
-        this.numStatesHidden = numStatesHidden;
-        this.classVar = vars.getVariableByName(classVarName);
+        //default values
+        this.numContinuousHidden = 2;
+        this.numStatesHidden = 2;
 
 
     }
@@ -109,10 +111,15 @@ public class HTClassification extends Model {
         return numStatesHidden;
     }
 
-    public Variable getClassVar() {
-        return classVar;
+    public void setNumContinuousHidden(int numContinuousHidden) {
+        this.numContinuousHidden = numContinuousHidden;
+        dag = null;
     }
 
+    public void setNumStatesHidden(int numStatesHidden) {
+        this.numStatesHidden = numStatesHidden;
+        dag = null;
+    }
 
     ///////// main class (example of use) //////
 
@@ -127,19 +134,37 @@ public class HTClassification extends Model {
         int numStatesHidden = 3;
 
         //Initializes the classifier
-        HTClassification htc = new HTClassification(data.getAttributes(), classVarName, numContinuousHidden, numStatesHidden);
+        LatentClassificationModel lcm = new LatentClassificationModel(data.getAttributes());
+        lcm.setClassName(classVarName);
+        lcm.setNumContinuousHidden(numContinuousHidden);
+        lcm.setNumStatesHidden(numStatesHidden);
+
 
         //Learning
-        if(htc.isValidConfiguration()) {
-            htc.learnModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                htc.updateModel(batch);
-            }
 
-            //Shows the resulting model
-            System.out.println(htc.getModel());
-            System.out.println(htc.getDAG());
+        lcm.learnModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+            lcm.updateModel(batch);
         }
+
+        //Shows the resulting model
+        System.out.println(lcm.getModel());
+        System.out.println(lcm.getDAG());
+
+
+        // predict the class of one instances
+/*        System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");
+        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
+
+        for(DataInstance d : dataTest) {
+            d.setValue(lcm.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = lcm.predict(d);
+            System.out.println(posteriorProb.toString());
+
+        }
+
+*/
+
     }
 
 

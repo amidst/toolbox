@@ -29,9 +29,9 @@ import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigu
  */
 public abstract class Model {
 
-    BayesianParameterLearningAlgorithm learningAlgorithm;
+    protected BayesianParameterLearningAlgorithm learningAlgorithm;
 
-    dVMP dvmp = new dVMP();
+    protected dVMP dvmp = new dVMP();
 
     protected DAG dag;
 

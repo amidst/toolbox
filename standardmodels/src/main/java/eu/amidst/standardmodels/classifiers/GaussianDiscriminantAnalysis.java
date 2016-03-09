@@ -9,21 +9,21 @@
  *
  */
 
-package eu.amidst.standardmodels;
+package eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -32,33 +32,30 @@ import java.util.stream.Collectors;
  * This class implements the model of Gaussian Discriminant Analysis
  *
  */
-public class GaussianDiscriminantAnalysis extends Model {
+public class GaussianDiscriminantAnalysis extends Classifier {
 
     /* diagonal flag:
     * If in the  model one assumes that the covariance matrices are diagonal,
     * then this means that we assume the features are conditionally independent,
     * and the resulting classifier is equivalent to the Gaussian Naive Bayes classifier
     */
-    final private boolean diagonal;
+    private boolean diagonal;
 
-    /** class variable */
-    final private Variable classVar;
+
 
     /**
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
+     * The default parameters are used: the class variable is the last one and the
+     * diagonal flag is set to false.
      * @param attributes
-     * @param classVarName
-     * @param diagonal
      * @throws WrongConfigurationException
      */
-    public GaussianDiscriminantAnalysis(Attributes attributes, String classVarName, boolean diagonal) throws WrongConfigurationException {
+    public GaussianDiscriminantAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-        classVar = vars.getVariableByName(classVarName);
-        this.diagonal = diagonal;
+        // default parameters
+        diagonal = false;
 
     }
-
-
 
 
 
@@ -128,14 +125,11 @@ public class GaussianDiscriminantAnalysis extends Model {
     }
 
 
-
-    /**
-     * Method to obtain the class variable
-     * @return object of the type {@link Variable} indicating which is the class variable
-     */
-    public Variable getClassVar() {
-        return classVar;
+    public void setDiagonal(boolean diagonal) {
+        this.diagonal = diagonal;
+        dag = null;
     }
+
 
 
     //////////// example of use
@@ -146,7 +140,9 @@ public class GaussianDiscriminantAnalysis extends Model {
         //file = "datasets/syntheticDataDaimler.arff";
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
 
-        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes(), "default", true);
+        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
+        gda.setDiagonal(false);
+        gda.setClassName("default");
 
         if(gda.isValidConfiguration()) {
             gda.learnModel(data);
@@ -155,6 +151,19 @@ public class GaussianDiscriminantAnalysis extends Model {
             }
             System.out.println(gda.getModel());
             System.out.println(gda.getDAG());
+        }
+
+
+
+        // predict the class of one instances
+
+        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
+
+        for(DataInstance d : dataTest) {
+            d.setValue(gda.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = gda.predict(d);
+            System.out.println(posteriorProb.toString());
+
         }
     }
 }
