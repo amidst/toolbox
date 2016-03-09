@@ -105,14 +105,12 @@ public class GaussianDiscriminantAnalysis extends Model {
                 .count();
 
 
-
         if(numFinite != 1 || numReal != vars.getNumberOfVars()-1) {
             isValid = false;
             String errorMsg = "Invalid configuration: wrong number types of variables domains. It should contain 1 discrete variable and the rest shoud be real";
             this.setErrorMessage(errorMsg);
 
         }
-
 
         return  isValid;
 
