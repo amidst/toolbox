@@ -4,8 +4,8 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
@@ -118,15 +118,12 @@ public class BayesianLinearRegression extends Model {
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        String file = "datasets/syntheticDataDaimler.arff";
-       // file = "datasets/tmp2.arff"; //example of inappropriate dataset
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
+        DataStream<DataInstance> data = DataSetGenerator.generate(0,1000, 0, 10);
+        System.out.println(data.getAttributes().toString());
 
+        String className = "GaussianVar0";
 
-        String className = "O_LAT_MEAS";
-       // className = "default";
-
-        BayesianLinearRegression BLR = new BayesianLinearRegression(data.getAttributes(), className, false);
+        BayesianLinearRegression BLR = new BayesianLinearRegression(data.getAttributes(), className, true);
 
         if(BLR.isValidConfiguration()) {
             BLR.learnModel(data);
