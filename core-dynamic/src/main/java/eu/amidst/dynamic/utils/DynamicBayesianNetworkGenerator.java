@@ -8,8 +8,10 @@
 
 package eu.amidst.dynamic.utils;
 
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -37,11 +40,18 @@ public class DynamicBayesianNetworkGenerator {
     /** Represents the number of links in the {@link DynamicBayesianNetwork} to be generated. */
     private static int numberOfLinks = 3;
 
+    /** Represents the seed for random generation. */
+    private static int seed=0;
+
 
     private static String classVarName = "ClassVar";
     private static String discreteVarName = "DiscreteVar";
     private static String continuousVarName = "ContinuousVar";
 
+
+    public static void setSeed(int seed) {
+        DynamicBayesianNetworkGenerator.seed = seed;
+    }
 
     public static void setClassVarName(String classVarName) {
         DynamicBayesianNetworkGenerator.classVarName = classVarName;
@@ -307,6 +317,135 @@ public class DynamicBayesianNetworkGenerator {
         return dynamicFAN;
     }
 
+
+    /**
+     * Generates a tree {@link DAG} given a set of variables.
+     * @param variables a set of {@link Variables}.
+     * @return a {@link DAG} object.
+     */
+    public static DynamicDAG generateTreeDAG(DynamicVariables variables) {
+        DynamicDAG dag = new DynamicDAG(variables);
+
+        //TREE FOR TIME 0
+        List<Variable> connectedVars = new ArrayList();
+
+        List<Variable> nonConnectedVars = variables.getListOfDynamicVariables().stream().collect(Collectors.toList());
+
+        Random random = new Random(seed);
+
+
+        connectedVars.add(nonConnectedVars.remove(random.nextInt(nonConnectedVars.size())));
+
+        while (nonConnectedVars.size()>0){
+            Variable var1 = connectedVars.get(random.nextInt(connectedVars.size()));
+            Variable var2 = nonConnectedVars.get(random.nextInt(nonConnectedVars.size()));
+
+            if (var1.getVarID()<var2.getVarID() && dag.getParentSetTime0(var2).getNumberOfParents()==0 && var2.getDistributionType().isParentCompatible(var1))
+                dag.getParentSetTime0(var2).addParent(var1);
+            else if (var2.getVarID()<var1.getVarID() && dag.getParentSetTime0(var1).getNumberOfParents()==0 && var1.getDistributionType().isParentCompatible(var2))
+                dag.getParentSetTime0(var1).addParent(var2);
+            else
+                continue;
+
+            nonConnectedVars.remove(var2);
+            connectedVars.add(var2);
+        }
+
+        //TREE FOR TIME T
+        connectedVars = new ArrayList();
+
+        nonConnectedVars = variables.getListOfDynamicVariables().stream().collect(Collectors.toList());
+
+        connectedVars.add(nonConnectedVars.remove(random.nextInt(nonConnectedVars.size())));
+
+        while (nonConnectedVars.size()>0){
+            Variable var1 = connectedVars.get(random.nextInt(connectedVars.size()));
+            Variable var2 = nonConnectedVars.get(random.nextInt(nonConnectedVars.size()));
+
+            if (var1.getVarID()<var2.getVarID() && dag.getParentSetTimeT(var2).getNumberOfParents()==0 && var2.getDistributionType().isParentCompatible(var1))
+                dag.getParentSetTimeT(var2).addParent(var1);
+            else if (var2.getVarID()<var1.getVarID() && dag.getParentSetTimeT(var1).getNumberOfParents()==0 && var1.getDistributionType().isParentCompatible(var2))
+                dag.getParentSetTimeT(var1).addParent(var2);
+            else
+                continue;
+
+            nonConnectedVars.remove(var2);
+            connectedVars.add(var2);
+        }
+
+        return dag;
+    }
+
+    /**
+     * Generates a {@link DynamicBayesianNetwork} randomly.
+     * @return a {@link DynamicBayesianNetwork} object.
+     */
+    public static DynamicBayesianNetwork generateDynamicBayesianNetwork(){
+
+        DynamicVariables variables = new DynamicVariables();
+
+        IntStream.range(0, DynamicBayesianNetworkGenerator.numberOfDiscreteVars)
+                .forEach(i -> variables.newMultinomialDynamicVariable("DiscreteVar" + i, DynamicBayesianNetworkGenerator.numberOfStates));
+
+        IntStream.range(0, DynamicBayesianNetworkGenerator.numberOfContinuousVars)
+                .forEach(i -> variables.newGaussianDynamicVariable("GaussianVar" + i));
+
+        DynamicDAG dag = generateTreeDAG(variables);
+
+
+        Random random = new Random(seed);
+
+        //DAG TIME 0
+        int dagLinks = variables.getNumberOfVars()-1;
+        while (dagLinks< numberOfLinks){
+            Variable var1 = variables.getVariableById(random.nextInt(variables.getNumberOfVars()));
+            int max = variables.getNumberOfVars() - var1.getVarID() - 1;
+            if (max == 0)
+                continue;
+
+            Variable var2 = variables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
+
+            if (dag.getParentSetTime0(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSetTime0(var2).getNumberOfParents()>=3)
+                continue;
+
+            dag.getParentSetTime0(var2).addParent(var1);
+            dagLinks++;
+        }
+
+        //DAG TIME T
+        dagLinks = variables.getNumberOfVars()-1;
+        while (dagLinks< numberOfLinks){
+            Variable var1 = variables.getVariableById(random.nextInt(variables.getNumberOfVars()));
+            int max = variables.getNumberOfVars() - var1.getVarID() - 1;
+            if (max == 0)
+                continue;
+
+            Variable var2 = variables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
+
+            if (dag.getParentSetTimeT(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSetTimeT(var2).getNumberOfParents()>=3)
+                continue;
+
+            dag.getParentSetTimeT(var2).addParent(var1);
+            dagLinks++;
+        }
+
+        //Finally we connected over time.
+        for (Variable variable : variables) {
+            dag.getParentSetTimeT(variable).addParent(variable.getInterfaceVariable());
+        }
+
+        System.out.println(dag);
+
+        if (dag.containCycles())
+            throw new IllegalStateException("DAG with cycles");
+
+        DynamicBayesianNetwork network = new DynamicBayesianNetwork(dag);
+
+        network.randomInitialization(new Random(seed));
+
+        return network;
+    }
+
     public static void main(String[] agrs) throws IOException, ClassNotFoundException {
 
         DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
@@ -324,6 +463,10 @@ public class DynamicBayesianNetworkGenerator {
         System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
         dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicTAN(new Random(0), 2, true);
         System.out.println("DYNAMIC TAN");
+        System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
+
+        dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicBayesianNetwork();
+        System.out.println("DYNAMIC BN");
         System.out.println(dynamicBayesianNetwork.getDynamicDAG().toString());
 
     }

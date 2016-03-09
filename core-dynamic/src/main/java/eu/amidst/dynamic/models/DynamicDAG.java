@@ -159,40 +159,7 @@ public class DynamicDAG implements Serializable {
      * @return a boolean indicating if this DynamicDAG contains cycles (true) or not (false).
      */
     public boolean containCycles() {
-
-        boolean[] bDone = new boolean[2*this.dynamicVariables.getNumberOfVars()];
-
-        for (int i = 0; i < bDone.length; i++) {
-            bDone[i] = false;
-        }
-
-        for (Variable var : this.dynamicVariables) {
-            // find a node for which all parents are 'done'
-            boolean bFound = false;
-
-            for (Variable variable2 : this.dynamicVariables) {
-                if (!bDone[variable2.getVarID()]) {
-                    boolean bHasNoParents = true;
-
-                    for (Variable parent : this.getParentSetTimeT(variable2)) {
-                        if (!bDone[parent.getVarID()]) {
-                            bHasNoParents = false;
-                        }
-                    }
-
-                    if (bHasNoParents) {
-                        bDone[variable2.getVarID()] = true;
-                        bFound = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!bFound) {
-                return true;
-            }
-        }
-        return false;
+        return this.toDAGTimeT().containCycles() || this.toDAGTime0().containCycles();
     }
 
     /**

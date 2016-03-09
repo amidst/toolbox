@@ -81,6 +81,9 @@ public final class Utils {
                 index = i;
             }
         }
+        if (index==-1)
+            throw new IllegalStateException("There is no maximum. Probably a NaN value.");
+
         return index;
     }
 
