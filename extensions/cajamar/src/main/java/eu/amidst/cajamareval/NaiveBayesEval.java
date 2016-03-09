@@ -11,7 +11,6 @@
 package eu.amidst.cajamareval;
 
 import COM.hugin.HAPI.Domain;
-import eu.amidst.core.classifiers.NaiveBayesClassifier;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -28,6 +27,9 @@ import java.io.FileWriter;
 public class NaiveBayesEval {
 
     public static void main(String[] args) throws Exception{
+
+        /*
+
         String fileTrain = args[0];
         String fileTest = args[1];
         String fileOutput = args[2];
@@ -63,6 +65,8 @@ public class NaiveBayesEval {
 
         fw.close();
 
-    }
 
+
+    */
+    }
 }
