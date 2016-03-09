@@ -409,14 +409,14 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         IntStream.range(0,nMergedClassVars).forEachOrdered(modelNumber -> {
 
-            System.out.println("Model number " + modelNumber);
+//            System.out.println("Model number " + modelNumber);
             Variables variables = obtainReplicatedStaticVariables(dynamicVariables, modelNumber);
 
             DAG dag = obtainStaticDAG(dynamicDAG,variables,modelNumber);
             //System.out.println(dag.toString());
 
             BayesianNetwork bn = obtainStaticMergedClassVarNetwork(dag,variables,modelNumber);
-            System.out.println(bn.toString());
+//            System.out.println(bn.toString());
 
 
 //            int replicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
@@ -835,22 +835,22 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         for (int t = nTimeSteps-1; t >= 1; t--) {
 
-            System.out.println("Time:" + t);
+            //System.out.println("Time:" + t);
             double [] currentDistProbabilities = posteriorDistributionsMAPvariable.get(t);
             int currentDistrib_nMergedVars = (int) Math.round(Math.log(currentDistProbabilities.length)/Math.log(nStates));
 
-            System.out.println("Current Probabilities:" + Arrays.toString(currentDistProbabilities));
+            //System.out.println("Current Probabilities:" + Arrays.toString(currentDistProbabilities));
             current_max_probs = new double[(int)Math.pow(nStates, currentDistrib_nMergedVars-1)];
 
             if (t==nTimeSteps-1) {
                 previous_max_probs = Arrays.stream(previous_max_probs).map(d -> 1).toArray();
             }
-            System.out.println("Current Max Probs Length: " + current_max_probs.length);
-            System.out.println("Previoius Max Probs: " + Arrays.toString(previous_max_probs));
+            //System.out.println("Current Max Probs Length: " + current_max_probs.length);
+            //System.out.println("Previoius Max Probs: " + Arrays.toString(previous_max_probs));
 
             for (int m = 0; m < Math.pow(nStates, currentDistrib_nMergedVars); m++) {
 
-                System.out.println("State: " + m );
+                //System.out.println("State: " + m );
                 String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
                 m_base_nStates = StringUtils.leftPad(m_base_nStates, currentDistrib_nMergedVars, '0');
 
@@ -869,7 +869,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                     currentStateLastVars= Integer.parseInt(m_base_nStates, nStates);
                 }
 
-                System.out.println("FirstVars:" + currentStateFirstVars + ", LastVars:" + currentStateLastVars);
+                //System.out.println("FirstVars:" + currentStateFirstVars + ", LastVars:" + currentStateLastVars);
 
                 double currentProb = currentDistProbabilities[m] * previous_max_probs[currentStateLastVars];
                 double maxProb = current_max_probs[currentStateFirstVars];
@@ -879,7 +879,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 }
             }
 
-            System.out.println("Current Max Probabilities:" + Arrays.toString(current_max_probs));
+            //System.out.println("Current Max Probabilities:" + Arrays.toString(current_max_probs));
 
             argMaxValues[t-1] = (int)argMax(current_max_probs)[1];
             previous_max_probs = current_max_probs;
@@ -887,8 +887,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             if (t==1) {
                 MAPsequenceProbability =  argMax(current_max_probs)[0];
             }
-            System.out.println("MAP Sequence Prob:" + MAPsequenceProbability);
-            System.out.println("Arg Max Value: " + argMaxValues[t-1]+ "\n\n\n");
+            //System.out.println("MAP Sequence Prob:" + MAPsequenceProbability);
+            //System.out.println("Arg Max Value: " + argMaxValues[t-1]+ "\n\n\n");
 
         }
 
@@ -942,7 +942,9 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //            }
 //        }
 
-        System.out.println("\n\n TRACEBACK \n\n");
+        System.out.println(Arrays.toString(argMaxValues));
+
+        //System.out.println("\n\n TRACEBACK \n\n");
 
         //int previousVarMAPState = argMaxValues[0];
         MAPsequence[0] = argMaxValues[0];
@@ -950,22 +952,23 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         int thisVarMAPState = 0;
         for (int t = 1; t < nTimeSteps; t++) {
 
-            System.out.println("Time Step: " + t);
+            //System.out.println("Time Step: " + t);
             current_probs = posteriorDistributionsMAPvariable.get(t);
 
             StringBuilder prevVarsStateBuilder = new StringBuilder();
 
             for (int j = 0; j < Math.min(nMergedClassVars-1, t); j++) {
-                System.out.println("Append: " + Integer.toString(MAPsequence[t-j]) );
-                prevVarsStateBuilder.append( Integer.toString(MAPsequence[t-j]) );
+                //System.out.println("Append: " + Integer.toString(MAPsequence[t-j-1]) );
+                prevVarsStateBuilder.append( Integer.toString(MAPsequence[t-j-1]) );
             }
             //previousVarMAPState = argMaxValues[t-1];
 
-            System.out.println("PrevVarsState: " + prevVarsStateBuilder.toString());
+            //System.out.println("PrevVarsState: " + prevVarsStateBuilder.toString());
 //            String prevVarsState = Integer.toString(Integer.parseInt(prevVarsStateBuilder.toString()), nStates);
             String prevVarsState = prevVarsStateBuilder.toString();
 
-            System.out.println("Prev Vars State:" + prevVarsState);
+            //System.out.println("Prev Vars State:" + prevVarsState);
+
 
 //            String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(previousVarMAPState), 10), nStates);
 //            m_base_nStates = StringUtils.leftPad(m_base_nStates, currentDistrib_nMergedVars, '0');
@@ -987,7 +990,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             for (int j = 0; j < nStates; j++) { // To go over all values of Y_t
 
                 int currentState = Integer.parseInt(prevVarsState.concat(Integer.toString(j)),nStates);
-                System.out.println("Current state:" + currentState);
+                //System.out.println("Current state:" + currentState);
 
                 if (current_probs[currentState] > maxProb) {
                     maxProb = current_probs[currentState];
@@ -995,7 +998,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 }
             }
             MAPsequence[t]=thisVarMAPState;
-            System.out.println("Currente Sequence Value: " + MAPsequence[t] + "\n\n");
+            //System.out.println("Currente Sequence Value: " + MAPsequence[t] + "\n\n");
         }
 
 //        int previousVarMAPState = argMaxValues[0];

@@ -24,7 +24,7 @@ public class ComparisonToHugin {
 
         int seed = 8648462;
 
-        int nTimeSteps=7;
+        int nTimeSteps=8;
 
 
 
@@ -74,7 +74,7 @@ public class ComparisonToHugin {
 
 
         BayesianNetwork staticModel = dynMAP.getUnfoldedStaticModel();
-        Assignment staticEvidence = dynMAP.getUnfoldedEvidence();
+        //Assignment staticEvidence = dynMAP.getUnfoldedEvidence();
 
 
         //System.out.println(staticModel.toString());
@@ -92,7 +92,7 @@ public class ComparisonToHugin {
 
         System.out.println("B");
 
-        huginInference.setEvidence(staticEvidence);
+        //huginInference.setEvidence(staticEvidence);
 
         Domain huginBN = huginInference.getHuginBN();
 
@@ -116,18 +116,21 @@ public class ComparisonToHugin {
 
             System.out.println(classVarReplications.toString());
 
-            huginBN.findMAPConfigurations(classVarReplications, 0.0001);
+            huginBN.findMAPConfigurations(classVarReplications, 0.001);
 
-            System.out.println("HUGIN MAP Sequence:");
-            System.out.println(Arrays.toString(huginBN.getMAPConfiguration(0)) + " with probability " + huginBN.getProbabilityOfMAPConfiguration(0));
+            System.out.println("HUGIN MAP Sequences:");
+            for (int i = 0; i < huginBN.getNumberOfMAPConfigurations() && i<3; i++) {
+                System.out.println(Arrays.toString(huginBN.getMAPConfiguration(i)) + " with probability " + huginBN.getProbabilityOfMAPConfiguration(i));
+            }
         }
         catch (ExceptionHugin e) {
             System.out.println("\nHUGIN EXCEPTION:");
             System.out.println(e.getMessage());
         }
 
-        dynMAP.setNumberOfMergedClassVars(3);
+        dynMAP.setNumberOfMergedClassVars(2);
         dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.IS);
+        dynMAP.setSampleSize(10000);
         System.out.println("DynMAP (Grouped-IS) Sequence:");
         System.out.println(Arrays.toString(dynMAP.getMAPsequence()));
 
