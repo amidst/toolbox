@@ -434,8 +434,6 @@ public class DynamicBayesianNetworkGenerator {
             dag.getParentSetTimeT(variable).addParent(variable.getInterfaceVariable());
         }
 
-        System.out.println(dag);
-
         if (dag.containCycles())
             throw new IllegalStateException("DAG with cycles");
 

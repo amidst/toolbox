@@ -6,8 +6,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,20 +100,21 @@ public class InputOutputHMM  extends DynamicModel {
 
     public static void main(String[] args) {
 
+        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(1,1000,3,3);
 
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
-                .loadFromFile("datasets/WasteIncineratorSample.arff");
+        //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
+        //        .loadFromFile("datasets/WasteIncineratorSample.arff");
 
         Attributes dataAttributes = data.getAttributes();
 
         List<Attribute> inputAtts = new ArrayList<>();
-        inputAtts.add(dataAttributes.getAttributeByName("B"));
-        inputAtts.add(dataAttributes.getAttributeByName("F"));
-        inputAtts.add(dataAttributes.getAttributeByName("W"));
+        inputAtts.add(dataAttributes.getAttributeByName("DiscreteVar0"));
+        inputAtts.add(dataAttributes.getAttributeByName("DiscreteVar1"));
+        inputAtts.add(dataAttributes.getAttributeByName("DiscreteVar2"));
         List<Attribute> outputAtts = new ArrayList<>();
-        outputAtts.add(dataAttributes.getAttributeByName("Mout"));
-        outputAtts.add(dataAttributes.getAttributeByName("C"));
-        outputAtts.add(dataAttributes.getAttributeByName("L"));
+        outputAtts.add(dataAttributes.getAttributeByName("GaussianVar0"));
+        outputAtts.add(dataAttributes.getAttributeByName("GaussianVar1"));
+        outputAtts.add(dataAttributes.getAttributeByName("GaussianVar2"));
 
         System.out.println("------------------Input-Output HMM (diagonal matrix) from streaming------------------");
         InputOutputHMM IOHMM = new InputOutputHMM(dataAttributes,inputAtts,outputAtts);

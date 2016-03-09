@@ -5,8 +5,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class FactorialHMM extends DynamicModel {
         List<Variable> binaryHiddenVars = new ArrayList<>();
 
         IntStream.range(0, getNumHidden()).forEach(i -> {
-            Variable binaryHiddenVar = this.variables.newGaussianDynamicVariable("binaryHiddenVar" + i);
+            Variable binaryHiddenVar = this.variables.newMultinomialDynamicVariable("binaryHiddenVar" + i,2);
             binaryHiddenVars.add(binaryHiddenVar);
         });
 
@@ -96,27 +96,28 @@ public class FactorialHMM extends DynamicModel {
 
     public static void main(String[] args) {
 
-
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
-                .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
+        DataStream<DynamicDataInstance> dataHybrid= DataSetGenerator.generate(1,1000,3,10);
+        DataStream<DynamicDataInstance> dataGaussians = DataSetGenerator.generate(1,1000,0,10);
+        //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
+        //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
         System.out.println("------------------Factorial HMM (diagonal matrix) from streaming------------------");
-        FactorialHMM factorialHMM = new FactorialHMM(data.getAttributes());
+        FactorialHMM factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
         System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.learnModel(data);
+        factorialHMM.learnModel(dataHybrid);
         System.out.println(factorialHMM.getModel());
 
         System.out.println("------------------Factorial HMM (full cov. matrix) from streaming------------------");
-        factorialHMM = new FactorialHMM(data.getAttributes());
+        factorialHMM = new FactorialHMM(dataGaussians.getAttributes());
         factorialHMM.setDiagonal(false);
         System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.learnModel(data);
+        factorialHMM.learnModel(dataGaussians);
         System.out.println(factorialHMM.getModel());
 
         System.out.println("------------------Factorial HMM (diagonal matrix) from batches------------------");
-        factorialHMM = new FactorialHMM(data.getAttributes());
+        factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
         System.out.println(factorialHMM.getDynamicDAG());
-        for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
+        for (DataOnMemory<DynamicDataInstance> batch : dataHybrid.iterableOverBatches(100)) {
             factorialHMM.updateModel(batch);
         }
         System.out.println(factorialHMM.getModel());
