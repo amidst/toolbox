@@ -9,13 +9,14 @@
  *
  */
 
-package eu.amidst.core.utils;
+package eu.amidst.dynamic.utils;
 
-import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 
 /**
- * This class aims at generate randomly a data set with some given features as number of samples, number of continuous
+ * This class aims at generate randomly a data set of dynamic data instances with some given features as number of samples, number of continuous
  * and number of discrete variables.
  *
  * Created by andresmasegosa on 9/3/16.
@@ -30,16 +31,18 @@ public final class DataSetGenerator {
      * @param nContinuousAttributes, the number of continuous attributes.
      * @return A valid {@code DataStream} object.
      */
-    public static DataStream<DataInstance> generate(int seed, int nSamples, int nDiscreteAtts, int nContinuousAttributes){
-        BayesianNetworkGenerator.setSeed(seed);
-        BayesianNetworkGenerator.setNumberOfGaussianVars(nContinuousAttributes);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(nDiscreteAtts,2);
+    public static DataStream<DynamicDataInstance> generate(int seed, int nSamples, int nDiscreteAtts, int nContinuousAttributes){
+        DynamicBayesianNetworkGenerator.setSeed(seed);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(nContinuousAttributes);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(nDiscreteAtts);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
         int nTotal = nDiscreteAtts+nContinuousAttributes;
-        BayesianNetworkGenerator.setNumberOfLinks((int)(0.2*nTotal*(nTotal-1)/2));
-
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(BayesianNetworkGenerator.generateBayesianNetwork());
+        DynamicBayesianNetworkGenerator.setNumberOfLinks((int)(0.2*nTotal*(nTotal-1)/2));
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkGenerator.generateDynamicBayesianNetwork();
+        System.out.println(dbn);
+        DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dbn);
         sampler.setSeed(seed);
-        return sampler.sampleToDataStream(nSamples);
+        return sampler.sampleToDataBase(nSamples/50,50);
     }
 
 }
