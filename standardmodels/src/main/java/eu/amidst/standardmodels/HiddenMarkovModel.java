@@ -5,8 +5,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,8 +84,10 @@ public class HiddenMarkovModel extends DynamicModel{
     public static void main(String[] args) {
 
 
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
-                .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
+        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(1,1000,0,10);
+
+        //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
+        //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
         System.out.println("------------------HMM (diagonal matrix) from streaming------------------");
         HiddenMarkovModel HMM = new HiddenMarkovModel(data.getAttributes());
