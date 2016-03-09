@@ -43,13 +43,10 @@ public class NaiveBayesClassifier extends Classifier{
     /**
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
      * @param attributes
-     * @param classVarName
      * @throws WrongConfigurationException
      */
-    public NaiveBayesClassifier(Attributes attributes, String classVarName) throws WrongConfigurationException {
-        super(attributes, classVarName);
-
-
+    public NaiveBayesClassifier(Attributes attributes) throws WrongConfigurationException {
+        super(attributes);
     }
 
 
@@ -101,7 +98,8 @@ public class NaiveBayesClassifier extends Classifier{
 
         String classVarName = "DiscreteVar0";
 
-        NaiveBayesClassifier nb = new NaiveBayesClassifier(data.getAttributes(), classVarName);
+        NaiveBayesClassifier nb = new NaiveBayesClassifier(data.getAttributes());
+        nb.setClassName(classVarName);
 
         if(nb.isValidConfiguration()) {
             nb.learnModel(data);
@@ -114,7 +112,7 @@ public class NaiveBayesClassifier extends Classifier{
         }
 
         // predict the class of one instances
-
+        System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");
         List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
 
         for(DataInstance d : dataTest) {
