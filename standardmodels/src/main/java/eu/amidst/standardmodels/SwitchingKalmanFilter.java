@@ -5,8 +5,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,27 +98,27 @@ public class SwitchingKalmanFilter  extends DynamicModel {
 
     public static void main(String[] args) {
 
-
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
-                .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
+        DataStream<DynamicDataInstance> dataGaussians = DataSetGenerator.generate(1,1000,0,10);
+        //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
+        //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
         System.out.println("------------------SKF (diagonal matrix) from streaming------------------");
-        SwitchingKalmanFilter SKF = new SwitchingKalmanFilter(data.getAttributes());
+        SwitchingKalmanFilter SKF = new SwitchingKalmanFilter(dataGaussians.getAttributes());
         System.out.println(SKF.getDynamicDAG());
-        SKF.learnModel(data);
+        SKF.learnModel(dataGaussians);
         System.out.println(SKF.getModel());
 
         System.out.println("------------------SKF (full cov. matrix) from streaming------------------");
-        SKF = new SwitchingKalmanFilter(data.getAttributes());
+        SKF = new SwitchingKalmanFilter(dataGaussians.getAttributes());
         SKF.setDiagonal(false);
         System.out.println(SKF.getDynamicDAG());
-        SKF.learnModel(data);
+        SKF.learnModel(dataGaussians);
         System.out.println(SKF.getModel());
 
         System.out.println("------------------SKF (diagonal matrix) from batches------------------");
-        SKF = new SwitchingKalmanFilter(data.getAttributes());
+        SKF = new SwitchingKalmanFilter(dataGaussians.getAttributes());
         System.out.println(SKF.getDynamicDAG());
-        for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
+        for (DataOnMemory<DynamicDataInstance> batch : dataGaussians.iterableOverBatches(100)) {
             SKF.updateModel(batch);
         }
         System.out.println(SKF.getModel());

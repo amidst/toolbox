@@ -5,8 +5,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,28 +113,29 @@ public class KalmanFilter extends DynamicModel {
 
     public static void main(String[] args) {
 
+        DataStream<DynamicDataInstance> dataGaussians = DataSetGenerator.generate(1,1000,0,10);
 
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
-                .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
+        //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
+        //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
         System.out.println("------------------KF (diagonal matrix) from streaming------------------");
-        KalmanFilter KF = new KalmanFilter(data.getAttributes());
+        KalmanFilter KF = new KalmanFilter(dataGaussians.getAttributes());
         KF.setNumHidden(2);
         System.out.println(KF.getDynamicDAG());
-        KF.learnModel(data);
+        KF.learnModel(dataGaussians);
         System.out.println(KF.getModel());
 
         System.out.println("------------------KF (full cov. matrix) from streaming------------------");
-        KF = new KalmanFilter(data.getAttributes());
+        KF = new KalmanFilter(dataGaussians.getAttributes());
         KF.setDiagonal(false);
         System.out.println(KF.getDynamicDAG());
-        KF.learnModel(data);
+        KF.learnModel(dataGaussians);
         System.out.println(KF.getModel());
 
         System.out.println("------------------KF (diagonal matrix) from batches------------------");
-        KF = new KalmanFilter(data.getAttributes());
+        KF = new KalmanFilter(dataGaussians.getAttributes());
         System.out.println(KF.getDynamicDAG());
-        for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
+        for (DataOnMemory<DynamicDataInstance> batch : dataGaussians.iterableOverBatches(100)) {
             KF.updateModel(batch);
         }
         System.out.println(KF.getModel());

@@ -5,8 +5,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -86,27 +86,28 @@ public class AutoRegressiveHMM extends DynamicModel  {
 
     public static void main(String[] args) {
 
-
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
-                .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
+        DataStream<DynamicDataInstance> dataHybrid= DataSetGenerator.generate(1,1000,3,10);
+        DataStream<DynamicDataInstance> dataGaussians = DataSetGenerator.generate(1,1000,0,10);
+        //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
+        //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
         System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from streaming------------------");
-        AutoRegressiveHMM autoRegressiveHMM = new AutoRegressiveHMM(data.getAttributes());
+        AutoRegressiveHMM autoRegressiveHMM = new AutoRegressiveHMM(dataHybrid.getAttributes());
         System.out.println(autoRegressiveHMM.getDynamicDAG());
-        autoRegressiveHMM.learnModel(data);
+        autoRegressiveHMM.learnModel(dataHybrid);
         System.out.println(autoRegressiveHMM.getModel());
 
         System.out.println("------------------Auto-Regressive HMM (full cov. matrix) from streaming------------------");
-        autoRegressiveHMM = new AutoRegressiveHMM(data.getAttributes());
+        autoRegressiveHMM = new AutoRegressiveHMM(dataGaussians.getAttributes());
         autoRegressiveHMM.setDiagonal(false);
         System.out.println(autoRegressiveHMM.getDynamicDAG());
-        autoRegressiveHMM.learnModel(data);
+        autoRegressiveHMM.learnModel(dataGaussians);
         System.out.println(autoRegressiveHMM.getModel());
 
         System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from batches------------------");
-        autoRegressiveHMM = new AutoRegressiveHMM(data.getAttributes());
+        autoRegressiveHMM = new AutoRegressiveHMM(dataHybrid.getAttributes());
         System.out.println(autoRegressiveHMM.getDynamicDAG());
-        for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
+        for (DataOnMemory<DynamicDataInstance> batch : dataHybrid.iterableOverBatches(100)) {
             autoRegressiveHMM.updateModel(batch);
         }
         System.out.println(autoRegressiveHMM.getModel());

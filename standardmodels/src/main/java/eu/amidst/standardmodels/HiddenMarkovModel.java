@@ -84,28 +84,29 @@ public class HiddenMarkovModel extends DynamicModel{
     public static void main(String[] args) {
 
 
-        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(1,1000,0,10);
+        DataStream<DynamicDataInstance> dataGaussians = DataSetGenerator.generate(1,1000,0,10);
+        DataStream<DynamicDataInstance> dataHybrid = DataSetGenerator.generate(1,1000,2,10);
 
         //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
         //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
         System.out.println("------------------HMM (diagonal matrix) from streaming------------------");
-        HiddenMarkovModel HMM = new HiddenMarkovModel(data.getAttributes());
+        HiddenMarkovModel HMM = new HiddenMarkovModel(dataHybrid.getAttributes());
         System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(data);
+        HMM.learnModel(dataHybrid);
         System.out.println(HMM.getModel());
 
         System.out.println("------------------HMM (full cov. matrix) from streaming------------------");
-        HMM = new HiddenMarkovModel(data.getAttributes());
+        HMM = new HiddenMarkovModel(dataGaussians.getAttributes());
         HMM.setDiagonal(false);
         System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(data);
+        HMM.learnModel(dataGaussians);
         System.out.println(HMM.getModel());
 
         System.out.println("------------------HMM (diagonal matrix) from batches------------------");
-        HMM = new HiddenMarkovModel(data.getAttributes());
+        HMM = new HiddenMarkovModel(dataHybrid.getAttributes());
         System.out.println(HMM.getDynamicDAG());
-        for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
+        for (DataOnMemory<DynamicDataInstance> batch : dataHybrid.iterableOverBatches(100)) {
             HMM.updateModel(batch);
         }
         System.out.println(HMM.getModel());
