@@ -35,7 +35,9 @@ public final class DataSetGenerator {
         BayesianNetworkGenerator.setNumberOfGaussianVars(nContinuousAttributes);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(nDiscreteAtts,2);
         int nTotal = nDiscreteAtts+nContinuousAttributes;
-        BayesianNetworkGenerator.setNumberOfLinks((int)(0.2*nTotal*(nTotal-1)/2));
+        int nLinksMin = nTotal-1;
+        int nLinksMax = nTotal*(nTotal-1)/2;
+        BayesianNetworkGenerator.setNumberOfLinks((int)(0.8*nLinksMin + 0.2*nLinksMax));
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(BayesianNetworkGenerator.generateBayesianNetwork());
         sampler.setSeed(seed);
