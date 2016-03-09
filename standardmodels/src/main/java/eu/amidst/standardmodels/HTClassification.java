@@ -6,6 +6,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
@@ -118,17 +119,25 @@ public class HTClassification extends Model {
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        String file = "datasets/tmp2.arff";
-        //file = "datasets/syntheticDataDaimler.arff";
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,1000, 1, 10);
+        System.out.println(data.getAttributes().toString());
 
-        HTClassification htc = new HTClassification(data.getAttributes(), "default", 3,3);
+        //Parameters of the classifier
+        String classVarName = "DiscreteVar0";
+        int numContinuousHidden = 4;
+        int numStatesHidden = 3;
 
+        //Initializes the classifier
+        HTClassification htc = new HTClassification(data.getAttributes(), classVarName, numContinuousHidden, numStatesHidden);
+
+        //Learning
         if(htc.isValidConfiguration()) {
             htc.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
                 htc.updateModel(batch);
             }
+
+            //Shows the resulting model
             System.out.println(htc.getModel());
             System.out.println(htc.getDAG());
         }
