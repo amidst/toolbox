@@ -17,6 +17,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
@@ -90,7 +91,11 @@ public class FactorAnalysis extends Model {
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticDataVerdandeScenario3.arff");
+        int seed=6236;
+        int nSamples=5000;
+        int nContinuousVars=10;
+
+        DataStream<DataInstance> data = DataSetGenerator.generate(seed,nSamples,0,nContinuousVars);
 
         Model model = new FactorAnalysis(data.getAttributes());
 
