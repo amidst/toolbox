@@ -90,7 +90,7 @@ public class NaiveBayesClassifier extends Classifier{
 
         //DataStream<DataInstance> data = DataSetGenerator.generate(1234,1000, 2, 10);
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 10);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 3);
        // DataStream<DataInstance> dataTest = DataSetGenerator.generate(1234,100, 2, 10);
 
 
@@ -113,14 +113,34 @@ public class NaiveBayesClassifier extends Classifier{
 
         // predict the class of one instances
         System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");
-        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
+        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,100);
+
+        double hits = 0;
 
         for(DataInstance d : dataTest) {
+
+            double realValue = d.getValue(nb.getClassVar());
+            double predValue;
+
             d.setValue(nb.getClassVar(), Utils.missingValue());
             Multinomial posteriorProb = nb.predict(d);
-            System.out.println(posteriorProb.toString());
+
+
+            double[] values = posteriorProb.getProbabilities();
+            if (values[0]>values[1]) {
+                predValue = 0;
+            }else {
+                predValue = 1;
+
+            }
+
+            if(realValue == predValue) hits++;
+
+            System.out.println("realValue = "+realValue+", predicted ="+predValue);
 
         }
+
+        System.out.println("hits="+hits);
 
 
 

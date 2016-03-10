@@ -25,6 +25,9 @@ public class BNConverterToHugin {
      * @throws ExceptionHugin
      */
     public BNConverterToHugin() throws ExceptionHugin {
+        String libPathProperty = System.getProperty("java.library.path");
+        System.out.println("libPathProperty"+libPathProperty);
+
         huginBN = new Domain();
     }
 
