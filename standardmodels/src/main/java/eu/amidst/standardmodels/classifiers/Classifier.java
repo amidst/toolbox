@@ -11,9 +11,8 @@ package eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.utils.Utils;
@@ -27,7 +26,7 @@ import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigu
 public abstract class Classifier extends Model {
 
     /** Represents the inference algorithm. */
-    private InferenceAlgorithm predictions;
+    private InferenceAlgorithm inferenceAlgoPredict;
 
     /** class variable */
     protected Variable classVar;
@@ -37,8 +36,8 @@ public abstract class Classifier extends Model {
         super(attributes);
 
         classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
-        predictions=new VMP();
-        predictions.setSeed(0);
+        inferenceAlgoPredict = new ImportanceSampling();
+
     }
 
 
@@ -51,12 +50,15 @@ public abstract class Classifier extends Model {
         if (!Utils.isMissingValue(instance.getValue(classVar)))
             System.out.println("Class Variable can not be set.");
 
-        predictions.setModel(this.getModel());
-        this.predictions.setEvidence(instance);
-        this.predictions.runInference();
+        inferenceAlgoPredict.setModel(this.getModel());
+        this.inferenceAlgoPredict.setEvidence(instance);
+
+        System.out.println(instance);
+
+        this.inferenceAlgoPredict.runInference();
 
 
-        return this.predictions.getPosterior(classVar);
+        return this.inferenceAlgoPredict.getPosterior(classVar);
 
 
 
@@ -85,4 +87,11 @@ public abstract class Classifier extends Model {
     }
 
 
+    public InferenceAlgorithm getInferenceAlgoPredict() {
+        return inferenceAlgoPredict;
+    }
+
+    public void setInferenceAlgoPredict(InferenceAlgorithm inferenceAlgoPredict) {
+        this.inferenceAlgoPredict = inferenceAlgoPredict;
+    }
 }
