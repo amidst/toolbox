@@ -65,7 +65,7 @@ public class NaiveBayesClassifier extends Classifier{
 
 
     /**
-     * test if attributes passed as an argument in the constructor are suitable for this classifier
+     * tests if the attributes passed as an argument in the constructor are suitable for this classifier
      * @return boolean value with the result of the test.
      */
     @Override
@@ -98,11 +98,9 @@ public class NaiveBayesClassifier extends Classifier{
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        //DataStream<DataInstance> data = DataSetGenerator.generate(1234,1000, 2, 10);
+
 
         DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 3);
-       // DataStream<DataInstance> dataTest = DataSetGenerator.generate(1234,100, 2, 10);
-
 
         System.out.println(data.getAttributes().toString());
 

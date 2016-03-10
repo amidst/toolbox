@@ -18,6 +18,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
  * Created by andresmasegosa and rcabanas on 4/3/16.
  *
  * This class implements the model of Gaussian Discriminant Analysis
- *
+ * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 101.
  */
 public class GaussianDiscriminantAnalysis extends Classifier {
 
@@ -46,8 +47,8 @@ public class GaussianDiscriminantAnalysis extends Classifier {
     /**
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
      * The default parameters are used: the class variable is the last one and the
-     * diagonal flag is set to false.
-     * @param attributes
+     * diagonal flag is set to false (predictive variables are NOT independent).
+     * @param attributes list of attributes of the classifier (i.e. its variables)
      * @throws WrongConfigurationException
      */
     public GaussianDiscriminantAnalysis(Attributes attributes) throws WrongConfigurationException {
@@ -57,8 +58,9 @@ public class GaussianDiscriminantAnalysis extends Classifier {
 
     }
 
-
-
+    /**
+     * Builds the DAG over the set of variables given with the naive Bayes structure
+     */
     @Override
     protected void buildDAG() {
 
@@ -87,7 +89,10 @@ public class GaussianDiscriminantAnalysis extends Classifier {
 
 
     }
-
+    /*
+    * tests if the attributes passed as an argument in the constructor are suitable for this classifier
+    * @return boolean value with the result of the test.
+            */
     @Override
     public boolean isValidConfiguration(){
         boolean isValid = true;
@@ -125,6 +130,11 @@ public class GaussianDiscriminantAnalysis extends Classifier {
     }
 
 
+    /**
+     * Method to obtain the value of the diagonal flag.
+     * @param diagonal boolean value: when it is set to true, predictive variables are
+     *                 independent and hence the model is equivalent to the naive bayes.
+     */
     public void setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
         dag = null;
@@ -136,13 +146,12 @@ public class GaussianDiscriminantAnalysis extends Classifier {
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        String file = "datasets/tmp2.arff";
-        //file = "datasets/syntheticDataDaimler.arff";
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 1, 3);
+
 
         GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
         gda.setDiagonal(false);
-        gda.setClassName("default");
+        gda.setClassName("DiscreteVar0");
 
         if(gda.isValidConfiguration()) {
             gda.learnModel(data);
