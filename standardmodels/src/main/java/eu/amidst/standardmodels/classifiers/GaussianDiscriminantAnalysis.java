@@ -157,7 +157,7 @@ public class GaussianDiscriminantAnalysis extends Classifier {
 
         // predict the class of one instances
 
-        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
+        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,5);
 
         for(DataInstance d : dataTest) {
             d.setValue(gda.getClassVar(), Utils.missingValue());
