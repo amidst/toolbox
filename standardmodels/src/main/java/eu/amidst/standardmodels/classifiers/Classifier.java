@@ -31,8 +31,15 @@ public abstract class Classifier extends Model {
     /** class variable */
     protected Variable classVar;
 
-
-    public Classifier(Attributes attributes) throws WrongConfigurationException {
+    /**
+     * Constructor of a classifier which is initialized with the default arguments:
+     * the last variable in attributes is the class variable and importance sampling
+     * is the inference algorithm for making the predictions.
+     * @param attributes list of attributes of the classifier (i.e. its variables)
+     * @throws WrongConfigurationException is thrown when the attributes passed are not suitable
+     * for such classifier
+     */
+    protected Classifier(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
 
         classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
@@ -43,8 +50,9 @@ public abstract class Classifier extends Model {
 
     /**
      * Predicts the class membership probabilities for a given instance.
-     * @param instance the data instance to be classified.
-     * @return an array of doubles containing the estimated membership probabilities of the data instance for each class label.
+     * @param instance the data instance to be classified. The value associated to the class variable must be
+     *                 a missing value (i.e. a NaN)
+     * @return the posterior probability of the class variable
      */
     public Multinomial predict(DataInstance instance) {
         if (!Utils.isMissingValue(instance.getValue(classVar)))
@@ -77,20 +85,48 @@ public abstract class Classifier extends Model {
         return classVar;
     }
 
-    public void setClassVar(Variable classVar) {
+
+    /**
+     * Method to set the class variable. Note that it should be multinomial
+     * @param classVar object of the type {@link Variable} indicating which is the class variable
+     * @throws WrongConfigurationException is thrown when the variable is not a multinomial.
+     */
+    public void setClassVar(Variable classVar) throws WrongConfigurationException {
+
+        if(!classVar.isMultinomial()) {
+            setErrorMessage("class variable is not a multinomial");
+            throw new WrongConfigurationException(errorMessage);
+        }
+
         this.classVar = classVar;
         dag = null;
+
     }
 
-    public void setClassName(String className) {
+    /**
+     * Method to set the class variable. Note that it should be multinomial
+     * @param className String with the name of the class variable
+     * @throws WrongConfigurationException is thrown when the variable is not a multinomial.
+     */
+    public void setClassName(String className) throws WrongConfigurationException {
         setClassVar(vars.getVariableByName(className));
     }
 
 
+    /**
+     * Method to obtain the inference algorithm used for making the predictions. By default,
+     * importance sampling is used.
+     * @return
+     */
     public InferenceAlgorithm getInferenceAlgoPredict() {
         return inferenceAlgoPredict;
     }
 
+    /**
+     * Method to set the inference algorithm used for making the predictions. By default,
+     * importance sampling is used.
+     * @param inferenceAlgoPredict
+     */
     public void setInferenceAlgoPredict(InferenceAlgorithm inferenceAlgoPredict) {
         this.inferenceAlgoPredict = inferenceAlgoPredict;
     }

@@ -34,22 +34,27 @@ import java.util.stream.Collectors;
 
 /**
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
+ * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 82.
  */
 public class NaiveBayesClassifier extends Classifier{
 
 
 
-
     /**
-     * Constructor of classifier from a list of attributes (e.g. from a datastream).
-     * @param attributes
-     * @throws WrongConfigurationException
+     * Constructor of the classifier which is initialized with the default arguments:
+     * the last variable in attributes is the class variable and importance sampling
+     * is the inference algorithm for making the predictions.
+     * @param attributes list of attributes of the classifier (i.e. its variables)
+     * @throws WrongConfigurationException is thrown when the attributes passed are not suitable
+     * for such classifier
      */
     public NaiveBayesClassifier(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
     }
 
-
+    /**
+     * Builds the DAG over the set of variables given with the naive Bayes structure
+     */
     @Override
     protected void buildDAG() {
 
@@ -58,6 +63,11 @@ public class NaiveBayesClassifier extends Classifier{
 
     }
 
+
+    /**
+     * test if attributes passed as an argument in the constructor are suitable for this classifier
+     * @return boolean value with the result of the test.
+     */
     @Override
     public boolean isValidConfiguration(){
         boolean isValid = true;
