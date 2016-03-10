@@ -26,11 +26,26 @@ import java.util.stream.Collectors;
 public class LatentClassificationModel extends Classifier {
 
 
+    /** number of continuous hidden variables */
     private int numContinuousHidden;
+
+    /** states of the multinomial hidden variable */
     private int numStatesHidden;
 
+    /** multinomial hidden variable */
+    private Variable hiddenMultinomial;
+
+    /** set of continuous hidden variables*/
+    private List<Variable> contHiddenList;
 
 
+    /**
+     * Constructor of classifier from a list of attributes.
+     * The default parameters are used: the class variable is the last one and the
+     * diagonal flag is set to false (predictive variables are NOT independent).
+     * @param attributes list of attributes of the classifier (i.e. its variables)
+     * @throws WrongConfigurationException
+     */
     public LatentClassificationModel(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
 
@@ -42,7 +57,9 @@ public class LatentClassificationModel extends Classifier {
     }
 
 
-
+    /**
+     * Builds the DAG over the set of variables given with the naive Bayes structure
+     */
     @Override
     protected void buildDAG() {
 
@@ -54,9 +71,9 @@ public class LatentClassificationModel extends Classifier {
 
 
         //Create the hidden variabels
-        Variable hiddenMultinomial = vars.newMultionomialVariable("M", numStatesHidden);
+        hiddenMultinomial = vars.newMultionomialVariable("M", numStatesHidden);
 
-        List<Variable> contHiddenList = new ArrayList<Variable>();
+        contHiddenList = new ArrayList<Variable>();
         for(int i=0; i<numContinuousHidden; i++) {
             contHiddenList.add(vars.newGaussianVariable("Z"+Integer.toString(i)));
         }
@@ -78,7 +95,10 @@ public class LatentClassificationModel extends Classifier {
 
 
     }
-
+    /*
+    * tests if the attributes passed as an argument in the constructor are suitable for this classifier
+    * @return boolean value with the result of the test.
+            */
     public boolean isValidConfiguration(){
         boolean isValid = true;
 
@@ -107,22 +127,54 @@ public class LatentClassificationModel extends Classifier {
 
     //////// Getters and setters /////////
 
+    /**
+     * Method to obtain the number of continuous hidden variables
+     * @return integer value
+     */
     public int getNumContinuousHidden() {
         return numContinuousHidden;
     }
 
+    /**
+     * method for getting number of states of the hidden multinomial variable
+     * @return integer value
+     */
     public int getNumStatesHidden() {
         return numStatesHidden;
     }
 
+    /**
+     * sets the number of continuous hidden variables
+     * @param numContinuousHidden integer value
+     */
     public void setNumContinuousHidden(int numContinuousHidden) {
         this.numContinuousHidden = numContinuousHidden;
         dag = null;
     }
 
+    /**
+     * sets the number of states of the hidden multinomial variable
+     * @param numStatesHidden integer value
+     */
     public void setNumStatesHidden(int numStatesHidden) {
         this.numStatesHidden = numStatesHidden;
         dag = null;
+    }
+
+    /**
+     * method for getting the hidden multinomial variable
+     * @return object of type Variable
+     */
+    public Variable getHiddenMultinomial() {
+        return hiddenMultinomial;
+    }
+
+    /**
+     * method for getting the list of continuous hidden variables
+     * @return
+     */
+    public List<Variable> getContHiddenList() {
+        return contHiddenList;
     }
 
     ///////// main class (example of use) //////
