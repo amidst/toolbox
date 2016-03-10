@@ -45,7 +45,7 @@ public class GaussianDiscriminantAnalysis extends Classifier {
 
 
     /**
-     * Constructor of classifier from a list of attributes (e.g. from a datastream).
+     * Constructor of classifier from a list of attributes.
      * The default parameters are used: the class variable is the last one and the
      * diagonal flag is set to false (predictive variables are NOT independent).
      * @param attributes list of attributes of the classifier (i.e. its variables)
