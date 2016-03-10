@@ -157,8 +157,8 @@ public class LatentClassificationModel extends Classifier {
 
 
         // Uncomment the following 2 lines to get the bug
-        InferenceAlgorithm algo = new VMP();
-        lcm.setInferenceAlgoPredict(algo);
+        //InferenceAlgorithm algo = new VMP();
+        //lcm.setInferenceAlgoPredict(algo);
 
 
         // predict the class of one instances
