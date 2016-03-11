@@ -22,7 +22,7 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
 import java.util.stream.Collectors;

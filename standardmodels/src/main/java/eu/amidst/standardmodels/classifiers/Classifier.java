@@ -14,11 +14,10 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.Model;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
  * The Classifier abstract class is defined for Bayesian classification models.

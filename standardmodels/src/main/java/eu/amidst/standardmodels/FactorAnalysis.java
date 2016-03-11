@@ -13,16 +13,11 @@ package eu.amidst.standardmodels;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
-import org.apache.commons.lang.NotImplementedException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.ArrayList;
 import java.util.List;

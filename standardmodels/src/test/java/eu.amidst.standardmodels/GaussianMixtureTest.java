@@ -3,16 +3,10 @@ package eu.amidst.standardmodels;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.DataSetGenerator;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.classifiers.GaussianDiscriminantAnalysis;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by rcabanas on 10/03/16.
