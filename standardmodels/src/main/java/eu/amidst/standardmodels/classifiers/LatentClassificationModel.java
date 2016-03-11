@@ -17,7 +17,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by rcabanas on 09/03/16.
+ * This class implements the latent classification models. For more details, see
+ * Langseth, H., & Nielsen, T. D. (2005). Latent classification models. Machine Learning, 59(3), 237-265.
+ * Created by rcabanas on 10/03/16.
+ *
  */
 public class LatentClassificationModel extends Classifier {
 
