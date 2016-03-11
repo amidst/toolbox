@@ -205,6 +205,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * Creates a new Variable given an Attribute and a distribution type.
      * @param att an Attribute.
      * @param distributionTypeEnum a distribution type.
+     * @param name the name of the variable to create
      * @return a new {@link Variable}.
      */
     public Variable newVariable(Attribute att, DistributionTypeEnum distributionTypeEnum, String name) {

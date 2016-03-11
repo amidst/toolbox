@@ -25,7 +25,7 @@ import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 public abstract class Classifier extends Model {
 
     /** Represents the inference algorithm. */
-    private InferenceAlgorithm inferenceAlgoPredict;
+    protected InferenceAlgorithm inferenceAlgoPredict;
 
     /** class variable */
     protected Variable classVar;
