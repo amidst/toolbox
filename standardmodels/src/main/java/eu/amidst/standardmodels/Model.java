@@ -22,7 +22,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.parametric.dVMP;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
  * Created by andresmasegosa on 4/3/16.
