@@ -6,6 +6,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * This class implements a Gaussian Mixture Model
+ * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 339.
  * Created by rcabanas on 07/03/16.
  */
 public class GaussianMixture extends Model {
@@ -21,34 +24,37 @@ public class GaussianMixture extends Model {
 
 
     /* diagonal flag*/
-    private final boolean diagonal;
+    private boolean diagonal;
 
     /*number of states of the hidden variable*/
-    private final int numStatesHiddenVar;
+    private int numStatesHiddenVar;
 
+    /** hidden variable */
+    private Variable hiddenVar;
 
 
     /**
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
-     *
+     * The following parameters are set to their default values: numStatesHiddenVar = 2
+     * and diagonal = true.
      * @param attributes
-     * @param numStatesHiddenVar
-     * @param diagonal
      */
-    public GaussianMixture(Attributes attributes, int numStatesHiddenVar, boolean diagonal) throws WrongConfigurationException {
+    public GaussianMixture(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-        this.numStatesHiddenVar = numStatesHiddenVar;
-        this.diagonal = diagonal;
+        this.numStatesHiddenVar = 2;
+        this.diagonal = true;
     }
 
 
 
 
-
+    /**
+     * Builds the DAG over the set of variables given with the structure of the model
+     */
     @Override
     protected void buildDAG() {
 
-        Variable hiddenVar = vars.newMultionomialVariable("HiddenVar",numStatesHiddenVar);
+        hiddenVar = vars.newMultionomialVariable("HiddenVar",numStatesHiddenVar);
 
         //We create a standard naive Bayes
         dag = new DAG(vars);
@@ -90,6 +96,15 @@ public class GaussianMixture extends Model {
     }
 
     /**
+     * Method to set the value of the diagonal flag.
+     * @param diagonal boolean value, when true means that the attributes are independent.
+     */
+    public void setDiagonal(boolean diagonal) {
+        this.diagonal = diagonal;
+        this.dag = null;
+    }
+
+    /**
      * Method to obtain the number of states of the hidden (latent) variable
      * @return integer value
      */
@@ -98,6 +113,28 @@ public class GaussianMixture extends Model {
         return numStatesHiddenVar;
     }
 
+
+    /**
+     * Method to obtain the number of states of the hidden (latent) variable
+     * @param numStatesHiddenVar
+     */
+    public void setNumStatesHiddenVar(int numStatesHiddenVar) {
+        this.numStatesHiddenVar = numStatesHiddenVar;
+        this.dag = null;
+    }
+
+    /**
+     * Method to obtain the hidden (latent) variable
+     * @return
+     */
+    public Variable getHiddenVar() {
+        return hiddenVar;
+    }
+
+    /**
+     * tests if the attributes passed as an argument in the constructor are suitable for this classifier
+     * @return boolean value with the result of the test.
+     */
     @Override
     public boolean isValidConfiguration(){
 
@@ -116,11 +153,12 @@ public class GaussianMixture extends Model {
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        String file = "datasets/syntheticDataDaimler.arff";
-        //file = "datasets/tmp2.arff"; //example of inappropriate dataset
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(file);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 0, 3);
 
-        GaussianMixture GMM = new GaussianMixture(data.getAttributes(), 2, true);
+
+        GaussianMixture GMM = new GaussianMixture(data.getAttributes());
+        GMM.setDiagonal(false);
+        GMM.setNumStatesHiddenVar(3);
 
         GMM.learnModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
