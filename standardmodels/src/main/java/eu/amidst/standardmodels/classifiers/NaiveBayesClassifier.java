@@ -13,23 +13,14 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.ParallelMLMissingData;
-import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.DAGGenerator;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.Model;
 import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
-import javax.xml.crypto.Data;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +41,8 @@ public class NaiveBayesClassifier extends Classifier{
      */
     public NaiveBayesClassifier(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
+
+        this.setLearningAlgorithm(new ParallelMaximumLikelihood());
     }
 
     /**
