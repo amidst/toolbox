@@ -8,7 +8,7 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 /**
  * Created by rcabanas on 07/03/16.
  */
-
-
 public class GaussianMixture extends Model {
 
 
