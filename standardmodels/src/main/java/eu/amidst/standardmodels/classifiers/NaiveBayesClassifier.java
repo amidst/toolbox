@@ -24,22 +24,27 @@ import java.util.stream.Collectors;
 
 /**
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
+ * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 82.
  */
 public class NaiveBayesClassifier extends Classifier{
 
 
 
-
     /**
-     * Constructor of classifier from a list of attributes (e.g. from a datastream).
-     * @param attributes
-     * @throws WrongConfigurationException
+     * Constructor of the classifier which is initialized with the default arguments:
+     * the last variable in attributes is the class variable and importance sampling
+     * is the inference algorithm for making the predictions.
+     * @param attributes list of attributes of the classifier (i.e. its variables)
+     * @throws WrongConfigurationException is thrown when the attributes passed are not suitable
+     * for such classifier
      */
     public NaiveBayesClassifier(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
     }
 
-
+    /**
+     * Builds the DAG over the set of variables given with the naive Bayes structure
+     */
     @Override
     protected void buildDAG() {
 
@@ -48,6 +53,11 @@ public class NaiveBayesClassifier extends Classifier{
 
     }
 
+
+    /**
+     * tests if the attributes passed as an argument in the constructor are suitable for this classifier
+     * @return boolean value with the result of the test.
+     */
     @Override
     public boolean isValidConfiguration(){
         boolean isValid = true;
@@ -78,11 +88,9 @@ public class NaiveBayesClassifier extends Classifier{
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        //DataStream<DataInstance> data = DataSetGenerator.generate(1234,1000, 2, 10);
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 10);
-       // DataStream<DataInstance> dataTest = DataSetGenerator.generate(1234,100, 2, 10);
 
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 3);
 
         System.out.println(data.getAttributes().toString());
 
@@ -103,14 +111,34 @@ public class NaiveBayesClassifier extends Classifier{
 
         // predict the class of one instances
         System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");
-        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
+        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,100);
+
+        double hits = 0;
 
         for(DataInstance d : dataTest) {
+
+            double realValue = d.getValue(nb.getClassVar());
+            double predValue;
+
             d.setValue(nb.getClassVar(), Utils.missingValue());
             Multinomial posteriorProb = nb.predict(d);
-            System.out.println(posteriorProb.toString());
+
+
+            double[] values = posteriorProb.getProbabilities();
+            if (values[0]>values[1]) {
+                predValue = 0;
+            }else {
+                predValue = 1;
+
+            }
+
+            if(realValue == predValue) hits++;
+
+            System.out.println("realValue = "+realValue+", predicted ="+predValue);
 
         }
+
+        System.out.println("hits="+hits);
 
 
 

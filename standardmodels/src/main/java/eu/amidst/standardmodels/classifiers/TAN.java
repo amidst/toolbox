@@ -114,6 +114,10 @@ public class TAN extends Model {
         int nDiscreteVars=5;
         int nContinuousVars=10;
 
+
+        String libPathProperty = System.getProperty("java.library.path");
+        System.out.println("libPathProperty"+libPathProperty);
+
         DataStream<DataInstance> data = DataSetGenerator.generate(seed,nSamples,nDiscreteVars,nContinuousVars);
 
         String classVarName="DiscreteVar0";

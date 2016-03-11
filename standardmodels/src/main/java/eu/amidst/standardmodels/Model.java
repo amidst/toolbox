@@ -85,7 +85,7 @@ public abstract class Model {
     }
 
     public void updateModel(DataOnMemory<DataInstance> datBatch){
-        if (learningAlgorithm ==null) {
+        if (learningAlgorithm ==null || dag == null ) {
             learningAlgorithm = new SVB();
             learningAlgorithm.setDAG(this.getDAG());
             learningAlgorithm.initLearning();
