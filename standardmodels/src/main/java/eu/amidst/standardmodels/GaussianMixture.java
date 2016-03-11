@@ -9,7 +9,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
  * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 339.
  * Created by rcabanas on 07/03/16.
  */
-
-
 public class GaussianMixture extends Model {
 
 

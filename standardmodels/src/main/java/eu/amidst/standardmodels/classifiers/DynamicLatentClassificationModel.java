@@ -11,7 +11,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DataSetGenerator;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -8,7 +8,7 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.classifiers.NaiveBayesClassifier;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
 import java.util.List;

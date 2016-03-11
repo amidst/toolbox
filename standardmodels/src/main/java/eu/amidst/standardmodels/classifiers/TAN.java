@@ -22,7 +22,7 @@ import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.learning.ParallelTAN;
 import eu.amidst.standardmodels.Model;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
  * Created by andresmasegosa on 4/3/16.

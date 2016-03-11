@@ -8,7 +8,7 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.classifiers.HODE;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
 import java.util.List;

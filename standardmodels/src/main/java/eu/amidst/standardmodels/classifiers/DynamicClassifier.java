@@ -11,7 +11,7 @@ import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
 import eu.amidst.dynamic.inference.InferenceAlgorithmForDBN;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.standardmodels.DynamicModel;
-import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
  * Created by ana@cs.aau.dk on 11/03/16.
