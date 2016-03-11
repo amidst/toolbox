@@ -19,7 +19,7 @@ public abstract class DynamicModel {
 
     protected DynamicDAG dynamicDAG;
 
-    DynamicVariables variables;
+    protected DynamicVariables variables;
 
     protected int windowSize = 100;
 

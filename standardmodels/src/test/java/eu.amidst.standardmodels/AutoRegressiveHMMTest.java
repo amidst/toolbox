@@ -18,8 +18,8 @@ public class AutoRegressiveHMMTest  extends TestCase {
         if (setUpIsDone) {
             return;
         }
-        dataHybrid = DataSetGenerator.generate(1,1000,3,10);
-        dataGaussians = DataSetGenerator.generate(1,1000,0,10);
+        dataHybrid = DataSetGenerator.generate(1,1000,3,5);
+        dataGaussians = DataSetGenerator.generate(1,1000,0,5);
         setUpIsDone = true;
     }
 

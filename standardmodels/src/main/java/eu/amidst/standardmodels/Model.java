@@ -15,7 +15,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgorithm;
+import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -29,7 +29,7 @@ import eu.amidst.standardmodels.eu.amidst.standardmodels.exceptions.WrongConfigu
  */
 public abstract class Model {
 
-    protected BayesianParameterLearningAlgorithm learningAlgorithm;
+    protected ParameterLearningAlgorithm learningAlgorithm;
 
     protected dVMP dvmp = new dVMP();
 
@@ -54,7 +54,7 @@ public abstract class Model {
         return dag;
     }
 
-    public void setLearningAlgorithm(BayesianParameterLearningAlgorithm learningAlgorithm) {
+    public void setLearningAlgorithm(ParameterLearningAlgorithm learningAlgorithm) {
         this.learningAlgorithm = learningAlgorithm;
     }
 

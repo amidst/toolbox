@@ -47,5 +47,4 @@ public class SwitchingKalmanFilterTest extends TestCase{
         }
         System.out.println(SKF.getModel());
     }
-
 }

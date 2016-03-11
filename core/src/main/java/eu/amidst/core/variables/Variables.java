@@ -202,6 +202,25 @@ public class Variables implements Iterable<Variable>, Serializable {
     }
 
     /**
+     * Creates a new Variable given an Attribute and a distribution type.
+     * @param att an Attribute.
+     * @param distributionTypeEnum a distribution type.
+     * @return a new {@link Variable}.
+     */
+    public Variable newVariable(Attribute att, DistributionTypeEnum distributionTypeEnum, String name) {
+        VariableBuilder builder = new VariableBuilder(att);
+        builder.setDistributionType(distributionTypeEnum);
+        builder.setName(name);
+        VariableImplementation var = new VariableImplementation(builder, allVariables.size());
+        if (mapping.containsKey(var.getName())) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(var.getName(), var.getVarID());
+        allVariables.add(var);
+        return var;
+    }
+
+    /**
      * Creates a new Variable given an Attribute.
      * @param att an Attribute.
      * @return a new {@link Variable}.
