@@ -14,7 +14,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Created by ana@cs.aau.dk on 08/03/16.
+ * This class implements a Factorial Hidden Markov Model. HMM with (unconnected) binary hidden parents. See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 627
+ *
+ * Created by ana@cs.aau.dk on 05/03/16.
  */
 public class FactorialHMM extends DynamicModel {
 
