@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
+ * This class implements a Kalman Filter (KF) or State Space Model (SSM). See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 640
+ *
  * Created by ana@cs.aau.dk on 05/03/16.
  */
 public class KalmanFilter extends DynamicModel {

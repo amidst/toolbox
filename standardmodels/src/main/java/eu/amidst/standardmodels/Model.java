@@ -25,6 +25,9 @@ import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
+ * The Model abstract class is defined as a superclass to all static standard models (not used for classification, if so,
+ * extends Classifier)
+ *
  * Created by andresmasegosa on 4/3/16.
  */
 public abstract class Model {

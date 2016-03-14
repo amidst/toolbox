@@ -12,7 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk on 08/03/16.
+ * This class implements an Auto-regressive Hidden Markov Model. HMM with temporal links on the leaves. See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 626
+ *
+ * Created by ana@cs.aau.dk on 05/03/16.
  */
 public class AutoRegressiveHMM extends DynamicModel  {
 

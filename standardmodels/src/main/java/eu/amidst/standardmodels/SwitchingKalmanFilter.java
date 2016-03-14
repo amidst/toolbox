@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * This class implements a Switching Kalman Filter (SKF). See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 640
+ *
  * Created by ana@cs.aau.dk on 07/03/16.
  */
 public class SwitchingKalmanFilter  extends DynamicModel {

@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk on 04/03/16.
+ * This class implements a Hidden Markov Model (HMM). See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 603
+ *
  */
 public class HiddenMarkovModel extends DynamicModel{
 

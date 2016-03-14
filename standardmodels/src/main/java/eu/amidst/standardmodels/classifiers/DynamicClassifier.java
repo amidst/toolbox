@@ -14,6 +14,8 @@ import eu.amidst.standardmodels.DynamicModel;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
+ * The DynamicClassifier abstract class is defined for dynamic Bayesian classification models.
+ *
  * Created by ana@cs.aau.dk on 11/03/16.
  */
 public abstract class DynamicClassifier extends DynamicModel{
