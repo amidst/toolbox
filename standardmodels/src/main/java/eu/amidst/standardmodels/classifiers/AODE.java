@@ -20,7 +20,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk on 11/03/16.
+ * The AODE class implements the interface {@link Classifier} and defines a (G)AODE Classifier.
+ * It can learn from datasets with either all discrete or all continuous attributes.
+ *
+ * For more details:
+ *
+ * See Geoffrey I. Webb, Janice R. Boughton, Zhihai Wang: Not So Naive Bayes: Aggregating One-Dependence Estimators.
+ * Machine Learning 58(1): 5-24 (2005).
+ *
+ * See M. Julia Flores, José A. Gámez, Ana M. Martínez, Jose Miguel Puerta: GAODE and HAODE: two proposals based on AODE
+ * to deal with continuous variables. ICML 2009: 313-320.
+ *
+ * Created by ana@cs.aau.dk on 05/03/16.
  */
 public class AODE extends Classifier {
 
@@ -148,22 +159,22 @@ public class AODE extends Classifier {
                 .filter( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.FINITE_SET))
                 .count();
 
-        if(numFinite <2) {
+        long numReal = vars.getListOfVariables().stream()
+                .filter( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
+                .count();
+
+        if(numFinite > 1 && numReal > 0) {
             isValid = false;
             String errorMsg = "Invalid configuration: There should be at least 2 discrete variables (root and class)";
             this.setErrorMessage(errorMsg);
         }
 
-        long numReal = vars.getListOfVariables().stream()
-                .filter( v -> v.getStateSpaceTypeEnum().equals(StateSpaceTypeEnum.REAL))
-                .count();
-
-        return  isValid && (numReal==0);
+        return  isValid;
     }
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 5, 0);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 1, 5);
 
         String classVarName = "DiscreteVar0";
 

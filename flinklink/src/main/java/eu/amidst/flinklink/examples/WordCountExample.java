@@ -17,6 +17,7 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,10 @@ public class WordCountExample {
     static Logger logger = LoggerFactory.getLogger(WordCountExample.class);
 
     public static void main(String[] args) throws Exception {
+
+        //BasicConfigurator.configure();
+        PropertyConfigurator.configure(args[0]);
+
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         logger.info("Entering application.");

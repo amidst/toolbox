@@ -16,7 +16,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk on 09/03/16.
+ * This class implements the HODE classification model (extended NB with a multinomial hidden as superparent).
+ *
+ * For more details:
+ *
+ * See M. Julia Flores, José A. Gámez, Ana M. Martínez, Jose Miguel Puerta: HODE: Hidden One-Dependence Estimator.
+ * ECSQARU 2009: 481-492.
+ *
+ * Created by ana@cs.aau.dk on 05/03/16.
  */
 public class HODE extends Classifier {
 

@@ -11,7 +11,11 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 
 /**
- * Created by ana@cs.aau.dk on 04/03/16.
+ *
+ * The DynamicModel abstract class is defined as a superclass to all dynamic standard models (not used for
+ * classification, if so, extends DynamicClassifier)
+ *
+ * Created by andresmasegosa, ana@cs.aau.dk on 04/03/16.
  */
 public abstract class DynamicModel {
 

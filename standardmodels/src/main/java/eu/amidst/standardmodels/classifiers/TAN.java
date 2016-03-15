@@ -25,6 +25,10 @@ import eu.amidst.standardmodels.Model;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
+ * This class implements a Tree Augmente Naive Bayes classifier, TAN. For more details:
+ *
+ * N. Friedman, D. Geiger, and M. Goldszmidt. Bayesian network classifiers. Machine Learning, 29(2-3):131–163, 1997.
+ *
  * Created by andresmasegosa on 4/3/16.
  */
 
