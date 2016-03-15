@@ -90,7 +90,6 @@
         <module>flinklink</module>
         <module>moalink</module>
         <module>sparklink</module>
-        <module>moa-customized</module>
         <module>extensions/cajamar</module>
         <module>extensions/caepia2015</module>
         <module>extensions/ida2015</module>
