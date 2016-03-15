@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -Xmx5000M -Djava.library.path="./huginlink/huginlib/" -cp "./huginlink/huginlib/*:./core/target/*:./examples/target/*:./moalink/target/*:./huginlink/target/*:./flinklink/target/*" $@
+java -Xmx5000M -Djava.library.path="./huginlink/huginlib/" -cp "./huginlink/huginlib/*:./core/target/*:./examples/target/*:./moalink/target/*:./huginlink/target/*:./flinklink/target/*:./extensions/uai2016/target/*" $@

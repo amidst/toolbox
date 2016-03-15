@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class implements an Input-Output Hidden Markov Model. HMM with input/control observed variables on top.
+ * See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 625
+ *
  * Created by ana@cs.aau.dk on 08/03/16.
  */
 public class InputOutputHMM  extends DynamicModel {
