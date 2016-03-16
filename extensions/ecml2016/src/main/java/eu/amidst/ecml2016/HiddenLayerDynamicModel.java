@@ -12,6 +12,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -266,8 +267,8 @@ public class HiddenLayerDynamicModel {
 //        System.out.println(dag1.containCycles());
 //        System.out.println(dag1.toDAGTime0().containCycles() + ", " + dag1.toDAGTimeT().containCycles());
 
-        dynamicVariables.forEach(variable -> System.out.println(variable.getName() + " with " + variable.getNumberOfStates() + " states"));
-        System.out.println(dag.toString());
+        //dynamicVariables.forEach(variable -> System.out.println(variable.getName() + " with " + variable.getNumberOfStates() + " states"));
+        //System.out.println(dag.toString());
 
         model = new DynamicBayesianNetwork(dag);
         model.randomInitialization(random);
@@ -282,16 +283,17 @@ public class HiddenLayerDynamicModel {
             IntStream.range(0,distribution.getNumberOfParentAssignments()).forEach(i -> {
                 ConditionalLinearGaussian currentTerm = distribution.getNormal_NormalParentsDistribution(i);
 
-                double[] parameters1 = currentTerm.getCoeffParents();
+//                double[] parameters1 = currentTerm.getCoeffParents();
 //                System.out.println(parameters1.length);
 //                System.out.println(Arrays.toString(parameters1));
-
+//
 //                for (int j = 0; j < parameters1.length; j++) {
 //                    parameters1[j] = 1;//Math.signum(parameters1[j]);
 //                }
-                //currentTerm.setIntercept(0);
-                //currentTerm.setCoeffParents(parameters1);
+                currentTerm.setIntercept(1*Math.pow(-1,i));
+//                currentTerm.setCoeffParents(parameters1);
                 currentTerm.setVariance(0.1);
+
                 if (variable.getName().contains(hiddenVarName)) {
                     currentTerm.setCoeffForParent(variable.getInterfaceVariable(), 1);
                 }
@@ -299,7 +301,7 @@ public class HiddenLayerDynamicModel {
 
             });
         });
-        if(Double.isFinite(probabilityKeepClassState)) {
+        if (Double.isFinite(probabilityKeepClassState)) {
             this.setProbabilityOfKeepingClass(probabilityKeepClassState);
         }
 
@@ -317,7 +319,7 @@ public class HiddenLayerDynamicModel {
 
 //        model.getDynamicVariables().getListOfDynamicVariables().forEach(variable -> System.out.println(variable.getName() + fullSample.stream().findFirst().get().getValue(variable)));
 
-        fullSample.stream().forEach(dynamicDataInstance1 -> System.out.println(dynamicDataInstance1.outputString(model.getDynamicVariables().getListOfDynamicVariables())));
+        //fullSample.stream().forEach(dynamicDataInstance1 -> System.out.println(dynamicDataInstance1.outputString(model.getDynamicVariables().getListOfDynamicVariables())));
 
         List<DynamicAssignment> sample = new ArrayList<>();
 
@@ -379,6 +381,7 @@ public class HiddenLayerDynamicModel {
 
     public void setProbabilityOfKeepingClass(double probKeeping) {
         if (model==null) {
+            this.probabilityKeepClassState=probKeeping;
             return;
         }
         Variable classVar = model.getDynamicVariables().getVariableByName(classVarName);
@@ -405,6 +408,64 @@ public class HiddenLayerDynamicModel {
     public void randomInitialization(Random random) {
         if(model!=null) {
             model.randomInitialization(random);
+
+
+            List<Variable> allVariables = model.getDynamicVariables().getListOfDynamicVariables();
+
+            allVariables.stream().filter(Variable::isNormal).forEach(variable -> {
+
+                if(variable.getName().equals("Continuous" + hiddenVarName + "1")) {
+                    Normal_MultinomialParents distribution0 = model.getConditionalDistributionTime0(variable);
+                    Normal_MultinomialNormalParents distributionT = model.getConditionalDistributionTimeT(variable);
+
+                    IntStream.range(0, distributionT.getNumberOfParentAssignments()).forEach(i -> {
+
+                        ConditionalLinearGaussian currentTermT = distributionT.getNormal_NormalParentsDistribution(i);
+                        currentTermT.setIntercept(1*Math.pow(-1,i));
+                        currentTermT.setVariance(1);
+
+                        Normal currentTerm0 = distribution0.getNormal(i);
+                        currentTerm0.setVariance(0.5);
+                    });
+
+                }
+                else {
+
+                    Normal_MultinomialNormalParents distributionT = model.getConditionalDistributionTimeT(variable);
+                    Normal_MultinomialNormalParents distribution0 = model.getConditionalDistributionTime0(variable);
+
+//            System.out.println("\nVariable: " + variable.getName());
+
+//            System.out.println(distributionT.toString());
+                    IntStream.range(0, distributionT.getNumberOfParentAssignments()).forEach(i -> {
+                        ConditionalLinearGaussian currentTermT = distributionT.getNormal_NormalParentsDistribution(i);
+                        ConditionalLinearGaussian currentTerm0 = distribution0.getNormal_NormalParentsDistribution(i);
+
+//                double[] parameters1 = currentTermT.getCoeffParents();
+//                System.out.println(parameters1.length);
+//                System.out.println(Arrays.toString(parameters1));
+//
+//                for (int j = 0; j < parameters1.length; j++) {
+//                    parameters1[j] = 1;//Math.signum(parameters1[j]);
+//                }
+                        currentTermT.setIntercept(1*Math.pow(-1,i));
+                        currentTerm0.setIntercept(1*Math.pow(-1,i));
+
+//                currentTermT.setCoeffParents(parameters1);
+
+                        currentTermT.setVariance(1);
+                        currentTerm0.setVariance(1);
+
+
+                        if (variable.getName().contains(hiddenVarName)) {
+                            currentTermT.setCoeffForParent(variable.getInterfaceVariable(), 1);
+                        }
+//                System.out.println(distributionT.getNormal_NormalParentsDistribution(i).toString());
+
+                    });
+                }
+            });
+
             if(Double.isFinite(probabilityKeepClassState)) {
                 this.setProbabilityOfKeepingClass(probabilityKeepClassState);
             }
