@@ -8,18 +8,20 @@
 
 package eu.amidst.core.examples.classifiers;
 
-import eu.amidst.core.classifiers.NaiveBayesClassifier;
+
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.standardmodels.classifiers.NaiveBayesClassifier;
+import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
  * Created by andresmasegosa on 15/01/15.
  */
 public class NaiveBayesClassifierDemo {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws WrongConfigurationException{
 
         BayesianNetworkGenerator.loadOptions();
 
@@ -37,11 +39,10 @@ public class NaiveBayesClassifierDemo {
         DataStream<DataInstance> data =  sampler.sampleToDataStream(sampleSize);
 
         long time = System.nanoTime();
-        NaiveBayesClassifier model = new NaiveBayesClassifier();
+        NaiveBayesClassifier model = new NaiveBayesClassifier(data.getAttributes());
         model.setClassName(data.getAttributes().getFullListOfAttributes().get(data.getAttributes().getFullListOfAttributes().size() - 1).getName());
-        model.setParallelMode(true);
-        model.learn(data, 1000);
-        BayesianNetwork nbClassifier = model.getBNModel();
+        model.learnModel(data);
+        BayesianNetwork nbClassifier = model.getModel();
         System.out.println(nbClassifier.toString());
 
         System.out.println("Time: "+(System.nanoTime()-time)/1000000000.0);

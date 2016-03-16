@@ -14,20 +14,25 @@ package eu.amidst.core.io;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.utils.DataSetGenerator;
 import junit.framework.TestCase;
+
+import java.io.IOException;
 
 /**
  * Created by andresmasegosa on 14/10/15.
  */
 public class DataStreamLoaderTest extends TestCase {
 
-    public static void test1(){
+    public static void test1() throws IOException{
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/datatest.arff");
-        for (Attribute attribute : data.getAttributes().getFullListOfAttributes()) {
+        DataStreamWriter.writeDataToFile(DataSetGenerator.generate(1234,50, 5, 5), "datasets/dataTest.arff");
+
+        DataStream<DataInstance> dataTest = DataStreamLoader.openFromFile("./datasets/dataTest.arff");
+        for (Attribute attribute : dataTest.getAttributes().getFullListOfAttributes()) {
             System.out.println(attribute.getName() +", "+attribute.getIndex());
         }
-        assertEquals(data.getAttributes().getNumberOfAttributes(),7);
-        assertEquals(data.stream().count(), 16);
+        assertEquals(dataTest.getAttributes().getNumberOfAttributes(),10);
+        assertEquals(dataTest.stream().count(), 50);
     }
 }

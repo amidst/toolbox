@@ -2,8 +2,6 @@ package eu.amidst.modelExperiments;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.datastream.filereaders.DataFileReader;
-import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
@@ -18,11 +16,9 @@ import weka.classifiers.evaluation.Prediction;
 import weka.classifiers.evaluation.ThresholdCurve;
 import weka.core.Instances;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,8 +27,8 @@ import java.util.List;
 public class EvaluateAUC {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        String networkFolder = "/Users/dario/Desktop/UAI/networks/";
-        String dataFolder = "/Users/dario/Desktop/UAI/data/";
+        String networkFolder = args[0];
+        String dataFolder = args[1];
 
         Path networkPath = Paths.get(networkFolder);
         List<Path> networkFiles = listSourceFiles(networkPath,"*.bn");

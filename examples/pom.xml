@@ -111,6 +111,11 @@
             <groupId>eu.amidst</groupId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>standardmodels</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
     </dependencies>
 
