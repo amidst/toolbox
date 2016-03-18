@@ -19,10 +19,12 @@ import eu.amidst.core.utils.*;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
+import org.apache.commons.math.complex.Complex;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.SynchronousQueue;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -243,14 +245,53 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
             ArrayVector SSposterior = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
             SSposterior.copy(SSvariablesAPosteriori.get(i));
 
-            ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-            SSsample.copy(ef_univariateDistribution.getSufficientStatistics(sample));
-            SSsample.multiplyBy(logWeight);
+            ArrayVector newSSposterior;
 
-            ArrayVector SS = new ArrayVector(ef_univariateDistribution.getMomentParameters().size());
-            SS.copy(ef_univariateDistribution.getSufficientStatistics(sample));
+            if(variable.isMultinomial()) {
 
-            ArrayVector newSSposterior = robustSumOfMultinomialSufficientStatistics(SSposterior,SSsample);
+                ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
+                SSsample.copy(ef_univariateDistribution.getSufficientStatistics(sample));
+                SSsample.multiplyBy(logWeight);
+
+                ArrayVector SS = new ArrayVector(ef_univariateDistribution.getMomentParameters().size());
+                SS.copy(ef_univariateDistribution.getSufficientStatistics(sample));
+
+                newSSposterior = robustSumOfMultinomialSufficientStatistics(SSposterior, SSsample);
+            }
+            else {
+//                if (variable.isNormal() ) {
+//
+//                    double global_shift = SSposterior.get(2);
+//
+//                    //ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics()+1);
+//
+//                    SufficientStatistics SSsample = ef_univariateDistribution.getSufficientStatistics(sample);
+//
+//                    double coef1 = ef_univariateDistribution.getSufficientStatistics(sample).get(0);
+//                    double coef2 = Math.pow(coef1,2);
+//                    double shift = 0;
+//
+//
+//                    if(coef1<=global_shift) {
+//                        shift = coef1-1;
+//                    }
+//                    double log_aux = Math.log(coef1 - global_shift - shift);
+//
+//                    double[] SScoefs = new double[]{log_aux, 2*log_aux, shift};
+//
+//                    ArrayVector AVsample = new ArrayVector(SScoefs);
+//                    //AVsample.multiplyBy(logWeight);
+//                    AVsample.sumConstant(logWeight);
+//
+////                ArrayVector SS = new ArrayVector(ef_univariateDistribution.getMomentParameters().size());
+////                SS.copy(ef_univariateDistribution.getSufficientStatistics(sample));
+//
+//                    newSSposterior = robustSumOfNormalSufficientStatistics(SSposterior, AVsample);
+//                }
+//                else {
+                    throw new UnsupportedOperationException("ImportanceSamplingRobust.updatePosteriorDistributions() works only for multinomials");
+//                }
+            }
             SSvariablesAPosteriori.set(i,newSSposterior);
 
         });
@@ -360,13 +401,13 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
             double tail;
             double aux = Math.exp(aux_min-aux_max);
-//            if (aux<0.1) {
-//                tail = Math.log1p( aux );
-//            }
-//            else {
-//                tail = Math.log(1+aux);
-//            }
-            tail = Math.log( 1+aux );
+            if (aux<0.5) {
+                tail = Math.log1p( aux );
+            }
+            else {
+                tail = Math.log( 1+aux );
+            }
+//            tail = Math.log( 1+aux );
 
             //double tail = Math.log1p( Math.exp(aux_min-aux_max) );
             result = aux_max + (Double.isFinite(tail) ? tail : 0);
@@ -409,6 +450,11 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
             ss_result[i] = robustSumOfLogarithms(log_a,log_b);
         }
         return new ArrayVector(ss_result);
+    }
+
+    private ArrayVector robustSumOfNormalSufficientStatistics(ArrayVector ss1, ArrayVector ss2) {
+        return new ArrayVector(new double[]{ss1.get(0)});
+
     }
 
     private ArrayVector robustNormalizationOfLogProbabilitiesVector(ArrayVector ss) {
@@ -587,37 +633,41 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 //                    .mapToObj(i -> generateSample(randomGenerator.current()));
 //        }
 
-        weightedSampleStream.forEach(i -> {
+        double logSumWeights = weightedSampleStream.mapToDouble(i -> {
             WeightedAssignment weightedSample = generateSample(randomGenerator.current());
             updatePosteriorDistributions(weightedSample.assignment,weightedSample.logWeight);
 
             //updateLogProbabilityOfEvidence(weightedSample.logWeight);
 
 
-            logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,weightedSample.logWeight-Math.log(sampleSize));
+            //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,weightedSample.logWeight-Math.log(sampleSize));
 
             //System.out.println(weightedSample.logWeight);
 
             //System.out.println(logProbOfEvidence);
-        });
+            return weightedSample.logWeight;
+        }).reduce(this::robustSumOfLogarithms).getAsDouble();
 
         //        return weightedSampleStream.mapToDouble(ws -> ws.logWeight - Math.log(sampleSize)).reduce(this::robustSumOfLogarithms).getAsDouble();
 
 
         //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,-Math.log(sampleSize));
+        logProbOfEvidence = logSumWeights - Math.log(sampleSize);
 
 //        if(saveDataOnMemory_) {
 //            weightedSampleList = weightedSampleStream.collect(Collectors.toList());
 //            //weightedSampleList.forEach(weightedAssignment -> System.out.println("Weight: " + weightedAssignment.logWeight + " for assignment " + weightedAssignment.assignment.getValue(this.model.getVariables().getListOfVariables().get(0)) + " prob " + model.getLogProbabiltyOf(weightedAssignment.assignment)));
 //        }
+
+
     }
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         BayesianNetworkGenerator.setNumberOfGaussianVars(0);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(500,2);
-        BayesianNetworkGenerator.setNumberOfLinks(1000);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(60,2);
+        BayesianNetworkGenerator.setNumberOfLinks(100);
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
         System.out.println(bn);
 
@@ -627,9 +677,16 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         //importanceSampling.setSamplingModel(vmp.getSamplingModel());
 
         importanceSampling.setParallelMode(true);
-        importanceSampling.setSampleSize(10000);
+        importanceSampling.setSampleSize(500);
         importanceSampling.setSeed(57457);
+
         List<Variable> causalOrder = importanceSampling.causalOrder;
+        Variable varPosterior = causalOrder.get(0);
+
+        List<Variable> variablesPosteriori = new ArrayList<>(1);
+        variablesPosteriori.add(varPosterior);
+        importanceSampling.setVariablesAPosteriori( variablesPosteriori);
+
 
 
 //        importanceSampling.runInference();
@@ -661,14 +718,33 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
 
         importanceSampling.setEvidence(assignment);
-        importanceSampling.runInference();
 
-        Variable varPosterior = causalOrder.get(0);
+        long time_start = System.nanoTime();
+        importanceSampling.runInference();
+        long time_end = System.nanoTime();
+        double execution_time = (((double)time_end)-time_start)/1E9;
+        System.out.println("Execution time: " + execution_time + " s");
+
         System.out.println("Posterior of " + varPosterior.getName() + " (IS with Evidence) :" + importanceSampling.getPosterior(varPosterior).toString());
 
 
         System.out.println("Log-Prob. of Evidence: " + importanceSampling.getLogProbabilityOfEvidence());
         System.out.println("Prob of Evidence: " + Math.exp(importanceSampling.getLogProbabilityOfEvidence()));
+
+
+
+        Complex complex = new Complex(1,0);
+        Complex log_complex = complex.log();
+        System.out.println(log_complex.getReal() + " + 1i * " + log_complex.getImaginary());
+
+
+        Complex complex1 = new Complex(0.5,-0.3);
+        Complex complex2 = new Complex(0.2,0.1);
+
+        Complex sum = complex1.add(complex2);
+        System.out.println(sum.getReal() + " + 1i * " + sum.getImaginary());
+
+
     }
 
 }
