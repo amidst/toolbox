@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
  */
 public class HiddenMarkovModelComparisonToHuginExperiments {
 
-    final static int maxTimeStepsHugin=25;
+    final static int maxTimeStepsHugin=30;
 
     public static void main(String[] args) {
 
@@ -55,15 +55,15 @@ public class HiddenMarkovModelComparisonToHuginExperiments {
         //int seedModel = 3634743;
         //int seedEvidence = 935;
 
-        int seedModel = 3634743;
+        int seedModel = 21945;
         Random randomModel = new Random(seedModel);
 
-        int seedEvidence = 935;
+        int seedEvidence = 168486;
         Random randomEvidence= new Random(seedEvidence);
 
 
 
-        int numberOfModelsToTest = 10;
+        int numberOfModelsToTest = 20;
 
         int numberOfEvidencesPerModel = 20;
 
@@ -73,8 +73,9 @@ public class HiddenMarkovModelComparisonToHuginExperiments {
 
 
 
-        int nTimeSteps=10;
-        int nSamplesForIS=10000;
+        int nTimeSteps=30;
+
+        int nSamplesForIS=20000;
 
         System.out.println("seedModel: " + seedModel);
         System.out.println("seedEvidence: " + seedEvidence);
@@ -105,7 +106,7 @@ public class HiddenMarkovModelComparisonToHuginExperiments {
         model.setnStatesClassVar(2);
         model.setnStates(2);
 
-        model.setnObservableContinuousVars(5);
+        model.setnObservableContinuousVars(2);
 
         model.generateModel();
         model.printDAG();

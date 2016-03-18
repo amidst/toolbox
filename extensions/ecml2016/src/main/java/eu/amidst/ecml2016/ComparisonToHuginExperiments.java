@@ -3,6 +3,7 @@ package eu.amidst.ecml2016;
 import COM.hugin.HAPI.*;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.inference.DynamicMAPInference;
@@ -71,8 +72,8 @@ public class ComparisonToHuginExperiments {
         VMP dumb_vmp = new VMP();
 
 
-        int nTimeSteps=200;
-        int nSamplesForIS=10000;
+        int nTimeSteps=20;
+        int nSamplesForIS=20000;
 
 
         System.out.println("seedModel: " + seedModel);
@@ -102,15 +103,16 @@ public class ComparisonToHuginExperiments {
 
 
         model.setnStatesClassVar(2);
-        model.setnStatesHidden(2);
+        model.setnStatesHidden(4);
         model.setnStates(2);
 
-        model.setnHiddenContinuousVars(2);
-        model.setnObservableDiscreteVars(3);
-        model.setnObservableContinuousVars(3);
+        model.setnHiddenContinuousVars(1);
+        model.setnObservableDiscreteVars(2);
+        model.setnObservableContinuousVars(2);
 
         model.generateModel();
         model.printDAG();
+
 
         int experimentNumber = 0;
         for (int i = 0; i < numberOfModelsToTest; i++) {
@@ -118,7 +120,7 @@ public class ComparisonToHuginExperiments {
             System.out.println("\nMODEL NUMBER "+ i+"\n");
             //model.setSeed(randomModel.nextInt());
             model.randomInitialization(randomModel);
-            model.setProbabilityOfKeepingClass(0.99);
+            model.setProbabilityOfKeepingClass(0.9);
 
             DynamicBayesianNetwork DBNmodel = model.getModel();
             System.out.println(DBNmodel);
@@ -131,6 +133,11 @@ public class ComparisonToHuginExperiments {
                 model.generateEvidence(nTimeSteps);
 
                 List<DynamicAssignment> evidence = model.getEvidenceNoClass();
+                IntStream.range(0,evidence.size()).forEachOrdered(k -> {
+                    if (k%2==0) {
+                        evidence.get(k).getVariables().forEach(variable -> evidence.get(k).setValue(variable, Utils.missingValue()));
+                    }
+                });
                 evidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
                 System.out.println("\n");
 
@@ -233,7 +240,7 @@ public class ComparisonToHuginExperiments {
                 dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.IS);
                 int [] sequence_UngroupedIS = dynMAP.getMAPsequence();
 
-                System.out.println("Ungrouped IS finished");
+//                System.out.println("Ungrouped IS finished");
 
                 /////////////////////////////////////////////////
                 // UNGROUPED VARIABLES WITH VMP
@@ -247,7 +254,7 @@ public class ComparisonToHuginExperiments {
                 dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.VMP);
                 int [] sequence_UngroupedVMP = dynMAP.getMAPsequence();
 
-                System.out.println("Ungrouped VMP finished");
+//                System.out.println("Ungrouped VMP finished");
 
 
                 /////////////////////////////////////////////////
@@ -268,8 +275,9 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.IS);
                 int [] sequence_2GroupedIS = dynMAP.getMAPsequence();
+                List<int[]> submodel_sequences_2GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("2-grouped IS finished");
+//                System.out.println("2-grouped IS finished");
 
 
                 /////////////////////////////////////////////////
@@ -287,8 +295,9 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
                 int [] sequence_2GroupedVMP = dynMAP.getMAPsequence();
+                List<int[]> submodel_sequences_2GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("2-grouped VMP finished");
+//                System.out.println("2-grouped VMP finished");
 
 
 
@@ -310,8 +319,9 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.IS);
                 int [] sequence_3GroupedIS = dynMAP.getMAPsequence();
+                List<int[]> submodel_sequences_3GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("3-grouped IS finished");
+//                System.out.println("3-grouped IS finished");
 
 
                 /////////////////////////////////////////////////
@@ -329,8 +339,9 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
                 int [] sequence_3GroupedVMP = dynMAP.getMAPsequence();
+                List<int[]> submodel_sequences_3GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("3-grouped VMP finished");
+//                System.out.println("3-grouped VMP finished");
 
 
                 /////////////////////////////////////////////////
@@ -351,8 +362,9 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.IS);
                 int [] sequence_4GroupedIS = dynMAP.getMAPsequence();
+                List<int[]> submodel_sequences_4GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("4-grouped IS finished");
+//                System.out.println("4-grouped IS finished");
 
 
                 /////////////////////////////////////////////////
@@ -370,8 +382,9 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
                 int [] sequence_4GroupedVMP = dynMAP.getMAPsequence();
+                List<int[]> submodel_sequences_4GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("4-grouped VMP finished\n\n");
+//                System.out.println("4-grouped VMP finished\n\n");
 
 
 
@@ -382,13 +395,45 @@ public class ComparisonToHuginExperiments {
                 }
 
                 System.out.println("DynMAP (Ungrouped-IS) Sequence:  " + Arrays.toString(sequence_UngroupedIS));
+                System.out.println();
+
                 System.out.println("DynMAP (2Grouped-IS) Sequence:   " + Arrays.toString(sequence_2GroupedIS));
+                System.out.println("       (2Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_2GroupedIS.get(0)));
+                System.out.println("       (2Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_2GroupedIS.get(1)));
+                System.out.println();
+
                 System.out.println("DynMAP (3Grouped-IS) Sequence:   " + Arrays.toString(sequence_3GroupedIS));
+                System.out.println("       (3Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_3GroupedIS.get(0)));
+                System.out.println("       (3Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_3GroupedIS.get(1)));
+                System.out.println("       (3Gr-IS) Seq. Submodel 2: " + Arrays.toString(submodel_sequences_3GroupedIS.get(2)));
+                System.out.println();
+
                 System.out.println("DynMAP (4Grouped-IS) Sequence:   " + Arrays.toString(sequence_4GroupedIS));
+                System.out.println("       (4Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_4GroupedIS.get(0)));
+                System.out.println("       (4Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_4GroupedIS.get(1)));
+                System.out.println("       (4Gr-IS) Seq. Submodel 2: " + Arrays.toString(submodel_sequences_4GroupedIS.get(2)));
+                System.out.println("       (4Gr-IS) Seq. Submodel 3: " + Arrays.toString(submodel_sequences_4GroupedIS.get(3)));
+                System.out.println();
+
                 System.out.println("DynMAP (Ungrouped-VMP) Sequence: " + Arrays.toString(sequence_UngroupedVMP));
+                System.out.println();
+
                 System.out.println("DynMAP (2Grouped-VMP) Sequence:  " + Arrays.toString(sequence_2GroupedVMP));
+                System.out.println("       (2Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(0)));
+                System.out.println("       (2Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(1)));
+                System.out.println();
+
                 System.out.println("DynMAP (3Grouped-VMP) Sequence:  " + Arrays.toString(sequence_3GroupedVMP));
+                System.out.println("       (3Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(0)));
+                System.out.println("       (3Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(1)));
+                System.out.println("       (3Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(2)));
+                System.out.println();
+
                 System.out.println("DynMAP (4Grouped-VMP) Sequence:  " + Arrays.toString(sequence_4GroupedVMP));
+                System.out.println("       (4Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(0)));
+                System.out.println("       (4Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(1)));
+                System.out.println("       (4Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(2)));
+                System.out.println("       (4Gr-VMP) Seq. Submodel 3:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(3)));
 
 
                 double current_precision_Hugin=0;
@@ -440,6 +485,10 @@ public class ComparisonToHuginExperiments {
                 precision_allOnes[experimentNumber]=current_precision_allOnes;
 
                 experimentNumber++;
+
+//                if(i==1 && j==2) {
+//                    System.exit(-60);
+//                }
             }
 
             double[] current_model_precision_Hugin = Arrays.copyOfRange(precision_Hugin,i*numberOfEvidencesPerModel,(i+1)*numberOfEvidencesPerModel-1);
@@ -471,6 +520,8 @@ public class ComparisonToHuginExperiments {
             System.out.println(" All-Ones seq:  " + Arrays.stream(current_model_precision_allOnes).average().getAsDouble());
 
             System.out.println("\n\n");
+
+
         }
 
         System.out.println("\nGLOBAL MEAN PRECISIONS:");

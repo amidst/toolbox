@@ -3,6 +3,7 @@ package eu.amidst.dynamic.inference;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.inference.ImportanceSamplingRobust;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
@@ -89,6 +90,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
     String groupedClassName = "__GROUPED_CLASS__";
 
+    private List<int[]> bestSequenceEachModel;
 
     /**
      * {@inheritDoc}
@@ -201,51 +203,51 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         }
     }
 
-    public void setEvidence(DataStream<DynamicDataInstance> evidence1) {
-
-        DynamicDataInstance currentDataInstance = evidence1.stream().findFirst().get();
-        long sequenceID = currentDataInstance.getSequenceID();
-
-        List<DynamicAssignment> evidence2 = new ArrayList<>(1);
-        for(DynamicDataInstance instance : evidence1) {
-            if(instance.getSequenceID()!=sequenceID) {
-                continue;
-            }
-            instance.setValue(this.MAPvariable, Utils.missingValue());
-
-            DynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(this.model.getNumberOfVars());
-            this.model.getDynamicVariables().getListOfDynamicVariables().stream().filter(var -> !(var.getName()==this.MAPvarName)).forEach(var -> {
-                dynamicAssignment.setValue(var,instance.getValue(var));
-            });
-            evidence2.add(dynamicAssignment);
-        }
-
-        //evidence2.sort( (l1,l2) -> (l1.getTimeID()<l2.getTimeID() ? 1 : -1) ) ;
-
-//        evidence2.forEach(evid -> {
-//            System.out.println(evid.outputString(this.model.getDynamicVariables().getListOfDynamicVariables()));
-////            System.out.println(evid.getSequenceID());
-////            System.out.println(evid.getTimeID());
-//        });
-
-
-        this.evidence = evidence2;
-
-//        if (staticEvenModel!=null) {
-//            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+//    public void setEvidence(DataStream<DynamicDataInstance> evidence1) {
 //
-//            evidence.stream().forEach(dynamicAssignment -> {
-//                int time = (int) dynamicAssignment.getTimeID();
-//                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
-//                for (Variable dynVariable : dynAssigVariables) {
-//                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
-//                    double varValue = dynamicAssignment.getValue(dynVariable);
-//                    staticEvidence.setValue(staticVariable, varValue);
-//                }
+//        DynamicDataInstance currentDataInstance = evidence1.stream().findFirst().get();
+//        long sequenceID = currentDataInstance.getSequenceID();
 //
+//        List<DynamicAssignment> evidence2 = new ArrayList<>(1);
+//        for(DynamicDataInstance instance : evidence1) {
+//            if(instance.getSequenceID()!=sequenceID) {
+//                continue;
+//            }
+//            instance.setValue(this.MAPvariable, Utils.missingValue());
+//
+//            DynamicAssignment dynamicAssignment = new HashMapDynamicAssignment(this.model.getNumberOfVars());
+//            this.model.getDynamicVariables().getListOfDynamicVariables().stream().filter(var -> !(var.getName()==this.MAPvarName)).forEach(var -> {
+//                dynamicAssignment.setValue(var,instance.getValue(var));
 //            });
+//            evidence2.add(dynamicAssignment);
 //        }
-    }
+//
+//        //evidence2.sort( (l1,l2) -> (l1.getTimeID()<l2.getTimeID() ? 1 : -1) ) ;
+//
+////        evidence2.forEach(evid -> {
+////            System.out.println(evid.outputString(this.model.getDynamicVariables().getListOfDynamicVariables()));
+//////            System.out.println(evid.getSequenceID());
+//////            System.out.println(evid.getTimeID());
+////        });
+//
+//
+//        this.evidence = evidence2;
+//
+////        if (staticEvenModel!=null) {
+////            staticEvidence = new HashMapAssignment(staticEvenModel.getNumberOfVars());
+////
+////            evidence.stream().forEach(dynamicAssignment -> {
+////                int time = (int) dynamicAssignment.getTimeID();
+////                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+////                for (Variable dynVariable : dynAssigVariables) {
+////                    Variable staticVariable = staticEvenModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+////                    double varValue = dynamicAssignment.getValue(dynVariable);
+////                    staticEvidence.setValue(staticVariable, varValue);
+////                }
+////
+////            });
+////        }
+//    }
 
     /**
      * Sets the model for this DynamicMAPInference.
@@ -397,6 +399,10 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         return getMAPestimate().getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID() ? 1 : -1)).collect(Collectors.toList());
     }
 
+    public List<int[]> getBestSequencesForEachSubmodel() {
+        return bestSequenceEachModel;
+    }
+
     /**
      * Computes Dynamic MAP for the even static model.
      */
@@ -434,6 +440,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //            System.out.println(bn.getConditionalDistribution(bn.getVariables().getVariableByName(groupedClassName + "_t3")).toString());
 //            System.out.println();
             mergedClassVarModels.add(bn);
+//            System.out.println("MODEL " + modelNumber);
+//            System.out.println(bn);
         });
     }
 
@@ -489,6 +497,10 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             this.computeMergedClassVarModels();
         }
 
+        if (this.unfoldedStaticModel == null) {
+            unfoldedStaticModel = DynamicToStaticBNConverter.convertDBNtoBN(model,nTimeSteps);
+        }
+
 //
 //        if (evidence!=null && staticEvidence==null) {
 //
@@ -507,6 +519,22 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //        }
 //
 
+        if (evidence!=null && staticEvidence==null) {
+
+            staticEvidence = new HashMapAssignment(unfoldedStaticModel.getNumberOfVars());
+
+            evidence.stream().forEach(dynamicAssignment -> {
+                int time = (int) dynamicAssignment.getTimeID();
+                Set<Variable> dynAssigVariables = dynamicAssignment.getVariables();
+                for (Variable dynVariable : dynAssigVariables) {
+                    Variable staticVariable = unfoldedStaticModel.getVariables().getVariableByName(dynVariable.getName() + "_t" + Integer.toString(time));
+                    double varValue = dynamicAssignment.getValue(dynVariable);
+                    staticEvidence.setValue(staticVariable, varValue);
+                }
+            });
+        }
+
+
         List<InferenceAlgorithm> staticModelsInference = new ArrayList<>(nMergedClassVars);
         IntStream.range(0,nMergedClassVars).forEachOrdered(i -> {
             InferenceAlgorithm currentModelInference;
@@ -519,22 +547,35 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 case IS:
                 default:
 
-                    currentModelInference = new ImportanceSampling();
+                    currentModelInference = new ImportanceSamplingRobust();
 
                     Random random = new Random((this.seed));
                     currentModelInference.setSeed(random.nextInt());
 
                     this.seed = random.nextInt();
 
-                    ((ImportanceSampling) currentModelInference).setKeepDataOnMemory(true);
-                    ((ImportanceSampling) currentModelInference).setSampleSize(sampleSize);
+                    ((ImportanceSamplingRobust) currentModelInference).setSampleSize(sampleSize);
 
                     break;
             }
             currentModelInference.setParallelMode(this.parallelMode);
             currentModelInference.setModel(mergedClassVarModels.get(i));
-            //currentModelInference.setEvidence();
+
+            if(searchAlgorithm==SearchAlgorithm.IS) {
+                ((ImportanceSamplingRobust) currentModelInference).setVariablesAPosteriori(mergedClassVarModels.get(i).getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(groupedClassName)).collect(Collectors.toList()));
+            }
+
+            BayesianNetwork thisModel = mergedClassVarModels.get(i);
+            Assignment thisEvidence = new HashMapAssignment();
+            if(staticEvidence!=null) {
+                for (Variable varEvidence : staticEvidence.getVariables()) {
+                    thisEvidence.setValue(thisModel.getVariables().getVariableByName(varEvidence.getName()), staticEvidence.getValue(varEvidence));
+                }
+            }
+            currentModelInference.setEvidence(thisEvidence);
             currentModelInference.runInference();
+
+            //System.out.println(currentModelInference.getLogProbabilityOfEvidence());
 
             staticModelsInference.add(currentModelInference);
         });
@@ -575,18 +616,57 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //        int replicationsMAPVariableOddModel = 1 + (nTimeSteps-1)/2 + (nTimeSteps-1)%2;
 //        IntStream.range(0,replicationsMAPVariableOddModel).forEachOrdered(i -> posteriorMAPDistributionsOddModel.add(oddModelInference.getPosterior(i)));
 
+
+
         posteriorMAPDistributions.forEach(list -> {
-            System.out.println("Model number " + posteriorMAPDistributions.indexOf(list));
+
             StringBuilder stringBuilder = new StringBuilder();
 
             list.forEach(uniDist -> {
                 stringBuilder.append(Arrays.toString(uniDist.getParameters()));
                 stringBuilder.append(" ,  ");
             });
-            System.out.println(stringBuilder.toString());
+//            System.out.println("Model number " + posteriorMAPDistributions.indexOf(list) + ": " + stringBuilder.toString());
+        });
+
+        bestSequenceEachModel = new ArrayList<>();
+        IntStream.range(0,nMergedClassVars).forEachOrdered(modelNumber -> {
+            int [] thisModelBestSequence = new int[nTimeSteps];
+            int indexSequence = 0;
+
+            List<UnivariateDistribution> thisModelPosteriors = posteriorMAPDistributions.get(modelNumber);
+
+            for (int k = 0; k < thisModelPosteriors.size(); k++) {
+                UnivariateDistribution thisDistribution = thisModelPosteriors.get(k);
+
+                int indexMaxProbability = (int)argMax(thisDistribution.getParameters())[1];
+                int thisDistribNumberOfMergedVars = (int) Math.round(Math.log(thisDistribution.getVariable().getNumberOfStates()) / Math.log(MAPvariable.getNumberOfStates()));
+
+                String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(indexMaxProbability), 10), MAPvariable.getNumberOfStates());
+                m_base_nStates = StringUtils.leftPad(m_base_nStates, thisDistribNumberOfMergedVars, '0');
+
+                for (int j = 0; j < m_base_nStates.length(); j++) {
+                    thisModelBestSequence[indexSequence] = Integer.parseInt(m_base_nStates.substring(j,j+1));
+                    indexSequence++;
+                }
+            }
+
+            //System.out.println("Best sequence model " + modelNumber + ": " + Arrays.toString(thisModelBestSequence));
+            bestSequenceEachModel.add(thisModelBestSequence);
         });
 
         List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributions);
+        //System.out.println("Cond Distributions: " + Arrays.toString(conditionalDistributionsMAPvariable));
+
+        StringBuilder stringBuilder = new StringBuilder();
+        conditionalDistributionsMAPvariable.forEach(conDistr -> {
+
+            stringBuilder.append(Arrays.toString(conDistr));
+            stringBuilder.append(" ,  ");
+        });
+//        System.out.println("Conmbined Conditional Distributions: \n" + stringBuilder.toString());
+
+
         computeMostProbableSequence(conditionalDistributionsMAPvariable);
 
     }
@@ -627,13 +707,13 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         switch(searchAlgorithm) {
             case VMP:
                 staticModelInference = new VMP();
+                ((VMP)staticModelInference).setMaxIter(3000);
                 break;
 
             case IS:
             default:
-                ImportanceSampling importanceSampling =  new ImportanceSampling();
-                importanceSampling.setSampleSize(15* unfoldedStaticModel.getNumberOfVars());
-                importanceSampling.setKeepDataOnMemory(true);
+                ImportanceSamplingRobust importanceSampling =  new ImportanceSamplingRobust();
+                importanceSampling.setSampleSize(this.sampleSize);
                 Random random = new Random((this.seed));
                 importanceSampling.setSeed(random.nextInt());
                 staticModelInference=importanceSampling;
@@ -643,13 +723,20 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         staticModelInference.setParallelMode(this.parallelMode);
         staticModelInference.setModel(unfoldedStaticModel);
+
+        if(searchAlgorithm==SearchAlgorithm.IS) {
+            ((ImportanceSamplingRobust)staticModelInference).setVariablesAPosteriori(unfoldedStaticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPvarName)).collect(Collectors.toList()));
+        }
         if (evidence != null) {
             staticModelInference.setEvidence(staticEvidence);
         }
         staticModelInference.runInference();
 
         List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
-        IntStream.range(0,nTimeSteps).forEachOrdered(i -> posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i)));
+        IntStream.range(0,nTimeSteps).forEachOrdered(i -> {
+            posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i));
+            //System.out.println("Ungrouped Posterior " + i + staticModelInference.getPosterior(i).toString());
+        });
 
         double [] probabilities = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToDouble(array -> array[0]).toArray();
         double MAPsequenceProbability = Math.exp(Arrays.stream(probabilities).map(prob -> Math.log(prob)).sum());
@@ -689,7 +776,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n");
         IntStream.range(0, nTimeSteps).forEachOrdered(timeStep -> {
 
-            System.out.println("\n\nTime step " + timeStep);
+//            System.out.println("\n\nTime step " + timeStep);
             double[] combinedConditionalDistributionProbabilities, baseDistributionProbabilities;
 
             int baseModelIndex = (timeStep+1)%nMergedClassVars;
@@ -800,7 +887,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                     })
                     .reduce(new double[baseDistributionProbabilities.length], (doubleArray1, doubleArray2) -> {
                         if (doubleArray1.length != doubleArray2.length) {
-                            System.out.println("Problem with lengths");
+//                            System.out.println("Problem with lengths");
                             System.exit(-40);
                         }
                         for (int i = 0; i < doubleArray1.length; i++)
@@ -808,7 +895,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                         return doubleArray1;
                     });
 
-            System.out.println("Combined distribution " + Arrays.toString(combinedConditionalDistributionProbabilities));
+            //System.out.println("Combined distribution " + Arrays.toString(combinedConditionalDistributionProbabilities));
             listCondDistributions.add(combinedConditionalDistributionProbabilities);
         });
 
@@ -835,22 +922,30 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         for (int t = nTimeSteps-1; t >= 1; t--) {
 
-            //System.out.println("Time:" + t);
+//            System.out.println("Time:" + t);
             double [] currentDistProbabilities = posteriorDistributionsMAPvariable.get(t);
+
+            if (Arrays.stream(currentDistProbabilities).anyMatch(Double::isNaN)) {
+                MAPsequence = new int[nTimeSteps];
+                for (int i = 0; i < MAPsequence.length; i++) {
+                    MAPsequence[i]=-1;
+                    return;
+                }
+            }
             int currentDistrib_nMergedVars = (int) Math.round(Math.log(currentDistProbabilities.length)/Math.log(nStates));
 
-            //System.out.println("Current Probabilities:" + Arrays.toString(currentDistProbabilities));
+//            System.out.println("Current Probabilities:" + Arrays.toString(currentDistProbabilities));
             current_max_probs = new double[(int)Math.pow(nStates, currentDistrib_nMergedVars-1)];
 
             if (t==nTimeSteps-1) {
                 previous_max_probs = Arrays.stream(previous_max_probs).map(d -> 1).toArray();
             }
-            //System.out.println("Current Max Probs Length: " + current_max_probs.length);
-            //System.out.println("Previoius Max Probs: " + Arrays.toString(previous_max_probs));
+//            System.out.println("Current Max Probs Length: " + current_max_probs.length);
+//            System.out.println("Previous Max Probs: " + Arrays.toString(previous_max_probs));
 
             for (int m = 0; m < Math.pow(nStates, currentDistrib_nMergedVars); m++) {
 
-                //System.out.println("State: " + m );
+//                System.out.println("State: " + m );
                 String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(m), 10), nStates);
                 m_base_nStates = StringUtils.leftPad(m_base_nStates, currentDistrib_nMergedVars, '0');
 
@@ -869,7 +964,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                     currentStateLastVars= Integer.parseInt(m_base_nStates, nStates);
                 }
 
-                //System.out.println("FirstVars:" + currentStateFirstVars + ", LastVars:" + currentStateLastVars);
+//                System.out.println("FirstVars:" + currentStateFirstVars + ", LastVars:" + currentStateLastVars);
 
                 double currentProb = currentDistProbabilities[m] * previous_max_probs[currentStateLastVars];
                 double maxProb = current_max_probs[currentStateFirstVars];
@@ -879,7 +974,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 }
             }
 
-            //System.out.println("Current Max Probabilities:" + Arrays.toString(current_max_probs));
+//            System.out.println("Current Max Probabilities:" + Arrays.toString(current_max_probs));
 
             argMaxValues[t-1] = (int)argMax(current_max_probs)[1];
             previous_max_probs = current_max_probs;
@@ -887,8 +982,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             if (t==1) {
                 MAPsequenceProbability =  argMax(current_max_probs)[0];
             }
-            //System.out.println("MAP Sequence Prob:" + MAPsequenceProbability);
-            //System.out.println("Arg Max Value: " + argMaxValues[t-1]+ "\n\n\n");
+//            System.out.println("MAP Sequence Prob:" + MAPsequenceProbability);
+//            System.out.println("Arg Max Value: " + argMaxValues[t-1]+ "\n\n\n");
 
         }
 
@@ -942,9 +1037,9 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //            }
 //        }
 
-        System.out.println(Arrays.toString(argMaxValues));
+        //System.out.println(Arrays.toString(argMaxValues));
 
-        //System.out.println("\n\n TRACEBACK \n\n");
+//        System.out.println("\n\n TRACEBACK \n\n");
 
         //int previousVarMAPState = argMaxValues[0];
         MAPsequence[0] = argMaxValues[0];
@@ -952,22 +1047,23 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         int thisVarMAPState = 0;
         for (int t = 1; t < nTimeSteps; t++) {
 
-            //System.out.println("Time Step: " + t);
+//            System.out.println("Time Step: " + t);
             current_probs = posteriorDistributionsMAPvariable.get(t);
 
             StringBuilder prevVarsStateBuilder = new StringBuilder();
 
+            int j_max = Math.min(nMergedClassVars-1, t);
             for (int j = 0; j < Math.min(nMergedClassVars-1, t); j++) {
-                //System.out.println("Append: " + Integer.toString(MAPsequence[t-j-1]) );
-                prevVarsStateBuilder.append( Integer.toString(MAPsequence[t-j-1]) );
+//                System.out.println("Append: " + Integer.toString(MAPsequence[t-j_max+j]) );
+                prevVarsStateBuilder.append( Integer.toString(MAPsequence[t-j_max+j]) );
             }
             //previousVarMAPState = argMaxValues[t-1];
 
-            //System.out.println("PrevVarsState: " + prevVarsStateBuilder.toString());
+//            System.out.println("PrevVarsState: " + prevVarsStateBuilder.toString());
 //            String prevVarsState = Integer.toString(Integer.parseInt(prevVarsStateBuilder.toString()), nStates);
             String prevVarsState = prevVarsStateBuilder.toString();
 
-            //System.out.println("Prev Vars State:" + prevVarsState);
+//            System.out.println("Prev Vars State:" + prevVarsState);
 
 
 //            String m_base_nStates = Integer.toString(Integer.parseInt(Integer.toString(previousVarMAPState), 10), nStates);
@@ -990,7 +1086,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             for (int j = 0; j < nStates; j++) { // To go over all values of Y_t
 
                 int currentState = Integer.parseInt(prevVarsState.concat(Integer.toString(j)),nStates);
-                //System.out.println("Current state:" + currentState);
+//                System.out.println("Current state:" + currentState);
 
                 if (current_probs[currentState] > maxProb) {
                     maxProb = current_probs[currentState];
@@ -998,7 +1094,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 }
             }
             MAPsequence[t]=thisVarMAPState;
-            //System.out.println("Currente Sequence Value: " + MAPsequence[t] + "\n\n");
+//            System.out.println("Currente Sequence Value: " + MAPsequence[t] + "\n\n");
         }
 
 //        int previousVarMAPState = argMaxValues[0];
@@ -1027,6 +1123,9 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         MAPestimate = new HashMapAssignment(nTimeSteps);
 
+        final int[] MAPsequence_final;
+        MAPsequence_final = Arrays.copyOf(MAPsequence,MAPsequence.length);
+
         if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
             MAPestimateLogProbability=Double.NaN;
         }
@@ -1042,15 +1141,15 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //                    Variables copy = Serialization.deepCopy(this.staticEvenModel.getVariables());
 //                    currentVar = copy.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
 //                }
-                MAPestimate.setValue(currentVar, MAPsequence[t]);
+                MAPestimate.setValue(currentVar, MAPsequence_final[t]);
             });
             MAPestimateLogProbability = Math.log(MAPsequenceProbability);
         }
 
-//        System.out.println(MAPestimate.outputString(MAPVarReplications.getListOfVariables()));
+        //System.out.println(MAPestimate.outputString(MAPVarReplications.getListOfVariables()));
         this.MAPsequence = MAPsequence;
 
-        System.out.println("FINAL SEQUENCE: " + Arrays.toString(MAPsequence));
+//        System.out.println("FINAL SEQUENCE: " + Arrays.toString(MAPsequence));
     }
 
 //    /**
@@ -2143,9 +2242,9 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         dynMAP.setModel(dynamicBayesianNetwork);
 
         // INITIALIZE THE MODEL
-        int nTimeSteps = 20;
+        int nTimeSteps = 5;
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
-        int nMergedClassVars = 4;
+        int nMergedClassVars = 3;
         dynMAP.setNumberOfMergedClassVars(nMergedClassVars);
 
         mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
