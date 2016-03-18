@@ -66,7 +66,7 @@ public class DynamicDAGTest {
         System.out.println(dynamicDAG.toString());
 
         /* test cyclic dynamic dag */
-        Assert.assertTrue(dynamicDAG.containCycles());
+        Assert.assertFalse(dynamicDAG.containCycles());
 
         /*test the parent set*/
         Assert.assertEquals(0, dynamicDAG.getParentSetTime0(aLAT).getNumberOfParents());
