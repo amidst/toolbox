@@ -1,15 +1,13 @@
 package eu.amidst.ecml2016;
 
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
-import COM.hugin.HAPI.NodeList;
+import COM.hugin.HAPI.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.inference.DynamicMAPInference;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.huginlink.inference.HuginInference;
+import eu.amidst.huginlink.converters.BNConverterToHugin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,9 +20,9 @@ public class ComparisonToHugin {
 
     public static void main(String[] args) {
 
-        int seed = 8648462;
+        int seed = 186248462;
 
-        int nTimeSteps=8;
+        int nTimeSteps=10;
 
 
 
@@ -32,16 +30,15 @@ public class ComparisonToHugin {
 
         HiddenLayerDynamicModel model = new HiddenLayerDynamicModel();
 
-        model.setnHiddenContinuousVars(1);
 
 
         model.setnStatesClassVar(2);
         model.setnStatesHidden(2);
         model.setnStates(2);
 
-        model.setnHiddenContinuousVars(1);
-        model.setnObservableDiscreteVars(1);
-        model.setnObservableContinuousVars(1);
+        model.setnHiddenContinuousVars(2);
+        model.setnObservableDiscreteVars(2);
+        model.setnObservableContinuousVars(2);
 
         model.generateModel();
 
@@ -50,7 +47,7 @@ public class ComparisonToHugin {
 
         model.setSeed(random.nextInt());
         model.randomInitialization(random);
-        model.setProbabilityOfKeepingClass(0.8);
+        model.setProbabilityOfKeepingClass(0.6);
 
         model.printHiddenLayerModel();
 
@@ -60,7 +57,6 @@ public class ComparisonToHugin {
 
         List<DynamicAssignment> evidence = model.getEvidenceNoClass();
         evidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
-
         System.out.println("\n\n");
 
         DynamicMAPInference dynMAP = new DynamicMAPInference();
@@ -70,11 +66,11 @@ public class ComparisonToHugin {
         dynMAP.setMAPvariable(MAPVariable);
         dynMAP.setNumberOfTimeSteps(nTimeSteps);
 
-        //dynMAP.setEvidence(evidence);
+        dynMAP.setEvidence(evidence);
 
 
         BayesianNetwork staticModel = dynMAP.getUnfoldedStaticModel();
-        //Assignment staticEvidence = dynMAP.getUnfoldedEvidence();
+        Assignment staticEvidence = dynMAP.getUnfoldedEvidence();
 
 
         //System.out.println(staticModel.toString());
@@ -82,26 +78,44 @@ public class ComparisonToHugin {
         //System.out.println("STATIC VARIABLES");
         //staticModel.getVariables().getListOfVariables().forEach(variable -> System.out.println(variable.getName()));
 
-        System.out.println("STATIC EVIDENCE:");
+        //System.out.println("STATIC EVIDENCE:");
         //System.out.println(staticEvidence.outputString(staticModel.getVariables().getListOfVariables())+"\n");
 
-        System.out.println("A");
 
-        HuginInference huginInference = new HuginInference();
-        huginInference.setModel(staticModel);
-
-        System.out.println("B");
-
-        //huginInference.setEvidence(staticEvidence);
-
-        Domain huginBN = huginInference.getHuginBN();
-
-        NodeList classVarReplications = new NodeList();
-
-        System.out.println("C");
 
         try {
-            huginBN.initialize();
+            Domain huginBN = BNConverterToHugin.convertToHugin(staticModel);
+            huginBN.compile();
+            System.out.println("HUGIN Domain compiled");
+
+            staticEvidence.getVariables().forEach(variable -> {
+                if (variable.isMultinomial()){
+                    try {
+                        ((DiscreteNode) huginBN.getNodeByName(variable.getName())).selectState((int) staticEvidence.getValue(variable));
+                    }
+                    catch (ExceptionHugin e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+                else if (variable.isNormal()) {
+                    try {
+                      ((ContinuousChanceNode)huginBN.getNodeByName(variable.getName())).enterValue(staticEvidence.getValue(variable));
+                    }
+                    catch (ExceptionHugin e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+                else {
+                    throw new IllegalArgumentException("Variable type not allowed.");
+                }
+            });
+
+            System.out.println("HUGIN Evidence set");
+
+            huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
+
+            System.out.println("HUGIN Propagation done");
+            NodeList classVarReplications = new NodeList();
 
             //System.out.println(huginBN.getNodes().toString());
             huginBN.getNodes().stream().filter(node -> {
@@ -114,9 +128,12 @@ public class ComparisonToHugin {
                 }
             }).forEach(classVarReplications::add);
 
-            System.out.println(classVarReplications.toString());
+            System.out.println("HUGIN Prob. evidence: " + huginBN.getLogLikelihood());
 
-            huginBN.findMAPConfigurations(classVarReplications, 0.001);
+
+            System.out.println("HUGIN MAP Variables:" + classVarReplications.toString());
+
+            huginBN.findMAPConfigurations(classVarReplications, 0.0001);
 
             System.out.println("HUGIN MAP Sequences:");
             for (int i = 0; i < huginBN.getNumberOfMAPConfigurations() && i<3; i++) {
@@ -126,11 +143,15 @@ public class ComparisonToHugin {
         catch (ExceptionHugin e) {
             System.out.println("\nHUGIN EXCEPTION:");
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
-        dynMAP.setNumberOfMergedClassVars(2);
-        dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.IS);
+        dynMAP.setNumberOfMergedClassVars(3);
+
+
         dynMAP.setSampleSize(10000);
+
+        dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.IS);
         System.out.println("DynMAP (Grouped-IS) Sequence:");
         System.out.println(Arrays.toString(dynMAP.getMAPsequence()));
 
@@ -145,6 +166,8 @@ public class ComparisonToHugin {
         dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.VMP);
         System.out.println("DynMAP (Ungrouped-VMP) Sequence:");
         System.out.println(Arrays.toString(dynMAP.getMAPsequence()));
+
+        System.out.println("ORIGINAL SEQUENCE:\n" + Arrays.toString(model.getClassSequence()));
     }
 
 }
