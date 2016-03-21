@@ -1,16 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/maven-v4_0_0.xsd">
-
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>AmidstToolbox</artifactId>
+        <groupId>eu.amidst</groupId>
+        <version>1.0.0</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>eu.amidst</groupId>
-    <artifactId>AmidstToolbox</artifactId>
-    <version>1.0.0</version>
-
-    <name>AmidstToolbox</name>
-
-    <packaging>pom</packaging>
+    <artifactId>wekalink</artifactId>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -81,68 +81,17 @@
         </developer>
     </developers>
 
+    <dependencies>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>3.7.12</version>
+        </dependency>
+    </dependencies>
 
-    <modules>
-        <module>huginlink</module>
-        <module>core</module>
-        <module>core-dynamic</module>
-        <module>examples</module>
-        <module>flinklink</module>
-        <module>moalink</module>
-        <module>sparklink</module>
-        <module>extensions/cajamar</module>
-        <module>extensions/caepia2015</module>
-        <module>extensions/ida2015</module>
-        <module>extensions/scai2015</module>
-        <module>extensions/ecml2016</module>
-        <module>extensions/uai2016</module>
-        <module>extensions/reviewMeeting2016</module>
-        <module>standardmodels</module>
-        <module>wekalink</module>
-    </modules>
-
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.6</slf4j.version>
-        <junit.version>4.11</junit.version>
-    </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <!-- Uncomment this text to build without running unit tests.-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
-                </configuration>
-            </plugin>
-
-            <!-- this plugin builds an executable jar with dependencies -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2.2</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>eu.amidst.examples.ParallelTANDemo</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
