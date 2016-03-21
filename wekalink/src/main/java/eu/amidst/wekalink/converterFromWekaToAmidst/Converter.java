@@ -1,4 +1,4 @@
-package eu.amidst.moalink.converterFromMoaToAmidst;
+package eu.amidst.wekalink.converterFromWekaToAmidst;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
@@ -7,7 +7,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
-import moa.core.InstancesHeader;
+import weka.core.Instances;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -19,11 +19,11 @@ import java.util.List;
 public final class Converter {
 
     /**
-     * Creates a set of {@link Attributes} from a given {@link moa.core.InstancesHeader} object.
-     * @param modelContext a {@link moa.core.InstancesHeader} object.
+     * Creates a set of {@link Attributes} from a given {@link weka.core.Instances} object.
+     * @param modelContext a {@link weka.core.Instances} object.
      * @return a set of {@link Attributes}.
      */
-    public static Attributes convertAttributes(InstancesHeader modelContext){
+    public static Attributes convertAttributes(Instances modelContext){
         Enumeration attributesWeka = modelContext.enumerateAttributes();
         return convertAttributes(attributesWeka, modelContext.classAttribute());
     }
@@ -66,11 +66,11 @@ public final class Converter {
 
     /**
      * Returns the class variable.
-     * @param modelContext a {@link moa.core.InstancesHeader} object.
+     * @param modelContext a {@link weka.core.Instances} object.
      * @param atts a set of of {@link Attributes}.
      * @return a {@link Variable} object that represents the class variable.
      */
-    public static Variable getClassVariable(InstancesHeader modelContext, Attributes atts){
+    public static Variable getClassVariable(Instances modelContext, Attributes atts){
         Variables variables = new Variables(atts);
         String className = modelContext.classAttribute().name();
         return variables.getVariableByName(className);
