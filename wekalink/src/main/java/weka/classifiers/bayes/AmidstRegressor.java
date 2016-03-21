@@ -101,22 +101,21 @@ public class AmidstRegressor extends AbstractClassifier implements OptionHandler
         dag = new DAG(modelHeader);
 
         /* Set DAG structure. */
-        /* 1. Add classVar as parent of all Gaussian and Multinomial hidden variables. */
+        /* 1. Add classVar all Gaussian hidden variables as parents of the target_var. */
         if(getnOfGaussianHiddenVars_() > 0)
             IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1).parallel()
-                    .forEach(hv -> dag.getParentSet(modelHeader.getVariableByName("HiddenG_" + hv)).addParent(targetVar_));
+                    .forEach(hv -> dag.getParentSet(targetVar_).addParent(modelHeader.getVariableByName("HiddenG_" + hv)));
 
-        /* 2. Add classVar and all hidden variables as parents of all predictive attributes. */
+        /* 2. Add all predictive attributes as parents of the target_var.  */
         /* Note however that Gaussian hidden variables can be only parents of Gaussian predictive attributes. */
-        dag.getParentSets().stream()
-                .filter(w -> w.getMainVar().getVarID() != targetVar_.getVarID())
-                .filter(w -> w.getMainVar().isObservable())
+        modelHeader.getListOfVariables().stream()
+                .filter(w -> w.getVarID() != targetVar_.getVarID())
+                .filter(w -> w.isObservable())
                 .forEach(w -> {
-                    w.addParent(targetVar_);
-                    if (w.getMainVar().isNormal() && getnOfGaussianHiddenVars_() != 0)
+                    dag.getParentSet(targetVar_).addParent(w);
+                    if (getnOfGaussianHiddenVars_() != 0)
                         IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1)
-                                .forEach(hv -> w.addParent(modelHeader.getVariableByName("HiddenG_" + hv)));});
-
+                                .forEach(hv -> dag.getParentSet(w).addParent(modelHeader.getVariableByName("HiddenG_" + hv)));});
 
         System.out.println(dag.toString());
 
