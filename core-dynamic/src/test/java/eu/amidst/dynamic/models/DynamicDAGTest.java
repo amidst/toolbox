@@ -19,7 +19,7 @@ import java.util.List;
 public class DynamicDAGTest {
 
 
-    DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDaimler.arff");
+    DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/syntheticDataDaimler.arff");
 
     @Test
     public void testingDynamicDAG() {

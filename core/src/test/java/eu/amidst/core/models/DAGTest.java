@@ -17,7 +17,7 @@ public class DAGTest {
     public void testingDAG() {
 
         ARFFDataReader reader = new ARFFDataReader();
-        reader.loadFromFile("datasets/dataWeka/contact-lenses.arff");
+        reader.loadFromFile("datasetsTests/dataWeka/contact-lenses.arff");
         Variables variables = new Variables(reader.getAttributes());
         DAG dag = new DAG(variables);
         DAG dag2 = new DAG(variables);

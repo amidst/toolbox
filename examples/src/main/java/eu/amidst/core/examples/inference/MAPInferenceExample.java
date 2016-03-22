@@ -33,7 +33,7 @@ public class MAPInferenceExample {
     public static void main(String[] args) throws Exception {
 
         //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/WasteIncinerator.bn");
         List<Variable> topologicalOrder = Utils.getTopologicalOrder(bn.getDAG());
 
         //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.

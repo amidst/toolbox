@@ -81,3 +81,6 @@ maven_startup.sh
 
 # hugin aux files
 networks/*.hlg
+
+# Ignore big Amazon output files
+extensions/uai2016/doc-experiments/experimentsResults/outputs/

@@ -9,22 +9,25 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.core.utils.Utils;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -294,21 +297,19 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        String file = "./datasets/bank_data_train.arff";
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
+        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(20,10000,10,0);
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
-        model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
+        model.setClassVarID(0);
         model.setParallelMode(true);
         model.learn(data);
         DynamicBayesianNetwork bn = model.getDynamicBNModel();
 
-        file = "./datasets/bank_data_predict.arff";
-        data = DynamicDataStreamLoader.loadFromFile(file);
+        data = DataSetGenerator.generate(50,10000,10,0);
 
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new DynamicVMP());
         InferenceEngineForDBN.setModel(bn);
-        Variable defaultVar = bn.getDynamicVariables().getVariableByName("DEFAULT");
+        Variable defaultVar = bn.getDynamicVariables().getVariableByName("DiscreteVar0");
         UnivariateDistribution dist = null;
         UnivariateDistribution distAhead = null;
 

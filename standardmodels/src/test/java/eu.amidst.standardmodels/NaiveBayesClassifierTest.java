@@ -4,6 +4,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
@@ -117,18 +119,30 @@ public class NaiveBayesClassifierTest extends TestCase {
     }
 
 
+    public void testNBClassifier() {
+
+        long time = System.nanoTime();
+        nb.learnModel(data);
+        BayesianNetwork nbClassifier = nb.getModel();
+        System.out.println(nbClassifier.toString());
+
+        System.out.println("Time: " + (System.nanoTime() - time) / 1000000000.0);
 
 
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
 
-/*
-    public void testDAG() {
-        boolean passedTest = true;
+        parallelMaximumLikelihood.setBatchSize(100);
+        parallelMaximumLikelihood.setDAG(nbClassifier.getDAG());
+        parallelMaximumLikelihood.setLaplace(true);
+        parallelMaximumLikelihood.setDataStream(DataSetGenerator.generate(1234,500, 2, 10));
 
+        parallelMaximumLikelihood.runLearning();
+        BayesianNetwork nbML = parallelMaximumLikelihood.getLearntBayesianNetwork();
+        System.out.println(nb.toString());
+        assertTrue(nbML.equalBNs(nbClassifier, 0.2));
 
-
-        assertTrue(passedTest);
     }
-*/
+
 
 
 }

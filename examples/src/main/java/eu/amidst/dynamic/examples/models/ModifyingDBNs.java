@@ -20,7 +20,7 @@ public class ModifyingDBNs {
 
         //We can open the data stream using the static class DynamicDataStreamLoader
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(
-                "datasets/syntheticDataDiscrete.arff");
+                "datasetsTests/syntheticDataDiscrete.arff");
 
         /**
          * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)

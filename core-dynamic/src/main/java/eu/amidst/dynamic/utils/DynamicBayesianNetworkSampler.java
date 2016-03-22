@@ -399,7 +399,7 @@ public class DynamicBayesianNetworkSampler {
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
         sampler.setSeed(0);
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(3,2);
-        DataStreamWriter.writeDataToFile(dataStream, "./datasets/dnb-samples.arff");
+        DataStreamWriter.writeDataToFile(dataStream, "./datasetsTests/dnb-samples.arff");
 
         System.out.println(watch.stop());
 

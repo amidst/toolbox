@@ -37,10 +37,10 @@ public class MLMultinomialsNormalsTest {
             DataStream<DataInstance> data = sampler.sampleToDataStream(100000);
 
             //try{
-            //    sampler.sampleToAnARFFFile("./data/WasteIncineratorSamples.arff", 10000);
+            //    sampler.sampleToAnARFFFile("./dataTests/WasteIncineratorSamples.arff", 10000);
             //} catch (IOException ex){
             //}
-            //DataStream data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/WasteIncineratorSamples.arff")));
+            //DataStream data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("dataTests/WasteIncineratorSamples.arff")));
 
             //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
             // and just learn then test the parameter learning

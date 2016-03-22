@@ -18,6 +18,6 @@ public class BayesianNetworkWriterTest {
     @Test
     public void test() throws Exception {
         //This class is already tested when using the BayesianNetworkLoaderTest
-        BayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networks");
+        BayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networksTests");
     }
 }

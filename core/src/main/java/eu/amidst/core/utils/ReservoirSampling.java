@@ -8,7 +8,6 @@
 
 package eu.amidst.core.utils;
 
-import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
@@ -64,7 +63,7 @@ public class ReservoirSampling {
     }
 
     public static void main(String[] args) throws Exception {
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticDataCajaMar.arff");
+        DataStream<DataInstance> data = DataSetGenerator.generate(15,1000,5,5);
         DataOnMemory<DataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(1000, data);
     }
 

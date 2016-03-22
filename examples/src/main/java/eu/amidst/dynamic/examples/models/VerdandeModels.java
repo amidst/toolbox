@@ -48,7 +48,7 @@ public final class VerdandeModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataVerdandeScenario1.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/syntheticDataVerdandeScenario1.arff");
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -158,7 +158,7 @@ public final class VerdandeModels {
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOSKF.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "networksTests/HuginVerdandeIOSKF.dbn");
 
     }
 
@@ -172,7 +172,7 @@ public final class VerdandeModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataVerdandeScenario2.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/syntheticDataVerdandeScenario2.arff");
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -327,7 +327,7 @@ public final class VerdandeModels {
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn,"networks/HuginVerdandeIOSKFwithMG.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn,"networksTests/HuginVerdandeIOSKFwithMG.dbn");
 
     }
 
@@ -335,7 +335,7 @@ public final class VerdandeModels {
      * In this example we show how to create an input-outputString KF with Gaussian mixtures (as in Figure 4.29 of Deliverable 2.1).
      */
     public static void VerdandeInputOutputHMM() throws IOException {
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/syntheticDataVerdandeScenario3.arff");
 
         Attribute attDepth = data.getAttributes().getAttributeByName("depth");
         Attribute attGammaDiff = data.getAttributes().getAttributeByName("gammaDiff");
@@ -371,7 +371,7 @@ public final class VerdandeModels {
         System.out.println(dbn.toString());
 
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/HuginVerdandeIOHMM.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "networksTests/HuginVerdandeIOHMM.dbn");
 
     }
 
