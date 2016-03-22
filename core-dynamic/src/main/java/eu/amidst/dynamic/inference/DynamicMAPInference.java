@@ -541,6 +541,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             switch (searchAlgorithm) {
                 case VMP:
                     currentModelInference = new VMP();
+                    ((VMP)currentModelInference).setTestELBO(true);
+                    ((VMP)currentModelInference).setThreshold(0.0001);
                     ((VMP) currentModelInference).setMaxIter(3000);
                     break;
 
