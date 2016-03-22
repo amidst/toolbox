@@ -40,7 +40,7 @@ public class TestReaderStatic {
 
     public static void loadFileAndInitializeStatic(){
         reader = new ARFFDataReader();
-        reader.loadFromFile("datasets/dataWeka/labor.arff");
+        reader.loadFromFile("datasetsTests/dataWeka/labor.arff");
         dataOnDiskReader = new DataStreamFromFile(reader);
         dataOnDiskIterator = dataOnDiskReader.iterator();
         attributes = dataOnDiskReader.getAttributes();
@@ -50,7 +50,7 @@ public class TestReaderStatic {
     @Test
     public void loadArffWekaFileStatic() {
         reader = new ARFFDataReader();
-        reader.loadFromFile("datasets/dataWeka/labor.arff");
+        reader.loadFromFile("datasetsTests/dataWeka/labor.arff");
 
         attributes = reader.getAttributes();
 

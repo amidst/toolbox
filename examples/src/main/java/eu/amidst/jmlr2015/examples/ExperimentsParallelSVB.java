@@ -103,12 +103,12 @@ public class ExperimentsParallelSVB {
         DataStream<DataInstance> data = new BayesianNetworkSampler(bn).sampleToDataStream(nbrSamples);
 
         // Save the generated data stream into a file.
-        DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data,"./datasetsTests/tmp.arff");
 
         long currentTime = System.nanoTime();
 
         // Load the data stream using {@link DataStreamLoader}.
-        data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
+        data = DataStreamLoader.openFromFile("./datasetsTests/tmp.arff");
 
         // Create a {@link ParallelSVB} object.
         ParallelSVB parameterLearningAlgorithm = new ParallelSVB();

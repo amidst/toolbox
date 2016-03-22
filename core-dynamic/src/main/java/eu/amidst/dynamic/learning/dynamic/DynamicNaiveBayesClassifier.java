@@ -141,7 +141,7 @@ public class DynamicNaiveBayesClassifier {
 
         int sampleSize = 1000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        String file = "./datasets/randomdata.arff";
+        String file = "./datasetsTests/randomdata.arff";
         DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
         DataStreamWriter.writeDataToFile(dataStream, file);
 

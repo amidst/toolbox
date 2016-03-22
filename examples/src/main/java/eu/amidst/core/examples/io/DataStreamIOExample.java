@@ -27,10 +27,10 @@ public class DataStreamIOExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/syntheticData.arff");
 
         //We can save this data set to a new file using the static class DataStreamWriter
-        DataStreamWriter.writeDataToFile(data, "datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "datasetsTests/tmp.arff");
 
     }
 }

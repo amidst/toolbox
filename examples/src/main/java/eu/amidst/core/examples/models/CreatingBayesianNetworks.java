@@ -32,7 +32,7 @@ public class CreatingBayesianNetworks {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/syntheticData.arff");
 
 
         /**
@@ -122,6 +122,6 @@ public class CreatingBayesianNetworks {
         }
         System.out.println(logProb);
 
-        BayesianNetworkWriter.saveToFile(bn, "networks/BNExample.bn");
+        BayesianNetworkWriter.saveToFile(bn, "networksTests/BNExample.bn");
     }
 }

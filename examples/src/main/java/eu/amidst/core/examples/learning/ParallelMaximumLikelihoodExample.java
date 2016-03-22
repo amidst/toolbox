@@ -30,7 +30,7 @@ public class ParallelMaximumLikelihoodExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/WasteIncineratorSample.arff");
 
         //We create a ParallelMaximumLikelihood object with the MaximumLikehood builder
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();

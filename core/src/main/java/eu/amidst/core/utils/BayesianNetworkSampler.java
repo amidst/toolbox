@@ -313,7 +313,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
 
 
-        DataStreamWriter.writeDataToFile(dataStream,"datasets/asisa-samples.arff");
+        DataStreamWriter.writeDataToFile(dataStream,"datasetsTests/asisa-samples.arff");
 
         System.out.println(watch.stop());
 

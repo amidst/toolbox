@@ -19,7 +19,7 @@ public class BayesianNetworkLoaderTest {
 
     @Test
     public void test() throws Exception {
-        BayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networks");
+        BayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networksTests");
     }
 
     public static void loadAndTestFilesFromFolder(final String folderName) throws Exception {

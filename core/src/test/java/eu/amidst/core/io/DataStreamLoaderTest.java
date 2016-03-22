@@ -26,9 +26,9 @@ public class DataStreamLoaderTest extends TestCase {
 
     public static void test1() throws IOException{
 
-        DataStreamWriter.writeDataToFile(DataSetGenerator.generate(1234,50, 5, 5), "datasets/dataTest.arff");
+        DataStreamWriter.writeDataToFile(DataSetGenerator.generate(1234,50, 5, 5), "datasetsTests/dataTest.arff");
 
-        DataStream<DataInstance> dataTest = DataStreamLoader.openFromFile("./datasets/dataTest.arff");
+        DataStream<DataInstance> dataTest = DataStreamLoader.openFromFile("./datasetsTests/dataTest.arff");
         for (Attribute attribute : dataTest.getAttributes().getFullListOfAttributes()) {
             System.out.println(attribute.getName() +", "+attribute.getIndex());
         }

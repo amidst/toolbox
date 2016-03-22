@@ -57,7 +57,7 @@ public class MLforDBNfromDataset {
     public static void main(String[] args) throws IOException {
         //We can open the data stream using the static class DataStreamLoader
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(
-                "datasets/randomDataTrain.arff");
+                "datasetsTests/randomDataTrain.arff");
 
         //Parameter Learning
         //We set the batch size which will be employed to learn the model in parallel

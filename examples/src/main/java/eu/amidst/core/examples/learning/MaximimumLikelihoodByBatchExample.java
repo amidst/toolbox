@@ -59,7 +59,7 @@ public class MaximimumLikelihoodByBatchExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/WasteIncineratorSample.arff");
 
         //We create a ParameterLearningAlgorithm object with the MaximumLikehood builder
         ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();

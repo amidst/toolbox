@@ -13,7 +13,7 @@ import org.junit.Test;
  */
 public class BayesianNetworkTest {
 
-    DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+    DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/syntheticData.arff");
 
     @Test
     public void testingBN(){

@@ -22,7 +22,7 @@ public class CreatingDBNsWithLatentVariables {
 
         //We can open the data stream using the static class DynamicDataStreamLoader
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(
-                "datasets/syntheticDataDiscrete.arff");
+                "datasetsTests/syntheticDataDiscrete.arff");
 
         /**
          * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
@@ -134,6 +134,6 @@ public class CreatingDBNsWithLatentVariables {
         /**
          * Finally teh Bayesian network is saved to a file.
          */
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/DBNExample.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "networksTests/DBNExample.dbn");
     }
 }
