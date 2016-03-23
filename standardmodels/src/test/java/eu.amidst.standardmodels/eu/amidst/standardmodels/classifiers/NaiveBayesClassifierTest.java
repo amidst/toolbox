@@ -15,16 +15,18 @@
  *
  */
 
-package eu.amidst.standardmodels;
+package eu.amidst.standardmodels.eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.classifiers.GaussianDiscriminantAnalysis;
+import eu.amidst.standardmodels.classifiers.NaiveBayesClassifier;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
@@ -34,28 +36,30 @@ import java.util.stream.Collectors;
 /**
  * Created by rcabanas on 10/03/16.
  */
-public class GaussianDiscriminantAnalysisTest extends TestCase {
+public class NaiveBayesClassifierTest extends TestCase {
 
-    protected GaussianDiscriminantAnalysis gda;
+    protected NaiveBayesClassifier nb;
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
+        data = DataSetGenerator.generate(1234,500, 2, 10);
 
-        data = DataSetGenerator.generate(1234,500, 1, 3);
+        System.out.println(data.getAttributes().toString());
 
-        gda = new GaussianDiscriminantAnalysis(data.getAttributes());
-        gda.setDiagonal(false);
-        gda.setClassName("DiscreteVar0");
+        String classVarName = "DiscreteVar0";
 
-        if(gda.isValidConfiguration()) {
-            gda.learnModel(data);
+        nb = new NaiveBayesClassifier(data.getAttributes());
+        nb.setClassName(classVarName);
+
+        if(nb.isValidConfiguration()) {
+            nb.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                gda.updateModel(batch);
+
+                nb.updateModel(batch);
             }
-
+            System.out.println(nb.getModel());
+            System.out.println(nb.getDAG());
         }
-
-
 
 
     }
@@ -66,18 +70,18 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
     public void testClassVariable() {
         boolean passedTest = true;
 
-        Variable classVar = gda.getClassVar();
+        Variable classVar = nb.getClassVar();
 
         // class variable is a multinomial
         boolean isMultinomial = classVar.isMultinomial();
 
         //has not parents
-        boolean noParents = gda.getDAG().getParentSet(classVar).getParents().isEmpty();
+        boolean noParents = nb.getDAG().getParentSet(classVar).getParents().isEmpty();
 
         //all the attributes are their children
-        boolean allAttrChildren = gda.getModel().getVariables().getListOfVariables().stream()
+        boolean allAttrChildren = nb.getModel().getVariables().getListOfVariables().stream()
                 .filter(v-> !v.equals(classVar))
-                .allMatch(v -> gda.getDAG().getParentSet(v).contains(classVar));
+                .allMatch(v -> nb.getDAG().getParentSet(v).contains(classVar));
 
         assertTrue(isMultinomial && noParents && allAttrChildren);
     }
@@ -85,14 +89,14 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
 
 
     public void testAttributes(){
-        Variable classVar = gda.getClassVar();
+        Variable classVar = nb.getClassVar();
 
         // the attributes have a single parent
-        boolean numParents = gda.getModel().getVariables().getListOfVariables().stream()
+        boolean numParents = nb.getModel().getVariables().getListOfVariables().stream()
                 .filter(v-> !v.equals(classVar))
-                .allMatch(v -> gda.getDAG().getParentSet(v).getNumberOfParents()==1);
+                .allMatch(v -> nb.getDAG().getParentSet(v).getNumberOfParents()==1);
 
-        assertTrue(!gda.isDiagonal() || numParents);
+        assertTrue(numParents);
     }
 
 
@@ -106,11 +110,11 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
 
         for(DataInstance d : dataTest) {
 
-            double realValue = d.getValue(gda.getClassVar());
+            double realValue = d.getValue(nb.getClassVar());
             double predValue;
 
-            d.setValue(gda.getClassVar(), Utils.missingValue());
-            Multinomial posteriorProb = gda.predict(d);
+            d.setValue(nb.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = nb.predict(d);
 
 
             double[] values = posteriorProb.getProbabilities();
@@ -126,13 +130,35 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
 
         }
 
-
-        System.out.println(hits);
         assertTrue(hits==10);
 
 
     }
 
+
+    public void testNBClassifier() {
+
+        long time = System.nanoTime();
+        nb.learnModel(data);
+        BayesianNetwork nbClassifier = nb.getModel();
+        System.out.println(nbClassifier.toString());
+
+        System.out.println("Time: " + (System.nanoTime() - time) / 1000000000.0);
+
+
+        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+
+        parallelMaximumLikelihood.setBatchSize(100);
+        parallelMaximumLikelihood.setDAG(nbClassifier.getDAG());
+        parallelMaximumLikelihood.setLaplace(true);
+        parallelMaximumLikelihood.setDataStream(DataSetGenerator.generate(1234,500, 2, 10));
+
+        parallelMaximumLikelihood.runLearning();
+        BayesianNetwork nbML = parallelMaximumLikelihood.getLearntBayesianNetwork();
+        System.out.println(nb.toString());
+        assertTrue(nbML.equalBNs(nbClassifier, 0.2));
+
+    }
 
 
 
