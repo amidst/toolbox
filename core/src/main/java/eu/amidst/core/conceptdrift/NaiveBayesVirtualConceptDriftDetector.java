@@ -192,8 +192,12 @@ public class NaiveBayesVirtualConceptDriftDetector {
         svb.setDAG(dag);
 
         svb.setOutput(false);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setMaxIter(1000);
         svb.getPlateuStructure().getVMP().setThreshold(0.001);
+
+       // svb.setParallelMode(true);
+
+
 
         svb.initLearning();
     }

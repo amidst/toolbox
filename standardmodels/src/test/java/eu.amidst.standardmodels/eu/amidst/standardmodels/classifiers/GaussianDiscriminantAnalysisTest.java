@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.standardmodels;
+package eu.amidst.standardmodels.eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -24,7 +24,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.classifiers.HODE;
+import eu.amidst.standardmodels.classifiers.GaussianDiscriminantAnalysis;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
@@ -32,31 +32,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk/rcabanas on 11/03/16.
+ * Created by rcabanas on 10/03/16.
  */
-public class HODETest extends TestCase{
-    protected HODE hode;
+public class GaussianDiscriminantAnalysisTest extends TestCase {
+
+    protected GaussianDiscriminantAnalysis gda;
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
-        data = DataSetGenerator.generate(1234,500, 2, 10);
 
-        System.out.println(data.getAttributes().toString());
+        data = DataSetGenerator.generate(1234,500, 1, 3);
 
-        String classVarName = "DiscreteVar0";
+        gda = new GaussianDiscriminantAnalysis(data.getAttributes());
+        gda.setDiagonal(false);
+        gda.setClassName("DiscreteVar0");
 
-        hode = new HODE(data.getAttributes());
-        hode.setClassName(classVarName);
-
-        if(hode.isValidConfiguration()) {
-            hode.learnModel(data);
+        if(gda.isValidConfiguration()) {
+            gda.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-
-                hode.updateModel(batch);
+                gda.updateModel(batch);
             }
-            System.out.println(hode.getModel());
-            System.out.println(hode.getDAG());
+
         }
+
+
 
 
     }
@@ -67,18 +66,18 @@ public class HODETest extends TestCase{
     public void testClassVariable() {
         boolean passedTest = true;
 
-        Variable classVar = hode.getClassVar();
+        Variable classVar = gda.getClassVar();
 
         // class variable is a multinomial
         boolean isMultinomial = classVar.isMultinomial();
 
         //has not parents
-        boolean noParents = hode.getDAG().getParentSet(classVar).getParents().isEmpty();
+        boolean noParents = gda.getDAG().getParentSet(classVar).getParents().isEmpty();
 
         //all the attributes are their children
-        boolean allAttrChildren = hode.getModel().getVariables().getListOfVariables().stream()
+        boolean allAttrChildren = gda.getModel().getVariables().getListOfVariables().stream()
                 .filter(v-> !v.equals(classVar))
-                .allMatch(v -> hode.getDAG().getParentSet(v).contains(classVar));
+                .allMatch(v -> gda.getDAG().getParentSet(v).contains(classVar));
 
         assertTrue(isMultinomial && noParents && allAttrChildren);
     }
@@ -86,15 +85,14 @@ public class HODETest extends TestCase{
 
 
     public void testAttributes(){
-        Variable classVar = hode.getClassVar();
+        Variable classVar = gda.getClassVar();
 
-        // the attributes have two parents
-        boolean numParents = hode.getModel().getVariables().getListOfVariables().stream()
+        // the attributes have a single parent
+        boolean numParents = gda.getModel().getVariables().getListOfVariables().stream()
                 .filter(v-> !v.equals(classVar))
-                .filter(v-> !v.equals(hode.getModel().getVariables().getVariableByName("superParentVar")))
-                .allMatch(v -> hode.getDAG().getParentSet(v).getNumberOfParents()==2);
+                .allMatch(v -> gda.getDAG().getParentSet(v).getNumberOfParents()==1);
 
-        assertTrue(numParents);
+        assertTrue(!gda.isDiagonal() || numParents);
     }
 
 
@@ -108,11 +106,11 @@ public class HODETest extends TestCase{
 
         for(DataInstance d : dataTest) {
 
-            double realValue = d.getValue(hode.getClassVar());
+            double realValue = d.getValue(gda.getClassVar());
             double predValue;
 
-            d.setValue(hode.getClassVar(), Utils.missingValue());
-            Multinomial posteriorProb = hode.predict(d);
+            d.setValue(gda.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = gda.predict(d);
 
 
             double[] values = posteriorProb.getProbabilities();
@@ -128,9 +126,14 @@ public class HODETest extends TestCase{
 
         }
 
+
+        System.out.println(hits);
         assertTrue(hits==10);
 
 
     }
+
+
+
 
 }

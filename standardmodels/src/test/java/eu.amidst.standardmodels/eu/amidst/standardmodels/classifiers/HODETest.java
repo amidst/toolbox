@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.standardmodels;
+package eu.amidst.standardmodels.eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -24,7 +24,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.classifiers.GaussianDiscriminantAnalysis;
+import eu.amidst.standardmodels.classifiers.HODE;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
@@ -32,30 +32,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by rcabanas on 10/03/16.
+ * Created by ana@cs.aau.dk/rcabanas on 11/03/16.
  */
-public class GaussianDiscriminantAnalysisTest extends TestCase {
-
-    protected GaussianDiscriminantAnalysis gda;
+public class HODETest extends TestCase{
+    protected HODE hode;
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
+        data = DataSetGenerator.generate(1234,500, 2, 10);
 
-        data = DataSetGenerator.generate(1234,500, 1, 3);
+        System.out.println(data.getAttributes().toString());
 
-        gda = new GaussianDiscriminantAnalysis(data.getAttributes());
-        gda.setDiagonal(false);
-        gda.setClassName("DiscreteVar0");
+        String classVarName = "DiscreteVar0";
 
-        if(gda.isValidConfiguration()) {
-            gda.learnModel(data);
+        hode = new HODE(data.getAttributes());
+        hode.setClassName(classVarName);
+
+        if(hode.isValidConfiguration()) {
+            hode.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                gda.updateModel(batch);
+
+                hode.updateModel(batch);
             }
-
+            System.out.println(hode.getModel());
+            System.out.println(hode.getDAG());
         }
-
-
 
 
     }
@@ -66,18 +67,18 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
     public void testClassVariable() {
         boolean passedTest = true;
 
-        Variable classVar = gda.getClassVar();
+        Variable classVar = hode.getClassVar();
 
         // class variable is a multinomial
         boolean isMultinomial = classVar.isMultinomial();
 
         //has not parents
-        boolean noParents = gda.getDAG().getParentSet(classVar).getParents().isEmpty();
+        boolean noParents = hode.getDAG().getParentSet(classVar).getParents().isEmpty();
 
         //all the attributes are their children
-        boolean allAttrChildren = gda.getModel().getVariables().getListOfVariables().stream()
+        boolean allAttrChildren = hode.getModel().getVariables().getListOfVariables().stream()
                 .filter(v-> !v.equals(classVar))
-                .allMatch(v -> gda.getDAG().getParentSet(v).contains(classVar));
+                .allMatch(v -> hode.getDAG().getParentSet(v).contains(classVar));
 
         assertTrue(isMultinomial && noParents && allAttrChildren);
     }
@@ -85,14 +86,15 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
 
 
     public void testAttributes(){
-        Variable classVar = gda.getClassVar();
+        Variable classVar = hode.getClassVar();
 
-        // the attributes have a single parent
-        boolean numParents = gda.getModel().getVariables().getListOfVariables().stream()
+        // the attributes have two parents
+        boolean numParents = hode.getModel().getVariables().getListOfVariables().stream()
                 .filter(v-> !v.equals(classVar))
-                .allMatch(v -> gda.getDAG().getParentSet(v).getNumberOfParents()==1);
+                .filter(v-> !v.equals(hode.getModel().getVariables().getVariableByName("superParentVar")))
+                .allMatch(v -> hode.getDAG().getParentSet(v).getNumberOfParents()==2);
 
-        assertTrue(!gda.isDiagonal() || numParents);
+        assertTrue(numParents);
     }
 
 
@@ -106,11 +108,11 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
 
         for(DataInstance d : dataTest) {
 
-            double realValue = d.getValue(gda.getClassVar());
+            double realValue = d.getValue(hode.getClassVar());
             double predValue;
 
-            d.setValue(gda.getClassVar(), Utils.missingValue());
-            Multinomial posteriorProb = gda.predict(d);
+            d.setValue(hode.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = hode.predict(d);
 
 
             double[] values = posteriorProb.getProbabilities();
@@ -126,14 +128,9 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
 
         }
 
-
-        System.out.println(hits);
         assertTrue(hits==10);
 
 
     }
-
-
-
 
 }
