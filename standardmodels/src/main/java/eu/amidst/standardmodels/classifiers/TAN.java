@@ -38,30 +38,44 @@ import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
  * Created by andresmasegosa on 4/3/16.
  */
 
-// TODO: change to extend Classifier class
-public class TAN extends Model {
+public class TAN extends Classifier {
 
+
+    /** This class provides a link to the <a href="https://www.hugin.com">Hugin</a>'s functionality to learn in parallel a TAN model.*/
     private ParallelTAN parallelTAN;
-    private String classVarName;
+
+    /** String with the name of the node used as a root */
     private String rootVarName;
 
-
+    /**
+     * Constructor of the TAN classifier from a list of attributes.
+     * @param attributes list of attributes of the classifier (i.e. its variables)
+     * @throws WrongConfigurationException
+     */
     public TAN(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
     }
 
+
+    /**
+     * In this class this method does nothing: the DAG is built in the hugin classes
+     */
     @Override
     protected void buildDAG() {
 
     }
 
+
+    /**
+     * This method learns the model from a data stream
+     * @param dataStream Object with the data stream
+     */
     @Override
     public void learnModel(DataStream<DataInstance> dataStream){
 
-        if(classVarName==null || rootVarName==null) {
-            Variable classVar = this.vars.getListOfVariables().stream()
+        if(classVar==null || rootVarName==null) {
+            classVar = this.vars.getListOfVariables().stream()
                     .filter(Variable::isMultinomial).findAny().get();
-            classVarName = classVar.getName();
 
             rootVarName = this.vars.getListOfVariables().stream()
                     .filter(Variable::isMultinomial)
@@ -71,7 +85,7 @@ public class TAN extends Model {
         parallelTAN = new ParallelTAN();
         this.dag = new DAG(this.vars);
 
-        parallelTAN.setNameTarget(classVarName);
+        parallelTAN.setNameTarget(classVar.getName());
         parallelTAN.setNameRoot(rootVarName);
         parallelTAN.setNumCores(1);
         parallelTAN.setNumSamplesOnMemory(5000);
@@ -91,14 +105,22 @@ public class TAN extends Model {
         learningAlgorithm.runLearning();
     }
 
-    public void setClassVarName(String classVarName) {
-        this.classVarName = classVarName;
-    }
-
+    /**
+     * Sets the root variable in the TAN classifier
+     * @param rootVarName String indicating the name of the root variable
+     */
     public void setRootVarName(String rootVarName) {
         this.rootVarName = rootVarName;
     }
 
+
+
+
+
+    /*
+    * tests if the attributes passed as an argument in the constructor are suitable for this classifier
+    * @return boolean value with the result of the test.
+    */
     @Override
     public boolean isValidConfiguration() {
 
@@ -117,6 +139,8 @@ public class TAN extends Model {
         return  isValid;
     }
 
+
+
     public static void main(String[] args) throws WrongConfigurationException {
 
         int seed=6236;
@@ -124,9 +148,6 @@ public class TAN extends Model {
         int nDiscreteVars=5;
         int nContinuousVars=10;
 
-
-        String libPathProperty = System.getProperty("java.library.path");
-        System.out.println("libPathProperty"+libPathProperty);
 
         DataStream<DataInstance> data = DataSetGenerator.generate(seed,nSamples,nDiscreteVars,nContinuousVars);
 
@@ -136,7 +157,8 @@ public class TAN extends Model {
 
         TAN model = new TAN(data.getAttributes());
 
-        model.setClassVarName(classVarName);
+
+        model.setClassName(classVarName);
         model.setRootVarName(rootVarName);
 
         model.learnModel(data);
