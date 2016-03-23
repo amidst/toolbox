@@ -78,7 +78,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
     @Test
     public void testBCC() throws IOException, ClassNotFoundException {
         int windowSize = 3000;
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/IDAlikeDataCD/MONTH1.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month0.arff");
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
         virtualDriftDetector.setClassIndex(-1);
         virtualDriftDetector.setData(data);
@@ -94,8 +94,8 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
 
         System.out.println();
         int countBatch = 0;
-        for (int k = 1; k <= 84; k++) {
-            data = DataStreamLoader.openFromFile("./datasets/DriftSets/IDAlikeDataCD/MONTH"+k+".arff");
+        for (int k = 1; k < 60; k++) {
+            data = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month" + k + ".arff");
             DataOnMemory<DataInstance> batch = new DataOnMemoryListContainer<DataInstance>(data.getAttributes(),data.stream().collect(Collectors.toList()));
             double[] out = virtualDriftDetector.updateModel(batch);
             System.out.print(countBatch + "\t");

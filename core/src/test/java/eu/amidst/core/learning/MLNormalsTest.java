@@ -43,7 +43,7 @@ public class MLNormalsTest {
     public void testingML_NormalNormal1Parent() throws IOException, ClassNotFoundException  {
 
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networksTests/Normal_1NormalParents.bn");
         System.out.println("\nNormal_withOneNormalParent network \n ");
 
         //Sampling
@@ -71,7 +71,7 @@ public class MLNormalsTest {
     @Test
     public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.bn");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networksTests/Normal_NormalParents.bn");
         System.out.println("\nNormal_withTwoNormalParents network \n ");
 
         //Sampling
