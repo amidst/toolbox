@@ -12,7 +12,7 @@ public class FileConverterFromHuginToAmidstTest {
     @Before
     public void setUp() throws Exception {
         //To make the test easier the check is done in the original class.
-        FileConverterFromHuginToAmidst.convertFilesFromFolder("networks");
+        FileConverterFromHuginToAmidst.convertFilesFromFolder("networksTests/");
     }
 
     @Test

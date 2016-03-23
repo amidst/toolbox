@@ -32,7 +32,7 @@ public class DynamicNaiveBayesClassifierDemo {
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
-        int sampleSize = 10000000;
+        int sampleSize = 1000000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         String file = "./datasetsTests/randomdata.arff";
         DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);

@@ -57,7 +57,7 @@ public class MLforDBNfromDataset {
     public static void main(String[] args) throws IOException {
         //We can open the data stream using the static class DataStreamLoader
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(
-                "datasetsTests/randomDataTrain.arff");
+                "datasetsTests/WasteIncineratorSample.arff");
 
         //Parameter Learning
         //We set the batch size which will be employed to learn the model in parallel
@@ -67,7 +67,7 @@ public class MLforDBNfromDataset {
 
         //We fix the DAG structure, the data and learn the DBN
         DynamicBayesianNetwork dbn = DynamicMaximumLikelihood.learnDynamic(
-                MLforDBNfromDataset.getNaiveBayesStructure(data.getAttributes(),9), data);
+                MLforDBNfromDataset.getNaiveBayesStructure(data.getAttributes(),2), data);
 
         //We print the model
         System.out.println(dbn.toString());
