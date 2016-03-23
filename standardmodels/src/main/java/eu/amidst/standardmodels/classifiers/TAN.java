@@ -39,10 +39,9 @@ import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
  */
 
 // TODO: change to extend Classifier class
-public class TAN extends Model {
+public class TAN extends Classifier {
 
     private ParallelTAN parallelTAN;
-    private String classVarName;
     private String rootVarName;
 
 
@@ -58,10 +57,9 @@ public class TAN extends Model {
     @Override
     public void learnModel(DataStream<DataInstance> dataStream){
 
-        if(classVarName==null || rootVarName==null) {
-            Variable classVar = this.vars.getListOfVariables().stream()
+        if(classVar==null || rootVarName==null) {
+            classVar = this.vars.getListOfVariables().stream()
                     .filter(Variable::isMultinomial).findAny().get();
-            classVarName = classVar.getName();
 
             rootVarName = this.vars.getListOfVariables().stream()
                     .filter(Variable::isMultinomial)
@@ -71,7 +69,7 @@ public class TAN extends Model {
         parallelTAN = new ParallelTAN();
         this.dag = new DAG(this.vars);
 
-        parallelTAN.setNameTarget(classVarName);
+        parallelTAN.setNameTarget(classVar.getName());
         parallelTAN.setNameRoot(rootVarName);
         parallelTAN.setNumCores(1);
         parallelTAN.setNumSamplesOnMemory(5000);
@@ -91,9 +89,6 @@ public class TAN extends Model {
         learningAlgorithm.runLearning();
     }
 
-    public void setClassVarName(String classVarName) {
-        this.classVarName = classVarName;
-    }
 
     public void setRootVarName(String rootVarName) {
         this.rootVarName = rootVarName;
@@ -125,9 +120,6 @@ public class TAN extends Model {
         int nContinuousVars=10;
 
 
-        String libPathProperty = System.getProperty("java.library.path");
-        System.out.println("libPathProperty"+libPathProperty);
-
         DataStream<DataInstance> data = DataSetGenerator.generate(seed,nSamples,nDiscreteVars,nContinuousVars);
 
         String classVarName="DiscreteVar0";
@@ -136,7 +128,8 @@ public class TAN extends Model {
 
         TAN model = new TAN(data.getAttributes());
 
-        model.setClassVarName(classVarName);
+
+        model.setClassName(classVarName);
         model.setRootVarName(rootVarName);
 
         model.learnModel(data);

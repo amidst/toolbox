@@ -37,7 +37,7 @@ public abstract class Classifier extends Model {
     protected InferenceAlgorithm inferenceAlgoPredict;
 
     /** class variable */
-    protected Variable classVar;
+    protected Variable classVar = null;
 
     /**
      * Constructor of a classifier which is initialized with the default arguments:
