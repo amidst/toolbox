@@ -32,7 +32,7 @@ public class BNConverterToHuginTest {
         //**************************************** Synthetic data ******************************************************
 
         ARFFDataReader fileReader = new ARFFDataReader();
-        fileReader.loadFromFile("datasets/syntheticData.arff");
+        fileReader.loadFromFile("datasetsTests/syntheticData.arff");
         Variables modelHeader = new Variables(fileReader.getAttributes());
 
 
@@ -192,7 +192,7 @@ public class BNConverterToHuginTest {
         //Conversion from AMIDST network into a Hugin network.
         System.out.println("\n\nConverting the AMIDST network into Hugin format ...");
         this.huginBN = BNConverterToHugin.convertToHugin(amidstBN);
-        String outFile = new String("networks/huginNetworkFromAMIDST.net");
+        String outFile = new String("networksTests//huginNetworkFromAMIDST.net");
         this.huginBN.saveAsNet(new String(outFile));
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");
 
@@ -208,7 +208,7 @@ public class BNConverterToHuginTest {
 
         System.out.println("\n\nConverting the previous AMIDST network into Hugin format ...");
         Domain huginNetwork2 = BNConverterToHugin.convertToHugin(amidstBN);
-        String outFile2 = new String("networks/huginNetworkFromAMIDST2.net");
+        String outFile2 = new String("networksTests//huginNetworkFromAMIDST2.net");
         huginNetwork2.saveAsNet(new String(outFile2));
         System.out.println("Hugin network saved in \"" + outFile2 + "\"" + ".");
 

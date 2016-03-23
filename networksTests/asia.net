@@ -1,0 +1,138 @@
+net
+{
+    node_size = (179 50);
+    HR_Grid_X = "10";
+    HR_Grid_Y = "10";
+    HR_Grid_GridSnap = "1";
+    HR_Grid_GridShow = "0";
+    HR_Font_Name = "Arial";
+    HR_Font_Size = "-12";
+    HR_Font_Weight = "400";
+    HR_Font_Italic = "0";
+    HR_Propagate_Auto = "0";
+    HR_Propagate_AutoSum = "1";
+    HR_Propagate_AutoNormal = "1";
+    HR_Compile_TriangMethod = "0";
+    HR_Compile_Compress = "0";
+    HR_Compile_Approximate = "0";
+    HR_Compile_ApproxEpsilon = "0.00001";
+    HR_Monitor_AutoUpdGraph = "0";
+    HR_Monitor_GraphPrecision = "100";
+    HR_Monitor_OpenGraph = "0";
+    HR_Monitor_InitStates = "5";
+    HR_Monitor_InitSD = "2";
+    HR_Color_DiscreteChance = "16";
+    HR_Color_ContinuosChance = "48";
+    HR_Color_Utility = "36";
+    HR_Color_Decision = "17";
+    HR_Groups_UserGroupsNo = "0";
+    HR_Groups_GroupNames = "";
+    HR_Groups_GroupColors = "";
+    label = "Chest-clinic-runtime";
+    name = "Chest-clinic";
+}
+
+node X
+{
+    label = "Positive X-ray?";
+    states = ("yes" "no");
+}
+
+node B
+{
+    label = "Has bronchitis";
+    position = (400 200);
+    states = ("yes" "no");
+}
+
+node D
+{
+    label = "Dyspnoea?";
+    position = (250 0);
+    states = ("yes" "no");
+}
+
+node A
+{
+    label = "Visit to Asia?";
+    position = (0 301);
+    states = ("yes" "no");
+}
+
+node S
+{
+    label = "Smoker?";
+    position = (299 301);
+    states = ("yes" "no");
+}
+
+node L
+{
+    label = "Has lung cancer";
+    position = (200 200);
+    states = ("yes" "no");
+}
+
+node T
+{
+    label = "Has tuberculosis";
+    position = (0 200);
+    states = ("yes" "no");
+}
+
+node E
+{
+    label = "Tuberculosis or cancer";
+    position = (99 101);
+    states = ("yes" "no");
+}
+
+potential (X | E)
+{
+ data = (( 0.98 0.02 )	%  yes
+	 ( 0.05 0.95 ));	%  no
+}
+
+potential (B | S)
+{
+ data = (( 0.6 0.4 )	%  yes
+	 ( 0.3 0.7 ));	%  no
+}
+
+potential (D | B E)
+{
+ data = ((( 0.9 0.1 )	%  yes  yes
+	  ( 0.8 0.2 ))	%  yes  no
+	 (( 0.7 0.3 )	%  no  yes
+	  ( 0.1 0.9 )));	%  no  no
+}
+
+potential (A)
+{
+ data = ( 0.01 0.99 );
+}
+
+potential (S)
+{
+ data = ( 0.5 0.5 );
+}
+
+potential (L | S)
+{
+ data = (( 0.1 0.9 )	%  yes
+	 ( 0.01 0.99 ));	%  no
+}
+
+potential (T | A)
+{
+ data = (( 0.05 0.95 )	%  yes
+	 ( 0.01 0.99 ));	%  no
+}
+
+potential (E | T L)
+{
+ data = ((( 1 0 )	%  yes  yes
+	  ( 1 0 ))	%  yes  no
+	 (( 1 0 )	%  no  yes
+	  ( 0 1 )));	%  no  no
+}

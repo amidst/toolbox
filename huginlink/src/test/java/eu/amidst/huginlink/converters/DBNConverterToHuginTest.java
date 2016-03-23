@@ -22,7 +22,7 @@ public class DBNConverterToHuginTest {
 
     public static DynamicBayesianNetwork getAmidst_DBN_Example()  {
 
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/syntheticDataDiscrete.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/syntheticDataDiscrete.arff");
 
         DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
         DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
@@ -177,7 +177,7 @@ public class DBNConverterToHuginTest {
         DynamicBayesianNetwork amidstDBN = getAmidst_DBN_Example();
         System.out.println("\n\nConverting the AMIDST Dynamic BN into Hugin format ...");
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
-        String outFile = new String("networks/huginDBNFromAMIDST.oobn");
+        String outFile = new String("networksTests//huginDBNFromAMIDST.oobn");
 
         //The name of the DBN must be the same as the name of the out file !!!
         huginDBN.setName("huginDBNFromAMIDST");

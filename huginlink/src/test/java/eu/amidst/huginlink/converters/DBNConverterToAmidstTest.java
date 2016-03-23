@@ -41,9 +41,9 @@ public class DBNConverterToAmidstTest {
         huginDBN.saveAsNet(outFile);
         System.out.println("Hugin network saved in \"" + outFile + "\"" + ".");*/
 
-        Class huginDBN = DBNLoaderFromHugin.loadFromFile("networks/CajamarDBN.oobn");
+        Class huginDBN = DBNLoaderFromHugin.loadFromFile("networksTests//CajamarDBN.oobn");
         DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
-        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networks/CajamarDBN.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "networksTests//CajamarDBN.dbn");
 
     }
 
