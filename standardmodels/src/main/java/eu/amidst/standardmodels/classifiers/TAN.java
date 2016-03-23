@@ -38,22 +38,38 @@ import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
  * Created by andresmasegosa on 4/3/16.
  */
 
-// TODO: change to extend Classifier class
 public class TAN extends Classifier {
 
+
+    /** This class provides a link to the <a href="https://www.hugin.com">Hugin</a>'s functionality to learn in parallel a TAN model.*/
     private ParallelTAN parallelTAN;
+
+    /** String with the name of the node used as a root */
     private String rootVarName;
 
-
+    /**
+     * Constructor of the TAN classifier from a list of attributes.
+     * @param attributes list of attributes of the classifier (i.e. its variables)
+     * @throws WrongConfigurationException
+     */
     public TAN(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
     }
 
+
+    /**
+     * In this class this method does nothing: the DAG is built in the hugin classes
+     */
     @Override
     protected void buildDAG() {
 
     }
 
+
+    /**
+     * This method learns the model from a data stream
+     * @param dataStream Object with the data stream
+     */
     @Override
     public void learnModel(DataStream<DataInstance> dataStream){
 
@@ -89,11 +105,22 @@ public class TAN extends Classifier {
         learningAlgorithm.runLearning();
     }
 
-
+    /**
+     * Sets the root variable in the TAN classifier
+     * @param rootVarName String indicating the name of the root variable
+     */
     public void setRootVarName(String rootVarName) {
         this.rootVarName = rootVarName;
     }
 
+
+
+
+
+    /*
+    * tests if the attributes passed as an argument in the constructor are suitable for this classifier
+    * @return boolean value with the result of the test.
+    */
     @Override
     public boolean isValidConfiguration() {
 
@@ -111,6 +138,8 @@ public class TAN extends Classifier {
 
         return  isValid;
     }
+
+
 
     public static void main(String[] args) throws WrongConfigurationException {
 
