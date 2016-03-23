@@ -35,7 +35,7 @@ public class DynamicBayesianNetworkWriterTest {
     @Test
     public void test() throws Exception {
         //This class is already tested when using the DynamicBayesianNetworkLoaderTest
-        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networks");
+        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networksTests");
     }
 
 

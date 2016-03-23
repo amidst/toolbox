@@ -61,7 +61,7 @@ public class BCC {
         for (int i = 0; i < MONTHS; i++) {
 
             //We load the data for the given month
-            DataStream<DataInstance> monthlyData = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month" + i + ".arff");
+            DataStream<DataInstance> monthlyData = DataStreamLoader.openFromFile("./datasetsTests/bnaic2015/BCC/Month" + i + ".arff");
 
             //We update the model in parallel with the data from data month
             parallelSVB.updateModelInParallel(monthlyData);
@@ -130,7 +130,7 @@ public class BCC {
     public static DAG modelBuilding() throws Exception {
 
         //We load the data for one month
-        DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month0.arff");
+        DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasetsTests/bnaic2015/BCC/Month0.arff");
 
         //Define the variables. By default, a random variable is created for each attribute
         Variables variables  = new Variables(instances.getAttributes());
@@ -170,7 +170,7 @@ public class BCC {
         for (int i = 0; i < MONTHS; i++) {
 
             //We load the data for that month
-            DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month"+i+".arff");
+            DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasetsTests/bnaic2015/BCC/Month"+i+".arff");
 
             //We get the attribute credit
             Attribute credit = instances.getAttributes().getAttributeByName("credit");

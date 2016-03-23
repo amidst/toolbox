@@ -22,7 +22,6 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.learning.parametric.LearningEngine;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
@@ -41,7 +40,7 @@ public class ParallelMLMissingDataTest extends TestCase {
     public void testingMLParallel() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/wasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/wasteIncinerator.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -82,7 +81,7 @@ public class ParallelMLMissingDataTest extends TestCase {
     public void testingMLParallel2() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/wasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/wasteIncinerator.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());

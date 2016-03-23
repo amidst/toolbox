@@ -39,7 +39,7 @@ public class ParallelSVBTest extends TestCase {
 
     public static void testAsia1Core() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
 
@@ -74,7 +74,7 @@ public class ParallelSVBTest extends TestCase {
     }
     public static void testAsiaNcore() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
 
@@ -110,7 +110,7 @@ public class ParallelSVBTest extends TestCase {
 
     public static void testAsiaNcore2() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
 
@@ -147,7 +147,7 @@ public class ParallelSVBTest extends TestCase {
 
     public static void testAsiaNcoreHidden() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
 
@@ -184,11 +184,11 @@ public class ParallelSVBTest extends TestCase {
 
     public static void testWasteIncinerator1Core() throws IOException, ClassNotFoundException{
 
-        String[] bns = {"networks/Normal.bn",
-                "networks/Normal_1NormalParents.bn",
-                "networks/Normal_NormalParents.bn",
-                "networks/Normal_MultinomialParents.bn",
-                "networks/WasteIncinerator.bn"
+        String[] bns = {"networksTests/Normal.bn",
+                "networksTests/Normal_1NormalParents.bn",
+                "networksTests/Normal_NormalParents.bn",
+                "networksTests/Normal_MultinomialParents.bn",
+                "networksTests/WasteIncinerator.bn"
         };
 
 
@@ -244,11 +244,11 @@ public class ParallelSVBTest extends TestCase {
 
     public static void testWasteIncineratorNCore() throws IOException, ClassNotFoundException{
 
-        String[] bns = {"networks/Normal.bn",
-        "networks/Normal_1NormalParents.bn",
-        "networks/Normal_NormalParents.bn",
-        "networks/Normal_MultinomialParents.bn",
-        "networks/WasteIncinerator.bn"
+        String[] bns = {"networksTests/Normal.bn",
+        "networksTests/Normal_1NormalParents.bn",
+        "networksTests/Normal_NormalParents.bn",
+        "networksTests/Normal_MultinomialParents.bn",
+        "networksTests/WasteIncinerator.bn"
         };
 
 
