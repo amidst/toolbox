@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.standardmodels;
+package eu.amidst.standardmodels.eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -27,6 +27,7 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.classifiers.NaiveBayesClassifier;
+import eu.amidst.standardmodels.classifiers.TAN;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
@@ -36,30 +37,40 @@ import java.util.stream.Collectors;
 /**
  * Created by rcabanas on 10/03/16.
  */
-public class NaiveBayesClassifierTest extends TestCase {
+public class TANTest extends TestCase {
 
-    protected NaiveBayesClassifier nb;
+    protected TAN model;
+    String rootVarName;
+
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
-        data = DataSetGenerator.generate(1234,500, 2, 10);
 
-        System.out.println(data.getAttributes().toString());
+        int seed=6236;
+        int nSamples=5000;
+        int nDiscreteVars=5;
+        int nContinuousVars=10;
 
-        String classVarName = "DiscreteVar0";
 
-        nb = new NaiveBayesClassifier(data.getAttributes());
-        nb.setClassName(classVarName);
 
-        if(nb.isValidConfiguration()) {
-            nb.learnModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                nb.updateModel(batch);
-            }
-            System.out.println(nb.getModel());
-            System.out.println(nb.getDAG());
-        }
+        data = DataSetGenerator.generate(seed,nSamples,nDiscreteVars,nContinuousVars);
+
+        String classVarName="DiscreteVar0";
+        rootVarName="DiscreteVar1";
+
+
+        model = new TAN(data.getAttributes());
+
+
+        model.setClassName(classVarName);
+        model.setRootVarName(rootVarName);
+
+        model.learnModel(data);
+
+        System.out.println(model.getDAG());
+        System.out.println();
+        System.out.println(model.getModel());
 
 
     }
@@ -68,20 +79,21 @@ public class NaiveBayesClassifierTest extends TestCase {
     //////// test methods
 
     public void testClassVariable() {
+
         boolean passedTest = true;
 
-        Variable classVar = nb.getClassVar();
+        Variable classVar = model.getClassVar();
 
         // class variable is a multinomial
         boolean isMultinomial = classVar.isMultinomial();
 
         //has not parents
-        boolean noParents = nb.getDAG().getParentSet(classVar).getParents().isEmpty();
+        boolean noParents = model.getDAG().getParentSet(classVar).getParents().isEmpty();
 
-        //all the attributes are their children
-        boolean allAttrChildren = nb.getModel().getVariables().getListOfVariables().stream()
+        //all the attributes have the class in their parent set
+        boolean allAttrChildren = model.getModel().getVariables().getListOfVariables().stream()
                 .filter(v-> !v.equals(classVar))
-                .allMatch(v -> nb.getDAG().getParentSet(v).contains(classVar));
+                .allMatch(v -> model.getDAG().getParentSet(v).contains(classVar));
 
         assertTrue(isMultinomial && noParents && allAttrChildren);
     }
@@ -89,19 +101,27 @@ public class NaiveBayesClassifierTest extends TestCase {
 
 
     public void testAttributes(){
-        Variable classVar = nb.getClassVar();
+        Variable classVar = model.getClassVar();
 
-        // the attributes have a single parent
-        boolean numParents = nb.getModel().getVariables().getListOfVariables().stream()
-                .filter(v-> !v.equals(classVar))
-                .allMatch(v -> nb.getDAG().getParentSet(v).getNumberOfParents()==1);
+
+
+        // all the attributes but the root have a 2 parents
+        boolean numParents = model.getModel().getVariables().getListOfVariables().stream()
+                .filter(v-> !v.equals(classVar) && !v.getName().equals(rootVarName))
+                .allMatch(v -> {
+                    System.out.println(v.getName()+" "+model.getDAG().getParentSet(v).getNumberOfParents());
+                    return model.getDAG().getParentSet(v).getNumberOfParents()==2;
+                });
 
         assertTrue(numParents);
+
+
     }
 
 
 
     public void testPrediction() {
+
 
         List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,10);
 
@@ -110,11 +130,11 @@ public class NaiveBayesClassifierTest extends TestCase {
 
         for(DataInstance d : dataTest) {
 
-            double realValue = d.getValue(nb.getClassVar());
+            double realValue = d.getValue(model.getClassVar());
             double predValue;
 
-            d.setValue(nb.getClassVar(), Utils.missingValue());
-            Multinomial posteriorProb = nb.predict(d);
+            d.setValue(model.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = model.predict(d);
 
 
             double[] values = posteriorProb.getProbabilities();
@@ -134,32 +154,6 @@ public class NaiveBayesClassifierTest extends TestCase {
 
 
     }
-
-
-    public void testNBClassifier() {
-
-        long time = System.nanoTime();
-        nb.learnModel(data);
-        BayesianNetwork nbClassifier = nb.getModel();
-        System.out.println(nbClassifier.toString());
-
-        System.out.println("Time: " + (System.nanoTime() - time) / 1000000000.0);
-
-
-        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-
-        parallelMaximumLikelihood.setBatchSize(100);
-        parallelMaximumLikelihood.setDAG(nbClassifier.getDAG());
-        parallelMaximumLikelihood.setLaplace(true);
-        parallelMaximumLikelihood.setDataStream(DataSetGenerator.generate(1234,500, 2, 10));
-
-        parallelMaximumLikelihood.runLearning();
-        BayesianNetwork nbML = parallelMaximumLikelihood.getLearntBayesianNetwork();
-        System.out.println(nb.toString());
-        assertTrue(nbML.equalBNs(nbClassifier, 0.2));
-
-    }
-
 
 
 }
