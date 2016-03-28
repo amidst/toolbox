@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class implements a Factorial Hidden Markov Model. HMM with (unconnected) binary hidden parents. See e.g.:
+ * This class implements a Bayesian Linear Regression Model. See e.g.:
  *
  * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 231
  *
@@ -70,8 +70,9 @@ public class BayesianLinearRegression extends Model {
     }
 
 
-
-
+    /**
+     * Builds the DAG of the model.
+     */
     @Override
     protected void buildDAG() {
         dag = new DAG(vars);
@@ -104,6 +105,11 @@ public class BayesianLinearRegression extends Model {
 
 
     }
+
+    /**
+     * tests if the attributes passed as an argument in the constructor are suitable
+     * @return boolean value with the result of the test.
+     */
 
     @Override
     public boolean isValidConfiguration() {
@@ -201,8 +207,6 @@ public class BayesianLinearRegression extends Model {
 
 
 
-        InferenceAlgorithm infer = new VMP();
-        infer.setModel(BLR.getModel());
 
         for(DataInstance d : dataTest) {
 

@@ -30,20 +30,40 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
+ * This class implements Factor Analysis. See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 381
+ *
  * Created by andresmasegosa on 4/3/16.
  */
 public class FactorAnalysis extends Model {
 
-    private int numberOfLatentVariables = 5;
+    private int numberOfLatentVariables;
 
+    /**
+     * Constructor from a list of attributes. By default, sets the number of latent
+     * variabels to 5.
+     * @param attributes list of attributes (i.e. its variables)
+     * @throws WrongConfigurationException
+     */
     public FactorAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
+        numberOfLatentVariables = 5;
     }
 
+
+    /**
+     * Sets the number of latent (i.e. hidden) continuous variables in the model
+     * @param numberOfLatentVariables positive integer value
+     */
     public void setNumberOfLatentVariables(int numberOfLatentVariables) {
         this.numberOfLatentVariables = numberOfLatentVariables;
     }
 
+
+    /**
+     * Builds the DAG
+     */
     @Override
     protected void buildDAG() {
 
@@ -75,7 +95,10 @@ public class FactorAnalysis extends Model {
     }
 
 
-
+    /**
+     * tests if the attributes passed as an argument in the constructor are suitable
+     * @return boolean value with the result of the test.
+     */
     @Override
     public boolean isValidConfiguration() {
 
@@ -89,6 +112,11 @@ public class FactorAnalysis extends Model {
 
         return isValid;
     }
+
+
+
+
+    //// example of use
 
     public static void main(String[] args) throws WrongConfigurationException {
 
