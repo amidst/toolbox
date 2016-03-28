@@ -60,6 +60,12 @@ public class FactorAnalysis extends Model {
         this.numberOfLatentVariables = numberOfLatentVariables;
     }
 
+    /**
+     * Sets the number of latent (i.e. hidden) continuous variables in the model
+     */
+    public int getNumberOfLatentVariables() {
+        return numberOfLatentVariables;
+    }
 
     /**
      * Builds the DAG
