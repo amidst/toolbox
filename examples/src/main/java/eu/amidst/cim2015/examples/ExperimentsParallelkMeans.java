@@ -1,3 +1,20 @@
+/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
 package eu.amidst.cim2015.examples;
 
 import eu.amidst.core.datastream.DataInstance;
@@ -25,6 +42,7 @@ public class ExperimentsParallelkMeans {
     static boolean sampleData = true;
     static int batchSize = 100;
     static int k = 3;
+    static String pathToFile = "datasetsTests/tmp.arff";
 
     public static int getK() {
         return k;
@@ -74,7 +92,13 @@ public class ExperimentsParallelkMeans {
         ExperimentsParallelML.sampleData = sampleData;
     }
 
+    public static String getPathToFile() {
+        return pathToFile;
+    }
 
+    public static void setPathToFile(String pathToFile) {
+        ExperimentsParallelkMeans.pathToFile = pathToFile;
+    }
 
     public static void runParallelKMeans() throws IOException {
 
@@ -84,10 +108,10 @@ public class ExperimentsParallelkMeans {
             BayesianNetworkGenerator.setNumberOfMultinomialVars(getNumDiscVars(), getNumStates());
             BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
             data = new BayesianNetworkSampler(bn).sampleToDataStream(getSampleSize());
-            DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+            DataStreamWriter.writeDataToFile(data, pathToFile);
         }
 
-        data = DataStreamLoader.openFromFile("datasets/tmp.arff");
+        data = DataStreamLoader.openFromFile(pathToFile);
 
         ParallelKMeans.setBatchSize(batchSize);
         double[][] centroids = ParallelKMeans.learnKMeans(getK(),data);
@@ -123,7 +147,8 @@ public class ExperimentsParallelkMeans {
                 "-GV, 5000, Num of gaussian variables\\"+
                 "-DV, 5000, Num of discrete variables\\"+
                 "-k, 2, Num of clusters\\"+
-                "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\";
+                "-sampleData, true, Sample arff data (if not path to file must be specified)\\"+
+                "-pathToFile, datasetsTests/tmp.arff,Path to sample file if sampleData is set to false\\";
     }
 
     public static void loadOptions() {
@@ -133,6 +158,7 @@ public class ExperimentsParallelkMeans {
         setSampleSize(getIntOption("-sampleSize"));
         setK(getIntOption("-k"));
         setSampleData(getBooleanOption("-sampleData"));
+        setPathToFile(getOption("-pathToFile"));
     }
 
 

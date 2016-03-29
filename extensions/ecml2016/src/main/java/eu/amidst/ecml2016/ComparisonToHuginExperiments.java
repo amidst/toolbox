@@ -1,3 +1,20 @@
+/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
 package eu.amidst.ecml2016;
 
 import COM.hugin.HAPI.*;
@@ -10,9 +27,7 @@ import eu.amidst.dynamic.inference.DynamicMAPInference;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
-import org.apache.log4j.BasicConfigurator;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -24,7 +39,7 @@ import java.util.stream.IntStream;
  */
 public class ComparisonToHuginExperiments {
 
-    final static int maxTimeStepsHugin=12;
+    final static int maxTimeStepsHugin=10;
 
     public static void main(String[] args) {
 
@@ -61,18 +76,18 @@ public class ComparisonToHuginExperiments {
         int seedEvidence = 935;
         Random randomEvidence= new Random(seedEvidence);
 
+        String outputDirectory = "/Users/dario/Desktop/dynMapNetworks/";
 
+        int numberOfModelsToTest = 1;
 
-        int numberOfModelsToTest = 10;
-
-        int numberOfEvidencesPerModel = 10;
+        int numberOfEvidencesPerModel = 1;
 
 
         //BasicConfigurator.configure();
         VMP dumb_vmp = new VMP();
 
 
-        int nTimeSteps=20;
+        int nTimeSteps=12;
         int nSamplesForIS=20000;
 
 
@@ -99,14 +114,17 @@ public class ComparisonToHuginExperiments {
 
         double[] precision_Hugin = new double[numberOfModelsToTest*numberOfEvidencesPerModel];
 
+        double[] precision_random = new double[numberOfModelsToTest*numberOfEvidencesPerModel];
+
+
         HiddenLayerDynamicModel model = new HiddenLayerDynamicModel();
 
 
         model.setnStatesClassVar(2);
-        model.setnStatesHidden(4);
+        model.setnStatesHidden(2);
         model.setnStates(2);
 
-        model.setnHiddenContinuousVars(1);
+        model.setnHiddenContinuousVars(2);
         model.setnObservableDiscreteVars(2);
         model.setnObservableContinuousVars(2);
 
@@ -120,7 +138,9 @@ public class ComparisonToHuginExperiments {
             System.out.println("\nMODEL NUMBER "+ i+"\n");
             //model.setSeed(randomModel.nextInt());
             model.randomInitialization(randomModel);
-            model.setProbabilityOfKeepingClass(0.9);
+
+            double probKeepingClassState = 1;
+            model.setProbabilityOfKeepingClass(probKeepingClassState);
 
             DynamicBayesianNetwork DBNmodel = model.getModel();
             System.out.println(DBNmodel);
@@ -133,11 +153,11 @@ public class ComparisonToHuginExperiments {
                 model.generateEvidence(nTimeSteps);
 
                 List<DynamicAssignment> evidence = model.getEvidenceNoClass();
-                IntStream.range(0,evidence.size()).forEachOrdered(k -> {
-                    if (k%2==0) {
-                        evidence.get(k).getVariables().forEach(variable -> evidence.get(k).setValue(variable, Utils.missingValue()));
-                    }
-                });
+//                IntStream.range(0,evidence.size()).forEachOrdered(k -> {
+//                    if (k%2==0) {
+//                        evidence.get(k).getVariables().forEach(variable -> evidence.get(k).setValue(variable, Utils.missingValue()));
+//                    }
+//                });
                 evidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
                 System.out.println("\n");
 
@@ -218,6 +238,17 @@ public class ComparisonToHuginExperiments {
 
 
                 int [] sequence_original = model.getClassSequence();
+
+                int [] random_sequence = new int[nTimeSteps];
+                Random aux = new Random();
+                //random_sequence[0]=(int)Math.round(aux.nextDouble());
+                random_sequence[0] = model.getClassSequence()[0];
+
+                for (int k = 1; k < random_sequence.length; k++) {
+                    double randomNumber = aux.nextDouble();
+                    random_sequence[k] = ((randomNumber < probKeepingClassState) ? random_sequence[k-1] :  1-random_sequence[k-1]);
+                }
+
                 //System.out.println("ORIGINAL SEQUENCE:               " + Arrays.toString(sequence_original));
 
 
@@ -225,9 +256,22 @@ public class ComparisonToHuginExperiments {
 //                    System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
 //                }
 
+
+
                 /////////////////////////////////////////////////
                 // UNGROUPED VARIABLES WITH I.S.
                 /////////////////////////////////////////////////
+
+                final BayesianNetwork unfoldedStaticModel1 = dynMAP.getUnfoldedStaticModel();
+
+                try {
+                    BNConverterToHugin.convertToHugin(unfoldedStaticModel1).saveAsNet(outputDirectory + "ungroupedModel.net");
+                }
+                catch (ExceptionHugin e) {
+                    System.out.println(e.toString());
+                }
+                unfoldedStaticModel1.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("ClassVar")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel1.getConditionalDistribution(variable).toString()));
+
                 dynMAP = new DynamicMAPInference();
                 dynMAP.setModel(DBNmodel);
                 dynMAP.setMAPvariable(MAPVariable);
@@ -240,11 +284,18 @@ public class ComparisonToHuginExperiments {
                 dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.IS);
                 int [] sequence_UngroupedIS = dynMAP.getMAPsequence();
 
-//                System.out.println("Ungrouped IS finished");
+                System.out.println("Ungrouped IS finished");
+                System.out.println("\n\n");
+
 
                 /////////////////////////////////////////////////
                 // UNGROUPED VARIABLES WITH VMP
                 /////////////////////////////////////////////////
+
+                final BayesianNetwork unfoldedStaticModel2 = dynMAP.getUnfoldedStaticModel();
+                unfoldedStaticModel2.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("ClassVar")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel2.getConditionalDistribution(variable).toString()));
+
+
                 dynMAP = new DynamicMAPInference();
                 dynMAP.setModel(DBNmodel);
                 dynMAP.setMAPvariable(MAPVariable);
@@ -254,12 +305,16 @@ public class ComparisonToHuginExperiments {
                 dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.VMP);
                 int [] sequence_UngroupedVMP = dynMAP.getMAPsequence();
 
-//                System.out.println("Ungrouped VMP finished");
 
+                System.out.println("Ungrouped VMP finished");
+                System.out.println("\n\n");
 
                 /////////////////////////////////////////////////
                 // 2-GROUPED VARIABLES WITH I.S.
                 /////////////////////////////////////////////////
+
+
+
                 dynMAP = new DynamicMAPInference();
                 dynMAP.setModel(DBNmodel);
                 dynMAP.setMAPvariable(MAPVariable);
@@ -273,12 +328,25 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.setEvidence(evidence);
 
+                final BayesianNetwork unfoldedStaticModel3 = dynMAP.getMergedClassVarModels().get(0);
+                unfoldedStaticModel3.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel3.getConditionalDistribution(variable).toString()));
+                final BayesianNetwork unfoldedStaticModel4 = dynMAP.getMergedClassVarModels().get(1);
+                unfoldedStaticModel4.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel4.getConditionalDistribution(variable).toString()));
+
+                try {
+                    BNConverterToHugin.convertToHugin(unfoldedStaticModel3).saveAsNet(outputDirectory + "2groupedModel_0.net");
+                    BNConverterToHugin.convertToHugin(unfoldedStaticModel4).saveAsNet(outputDirectory + "2groupedModel_1.net");
+                }
+                catch (ExceptionHugin e) {
+                    System.out.println(e.toString());
+                }
+
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.IS);
                 int [] sequence_2GroupedIS = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_2GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-//                System.out.println("2-grouped IS finished");
-
+                System.out.println("2-grouped IS finished");
+                System.out.println("\n\n");
 
                 /////////////////////////////////////////////////
                 // 2-GROUPED VARIABLES WITH VMP
@@ -293,12 +361,17 @@ public class ComparisonToHuginExperiments {
 
                 dynMAP.setEvidence(evidence);
 
+                final BayesianNetwork unfoldedStaticModel5 = dynMAP.getMergedClassVarModels().get(0);
+                unfoldedStaticModel5.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel5.getConditionalDistribution(variable).toString()));
+                final BayesianNetwork unfoldedStaticModel6 = dynMAP.getMergedClassVarModels().get(1);
+                unfoldedStaticModel6.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel6.getConditionalDistribution(variable).toString()));
+
                 dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
                 int [] sequence_2GroupedVMP = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_2GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-//                System.out.println("2-grouped VMP finished");
-
+                System.out.println("2-grouped VMP finished");
+                System.out.println("\n\n");
 
 
                 /////////////////////////////////////////////////
@@ -321,7 +394,8 @@ public class ComparisonToHuginExperiments {
                 int [] sequence_3GroupedIS = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_3GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-//                System.out.println("3-grouped IS finished");
+                System.out.println("3-grouped IS finished");
+                System.out.println("\n\n");
 
 
                 /////////////////////////////////////////////////
@@ -341,8 +415,9 @@ public class ComparisonToHuginExperiments {
                 int [] sequence_3GroupedVMP = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_3GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-//                System.out.println("3-grouped VMP finished");
 
+                System.out.println("3-grouped VMP finished");
+                System.out.println("\n\n");
 
                 /////////////////////////////////////////////////
                 // 4-GROUPED VARIABLES WITH I.S.
@@ -364,7 +439,9 @@ public class ComparisonToHuginExperiments {
                 int [] sequence_4GroupedIS = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_4GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-//                System.out.println("4-grouped IS finished");
+                System.out.println("4-grouped IS finished");
+                System.out.println("\n\n");
+
 
 
                 /////////////////////////////////////////////////
@@ -384,7 +461,8 @@ public class ComparisonToHuginExperiments {
                 int [] sequence_4GroupedVMP = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_4GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-//                System.out.println("4-grouped VMP finished\n\n");
+                System.out.println("4-grouped VMP finished\n\n");
+                System.out.println("\n\n");
 
 
 
@@ -393,6 +471,7 @@ public class ComparisonToHuginExperiments {
                 if (nTimeSteps<=maxTimeStepsHugin) {
                     System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
                 }
+                System.out.println("Random Sequence:                 " + Arrays.toString(random_sequence));
 
                 System.out.println("DynMAP (Ungrouped-IS) Sequence:  " + Arrays.toString(sequence_UngroupedIS));
                 System.out.println();
@@ -442,6 +521,8 @@ public class ComparisonToHuginExperiments {
 //                    System.out.println("Precision HUGIN: " + current_precision_Hugin);
                 }
 
+                double current_precision_random = compareIntArrays(sequence_original, random_sequence);
+
                 double current_precision_UngroupedIS=compareIntArrays(sequence_original,sequence_UngroupedIS);
                 double current_precision_2GroupedIS=compareIntArrays(sequence_original,sequence_2GroupedIS);
                 double current_precision_3GroupedIS=compareIntArrays(sequence_original,sequence_3GroupedIS);
@@ -468,6 +549,7 @@ public class ComparisonToHuginExperiments {
                 double current_precision_allZeros=compareIntArrays(sequence_original,sequenceAllZeros);
                 double current_precision_allOnes=compareIntArrays(sequence_original,sequenceAllOnes);
 
+                precision_random[experimentNumber] = current_precision_random;
 
                 precision_UngroupedIS[experimentNumber]=current_precision_UngroupedIS;
                 precision_2GroupedIS[experimentNumber]=current_precision_2GroupedIS;
@@ -504,8 +586,12 @@ public class ComparisonToHuginExperiments {
             double[] current_model_precision_allZeros = Arrays.copyOfRange(precision_allZeros,i*numberOfEvidencesPerModel,(i+1)*numberOfEvidencesPerModel-1);
             double[] current_model_precision_allOnes = Arrays.copyOfRange(precision_allOnes,i*numberOfEvidencesPerModel,(i+1)*numberOfEvidencesPerModel-1);
 
+            double[] current_model_precision_random = Arrays.copyOfRange(precision_random,i*numberOfEvidencesPerModel,(i+1)*numberOfEvidencesPerModel-1);
+
             System.out.println("\nMEAN PRECISIONS FOR THIS MODEL:");
             System.out.println("         HUGIN: " + Arrays.stream(current_model_precision_Hugin).average().getAsDouble());
+
+            System.out.println("  Random Guess: " + Arrays.stream(current_model_precision_random).average().getAsDouble());
 
             System.out.println("  IS Ungrouped: " + Arrays.stream(current_model_precision_UngroupedIS).average().getAsDouble());
             System.out.println("  IS 2-Grouped: " + Arrays.stream(current_model_precision_2GroupedIS).average().getAsDouble());
@@ -526,6 +612,8 @@ public class ComparisonToHuginExperiments {
 
         System.out.println("\nGLOBAL MEAN PRECISIONS:");
         System.out.println("         HUGIN: " + Arrays.stream(precision_Hugin).average().getAsDouble());
+
+        System.out.println("  Random Guess: " + Arrays.stream(precision_random).average().getAsDouble());
 
         System.out.println("  IS Ungrouped: " + Arrays.stream(precision_UngroupedIS).average().getAsDouble());
         System.out.println("  IS 2-Grouped: " + Arrays.stream(precision_2GroupedIS).average().getAsDouble());

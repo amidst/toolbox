@@ -1,3 +1,20 @@
+/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
 package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
@@ -23,7 +40,7 @@ public class MLMultinomialsNormalsTest {
 
             // load the true WasteIncinerator hugin Bayesian network containing 3 Multinomial and 6 Gaussian variables
 
-            BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
+            BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("./networksTests/WasteIncinerator.bn");
 
             System.out.println("\nWasteIncinerator network \n ");
             System.out.println(trueBN.getDAG().toString());
@@ -37,10 +54,10 @@ public class MLMultinomialsNormalsTest {
             DataStream<DataInstance> data = sampler.sampleToDataStream(100000);
 
             //try{
-            //    sampler.sampleToAnARFFFile("./data/WasteIncineratorSamples.arff", 10000);
+            //    sampler.sampleToAnARFFFile("./dataTests/WasteIncineratorSamples.arff", 10000);
             //} catch (IOException ex){
             //}
-            //DataStream data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("data/WasteIncineratorSamples.arff")));
+            //DataStream data = new StaticDataOnDiskFromFile(new ARFFDataReader(new String("dataTests/WasteIncineratorSamples.arff")));
 
             //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
             // and just learn then test the parameter learning

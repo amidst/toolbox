@@ -1,11 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * See the License for the specific language governing permissions and limitations under the License.
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
  *
  */
 package eu.amidst.core.conceptdrift;
@@ -36,7 +42,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
     @Test
     public void testSea() throws IOException, ClassNotFoundException {
         int windowSize = 1000;
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasetsTests/DriftSets/sea.arff");
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
         virtualDriftDetector.setClassIndex(-1);
         virtualDriftDetector.setData(data);
@@ -72,7 +78,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
     @Test
     public void testBCC() throws IOException, ClassNotFoundException {
         int windowSize = 3000;
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/dataFlink/IDAlikeDataCD/MONTH1.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month0.arff");
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
         virtualDriftDetector.setClassIndex(-1);
         virtualDriftDetector.setData(data);
@@ -88,8 +94,8 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
 
         System.out.println();
         int countBatch = 0;
-        for (int k = 1; k <= 84; k++) {
-            data = DataStreamLoader.openFromFile("./datasets/dataFlink/IDAlikeDataCD/MONTH"+k+".arff");
+        for (int k = 1; k < 60; k++) {
+            data = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month" + k + ".arff");
             DataOnMemory<DataInstance> batch = new DataOnMemoryListContainer<DataInstance>(data.getAttributes(),data.stream().collect(Collectors.toList()));
             double[] out = virtualDriftDetector.updateModel(batch);
             System.out.print(countBatch + "\t");
