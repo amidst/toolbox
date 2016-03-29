@@ -1,3 +1,20 @@
+/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
 package eu.amidst.standardmodels;
 
 import eu.amidst.core.datastream.Attributes;
@@ -5,12 +22,14 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -153,12 +172,12 @@ public class GaussianMixture extends Model {
 
     public static void main(String[] args) throws WrongConfigurationException {
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 0, 3);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 0, 1);
 
 
         GaussianMixture GMM = new GaussianMixture(data.getAttributes());
         GMM.setDiagonal(false);
-        GMM.setNumStatesHiddenVar(3);
+        GMM.setNumStatesHiddenVar(2);
 
         GMM.learnModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
@@ -167,6 +186,13 @@ public class GaussianMixture extends Model {
         System.out.println(GMM.getModel());
         System.out.println(GMM.getDAG());
 
+
+    /*    try {
+            DataStreamWriter.writeDataToFile(data, "tmp/gmm2vars.arff");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
     }
 }
 

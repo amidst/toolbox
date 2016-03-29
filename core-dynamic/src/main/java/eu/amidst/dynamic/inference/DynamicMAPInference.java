@@ -1,8 +1,23 @@
+/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
 package eu.amidst.dynamic.inference;
 
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.ImportanceSamplingRobust;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
@@ -10,17 +25,13 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Serialization;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.*;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
-import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.utils.DynamicToStaticBNConverter;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -91,6 +102,9 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
     String groupedClassName = "__GROUPED_CLASS__";
 
     private List<int[]> bestSequenceEachModel;
+
+    List<List<UnivariateDistribution>> allGroupedPosteriorDistributions;
+    List<UnivariateDistribution> allUngroupedPosteriorDistributions;
 
     /**
      * {@inheritDoc}
@@ -249,6 +263,14 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 ////        }
 //    }
 
+    public List<List<UnivariateDistribution>> getGroupedPosteriorDistributions() {
+        return allGroupedPosteriorDistributions;
+    }
+
+    public List<UnivariateDistribution> getUngroupedPosteriorDistributions() {
+        return allUngroupedPosteriorDistributions;
+    }
+
     /**
      * Sets the model for this DynamicMAPInference.
      * @param model a {@link DynamicBayesianNetwork} object.
@@ -323,6 +345,10 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         if (nMergedClassVars > nTimeSteps) {
             System.out.println("Error: The number of merged class variables should be less or equal than the number of time steps");
             System.exit(-13);
+        }
+        if (nMergedClassVars<2 || nMergedClassVars > 10) {
+            System.out.println("Error: The number of merged class variables should be between 2 and 10");
+            System.exit(-14);
         }
         this.nMergedClassVars = nMergedClassVars;
     }
@@ -628,8 +654,10 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 stringBuilder.append(Arrays.toString(uniDist.getParameters()));
                 stringBuilder.append(" ,  ");
             });
-//            System.out.println("Model number " + posteriorMAPDistributions.indexOf(list) + ": " + stringBuilder.toString());
+            System.out.println("Model number " + posteriorMAPDistributions.indexOf(list) + ": " + stringBuilder.toString());
         });
+
+        allGroupedPosteriorDistributions = posteriorMAPDistributions;
 
         bestSequenceEachModel = new ArrayList<>();
         IntStream.range(0,nMergedClassVars).forEachOrdered(modelNumber -> {
@@ -657,7 +685,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             bestSequenceEachModel.add(thisModelBestSequence);
         });
 
-        List<double[]> conditionalDistributionsMAPvariable = getCombinedConditionalDistributions(posteriorMAPDistributions);
+        List<double[]> conditionalDistributionsMAPvariable = obtainMAPVariableConditionalDistributions(posteriorMAPDistributions);
         //System.out.println("Cond Distributions: " + Arrays.toString(conditionalDistributionsMAPvariable));
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -666,7 +694,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             stringBuilder.append(Arrays.toString(conDistr));
             stringBuilder.append(" ,  ");
         });
-//        System.out.println("Conmbined Conditional Distributions: \n" + stringBuilder.toString());
+        System.out.println("Combined Conditional Distributions: \n" + stringBuilder.toString());
 
 
         computeMostProbableSequence(conditionalDistributionsMAPvariable);
@@ -709,6 +737,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         switch(searchAlgorithm) {
             case VMP:
                 staticModelInference = new VMP();
+                ((VMP)staticModelInference).setTestELBO(true);
+                ((VMP)staticModelInference).setThreshold(0.0001);
                 ((VMP)staticModelInference).setMaxIter(3000);
                 break;
 
@@ -726,7 +756,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         staticModelInference.setParallelMode(this.parallelMode);
         staticModelInference.setModel(unfoldedStaticModel);
 
-        if(searchAlgorithm==SearchAlgorithm.IS) {
+        if (searchAlgorithm==SearchAlgorithm.IS) {
             ((ImportanceSamplingRobust)staticModelInference).setVariablesAPosteriori(unfoldedStaticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPvarName)).collect(Collectors.toList()));
         }
         if (evidence != null) {
@@ -737,8 +767,10 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
         IntStream.range(0,nTimeSteps).forEachOrdered(i -> {
             posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i));
-            //System.out.println("Ungrouped Posterior " + i + staticModelInference.getPosterior(i).toString());
+            System.out.println("Ungrouped Posterior " + i + staticModelInference.getPosterior(i).toString());
         });
+
+        allUngroupedPosteriorDistributions = posteriorMAPDistributionsStaticModel;
 
         double [] probabilities = posteriorMAPDistributionsStaticModel.stream().map(dist -> argMax(dist.getParameters())).mapToDouble(array -> array[0]).toArray();
         double MAPsequenceProbability = Math.exp(Arrays.stream(probabilities).map(prob -> Math.log(prob)).sum());
@@ -764,7 +796,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
 
 
-    private List<double[]> getCombinedConditionalDistributions( List<List<UnivariateDistribution>> posteriorMAPVariableDistributions ) {
+    private List<double[]> obtainMAPVariableConditionalDistributions(List<List<UnivariateDistribution>> posteriorMAPVariableDistributions ) {
 
         List<double[]> listCondDistributions = new ArrayList<>(nTimeSteps);
 
@@ -1909,7 +1941,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 Variable staticVar2 = variables.getVariableByName(dynVariable.getName() + "_t" + Integer.toString(timeStep));
                 List<Variable> parentList = bn.getDAG().getParentSet(staticVar2).getParents();
 
-                BaseDistribution_MultinomialParents staticVar2Distribution = obtainDistributionOfMAPChildren(staticVar2, dynamicConDist, parentList, modelNumber, timeStep);
+                ConditionalDistribution staticVar2Distribution = obtainDistributionOfMAPChildren(staticVar2, dynamicConDist, parentList, modelNumber, timeStep);
                 bn.setConditionalDistribution(staticVar2, staticVar2Distribution);
             });
         });
@@ -1953,13 +1985,46 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      * @param time_step the time step.
      * @return a {@link BaseDistribution_MultinomialParents} distribution.
      */
-    private BaseDistribution_MultinomialParents obtainDistributionOfMAPChildren(Variable staticVariable, ConditionalDistribution dynamicConditionalDistribution, List<Variable> parentList, int modelNumber, int time_step) {
+    private ConditionalDistribution obtainDistributionOfMAPChildren(Variable staticVariable, ConditionalDistribution dynamicConditionalDistribution, List<Variable> parentList, int modelNumber, int time_step) {
 
         boolean allParentsMultinomial = parentList.stream().allMatch(parent -> parent.isMultinomial());
         List<Variable> multinomialParents = parentList.stream().filter(parent -> parent.isMultinomial()).collect(Collectors.toList());
         List<Variable> continuousParents = parentList.stream().filter(parent -> !parent.isMultinomial()).collect(Collectors.toList());
 
-        BaseDistribution_MultinomialParents staticVarConDist = new BaseDistribution_MultinomialParents(staticVariable, parentList);
+        //BaseDistribution_MultinomialParents staticVarConDist = new BaseDistribution_MultinomialParents(staticVariable, parentList);
+
+        ConditionalDistribution staticVarConDist;
+
+        // In this method, all variables have at least one parent (either discrete or continuous)
+        int distributionType = -1;
+        if (staticVariable.isMultinomial()) {
+            distributionType = 0;
+            staticVarConDist = new Multinomial_MultinomialParents(staticVariable, parentList);
+        }
+        else if (staticVariable.isNormal()) {
+
+            int nMultinomialParents = multinomialParents.size();
+            int nNormalParents = continuousParents.size();
+
+            if (nNormalParents>0 && nMultinomialParents==0) {
+                distributionType = 1;
+                staticVarConDist = new ConditionalLinearGaussian(staticVariable, parentList);
+            }
+            else if (nNormalParents==0 && nMultinomialParents>0) {
+                distributionType = 2;
+                staticVarConDist = new Normal_MultinomialParents(staticVariable, parentList);
+            }
+            else if (nNormalParents>0 && nMultinomialParents>0) {
+                distributionType = 3;
+                staticVarConDist = new Normal_MultinomialNormalParents(staticVariable, parentList);
+            }
+            else {
+                throw new IllegalArgumentException("Unrecognized DistributionType. ");
+            }
+        }
+        else {
+            throw new IllegalArgumentException("Unrecognized DistributionType. ");
+        }
 
         int nStatesMultinomialParents = (int) Math.round(Math.exp(multinomialParents.stream().mapToDouble(parent -> Math.log(parent.getNumberOfStates())).sum()));
         int nStatesMAPVariable = MAPvariable.getNumberOfStates();
@@ -2058,8 +2123,46 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
 //            System.out.println(dynamicParentsConfiguration.outputString());
 
-            if (allParentsMultinomial && staticVariable.isMultinomial()) {
-//                try {
+//            if (allParentsMultinomial && staticVariable.isMultinomial()) {
+////                try {
+//
+//                Multinomial_MultinomialParents multinomial_multinomialParents = (Multinomial_MultinomialParents) dynamicConditionalDistribution;
+//                Multinomial multinomial1 = (Multinomial) multinomial_multinomialParents.getMultinomial(dynamicParentsConfiguration);
+//
+//                multinomial1.setVar(staticVariable);
+//                multinomial1.setConditioningVariables(multinomialParents);
+//
+////                System.out.println(multinomial1.toString()+"\n\n");
+//                staticVarConDist.setBaseDistribution(m, multinomial1);
+//                staticVarConDist.set
+////                }
+////                catch(Exception e) {
+////                    System.out.println("Exception");
+////                    System.out.println(e.getMessage());
+////                    System.out.println(staticVariable.getName());
+////                    System.out.println(dynamicParentsConfiguration.outputString());
+////                }
+//            }
+//            else if (allParentsMultinomial && staticVariable.isNormal() ){
+//                Normal_MultinomialParents normal_multinomialParents = (Normal_MultinomialParents) dynamicConditionalDistribution;
+//                Normal clg = normal_multinomialParents.getNormal(dynamicParentsConfiguration);
+//                clg.setConditioningVariables(multinomialParents);
+//                //clg.setConditioningVariables(continuousParents);
+//                clg.setVar(staticVariable);
+//
+//                staticVarConDist.setBaseDistribution(m, clg);
+//            }
+//            else {
+//                Normal_MultinomialNormalParents normal_multinomialNormalParents = (Normal_MultinomialNormalParents) dynamicConditionalDistribution;
+//                ConditionalLinearGaussian clg = normal_multinomialNormalParents.getNormal_NormalParentsDistribution(dynamicParentsConfiguration);
+//                clg.setConditioningVariables(continuousParents);
+//                clg.setVar(staticVariable);
+//
+//                staticVarConDist.setBaseDistribution(m, clg);
+//            }
+
+
+            if (distributionType==0) { // Multinomial_Multinomial
 
                 Multinomial_MultinomialParents multinomial_multinomialParents = (Multinomial_MultinomialParents) dynamicConditionalDistribution;
                 Multinomial multinomial1 = (Multinomial) multinomial_multinomialParents.getMultinomial(dynamicParentsConfiguration);
@@ -2067,35 +2170,44 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 multinomial1.setVar(staticVariable);
                 multinomial1.setConditioningVariables(multinomialParents);
 
-//                System.out.println(multinomial1.toString()+"\n\n");
-                staticVarConDist.setBaseDistribution(m, multinomial1);
-//                }
-//                catch(Exception e) {
-//                    System.out.println("Exception");
-//                    System.out.println(e.getMessage());
-//                    System.out.println(staticVariable.getName());
-//                    System.out.println(dynamicParentsConfiguration.outputString());
-//                }
-            }
-            else if (allParentsMultinomial && staticVariable.isNormal() ){
-                Normal_MultinomialParents normal_multinomialParents = (Normal_MultinomialParents) dynamicConditionalDistribution;
-                Normal clg = normal_multinomialParents.getNormal(dynamicParentsConfiguration);
-                clg.setConditioningVariables(multinomialParents);
-                //clg.setConditioningVariables(continuousParents);
-                clg.setVar(staticVariable);
+                ((Multinomial_MultinomialParents)staticVarConDist).setMultinomial(m, multinomial1);
 
-                staticVarConDist.setBaseDistribution(m, clg);
             }
-            else {
+            else if (distributionType==2 ){ // Normal_Multinomial
+
+                Normal_MultinomialParents normal_multinomialParents = (Normal_MultinomialParents) dynamicConditionalDistribution;
+
+                Normal normal1 = normal_multinomialParents.getNormal(dynamicParentsConfiguration);
+                normal1.setConditioningVariables(multinomialParents);
+                //clg.setConditioningVariables(continuousParents);
+                normal1.setVar(staticVariable);
+
+                ((Normal_MultinomialParents)staticVarConDist).setNormal(m, normal1);
+
+            }
+            else if (distributionType==3) { // Normal_MultinomialNormal
+
                 Normal_MultinomialNormalParents normal_multinomialNormalParents = (Normal_MultinomialNormalParents) dynamicConditionalDistribution;
                 ConditionalLinearGaussian clg = normal_multinomialNormalParents.getNormal_NormalParentsDistribution(dynamicParentsConfiguration);
                 clg.setConditioningVariables(continuousParents);
                 clg.setVar(staticVariable);
 
-                staticVarConDist.setBaseDistribution(m, clg);
+                ((Normal_MultinomialNormalParents)staticVarConDist).setNormal_NormalParentsDistribution(m, clg);
+
             }
+            else { // ConditionalLinearGaussian, distributionType==1
+                ConditionalLinearGaussian clg = (ConditionalLinearGaussian) dynamicConditionalDistribution;
+                //((ConditionalLinearGaussian)staticVarConDist)
+                staticVarConDist = clg;
+            }
+
         }
 
+//        if (allParentsMultinomial && staticVariable.isNormal())
+//            return (Normal_MultinomialParents)staticVarConDist;
+//        else {
+//            return staticVarConDist;
+//        }
         return staticVarConDist;
     }
 
