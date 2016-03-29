@@ -1,11 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
  *
- * See the License for the specific language governing permissions and limitations under the License.
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
  *
  */
 
@@ -24,20 +30,46 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
+ * This class implements Factor Analysis. See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 381
+ *
  * Created by andresmasegosa on 4/3/16.
  */
 public class FactorAnalysis extends Model {
 
-    private int numberOfLatentVariables = 5;
+    private int numberOfLatentVariables;
 
+    /**
+     * Constructor from a list of attributes. By default, sets the number of latent
+     * variabels to 5.
+     * @param attributes list of attributes (i.e. its variables)
+     * @throws WrongConfigurationException
+     */
     public FactorAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
+        numberOfLatentVariables = 5;
     }
 
+
+    /**
+     * Sets the number of latent (i.e. hidden) continuous variables in the model
+     * @param numberOfLatentVariables positive integer value
+     */
     public void setNumberOfLatentVariables(int numberOfLatentVariables) {
         this.numberOfLatentVariables = numberOfLatentVariables;
     }
 
+    /**
+     * Sets the number of latent (i.e. hidden) continuous variables in the model
+     */
+    public int getNumberOfLatentVariables() {
+        return numberOfLatentVariables;
+    }
+
+    /**
+     * Builds the DAG
+     */
     @Override
     protected void buildDAG() {
 
@@ -69,7 +101,10 @@ public class FactorAnalysis extends Model {
     }
 
 
-
+    /**
+     * tests if the attributes passed as an argument in the constructor are suitable
+     * @return boolean value with the result of the test.
+     */
     @Override
     public boolean isValidConfiguration() {
 
@@ -83,6 +118,11 @@ public class FactorAnalysis extends Model {
 
         return isValid;
     }
+
+
+
+
+    //// example of use
 
     public static void main(String[] args) throws WrongConfigurationException {
 

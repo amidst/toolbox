@@ -1,11 +1,36 @@
+/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
 package eu.amidst.standardmodels;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.InferenceEngine;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
+import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
@@ -14,34 +39,40 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * This class implements a Bayesian Linear Regression Model. See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 231
+ *
  * Created by rcabanas on 08/03/16.
  */
 public class BayesianLinearRegression extends Model {
 
 
     /* diagonal flag */
-    final private boolean diagonal;
+    private boolean diagonal;
 
     /** class variable */
-    final private Variable classVar;
+    private Variable classVar;
 
     /**
-     * Constructor of classifier from a list of attributes (e.g. from a datastream).
-     * @param attributes
-     * @param classVarName
-     * @param diagonal
+     * Constructor from a list of attributes.
+     * The default parameters are used: the class variable is the last one and the
+     * diagonal flag is set to false (predictive variables are NOT independent).
+     * @param attributes list of attributes of the classifier (i.e. its variables)
      * @throws WrongConfigurationException
      */
-    public BayesianLinearRegression(Attributes attributes, String classVarName, boolean diagonal) throws WrongConfigurationException {
+    public BayesianLinearRegression(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-        classVar = vars.getVariableByName(classVarName);
-        this.diagonal = diagonal;
+
+        classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
+        this.diagonal = false;
 
     }
 
 
-
-
+    /**
+     * Builds the DAG of the model.
+     */
     @Override
     protected void buildDAG() {
         dag = new DAG(vars);
@@ -74,6 +105,11 @@ public class BayesianLinearRegression extends Model {
 
 
     }
+
+    /**
+     * tests if the attributes passed as an argument in the constructor are suitable
+     * @return boolean value with the result of the test.
+     */
 
     @Override
     public boolean isValidConfiguration() {
@@ -112,6 +148,34 @@ public class BayesianLinearRegression extends Model {
     }
 
 
+    /**
+     * Method for setting the diagonal flag
+     * @param diagonal boolean value
+     */
+    public void setDiagonal(boolean diagonal) {
+        this.diagonal = diagonal;
+        dag = null;
+    }
+
+    /**
+     * Method to set the class variable.
+     * @param classVar object of the type {@link Variable} indicating which is the class variable
+     */
+    public void setClassVar(Variable classVar){
+
+        this.classVar = classVar;
+        dag = null;
+
+    }
+
+    /**
+     * Method to set the class variable.
+     * @param className String with the name of the class variable
+     */
+    public void setClassName(String className){
+        setClassVar(vars.getVariableByName(className));
+    }
+
 
 
     //////// Example of use ///////
@@ -123,7 +187,10 @@ public class BayesianLinearRegression extends Model {
 
         String className = "GaussianVar0";
 
-        BayesianLinearRegression BLR = new BayesianLinearRegression(data.getAttributes(), className, true);
+
+        BayesianLinearRegression BLR = new BayesianLinearRegression(data.getAttributes());
+        BLR.setClassName(className);
+        BLR.setDiagonal(false);
 
         if(BLR.isValidConfiguration()) {
             BLR.learnModel(data);
@@ -133,6 +200,30 @@ public class BayesianLinearRegression extends Model {
             System.out.println(BLR.getModel());
             System.out.println(BLR.getDAG());
         }
+
+
+
+        List<DataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,5);
+
+
+
+
+        for(DataInstance d : dataTest) {
+
+            Assignment assignment = new HashMapAssignment(BLR.getModel().getNumberOfVars()-1);
+            for (int i=0; i<BLR.getModel().getNumberOfVars(); i++) {
+                Variable v = BLR.getModel().getVariables().getVariableById(i);
+                if(!v.equals(BLR.getClassVar()))
+                    assignment.setValue(v,d.getValue(v));
+            }
+
+            UnivariateDistribution posterior = InferenceEngine.getPosterior(BLR.getClassVar(), BLR.getModel(),assignment);
+
+            System.out.println(posterior.toString());
+
+
+        }
+
     }
 
 

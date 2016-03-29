@@ -1,3 +1,20 @@
+/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
 package eu.amidst.cim2015.examples;
 
 
@@ -29,6 +46,7 @@ public final class ExperimentsParallelML {
     /*Options for batch size comparisons*/
     static boolean parallel = true;
     static boolean sampleData = true;
+    static String pathToFile = "datasetsTests/tmp.arff";
     static int sampleSize = 1000000;
     static int numDiscVars = 5;
     static int numGaussVars = 5;
@@ -117,6 +135,14 @@ public final class ExperimentsParallelML {
         ExperimentsParallelML.batchSize = batchSize;
     }
 
+    public static String getPathToFile() {
+        return pathToFile;
+    }
+
+    public static void setPathToFile(String pathToFile) {
+        ExperimentsParallelkMeans.pathToFile = pathToFile;
+    }
+
     static DAG dag;
 
     public static void compareNumberOfCores() throws IOException {
@@ -127,7 +153,7 @@ public final class ExperimentsParallelML {
         if(isSampleData())
             sampleBayesianNetwork();
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/sampleBatchSize.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(getPathToFile());
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setParallelMode(isParallel());
         parameterLearningAlgorithm.setDAG(dag);
@@ -162,7 +188,7 @@ public final class ExperimentsParallelML {
         if(isSampleData())
             sampleBayesianNetwork();
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/sampleBatchSize.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(getPathToFile());
 
 
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
@@ -242,7 +268,7 @@ public final class ExperimentsParallelML {
         DataStream<DataInstance> dataStream = sampler.sampleToDataStream(getSampleSize());
 
         //We finally save the sampled data set to an arff file.
-        DataStreamWriter.writeDataToFile(dataStream, "datasets/sampleBatchSize.arff");
+        DataStreamWriter.writeDataToFile(dataStream, getPathToFile());
     }
 
     public static String classNameID(){
@@ -270,10 +296,11 @@ public final class ExperimentsParallelML {
                 "-DV, 5, Num of discrete variables\\"+
                 "-SPGV, 2, Num of gaussian super-parent variables\\"+
                 "-SPDV, 10, Num of states for super-parent discrete variable\\"+
-                "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\"+
+                "-sampleData, true, Sample arff data\\"+
                 "-parallelMode, true, Run in parallel\\"+
                 "-coreComparison, true, Perform comparisons varying the number of cores\\"+
-                "-batchSize, 1000, Batch size for comparisons in the number of cores\\";
+                "-batchSize, 1000, Batch size for comparisons in the number of cores\\"+
+                "-pathToFile, datasetsTests/tmp.arff,Path to sample file if sampleData is set to false\\";
     }
 
     public static void loadOptions(){
@@ -287,6 +314,7 @@ public final class ExperimentsParallelML {
         setParallel(getBooleanOption("-parallelMode"));
         setCoreComparison(getBooleanOption("-coreComparison"));
         setBatchSize(getIntOption("-batchSize"));
+        setPathToFile(getOption("-pathToFile"));
     }
 
     public static void main(String[] args) throws Exception {

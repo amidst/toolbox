@@ -1,9 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
  */
 
 /*
@@ -20,7 +29,7 @@ public class Main {
 
     public static void learningNaiveBayesClusteringModel(){
 
-        DataStreamReaderFromFile reader = new DataStreamReaderFromFile("./data/data.arff");
+        DataStreamReaderFromFile reader = new DataStreamReaderFromFile("./dataTests/data.arff");
 
         DataStream dataStream = reader.getDataStream();
 
@@ -36,7 +45,7 @@ public class Main {
 
     public static void learningNaiveBayes(){
 
-        DataStreamReaderFromFile reader = new DataStreamReaderFromFile("./data/data.arff");
+        DataStreamReaderFromFile reader = new DataStreamReaderFromFile("./dataTests/data.arff");
 
         DataStream dataStream = reader.getDataStream();
 
@@ -61,19 +70,14 @@ package eu.amidst.dynamic.examples;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.CompoundVector;
-import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -121,7 +125,7 @@ public class Main {
         System.out.println(letterToCount.toString());
 
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/syntheticData.arff");
 
         Iterator<DataInstance> it = data.iterator();
         for (int i = 0; i < 3; i++) {
@@ -138,7 +142,7 @@ public class Main {
         System.out.println(wordToCount);
 
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/Asia.bn");
         System.out.println(bn.toString());
         DAG dag = bn.getDAG();
 
@@ -153,7 +157,7 @@ public class Main {
     }
 
     public static void test2(String[] args) throws Exception {
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/Asia.bn");
         DAG dag = bn.getDAG();
         System.out.println(dag.toString());
 
@@ -193,7 +197,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/Asia.bn");
         DAG dag = bn.getDAG();
         System.out.println(dag.toString());
 
