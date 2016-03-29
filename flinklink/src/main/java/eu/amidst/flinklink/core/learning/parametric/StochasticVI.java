@@ -15,7 +15,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
-import eu.amidst.core.inference.messagepassing.VMPParameter;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
@@ -213,6 +212,10 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
             t++;
 
         }
+
+
+        this.svb.updateNaturalParameterPrior(currentParam);
+
 
     }
 

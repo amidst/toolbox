@@ -17,7 +17,6 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.inference.messagepassing.VMPParameter;
 import eu.amidst.core.learning.parametric.bayesian.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
