@@ -22,6 +22,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
@@ -220,13 +222,13 @@ public class LatentClassificationModel extends Classifier {
         }
 
         //Shows the resulting model
-        //System.out.println(lcm.getModel());
-        //System.out.println(lcm.getDAG());
+        System.out.println(lcm.getModel());
+        System.out.println(lcm.getDAG());
 
 
         // Uncomment the following 2 lines to get the bug
-        //InferenceAlgorithm algo = new VMP();
-        //lcm.setInferenceAlgoPredict(algo);
+        InferenceAlgorithm algo = new VMP();
+        lcm.setInferenceAlgoPredict(algo);
 
 
         // predict the class of one instances

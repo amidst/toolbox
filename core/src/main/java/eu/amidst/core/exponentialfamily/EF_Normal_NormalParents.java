@@ -348,6 +348,18 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
 
+        int parentID=this.parents.indexOf(parent);
+
+        if (betas[parentID]==0){
+            NaturalParameters naturalParameters = new EF_Normal.ArrayVectorParameter(2);
+            naturalParameters.set(0,0);
+            naturalParameters.set(1,0);
+
+            return naturalParameters;
+        }
+
+
+
         int nOfBetas = this.betas.length;
 
         double dotProductBetaY = 0;
@@ -361,11 +373,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         double X = momentChildCoParents.get(var).get(0);
 
-        int parentID=this.parents.indexOf(parent);
         double beta_iSquared = betas[parentID]*betas[parentID];
         double beta_i = betas[parentID];
         double Y_i = momentChildCoParents.get(this.parents.get(parentID)).get(0);
         double invVariance = 1/variance;
+
 
         double factor = beta_i/beta_iSquared;
 
