@@ -494,11 +494,13 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
             return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
         else{
 
+            CompoundVector prior = this.plateuStructure.getPlateauNaturalParameterPrior();
+
             this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
 
             BayesianNetwork learntBN =  new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
 
-            this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPrior());
+            this.updateNaturalParameterPrior(prior);
 
             return learntBN;
         }
