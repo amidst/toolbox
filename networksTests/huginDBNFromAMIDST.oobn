@@ -1,0 +1,151 @@
+class huginDBNFromAMIDST
+{
+    inputs = ();
+    outputs = ();
+    node_size = (0 0);
+
+    node A
+    {
+	label = "A";
+	states = ("1" "2");
+    }
+
+    temporal T_A : A
+    {
+	label = "T_A";
+    }
+
+    node B
+    {
+	label = "B";
+	states = ("1" "2" "3");
+    }
+
+    temporal T_B : B
+    {
+	label = "T_B";
+    }
+
+    node C
+    {
+	label = "C";
+	states = ("1" "2");
+    }
+
+    temporal T_C : C
+    {
+	label = "T_C";
+    }
+
+    node D
+    {
+	label = "D";
+	states = ("1" "2");
+    }
+
+    temporal T_D : D
+    {
+	label = "T_D";
+    }
+
+    node E
+    {
+	label = "E";
+	states = ("1" "2");
+    }
+
+    temporal T_E : E
+    {
+	label = "T_E";
+    }
+
+    node G
+    {
+	label = "G";
+	states = ("1" "2");
+    }
+
+    temporal T_G : G
+    {
+	label = "T_G";
+    }
+
+    potential (T_A)
+    {
+	data = ( 0.3 0.7 );
+    }
+
+    potential (A | T_A)
+    {
+	data = (( 0.15 0.85 )	%  T_A=1
+		( 0.1 0.9 ));	%  T_A=2
+    }
+
+    potential (T_B | T_A)
+    {
+	data = (( 0.4 0.1 0.5 )	%  T_A=1
+		( 0.2 0.5 0.3 ));	%  T_A=2
+    }
+
+    potential (B | T_B A)
+    {
+	data = ((( 0.1 0.2 0.7 )	%  T_B=1  A=1
+		 ( 0.6 0.1 0.3 ))	%  T_B=1  A=2
+		(( 0.3 0.4 0.3 )	%  T_B=2  A=1
+		 ( 0.2 0.1 0.7 ))	%  T_B=2  A=2
+		(( 0.5 0.1 0.4 )	%  T_B=3  A=1
+		 ( 0.1 0.1 0.8 )));	%  T_B=3  A=2
+    }
+
+    potential (T_C | T_A)
+    {
+	data = (( 0.4 0.6 )	%  T_A=1
+		( 0.2 0.8 ));	%  T_A=2
+    }
+
+    potential (C | A)
+    {
+	data = (( 0.4 0.6 )	%  A=1
+		( 0.2 0.8 ));	%  A=2
+    }
+
+    potential (T_D | T_A)
+    {
+	data = (( 0.7 0.3 )	%  T_A=1
+		( 0.1 0.9 ));	%  T_A=2
+    }
+
+    potential (D | A)
+    {
+	data = (( 0.7 0.3 )	%  A=1
+		( 0.1 0.9 ));	%  A=2
+    }
+
+    potential (T_E | T_A)
+    {
+	data = (( 0.8 0.2 )	%  T_A=1
+		( 0.1 0.9 ));	%  T_A=2
+    }
+
+    potential (E | T_E A)
+    {
+	data = ((( 0.3 0.7 )	%  T_E=1  A=1
+		 ( 0.6 0.4 ))	%  T_E=1  A=2
+		(( 0.7 0.3 )	%  T_E=2  A=1
+		 ( 0.9 0.1 )));	%  T_E=2  A=2
+    }
+
+    potential (T_G | T_A)
+    {
+	data = (( 0.6 0.4 )	%  T_A=1
+		( 0.7 0.3 ));	%  T_A=2
+    }
+
+    potential (G | T_G A)
+    {
+	data = ((( 0.2 0.8 )	%  T_G=1  A=1
+		 ( 0.5 0.5 ))	%  T_G=1  A=2
+		(( 0.3 0.7 )	%  T_G=2  A=1
+		 ( 0.8 0.2 )));	%  T_G=2  A=2
+    }
+} % class huginDBNFromAMIDST
