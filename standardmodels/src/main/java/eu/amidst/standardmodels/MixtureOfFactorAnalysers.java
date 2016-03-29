@@ -59,7 +59,7 @@ public class MixtureOfFactorAnalysers extends Model {
     public MixtureOfFactorAnalysers(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
         numberOfLatentVariables = 5;
-        numberOfLatentVariables = 2;
+        numberOfStatesLatentDiscreteVar = 2;
     }
 
 
