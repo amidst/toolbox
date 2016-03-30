@@ -144,51 +144,30 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     @Override
     public NaturalParameters getNaturalParameters(){
 
-        this.naturalParameters = this.createEmtpyCompoundVector();
+        CompoundVector naturalParametersCompound = this.createEmtpyCompoundVector();
 
-        RealVector beta = new ArrayRealVector(betas);
 
-        /*
-         * 1) theta_0
-         */
+        /* 1) theta_0  */
         double theta_0 = beta0 / variance;
-        double[] theta_0array = {theta_0};
+        naturalParametersCompound.setThetaBeta0_NatParam(theta_0);
 
-        /*
-         * 2) theta_0Theta
-         */
+        /* 2) theta_0Theta */
         double variance2Inv =  1.0/(2*variance);
-        RealVector theta_0Theta = beta.mapMultiply(-beta0 / variance);
-        ((CompoundVector) this.naturalParameters).setXYbaseVector(new ArrayRealVector(theta_0array, theta_0Theta.getData()));
+        //IntStream.range(0,coeffParents.length).forEach(i-> coeffParents[i]*=(beta_0*variance2Inv));
+        double[] theta0_beta = Arrays.stream(betas).map(w->-w*beta0/variance).toArray();
+        naturalParametersCompound.setThetaBeta0Beta_NatParam(theta0_beta);
 
-        /*
-         * 3) theta_Minus1
-         */
+        /* 3) theta_Minus1 */
         double theta_Minus1 = -variance2Inv;
 
-        /*
-         * 4) theta_beta
-         */
-        RealVector theta_beta = beta.mapMultiply(variance2Inv);
+        /* 4) theta_beta & 5) theta_betaBeta */
+        naturalParametersCompound.setThetaCov_NatParam(theta_Minus1,betas, variance2Inv);
 
-        /*
-         * 5) theta_betaBeta
-         */
-        RealMatrix theta_betaBeta = beta.outerProduct(beta).scalarMultiply(-variance2Inv*2);
-
-        /*
-         * Store natural parameters
-         */
-        RealMatrix natural_XY = new Array2DRowRealMatrix(nOfParents+1,nOfParents+1);
-        double[] theta_Minus1array = {theta_Minus1};
-        RealVector covXY = new ArrayRealVector(theta_Minus1array, theta_beta.getData());
-        natural_XY.setColumnVector(0, covXY);
-        natural_XY.setRowVector(0, covXY);
-        natural_XY.setSubMatrix(theta_betaBeta.getData(),1,1);
-        ((CompoundVector) this.naturalParameters).setcovbaseVector(natural_XY);
+        this.naturalParameters = naturalParametersCompound;
 
         return this.naturalParameters;
     }
+
 
     /**
      * {@inheritDoc}
