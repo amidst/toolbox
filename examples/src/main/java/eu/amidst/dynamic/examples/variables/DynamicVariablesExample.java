@@ -43,6 +43,9 @@ public class DynamicVariablesExample {
         //Create a Multinomial dynamic variable with two states: TRUE and FALSE
         Variable multinomialVar2 = variables.newMultinomialDynamicVariable("MultinomialVar2", Arrays.asList("TRUE, FALSE"));
 
+        //We must block the object before we start to query.
+        variables.block();
+
         //All dynamic Variables have an interface variable
         Variable gaussianVarInt = gaussianVar.getInterfaceVariable();
         Variable multinomialVarInt = multinomialVar.getInterfaceVariable();
