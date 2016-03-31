@@ -828,13 +828,13 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
                 this.nonZeroEntries().forEach(entry ->{
                     Vector outerVector = vec.getVectorByPosition(entry.getKey());
                     if (outerVector!=null)
-                        sum.addAndGet(entry.getValue().dotProduct(outerVector));
+                        sum.addAndGet(outerVector.dotProduct(entry.getValue()));
                 });
             }else{
                 vec.nonZeroEntries().forEach(entry ->{
                     Vector localVector = this.getVectorByPosition(entry.getKey());
                     if (localVector!=null)
-                        sum.addAndGet(entry.getValue().dotProduct(localVector));
+                        sum.addAndGet(localVector.dotProduct(entry.getValue()));
                 });
             }
             return sum.doubleValue();

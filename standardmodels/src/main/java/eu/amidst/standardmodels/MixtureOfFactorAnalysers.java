@@ -30,25 +30,42 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
+ * This class implements a mixture of Factor Analysers. See e.g.:
+ *
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 385
+ *
  * Created by andresmasegosa on 4/3/16.
  */
 public class MixtureOfFactorAnalysers extends Model {
 
-    private int numberOfLatentVariables = 5;
-    private int numberOfStatesLatentDiscreteVar = 2;
 
+    /**
+     * Number of continuous latent variables
+     */
+    private int numberOfLatentVariables;
+
+    /**
+     * Number of states in the discrete latent variable
+     */
+    private int numberOfStatesLatentDiscreteVar;
+
+
+    /**
+     * Constructor from a list of attributes. By default, sets the number of  continuous latent
+     * variabels to 5 and the number of states of the discrete one to 2.
+     * @param attributes list of attributes (i.e. its variables)
+     * @throws WrongConfigurationException
+     */
     public MixtureOfFactorAnalysers(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
+        numberOfLatentVariables = 5;
+        numberOfStatesLatentDiscreteVar = 2;
     }
 
-    public void setNumberOfLatentVariables(int numberOfLatentVariables) {
-        this.numberOfLatentVariables = numberOfLatentVariables;
-    }
 
-    public void setNumberOfStatesLatentDiscreteVar(int numberOfStatesLatentDiscreteVar) {
-        this.numberOfStatesLatentDiscreteVar = numberOfStatesLatentDiscreteVar;
-    }
-
+    /**
+     * Builds the graph
+     */
     @Override
     protected void buildDAG() {
 
@@ -74,6 +91,10 @@ public class MixtureOfFactorAnalysers extends Model {
 
     }
 
+    /**
+     * tests if the attributes passed as an argument in the constructor are suitable
+     * @return boolean value with the result of the test.
+     */
     @Override
     public boolean isValidConfiguration() {
 
@@ -87,6 +108,49 @@ public class MixtureOfFactorAnalysers extends Model {
 
         return isValid;
     }
+
+
+
+
+    //////// Getters and setters ////////
+
+    /**
+     * Sets the number of latent variables
+     * @param numberOfLatentVariables integer value
+     */
+    public void setNumberOfLatentVariables(int numberOfLatentVariables) {
+        this.numberOfLatentVariables = numberOfLatentVariables;
+    }
+
+    /**
+     * Sets the number of states in the discrete latent variable
+     * @param numberOfStatesLatentDiscreteVar integer value
+     */
+    public void setNumberOfStatesLatentDiscreteVar(int numberOfStatesLatentDiscreteVar) {
+        this.numberOfStatesLatentDiscreteVar = numberOfStatesLatentDiscreteVar;
+    }
+
+
+    /**
+     * Obtains the number of continuous latent variables
+     * @return integer value greater or equal to zero
+     */
+    public int getNumberOfLatentVariables() {
+        return numberOfLatentVariables;
+    }
+
+
+    /**
+     * Obtains the number of states in the discrete latent variable
+     * @return
+     */
+    public int getNumberOfStatesLatentDiscreteVar() {
+        return numberOfStatesLatentDiscreteVar;
+    }
+
+
+
+    ////// example of use ///////
 
     public static void main(String[] args) throws WrongConfigurationException {
 

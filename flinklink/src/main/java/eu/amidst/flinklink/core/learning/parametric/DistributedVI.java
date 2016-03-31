@@ -1,17 +1,11 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 package eu.amidst.flinklink.core.learning.parametric;
@@ -22,7 +16,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -59,12 +52,12 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class dVMP implements ParameterLearningAlgorithm, Serializable {
+public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
 
-    static Logger logger = LoggerFactory.getLogger(dVMP.class);
+    static Logger logger = LoggerFactory.getLogger(DistributedVI.class);
 
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
@@ -102,7 +95,7 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
     private int nBatches;
 
 
-    public dVMP(){
+    public DistributedVI(){
         this.svb = new SVB();
     }
 
@@ -157,9 +150,9 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
-        VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
-        vmpParameter.setMaxGlobaIter(1);
-        this.svb.getPlateuStructure().setVmp(vmpParameter);
+        //VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
+        //vmpParameter.setMaxGlobaIter(1);
+        //this.svb.getPlateuStructure().setVmp(vmpParameter);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svb.setDAG(this.dag);
@@ -390,6 +383,10 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
 
         boolean randomStart;
 
+        double factor = 1;
+        double learningRate = 0.7;
+        double KL=0;
+
         public ParallelVBMap(boolean randomStart, IdenitifableModelling idenitifableModelling) {
             this.randomStart = randomStart;
             this.idenitifableModelling = idenitifableModelling;
@@ -439,40 +436,52 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
                 if (Double.isNaN(outElbo.getElbo()))
                     throw new IllegalStateException("NaN elbo");
 
+
+                KL += svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
+
+
+
                 return outElbo.getVector();
             }
 
         }
 
+        @Override
+        public void close() {
+
+            double gradient = KL + 0.01/factor;
+
+            factor = factor +learningRate*gradient;
+
+            if (factor<0.01){
+                factor=0.01;
+            }
+
+        }
 
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
             bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
-            int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
-            if (superstep==0)
-                this.svb.getPlateuStructure().setVmp(new VMP());
 
             svb.initLearning();
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
-
-            //if(updatedPosterior==null)
-                updatedPosterior = collection.iterator().next();
-            /*else{
-                double learningRate = 0.5;
-                updatedPosterior.multiplyBy(1-learningRate);
-                CompoundVector update= collection.iterator().next();
-                update.multiplyBy(learningRate);
-                updatedPosterior.sum(update);
-            }*/
+            updatedPosterior = collection.iterator().next();
 
 
             if (prior!=null) {
                 svb.updateNaturalParameterPrior(prior);
                 svb.updateNaturalParameterPosteriors(updatedPosterior);
                 basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
+
+
+
+                CompoundVector referencePrior = Serialization.deepCopy(updatedPosterior);
+                referencePrior.multiplyBy(factor);
+                svb.updateNaturalParameterPrior(referencePrior);
+
             }else{
                 this.prior=Serialization.deepCopy(updatedPosterior);
                 this.svb.updateNaturalParameterPrior(prior);
@@ -679,14 +688,8 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             }else if (percentage<-1){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
-                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
-                //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
-
-                System.out.println("Global bound is not monotonically increasing: "+ iteration +","+percentage+
-                        "," + (value.getValue()) +">" + previousELBO+ ","+
-                        (System.nanoTime() - start) / 1000000000.0 + " seconds");
-                this.previousELBO=value.getValue();
-                return false;
+                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
             }else if (percentage>-1 && timeIteration < timeLimit) {
                 logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
                         df.format(percentage), df.format(value.getValue()), df.format(previousELBO),
