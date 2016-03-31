@@ -434,11 +434,11 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         IntStream.range(0,nMergedClassVars).forEachOrdered(modelNumber -> {
 
-//            System.out.println("Model number " + modelNumber);
+            System.out.println("Model number " + modelNumber);
             Variables variables = obtainReplicatedStaticVariables(dynamicVariables, modelNumber);
 
             DAG dag = obtainStaticDAG(dynamicDAG,variables,modelNumber);
-            //System.out.println(dag.toString());
+            System.out.println(dag.toString());
 
             BayesianNetwork bn = obtainStaticMergedClassVarNetwork(dag,variables,modelNumber);
 //            System.out.println(bn.toString());
@@ -460,7 +460,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //            System.out.println();
             mergedClassVarModels.add(bn);
 //            System.out.println("MODEL " + modelNumber);
-//            System.out.println(bn);
+            System.out.println(bn);
         });
     }
 
@@ -627,7 +627,10 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             List<UnivariateDistribution> currentModelPosteriorMAPDistributions = new ArrayList<>();
             int nReplicationsMAPVariable = (modelNumber==0 ? 0 : 1) + (nTimeSteps-modelNumber)/nMergedClassVars + ((nTimeSteps-modelNumber)%nMergedClassVars==0 ? 0 : 1);
 
-            IntStream.range(0,nReplicationsMAPVariable).forEachOrdered(i -> currentModelPosteriorMAPDistributions.add(staticModelsInference.get(modelNumber).getPosterior(i)));
+            IntStream.range(0,nReplicationsMAPVariable).forEachOrdered(i -> {
+                currentModelPosteriorMAPDistributions.add(staticModelsInference.get(modelNumber).getPosterior(i));
+                System.out.println(staticModelsInference.get(modelNumber).getPosterior(i).toString());
+            });
 
             posteriorMAPDistributions.add(currentModelPosteriorMAPDistributions);
         });
