@@ -29,7 +29,6 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -37,7 +36,7 @@ import java.util.stream.IntStream;
 /**
  * Created by dario on 24/02/16.
  */
-public class HiddenLayerDynamicModel {
+public class HiddenLayerStronglyCorrelatedDynamicModel {
 
     private DynamicBayesianNetwork model;
 
@@ -448,18 +447,26 @@ public class HiddenLayerDynamicModel {
 
             allVariables.stream().filter(Variable::isNormal).forEach(variable -> {
 
-                if(variable.getName().equals("Continuous" + hiddenVarName + "1")) {
-                    Normal_MultinomialParents distribution0 = model.getConditionalDistributionTime0(variable);
+                if(variable.getName().contains("Continuous" + hiddenVarName)) {
+
                     Normal_MultinomialNormalParents distributionT = model.getConditionalDistributionTimeT(variable);
 
                     IntStream.range(0, distributionT.getNumberOfParentAssignments()).forEach(i -> {
 
                         ConditionalLinearGaussian currentTermT = distributionT.getNormal_NormalParentsDistribution(i);
-                        //currentTermT.setIntercept(1*Math.pow(-1,i));
-                        //currentTermT.setVariance(1);
+                        currentTermT.setIntercept(0);
+                        double [] coeffParents = currentTermT.getCoeffParents();
+                        for (int j = 0; j < coeffParents.length; j++) {
+                            coeffParents[j]=1;
+                        }
+                        currentTermT.setCoeffParents(coeffParents);
+                        currentTermT.setVariance(1);
 
-                        Normal currentTerm0 = distribution0.getNormal(i);
-                        //currentTerm0.setVariance(0.5);
+                        if (variable.getName().equals("Continuous" + hiddenVarName + "1")) {
+                            Normal_MultinomialParents distribution0 = model.getConditionalDistributionTime0(variable);
+                            Normal currentTerm0 = distribution0.getNormal(i);
+                            currentTerm0.setVariance(2);
+                        }
                     });
 
                 }
@@ -516,10 +523,10 @@ public class HiddenLayerDynamicModel {
     }
 
     public static void main(String[] args) {
-        HiddenLayerDynamicModel hiddenModel = new HiddenLayerDynamicModel();
+        HiddenLayerStronglyCorrelatedDynamicModel hiddenModel = new HiddenLayerStronglyCorrelatedDynamicModel();
 
         hiddenModel.setnStatesClassVar(2);
-        hiddenModel.setnStatesHidden(4);
+        hiddenModel.setnStatesHidden(2);
         hiddenModel.setnStates(2);
 
         hiddenModel.setnHiddenContinuousVars(2);
@@ -527,11 +534,12 @@ public class HiddenLayerDynamicModel {
         hiddenModel.setnObservableContinuousVars(5);
 
         hiddenModel.generateModel();
+        hiddenModel.randomInitialization(new Random(0));
 
         System.out.println(hiddenModel.model.getDynamicDAG().toString());
 
 
-        hiddenModel.setSeed((new Random()).nextInt());
+        //hiddenModel.setSeed((new Random()).nextInt());
 
 //        System.out.println(hiddenModel.model.toString());
 
