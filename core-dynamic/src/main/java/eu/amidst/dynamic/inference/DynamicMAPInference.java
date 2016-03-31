@@ -18,6 +18,7 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.ImportanceSamplingRobust;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
@@ -71,9 +72,6 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
     /** Represents the MAP {@link Variable}. */
     private Variable MAPvariable;
-
-    /** As a {@link Variables} object, represents the MAP Variable temporal replications. */
-    private Variables MAPVarReplications;
 
     /** Represents the name of the MAP {@link Variable}. */
     private String MAPvarName;
@@ -184,6 +182,11 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      */
     public void setEvidence(List<DynamicAssignment> evidence) {
 
+        if(evidence==null) {
+            this.evidence = null;
+            this.staticEvidence = null;
+            return;
+        }
         long sequenceID = evidence.get(0).getSequenceID();
         for(DynamicAssignment dynAssig : evidence) {
             if (dynAssig.getSequenceID()!=sequenceID) {
@@ -309,10 +312,6 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         this.MAPvariable = MAPvariable;
         this.MAPvarName = MAPvariable.getName();
 
-        MAPVarReplications = new Variables();
-        IntStream.range(0,nTimeSteps).forEach(t -> {
-            MAPVarReplications.newMultionomialVariable(this.MAPvarName + "_t" + Integer.toString(t), this.MAPvariable.getNumberOfStates());
-        });
     }
 
     /**
@@ -328,12 +327,6 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         this.setModel(this.model);
 
-        if (MAPvariable!=null) {
-            MAPVarReplications = new Variables();
-            IntStream.range(0,nTimeSteps).forEach(t -> {
-                MAPVarReplications.newMultionomialVariable(this.MAPvarName + "_t" + Integer.toString(t), this.MAPvariable.getNumberOfStates());
-            });
-        }
     }
 
     /**
@@ -594,13 +587,14 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             }
 
             BayesianNetwork thisModel = mergedClassVarModels.get(i);
-            Assignment thisEvidence = new HashMapAssignment();
+
             if(staticEvidence!=null) {
+                Assignment thisEvidence = new HashMapAssignment();
                 for (Variable varEvidence : staticEvidence.getVariables()) {
                     thisEvidence.setValue(thisModel.getVariables().getVariableByName(varEvidence.getName()), staticEvidence.getValue(varEvidence));
                 }
+                currentModelInference.setEvidence(thisEvidence);
             }
-            currentModelInference.setEvidence(thisEvidence);
             currentModelInference.runInference();
 
             //System.out.println(currentModelInference.getLogProbabilityOfEvidence());
@@ -654,7 +648,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 stringBuilder.append(Arrays.toString(uniDist.getParameters()));
                 stringBuilder.append(" ,  ");
             });
-            System.out.println("Model number " + posteriorMAPDistributions.indexOf(list) + ": " + stringBuilder.toString());
+            //System.out.println("Model number " + posteriorMAPDistributions.indexOf(list) + ": " + stringBuilder.toString());
         });
 
         allGroupedPosteriorDistributions = posteriorMAPDistributions;
@@ -694,7 +688,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             stringBuilder.append(Arrays.toString(conDistr));
             stringBuilder.append(" ,  ");
         });
-        System.out.println("Combined Conditional Distributions: \n" + stringBuilder.toString());
+        //System.out.println("Combined Conditional Distributions: \n" + stringBuilder.toString());
 
 
         computeMostProbableSequence(conditionalDistributionsMAPvariable);
@@ -767,7 +761,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         List<UnivariateDistribution> posteriorMAPDistributionsStaticModel = new ArrayList<>();
         IntStream.range(0,nTimeSteps).forEachOrdered(i -> {
             posteriorMAPDistributionsStaticModel.add(staticModelInference.getPosterior(i));
-            System.out.println("Ungrouped Posterior " + i + staticModelInference.getPosterior(i).toString());
+            //System.out.println("Ungrouped Posterior " + i + staticModelInference.getPosterior(i).toString());
         });
 
         allUngroupedPosteriorDistributions = posteriorMAPDistributionsStaticModel;
@@ -1155,32 +1149,13 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
 
 
-        MAPestimate = new HashMapAssignment(nTimeSteps);
-
-        final int[] MAPsequence_final;
-        MAPsequence_final = Arrays.copyOf(MAPsequence,MAPsequence.length);
 
         if (Arrays.stream(MAPsequence).anyMatch(value -> value<0)) {
             MAPestimateLogProbability=Double.NaN;
         }
         else {
-            IntStream.range(0, nTimeSteps).forEach(t -> {
-//                Variables varsAux = Serialization.deepCopy(this.staticEvenModel.getVariables());
-//                Variable currentVar = varsAux.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
-                Variable currentVar;
-//                try {
-                currentVar = this.MAPVarReplications.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
-//                }
-//                catch (Exception e) {
-//                    Variables copy = Serialization.deepCopy(this.staticEvenModel.getVariables());
-//                    currentVar = copy.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
-//                }
-                MAPestimate.setValue(currentVar, MAPsequence_final[t]);
-            });
             MAPestimateLogProbability = Math.log(MAPsequenceProbability);
         }
-
-        //System.out.println(MAPestimate.outputString(MAPVarReplications.getListOfVariables()));
         this.MAPsequence = MAPsequence;
 
 //        System.out.println("FINAL SEQUENCE: " + Arrays.toString(MAPsequence));
