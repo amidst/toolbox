@@ -20,6 +20,7 @@ package eu.amidst.core.inference;
 import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
@@ -59,7 +60,6 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
     private int seed = 0;
     private int sampleSize = 1000;
 
-    private List<ImportanceSamplingRobust.WeightedAssignment> weightedSampleList;
     private Stream<ImportanceSamplingRobust.WeightedAssignment> weightedSampleStream;
 
     private List<Variable> variablesAPosteriori;
@@ -122,7 +122,6 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         this.sameSamplingModel=true;
 
         evidence=null;
-        weightedSampleList=null;
         weightedSampleStream=null;
 
         variablesAPosteriori = model.getVariables().getListOfVariables();
@@ -142,7 +141,6 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
     @Override
     public void setEvidence(Assignment evidence_) {
         this.evidence = evidence_;
-        weightedSampleList=null;
         weightedSampleStream=null;
     }
 
@@ -260,10 +258,18 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
                 ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
                 SSsample.copy(ef_univariateDistribution.getSufficientStatistics(sample));
-                SSsample.multiplyBy(logWeight);
 
-                ArrayVector SS = new ArrayVector(ef_univariateDistribution.getMomentParameters().size());
-                SS.copy(ef_univariateDistribution.getSufficientStatistics(sample));
+                if(evidence!=null) {
+                    SSsample.multiplyBy(logWeight);
+                }
+
+//                ArrayVector SS = new ArrayVector(ef_univariateDistribution.getMomentParameters().size());
+//                SS.copy(ef_univariateDistribution.getSufficientStatistics(sample));
+
+//                System.out.println(Arrays.toString(SSposterior.toArray()));
+//                System.out.println(Arrays.toString(SSsample.toArray()));
+//                System.out.println(Arrays.toString(SS.toArray()));
+//                System.out.println();
 
                 newSSposterior = robustSumOfMultinomialSufficientStatistics(SSposterior, SSsample);
             }
@@ -299,7 +305,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 //                }
 //                else {
                     throw new UnsupportedOperationException("ImportanceSamplingRobust.updatePosteriorDistributions() works only for multinomials");
-//                }
+//              }
             }
             SSvariablesAPosteriori.set(i,newSSposterior);
 
@@ -529,11 +535,13 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
         ArrayVector sumSS = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
         sumSS.copy(SSvariablesAPosteriori.get(variablesAPosteriori.indexOf(variable)));
+        //System.out.println(Arrays.toString(sumSS.toArray()));
 
         sumSS = robustNormalizationOfLogProbabilitiesVector(sumSS);
 
         ef_univariateDistribution.setMomentParameters((SufficientStatistics)sumSS);
-        Distribution posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
+        Multinomial posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
+        posteriorDistribution.setProbabilities(Utils.normalize(posteriorDistribution.getParameters()));
 
         return (E)posteriorDistribution;
     }
@@ -645,7 +653,6 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         double logSumWeights = weightedSampleStream.mapToDouble(i -> {
             WeightedAssignment weightedSample = generateSample(randomGenerator.current());
             updatePosteriorDistributions(weightedSample.assignment,weightedSample.logWeight);
-
             //updateLogProbabilityOfEvidence(weightedSample.logWeight);
 
 
@@ -654,14 +661,22 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
             //System.out.println(weightedSample.logWeight);
 
             //System.out.println(logProbOfEvidence);
+
             return weightedSample.logWeight;
+
         }).reduce(this::robustSumOfLogarithms).getAsDouble();
 
         //        return weightedSampleStream.mapToDouble(ws -> ws.logWeight - Math.log(sampleSize)).reduce(this::robustSumOfLogarithms).getAsDouble();
 
 
         //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,-Math.log(sampleSize));
-        logProbOfEvidence = logSumWeights - Math.log(sampleSize);
+
+        if (evidence!=null) {
+            logProbOfEvidence = logSumWeights - Math.log(sampleSize);
+        }
+        else {
+            logProbOfEvidence = 0;
+        }
 
 //        if(saveDataOnMemory_) {
 //            weightedSampleList = weightedSampleStream.collect(Collectors.toList());
@@ -677,6 +692,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         BayesianNetworkGenerator.setNumberOfGaussianVars(0);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(60,2);
         BayesianNetworkGenerator.setNumberOfLinks(100);
+        BayesianNetworkGenerator.setSeed(1);
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
         System.out.println(bn);
 
@@ -686,7 +702,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         //importanceSampling.setSamplingModel(vmp.getSamplingModel());
 
         importanceSampling.setParallelMode(true);
-        importanceSampling.setSampleSize(500);
+        importanceSampling.setSampleSize(5000);
         importanceSampling.setSeed(57457);
 
         List<Variable> causalOrder = importanceSampling.causalOrder;
@@ -698,7 +714,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
 
 
-//        importanceSampling.runInference();
+        importanceSampling.runInference();
 //
 
 //
@@ -707,16 +723,16 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 ////        }
 //
 
-//        System.out.println("Posterior (IS) of " + var.getName() + ":" + importanceSampling.getPosterior(var).toString());
-//        System.out.println(bn.getConditionalDistribution(var).toString());
-//        System.out.println("Log-Prob. of Evidence: " + importanceSampling.getLogProbabilityOfEvidence());
+        System.out.println("Posterior (IS) of " + varPosterior.getName() + ":" + importanceSampling.getPosterior(varPosterior).toString());
+        System.out.println(bn.getConditionalDistribution(varPosterior).toString());
+        System.out.println("Log-Prob. of Evidence: " + importanceSampling.getLogProbabilityOfEvidence());
 
 
 
         // Including evidence:
         Variable variableEvidence = causalOrder.get(1);
 
-        int varEvidenceValue=1;
+        int varEvidenceValue=0;
 
         System.out.println("Evidence: Variable " + variableEvidence.getName() + " = " + varEvidenceValue);
         System.out.println();
@@ -742,16 +758,16 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
 
 
-        Complex complex = new Complex(1,0);
-        Complex log_complex = complex.log();
-        System.out.println(log_complex.getReal() + " + 1i * " + log_complex.getImaginary());
-
-
-        Complex complex1 = new Complex(0.5,-0.3);
-        Complex complex2 = new Complex(0.2,0.1);
-
-        Complex sum = complex1.add(complex2);
-        System.out.println(sum.getReal() + " + 1i * " + sum.getImaginary());
+//        Complex complex = new Complex(1,0);
+//        Complex log_complex = complex.log();
+//        System.out.println(log_complex.getReal() + " + 1i * " + log_complex.getImaginary());
+//
+//
+//        Complex complex1 = new Complex(0.5,-0.3);
+//        Complex complex2 = new Complex(0.2,0.1);
+//
+//        Complex sum = complex1.add(complex2);
+//        System.out.println(sum.getReal() + " + 1i * " + sum.getImaginary());
 
 
     }
