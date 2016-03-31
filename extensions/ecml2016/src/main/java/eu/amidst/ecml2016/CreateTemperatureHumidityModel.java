@@ -30,10 +30,12 @@ public class CreateTemperatureHumidityModel {
 
         DynamicVariables dynamicVariables = new DynamicVariables();
 
-        Variable season = dynamicVariables.newMultinomialDynamicVariable("Season", Arrays.asList("Winter","Spring"));
+        //Variable season = dynamicVariables.newMultinomialDynamicVariable("ClassVar", Arrays.asList("Winter","Spring"));
+        Variable season = dynamicVariables.newMultinomialDynamicVariable("Season", 2);
 
         Variable weatherPhenomenon = dynamicVariables
-                .newMultinomialDynamicVariable("WeatherPhenomenon", Arrays.asList("NonPresent", "Present"));
+                //.newMultinomialDynamicVariable("WeatherPhenomenon", Arrays.asList("NonPresent", "Present"));
+                .newMultinomialDynamicVariable("WeatherPhenomenon", 2);
 
         Variable temperature = dynamicVariables.newGaussianDynamicVariable("Temperature");
 
@@ -65,7 +67,6 @@ public class CreateTemperatureHumidityModel {
         dynamicDAG.getParentSetTimeT(season).addParent(season.getInterfaceVariable());
 
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
-
 
         Multinomial p0 = dbn.getConditionalDistributionTime0(season);
         p0.setProbabilities(new double[]{0.5,0.5});
