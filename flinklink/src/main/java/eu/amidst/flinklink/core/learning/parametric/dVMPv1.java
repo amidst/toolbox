@@ -1,17 +1,11 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 package eu.amidst.flinklink.core.learning.parametric;
@@ -59,12 +53,12 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class dVMP implements ParameterLearningAlgorithm, Serializable {
+public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
 
-    static Logger logger = LoggerFactory.getLogger(dVMP.class);
+    static Logger logger = LoggerFactory.getLogger(dVMPv1.class);
 
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
@@ -102,7 +96,7 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
     private int nBatches;
 
 
-    public dVMP(){
+    public dVMPv1(){
         this.svb = new SVB();
     }
 
@@ -157,7 +151,7 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
-        VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
+        VMPParameterv1 vmpParameter = new VMPParameterv1(this.svb.getPlateuStructure());
         vmpParameter.setMaxGlobaIter(1);
         this.svb.getPlateuStructure().setVmp(vmpParameter);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
@@ -267,7 +261,7 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
                 convergenceELBO = new ConvergenceELBO(this.globalThreshold, System.nanoTime());
             }
             else {
-                convergenceELBO = new ConvergenceELBObyTime(this.timeLimit, System.nanoTime());
+                convergenceELBO = new ConvergenceELBObyTime(this.timeLimit, System.nanoTime(), this.idenitifableModelling.getNumberOfEpochs());
                 this.setMaximumGlobalIterations(5000);
             }
             // set number of bulk iterations for KMeans algorithm
@@ -638,10 +632,12 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         double previousELBO = Double.NaN;
         final double timeLimit;
         long start;
+        int epochs;
 
-        public ConvergenceELBObyTime(double timeLimit, long start){
+        public ConvergenceELBObyTime(double timeLimit, long start, int epochs){
             this.start = start;
             this.timeLimit = timeLimit;
+            this.epochs = epochs;
         }
 
         public double getELBO() {
@@ -652,10 +648,16 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         public boolean isConverged(int iteration, DoubleValue value) {
 
 
+
             if (iteration==1)
                 return false;
 
             iteration--;
+
+            if (iteration%epochs!=0)
+                return false;
+
+            iteration= iteration/epochs;
 
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");

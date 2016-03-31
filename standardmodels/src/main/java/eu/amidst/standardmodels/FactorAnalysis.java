@@ -38,6 +38,10 @@ import java.util.stream.IntStream;
  */
 public class FactorAnalysis extends Model {
 
+
+    /**
+     * Number of continuous latent variables
+     */
     private int numberOfLatentVariables;
 
     /**
