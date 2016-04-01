@@ -434,11 +434,11 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
         IntStream.range(0,nMergedClassVars).forEachOrdered(modelNumber -> {
 
-            System.out.println("Model number " + modelNumber);
+//            System.out.println("Model number " + modelNumber);
             Variables variables = obtainReplicatedStaticVariables(dynamicVariables, modelNumber);
 
             DAG dag = obtainStaticDAG(dynamicDAG,variables,modelNumber);
-            System.out.println(dag.toString());
+//            System.out.println(dag.toString());
 
             BayesianNetwork bn = obtainStaticMergedClassVarNetwork(dag,variables,modelNumber);
 //            System.out.println(bn.toString());
@@ -460,7 +460,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //            System.out.println();
             mergedClassVarModels.add(bn);
 //            System.out.println("MODEL " + modelNumber);
-            System.out.println(bn);
+//            System.out.println(bn);
         });
     }
 
@@ -629,7 +629,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
             IntStream.range(0,nReplicationsMAPVariable).forEachOrdered(i -> {
                 currentModelPosteriorMAPDistributions.add(staticModelsInference.get(modelNumber).getPosterior(i));
-                System.out.println(staticModelsInference.get(modelNumber).getPosterior(i).toString());
+                //System.out.println(staticModelsInference.get(modelNumber).getPosterior(i).toString());
             });
 
             posteriorMAPDistributions.add(currentModelPosteriorMAPDistributions);
@@ -1934,7 +1934,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             ConditionalDistribution conditionalDistribution = Serialization.deepCopy(model.getConditionalDistributionTime0(dynVariable));
             Variable staticVar1 = variables.getVariableByName(dynVariable.getName() + "_t0");
             List<Variable> thisVarParents = conditionalDistribution.getConditioningVariables();
-            thisVarParents.stream().map(parent -> variables.getVariableByName(parent.getName() + "_t0"));
+            thisVarParents = thisVarParents.stream().map(parent -> variables.getVariableByName(parent.getName() + "_t0")).collect(Collectors.toList());
+
             conditionalDistribution.setConditioningVariables(thisVarParents);
             conditionalDistribution.setVar(staticVar1);
             bn.setConditionalDistribution(staticVar1, conditionalDistribution);
@@ -1944,7 +1945,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 ConditionalDistribution conditionalDistribution1 = Serialization.deepCopy(model.getConditionalDistributionTimeT(dynVariable));
                 Variable staticVar2 = variables.getVariableByName(dynVariable.getName() + "_t" + Integer.toString(i));
                 List<Variable> thisVarParents1 = conditionalDistribution1.getConditioningVariables();
-                thisVarParents1.stream().map(parent -> variables.getVariableByName(parent.getName() + "_t" + Integer.toString(i)));
+                thisVarParents1 = thisVarParents1.stream().map(parent -> variables.getVariableByName(parent.getName() + "_t" + Integer.toString(i))).collect(Collectors.toList());
                 conditionalDistribution1.setConditioningVariables(thisVarParents1);
                 conditionalDistribution1.setVar(staticVar2);
                 bn.setConditionalDistribution(staticVar2, conditionalDistribution1);
@@ -2085,7 +2086,6 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //                        }
                 }
                 else {
-
                     if (multinomialParents.get(k).getName().endsWith("_t" + Integer.toString(time_step - 1))) {
                         parentName = multinomialParents.get(k).getName().replaceFirst("_t\\d+", "");
                         Variable dynParent = model.getDynamicVariables().getVariableByName(parentName);
