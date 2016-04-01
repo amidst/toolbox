@@ -22,12 +22,9 @@ import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.util.ArrayList;
@@ -50,7 +47,7 @@ public class TemperatureHumidityDynamicModel {
 
     private String classVarName = "Season";
 
-    private List<DynamicAssignment> lastEvidence;
+    private List<DynamicAssignment> observableEvidence;
 
     private List<DynamicAssignment> fullEvidence;
 
@@ -108,7 +105,7 @@ public class TemperatureHumidityDynamicModel {
             sample.add(dynamicAssignment);
 
             DynamicAssignment fullDynamicAssignment = new HashMapDynamicAssignment(observableVars.size());
-            ((HashMapDynamicAssignment)dynamicAssignment).setTimeID((int)dynamicDataInstance.getTimeID());
+            ((HashMapDynamicAssignment)fullDynamicAssignment).setTimeID((int)dynamicDataInstance.getTimeID());
             model.getDynamicVariables().getListOfDynamicVariables().stream().forEach(var1 -> {
                 fullDynamicAssignment.setValue(var1,dynamicDataInstance.getValue(var1));
 //                System.out.println(dynamicDataInstance.getValue(var1));
@@ -116,7 +113,7 @@ public class TemperatureHumidityDynamicModel {
             fullEvidence.add(fullDynamicAssignment);
         });
 
-        this.lastEvidence=sample;
+        this.observableEvidence =sample;
         this.fullEvidence=fullEvidence;
 
         return sample;
@@ -128,7 +125,7 @@ public class TemperatureHumidityDynamicModel {
     }
 
     public List<DynamicAssignment> getEvidence() {
-        return lastEvidence;
+        return observableEvidence;
     }
 
     public List<DynamicAssignment> getFullEvidence() {
@@ -139,7 +136,7 @@ public class TemperatureHumidityDynamicModel {
 
         List<DynamicAssignment> evidenceNoClass = new ArrayList<>();
 
-        this.lastEvidence.forEach(dynamicAssignment -> {
+        this.observableEvidence.forEach(dynamicAssignment -> {
             DynamicAssignment dynamicAssignmentNoClass = new HashMapDynamicAssignment(dynamicAssignment.getVariables().size()-1);
             ((HashMapDynamicAssignment)dynamicAssignmentNoClass).setTimeID((int)dynamicAssignment.getTimeID());
             dynamicAssignment.getVariables().stream()
@@ -153,9 +150,9 @@ public class TemperatureHumidityDynamicModel {
 
     public int[] getClassSequence() {
 
-        int[] classSequence = new int[lastEvidence.size()];
+        int[] classSequence = new int[fullEvidence.size()];
 
-        this.lastEvidence.forEach(dynamicAssignment -> {
+        this.fullEvidence.forEach(dynamicAssignment -> {
 
             classSequence[(int) dynamicAssignment.getTimeID()] = (int) dynamicAssignment.getValue(this.getClassVariable());
 

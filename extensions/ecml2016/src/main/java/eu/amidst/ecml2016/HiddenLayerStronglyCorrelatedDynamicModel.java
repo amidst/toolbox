@@ -175,10 +175,9 @@ public class HiddenLayerStronglyCorrelatedDynamicModel {
         dag.getParentSetsTimeT().stream()
             .filter(var -> !var.getMainVar().equals(classVar) && !var.getMainVar().equals(hiddenDiscreteVar))
             .forEach(w -> {
-                w.addParent(classVar);
                 String thisVarName = w.getMainVar().getName();
                 if (thisVarName.contains(hiddenVarName)) {
-
+                    w.addParent(classVar);
                     w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
                     w.addParent(hiddenDiscreteVar);
 
@@ -295,12 +294,14 @@ public class HiddenLayerStronglyCorrelatedDynamicModel {
         List<Variable> allVariables = model.getDynamicVariables().getListOfDynamicVariables();
 
         allVariables.stream().filter(Variable::isNormal).forEach(variable -> {
-            Normal_MultinomialNormalParents distribution = model.getConditionalDistributionTimeT(variable);
+
+            if (!observableVars.contains(variable)) {
+                Normal_MultinomialNormalParents distribution = model.getConditionalDistributionTimeT(variable);
 //            System.out.println("\nVariable: " + variable.getName());
 
 //            System.out.println(distribution.toString());
-            IntStream.range(0,distribution.getNumberOfParentAssignments()).forEach(i -> {
-                ConditionalLinearGaussian currentTerm = distribution.getNormal_NormalParentsDistribution(i);
+                IntStream.range(0, distribution.getNumberOfParentAssignments()).forEach(i -> {
+                    ConditionalLinearGaussian currentTerm = distribution.getNormal_NormalParentsDistribution(i);
 
 //                double[] parameters1 = currentTerm.getCoeffParents();
 //                System.out.println(parameters1.length);
@@ -309,16 +310,24 @@ public class HiddenLayerStronglyCorrelatedDynamicModel {
 //                for (int j = 0; j < parameters1.length; j++) {
 //                    parameters1[j] = 1;//Math.signum(parameters1[j]);
 //                }
-                //currentTerm.setIntercept(1*Math.pow(-1,i));
+                    //currentTerm.setIntercept(1*Math.pow(-1,i));
 //                currentTerm.setCoeffParents(parameters1);
-                //currentTerm.setVariance(0.1);
+                    //currentTerm.setVariance(0.1);
 
-                if (variable.getName().contains(hiddenVarName)) {
-                    currentTerm.setCoeffForParent(variable.getInterfaceVariable(), 1);
-                }
+                    if (variable.getName().contains(hiddenVarName)) {
+                        currentTerm.setCoeffForParent(variable.getInterfaceVariable(), 1);
+                    }
 //                System.out.println(distribution.getNormal_NormalParentsDistribution(i).toString());
 
-            });
+                });
+            }
+            else {
+                ConditionalLinearGaussian distribution = model.getConditionalDistributionTimeT(variable);
+//            System.out.println("\nVariable: " + variable.getName());
+
+//            System.out.println(distribution.toString());
+
+            }
         });
         if (Double.isFinite(probabilityKeepClassState)) {
             this.setProbabilityOfKeepingClass(probabilityKeepClassState);
@@ -445,7 +454,7 @@ public class HiddenLayerStronglyCorrelatedDynamicModel {
 
             List<Variable> allVariables = model.getDynamicVariables().getListOfDynamicVariables();
 
-            allVariables.stream().filter(Variable::isNormal).forEach(variable -> {
+            allVariables.stream().filter(Variable::isNormal).filter(variable -> !observableVars.contains(variable)).forEach(variable -> {
 
                 if(variable.getName().contains("Continuous" + hiddenVarName)) {
 
@@ -468,7 +477,6 @@ public class HiddenLayerStronglyCorrelatedDynamicModel {
                             currentTerm0.setVariance(2);
                         }
                     });
-
                 }
                 else {
 
