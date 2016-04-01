@@ -38,7 +38,7 @@ import java.util.stream.IntStream;
  */
 public class TemperatureHumidityExperiments {
 
-    final static int maxTimeStepsHugin=10;
+    final static int maxTimeStepsHugin=12;
 
     public static void main(String[] args) {
 
@@ -71,21 +71,21 @@ public class TemperatureHumidityExperiments {
 
         int seedModel = 3634743;
 
-        int seedEvidence = 935;
+        int seedEvidence = 816935;
         Random randomEvidence= new Random(seedEvidence);
 
         String outputDirectory = "/Users/dario/Desktop/dynMapNetworks/";
 
         int numberOfModelsToTest = 1;
 
-        int numberOfEvidencesPerModel = 20;
+        int numberOfEvidencesPerModel = 10;
 
 
         //BasicConfigurator.configure();
         VMP dumb_vmp = new VMP();
 
 
-        int nTimeSteps=6;
+        int nTimeSteps=10;
         int nSamplesForIS=20000;
 
 
@@ -127,16 +127,17 @@ public class TemperatureHumidityExperiments {
             System.out.println("\nMODEL NUMBER "+ i+"\n");
             //model.setSeed(randomModel.nextInt());
 
-            double probKeepingClassState = 0.9;
-//            model.setProbabilityOfKeepingClass(probKeepingClassState);
+            double probKeepingClassState = 0.90;
+            model.setProbabilityOfKeepingClass(probKeepingClassState);
 
             DynamicBayesianNetwork DBNmodel = model.getModel();
-            System.out.println(DBNmodel);
+            System.out.println(DBNmodel.toString());
 
 
             for (int j = 0; j < numberOfEvidencesPerModel; j++) {
 
-                System.out.println("\nEVIDENCE NUMBER "+ j + "\n");
+                System.out.println("\nEVIDENCE NUMBER "+ j);
+                System.out.println("(only the sensorTemperature and sensorHumidity values are given to the inference methods as evidence)\n");
                 model.setSeed(randomEvidence.nextInt());
                 model.generateEvidence(nTimeSteps);
 
@@ -169,7 +170,7 @@ public class TemperatureHumidityExperiments {
                     try {
                         Domain huginBN = BNConverterToHugin.convertToHugin(staticModel);
                         huginBN.compile();
-                System.out.println("HUGIN Domain compiled");
+                        System.out.println("HUGIN Domain compiled");
 
                         staticEvidence.getVariables().forEach(variable -> {
                             if (variable.isMultinomial()) {
@@ -189,11 +190,11 @@ public class TemperatureHumidityExperiments {
                             }
                         });
 
-                System.out.println("HUGIN Evidence set");
+                        System.out.println("HUGIN Evidence set");
 
-                        huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
+                                huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
 
-                System.out.println("HUGIN Propagation done");
+                        System.out.println("HUGIN Propagation done");
                         NodeList classVarReplications = new NodeList();
 
                         //System.out.println(huginBN.getNodes().toString());
@@ -211,23 +212,24 @@ public class TemperatureHumidityExperiments {
 
 //                System.out.println("HUGIN MAP Variables:" + classVarReplications.toString());
 
-                        huginBN.findMAPConfigurations(classVarReplications, 0.001);
-
+                huginBN.findMAPConfigurations(classVarReplications, 0.05);
+                System.out.println("HUGIN MAP configuration found");
 //                System.out.println("HUGIN MAP Sequences:");
 //                for (int i = 0; i < huginBN.getNumberOfMAPConfigurations() && i < 3; i++) {
 //                    System.out.println(Arrays.toString(huginBN.getMAPConfiguration(i)) + " with probability " + huginBN.getProbabilityOfMAPConfiguration(i));
 //                }
-                        sequence_Hugin = huginBN.getMAPConfiguration(0);
-                    } catch (ExceptionHugin e) {
-                        System.out.println("\nHUGIN EXCEPTION:");
-                        System.out.println(e.getMessage());
-                        e.printStackTrace();
-                    }
+                sequence_Hugin = huginBN.getMAPConfiguration(0);
+                } catch (ExceptionHugin e) {
+                    System.out.println("\nHUGIN EXCEPTION:");
+                    System.out.println(e.getMessage());
+                    e.printStackTrace();
+                }
                 }
 
                 System.out.println("\n\n");
 
                 int [] sequence_original = model.getClassSequence();
+
 
                 int [] random_sequence = new int[nTimeSteps];
                 Random aux = new Random();
@@ -274,8 +276,8 @@ public class TemperatureHumidityExperiments {
                 dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.IS);
                 int [] sequence_UngroupedIS = dynMAP.getMAPsequence();
 
-                System.out.println("Ungrouped IS finished");
-                System.out.println("\n\n");
+//                System.out.println("Ungrouped IS finished");
+//                System.out.println("\n\n");
 
 
                 /////////////////////////////////////////////////
@@ -292,12 +294,22 @@ public class TemperatureHumidityExperiments {
                 dynMAP.setNumberOfTimeSteps(nTimeSteps);
                 dynMAP.setEvidence(evidence);
 
-                dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.VMP);
-                int [] sequence_UngroupedVMP = dynMAP.getMAPsequence();
+                int [] sequence_UngroupedVMP;
+                boolean sequence_UngroupedVMP_computed = false;
+
+                try {
+                    dynMAP.runInferenceUngroupedMAPVariable(DynamicMAPInference.SearchAlgorithm.VMP);
+                    sequence_UngroupedVMP_computed = true;
+                    sequence_UngroupedVMP = dynMAP.getMAPsequence();
+                }
+                catch (IllegalStateException e) {
+                    sequence_UngroupedVMP = new int[nTimeSteps];
+                    System.out.println(e.getMessage());
+                }
 
 
-                System.out.println("Ungrouped VMP finished");
-                System.out.println("\n\n");
+//                System.out.println("Ungrouped VMP finished");
+//                System.out.println("\n\n");
 
                 /////////////////////////////////////////////////
                 // 2-GROUPED VARIABLES WITH I.S.
@@ -319,9 +331,9 @@ public class TemperatureHumidityExperiments {
                 dynMAP.setEvidence(evidence);
 
                 final BayesianNetwork unfoldedStaticModel3 = dynMAP.getMergedClassVarModels().get(0);
-                unfoldedStaticModel3.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel3.getConditionalDistribution(variable).toString()));
+                //unfoldedStaticModel3.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel3.getConditionalDistribution(variable).toString()));
                 final BayesianNetwork unfoldedStaticModel4 = dynMAP.getMergedClassVarModels().get(1);
-                unfoldedStaticModel4.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel4.getConditionalDistribution(variable).toString()));
+                //unfoldedStaticModel4.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel4.getConditionalDistribution(variable).toString()));
 
                 //System.out.println(unfoldedStaticModel3.toString());
                 //System.out.println(unfoldedStaticModel4.toString());
@@ -339,8 +351,8 @@ public class TemperatureHumidityExperiments {
                 int [] sequence_2GroupedIS = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_2GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("2-grouped IS finished");
-                System.out.println("\n\n");
+//                System.out.println("2-grouped IS finished");
+//                System.out.println("\n\n");
 
                 /////////////////////////////////////////////////
                 // 2-GROUPED VARIABLES WITH VMP
@@ -356,16 +368,26 @@ public class TemperatureHumidityExperiments {
                 dynMAP.setEvidence(evidence);
 
                 final BayesianNetwork unfoldedStaticModel5 = dynMAP.getMergedClassVarModels().get(0);
-                unfoldedStaticModel5.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel5.getConditionalDistribution(variable).toString()));
+                //unfoldedStaticModel5.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel5.getConditionalDistribution(variable).toString()));
                 final BayesianNetwork unfoldedStaticModel6 = dynMAP.getMergedClassVarModels().get(1);
-                unfoldedStaticModel6.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel6.getConditionalDistribution(variable).toString()));
+                //unfoldedStaticModel6.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains("GROUPED")).forEachOrdered(variable -> System.out.println(unfoldedStaticModel6.getConditionalDistribution(variable).toString()));
 
-                dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
-                int [] sequence_2GroupedVMP = dynMAP.getMAPsequence();
+                int [] sequence_2GroupedVMP;
+                boolean sequence_2GroupedVMP_computed=false;
+                try {
+                    dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
+                    sequence_2GroupedVMP = dynMAP.getMAPsequence();
+                    sequence_2GroupedVMP_computed=true;
+                }
+                catch (IllegalStateException e) {
+                    sequence_2GroupedVMP = new int[nTimeSteps];
+                    System.out.println(e.getMessage());
+                }
+
                 List<int[]> submodel_sequences_2GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("2-grouped VMP finished");
-                System.out.println("\n\n");
+//                System.out.println("2-grouped VMP finished");
+//                System.out.println("\n\n");
 
 
                 /////////////////////////////////////////////////
@@ -388,8 +410,8 @@ public class TemperatureHumidityExperiments {
                 int [] sequence_3GroupedIS = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_3GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("3-grouped IS finished");
-                System.out.println("\n\n");
+//                System.out.println("3-grouped IS finished");
+//                System.out.println("\n\n");
 
 
                 /////////////////////////////////////////////////
@@ -405,13 +427,23 @@ public class TemperatureHumidityExperiments {
 
                 dynMAP.setEvidence(evidence);
 
-                dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
-                int [] sequence_3GroupedVMP = dynMAP.getMAPsequence();
+                int [] sequence_3GroupedVMP;
+                boolean sequence_3GroupedVMP_computed=false;
+                try {
+                    dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
+                    sequence_3GroupedVMP_computed=true;
+                    sequence_3GroupedVMP = dynMAP.getMAPsequence();
+                }
+                catch (IllegalStateException e) {
+                    sequence_3GroupedVMP = new int[nTimeSteps];
+                    System.out.println(e.getMessage());
+                }
+
                 List<int[]> submodel_sequences_3GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
 
-                System.out.println("3-grouped VMP finished");
-                System.out.println("\n\n");
+//                System.out.println("3-grouped VMP finished");
+//                System.out.println("\n\n");
 
                 /////////////////////////////////////////////////
                 // 4-GROUPED VARIABLES WITH I.S.
@@ -433,8 +465,8 @@ public class TemperatureHumidityExperiments {
                 int [] sequence_4GroupedIS = dynMAP.getMAPsequence();
                 List<int[]> submodel_sequences_4GroupedIS = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("4-grouped IS finished");
-                System.out.println("\n\n");
+//                System.out.println("4-grouped IS finished");
+//                System.out.println("\n\n");
 
 
 
@@ -451,12 +483,22 @@ public class TemperatureHumidityExperiments {
 
                 dynMAP.setEvidence(evidence);
 
-                dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
-                int [] sequence_4GroupedVMP = dynMAP.getMAPsequence();
+                int [] sequence_4GroupedVMP;
+                boolean sequence_4GroupedVMP_computed=false;
+                try {
+                    dynMAP.runInference(DynamicMAPInference.SearchAlgorithm.VMP);
+                    sequence_4GroupedVMP = dynMAP.getMAPsequence();
+                    sequence_4GroupedVMP_computed = true;
+                }
+                catch (IllegalStateException e) {
+                    sequence_4GroupedVMP = new int[nTimeSteps];
+                    System.out.println(e.getMessage());
+                }
+
                 List<int[]> submodel_sequences_4GroupedVMP = dynMAP.getBestSequencesForEachSubmodel();
 
-                System.out.println("4-grouped VMP finished\n\n");
-                System.out.println("\n\n");
+//                System.out.println("4-grouped VMP finished\n\n");
+//                System.out.println("\n\n");
 
 
 
@@ -488,31 +530,51 @@ public class TemperatureHumidityExperiments {
                 System.out.println("       (4Gr-IS) Seq. Submodel 3: " + Arrays.toString(submodel_sequences_4GroupedIS.get(3)));
                 System.out.println();
 
-                System.out.println("DynMAP (Ungrouped-VMP) Sequence: " + Arrays.toString(sequence_UngroupedVMP));
-                System.out.println();
+                if (sequence_UngroupedVMP_computed) {
+                    System.out.println("DynMAP (Ungrouped-VMP) Sequence: " + Arrays.toString(sequence_UngroupedVMP));
+                    System.out.println();
+                }
+                else {
+                    System.out.println("DynMAP (Ungrouped-VMP) Sequence:  Not obtained\n");
+                }
 
-                System.out.println("DynMAP (2Grouped-VMP) Sequence:  " + Arrays.toString(sequence_2GroupedVMP));
-                System.out.println("       (2Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(0)));
-                System.out.println("       (2Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(1)));
-                System.out.println();
+                if (sequence_2GroupedVMP_computed) {
+                    System.out.println("DynMAP (2Grouped-VMP) Sequence:  " + Arrays.toString(sequence_2GroupedVMP));
+                    System.out.println("       (2Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(0)));
+                    System.out.println("       (2Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(1)));
+                    System.out.println();
+                }
+                else {
+                    System.out.println("DynMAP (2Grouped-VMP) Sequence:   Not obtained\n");
+                }
 
-                System.out.println("DynMAP (3Grouped-VMP) Sequence:  " + Arrays.toString(sequence_3GroupedVMP));
-                System.out.println("       (3Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(0)));
-                System.out.println("       (3Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(1)));
-                System.out.println("       (3Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(2)));
-                System.out.println();
-
-                System.out.println("DynMAP (4Grouped-VMP) Sequence:  " + Arrays.toString(sequence_4GroupedVMP));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(0)));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(1)));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(2)));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 3:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(3)));
+                if (sequence_3GroupedVMP_computed) {
+                    System.out.println("DynMAP (3Grouped-VMP) Sequence:  " + Arrays.toString(sequence_3GroupedVMP));
+                    System.out.println("       (3Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(0)));
+                    System.out.println("       (3Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(1)));
+                    System.out.println("       (3Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(2)));
+                    System.out.println();
+                }
+                else {
+                    System.out.println("DynMAP (3Grouped-VMP) Sequence:   Not obtained\n");
+                }
+                if (sequence_4GroupedVMP_computed) {
+                    System.out.println("DynMAP (4Grouped-VMP) Sequence:  " + Arrays.toString(sequence_4GroupedVMP));
+                    System.out.println("       (4Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(0)));
+                    System.out.println("       (4Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(1)));
+                    System.out.println("       (4Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(2)));
+                    System.out.println("       (4Gr-VMP) Seq. Submodel 3:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(3)));
+                }
+                else {
+                    System.out.println("DynMAP (4Grouped-VMP) Sequence:   Not obtained\n");
+                }
 
 
                 double current_precision_Hugin=0;
-                if(nTimeSteps<=maxTimeStepsHugin) {
+                if (nTimeSteps<=maxTimeStepsHugin) {
                     current_precision_Hugin = compareIntArrays(sequence_original, sequence_Hugin);
 //                    System.out.println("Precision HUGIN: " + current_precision_Hugin);
+                    sequence_original = sequence_Hugin;
                 }
 
                 double current_precision_random = compareIntArrays(sequence_original, random_sequence);
@@ -582,10 +644,17 @@ public class TemperatureHumidityExperiments {
 
             double[] current_model_precision_random = Arrays.copyOfRange(precision_random,i*numberOfEvidencesPerModel,(i+1)*numberOfEvidencesPerModel-1);
 
-            System.out.println("\nMEAN PRECISIONS FOR THIS MODEL:");
-            System.out.println("         HUGIN: " + Arrays.stream(current_model_precision_Hugin).average().getAsDouble());
+            if (nTimeSteps<=maxTimeStepsHugin) {
+                System.out.println("\nMEAN PRECISIONS FOR THIS MODEL: (compared to HUGIN MAP sequence)");
+                System.out.println("         HUGIN: " + Arrays.stream(current_model_precision_Hugin).average().getAsDouble() + " (this one compared to the original sequence)");
+            }
+            else {
+                System.out.println("\nMEAN PRECISIONS FOR THIS MODEL: ");
+                System.out.println("         HUGIN:    Not computed");
+            }
 
-            System.out.println("  Random Guess: " + Arrays.stream(current_model_precision_random).average().getAsDouble());
+
+            //System.out.println("  Random Guess: " + Arrays.stream(current_model_precision_random).average().getAsDouble());
 
             System.out.println("  IS Ungrouped: " + Arrays.stream(current_model_precision_UngroupedIS).average().getAsDouble());
             System.out.println("  IS 2-Grouped: " + Arrays.stream(current_model_precision_2GroupedIS).average().getAsDouble());
@@ -604,10 +673,17 @@ public class TemperatureHumidityExperiments {
 
         }
 
-        System.out.println("\nGLOBAL MEAN PRECISIONS:");
-        System.out.println("         HUGIN: " + Arrays.stream(precision_Hugin).average().getAsDouble());
+        if (nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("\nGLOBAL MEAN PRECISIONS: (compared to HUGIN MAP sequence)");
+            System.out.println("         HUGIN: " + Arrays.stream(precision_Hugin).average().getAsDouble() + " (this one compared to the original sequence)");
 
-        System.out.println("  Random Guess: " + Arrays.stream(precision_random).average().getAsDouble());
+        }
+        else {
+            System.out.println("\nGLOBAL MEAN PRECISIONS:");
+            System.out.println("         HUGIN:    Not computed");
+        }
+
+        //System.out.println("  Random Guess: " + Arrays.stream(precision_random).average().getAsDouble());
 
         System.out.println("  IS Ungrouped: " + Arrays.stream(precision_UngroupedIS).average().getAsDouble());
         System.out.println("  IS 2-Grouped: " + Arrays.stream(precision_2GroupedIS).average().getAsDouble());

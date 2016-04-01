@@ -77,7 +77,7 @@ public class SequenceRecoveryExperiments {
         Random randomEvidence= new Random(seedEvidence);
 
         boolean saveModels = false;
-        String outputDirectory = "/Users/dario/Desktop/dynMapNetworks/6timeSteps/";
+        String outputDirectory = "/Users/dario/Desktop/dynMapNetworks/";
 
         int numberOfModelsToTest = 10;
 
@@ -125,9 +125,9 @@ public class SequenceRecoveryExperiments {
         model.setnStatesHidden(2);
         model.setnStates(2);
 
-        model.setnHiddenContinuousVars(2);
-        model.setnObservableDiscreteVars(4);
-        model.setnObservableContinuousVars(4);
+        model.setnHiddenContinuousVars(3);
+        model.setnObservableDiscreteVars(0);
+        model.setnObservableContinuousVars(3);
 
         model.generateModel();
         model.printDAG();
@@ -531,6 +531,7 @@ public class SequenceRecoveryExperiments {
 
                 if (nTimeSteps<=maxTimeStepsHugin) {
                     System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
+                    sequence_original=sequence_Hugin;
                 }
                 //System.out.println("Random Sequence:                 " + Arrays.toString(random_sequence));
                 System.out.println();
@@ -555,6 +556,7 @@ public class SequenceRecoveryExperiments {
                 System.out.println("       (4Gr-IS) Seq. Submodel 2: " + Arrays.toString(submodel_sequences_4GroupedIS.get(2)));
                 System.out.println("       (4Gr-IS) Seq. Submodel 3: " + Arrays.toString(submodel_sequences_4GroupedIS.get(3)));
                 System.out.println();
+
 
                 if (sequence_UngroupedVMP_computed) {
                     System.out.println("DynMAP (Ungrouped-VMP) Sequence: " + Arrays.toString(sequence_UngroupedVMP));
