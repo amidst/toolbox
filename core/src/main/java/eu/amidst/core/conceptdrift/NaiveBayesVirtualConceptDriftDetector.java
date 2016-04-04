@@ -151,6 +151,17 @@ public class NaiveBayesVirtualConceptDriftDetector {
         return svb;
     }
 
+
+    public void deactivateTransitionMethod(){
+        svb.setTransitionMethod(null);
+    }
+
+    public void activateTransitionMethod(){
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars,
+                0, this.transitionVariance);
+        gaussianHiddenTransitionMethod.setFading(fading);
+        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+    }
     /**
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
