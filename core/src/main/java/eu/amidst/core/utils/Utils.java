@@ -97,6 +97,26 @@ public final class Utils {
     }
 
     /**
+     * Returns the index of the minimum element in a given vector.
+     * @param vector a {@link Vector} object.
+     * @return an {@code int} that represents the index of the minimum element in the vector.
+     */
+    public static int minIndex(Vector vector){
+        double min = Double.POSITIVE_INFINITY;
+        int index = -1;
+        for (int i=0; i<vector.size(); i++){
+            if (vector.get(i)<min) {
+                min = vector.get(i);
+                index = i;
+            }
+        }
+        if (index==-1)
+            throw new IllegalStateException("There is no maximum. Probably a NaN value.");
+
+        return index;
+    }
+
+    /**
      * Sets a missing value as a Double.NaN.
      * @return a Double.NaN.
      */
