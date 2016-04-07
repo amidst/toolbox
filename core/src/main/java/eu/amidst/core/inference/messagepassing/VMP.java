@@ -20,6 +20,7 @@ package eu.amidst.core.inference.messagepassing;
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.InferenceAlgorithm;
@@ -179,8 +180,21 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
             elbo -= node.getPDist().getExpectedLogNormalizer(momentParents);
             elbo += node.getQDist().computeLogNormalizer();*/
 
-            elbo-=node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
-                                 node.getPDist().getExpectedLogNormalizer(momentParents));
+
+            if (this.messagesFromPast.containsKey(node)) {
+                EF_UnivariateDistribution pDist = node.getMainVariable().getDistributionType().newEFUnivariateDistribution();
+                NaturalParameters naturalParameters =node.getPDist().getExpectedNaturalFromParents(momentParents);
+                naturalParameters.sum(this.messagesFromPast.get(node));
+                pDist.setNaturalParameters(naturalParameters);
+                pDist.fixNumericalInstability();
+                pDist.updateMomentFromNaturalParameters();
+
+                elbo -= node.getQDist().kl(pDist.getNaturalParameters(),pDist.computeLogNormalizer());
+
+            }else {
+                elbo -= node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
+                        node.getPDist().getExpectedLogNormalizer(momentParents));
+            }
 
         }else {
             NaturalParameters expectedNatural = node.getPDist().getExpectedNaturalFromParents(momentParents);

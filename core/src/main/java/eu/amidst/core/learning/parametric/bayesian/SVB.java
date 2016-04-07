@@ -285,7 +285,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.plateuStructure.runInference();
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
-        this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
+        this.updateNaturalParameterPastOnPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
 
         //this.plateuVMP.resetQs();
         return this.plateuStructure.getLogProbabilityOfEvidence();
@@ -477,6 +477,17 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     private static EF_BayesianNetwork convertDAGToExtendedEFBN(DAG dag){
         return null;
+    }
+
+
+    /**
+     * Initialize the Natural Parameter Prior from a given parameter vector.
+     * @param parameterVector a {@link CompoundVector} object.
+     */
+    public void initializeNaturalParameterPrior(CompoundVector parameterVector){
+        this.plateuStructure.updateNaturalParameterPrior(parameterVector);
+        this.ef_extendedBN = this.plateuStructure.getEFLearningBN();
+        this.naturalVectorPrior=this.computeNaturalParameterVectorPrior();
     }
 
     /**
