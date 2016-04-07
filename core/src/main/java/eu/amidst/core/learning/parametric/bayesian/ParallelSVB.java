@@ -223,7 +223,7 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
             }
 
             for (int i = 0; i < nCores; i++) {
-                this.svbEngines[i].updateNaturalParameterPrior(posterior);
+                this.svbEngines[i].updateNaturalParameterPastOnPrior(posterior);
             }
 
 

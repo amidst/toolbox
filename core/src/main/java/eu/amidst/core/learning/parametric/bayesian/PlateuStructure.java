@@ -400,8 +400,7 @@ public class PlateuStructure implements Serializable {
                 .filter(var -> isNonReplicatedVar(var))
                 .map(var -> {
                     Node node = this.getNodeOfNonReplicatedVar(var);
-                    Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                    return node.getPDist().getExpectedNaturalFromParents(momentParents);
+                    return this.vmp.getPriorPlustPast(node);
                 }).collect(Collectors.toList());
 
         return new CompoundVector(naturalPlateauParametersPriors);
@@ -455,25 +454,37 @@ public class PlateuStructure implements Serializable {
                 .filter(var -> isNonReplicatedVar(var))
                 .forEach(var -> {
 
-                    Node node = this.getNodeOfNonReplicatedVar(var);
-                    Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                    NaturalParameters naturalParametersPrior = node.getPDist().getExpectedNaturalFromParents(momentParents);
-                    NaturalParameters naturalParametersPosterior = (NaturalParameters)parameterVector.getVectorByPosition(count[0]);
-                    naturalParametersPosterior.substract(naturalParametersPrior);
-                    this.vmp.setMessagesFromPast(node,naturalParametersPosterior);
-
-                   /* EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
+                    EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
                     uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count[0]));
                     uni.fixNumericalInstability();
                     uni.updateMomentFromNaturalParameters();
                     this.ef_learningmodel.setDistribution(var, uni);
                     this.getNodeOfNonReplicatedVar(var).setPDist(uni);
-                    */
+
 
                     count[0]++;
                 });
     }
 
+    /**
+     * Updates the Natural Parameters containing past information
+     * @param parameterVector a {@link CompoundVector} object.
+     */
+    public void updateNaturalParameterPastOnPrior(CompoundVector parameterVector) {
+
+        final int[] count = new int[1];
+        count[0] = 0;
+
+        ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .forEach(var -> {
+                    Node node = this.getNodeOfNonReplicatedVar(var);
+                    NaturalParameters naturalParametersPosterior = (NaturalParameters)parameterVector.getVectorByPosition(count[0]);
+                    this.vmp.setMessagesFromPast(node,naturalParametersPosterior);
+                    count[0]++;
+                });
+    }
 
     public void desactiveParametersNodes(){
         this.ef_learningmodel.getParametersVariables().getListOfParamaterVariables().stream()
