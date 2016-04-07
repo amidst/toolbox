@@ -110,6 +110,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
 
+            /** We remove past messages**/
             plateuStructure.getVMP().setMessagesFromPast(plateuStructure.getNodeOfNonReplicatedVar(localVar),null);
         }
 
