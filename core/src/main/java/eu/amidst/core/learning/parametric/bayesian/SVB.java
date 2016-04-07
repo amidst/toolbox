@@ -485,7 +485,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      * @param parameterVector a {@link CompoundVector} object.
      */
     public void initializeNaturalParameterPrior(CompoundVector parameterVector){
-        this.plateuStructure.updateNaturalParameterPrior(parameterVector);
+        this.plateuStructure.initializeNaturalParameterPrior(parameterVector);
         this.ef_extendedBN = this.plateuStructure.getEFLearningBN();
         this.naturalVectorPrior=this.computeNaturalParameterVectorPrior();
     }
