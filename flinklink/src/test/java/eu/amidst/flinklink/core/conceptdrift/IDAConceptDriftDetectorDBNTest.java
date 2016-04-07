@@ -124,14 +124,14 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
     public static void testUpdateN(String networkName, double threshold) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + networkName+".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName+".dbn");
         dbn.randomInitialization(new Random(0));
 
         System.out.println(dbn.toString());
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/simulated/conceptdrift/data0.arff", false);
+                "../datasets/simulated/conceptdrift/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         IDAConceptDriftDetectorDBN learn = new IDAConceptDriftDetectorDBN();

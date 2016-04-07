@@ -57,6 +57,7 @@ public class FileConverterFromHuginToAmidst {
                 String fileName = fileEntry.getName();
                 String fullFileName = folder.getName() + "/" + fileName;
 
+
                 if (fileName.endsWith(huginBNExtension)) { //Static BN
 
                     String modelName = fileName.substring(0, fileName.length() - 4);
@@ -64,6 +65,8 @@ public class FileConverterFromHuginToAmidst {
                     String fullAmidstFileName = folder.getName() + "/" + amidstFileName;
 
                     System.out.println("Converting " + fileName + " to " + amidstFileName);
+
+                    System.out.println(fullFileName);
 
                     Domain huginBN = BNLoaderFromHugin.loadFromFile(fullFileName);
                     BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);

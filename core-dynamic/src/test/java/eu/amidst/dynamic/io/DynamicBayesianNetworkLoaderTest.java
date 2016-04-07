@@ -62,7 +62,7 @@ public class DynamicBayesianNetworkLoaderTest {
                         if (!amidstDBN.equalDBNs(amidstDBN2, 0.0))
                             throw new Exception("Dynamic Bayesian network loader for " + fileName + " failed. ");
                     }catch(java.lang.ClassCastException ex){
-                        System.out.println("WARNING: "+fileName+" is not a DNB and it cannot be loaded");
+                        System.out.println("WARNING: "+fileName+"");
 
                     }
 
