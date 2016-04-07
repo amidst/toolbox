@@ -109,6 +109,8 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             normal.setNaturalWithMeanPrecision(mean,1/variance);
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
+
+            plateuStructure.getVMP().setMessagesFromPast(plateuStructure.getNodeOfNonReplicatedVar(localVar),null);
         }
 
         /***** FADING ****/

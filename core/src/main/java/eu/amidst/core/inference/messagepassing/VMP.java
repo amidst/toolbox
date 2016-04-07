@@ -70,7 +70,10 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
      * @param naturalParameters
      */
     public void setMessagesFromPast(Node node, NaturalParameters naturalParameters){
-        this.messagesFromPast.put(node,naturalParameters);
+        if (naturalParameters==null)
+            this.messagesFromPast.remove(node);
+        else
+            this.messagesFromPast.put(node,naturalParameters);
     }
 
     /**
