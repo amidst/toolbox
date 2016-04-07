@@ -481,6 +481,7 @@ public class PlateuStructure implements Serializable {
                 .forEach(var -> {
                     Node node = this.getNodeOfNonReplicatedVar(var);
                     NaturalParameters naturalParametersPosterior = (NaturalParameters)parameterVector.getVectorByPosition(count[0]);
+                    naturalParametersPosterior.substract(this.vmp.getPriorPlustPast(node));
                     this.vmp.setMessagesFromPast(node,naturalParametersPosterior);
                     count[0]++;
                 });
