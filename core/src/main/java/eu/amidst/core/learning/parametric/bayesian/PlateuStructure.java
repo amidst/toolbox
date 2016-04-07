@@ -18,10 +18,7 @@
 package eu.amidst.core.learning.parametric.bayesian;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
-import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.DAG;
@@ -340,6 +337,11 @@ public class PlateuStructure implements Serializable {
             }
         }
 
+        for (Node node : nonReplictedNodes) {
+            node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, 0)).collect(Collectors.toList()));
+            node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, 0).getChildren().add(node));
+        }
+
         List<Node> allNodes = new ArrayList();
 
         allNodes.addAll(this.nonReplictedNodes);
@@ -397,10 +399,9 @@ public class PlateuStructure implements Serializable {
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
                 .map(var -> {
-                    NaturalParameters parameter = this.ef_learningmodel.getDistribution(var).getNaturalParameters();
-                    NaturalParameters copy = this.ef_learningmodel.getDistribution(var).createZeroNaturalParameters();
-                    copy.copy(parameter);
-                    return copy;
+                    Node node = this.getNodeOfNonReplicatedVar(var);
+                    Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+                    return node.getPDist().getExpectedNaturalFromParents(momentParents);
                 }).collect(Collectors.toList());
 
         return new CompoundVector(naturalPlateauParametersPriors);
@@ -453,12 +454,22 @@ public class PlateuStructure implements Serializable {
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
                 .forEach(var -> {
-                    EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
+
+                    Node node = this.getNodeOfNonReplicatedVar(var);
+                    Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+                    NaturalParameters naturalParametersPrior = node.getPDist().getExpectedNaturalFromParents(momentParents);
+                    NaturalParameters naturalParametersPosterior = (NaturalParameters)parameterVector.getVectorByPosition(count[0]);
+                    naturalParametersPosterior.substract(naturalParametersPrior);
+                    this.vmp.setMessagesFromPast(node,naturalParametersPosterior);
+
+                   /* EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
                     uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count[0]));
                     uni.fixNumericalInstability();
                     uni.updateMomentFromNaturalParameters();
                     this.ef_learningmodel.setDistribution(var, uni);
                     this.getNodeOfNonReplicatedVar(var).setPDist(uni);
+                    */
+
                     count[0]++;
                 });
     }

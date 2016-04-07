@@ -17,10 +17,7 @@
 
 package eu.amidst.core.inference.messagepassing;
 
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.MomentParameters;
-import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;

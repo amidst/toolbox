@@ -154,9 +154,10 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     /**
      * Converts the distributions of this EF_LearningBayesianNetwork model into a list of {@link ConditionalDistribution} objects.
      * This conversion also removes the parameter variables by replacing them with their expected value.
+     * @param expectedValueParameterVariables a {@code Map} object that maps {@link Variable} to their corresponding expected values, i.e. {@link Vector}s.
      * @return a {@code List} of {@link ConditionalDistribution} objects.
      */
-    public List<ConditionalDistribution> toConditionalDistribution(){
+    public List<ConditionalDistribution> toConditionalDistribution(Map<Variable, Vector> expectedValueParameterVariables){
         List<ConditionalDistribution> condDistList = new ArrayList<>();
 
         for (EF_ConditionalDistribution dist: distributionList) {
@@ -167,16 +168,7 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
                 condDistList.add(dist.toConditionalDistribution());
                 continue;
             }
-
-            EF_ConditionalDistribution distLearning = dist;
-            Map<Variable, Vector> expectedParameters = new HashMap<>();
-            for(Variable var: distLearning.getConditioningVariables()){
-                if (!var.isParameterVariable())
-                    continue;;
-                EF_UnivariateDistribution uni =  ((EF_UnivariateDistribution)distributionList.get(var.getVarID()));
-                expectedParameters.put(var, uni.getExpectedParameters());
-            }
-            condDistList.add(distLearning.toConditionalDistribution(expectedParameters));
+            condDistList.add(dist.toConditionalDistribution(expectedValueParameterVariables));
         }
 
         condDistList = condDistList.stream().sorted((a, b) -> a.getVariable().getVarID() - b.getVariable().getVarID()).collect(Collectors.toList());

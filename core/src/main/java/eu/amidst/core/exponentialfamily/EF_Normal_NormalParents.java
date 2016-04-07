@@ -393,9 +393,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return new CompoundVector(nOfParents);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
@@ -424,6 +422,47 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return conditionalDistributions;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+/*    @Override
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
+        List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
+
+        Variable varGamma = variables.newGammaParameter(this.var.getName() + "_Gamma_Parameter_"+nameSuffix+"_" + variables.getNumberOfVars());
+
+        conditionalDistributions.add(varGamma.getDistributionType().newEFUnivariateDistribution());
+
+        Variable normalBeta0 = variables.newGaussianParameter(this.var.getName() + "_Beta0_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
+
+
+        conditionalDistributions.add(normalBeta0.getDistributionType().newEFUnivariateDistribution());
+
+        List<Variable> betas = new ArrayList<>();
+        for (Variable variableParent: this.parents){
+            Variable normalBetai = variables.newGaussianParameter(this.var.getName() + "_Beta_"+ variableParent.getName() + "_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
+            betas.add(normalBetai);
+
+            Variable normalBetaiGamma = variables.newGammaParameter(this.var.getName() + "_BetaGamma_"+ variableParent.getName() + "_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
+
+            conditionalDistributions.add(new EF_NormalGivenOnlyGamma(normalBetai,0,normalBetaiGamma));
+
+            EF_Gamma gammaDist = normalBetaiGamma.getDistributionType().newEFUnivariateDistribution();
+            gammaDist.getNaturalParameters().set(0, 1e-6 - 1);
+            gammaDist.getNaturalParameters().set(1, -1e-6);
+
+            conditionalDistributions.add(gammaDist);
+
+        }
+
+
+        EF_Normal_Normal_Gamma condDist = new EF_Normal_Normal_Gamma(this.var,this.parents,normalBeta0, betas, varGamma);
+
+        conditionalDistributions.add(condDist);
+
+        return conditionalDistributions;
+    }
+*/
     public static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters, Serializable {
 
         /** Represents the serial version ID for serializing the object. */

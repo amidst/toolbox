@@ -31,6 +31,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,9 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
     /** Represents a test of the evidence lower bound (ELBO). */
     boolean testELBO=false;
 
+    /* Stores messages coming from the past. Needed to perfrom sequential updating */
+    HashMap<Node,NaturalParameters> messagesFromPast = new HashMap<>();
+
     /**
      * Sets the testELBO value.
      * @param testELBO a {@code boolean} that represents the testELBO value to be set.
@@ -60,13 +64,27 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
 
 
     /**
+     * Set a message coming from the past.
+     * @param node
+     * @param naturalParameters
+     */
+    public void setMessagesFromPast(Node node, NaturalParameters naturalParameters){
+        this.messagesFromPast.put(node,naturalParameters);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public Message<NaturalParameters> newSelfMessage(Node node) {
         Map<Variable, MomentParameters> momentParents = node.getMomentParents();
         Message<NaturalParameters> message = new Message(node);
-        message.setVector(node.getPDist().getExpectedNaturalFromParents(momentParents));
+        NaturalParameters naturalParameters = node.getPDist().getExpectedNaturalFromParents(momentParents);
+
+        if (messagesFromPast.containsKey(node))
+            naturalParameters.sum(messagesFromPast.get(node));
+
+        message.setVector(naturalParameters);
         message.setDone(node.messageDoneFromParents());
 
         return message;

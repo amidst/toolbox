@@ -29,13 +29,16 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 // TODO By iterating several times over the data we can get better approximations.
@@ -499,20 +502,12 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
-        if(!nonSequentialModel)
-            return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
-        else{
+        Map<Variable, Vector > expectedValueParameterVariables = new HashMap<>();
+        this.plateuStructure.getNonReplictedNodes()
+                .forEach(node -> expectedValueParameterVariables.put(node.getMainVariable(),node.getQDist().getExpectedParameters()));
 
-            CompoundVector prior = this.plateuStructure.getPlateauNaturalParameterPrior();
+        return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution(expectedValueParameterVariables));
 
-            this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
-
-            BayesianNetwork learntBN =  new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
-
-            this.updateNaturalParameterPrior(prior);
-
-            return learntBN;
-        }
     }
 
     /**
