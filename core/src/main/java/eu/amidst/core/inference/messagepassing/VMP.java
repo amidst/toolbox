@@ -91,9 +91,15 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
         return message;
     }
 
+    public NaturalParameters getPrior(Node node){
+        Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+        NaturalParameters naturalParameters = node.getPDist().getExpectedNaturalFromParents(momentParents);
+
+        return naturalParameters;
+    }
+
     public NaturalParameters getPriorPlustPast(Node node){
         Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-        Message<NaturalParameters> message = new Message(node);
         NaturalParameters naturalParameters = node.getPDist().getExpectedNaturalFromParents(momentParents);
 
         if (messagesFromPast.containsKey(node))
