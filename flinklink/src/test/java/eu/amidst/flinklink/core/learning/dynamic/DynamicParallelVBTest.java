@@ -75,7 +75,7 @@ public class DynamicParallelVBTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "./networks/dbn1.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn1.dbn");
     }
 
     public static void createDBN2() throws Exception {
@@ -99,7 +99,7 @@ public class DynamicParallelVBTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "./networks/dbn2.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn2.dbn");
     }
 
     public static void createDBN3() throws Exception {
@@ -123,14 +123,14 @@ public class DynamicParallelVBTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "./networks/dbn3.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn3.dbn");
     }
 
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
@@ -153,8 +153,8 @@ public class DynamicParallelVBTest extends TestCase {
         DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
 
 
-        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/dataFlink/cajaMarSynthetic/data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
+        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/simulated/cajaMarSynthetic/data0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/cajaMarSynthetic/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
         System.out.println(list);
@@ -169,8 +169,8 @@ public class DynamicParallelVBTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
 
             dataPrev = dataNew;
 
@@ -194,7 +194,7 @@ public class DynamicParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
+                "./datasets/simulated/cajaMarSynthetic/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
 
@@ -206,7 +206,7 @@ public class DynamicParallelVBTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
+                    "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
 
             DataSet<Long> dataJoin = data0.getDataSet().join(dataNew.getDataSet(), JoinOperatorBase.JoinHint.REPARTITION_HASH_FIRST).where(
                     new KeySelector<DynamicDataInstance, Long>() {
@@ -245,7 +245,7 @@ public class DynamicParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
+                "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
 
@@ -257,7 +257,7 @@ public class DynamicParallelVBTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
+                    "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
 
             DataSet<Long> dataJoin = data0.getDataSet().join(dataNew.getDataSet(), JoinOperatorBase.JoinHint.REPARTITION_HASH_FIRST).where(
                     new KeySelector<DynamicDataInstance, Long>() {
@@ -295,14 +295,14 @@ public class DynamicParallelVBTest extends TestCase {
     public static void update0Learn(String networkName) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + NETWORK_NAME);
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + NETWORK_NAME);
         dbn.randomInitialization(new Random(0));
 
         System.out.println(dbn.toString());
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
+                "../networks/bnaic2015/BCC/cajaMarSynthetic/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         DynamicParallelVB learn = new DynamicParallelVB();
@@ -323,14 +323,14 @@ public class DynamicParallelVBTest extends TestCase {
     public static void testUpdateN(String networkName, double threshold) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName+".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + networkName+".dbn");
         dbn.randomInitialization(new Random(0));
 
         System.out.println(dbn.toString());
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/dataFlink/cajaMarSynthetic/data0.arff", false);
+                "./datasets/simulated/cajaMarSynthetic/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         DynamicParallelVB learn = new DynamicParallelVB();
@@ -349,7 +349,7 @@ public class DynamicParallelVBTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/dataFlink/cajaMarSynthetic/data" + i + ".arff", false);
+                    "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
             learn.updateModelWithNewTimeSlice(i, dataNew);
             assertEquals(SAMPLESIZE, learn.dataPosteriorDataSet.count());
         }

@@ -43,7 +43,7 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -55,9 +55,9 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data,"../networks/simulated/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env ,"./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env ,"../networks/simulated/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -86,7 +86,7 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nWasteIncinerator network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -98,9 +98,9 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        DataStreamWriter.writeDataToFile(data,"./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data,"../datasets/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning

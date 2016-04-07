@@ -41,7 +41,7 @@ public class MLTestOneVar {
     public void MLTest() throws  IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork net = BayesianNetworkLoader.loadFromFile("./networksTests/One.bn");
+        BayesianNetwork net = BayesianNetworkLoader.loadFromFile("../networks/simulated/One.bn");
 
         System.out.println("\nOne network \n ");
         System.out.println(net.getDAG().toString());

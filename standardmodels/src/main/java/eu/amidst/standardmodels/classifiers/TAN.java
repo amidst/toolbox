@@ -27,7 +27,6 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.learning.ParallelTAN;
-import eu.amidst.standardmodels.Model;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**

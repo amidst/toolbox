@@ -33,7 +33,7 @@ public class HuginInferenceExample {
     public static void main(String[] args) throws Exception {
 
         //Load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/WasteIncinerator.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/simulated/WasteIncinerator.bn");
 
         //Recover the relevant variables.
         // For this example, we have two variables: Mout which is normally distributed, and W which is multinomial.

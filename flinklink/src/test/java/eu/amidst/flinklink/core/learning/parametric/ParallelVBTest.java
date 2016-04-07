@@ -65,9 +65,9 @@ public class ParallelVBTest extends TestCase {
 
     public static void baseTest(ExecutionEnvironment env, DataStream<DataInstance> data, BayesianNetwork network, int batchSize, double error) throws IOException, ClassNotFoundException {
 
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "../datasets/simulated/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
         network.getDAG().getVariables().setAttributes(dataFlink.getAttributes());
 
@@ -158,7 +158,7 @@ public class ParallelVBTest extends TestCase {
 
     public static void testGaussian0() throws IOException, ClassNotFoundException {
 
-        String[] bns = {"networks/Normal.bn", "networks/Normal_1NormalParents.bn"};
+        String[] bns = {"../networks/simulated/Normal.bn", "../networks/simulated/Normal_1NormalParents.bn"};
 
         for (String bnname : bns) {
             BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(bnname);
@@ -180,7 +180,7 @@ public class ParallelVBTest extends TestCase {
 
 
         //for (int i = 2; i <3; i++) {
-            BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Normal_MultinomialParents.bn");
+            BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialParents.bn");
             //bn.randomInitialization(new Random(0));
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -199,7 +199,7 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -211,9 +211,9 @@ public class ParallelVBTest extends TestCase {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "../datasets/simulated/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -251,7 +251,7 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -263,9 +263,9 @@ public class ParallelVBTest extends TestCase {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "../datasets/simulated/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -303,7 +303,7 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -315,9 +315,9 @@ public class ParallelVBTest extends TestCase {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
         sampler.setHiddenVar(asianet.getVariables().getVariableById(7));
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "../datasets/simulated/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -368,10 +368,10 @@ public class ParallelVBTest extends TestCase {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(5000);
 
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "../datasets/simulated/tmp.arff");
 
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
 
         DAG hiddenNB = ParallelVMPExtended.getHiddenNaiveBayesStructure(dataFlink.getAttributes());
@@ -413,7 +413,7 @@ public class ParallelVBTest extends TestCase {
 
 
         // load the true WasteIncinerator Bayesian network
-        BayesianNetwork wasteIncinerator = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        BayesianNetwork wasteIncinerator = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
         wasteIncinerator.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -425,10 +425,10 @@ public class ParallelVBTest extends TestCase {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
         sampler.setHiddenVar(wasteIncinerator.getVariables().getVariableById(6));
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "../datasets/simulated/tmp.arff");
 
         //We load the data
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
 
         //ParallelVB is defined
@@ -459,7 +459,7 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nWasteIncinerator network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -478,11 +478,11 @@ public class ParallelVBTest extends TestCase {
         sampler.setSeed(0);
         DataFlink<DataInstance> data = sampler.sampleToDataFlink(10000);
 
-        DataFlinkWriter.writeDataToARFFFolder(data, "./datasets/tmpfolder.arff");
+        DataFlinkWriter.writeDataToARFFFolder(data, "../datasets/simulated/tmpfolder.arff");
 
 
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "./datasets/tmpfolder.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../datasets/simulated/tmpfolder.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -519,7 +519,7 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
-                "./datasets/dataFlink/test_not_modify/MONTH1.arff", true);
+                "../datasets/simulated/test_not_modify/MONTH1.arff", true);
         //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
         //        "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
 
@@ -560,7 +560,7 @@ public class ParallelVBTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
-                "./datasets/dataFlink/test_not_modify/MONTH1.arff", true);
+                "../datasets/simulated/test_not_modify/MONTH1.arff", true);
 
         //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
         //        "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
@@ -616,7 +616,7 @@ public class ParallelVBTest extends TestCase {
         //PropertyConfigurator.configure(args[7]);
 
         //String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
-        String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
+        String fileName = "../datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
 
         // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
         BayesianNetworkGenerator.setSeed(seed);
@@ -725,17 +725,17 @@ public class ParallelVBTest extends TestCase {
         env.setParallelism(1);
 
 
-        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
         sampler.setSeed(2);
-        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(10000),"./datasets/dataFlink/tmp.arff");
+        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(10000),"../networks/simulated/simulated/tmp.arff");
 
 
 
 
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "./datasets/dataFlink/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../networks/simulated/simulated/tmp.arff", false);
 
         network.getDAG().getVariables().setAttributes(dataFlink.getAttributes());
 
@@ -761,7 +761,7 @@ public class ParallelVBTest extends TestCase {
 
 
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/dataFlink/tmp.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("../datasets/simulated/tmp.arff");
 
         SVB svb = new SVB();
         svb.setWindowsSize(10000);
@@ -794,12 +794,12 @@ public class ParallelVBTest extends TestCase {
         int SAMPLES = 10000;
 
         IDAConceptDriftDetectorTest.createBN1(10);
-        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("./networks/dbn1.dbn");
+        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("../networks/simulated/dbn1.dbn");
         network.randomInitialization(new Random(0));
         System.out.println(network.toString());
 
         //String dataset= "./datasets/dataFlink/conceptdrift/data0.arff";
-        String dataset= "./datasets/dataFlink/tmp.arff";
+        String dataset= "../datasets/simulated/tmp.arff";
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
         sampler.setSeed(1);
         sampler.setBatchSize(500);

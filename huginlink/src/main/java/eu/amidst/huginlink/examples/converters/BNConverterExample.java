@@ -33,7 +33,7 @@ public class BNConverterExample {
     public static void main(String[] args) throws Exception {
 
         //loads a BN model from Hugin
-        Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/asia.net");
+        Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/dataWeka/asia.net");
 
         //Converts the Hugin model to an AMIDST BayesianNetwork object
         BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);

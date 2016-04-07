@@ -28,7 +28,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/pigs.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/pigs.bn");
         System.out.println(bn.getNumberOfVars());
         //System.out.println(BayesianNetworkLoader.loadFromFile("./datasets/cajamar/outputTANOperativos.txt_TAN_model.bn"));
 

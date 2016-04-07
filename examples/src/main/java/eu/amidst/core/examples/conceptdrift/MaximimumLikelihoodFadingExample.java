@@ -41,7 +41,7 @@ public class MaximimumLikelihoodFadingExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/WasteIncineratorSample.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/WasteIncineratorSample.arff");
 
         //We create a ParameterLearningAlgorithm object with the MaximumLikelihoodFading builder
         MaximumLikelihoodFading parameterLearningAlgorithm = new MaximumLikelihoodFading();

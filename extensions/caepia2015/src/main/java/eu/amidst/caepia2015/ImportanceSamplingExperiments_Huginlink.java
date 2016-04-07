@@ -189,7 +189,7 @@ public class ImportanceSamplingExperiments_Huginlink {
             //*****************************************************************
             Random randomFilename = new Random();
             String filename_sufix = Integer.toString(randomFilename.nextInt(10000));
-            filename = "networks/randomlyGeneratedBN_ISE.bn";
+            filename = "networks/simulated/randomlyGeneratedBN_ISE.bn";
             BayesianNetworkGenerator.generateBNtoFile(nDiscrete, nStates, nContin, nLinks, seed, filename);
             bn = BayesianNetworkLoader.loadFromFile(filename);
             /*

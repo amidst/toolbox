@@ -36,7 +36,7 @@ public class DynamicBayesianNetworkLoaderTest {
 
     @Test
     public void test() throws Exception {
-        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networksTests");
+        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("../networks/simulated");
     }
 
     public static void loadAndTestFilesFromFolder(final String folderName) throws Exception {

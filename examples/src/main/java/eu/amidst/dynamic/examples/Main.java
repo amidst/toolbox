@@ -125,7 +125,7 @@ public class Main {
         System.out.println(letterToCount.toString());
 
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/syntheticData.arff");
 
         Iterator<DataInstance> it = data.iterator();
         for (int i = 0; i < 3; i++) {
@@ -142,7 +142,7 @@ public class Main {
         System.out.println(wordToCount);
 
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/Asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/simulated/Asia.bn");
         System.out.println(bn.toString());
         DAG dag = bn.getDAG();
 
@@ -157,7 +157,7 @@ public class Main {
     }
 
     public static void test2(String[] args) throws Exception {
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/Asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/Asia.bn");
         DAG dag = bn.getDAG();
         System.out.println(dag.toString());
 
@@ -197,7 +197,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/Asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/asia.bn");
         DAG dag = bn.getDAG();
         System.out.println(dag.toString());
 

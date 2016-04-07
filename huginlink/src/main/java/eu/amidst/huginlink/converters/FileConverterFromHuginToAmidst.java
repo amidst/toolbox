@@ -99,6 +99,6 @@ public class FileConverterFromHuginToAmidst {
     }
 
     public static void main(String[] args) throws Exception {
-        FileConverterFromHuginToAmidst.convertFilesFromFolder("networks");
+        FileConverterFromHuginToAmidst.convertFilesFromFolder("networks/simulated/");
     }
 }

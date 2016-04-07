@@ -52,7 +52,7 @@ public class ParallelPCExample {
         //We load a Bayesian network to generate a data stream
         //using BayesianNewtorkSampler class.
         int sampleSize = 100000;
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/dataWeka/Pigs.bn");
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
         //We fix the number of samples in memory used for performing the structural learning.

@@ -39,7 +39,7 @@ public class SVBFadingTest {
 
             // load the true WasteIncinerator hugin Bayesian network containing 3 Multinomial and 6 Gaussian variables
 
-            BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("./networksTests/WasteIncinerator.bn");
+            BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
             System.out.println("\nWasteIncinerator network \n ");
             System.out.println(trueBN.getDAG().toString());
@@ -83,7 +83,7 @@ public class SVBFadingTest {
 
         // load the true WasteIncinerator hugin Bayesian network containing 3 Multinomial and 6 Gaussian variables
 
-        BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("./networksTests/WasteIncinerator.bn");
+        BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nWasteIncinerator network \n ");
         System.out.println(trueBN.getDAG().toString());

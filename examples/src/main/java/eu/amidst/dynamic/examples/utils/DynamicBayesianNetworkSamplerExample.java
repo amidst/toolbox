@@ -54,6 +54,6 @@ public class DynamicBayesianNetworkSamplerExample {
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(3,1000);
 
         //Save the created data sample in a file
-        DataStreamWriter.writeDataToFile(dataStream, "./datasetsTests/dnb-samples.arff");
+        DataStreamWriter.writeDataToFile(dataStream, "./datasets/simulated/dnb-samples.arff");
     }
 }

@@ -43,7 +43,7 @@ public class HuginInferenceForBNTest {
     @Test
     public void test() throws IOException, ClassNotFoundException, ExceptionHugin {
 
-        Domain huginBN = BNLoaderFromHugin.loadFromFile("./networksTests//Example.net");
+        Domain huginBN = BNLoaderFromHugin.loadFromFile("../networks/simulated/Example.net");
         BayesianNetwork bn = BNConverterToAMIDST.convertToAmidst(huginBN);
         System.out.println(bn.toString());
 

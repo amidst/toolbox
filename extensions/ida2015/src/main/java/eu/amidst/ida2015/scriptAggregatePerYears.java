@@ -65,7 +65,7 @@ public class scriptAggregatePerYears {
     }
     public static void main(String[] args) {
         try {
-            aggregatePerYears("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            aggregatePerYears("datasets/simulated/dynamicDataOnlyContinuous.arff");
             //aggregatePerYears(args[0]);
         }catch (IOException ex){}
     }

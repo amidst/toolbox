@@ -133,7 +133,7 @@ public class ImportanceSamplingExperiments {
             System.exit(1);
         }
         else if (args.length==0) {
-            filename="networks/Bayesian10Vars15Links.bn"; //Filename with the Bayesian Network
+            filename="networks/simulated/Bayesian10Vars15Links.bn"; //Filename with the Bayesian Network
             //filename="networks/Bayesian2Vars1Link.bn";
             varname ="GaussianVar1"; // Variable of interest in the BN
             a = 0; // Lower endpoint of the interval

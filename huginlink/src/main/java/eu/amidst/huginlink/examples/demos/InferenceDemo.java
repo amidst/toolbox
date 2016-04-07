@@ -68,7 +68,7 @@ public class InferenceDemo {
         //********************** LEARNING IN AMIDST ******************
         //************************************************************
 
-        String file = "./datasets/bank_data_train.arff";
+        String file = "./datasets/simulated/bank_data_train.arff";
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
 
         //System.out.println("ATTRIBUTES:");
@@ -96,7 +96,7 @@ public class InferenceDemo {
          //********************** INFERENCE IN HUGIN ******************
          //************************************************************
 
-         file = "./datasets/bank_data_predict.arff";
+         file = "./datasets/simulated/bank_data_predict.arff";
          data = DynamicDataStreamLoader.loadFromFile(file);
 
          // The value of the timeWindow must be sampleSize-1 at maximum

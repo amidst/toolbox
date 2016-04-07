@@ -39,7 +39,7 @@ public class VMPExample {
     public static void main(String[] args) throws Exception {
 
         //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/WasteIncinerator.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/simulated/WasteIncinerator.bn");
 
         //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
         Variable varMout = bn.getVariables().getVariableByName("Mout");
