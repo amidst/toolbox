@@ -23,6 +23,7 @@ import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
@@ -480,7 +481,7 @@ public class PlateuStructure implements Serializable {
                 .filter(var -> isNonReplicatedVar(var))
                 .forEach(var -> {
                     Node node = this.getNodeOfNonReplicatedVar(var);
-                    NaturalParameters naturalParametersPosterior = (NaturalParameters)parameterVector.getVectorByPosition(count[0]);
+                    NaturalParameters naturalParametersPosterior = Serialization.deepCopy((NaturalParameters)parameterVector.getVectorByPosition(count[0]));
                     naturalParametersPosterior.substract(this.vmp.getPriorPlustPast(node));
                     this.vmp.setMessagesFromPast(node,naturalParametersPosterior);
                     count[0]++;
