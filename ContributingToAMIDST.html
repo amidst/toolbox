@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>AMIDST Toolbox 1.0 by amidst</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">AMIDST Toolbox 1.0</h1>
+      <h2 class="project-tagline">A Java Toolbox for Analysis of MassIve Data STreams using Probabilistic Graphical Models</h2>
+      <a href="https://github.com/amidst/toolbox" class="btn">View on GitHub</a>
+      <a href="https://github.com/amidst/toolbox/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/amidst/toolbox/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="contributing-to-amidst-" class="anchor" href="#contributing-to-amidst-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing to AMIDST <a name="extension"></a>
+</h1>
+
+<p>Developers are expected to contribute to this open software following the <a href="https://help.github.com/articles/using-pull-requests/">Fork &amp; Pull</a> collaboration model. Read this <a href="https://guides.github.com/activities/forking/">guide</a> for full details about how to fork a project and make a pull request.</p>
+
+<p>We establish the following categorization for the contributions to the toolbox. Each one is associated with a different collaboration schemes which is also detailed below.  </p>
+
+<h2>
+<a id="a-basic-contributions" class="anchor" href="#a-basic-contributions" aria-hidden="true"><span class="octicon octicon-link"></span></a>(A) Basic Contributions</h2>
+
+<p>They encompass those contributions to the code that do not imply any major change or addition. For example, fixing a bug, adding methods to existing classes, adding new utility classes, etc. This contributions are made through a <a href="https://help.github.com/articles/using-pull-requests/">pull request</a>, which will be examined by the core group of developers of the project. </p>
+
+<h2>
+<a id="b-major-extensions" class="anchor" href="#b-major-extensions" aria-hidden="true"><span class="octicon octicon-link"></span></a>(B) Major Extensions</h2>
+
+<p>They refer to those contributions which aim to include a new functionality in the toolbox. For example, new inference methods, new learning algorithms, new concept-drift detection methods, new PGMs, new links to other toolboxes, etc. These extensions or new functionalities will be integrated as new Maven modules and will be located in the folder <em>[project-root-folder]/extensions/</em>. Then, contributing with a new extension will be based on the following three steps: (i) create a new Maven module using IntelliJ (follow this <a href="https://www.jetbrains.com/idea/help/creating-maven-module.html">link</a> for details); then (ii) code your new algorithm inside this module; and (iii) make a <a href="https://help.github.com/articles/using-pull-requests/">pull request</a> to add the new functionality to the project repository. </p>
+
+<p>All the provided extensions should fulfill the following basic quality requirements to be accepted as extensions by the AMIDST core team. </p>
+
+<ul>
+<li><p>They should contain a readme.txt file detailing the functionality and scope of the extension. It also needs to specify if it is supported by a companion paper, student project, etc.</p></li>
+<li><p>The code should be well documented following <a href="https://en.wikipedia.org/wiki/Javadoc">JavaDoc</a> standards. </p></li>
+<li><p>It has to include <a href="www.junit.org/">JUnit</a> tests which verify the correctness of the results produced by the provided code. </p></li>
+</ul>
+
+<h2>
+<a id="c-use-cases" class="anchor" href="#c-use-cases" aria-hidden="true"><span class="octicon octicon-link"></span></a>(C) Use-Cases</h2>
+
+<p>They refer to those contributions which do not add any specific functionality to the toolbox. They can be seen as examples of how this toolbox can be used. This category might include contributions related to student projects, research papers, industry applications, etc. The AMIDST core team will not supervise the quality of the contributions, this is responsibility of the contributors. They  will be integrated as independent Maven modules and will be placed in a different code repository on github, <a href="https://github.com/amidst/toolbox-use-cases/">https://github.com/amidst/toolbox-use-cases/</a>, where they are expected to be submitted using, again, a <a href="https://help.github.com/articles/using-pull-requests/">pull request</a> approach. </p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/amidst/toolbox">AMIDST Toolbox 1.0</a> is maintained by <a href="https://github.com/amidst">amidst</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-66233470-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>

@@ -2,74 +2,103 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>The AMIDST Toolbox by amidst</title>
+    <title>AMIDST Toolbox 2.0 by amidst</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">The AMIDST Toolbox</h1>
-      <h2 class="project-tagline">A Java library for analysis of massive data streams using probabilistic graphical models</h2>
-      <a href="https://github.com/amidst/core" class="btn">View on GitHub</a>
-      <a href="https://github.com/amidst/core/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/amidst/core/tarball/master" class="btn">Download .tar.gz</a>
+      <h1 class="project-name">AMIDST Toolbox 2.0</h1>
+      <h2 class="project-tagline">A Java Toolbox for Analysis of MassIve Data STreams using Probabilistic Graphical Models</h2>
+      <a href="https://github.com/amidst/toolbox" class="btn">View on GitHub</a>
+      <a href="https://github.com/amidst/toolbox/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/amidst/toolbox/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
       <h1>
-<a id="amidst-toolbox" class="anchor" href="#amidst-toolbox" aria-hidden="true"><span class="octicon octicon-link"></span></a>AMIDST Toolbox</h1>
+<a id="new-release-of-amidst-20" class="anchor" href="#new-release-of-amidst-20" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>New Release of AMIDST 2.0</h1>
 
-<h1></h1>
+<p>We have made a new release of AMIDST 2.0.</p>
 
-<p>Analysis of data streams using expressive and flexible Bayesian networks</p>
-
-<p>This is the repository for the open source code in the amidst project. </p>
-
-<p>Install Java 8 and IntelliJ</p>
-
-<p><a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a></p>
-
-<p><a href="http://www.jetbrains.com/idea/download/">http://www.jetbrains.com/idea/download/</a></p>
-
-<p>In IntelliJ open maven project and point to the pom file. Also you need to point to the Java 8 installation and you ready to rock.</p>
-
-<h1></h1>
+<p>The new features of this release are incorporated in the Core Dynamic module, specifically the Dynamic Inference Engine, 
+including all the inference algorithms for dynamic Bayesian networks. 
+It consists of the implementation of the dynamic versions of HUGIN Exact Inference, 
+Importance Sampling, Variational Message Passing by means of the Factored Frontier algorithm, as well as Dynamic MAP.</p>
 
 <h1>
-<a id="compiling--running-from-the-command-line" class="anchor" href="#compiling--running-from-the-command-line" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compiling &amp; Running from the command line</h1>
+<a id="scope" class="anchor" href="#scope" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scope</h1>
 
-<p>1- Install Maven: <a href="http://maven.apache.org/download.cgi">http://maven.apache.org/download.cgi</a>
-(Download binaries and copy to Applications folder)</p>
+<p>This toolbox offers a collection of scalable and parallel algorithms for inference and learning of both static and dynamic Bayesian 
+networks from streaming data. For example, AMIDST provides parallel multi-core implementations of Bayesian parameter 
+learning, using streaming variational Bayes and variational message passing. Additionally, AMIDST efficiently leverages 
+existing functionalities and algorithms by interfacing to existing software tools such as <a href="http://www.hugin.com">Hugin</a> 
+and <a href="http://moa.cms.waikato.ac.nz">MOA</a>. AMIDST is an open source Java toolbox released under the 
+Apache Software License version 2.0.</p>
 
-<p>2- Modify the file maven_startup.sh (which you find it in the root project folder) and fix the path of your maven (Line 5) and java installation (Line 9).</p>
+<p>The figure below shows a non-exhaustive taxonomy of relevant data mining tools dealing with probabilistic graphical models (PGMs) and data streams. To the best of our knowledge, existing software systems for PGMs only focus on mining stationary data sets, and hence, the main goal of AMIDST is to fill this gap and provide a significant contribution within the areas of PGMs and mining data streams.</p>
 
-<p>3- Create (or modify if already exist) a file ".profile" or ".bash_profile" in you home directory and add the following line,
-which points to file "maven_startup.sh"</p>
+<p align="center">
+<img title="Taxonomy" src="https://amidst.github.io/toolbox/docs/taxonomy.png" width="500">
+</p>
 
-<pre><code>    source &lt;project-folder&gt;/maven_startup.sh
-</code></pre>
+<h1>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation<a name="documentation"></a>
+</h1>
 
-<p>Now after restarting the terminal, mvn should work.</p>
+<ul>
+<li><p><a href="http://amidst.github.io/toolbox/GettingStarted.html">Getting Started!</a> explains how to install the AMIDST toolbox, how this toolbox makes use of Java 8 new functional style programming features, and why it is based on a module based architecture.</p></li>
+<li><p><a href="http://amidst.github.io/toolbox/ToolboxFunctionalities.html">Toolbox Functionalities</a> describes the main functionalities (i.e., data streams, BNs, DBNs, static and dynamic learning and inference engines, etc.) of the AMIDST toolbox.</p></li>
+<li><p><a href="http://amidst.github.io/toolbox/CodeExamples.html">Bayesian networks: Code Examples</a> includes a list of source code examples explaining how to use some functionalities of the AMIDST toolbox.</p></li>
+<li><p><a href="http://amidst.github.io/toolbox/DynamicCodeExamples.html">Dynamic Bayesian networks: Code Examples</a> includes some source code examples of functionalities related to Dynamic Bayesian networks.</p></li>
+<li><p><a href="http://amidst.github.io/toolbox/javadoc/index.html">API JavaDoc</a> of the AMIDST toolbox. </p></li>
+</ul>
 
-<p>4- The script "compile.sh" (which you find it in the root project folder) just compile the whole project and create a .jar file in the ./target folder.</p>
+<h1>
+<a id="scalability" class="anchor" href="#scalability" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scalability</h1>
 
-<p>5- The script "run.sh" (which you find it in the root project folder) should be used to run some class. For example,</p>
+<p>Scalability is a main concern for the AMIDST toolbox. Java 8 functional programming style is used to provide parallel implementations of the algorithms. If more computation capacity is needed to process data streams, AMIDST users can also use more CPU cores. As an example, the following figure shows how the data processing capacity of our toolbox increases given the number of CPU cores when learning an hybrid BN model (including a class variable C, two latent variables (dashed nodes), multinomial (blue nodes) and Gaussian (green nodes) observable variables) using the AMIDST's learning engine. As can be seen, using our variational learning engine, AMIDST toolbox is able to process data in the order of gigabytes (GB) per hour depending on the number of available CPU cores with large and complex PGMs with latent variables. Note that, these experiments were carried out on a Ubuntu Linux server with a x86_64 architecture and 32 cores. The size of the processed data set was measured according to the <a href="www.cs.waikato.ac.nz/ml/weka/">Weka</a>'s ARFF format.</p>
 
-<pre><code>    ./run.sh eu.amidst.core.examples.learning.ParallelMaximumLikelihoodExample
-</code></pre>
+<p align="center">
+<img src="https://amidst.github.io/toolbox/docs/scalability.png" width="800">
+</p>
+
+<h1>
+<a id="publications--use-cases" class="anchor" href="#publications--use-cases" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Publications &amp; Use-Cases</h1>
+
+<p>The following repository <a href="https://github.com/amidst/toolbox-usecases">https://github.com/amidst/toolbox-usecases</a> contains the source code and details about the publications and use-cases using the AMIDST toolbox.</p>
+
+<h1>
+<a id="upcoming-developments" class="anchor" href="#upcoming-developments" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Upcoming Developments</h1>
+
+<p>The AMIDST toolbox is an expanding project and upcoming developments include for instance the ongoing integration of the toolbox in Big Data platforms such as <a href="http://flink.apache.org">Flink</a> and <a href="http://spark.apache.org">Spark</a> to enlarge its scalability capacities. In addition, a new link to <a href="http://static.amidst.eu/upload/dokumenter/Posters/PosterUseR.pdf">R</a> is still in progress which will expand the AMIDST user-base.</p>
+
+<h1>
+<a id="contributing-to-amidst" class="anchor" href="#contributing-to-amidst" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contributing to AMIDST</h1>
+
+<p>AMIDST is an open source toolbox and the end-users are encouraged to upload their contributions (which may include basic contributions, major extensions, and/or use-cases) following the indications given in this <a href="http://amidst.github.io/toolbox/ContributingToAMIDST.html">link</a>.</p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/amidst/core">The AMIDST Toolbox</a> is maintained by <a href="https://github.com/amidst">amidst</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/amidst/toolbox">AMIDST Toolbox 2.0</a> is maintained by <a href="https://github.com/amidst">amidst</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
 
     </section>
 
-  
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-66233470-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
-
