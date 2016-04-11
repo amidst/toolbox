@@ -506,8 +506,15 @@ public class PlateuStructure implements Serializable {
         ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .forEach(var -> {
-                    Node node = this.getNodeOfNonReplicatedVar(var);
+                .map(var -> this.getNodeOfNonReplicatedVar(var))
+                .filter(node -> {
+                    for (Node children: node.getChildren()){
+                        if (isReplicatedVar(children.getMainVariable()))
+                            return true;
+                    }
+                    count[0]++;
+                    return false;
+                }).forEach(node -> {
                     NaturalParameters naturalParametersPosterior = Serialization.deepCopy((NaturalParameters)parameterVector.getVectorByPosition(count[0]));
                     naturalParametersPosterior.substract(this.vmp.getPrior(node));
                     this.vmp.setMessagesFromPast(node,naturalParametersPosterior);

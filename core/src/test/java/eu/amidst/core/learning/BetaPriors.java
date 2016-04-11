@@ -11,6 +11,9 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -34,22 +37,34 @@ public class BetaPriors extends TestCase {
 
         Variable varB = variables.newGaussianVariable("B");
 
+        Variable varC = variables.newGaussianVariable("C");
+
         DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varB);
+        dag.getParentSet(varA).addParent(varC);
+        dag.getParentSet(varC).addParent(varB);
+
 
         BayesianNetwork bn = new BayesianNetwork(dag);
-        bn.randomInitialization(new Random(0));
+        bn.randomInitialization(new Random(2));
 
+        ConditionalLinearGaussian clg = bn.getConditionalDistribution(bn.getVariables().getVariableByName("A"));
+        clg.setCoeffParents(new double[] {1,0.0});
+        clg.setVariance(2);
         System.out.println(bn);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+        DataStream<DataInstance> dataStream  = sampler.sampleToDataStream(300);
 
         SVB svb = new SVB();
+        svb.getPlateuStructure().getVMP().setThreshold(0.0001);
+        svb.getPlateuStructure().getVMP().setMaxIter(1000);
 
-        svb.setWindowsSize(100);
+        svb.setOutput(true);
+        svb.setWindowsSize(300);
         svb.setDAG(dag);
-        svb.setDataStream(sampler.sampleToDataStream(100));
+        svb.setDataStream(dataStream);
 
         svb.runLearning();
 
