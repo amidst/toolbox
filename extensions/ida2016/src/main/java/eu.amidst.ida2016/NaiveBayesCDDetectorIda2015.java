@@ -15,13 +15,15 @@
  *
  */
 
-import eu.amidst.core.conceptdrift.NaiveBayesVirtualConceptDriftDetector;
+
+package eu.amidst.ida2016;
+
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
 /**
- * This example shows how to use the class NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift
+ * This example shows how to use the class eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift
  * detector detailed in
  *
  * <i>Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.</i>
@@ -31,22 +33,25 @@ public class NaiveBayesCDDetectorIda2015 {
     public static void main(String[] args) {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/datosWeka.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+                "datosWeka.arff");
 
         //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DynamicDataContinuous.arff");
 
 
-        //We create a NaiveBayesVirtualConceptDriftDetector object
+        //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
 
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
+        virtualDriftDetector.setSeed(1);
+
         //We set the data which is going to be used
         virtualDriftDetector.setData(data);
 
         //We fix the size of the window
-        int windowSize = 1000;
+        int windowSize = 100;
         virtualDriftDetector.setWindowsSize(windowSize);
 
         //We fix the so-called transition variance
@@ -58,7 +63,7 @@ public class NaiveBayesCDDetectorIda2015 {
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
 
-        virtualDriftDetector.deactivateTransitionMethod();
+        //virtualDriftDetector.deactivateTransitionMethod();
 
         //Some prints
         System.out.print("Month \t");
@@ -76,27 +81,37 @@ public class NaiveBayesCDDetectorIda2015 {
 
         DataOnMemoryListContainer<DataInstance> batch = new DataOnMemoryListContainer(attributes);
         double currentTimeID = 0;
+        double[] meanHiddenVars = new double[virtualDriftDetector.getHiddenVars().size()];;
         for (DataInstance dataInstance : data) {
 
             if (dataInstance.getValue(timeID) != currentTimeID) {
 
+                virtualDriftDetector.setTransitionVariance(0);
+
                 double[] out = null;
                 for (DataOnMemory<DataInstance> minibatch: batch.iterableOverBatches(windowSize)) {
-                    out = virtualDriftDetector.updateModel(minibatch);
-                    virtualDriftDetector.deactivateTransitionMethod();
+                    out= virtualDriftDetector.updateModel(minibatch);
+
+                    //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
+                    for (int i = 0; i < meanHiddenVars.length; i++) {
+                        meanHiddenVars[i] += out[i];
+                    }
                 }
 
                 //System.out.println("seqID , timeID (1st instance)= "+batch.getDataInstance(0).getValue(seqID)+","+batch.getDataInstance(0).getValue(timeID));
                 //System.out.println("seqID , timeID (last instance)= "+batch.getDataInstance(batch.getNumberOfDataInstances()-1).getValue(seqID)+
                 //        ","+batch.getDataInstance(batch.getNumberOfDataInstances()-1).getValue(timeID));
 
-                virtualDriftDetector.activateTransitionMethod();
+                //virtualDriftDetector.activateTransitionMethod();
+                virtualDriftDetector.setTransitionVariance(0.1);
+                virtualDriftDetector.getSvb().applyTransition();
 
                 //We print the output
                 System.out.print(currentTimeID + "\t");
                 System.out.print(countBatch + "\t");
-                for (int i = 0; i < out.length; i++) {
-                    System.out.print(out[i]+"\t");
+                for (int i = 0; i < meanHiddenVars.length; i++) {
+                    System.out.print(meanHiddenVars[i]+"\t");
+                    meanHiddenVars[i]=0;
                 }
                 System.out.println();
                 currentTimeID = dataInstance.getValue(timeID);

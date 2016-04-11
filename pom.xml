@@ -93,6 +93,7 @@
         <module>extensions/cajamar</module>
         <module>extensions/caepia2015</module>
         <module>extensions/ida2015</module>
+        <module>extensions/ida2016</module>
         <module>extensions/scai2015</module>
         <module>extensions/ecml2016</module>
         <module>extensions/uai2016</module>

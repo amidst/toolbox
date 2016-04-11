@@ -15,7 +15,7 @@
  *
  */
 
-import eu.amidst.core.datastream.DataInstance;
+package eu.amidst.ida2016;import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
@@ -36,12 +36,12 @@ public class NaiveBayesCDDetectorIda2015Flink {
 
         long start = System.nanoTime();
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
-        learn.setBatchSize(1000);
+        learn.setBatchSize(100);
         learn.setClassIndex(-1);
         learn.setAttributes(data0.getAttributes());
         learn.setNumberOfGlobalVars(1);
         learn.setTransitionVariance(0.1);
-        learn.setSeed(0);
+        learn.setSeed(1);
 
         learn.initLearning();
         double[] output = new double[NSETS];
