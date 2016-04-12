@@ -19,10 +19,7 @@ package eu.amidst.core.utils;
 
 
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
@@ -146,6 +143,15 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     public void setSeed(int seed) {
         this.seed = seed;
         random = new Random(seed);
+    }
+
+    /**
+     * Samples randomly a data set of size nSamples from this BayesianNetworkSampler.
+     * @param nSamples an {@code int} that represents the number of samples in the data stream.
+     * @return a {@link DataOnMemory} of {@link DataInstance}s.
+     */
+    public DataOnMemory<DataInstance> sampleToDataOnMemory(int nSamples){
+        return this.sampleToDataStream(nSamples).streamOfBatches(nSamples).findFirst().get();
     }
 
     /**

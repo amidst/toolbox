@@ -12,7 +12,7 @@
 package eu.amidst.core.learning;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
@@ -27,7 +27,7 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 4/4/16.
  */
-public class BetaPriors extends TestCase {
+public class ARDPriors extends TestCase {
 
     public static void test() {
 
@@ -55,21 +55,21 @@ public class BetaPriors extends TestCase {
         System.out.println(bn);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        DataStream<DataInstance> dataStream  = sampler.sampleToDataStream(300);
 
         SVB svb = new SVB();
         svb.getPlateuStructure().getVMP().setThreshold(0.0001);
         svb.getPlateuStructure().getVMP().setMaxIter(1000);
 
         svb.setOutput(true);
-        svb.setWindowsSize(300);
+        svb.setWindowsSize(500);
         svb.setDAG(dag);
-        svb.setDataStream(dataStream);
+        svb.initLearning();
 
-        svb.runLearning();
+        for (DataOnMemory<DataInstance> batch: sampler.sampleToDataStream(2000).iterableOverBatches(500)) {
+            svb.updateModel(batch);
+            System.out.println(svb.getLearntBayesianNetwork());
+        }
 
-
-        System.out.println(svb.getLearntBayesianNetwork());
 
     }
 }

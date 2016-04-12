@@ -393,7 +393,6 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return new CompoundVector(nOfParents);
     }
 
-
     @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
@@ -422,10 +421,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return conditionalDistributions;
     }
 
-    /**
+   /**
      * {@inheritDoc}
      */
-/*    @Override
+ /*
+   @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
@@ -447,9 +447,10 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
             conditionalDistributions.add(new EF_NormalGivenOnlyGamma(normalBetai,0,normalBetaiGamma));
 
+            double factor = 1e20;
             EF_Gamma gammaDist = normalBetaiGamma.getDistributionType().newEFUnivariateDistribution();
-            gammaDist.getNaturalParameters().set(0, 1e-6 - 1);
-            gammaDist.getNaturalParameters().set(1, -1e-6);
+            gammaDist.getNaturalParameters().set(0, factor - 1);
+            gammaDist.getNaturalParameters().set(1, -factor);
 
             conditionalDistributions.add(gammaDist);
 

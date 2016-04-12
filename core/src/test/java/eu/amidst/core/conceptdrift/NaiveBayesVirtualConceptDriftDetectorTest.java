@@ -23,10 +23,15 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -104,5 +109,62 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
             }
             System.out.println();
         }
+    }
+
+    @Test
+    public void testHardConceptDrift() throws IOException, ClassNotFoundException {
+
+        Variables variables = new Variables();
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newGaussianVariable("B");
+        Variable varC = variables.newGaussianVariable("C");
+
+        DAG dag = new DAG(variables);
+        dag.getParentSet(varA).addParent(varB);
+        dag.getParentSet(varA).addParent(varC);
+        dag.getParentSet(varC).addParent(varB);
+
+
+        BayesianNetwork bn = new BayesianNetwork(dag);
+        bn.randomInitialization(new Random(2));
+
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+
+
+        int windowSize = 1000;
+        NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+        virtualDriftDetector.setClassIndex(-1);
+        virtualDriftDetector.setData(sampler.sampleToDataOnMemory(1000));
+        virtualDriftDetector.setWindowsSize(windowSize);
+        virtualDriftDetector.setTransitionVariance(0.1);
+        virtualDriftDetector.setNumberOfGlobalVars(1);
+        virtualDriftDetector.initLearning();
+
+
+
+        System.out.print("Batch");
+        for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
+            System.out.print("\t" + hiddenVar.getName());
+        }
+
+        System.out.println();
+        int countBatch = 0;
+
+
+        for (int k = 0; k < 10; k++) {
+            if (k % 3 == 0) {
+                bn.randomInitialization(new Random(k*20));
+                //System.out.println(bn);
+                sampler = new BayesianNetworkSampler(bn);
+            }
+
+            double[] out = virtualDriftDetector.updateModel(sampler.sampleToDataOnMemory(1000));
+                        System.out.print(countBatch + "\t");
+            for (int i = 0; i < out.length; i++) {
+                System.out.print(out[i] + "\t");
+            }
+            System.out.println();
+        }
+
     }
 }
