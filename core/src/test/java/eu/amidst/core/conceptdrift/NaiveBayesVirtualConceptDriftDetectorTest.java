@@ -131,10 +131,11 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
 
-        int windowSize = 1000;
+        int windowSize = 100;
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+        virtualDriftDetector.setSeed(0);
         virtualDriftDetector.setClassIndex(-1);
-        virtualDriftDetector.setData(sampler.sampleToDataOnMemory(1000));
+        virtualDriftDetector.setData(sampler.sampleToDataOnMemory(windowSize));
         virtualDriftDetector.setWindowsSize(windowSize);
         virtualDriftDetector.setTransitionVariance(0.1);
         virtualDriftDetector.setNumberOfGlobalVars(1);
@@ -153,12 +154,12 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
 
         for (int k = 0; k < 10; k++) {
             if (k % 3 == 0) {
-                bn.randomInitialization(new Random(k*20));
+                bn.randomInitialization(new Random(k));
                 //System.out.println(bn);
                 sampler = new BayesianNetworkSampler(bn);
             }
 
-            double[] out = virtualDriftDetector.updateModel(sampler.sampleToDataOnMemory(1000));
+            double[] out = virtualDriftDetector.updateModel(sampler.sampleToDataOnMemory(windowSize));
                         System.out.print(countBatch + "\t");
             for (int i = 0; i < out.length; i++) {
                 System.out.print(out[i] + "\t");
