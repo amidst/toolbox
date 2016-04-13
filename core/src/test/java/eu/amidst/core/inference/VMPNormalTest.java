@@ -42,7 +42,7 @@ public class VMPNormalTest extends TestCase {
 
     public static void test1() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/Munin1.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/Munin1.bn");
         for (int i = 0; i < 10; i++) {
 
             //bn.randomInitialization(new Random(i));

@@ -238,7 +238,7 @@ public class HuginInference implements InferenceAlgorithm, Serializable {
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
-        BNWriterToHugin.saveToHuginFile(bn,"networks/inference.net");
+        BNWriterToHugin.saveToHuginFile(bn,"networks/simulated/inference.net");
 
         Variable DiscreteVar0 = bn.getVariables().getVariableById(0);
         Variable GaussianVar0 = bn.getVariables().getVariableById(1);

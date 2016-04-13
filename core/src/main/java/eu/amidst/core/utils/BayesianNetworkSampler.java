@@ -318,7 +318,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
         Stopwatch watch = Stopwatch.createStarted();
 
-        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork network = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/asia.bn");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(0);
@@ -328,7 +328,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
 
 
-        DataStreamWriter.writeDataToFile(dataStream,"datasetsTests/asisa-samples.arff");
+        DataStreamWriter.writeDataToFile(dataStream,"./datasets/simulated/asisa-samples.arff");
 
         System.out.println(watch.stop());
 

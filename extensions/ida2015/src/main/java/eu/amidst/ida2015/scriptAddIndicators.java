@@ -160,7 +160,7 @@ public final class scriptAddIndicators{
     public static void main(String[] args) {
         try {
             //addIndicatorVarsToCajamar(args[0]);
-            addIndicatorVarsToCajamar("/Users/ana/Documents/core/datasets/dynamicDataOnlyContinuous.arff");
+            addIndicatorVarsToCajamar("datasets/simulated/dynamicDataOnlyContinuous.arff");
         }catch (IOException ex){}
     }
 }

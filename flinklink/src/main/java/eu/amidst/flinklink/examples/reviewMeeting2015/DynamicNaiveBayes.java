@@ -101,7 +101,7 @@ public class DynamicNaiveBayes {
         Boolean includeHidden = Boolean.parseBoolean(args[0]);
 
         //String fileName = "hdfs:///tmp_conceptdrift_data";
-        String fileName = "./datasets/dataFlink/conceptdrift/data";
+        String fileName = "./datasets/simulated//conceptdrift/data";
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 

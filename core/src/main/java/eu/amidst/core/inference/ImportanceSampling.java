@@ -398,7 +398,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/asia.bn");
 
         System.out.println(bn.toString());
 

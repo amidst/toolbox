@@ -39,7 +39,7 @@ public class NormalNormalParentsTest {
     public void testingProbabilities_Normal1NormalParent() throws IOException, ClassNotFoundException  {
 
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         ConditionalLinearGaussian dist = (ConditionalLinearGaussian) testnet.getConditionalDistributions().get(1);
 
@@ -84,7 +84,7 @@ public class NormalNormalParentsTest {
     @Test
     public void testingProbabilities_Normal2NormalParents() throws IOException, ClassNotFoundException  {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_NormalParents.bn");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_NormalParents.bn");
 
         System.out.println(testnet.toString());
 

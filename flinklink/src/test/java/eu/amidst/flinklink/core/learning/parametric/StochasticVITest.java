@@ -43,9 +43,9 @@ public class StochasticVITest extends TestCase {
 
     public static void baseTest(ExecutionEnvironment env, DataStream<DataInstance> data, BayesianNetwork network, int dataSetSize, int batchSize, double error) throws IOException, ClassNotFoundException {
 
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "../datasets/simulated/tmp.arff");
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
         network.getDAG().getVariables().setAttributes(dataFlink.getAttributes());
 
@@ -108,7 +108,7 @@ public class StochasticVITest extends TestCase {
 
 
         //for (int i = 2; i <3; i++) {
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Normal_MultinomialParents.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialParents.bn");
         //bn.randomInitialization(new Random(0));
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);

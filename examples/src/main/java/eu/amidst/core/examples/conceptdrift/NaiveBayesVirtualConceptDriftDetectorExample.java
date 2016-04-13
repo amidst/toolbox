@@ -36,7 +36,7 @@ public class NaiveBayesVirtualConceptDriftDetectorExample {
     public static void main(String[] args) {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasetsTests/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/sea.arff");
 
         //We create a NaiveBayesVirtualConceptDriftDetector object
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();

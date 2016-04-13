@@ -35,7 +35,7 @@ import java.util.Random;
 public class DBNSamplerTest extends TestCase {
 
     public static void test0() throws Exception {
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/HuginCajaMarDefaulterPredictor.dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
         System.out.println(dbn.toString());
@@ -59,7 +59,7 @@ public class DBNSamplerTest extends TestCase {
 
 
     public static void test1() throws Exception {
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/HuginCajaMarDefaulterPredictor.dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
         System.out.println(dbn.toString());
@@ -85,7 +85,7 @@ public class DBNSamplerTest extends TestCase {
 
 
     public static void test2() throws Exception {
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/HuginCajaMarDefaulterPredictor.dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
         System.out.println(dbn.toString());
@@ -120,7 +120,7 @@ public class DBNSamplerTest extends TestCase {
 
     public static void test3() throws Exception {
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/HuginCajaMarDefaulterPredictor.dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
         Multinomial_MultinomialParents dist = dbn.getConditionalDistributionTimeT(dbn.getDynamicVariables().getVariableByName("DEFAULTER"));
         dist.getMultinomial(0).setProbabilities(new double[]{0.99,0.01});

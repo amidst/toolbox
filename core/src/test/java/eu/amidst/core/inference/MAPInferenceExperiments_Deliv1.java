@@ -139,7 +139,7 @@ public class MAPInferenceExperiments_Deliv1 {
         BayesianNetworkGenerator.setNumberOfMultinomialVars(numberOfMultinomials, 2);
         BayesianNetworkGenerator.setNumberOfLinks(numberOfLinks);
 
-        String filename = "./networks/RandomBN_" + Integer.toString(numberOfMultinomials) + "D_" + Integer.toString(numberOfGaussians) + "C_" + Integer.toString(seedNetwork) + "_Seed.bn";
+        String filename = "./networks/simulated/RandomBN_" + Integer.toString(numberOfMultinomials) + "D_" + Integer.toString(numberOfGaussians) + "C_" + Integer.toString(seedNetwork) + "_Seed.bn";
         BayesianNetworkGenerator.generateBNtoFile(numberOfMultinomials,2,numberOfGaussians,numberOfLinks,seedNetwork,filename);
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
 

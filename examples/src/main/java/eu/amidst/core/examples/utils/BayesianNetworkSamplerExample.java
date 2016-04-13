@@ -38,7 +38,7 @@ public class BayesianNetworkSamplerExample {
     public static void main(String[] agrs) throws IOException, ClassNotFoundException {
 
         //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/WasteIncinerator.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/simulated/WasteIncinerator.bn");
 
         //We simply create an BayesianNetworkSampler object, passing to the constructor the BN model.
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -48,6 +48,6 @@ public class BayesianNetworkSamplerExample {
         DataStream<DataInstance> dataStream = sampler.sampleToDataStream(10);
 
         //We finally save the sampled data set to a arff file.
-        DataStreamWriter.writeDataToFile(dataStream, "datasetsTests/sample-WasteIncinerator.arff");
+        DataStreamWriter.writeDataToFile(dataStream, "datasets/simulated/sample-WasteIncinerator.arff");
     }
 }

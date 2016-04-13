@@ -55,7 +55,7 @@ public final class CajaMarModels {
          * 2. Our data is dynamic and is on file, so we create the DataStream using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/syntheticDataCajaMar.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/simulated/syntheticDataCajaMar.arff");
 
 
         /**
@@ -186,7 +186,7 @@ public final class CajaMarModels {
         }
         System.out.println(logProb);
 
-        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networksTests/HuginCajaMarDefaulterPredictor.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/simulated/HuginCajaMarDefaulterPredictor.dbn");
 
     }
     public static void main(String[] args) throws IOException, ClassNotFoundException {

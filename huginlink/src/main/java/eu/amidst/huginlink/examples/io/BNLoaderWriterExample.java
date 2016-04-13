@@ -31,10 +31,10 @@ public class BNLoaderWriterExample {
     public static void main(String[] args) throws Exception {
 
         //Load from Hugin format
-        Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/asia.net");
+        Domain huginBN = BNLoaderFromHugin.loadFromFile("networks/dataWeka/asia.net");
 
         //Save a AMIDST BayesianNetwork to Hugin format
         BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
-        BNWriterToHugin.saveToHuginFile(amidstBN,"networks/tmp.net");
+        BNWriterToHugin.saveToHuginFile(amidstBN,"networks/simulated/tmp.net");
     }
 }

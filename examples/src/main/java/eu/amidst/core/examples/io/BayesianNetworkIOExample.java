@@ -35,7 +35,7 @@ public class BayesianNetworkIOExample {
     public static void main(String[] args) throws Exception {
 
         //We can load a Bayesian network using the static class BayesianNetworkLoader
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests/WasteIncinerator.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/simulated/WasteIncinerator.bn");
 
         //Now we print the loaded model
         System.out.println(bn.toString());
@@ -44,7 +44,7 @@ public class BayesianNetworkIOExample {
         bn.randomInitialization(new Random(0));
 
         //We can save this Bayesian network to using the static class BayesianNetworkWriter
-        BayesianNetworkWriter.saveToFile(bn, "networksTests/tmp.bn");
+        BayesianNetworkWriter.saveToFile(bn, "networks/simulated/tmp.bn");
 
     }
 }
