@@ -47,8 +47,9 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
     @Test
     public void testSea() throws IOException, ClassNotFoundException {
         int windowSize = 1000;
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasetsTests/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/sea.arff");
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+        virtualDriftDetector.setSeed(1);
         virtualDriftDetector.setClassIndex(-1);
         virtualDriftDetector.setData(data);
         virtualDriftDetector.setWindowsSize(windowSize);
@@ -120,9 +121,8 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
-        dag.getParentSet(varA).addParent(varB);
         dag.getParentSet(varA).addParent(varC);
-        dag.getParentSet(varC).addParent(varB);
+        dag.getParentSet(varB).addParent(varC);
 
 
         BayesianNetwork bn = new BayesianNetwork(dag);
@@ -133,7 +133,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
 
         int windowSize = 100;
         NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
-        virtualDriftDetector.setSeed(0);
+        virtualDriftDetector.setSeed(10);
         virtualDriftDetector.setClassIndex(-1);
         virtualDriftDetector.setData(sampler.sampleToDataOnMemory(windowSize));
         virtualDriftDetector.setWindowsSize(windowSize);
@@ -160,11 +160,13 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
             }
 
             double[] out = virtualDriftDetector.updateModel(sampler.sampleToDataOnMemory(windowSize));
-                        System.out.print(countBatch + "\t");
+            System.out.print(countBatch + "\t");
             for (int i = 0; i < out.length; i++) {
                 System.out.print(out[i] + "\t");
             }
             System.out.println();
+            //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
+
         }
 
     }
