@@ -15,8 +15,9 @@
  *
  */
 
-package eu.amidst.ida2016;import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
+package eu.amidst.ida2016;
+
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import org.apache.flink.api.java.ExecutionEnvironment;

@@ -19,6 +19,7 @@
 package eu.amidst.ida2016;
 
 import eu.amidst.core.datastream.*;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
@@ -33,10 +34,13 @@ public class NaiveBayesCDDetectorIda2015 {
     public static void main(String[] args) {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-                "datosWeka.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+        //        "datosWeka.arff");
 
         //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DynamicDataContinuous.arff");
+
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+                "dataWekaUnemploymentRate.arff");
 
 
         //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
@@ -71,12 +75,20 @@ public class NaiveBayesCDDetectorIda2015 {
         for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
             System.out.print("\t" + hiddenVar.getName());
         }
-        System.out.println();
 
         int countBatch = 0;
 
         Attributes attributes = data.getAttributes();
         Attribute timeID = attributes.getTime_id();
+
+        Variable unemploymentRateVar = null;
+        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
+        try {
+            unemploymentRateVar = virtualDriftDetector.getSvb().getDAG().getVariables().getVariableByName(unemploymentRateAttName);
+            System.out.println("\t UnempRate");
+        }catch (UnsupportedOperationException e){}
+
+        System.out.println();
 
 
         DataOnMemoryListContainer<DataInstance> batch = new DataOnMemoryListContainer(attributes);
@@ -98,11 +110,6 @@ public class NaiveBayesCDDetectorIda2015 {
                     }
                 }
 
-                //System.out.println("seqID , timeID (1st instance)= "+batch.getDataInstance(0).getValue(seqID)+","+batch.getDataInstance(0).getValue(timeID));
-                //System.out.println("seqID , timeID (last instance)= "+batch.getDataInstance(batch.getNumberOfDataInstances()-1).getValue(seqID)+
-                //        ","+batch.getDataInstance(batch.getNumberOfDataInstances()-1).getValue(timeID));
-
-                //virtualDriftDetector.activateTransitionMethod();
                 virtualDriftDetector.setTransitionVariance(0.1);
                 virtualDriftDetector.getSvb().applyTransition();
 
@@ -113,6 +120,11 @@ public class NaiveBayesCDDetectorIda2015 {
                     System.out.print(meanHiddenVars[i]+"\t");
                     meanHiddenVars[i]=0;
                 }
+                if(unemploymentRateVar!=null) {
+                    Normal normal = virtualDriftDetector.getLearntBayesianNetwork().getConditionalDistribution(unemploymentRateVar);
+                    System.out.print(normal);
+                }
+
                 System.out.println();
                 currentTimeID = dataInstance.getValue(timeID);
                 batch = new DataOnMemoryListContainer(attributes);

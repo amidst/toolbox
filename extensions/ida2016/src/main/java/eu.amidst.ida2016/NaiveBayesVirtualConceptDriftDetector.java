@@ -167,17 +167,28 @@ public class NaiveBayesVirtualConceptDriftDetector {
         Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
+        List<Variable> hiddenVarsWithUR = new ArrayList<>();
 
         for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-            hiddenVars.add(variables.newGaussianVariable("GlobalHidden_"+i));
+            Variable globalHidden = variables.newGaussianVariable("GlobalHidden_"+i);
+            hiddenVars.add(globalHidden);
+            hiddenVarsWithUR.add(globalHidden);
         }
+
+        Variable unemploymentRateVar = null;
+        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
+        try {
+            unemploymentRateVar = variables.getVariableByName("UNEMPLOYMENT_RATE_ALMERIA");
+            hiddenVarsWithUR.add(unemploymentRateVar);
+        }catch (UnsupportedOperationException e){}
+
 
         Variable classVariable = variables.getVariableByName(className);
 
         DAG dag = new DAG(variables);
 
         for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
-            if (att.getName().equals(className))
+            if (att.getName().equals(className) || att.getName().equals(unemploymentRateAttName))
                 continue;
 
             Variable variable = variables.getVariableByName(att.getName());
@@ -187,13 +198,15 @@ public class NaiveBayesVirtualConceptDriftDetector {
                     dag.getParentSet(variable).addParent(hiddenVars.get(i));
                 }
             }
+            if(unemploymentRateVar!=null)
+                dag.getParentSet(variable).addParent(unemploymentRateVar);
         }
 
-        //System.out.println(dag.toString());
+        System.out.println(dag.toString());
 
         svb = new SVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
+        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVarsWithUR));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(fading);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
