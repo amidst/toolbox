@@ -178,7 +178,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
         Variable unemploymentRateVar = null;
         String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
         try {
-            unemploymentRateVar = variables.getVariableByName("UNEMPLOYMENT_RATE_ALMERIA");
+            unemploymentRateVar = variables.getVariableByName(unemploymentRateAttName);
             hiddenVarsWithUR.add(unemploymentRateVar);
         }catch (UnsupportedOperationException e){}
 

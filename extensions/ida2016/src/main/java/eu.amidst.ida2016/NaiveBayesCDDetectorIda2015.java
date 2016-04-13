@@ -19,7 +19,6 @@
 package eu.amidst.ida2016;
 
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
@@ -34,13 +33,13 @@ public class NaiveBayesCDDetectorIda2015 {
     public static void main(String[] args) {
 
         //We can open the data stream using the static class DataStreamLoader
-        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-        //        "datosWeka.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+                "datosWeka.arff");
 
         //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DynamicDataContinuous.arff");
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-                "dataWekaUnemploymentRate.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+        //        "dataWekaUnemploymentRate.arff");
 
 
         //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
@@ -121,8 +120,7 @@ public class NaiveBayesCDDetectorIda2015 {
                     meanHiddenVars[i]=0;
                 }
                 if(unemploymentRateVar!=null) {
-                    Normal normal = virtualDriftDetector.getLearntBayesianNetwork().getConditionalDistribution(unemploymentRateVar);
-                    System.out.print(normal);
+                    System.out.print(virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(unemploymentRateVar).getAssignment().getValue(unemploymentRateVar)+"\t");
                 }
 
                 System.out.println();

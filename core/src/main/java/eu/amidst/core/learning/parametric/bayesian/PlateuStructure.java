@@ -405,9 +405,11 @@ public class PlateuStructure implements Serializable {
         List<Vector> naturalPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .map(var -> {
-                    NaturalParameters parameter = this.ef_learningmodel.getDistribution(var).getNaturalParameters();
-                    NaturalParameters copy = this.ef_learningmodel.getDistribution(var).createZeroNaturalParameters();
+                .map(var -> getNodeOfNonReplicatedVar(var))
+                .filter(node -> !node.isObserved())
+                .map(node -> {
+                    NaturalParameters parameter = this.ef_learningmodel.getDistribution(node.getMainVariable()).getNaturalParameters();
+                    NaturalParameters copy = this.ef_learningmodel.getDistribution(node.getMainVariable()).createZeroNaturalParameters();
                     copy.copy(parameter);
                     return copy;
                 }).collect(Collectors.toList());
@@ -420,8 +422,10 @@ public class PlateuStructure implements Serializable {
         List<Vector> naturalPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .map(var -> {
-                    EF_UnivariateDistribution qDist = this.getNodeOfNonReplicatedVar(var).getQDist();
+                .map(var -> getNodeOfNonReplicatedVar(var))
+                .filter(node -> !node.isObserved())
+                .map(node -> {
+                    EF_UnivariateDistribution qDist = node.getQDist();
                     NaturalParameters parameter = qDist.getNaturalParameters();
                     NaturalParameters copy = qDist.createZeroNaturalParameters();
                     copy.copy(parameter);
@@ -440,8 +444,10 @@ public class PlateuStructure implements Serializable {
         ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .forEach(var -> {
-                    EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist();
+                .map(var -> getNodeOfNonReplicatedVar(var))
+                .filter(node -> !node.isObserved())
+                .forEach(node -> {
+                    EF_UnivariateDistribution uni = node.getQDist();
                     uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count[0]));
                     uni.fixNumericalInstability();
                     uni.updateMomentFromNaturalParameters();
@@ -461,13 +467,15 @@ public class PlateuStructure implements Serializable {
         ef_learningmodel.getDistributionList().stream()
                 .map(dist -> dist.getVariable())
                 .filter(var -> isNonReplicatedVar(var))
-                .forEach(var -> {
-                    EF_UnivariateDistribution uni = this.getNodeOfNonReplicatedVar(var).getQDist().deepCopy();
+                .map(var -> getNodeOfNonReplicatedVar(var))
+                .filter(node -> !node.isObserved())
+                .forEach(node -> {
+                    EF_UnivariateDistribution uni = node.getQDist().deepCopy();
                     uni.getNaturalParameters().copy(parameterVector.getVectorByPosition(count[0]));
                     uni.fixNumericalInstability();
                     uni.updateMomentFromNaturalParameters();
-                    this.ef_learningmodel.setDistribution(var, uni);
-                    this.getNodeOfNonReplicatedVar(var).setPDist(uni);
+                    this.ef_learningmodel.setDistribution(node.getMainVariable(), uni);
+                    this.getNodeOfNonReplicatedVar(node.getMainVariable()).setPDist(uni);
                     count[0]++;
                 });
     }
