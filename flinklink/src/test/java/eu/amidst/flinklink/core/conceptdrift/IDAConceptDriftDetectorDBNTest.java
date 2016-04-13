@@ -48,7 +48,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(1));
         System.out.println(dbn.toString());
 
@@ -71,8 +71,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
 
 
-        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/dataFlink/conceptdrift/data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data0.arff", false);
+        DataFlinkWriter.writeDataToARFFFolder(data0, "../datasets/simulated/conceptdrift/data0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated//conceptdrift/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
         System.out.println(list);
@@ -87,8 +87,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSampleConceptDrift(dataPrev, i%4==1);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/dataFlink/conceptdrift/data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/simulated/conceptdrift/data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/conceptdrift/data" + i + ".arff", false);
             dataPrev = dataNew;
         }
     }
@@ -117,21 +117,21 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "./networks/dbn1.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn1.dbn");
     }
 
 
     public static void testUpdateN(String networkName, double threshold) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName+".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName+".dbn");
         dbn.randomInitialization(new Random(0));
 
         System.out.println(dbn.toString());
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/dataFlink/conceptdrift/data0.arff", false);
+                "../datasets/simulated/conceptdrift/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         IDAConceptDriftDetectorDBN learn = new IDAConceptDriftDetectorDBN();
@@ -152,7 +152,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
+                    "./datasets/simulated/conceptdrift/data" + i + ".arff", false);
             out = learn.updateModelWithNewTimeSlice(i, dataNew);
             output[i] = out[0];
 
@@ -171,7 +171,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
     public static void createDataSetsDBN2(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/" + networkName + ".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));
 
         for (Variable variable : dbn.getDynamicVariables()) {
@@ -208,8 +208,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
 
 
-        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/dataFlink/conceptdrift/data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data0.arff", false);
+        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/simulated/conceptdrift/data0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/conceptdrift/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
         System.out.println(list);
@@ -256,8 +256,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
                 sampler.setDBN(dbn);
             }
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/dataFlink/conceptdrift/data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/dataFlink/conceptdrift/data" + i + ".arff", false);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/conceptdrift/data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
             dataPrev = dataNew;
         }
     }

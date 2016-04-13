@@ -38,7 +38,7 @@ public class BaseDistributionMultinomialParentsTest {
     @Test
     public void testingProbabilities_MultinomialMultinomialParents() throws IOException, ClassNotFoundException  {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         //Here we had to modify the CPT of the variable E because no smoothing is considered yet
         //Multinomial_MultinomialParents distE = testnet.getConditionalDistribution(testnet.getVariables().getVariableByName("E"));
@@ -78,7 +78,7 @@ public class BaseDistributionMultinomialParentsTest {
     @Test
     public void testingProbabilities_NormalMultinomialParents() throws IOException, ClassNotFoundException  {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_MultinomialParents.bn");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialParents.bn");
 
         System.out.println(testnet.toString());
         System.out.println("\nNormal_MultinomialParents probabilities comparison \n ");
@@ -108,7 +108,7 @@ public class BaseDistributionMultinomialParentsTest {
     @Test
     public void testingProbabilities_NormalMultinomialNormalParents() throws IOException, ClassNotFoundException  {
 
-        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("networks/Normal_MultinomialNormalParents.bn");
+        BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialNormalParents.bn");
 
         System.out.println(testnet.toString());
 

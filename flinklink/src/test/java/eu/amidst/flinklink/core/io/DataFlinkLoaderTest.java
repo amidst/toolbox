@@ -39,7 +39,7 @@ public class DataFlinkLoaderTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
-                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
+                "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
         DataSet<DataInstance> data = dataFlink.getDataSet();
 
         data.print();
@@ -63,7 +63,7 @@ public class DataFlinkLoaderTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
-                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
+                "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
         DataSet<DataOnMemory<DataInstance>> data = dataFlink.getBatchedDataSet(3);
 
         data.print();
@@ -95,7 +95,7 @@ public class DataFlinkLoaderTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlinkWriterTest.test1();
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "./datasets/dataFlink/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../datasets/simulated/tmp.arff", false);
         DataSet<DataInstance> data = dataFlink.getDataSet();
 
         data.print();

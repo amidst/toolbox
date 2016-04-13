@@ -44,7 +44,7 @@ public class ImportanceSamplingHuginTest {
     @Test
     public void test() throws IOException, ClassNotFoundException {
 
-        BayesianNetwork model = BayesianNetworkLoader.loadFromFile("networksTests//IS.bn");
+        BayesianNetwork model = BayesianNetworkLoader.loadFromFile("../networks/simulated/IS.bn");
         System.out.println(model.toString());
         //**************************************************************************************************************
         // MODEL DISTRIBUTIONS
@@ -122,7 +122,7 @@ public class ImportanceSamplingHuginTest {
 
     private static BayesianNetwork getNoisyModel() throws IOException, ClassNotFoundException {
 
-        BayesianNetwork samplingBN = BayesianNetworkLoader.loadFromFile("networksTests//IS.bn");
+        BayesianNetwork samplingBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/IS.bn");
         Variables variables = samplingBN.getVariables();
         Variable A = variables.getVariableByName("A");
         Variable B = variables.getVariableByName("B");

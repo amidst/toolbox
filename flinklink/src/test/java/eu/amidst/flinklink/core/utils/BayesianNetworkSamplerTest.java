@@ -30,7 +30,7 @@ import org.junit.Assert;
 public class BayesianNetworkSamplerTest extends TestCase {
 
     public void test1() throws Exception {
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setBatchSize(2);
@@ -46,7 +46,7 @@ public class BayesianNetworkSamplerTest extends TestCase {
     }
     public void testingAsia() throws Exception {
 
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
 

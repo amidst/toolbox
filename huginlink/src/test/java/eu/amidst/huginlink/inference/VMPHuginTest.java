@@ -36,7 +36,7 @@ public class VMPHuginTest extends TestCase {
 
     public static void testMultinomialBN() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests//asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         System.out.println(bn.toString());
 
@@ -85,7 +85,7 @@ public class VMPHuginTest extends TestCase {
 
     public static void testMultinomialNormalBN() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networksTests//WasteIncinerator.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println(bn.toString());
 

@@ -311,7 +311,7 @@ public class SVBTest extends TestCase {
 
     public static void testAsia() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
 
@@ -343,7 +343,7 @@ public class SVBTest extends TestCase {
 
     public static void testAsia2() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         System.out.println(asianet.toString());
         asianet.randomInitialization(new Random(0));
         System.out.println("\nAsia network \n ");
@@ -382,7 +382,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian0() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("networksTests/Normal.bn");
+        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal.bn");
 
         for (int i = 0; i < 1; i++) {
 
@@ -433,11 +433,11 @@ public class SVBTest extends TestCase {
 
     public static void testWasteIncinerator() throws IOException, ClassNotFoundException{
 
-        String[] bns = {"networksTests/Normal.bn",
-                "networksTests/Normal_1NormalParents.bn",
-                "networksTests/Normal_NormalParents.bn",
-                "networksTests/Normal_MultinomialParents.bn",
-                "networksTests/WasteIncinerator.bn"
+        String[] bns = {"../networks/simulated/Normal.bn",
+                "../networks/simulated/Normal_1NormalParents.bn",
+                "../networks/simulated/Normal_NormalParents.bn",
+                "../networks/simulated/Normal_MultinomialParents.bn",
+                "../networks/simulated/WasteIncinerator.bn"
         };
 
 
@@ -488,7 +488,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian1() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networksTests/Normal_1NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         for (int i = 0; i < 10; i++) {
 
@@ -538,7 +538,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian2() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networksTests/Normal_NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_NormalParents.bn");
 
         int cont=0;
         for (int i = 0; i < 10; i++) {
@@ -585,7 +585,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian3() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networksTests/Normal_MultinomialParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialParents.bn");
 
         for (int i = 0; i < 10; i++) {
 
@@ -630,7 +630,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian4() throws IOException, ClassNotFoundException{
 
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networksTests/Normal_MultinomialNormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialNormalParents.bn");
         int contA=0;
         int contB=0;
 

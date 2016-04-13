@@ -1,4 +1,0 @@
-A,B
-yes,no
-no,yes
-no,yes

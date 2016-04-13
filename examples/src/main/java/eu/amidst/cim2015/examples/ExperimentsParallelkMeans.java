@@ -42,7 +42,7 @@ public class ExperimentsParallelkMeans {
     static boolean sampleData = true;
     static int batchSize = 100;
     static int k = 3;
-    static String pathToFile = "datasetsTests/tmp.arff";
+    static String pathToFile = "datasets/simulated/tmp.arff";
 
     public static int getK() {
         return k;
@@ -148,7 +148,7 @@ public class ExperimentsParallelkMeans {
                 "-DV, 5000, Num of discrete variables\\"+
                 "-k, 2, Num of clusters\\"+
                 "-sampleData, true, Sample arff data (if not path to file must be specified)\\"+
-                "-pathToFile, datasetsTests/tmp.arff,Path to sample file if sampleData is set to false\\";
+                "-pathToFile, datasets/simulated/tmp.arff,Path to sample file if sampleData is set to false\\";
     }
 
     public static void loadOptions() {

@@ -39,7 +39,7 @@ public class Main {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/asia.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -51,10 +51,10 @@ public class Main {
         //Load the sampled data
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "./datasets/simulated/tmp.arff");
 
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/simulated/tmp.arff", false);
 
         SVB svb = new SVB();
         svb.setDAG(asianet.getDAG());

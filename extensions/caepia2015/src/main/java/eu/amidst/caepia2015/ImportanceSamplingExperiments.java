@@ -184,7 +184,7 @@ public class ImportanceSamplingExperiments {
             // CREATION OF RANDOM HYBRID BAYESIAN NETWORK
             //*****************************************************************
 
-            filename = "networks/randomlyGeneratedBN.bn";
+            filename = "networks/simulated/randomlyGeneratedBN.bn";
             BayesianNetworkGenerator.generateBNtoFile(nDiscrete, nStates, nContin, nLinks, seed, filename);
             bn = BayesianNetworkLoader.loadFromFile(filename);
             /*

@@ -32,9 +32,9 @@ public class DataFlinkWriterTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
-                "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
+                "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
 
-        DataFlinkWriter.writeDataToARFFFolder(dataFlink, "./datasets/dataFlink/tmp.arff");
+        DataFlinkWriter.writeDataToARFFFolder(dataFlink, "../datasets/simulated/tmp.arff");
 
     }
 }

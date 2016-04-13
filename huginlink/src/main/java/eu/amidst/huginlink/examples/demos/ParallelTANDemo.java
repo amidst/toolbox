@@ -54,7 +54,7 @@ public class ParallelTANDemo {
         //It needs GBs, so avoid putting this file in a Dropbox folder!!
         //String dataFile = new String("/Users/afa/Pigs.arff");
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/Pigs.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/dataWeka/Pigs.bn");
 
         int sampleSize = 10000;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -90,7 +90,7 @@ public class ParallelTANDemo {
         int nOfVars;
 
         //It may need many GBs, so avoid putting this file in a Dropbox folder!!
-        dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
+        dataFile = new String("./datasets/simulated/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
         BayesianNetworkGenerator.setNumberOfGaussianVars(numContVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(numDiscVars, 2);
         BayesianNetworkGenerator.setSeed(0);
@@ -142,7 +142,7 @@ public class ParallelTANDemo {
         int nOfVars;
 
         // Generate some fake data and write to file
-        dataFile = new String("./datasets/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
+        dataFile = new String("./datasets/simulated/Data_#v" + numDiscVars + "_#s" + sampleSize + ".arff");
         BayesianNetworkGenerator.setNumberOfGaussianVars(numContVars);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(numDiscVars, 2);
         BayesianNetworkGenerator.setSeed(0);

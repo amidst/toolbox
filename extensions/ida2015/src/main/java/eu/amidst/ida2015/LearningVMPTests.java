@@ -78,7 +78,7 @@ public class LearningVMPTests {
         sampler.setHiddenVar(varC);
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
-        DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+        DataStreamWriter.writeDataToFile(data, "./datasets/simulated/tmp.arff");
 
         int windowSize = 10;
 
@@ -557,7 +557,7 @@ public class LearningVMPTests {
     }
 
     public static void testCompareBatchSizes() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         for (int i = 0; i < 1; i++) {
 
@@ -648,7 +648,7 @@ public class LearningVMPTests {
     }
 
     public static void testCompareBatchSizesParallelMode() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         for (int i = 0; i < 1; i++) {
 
@@ -799,7 +799,7 @@ public class LearningVMPTests {
     }
 
     public static void testCompareBatchSizesFadingVMP() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         for (int i = 0; i < 1; i++) {
 
@@ -816,9 +816,9 @@ public class LearningVMPTests {
             //sampler.setMARVar(varB,0.5);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+            DataStreamWriter.writeDataToFile(data, "./datasets/simulated/tmp.arff");
 
-            data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
+            data = DataStreamLoader.openFromFile("./datasets/simulated/tmp.arff");
 
             SVB svb = new SVB();
             svb.setParallelMode(false);
@@ -905,7 +905,7 @@ public class LearningVMPTests {
     }
 
     public static void testCompareBatchSizesFadingML() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         for (int i = 0; i < 1; i++) {
 
@@ -922,9 +922,9 @@ public class LearningVMPTests {
             //sampler.setMARVar(varB,0.5);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            DataStreamWriter.writeDataToFile(data, "./datasets/tmp.arff");
+            DataStreamWriter.writeDataToFile(data, "./datasets/simulated/tmp.arff");
 
-            data = DataStreamLoader.openFromFile("./datasets/tmp.arff");
+            data = DataStreamLoader.openFromFile("./datasets/simulated/tmp.arff");
 
 
             int[] windowsSizes = {1, 2, 10, 100, 1000};
@@ -1001,7 +1001,7 @@ public class LearningVMPTests {
     }
 
     public static void testLogProbOfEvidenceForDiffBatches_WasteIncinerator() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nWaste Incinerator - \n ");
 
@@ -1050,7 +1050,7 @@ public class LearningVMPTests {
     }
 
     public static void testLogProbOfEvidenceForDiffBatches_WasteIncineratorWithLatentVars() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nWaste Incinerator + latent vars - \n ");
 
@@ -1100,7 +1100,7 @@ public class LearningVMPTests {
     }
 
     public static void testLogProbOfEvidenceForDiffBatches_Normal1Normal() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nNormal_1NormalParent - \n ");
@@ -1149,7 +1149,7 @@ public class LearningVMPTests {
     }
 
     public static void testLogProbOfEvidenceForDiffBatches_Normal1Normal_LatentVariable() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/Normal_1NormalParents.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
 
         normalVarBN.randomInitialization(new Random(0));
         System.out.println("\nNormal_1NormalParent - \n ");
@@ -1183,7 +1183,7 @@ public class LearningVMPTests {
     }
 
     public static void testLogProbOfEvidenceForDiffBatches_Asia() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         System.out.println("\nAsia - \n ");
 
@@ -1216,7 +1216,7 @@ public class LearningVMPTests {
     }
 
     public static void testLogProbOfEvidenceForDiffBatches_AsiaLatentVars() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/asia.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         System.out.println("\nAsia - \n ");
 
@@ -1251,7 +1251,7 @@ public class LearningVMPTests {
     }
 
     public static void testParametersForDiffBatchesAndFading_WasteIncinerator() throws IOException, ClassNotFoundException {
-        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("networks/WasteIncinerator.bn");
+        BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nWaste Incinerator - \n ");
 
