@@ -447,7 +447,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
             conditionalDistributions.add(new EF_NormalGivenOnlyGamma(normalBetai,0,normalBetaiGamma));
 
-            double factor = 1e20;
+            double factor = 1e-06;
             EF_Gamma gammaDist = normalBetaiGamma.getDistributionType().newEFUnivariateDistribution();
             gammaDist.getNaturalParameters().set(0, factor - 1);
             gammaDist.getNaturalParameters().set(1, -factor);
