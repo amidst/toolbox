@@ -16,26 +16,31 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>1.0.0</version>
+        <version>0.4.1-beta</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+
+    <groupId>eu.amidst</groupId>
     <artifactId>standardmodels</artifactId>
+    <version>0.4.1-beta</version>
+    
+    
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>0.4.1-beta</version>
         </dependency>
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>1.0.0</version>
+            <version>0.4.1-beta</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>1.0.0</version>
+            <version>0.4.1-beta</version>
         </dependency>
     </dependencies>
     
