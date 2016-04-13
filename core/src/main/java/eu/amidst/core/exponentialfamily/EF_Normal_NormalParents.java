@@ -393,7 +393,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         return new CompoundVector(nOfParents);
     }
 
-    @Override
+    /*@Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
@@ -419,12 +419,11 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
         conditionalDistributions.add(condDist);
 
         return conditionalDistributions;
-    }
+    }*/
 
    /**
      * {@inheritDoc}
      */
- /*
    @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
@@ -464,7 +463,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
 
         return conditionalDistributions;
     }
-*/
+
     public static class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters, Serializable {
 
         /** Represents the serial version ID for serializing the object. */

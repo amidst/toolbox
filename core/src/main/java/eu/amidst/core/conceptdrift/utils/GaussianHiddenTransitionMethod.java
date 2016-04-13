@@ -58,7 +58,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
 
 
         for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfParamaterVariables()){
-
+/*
             if (!paramVariable.isNormalParameter())
                 continue;
 
@@ -71,7 +71,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             prior.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
             prior.fixNumericalInstability();
             prior.updateMomentFromNaturalParameters();
-
+*/
         }
 
 
