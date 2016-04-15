@@ -36,7 +36,7 @@ import java.util.stream.IntStream;
 /**
  * Created by dario on 08/03/16.
  */
-public class TemperatureHumidityExperiments {
+public class BankModelExperiments {
 
     final static int maxTimeStepsHugin=10;
 
@@ -59,10 +59,10 @@ public class TemperatureHumidityExperiments {
             System.out.println("\nIncorrect number of parameters (4 are needed: nTimeSteps, nEvidences, nSamplesIS, seed)");
             System.out.println("Using default values for parameters\n\n");
 
-            nTimeSteps=10;
-            numberOfEvidencesPerModel = 50;
-            nSamplesForIS=10000;
-            seedEvidence=816935;
+            nTimeSteps=50;
+            numberOfEvidencesPerModel = 30;
+            nSamplesForIS=20000;
+            seedEvidence=2795;
         }
         else {
             nTimeSteps = Integer.parseInt(args[0]);
@@ -109,7 +109,7 @@ public class TemperatureHumidityExperiments {
         double[] times_Hugin = new double[numberOfEvidencesPerModel];
 
 
-        TemperatureHumidityDynamicModel model = new TemperatureHumidityDynamicModel();
+        BankSimulatedDynamicModel3 model = new BankSimulatedDynamicModel3();
 
         model.generateModel();
         model.printDAG();
@@ -122,7 +122,7 @@ public class TemperatureHumidityExperiments {
         System.out.println("\nDYNAMIC MODEL \n");
 
 
-        //double probKeepingClassState = 0.90;
+        //double probKeepingClassState = 0.80;
         //model.setProbabilityOfKeepingClass(probKeepingClassState);
 
 
@@ -133,7 +133,7 @@ public class TemperatureHumidityExperiments {
         for (int j = 0; j < numberOfEvidencesPerModel; j++) {
 
             System.out.println("\nEVIDENCE NUMBER "+ j);
-            System.out.println("(only the sensorTemperature and sensorHumidity values are given to the inference methods as evidence)\n");
+            System.out.println("(only the LocalIncomes and LocalExpenses values are given to the inference methods as evidence)\n");
             model.setSeed(randomEvidence.nextInt());
             model.generateEvidence(nTimeSteps);
 
