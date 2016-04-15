@@ -560,7 +560,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             switch (searchAlgorithm) {
                 case VMP:
                     currentModelInference = new VMP();
-                    ((VMP)currentModelInference).setTestELBO(true);
+                    //((VMP)currentModelInference).setTestELBO(true);
                     ((VMP)currentModelInference).setThreshold(0.0001);
                     ((VMP) currentModelInference).setMaxIter(3000);
                     break;
@@ -734,7 +734,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         switch(searchAlgorithm) {
             case VMP:
                 staticModelInference = new VMP();
-                ((VMP)staticModelInference).setTestELBO(true);
+                //((VMP)staticModelInference).setTestELBO(true);
                 ((VMP)staticModelInference).setThreshold(0.0001);
                 ((VMP)staticModelInference).setMaxIter(3000);
                 break;
@@ -1945,7 +1945,14 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 ConditionalDistribution conditionalDistribution1 = Serialization.deepCopy(model.getConditionalDistributionTimeT(dynVariable));
                 Variable staticVar2 = variables.getVariableByName(dynVariable.getName() + "_t" + Integer.toString(i));
                 List<Variable> thisVarParents1 = conditionalDistribution1.getConditioningVariables();
-                thisVarParents1 = thisVarParents1.stream().map(parent -> variables.getVariableByName(parent.getName() + "_t" + Integer.toString(i))).collect(Collectors.toList());
+                thisVarParents1 = thisVarParents1.stream().map(parent -> {
+                    if(parent.getName().contains("_Interface")) {
+                        return variables.getVariableByName(parent.getName().replace("_Interface","_t" + Integer.toString(i-1)));
+                    }
+                    else {
+                        return variables.getVariableByName(parent.getName() + "_t" + Integer.toString(i));
+                    }
+                }).collect(Collectors.toList());
                 conditionalDistribution1.setConditioningVariables(thisVarParents1);
                 conditionalDistribution1.setVar(staticVar2);
                 bn.setConditionalDistribution(staticVar2, conditionalDistribution1);
