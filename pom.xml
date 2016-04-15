@@ -79,6 +79,12 @@
             <organization>University of Almeria, Spain</organization>
             <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
         </developer>
+        <developer>
+            <name>Rafael Cabañas</name>
+            <email>rcabanas@cs.aau.dk</email>
+            <organization>Aalborg University, Denmark</organization>
+            <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
+        </developer>
     </developers>
 
 
@@ -87,16 +93,16 @@
         <module>core</module>
         <module>core-dynamic</module>
         <module>examples</module>
-        <module>flinklink</module>
+        <!--module>flinklink</module-->
         <module>moalink</module>
-        <module>sparklink</module>
+        <!--module>sparklink</module>
         <module>extensions/cajamar</module>
         <module>extensions/caepia2015</module>
         <module>extensions/ida2015</module>
         <module>extensions/scai2015</module>
         <module>extensions/ecml2016</module>
         <module>extensions/uai2016</module>
-        <module>extensions/reviewMeeting2016</module>
+        <module>extensions/reviewMeeting2016</module-->
         <module>standardmodels</module>
         <module>wekalink</module>
     </modules>

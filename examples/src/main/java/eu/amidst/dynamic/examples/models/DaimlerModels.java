@@ -57,7 +57,7 @@ public final class DaimlerModels {
          * 2. Our data is dynamic and is on file, so we create the DataOnDisk using a DynamicDataOnDiskFromFile object.
          * 3. Our data is in Weka format, so we use a WekaDataFileReader.
          */
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/syntheticDataDaimler.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/simulated/syntheticDataDaimler.arff");
 
         /**
          * 1. Once the data is loaded, we create random dynamic variables for some of the attributes (i.e. data columns)
@@ -176,7 +176,7 @@ public final class DaimlerModels {
         DynamicBayesianNetwork dynamicBayesianNetwork = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networksTests/HuginDaimlerLEAcceleration.dbn");
+        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/simulated/HuginDaimlerLEAcceleration.dbn");
     }
 
 

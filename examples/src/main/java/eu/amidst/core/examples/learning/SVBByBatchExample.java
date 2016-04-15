@@ -45,7 +45,7 @@ public class SVBByBatchExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/WasteIncineratorSample.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/WasteIncineratorSample.arff");
 
         //We create a SVB object
         SVB parameterLearningAlgorithm = new SVB();
@@ -65,7 +65,8 @@ public class SVBByBatchExample {
 
         //Then we show how we can perform parameter learning by a sequential updating of data batches.
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(5)){
-            parameterLearningAlgorithm.updateModel(batch);
+            double log_likelhood_of_batch = parameterLearningAlgorithm.updateModel(batch);
+            System.out.println("Log-Likelihood of Batch: "+ log_likelhood_of_batch);
         }
 
         //And we get the model

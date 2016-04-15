@@ -156,7 +156,7 @@ public class DataStreamTest extends TestCase {
 
         ARFFDataReader reader = new ARFFDataReader();
 
-        reader.loadFromFile("datasetsTests/dataWeka/labor.arff");
+        reader.loadFromFile("../datasets/dataWeka/labor.arff");
 
         DataStream<DataInstance> data = new DataOnMemoryFromFile(reader);
 

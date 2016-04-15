@@ -27,7 +27,6 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.learning.ParallelTAN;
-import eu.amidst.standardmodels.Model;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 
 /**
@@ -97,7 +96,6 @@ public class TAN extends Classifier {
             System.out.println(e.getMessage());
         }
 
-        dvmp=null;
         learningAlgorithm = new SVB();
         learningAlgorithm.setDAG(this.dag);
         learningAlgorithm.setDataStream(dataStream);

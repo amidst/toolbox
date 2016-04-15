@@ -39,12 +39,12 @@ public class ReservoirSampleExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/syntheticData.arff");
 
         //ReservoirSampling allows to create a DataOnMemory object containing a unfiorm subsample of the data stream
         DataOnMemory<DataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(100, data);
 
         //We can save this data set to a new file using the static class DataStreamWriter
-        DataStreamWriter.writeDataToFile(data, "datasetsTests/subsample.arff");
+        DataStreamWriter.writeDataToFile(data, "datasets/simulated/subsample.arff");
     }
 }

@@ -46,7 +46,7 @@ public final class ExperimentsParallelML {
     /*Options for batch size comparisons*/
     static boolean parallel = true;
     static boolean sampleData = true;
-    static String pathToFile = "datasetsTests/tmp.arff";
+    static String pathToFile = "datasets/simulated/tmp.arff";
     static int sampleSize = 1000000;
     static int numDiscVars = 5;
     static int numGaussVars = 5;

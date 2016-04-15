@@ -467,7 +467,7 @@ public class ParallelVMP implements InferenceAlgorithm, Sampler {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/Munin1.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/Munin1.bn");
         System.out.println(bn.getNumberOfVars());
         System.out.println(bn.getConditionalDistributions().stream().mapToInt(p->p.getNumberOfParameters()).max().getAsInt());
 

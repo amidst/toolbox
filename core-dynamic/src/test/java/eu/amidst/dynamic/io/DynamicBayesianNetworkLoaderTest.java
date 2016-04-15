@@ -36,7 +36,7 @@ public class DynamicBayesianNetworkLoaderTest {
 
     @Test
     public void test() throws Exception {
-        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("networksTests");
+        DynamicBayesianNetworkLoaderTest.loadAndTestFilesFromFolder("../networks/simulated");
     }
 
     public static void loadAndTestFilesFromFolder(final String folderName) throws Exception {
@@ -49,15 +49,23 @@ public class DynamicBayesianNetworkLoaderTest {
                 String fileName = fileEntry.getName();
                 String fullFileName = folderName + "/" + fileName;
 
+                System.out.println("reading "+fileName);
+
                 if (fileName.endsWith(".dbn")) { //Dynamic BN
 
-                    DynamicBayesianNetwork amidstDBN = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
-                    DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullFileName);
+                    try {
+                        DynamicBayesianNetwork amidstDBN = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
+                        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullFileName);
 
-                    DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
+                        DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
 
-                    if (!amidstDBN.equalDBNs(amidstDBN2, 0.0))
-                        throw new Exception("Dynamic Bayesian network loader for " + fileName + " failed. ");
+                        if (!amidstDBN.equalDBNs(amidstDBN2, 0.0))
+                            throw new Exception("Dynamic Bayesian network loader for " + fileName + " failed. ");
+                    }catch(java.lang.ClassCastException ex){
+                        System.out.println("WARNING: "+fileName+"");
+
+                    }
+
                 }
             }
         }

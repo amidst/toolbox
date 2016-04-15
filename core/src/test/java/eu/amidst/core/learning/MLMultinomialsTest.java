@@ -40,7 +40,7 @@ public class MLMultinomialsTest {
     public void testingMLSequential() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -79,7 +79,7 @@ public class MLMultinomialsTest {
     public void testingMLParallel() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -118,7 +118,7 @@ public class MLMultinomialsTest {
     public void testingMLBatches() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("networksTests/asia.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
