@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.4.1-alpha</version>
+    <version>0.4.1</version>
 
     <name>AmidstToolbox</name>
 
@@ -115,16 +115,7 @@
         <module>core</module>
         <module>core-dynamic</module>
         <module>examples</module>
-        <!--module>flinklink</module-->
         <module>moalink</module>
-        <!--module>sparklink</module>
-        <module>extensions/cajamar</module>
-        <module>extensions/caepia2015</module>
-        <module>extensions/ida2015</module>
-        <module>extensions/scai2015</module>
-        <module>extensions/ecml2016</module>
-        <module>extensions/uai2016</module>
-        <module>extensions/reviewMeeting2016</module-->
         <module>standardmodels</module>
         <module>wekalink</module>
     </modules>
@@ -219,7 +210,6 @@
             </goals>
             <configuration>
               <keyname>1D3E048C</keyname>
-              <!--passphraseServerId>${gpg.keyname}</passphraseServerId-->
             </configuration>
           </execution>
         </executions>
