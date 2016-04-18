@@ -13,13 +13,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.1-beta</version>
+        <version>0.4.1-alpha</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>core</artifactId>
-    <version>0.4.1-beta</version>
+    <version>0.4.1-alpha</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -87,6 +87,12 @@
             <email>antonio.salmeron@ual.es</email>
             <organization>University of Almeria, Spain</organization>
             <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
+        </developer>
+        <developer>
+            <name>Rafael Cabañas</name>
+            <email>rcabanas@cs.aau.dk</email>
+            <organization>Aalborg University, Denmark</organization>
+            <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
         </developer>
     </developers>
 

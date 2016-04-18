@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.4.1-beta</version>
+    <version>0.4.1-alpha</version>
 
     <name>AmidstToolbox</name>
 
@@ -21,6 +21,9 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    
+    
+
 
 
     <scm>
@@ -30,7 +33,6 @@
     </scm>
     
     
-    <!-- local deployment files -->
     <distributionManagement>
         <repository>
             <id>internal.repo</id>
@@ -38,6 +40,16 @@
             <url>file://${project.build.directory}/mvn-repo</url>
         </repository>
     </distributionManagement>
+    
+
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>1.7.6</slf4j.version>
+        <junit.version>4.11</junit.version>
+         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
+        <github.global.server>github</github.global.server>
+    </properties>
 
 
     <developers>
@@ -118,11 +130,7 @@
     </modules>
 
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.6</slf4j.version>
-        <junit.version>4.11</junit.version>
-    </properties>
+
 
     <build>
         <plugins>
@@ -171,7 +179,51 @@
                     <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
                 </configuration>
             </plugin>
+
             
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.11</version>
+                <configuration>
+                    <message>Maven artifacts for ${artifactId}-${version}</message>  <!-- git commit message -->
+                    <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+                    <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+                    <includes><include>**/*</include></includes>
+                    <repositoryName>toolbox</repositoryName>      <!-- github repo name -->
+                    <repositoryOwner>amidst</repositoryOwner>    <!-- github username  -->
+                    <merge>true</merge>
+                </configuration>
+                <executions>
+                    <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+              <keyname>1D3E048C</keyname>
+              <!--passphraseServerId>${gpg.keyname}</passphraseServerId-->
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
             
         </plugins>
     </build>
