@@ -177,17 +177,17 @@
                 <artifactId>site-maven-plugin</artifactId>
                 <version>0.11</version>
                 <configuration>
-                    <message>Maven artifacts for ${artifactId}-${version}</message>  <!-- git commit message -->
-                    <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
-                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
-                    <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+                    <message>Maven artifacts for ${artifactId}-${version}</message>  
+                    <noJekyll>true</noJekyll>                                  
+                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> 
+                    <branch>refs/heads/mvn-repo</branch>                       
                     <includes><include>**/*</include></includes>
-                    <repositoryName>toolbox</repositoryName>      <!-- github repo name -->
-                    <repositoryOwner>amidst</repositoryOwner>    <!-- github username  -->
+                    <repositoryName>toolbox</repositoryName>      
+                    <repositoryOwner>amidst</repositoryOwner>    
                     <merge>true</merge>
                 </configuration>
                 <executions>
-                    <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+
                     <execution>
                         <goals>
                             <goal>site</goal>
