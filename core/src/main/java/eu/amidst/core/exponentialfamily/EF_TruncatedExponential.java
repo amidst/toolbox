@@ -82,6 +82,7 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
         EF_TruncatedExponential copy = new EF_TruncatedExponential(var);
         copy.getNaturalParameters().copy(this.getNaturalParameters());
         copy.getMomentParameters().copy(this.getMomentParameters());
+        return copy;
     }
 
     @Override

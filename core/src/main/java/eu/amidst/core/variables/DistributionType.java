@@ -80,6 +80,23 @@ public abstract class DistributionType  implements Serializable {
         return this.newUnivariateDistribution().toEFUnivariateDistribution();
     }
 
+
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @param <E> the type of elements.
+     * @return an exponential family univariate distribution.
+     */
+
+    /**
+     * Creates a new exponential family univariate distribution with initial natural parameters
+     * @param args, a sequence with the initial natural parameters.
+     * @param <E> the type of elements.
+     * @return
+     */
+    public <E extends EF_UnivariateDistribution> E newEFUnivariateDistribution(double... args) {
+        return newEFUnivariateDistribution();
+    }
+
     /**
      * Creates a new conditional distribution given the input list of parents.
      * @param parents the list of parents.

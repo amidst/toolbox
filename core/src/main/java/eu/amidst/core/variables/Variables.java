@@ -192,6 +192,16 @@ public class Variables implements Iterable<Variable>, Serializable {
         return this.newVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
     }
 
+
+    /**
+     * Creates a new Truncated ([0,1]) Exponential variable from a given name.
+     * @param name a given name.
+     * @return a new Truncated Exponential Variable.
+     */
+    public Variable newTruncatedExponential(String name) {
+        return this.newVariable(name, DistributionTypeEnum.TRUNCATED_EXPONENTIAL, new RealStateSpace(0,1));
+    }
+
     /**
      * Creates a new Variable given an Attribute and a distribution type.
      * @param att an Attribute.
