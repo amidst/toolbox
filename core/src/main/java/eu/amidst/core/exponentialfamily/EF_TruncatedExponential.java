@@ -69,7 +69,7 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
 
     @Override
     public Vector getExpectedParameters() {
-        return null;
+        return this.momentParameters;
     }
 
     @Override
@@ -114,12 +114,12 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
 
     @Override
     public int sizeOfSufficientStatistics() {
-        return 0;
+        return 1;
     }
 
     @Override
     public double computeLogNormalizer() {
-        return 0;
+        return Math.log(Math.exp(this.getNaturalParameters().get(0)));
     }
 
     @Override
@@ -129,6 +129,8 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
 
     @Override
     public SufficientStatistics createInitSufficientStatistics() {
-        return null;
+        SufficientStatistics sufficientStatistics = this.createZeroSufficientStatistics();
+        sufficientStatistics.set(0,0.1);
+        return sufficientStatistics;
     }
 }

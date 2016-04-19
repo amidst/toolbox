@@ -95,7 +95,7 @@ public class DriftSVB extends SVB{
             }).sum();
 
             ef_TExpQ.getNaturalParameters().set(0,
-                    kl_q_pt_1 - kl_q_p0 +
+                    kl_q_p0 - kl_q_pt_1 +
                     this.ef_TExpP.getNaturalParameters().get(0));
             ef_TExpQ.fixNumericalInstability();
             ef_TExpQ.updateMomentFromNaturalParameters();
