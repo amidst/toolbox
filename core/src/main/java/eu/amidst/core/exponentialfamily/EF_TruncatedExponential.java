@@ -104,12 +104,15 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
 
     @Override
     public void updateNaturalFromMomentParameters() {
-
+        throw new UnsupportedOperationException("Not Implemented");
     }
+
 
     @Override
     public void updateMomentFromNaturalParameters() {
+        double delta =this.getNaturalParameters().get(0);
 
+        this.momentParameters.set(0, Math.exp(delta)/(Math.exp(delta)-1) - 1/delta);
     }
 
     @Override
@@ -119,7 +122,8 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
 
     @Override
     public double computeLogNormalizer() {
-        return Math.log(Math.exp(this.getNaturalParameters().get(0)));
+        double delta =this.getNaturalParameters().get(0);
+        return Math.log((Math.exp(delta)-1)/delta);
     }
 
     @Override
