@@ -1,7 +1,9 @@
 
 *.class
 
-# Mobile Tools for Java (J2ME)
+# Mobile Tools for Java (J2MEs
+
+
 .mtj.tmp/
 
 # Package Files #
@@ -72,8 +74,8 @@ Archive 2.zip
 Archive.1.zip
 *.zip
 
-*.arff
-datasets/RandomData.arff
+#*.arff
+#datasets/RandomData.arff
 doc/testEvaluation/*
 huginlib/*
 maven_startup.sh
