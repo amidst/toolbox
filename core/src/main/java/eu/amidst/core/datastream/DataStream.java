@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
  *
  */
-public interface DataStream<E extends DataInstance> extends Iterable<E> {
+public interface DataStream<E extends DataInstance> extends  Iterable<E> {
 
     /**
      * Returns an Attributes object containing the attributes of this DataStream.

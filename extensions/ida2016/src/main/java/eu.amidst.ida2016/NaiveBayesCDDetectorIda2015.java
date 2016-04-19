@@ -22,6 +22,8 @@ import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
+import java.util.stream.IntStream;
+
 /**
  * This example shows how to use the class eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift
  * detector detailed in
@@ -33,13 +35,16 @@ public class NaiveBayesCDDetectorIda2015 {
     public static void main(String[] args) {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-                "datosWeka.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+        //        "datosWeka.arff");
 
         //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DynamicDataContinuous.arff");
 
         //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-        //        "dataWekaUnemploymentRate.arff");
+        //        "dataWekaDummyAttribute1.arff");
+
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+                  "dataWekaUnemploymentRate.arff");
 
 
         //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
@@ -48,7 +53,7 @@ public class NaiveBayesCDDetectorIda2015 {
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
-        virtualDriftDetector.setSeed(1);
+        virtualDriftDetector.setSeed(325);
 
         //We set the data which is going to be used
         virtualDriftDetector.setData(data);
@@ -65,6 +70,8 @@ public class NaiveBayesCDDetectorIda2015 {
 
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
+
+        int[] peakMonths = {2,8,14,20,26,32,38,44,47,50,53,56,59,62,65,68,71,74,77,80,83};
 
         //virtualDriftDetector.deactivateTransitionMethod();
 
@@ -95,19 +102,31 @@ public class NaiveBayesCDDetectorIda2015 {
         double[] meanHiddenVars = new double[virtualDriftDetector.getHiddenVars().size()];;
         for (DataInstance dataInstance : data) {
 
+            if (IntStream.of(peakMonths).anyMatch(x -> x == dataInstance.getValue(timeID)))
+                continue;
+
             if (dataInstance.getValue(timeID) != currentTimeID) {
 
                 virtualDriftDetector.setTransitionVariance(0);
 
-                double[] out = null;
+                double[] out;
                 for (DataOnMemory<DataInstance> minibatch: batch.iterableOverBatches(windowSize)) {
                     out= virtualDriftDetector.updateModel(minibatch);
 
-                    //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
+
                     for (int i = 0; i < meanHiddenVars.length; i++) {
                         meanHiddenVars[i] += out[i];
                     }
                 }
+
+
+                //Remove residuals
+
+                //DataOnMemory<DataInstance> batchNoUR = new DataOnMemoryListContainer<DataInstance>(attributes);
+
+
+
+                System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
                 virtualDriftDetector.setTransitionVariance(0.1);
                 virtualDriftDetector.getSvb().applyTransition();
