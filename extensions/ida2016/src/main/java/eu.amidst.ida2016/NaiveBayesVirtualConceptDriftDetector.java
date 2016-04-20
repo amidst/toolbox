@@ -131,6 +131,8 @@ public class NaiveBayesVirtualConceptDriftDetector {
      */
     public void setTransitionVariance(double transitionVariance) {
         this.transitionVariance = transitionVariance;
+        if(this.svb!=null)
+            ((GaussianHiddenTransitionMethod)this.svb.getTransitionMethod()).setTransitionVariance(transitionVariance);
     }
 
     /**
@@ -160,10 +162,71 @@ public class NaiveBayesVirtualConceptDriftDetector {
         gaussianHiddenTransitionMethod.setFading(fading);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
     }
+
     /**
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
     private void buildGlobalDAG(){
+        Variables variables = new Variables(data.getAttributes());
+        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
+        hiddenVars = new ArrayList<Variable>();
+        List<Variable> hiddenVarsWithUR = new ArrayList<>();
+
+        for (int i = 0; i < this.numberOfGlobalVars ; i++) {
+            Variable globalHidden = variables.newGaussianVariable("GlobalHidden_"+i);
+            hiddenVars.add(globalHidden);
+            hiddenVarsWithUR.add(globalHidden);
+        }
+
+        Variable classVariable = variables.getVariableByName(className);
+
+        DAG dag = new DAG(variables);
+
+        Variable unemploymentRateVar = null;
+        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
+        try {
+            unemploymentRateVar = variables.getVariableByName(unemploymentRateAttName);
+        }catch (UnsupportedOperationException e){}
+
+        for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
+            if (att.getName().equals(className) || att.getName().equals(unemploymentRateAttName))
+                continue;
+
+            Variable variable = variables.getVariableByName(att.getName());
+            dag.getParentSet(variable).addParent(classVariable);
+            if (this.globalHidden) {
+                for (int i = 0; i < this.numberOfGlobalVars ; i++) {
+                    dag.getParentSet(variable).addParent(hiddenVars.get(i));
+                }
+            }
+        }
+
+        System.out.println(dag.toString());
+
+        svb = new SVB();
+        svb.setSeed(this.seed);
+        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVars));
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
+        gaussianHiddenTransitionMethod.setFading(fading);
+        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+        svb.setWindowsSize(this.windowsSize);
+        svb.setDAG(dag);
+
+        svb.setOutput(false);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setThreshold(0.001);
+
+        // svb.setParallelMode(true);
+
+
+
+        svb.initLearning();
+    }
+
+    /**
+     * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
+     */
+    private void buildGlobalDAGWithUR(){
         Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
@@ -237,6 +300,42 @@ public class NaiveBayesVirtualConceptDriftDetector {
                 this.buildGlobalDAG();
                 break;
         }
+    }
+
+    /**
+     * Initialises the class for concept drift detection.
+     */
+    public void initLearningWithUR() {
+        if (classIndex == -1)
+            classIndex = data.getAttributes().getNumberOfAttributes()-1;
+
+
+        switch (this.conceptDriftDetector){
+            case GLOBAL:
+                this.buildGlobalDAGWithUR();
+                break;
+        }
+    }
+
+    /**
+     * Update the model with a new data stream of instances.
+     * @param batch, a <code>DataOnMemory</code> object containing a batch of data instances.
+     * @return An array of double values containing the expected value of the global hidden variables.
+     */
+    public double[] updateModel(DataStream<DataInstance> batch){
+
+        double[] meanHiddenVars = new double[this.getHiddenVars().size()];
+
+        double out[];
+        for (DataOnMemory<DataInstance> minibatch : batch.iterableOverBatches(this.windowsSize)) {
+            out = this.updateModel(minibatch);
+
+
+            for (int i = 0; i < meanHiddenVars.length; i++) {
+                meanHiddenVars[i] += out[i];
+            }
+        }
+        return meanHiddenVars;
     }
 
     /**

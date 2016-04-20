@@ -70,6 +70,26 @@ public class ARFFDataWriter implements DataFileWriter {
     }
 
     /**
+     * Append a given data stream to an ARFF file.
+     * @param dataStream an input {@link DataStream}.
+     * @param path the path of the ARFF file where the data stream will be saved.
+     * @throws IOException in case of an error when writing to file
+     */
+    public static void appendToARFFFile(DataStream<? extends DataInstance> dataStream, String path) throws IOException {
+        FileWriter fw = new FileWriter(path, true);
+
+        dataStream.stream().forEach(e -> {
+            try {
+                fw.write(ARFFDataWriter.dataInstanceToARFFString(dataStream.getAttributes(), e) + "\n");
+            } catch (IOException ex) {
+                throw new UncheckedIOException(ex);
+            }
+        });
+
+        fw.close();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -83,6 +103,14 @@ public class ARFFDataWriter implements DataFileWriter {
     @Override
     public void writeToFile(DataStream<? extends DataInstance> dataStream, String path) throws IOException {
        ARFFDataWriter.writeToARFFFile(dataStream, path);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void appendToFile(DataStream<? extends DataInstance> dataStream, String path) throws IOException {
+        ARFFDataWriter.appendToARFFFile(dataStream, path);
     }
 
     public static String attributeToARFFString(Attribute att){

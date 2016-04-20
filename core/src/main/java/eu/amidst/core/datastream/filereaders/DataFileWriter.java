@@ -41,4 +41,12 @@ public interface DataFileWriter {
      */
     void writeToFile(DataStream<? extends DataInstance> dataStream, String file) throws IOException;
 
+    /**
+     * Append a {@link DataStream} in a given file.
+     * @param dataStream the {@link DataStream} to be written in the file.
+     * @param file a String that represents the name of the file where the data will be written.
+     * @throws IOException in case of an error when writing to file
+     */
+    void appendToFile(DataStream<? extends DataInstance> dataStream, String file) throws IOException;
+
 }
