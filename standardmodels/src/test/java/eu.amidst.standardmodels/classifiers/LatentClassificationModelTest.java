@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.standardmodels.eu.amidst.standardmodels.classifiers;
+package eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;

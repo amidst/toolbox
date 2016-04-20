@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.standardmodels.eu.amidst.standardmodels.classifiers;
+package eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -24,7 +24,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.classifiers.AODE;
+import eu.amidst.standardmodels.classifiers.GaussianDiscriminantAnalysis;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
@@ -32,31 +32,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk on 11/03/16.
+ * Created by rcabanas on 10/03/16.
  */
-public class AODETest extends TestCase {
-    protected AODE aode;
+public class GaussianDiscriminantAnalysisTest extends TestCase {
+
+    protected GaussianDiscriminantAnalysis gda;
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
-        data = DataSetGenerator.generate(1234,500, 5, 0);
 
-        System.out.println(data.getAttributes().toString());
+        data = DataSetGenerator.generate(1234,500, 1, 3);
 
-        String classVarName = "DiscreteVar0";
+        gda = new GaussianDiscriminantAnalysis(data.getAttributes());
+        gda.setDiagonal(false);
+        gda.setClassName("DiscreteVar0");
 
-        aode = new AODE(data.getAttributes());
-        aode.setClassName(classVarName);
-
-        if(aode.isValidConfiguration()) {
-            aode.learnModel(data);
+        if(gda.isValidConfiguration()) {
+            gda.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-
-                aode.updateModel(batch);
+                gda.updateModel(batch);
             }
-            System.out.println(aode.getModel());
-            System.out.println(aode.getDAG());
+
         }
+
+
 
 
     }
@@ -67,18 +66,34 @@ public class AODETest extends TestCase {
     public void testClassVariable() {
         boolean passedTest = true;
 
-        Variable classVar = aode.getClassVar();
+        Variable classVar = gda.getClassVar();
 
         // class variable is a multinomial
         boolean isMultinomial = classVar.isMultinomial();
 
         //has not parents
-        boolean noParents = aode.getDAG().getParentSet(classVar).getParents().isEmpty();
+        boolean noParents = gda.getDAG().getParentSet(classVar).getParents().isEmpty();
 
-        assertTrue(isMultinomial && noParents);
+        //all the attributes are their children
+        boolean allAttrChildren = gda.getModel().getVariables().getListOfVariables().stream()
+                .filter(v-> !v.equals(classVar))
+                .allMatch(v -> gda.getDAG().getParentSet(v).contains(classVar));
+
+        assertTrue(isMultinomial && noParents && allAttrChildren);
     }
 
 
+
+    public void testAttributes(){
+        Variable classVar = gda.getClassVar();
+
+        // the attributes have a single parent
+        boolean numParents = gda.getModel().getVariables().getListOfVariables().stream()
+                .filter(v-> !v.equals(classVar))
+                .allMatch(v -> gda.getDAG().getParentSet(v).getNumberOfParents()==1);
+
+        assertTrue(!gda.isDiagonal() || numParents);
+    }
 
 
 
@@ -91,11 +106,11 @@ public class AODETest extends TestCase {
 
         for(DataInstance d : dataTest) {
 
-            double realValue = d.getValue(aode.getClassVar());
+            double realValue = d.getValue(gda.getClassVar());
             double predValue;
 
-            d.setValue(aode.getClassVar(), Utils.missingValue());
-            Multinomial posteriorProb = aode.predict(d);
+            d.setValue(gda.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = gda.predict(d);
 
 
             double[] values = posteriorProb.getProbabilities();
@@ -110,9 +125,15 @@ public class AODETest extends TestCase {
 
 
         }
-        assertTrue(hits==9);
+
+
+        System.out.println(hits);
+        assertTrue(hits==10);
 
 
     }
+
+
+
 
 }

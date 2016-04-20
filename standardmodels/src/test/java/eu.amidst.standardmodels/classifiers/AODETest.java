@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.standardmodels.eu.amidst.standardmodels.classifiers;
+package eu.amidst.standardmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -24,7 +24,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.standardmodels.classifiers.HODE;
+import eu.amidst.standardmodels.classifiers.AODE;
 import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
@@ -32,30 +32,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by ana@cs.aau.dk/rcabanas on 11/03/16.
+ * Created by ana@cs.aau.dk on 11/03/16.
  */
-public class HODETest extends TestCase{
-    protected HODE hode;
+public class AODETest extends TestCase {
+    protected AODE aode;
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
-        data = DataSetGenerator.generate(1234,500, 2, 10);
+        data = DataSetGenerator.generate(1234,500, 5, 0);
 
         System.out.println(data.getAttributes().toString());
 
         String classVarName = "DiscreteVar0";
 
-        hode = new HODE(data.getAttributes());
-        hode.setClassName(classVarName);
+        aode = new AODE(data.getAttributes());
+        aode.setClassName(classVarName);
 
-        if(hode.isValidConfiguration()) {
-            hode.learnModel(data);
+        if(aode.isValidConfiguration()) {
+            aode.learnModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                hode.updateModel(batch);
+                aode.updateModel(batch);
             }
-            System.out.println(hode.getModel());
-            System.out.println(hode.getDAG());
+            System.out.println(aode.getModel());
+            System.out.println(aode.getDAG());
         }
 
 
@@ -67,35 +67,18 @@ public class HODETest extends TestCase{
     public void testClassVariable() {
         boolean passedTest = true;
 
-        Variable classVar = hode.getClassVar();
+        Variable classVar = aode.getClassVar();
 
         // class variable is a multinomial
         boolean isMultinomial = classVar.isMultinomial();
 
         //has not parents
-        boolean noParents = hode.getDAG().getParentSet(classVar).getParents().isEmpty();
+        boolean noParents = aode.getDAG().getParentSet(classVar).getParents().isEmpty();
 
-        //all the attributes are their children
-        boolean allAttrChildren = hode.getModel().getVariables().getListOfVariables().stream()
-                .filter(v-> !v.equals(classVar))
-                .allMatch(v -> hode.getDAG().getParentSet(v).contains(classVar));
-
-        assertTrue(isMultinomial && noParents && allAttrChildren);
+        assertTrue(isMultinomial && noParents);
     }
 
 
-
-    public void testAttributes(){
-        Variable classVar = hode.getClassVar();
-
-        // the attributes have two parents
-        boolean numParents = hode.getModel().getVariables().getListOfVariables().stream()
-                .filter(v-> !v.equals(classVar))
-                .filter(v-> !v.equals(hode.getModel().getVariables().getVariableByName("superParentVar")))
-                .allMatch(v -> hode.getDAG().getParentSet(v).getNumberOfParents()==2);
-
-        assertTrue(numParents);
-    }
 
 
 
@@ -108,11 +91,11 @@ public class HODETest extends TestCase{
 
         for(DataInstance d : dataTest) {
 
-            double realValue = d.getValue(hode.getClassVar());
+            double realValue = d.getValue(aode.getClassVar());
             double predValue;
 
-            d.setValue(hode.getClassVar(), Utils.missingValue());
-            Multinomial posteriorProb = hode.predict(d);
+            d.setValue(aode.getClassVar(), Utils.missingValue());
+            Multinomial posteriorProb = aode.predict(d);
 
 
             double[] values = posteriorProb.getProbabilities();
@@ -127,8 +110,7 @@ public class HODETest extends TestCase{
 
 
         }
-
-        assertTrue(hits==10);
+        assertTrue(hits==9);
 
 
     }
