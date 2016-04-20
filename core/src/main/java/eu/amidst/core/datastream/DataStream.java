@@ -20,6 +20,7 @@ package eu.amidst.core.datastream;
 import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 //TODO: Which the index of the variables TIME_ID and SEQ_ID
@@ -115,6 +116,15 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
      */
     default Stream<DataOnMemory<E>> parallelStreamOfBatches(int batchSize){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.streamOfBatches(batchSize), 1);
+    }
+
+
+    /**
+     * Returns a {@link DataOnMemory} object containing the data instances of the stream.
+     * @return A {@link DataOnMemory} object.
+     */
+    default DataOnMemory<E> toDataOnMemory(){
+        return new DataOnMemoryListContainer<E>(this.getAttributes(),this.stream().collect(Collectors.toList()));
     }
 
 }

@@ -15,11 +15,18 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
 import eu.amidst.core.exponentialfamily.MomentParameters;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by andresmasegosa on 14/4/16.
@@ -32,7 +39,7 @@ public class DriftSVB extends SVB{
 
     Variable truncatedExpVar;
 
-    boolean firstBatch=false;
+    boolean firstBatch=true;
 
     CompoundVector posteriorT_1=null;
 
@@ -44,17 +51,37 @@ public class DriftSVB extends SVB{
     @Override
     public void initLearning() {
         super.initLearning();
-        truncatedExpVar = this.getDAG().getVariables().newTruncatedExponential("TruncatedExponentialVar");
+        truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
         this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(0.1);
         this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(0.1);
-        firstBatch=false;
+        firstBatch=true;
         prior = this.plateuStructure.getPlateauNaturalParameterPrior();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BayesianNetwork getLearntBayesianNetwork() {
+
+        CompoundVector prior = this.plateuStructure.getPlateauNaturalParameterPrior();
+
+        this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
+
+        BayesianNetwork learntBN =  new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+
+        this.updateNaturalParameterPrior(prior);
+
+        return learntBN;
+
+    }
+
     public double updateModelWithConceptDrift(DataOnMemory<DataInstance> batch) {
+
+        this.plateuStructure.setEvidence(batch.getList());
+
         if (firstBatch){
             firstBatch=false;
-            this.plateuStructure.setEvidence(batch.getList());
             this.plateuStructure.runInference();
 
             posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
@@ -69,7 +96,7 @@ public class DriftSVB extends SVB{
             //Messages for TExp to Theta
             double lambda = this.ef_TExpQ.getMomentParameters().get(0);
             CompoundVector newPrior = Serialization.deepCopy(prior);
-            prior.multiplyBy(1 - lambda);
+            newPrior.multiplyBy(1 - lambda);
             CompoundVector newPosterior = Serialization.deepCopy(posteriorT_1);
             newPosterior.multiplyBy(lambda);
             newPrior.sum(newPosterior);
@@ -78,6 +105,9 @@ public class DriftSVB extends SVB{
             //Standard Messages
             this.plateuStructure.getVMP().setMaxIter(10);
             this.plateuStructure.runInference();
+
+            //Compute elbo
+            double newELBO = this.plateuStructure.getLogProbabilityOfEvidence();
 
             //Messages to TExp
             this.plateuStructure.updateNaturalParameterPrior(this.prior);
@@ -95,27 +125,31 @@ public class DriftSVB extends SVB{
             }).sum();
 
             ef_TExpQ.getNaturalParameters().set(0,
-                    kl_q_p0 - kl_q_pt_1 +
+                    - kl_q_pt_1 + kl_q_p0 +
                     this.ef_TExpP.getNaturalParameters().get(0));
             ef_TExpQ.fixNumericalInstability();
             ef_TExpQ.updateMomentFromNaturalParameters();
 
 
-            //Compute elbo
-            double newELBO = this.plateuStructure.getLogProbabilityOfEvidence();
             //Elbo component assocaited to the truncated exponential.
             newELBO-=this.ef_TExpQ.kl(this.ef_TExpP.getNaturalParameters(),this.ef_TExpP.computeLogNormalizer());
 
             if (!Double.isNaN(elbo) &&  newELBO<elbo){
                 new IllegalStateException("Non increasing lower bound");
             }
-            if (!Double.isNaN(elbo) && (newELBO-elbo)/elbo<this.plateuStructure.getVMP().getThreshold()){
+            double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
+
+            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
+
+            if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
             }
 
+            elbo=newELBO;
             niter++;
         }
 
+        posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
 
         return elbo;
@@ -127,7 +161,44 @@ public class DriftSVB extends SVB{
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+
+
+
+            BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
+
+            System.out.println(oneNormalVarBN);
+            int batchSize = 1000;
+
+
+            DriftSVB svb = new DriftSVB();
+            svb.setWindowsSize(batchSize);
+            svb.setSeed(0);
+            VMP vmp = svb.getPlateuStructure().getVMP();
+            vmp.setOutput(false);
+            vmp.setTestELBO(true);
+            vmp.setMaxIter(1000);
+            vmp.setThreshold(0.0001);
+
+            svb.setDAG(oneNormalVarBN.getDAG());
+
+            svb.initLearning();
+
+        for (int i = 0; i < 10; i++) {
+
+            if (i%3==0) {
+                oneNormalVarBN.randomInitialization(new Random(i));
+                System.out.println(oneNormalVarBN);
+            }
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
+            sampler.setSeed(i);
+
+            svb.updateModelWithConceptDrift(sampler.sampleToDataStream(batchSize).toDataOnMemory());
+
+            System.out.println(svb.getLogMarginalProbability());
+            System.out.println(svb.getLearntBayesianNetwork());
+        }
 
     }
 }

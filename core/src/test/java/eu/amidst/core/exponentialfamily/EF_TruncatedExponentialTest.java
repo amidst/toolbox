@@ -31,7 +31,11 @@ public class EF_TruncatedExponentialTest extends TestCase {
         assertEquals(dist.getMomentParameters().get(0),0.4166668,0.01);
         assertEquals(dist.getMomentParameters().get(0),dist.getExpectedParameters().get(0),0.0);
 
-    }
 
+        dist.getNaturalParameters().set(0,100);
+        dist.updateMomentFromNaturalParameters();
+        System.out.println(dist.getExpectedParameters().get(0));
+
+    }
 
 }
