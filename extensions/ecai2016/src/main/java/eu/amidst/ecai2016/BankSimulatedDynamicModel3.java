@@ -18,7 +18,7 @@
 package eu.amidst.ecai2016;
 
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
@@ -35,17 +35,17 @@ import java.util.stream.IntStream;
 /**
  * Created by dario on 24/02/16.
  */
-public class TemperatureHumidityDynamicModel {
+public class BankSimulatedDynamicModel3 {
 
     private DynamicBayesianNetwork model;
 
     private List<Variable> observableVars;
 
-    private int seed=23664;
+    private int seed=34943;
 
     private Random random;
 
-    private String classVarName = "Season";
+    private String classVarName = "PersonalFinancialSituation";
 
     private List<DynamicAssignment> observableEvidence;
 
@@ -67,15 +67,15 @@ public class TemperatureHumidityDynamicModel {
         random = new Random(seed);
 
         try {
-            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/simulated/TemparatureHumidtyNetworks.dbn");
+            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/simulated/BankSimulatedNetwork4.dbn");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
         observableVars = new ArrayList<>();
-        observableVars.add(model.getDynamicVariables().getVariableByName("sensorTemperature"));
-        observableVars.add(model.getDynamicVariables().getVariableByName("sensorHumidity"));
+        observableVars.add(model.getDynamicVariables().getVariableByName("LocalIncomes"));
+        observableVars.add(model.getDynamicVariables().getVariableByName("LocalExpenses"));
 
     }
 
@@ -140,8 +140,8 @@ public class TemperatureHumidityDynamicModel {
             DynamicAssignment dynamicAssignmentNoClass = new HashMapDynamicAssignment(dynamicAssignment.getVariables().size()-1);
             ((HashMapDynamicAssignment)dynamicAssignmentNoClass).setTimeID((int)dynamicAssignment.getTimeID());
             dynamicAssignment.getVariables().stream()
-                .filter(variable -> !variable.equals(this.getClassVariable()))
-                .forEach(variable -> dynamicAssignmentNoClass.setValue(variable,dynamicAssignment.getValue(variable)));
+                    .filter(variable -> !variable.equals(this.getClassVariable()))
+                    .forEach(variable -> dynamicAssignmentNoClass.setValue(variable,dynamicAssignment.getValue(variable)));
             evidenceNoClass.add(dynamicAssignmentNoClass);
         });
 
@@ -199,7 +199,7 @@ public class TemperatureHumidityDynamicModel {
     }
 
     public static void main(String[] args) {
-        TemperatureHumidityDynamicModel hiddenModel = new TemperatureHumidityDynamicModel();
+        BankSimulatedDynamicModel3 hiddenModel = new BankSimulatedDynamicModel3();
 
         hiddenModel.generateModel();
 
@@ -220,12 +220,13 @@ public class TemperatureHumidityDynamicModel {
 
 
         System.out.println("\nEVIDENCE");
-        List<DynamicAssignment> evidence = hiddenModel.generateEvidence(1000);
-
+        List<DynamicAssignment> evidence = hiddenModel.generateEvidence(100);
         evidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(hiddenModel.observableVars)));
+
+        List<DynamicAssignment> fullEvidence = hiddenModel.getFullEvidence();
+        fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(hiddenModel.model.getDynamicVariables().getListOfDynamicVariables())));
 
 
 
     }
 }
-

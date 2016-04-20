@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
@@ -35,17 +35,17 @@ import java.util.stream.IntStream;
 /**
  * Created by dario on 24/02/16.
  */
-public class DaimlerSimulatedDynamicModel {
+public class BankSimulatedDynamicModel {
 
     private DynamicBayesianNetwork model;
 
     private List<Variable> observableVars;
 
-    private int seed=23664;
+    private int seed=296718;
 
     private Random random;
 
-    private String classVarName = "LaneChange";
+    private String classVarName = "Defaulter";
 
     private List<DynamicAssignment> observableEvidence;
 
@@ -67,15 +67,15 @@ public class DaimlerSimulatedDynamicModel {
         random = new Random(seed);
 
         try {
-            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/DaimlerSimulatedNetwork.dbn");
+            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/simulated/BankSimulatedNetwork.dbn");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
         observableVars = new ArrayList<>();
-        observableVars.add(model.getDynamicVariables().getVariableByName("sensorVelocity1"));
-        observableVars.add(model.getDynamicVariables().getVariableByName("sensorVelocity2"));
+        observableVars.add(model.getDynamicVariables().getVariableByName("AccountBalance"));
+        observableVars.add(model.getDynamicVariables().getVariableByName("CreditRepayment"));
 
     }
 
@@ -199,7 +199,7 @@ public class DaimlerSimulatedDynamicModel {
     }
 
     public static void main(String[] args) {
-        DaimlerSimulatedDynamicModel hiddenModel = new DaimlerSimulatedDynamicModel();
+        BankSimulatedDynamicModel hiddenModel = new BankSimulatedDynamicModel();
 
         hiddenModel.generateModel();
 
@@ -224,7 +224,9 @@ public class DaimlerSimulatedDynamicModel {
 
         evidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(hiddenModel.observableVars)));
 
+        List<DynamicAssignment> fullEvidence = hiddenModel.getFullEvidence();
 
+        fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(hiddenModel.model.getDynamicVariables().getListOfDynamicVariables())));
 
     }
 }
