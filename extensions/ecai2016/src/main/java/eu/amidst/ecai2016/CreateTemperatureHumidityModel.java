@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import eu.amidst.core.distribution.*;
 import eu.amidst.core.variables.Variable;
@@ -19,7 +19,6 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Created by andresmasegosa on 31/3/16.

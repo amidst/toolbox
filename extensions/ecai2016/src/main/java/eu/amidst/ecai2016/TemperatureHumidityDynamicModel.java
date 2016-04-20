@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;

@@ -15,18 +15,15 @@
  *
  */
 
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import COM.hugin.HAPI.*;
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.DynamicMAPInference;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.dynamic.utils.DataSetGenerator;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
 

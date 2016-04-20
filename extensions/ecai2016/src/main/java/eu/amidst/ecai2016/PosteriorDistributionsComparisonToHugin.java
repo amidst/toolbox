@@ -1,4 +1,4 @@
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import COM.hugin.HAPI.*;
 import eu.amidst.core.distribution.UnivariateDistribution;
@@ -17,8 +17,6 @@ import eu.amidst.huginlink.converters.BNConverterToHugin;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 /**
  * Created by dario on 08/03/16.
