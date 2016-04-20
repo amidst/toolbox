@@ -139,7 +139,7 @@ public class DriftSVB extends SVB{
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
-            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
+            //System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
 
             if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
@@ -166,24 +166,24 @@ public class DriftSVB extends SVB{
 
 
 
-            BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
+        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
 
-            System.out.println(oneNormalVarBN);
-            int batchSize = 1000;
+        System.out.println(oneNormalVarBN);
+        int batchSize = 1000;
 
 
-            DriftSVB svb = new DriftSVB();
-            svb.setWindowsSize(batchSize);
-            svb.setSeed(0);
-            VMP vmp = svb.getPlateuStructure().getVMP();
-            vmp.setOutput(false);
-            vmp.setTestELBO(true);
-            vmp.setMaxIter(1000);
-            vmp.setThreshold(0.0001);
+        DriftSVB svb = new DriftSVB();
+        svb.setWindowsSize(batchSize);
+        svb.setSeed(0);
+        VMP vmp = svb.getPlateuStructure().getVMP();
+        vmp.setOutput(false);
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(1000);
+        vmp.setThreshold(0.0001);
 
-            svb.setDAG(oneNormalVarBN.getDAG());
+        svb.setDAG(oneNormalVarBN.getDAG());
 
-            svb.initLearning();
+        svb.initLearning();
 
         for (int i = 0; i < 10; i++) {
 
@@ -191,6 +191,7 @@ public class DriftSVB extends SVB{
                 oneNormalVarBN.randomInitialization(new Random(i));
                 System.out.println(oneNormalVarBN);
             }
+
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
             sampler.setSeed(i);
 
@@ -198,6 +199,7 @@ public class DriftSVB extends SVB{
 
             System.out.println(svb.getLogMarginalProbability());
             System.out.println(svb.getLearntBayesianNetwork());
+
         }
 
     }
