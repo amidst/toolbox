@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
@@ -29,7 +29,6 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;

@@ -97,8 +97,6 @@ public class FactorAnalysisTest extends TestCase {
 
         if(params[0] == -0.11391269298981004 && params[1] == 47.58199351242742)
             passed = true;
-
-
         assertTrue(passed);
 
 

@@ -125,4 +125,9 @@ public class SVBFading implements BayesianParameterLearningAlgorithm, FadingLear
     public void setOutput(boolean activateOutput) {
         svb.setOutput(activateOutput);
     }
+
+    @Override
+    public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
+        return this.svb.predictedLogLikelihood(batch);
+    }
 }

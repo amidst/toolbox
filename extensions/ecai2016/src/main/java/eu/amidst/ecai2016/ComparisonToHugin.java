@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import COM.hugin.HAPI.*;
 import eu.amidst.core.models.BayesianNetwork;

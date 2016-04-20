@@ -66,7 +66,6 @@ public abstract class DynamicClassifier extends DynamicModel{
     /**
      * Method to set the class variable. Note that it should be multinomial
      * @param classVar object of the type {@link Variable} indicating which is the class variable
-     * @throws WrongConfigurationException is thrown when the variable is not a multinomial.
      */
     public void setClassVar(Variable classVar){
 

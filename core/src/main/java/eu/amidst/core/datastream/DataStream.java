@@ -21,6 +21,8 @@ import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
 import java.util.Iterator;
 import java.util.stream.Collectors;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 //TODO: Which the index of the variables TIME_ID and SEQ_ID
@@ -37,7 +39,7 @@ import java.util.stream.Stream;
  * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
  *
  * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
- *
+ *<
  */
 public interface DataStream<E extends DataInstance> extends Iterable<E> {
 
@@ -71,6 +73,92 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
      * @return a valid Java stream of DataInstance objects to be processed sequentially.
      */
     Stream<E> stream();
+
+
+    /**
+     * Returns a data stream consisting of the elements of this stream that match
+     * the given predicate.
+     *
+     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
+     * operation</a>.
+     *
+     * @param predicate a <a href="package-summary.html#NonInterference">non-interfering</a>,
+     *                  <a href="package-summary.html#Statelessness">stateless</a>
+     *                  predicate to apply to each element to determine if it
+     *                  should be included
+     * @return the new stream
+     */
+    default DataStream<E> filter(Predicate<? super E> predicate){
+        return new DataStream<E>() {
+
+            @Override
+            public Attributes getAttributes() {
+                return this.getAttributes();
+            }
+
+            @Override
+            public void close() {
+                this.close();
+            }
+
+            @Override
+            public boolean isRestartable() {
+                return this.isRestartable();
+            }
+
+            @Override
+            public void restart() {
+                this.restart();
+            }
+
+            @Override
+            public Stream<E> stream() {
+                return this.stream().filter(predicate);
+            }
+        };
+    }
+
+
+    /**
+     * Returns a data stream consisting of the results of applying the given
+     * function to the elements of this stream.
+     *
+     * <p>This is an <a href="package-summary.html#StreamOps">intermediate
+     * operation</a>.
+     *
+     * @param mapper a <a href="package-summary.html#NonInterference">non-interfering</a>,
+     *               <a href="package-summary.html#Statelessness">stateless</a>
+     *               function to apply to each element
+     * @return the new data stream
+     */
+    default <R extends DataInstance> DataStream<R> map(Function<? super E, ? extends R> mapper){
+        return new DataStream<R>() {
+            @Override
+            public Attributes getAttributes() {
+                return this.getAttributes();
+            }
+
+            @Override
+            public void close() {
+                this.close();
+            }
+
+            @Override
+            public boolean isRestartable() {
+                return this.isRestartable();
+            }
+
+            @Override
+            public void restart() {
+                this.restart();
+            }
+
+            @Override
+            public Stream<R> stream() {
+                return ((Stream<E>)this.stream()).map(mapper);
+            }
+        };
+    }
 
     /**
      * Returns a Stream of DataInstance objects to be processed in parallel.

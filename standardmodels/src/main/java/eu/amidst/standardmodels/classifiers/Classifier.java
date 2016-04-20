@@ -124,7 +124,7 @@ public abstract class Classifier extends Model {
     /**
      * Method to obtain the inference algorithm used for making the predictions. By default,
      * importance sampling is used.
-     * @return
+     * @return an object of the class InferenceAlgorithm
      */
     public InferenceAlgorithm getInferenceAlgoPredict() {
         return inferenceAlgoPredict;
@@ -133,7 +133,7 @@ public abstract class Classifier extends Model {
     /**
      * Method to set the inference algorithm used for making the predictions. By default,
      * importance sampling is used.
-     * @param inferenceAlgoPredict
+     * @param inferenceAlgoPredict, object of the class InferenceAlgorithm
      */
     public void setInferenceAlgoPredict(InferenceAlgorithm inferenceAlgoPredict) {
         this.inferenceAlgoPredict = inferenceAlgoPredict;

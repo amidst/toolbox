@@ -560,7 +560,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             switch (searchAlgorithm) {
                 case VMP:
                     currentModelInference = new VMP();
-                    ((VMP)currentModelInference).setTestELBO(true);
+                    //((VMP)currentModelInference).setTestELBO(true);
                     ((VMP)currentModelInference).setThreshold(0.0001);
                     ((VMP) currentModelInference).setMaxIter(3000);
                     break;
@@ -734,7 +734,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         switch(searchAlgorithm) {
             case VMP:
                 staticModelInference = new VMP();
-                ((VMP)staticModelInference).setTestELBO(true);
+                //((VMP)staticModelInference).setTestELBO(true);
                 ((VMP)staticModelInference).setThreshold(0.0001);
                 ((VMP)staticModelInference).setMaxIter(3000);
                 break;
@@ -916,15 +916,15 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //                        System.out.println("Model distribution: " + Arrays.toString(probabilities));
                         return probabilities;
                     })
-                    .reduce(new double[baseDistributionProbabilities.length], (doubleArray1, doubleArray2) -> {
-                        if (doubleArray1.length != doubleArray2.length) {
+                            .reduce(new double[baseDistributionProbabilities.length], (doubleArray1, doubleArray2) -> {
+                                if (doubleArray1.length != doubleArray2.length) {
 //                            System.out.println("Problem with lengths");
-                            System.exit(-40);
-                        }
-                        for (int i = 0; i < doubleArray1.length; i++)
-                            doubleArray1[i] += ((double) 1 / nMergedClassVars) * doubleArray2[i];
-                        return doubleArray1;
-                    });
+                                    System.exit(-40);
+                                }
+                                for (int i = 0; i < doubleArray1.length; i++)
+                                    doubleArray1[i] += ((double) 1 / nMergedClassVars) * doubleArray2[i];
+                                return doubleArray1;
+                            });
 
             //System.out.println("Combined distribution " + Arrays.toString(combinedConditionalDistributionProbabilities));
             listCondDistributions.add(combinedConditionalDistributionProbabilities);
@@ -1578,7 +1578,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      * Returns the static DAG structure.
      * @param dynamicDAG a {@link DynamicDAG} object.
      * @param variables a {@link Variables} object.
-     * @param modelNumber
+     * @param modelNumber an integer
      * @return a {@link DAG} object.
      */
     private DAG obtainStaticDAG(DynamicDAG dynamicDAG, Variables variables, int modelNumber) {
@@ -1767,7 +1767,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      * Returns the {@link BayesianNetwork} related to the static grouped class.
      * @param dag a {@link DAG} object.
      * @param variables a {@link Variables} obejct.
-     * @param modelNumber
+     * @param modelNumber an integer
      * @return a {@link BayesianNetwork} object.
      */
     private BayesianNetwork obtainStaticMergedClassVarNetwork(DAG dag, Variables variables, int modelNumber) {
@@ -1945,7 +1945,14 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 ConditionalDistribution conditionalDistribution1 = Serialization.deepCopy(model.getConditionalDistributionTimeT(dynVariable));
                 Variable staticVar2 = variables.getVariableByName(dynVariable.getName() + "_t" + Integer.toString(i));
                 List<Variable> thisVarParents1 = conditionalDistribution1.getConditioningVariables();
-                thisVarParents1 = thisVarParents1.stream().map(parent -> variables.getVariableByName(parent.getName() + "_t" + Integer.toString(i))).collect(Collectors.toList());
+                thisVarParents1 = thisVarParents1.stream().map(parent -> {
+                    if(parent.getName().contains("_Interface")) {
+                        return variables.getVariableByName(parent.getName().replace("_Interface","_t" + Integer.toString(i-1)));
+                    }
+                    else {
+                        return variables.getVariableByName(parent.getName() + "_t" + Integer.toString(i));
+                    }
+                }).collect(Collectors.toList());
                 conditionalDistribution1.setConditioningVariables(thisVarParents1);
                 conditionalDistribution1.setVar(staticVar2);
                 bn.setConditionalDistribution(staticVar2, conditionalDistribution1);
@@ -1960,8 +1967,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      * @param staticVariable the static {@link Variable} object.
      * @param dynamicConditionalDistribution the dynamic {@link ConditionalDistribution} at time T.
      * @param parentList the {@code List} of parent {@link Variable}s.
-     * @param
-     * @param time_step the time step.
+     * @param modelNumber an integer
+     * @param time_step an integer with the time step.
      * @return a {@link BaseDistribution_MultinomialParents} distribution.
      */
     private ConditionalDistribution obtainDistributionOfMAPChildren(Variable staticVariable, ConditionalDistribution dynamicConditionalDistribution, List<Variable> parentList, int modelNumber, int time_step) {
