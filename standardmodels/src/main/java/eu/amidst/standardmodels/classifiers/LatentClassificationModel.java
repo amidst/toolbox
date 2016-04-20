@@ -189,7 +189,7 @@ public class LatentClassificationModel extends Classifier {
 
     /**
      * method for getting the list of continuous hidden variables
-     * @return
+     * @return list of variables
      */
     public List<Variable> getContHiddenList() {
         return contHiddenList;

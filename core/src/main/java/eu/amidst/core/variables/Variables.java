@@ -338,8 +338,8 @@ public class Variables implements Iterable<Variable>, Serializable {
 
     /**
      * Auxiliar builder. It shoud not be used
-     * @param variables
-     * @return
+     * @param variables list of variables
+     * @return list of variables
      */
     public static Variables auxiliarBuilder(List<Variable> variables){
         return new Variables(variables);
@@ -347,7 +347,7 @@ public class Variables implements Iterable<Variable>, Serializable {
 
     /**
      * Auxiliar builder.
-     * @param variables
+     * @param variables list of variables
      */
     private Variables(List<Variable> variables){
         this.allVariables = new ArrayList<>();

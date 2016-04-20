@@ -142,7 +142,7 @@ public class MixtureOfFactorAnalysers extends Model {
 
     /**
      * Obtains the number of states in the discrete latent variable
-     * @return
+     * @return integer value
      */
     public int getNumberOfStatesLatentDiscreteVar() {
         return numberOfStatesLatentDiscreteVar;
