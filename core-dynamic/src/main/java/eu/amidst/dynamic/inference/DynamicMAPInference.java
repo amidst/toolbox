@@ -1578,7 +1578,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      * Returns the static DAG structure.
      * @param dynamicDAG a {@link DynamicDAG} object.
      * @param variables a {@link Variables} object.
-     * @param modelNumber
+     * @param modelNumber an integer
      * @return a {@link DAG} object.
      */
     private DAG obtainStaticDAG(DynamicDAG dynamicDAG, Variables variables, int modelNumber) {
@@ -1767,7 +1767,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      * Returns the {@link BayesianNetwork} related to the static grouped class.
      * @param dag a {@link DAG} object.
      * @param variables a {@link Variables} obejct.
-     * @param modelNumber
+     * @param modelNumber an integer
      * @return a {@link BayesianNetwork} object.
      */
     private BayesianNetwork obtainStaticMergedClassVarNetwork(DAG dag, Variables variables, int modelNumber) {
@@ -1967,8 +1967,8 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
      * @param staticVariable the static {@link Variable} object.
      * @param dynamicConditionalDistribution the dynamic {@link ConditionalDistribution} at time T.
      * @param parentList the {@code List} of parent {@link Variable}s.
-     * @param
-     * @param time_step the time step.
+     * @param modelNumber an integer
+     * @param time_step an integer with the time step.
      * @return a {@link BaseDistribution_MultinomialParents} distribution.
      */
     private ConditionalDistribution obtainDistributionOfMAPChildren(Variable staticVariable, ConditionalDistribution dynamicConditionalDistribution, List<Variable> parentList, int modelNumber, int time_step) {
