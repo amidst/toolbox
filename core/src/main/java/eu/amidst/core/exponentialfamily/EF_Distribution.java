@@ -189,7 +189,7 @@ public abstract class EF_Distribution implements Serializable {
      *
      * @param variables a {@link ParameterVariables} object which allow to access to all the parameter prior variables
      *                   of the newly created model.
-     * @param nameSuffix
+     * @param nameSuffix an string variable
      * @return a non-empty {@code List} of {@link EF_ConditionalDistribution} objects.
      */
     protected List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix){

@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.ecml2016;
+package eu.amidst.ecai2016;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
@@ -67,7 +67,7 @@ public class TemperatureHumidityDynamicModel {
         random = new Random(seed);
 
         try {
-            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/TemparatureHumidtyNetworks.dbn");
+            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/simulated/TemparatureHumidtyNetworks.dbn");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());

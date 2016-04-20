@@ -255,6 +255,11 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
         throw new UnsupportedOperationException("Method not implemented");
     }
 
+    @Override
+    public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
+        return this.SVBEngine.predictedLogLikelihood(batch);
+    }
+
     /**
      * {@inheritDoc}
      */

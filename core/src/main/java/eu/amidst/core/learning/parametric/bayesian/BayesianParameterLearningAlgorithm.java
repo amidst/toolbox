@@ -57,4 +57,12 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
 
         throw new UnsupportedOperationException("Non implemented yet");
     }
+
+    /**
+     * Computes the predictive log-likelihood of the data.
+     * @param batch a {@link DataOnMemory} object.
+     * @return the predictive log-probability of the data instances of the
+     * batch. Or Double.NaN if this log-probability can not be estimated.
+     */
+    double predictedLogLikelihood(DataOnMemory<DataInstance> batch);
 }

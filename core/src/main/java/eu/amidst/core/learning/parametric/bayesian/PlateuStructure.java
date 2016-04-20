@@ -377,6 +377,15 @@ public class PlateuStructure implements Serializable {
                 node.setActive(false);
             });
         }
+
+
+
+        //Non-replicated nodes can have evidende, which is taken from the first data sample in the list
+        for (Node nonReplictedNode : this.nonReplictedNodes) {
+            nonReplictedNode.setAssignment(data.get(0));
+        }
+
+        
     }
 
     public Node getNodeOfNonReplicatedVar(Variable variable) {
