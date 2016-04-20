@@ -163,9 +163,6 @@ public class DriftSVB extends SVB{
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-
-
-
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
 
         System.out.println(oneNormalVarBN);
@@ -185,6 +182,7 @@ public class DriftSVB extends SVB{
 
         svb.initLearning();
 
+        double pred = 0;
         for (int i = 0; i < 10; i++) {
 
             if (i%3==0) {
@@ -194,13 +192,20 @@ public class DriftSVB extends SVB{
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
             sampler.setSeed(i);
+            DataOnMemory<DataInstance> batch = sampler.sampleToDataStream(batchSize).toDataOnMemory();
 
-            svb.updateModelWithConceptDrift(sampler.sampleToDataStream(batchSize).toDataOnMemory());
+            if (i>0)
+                pred+=svb.predictedLogLikelihood(batch);
+
+            svb.updateModelWithConceptDrift(batch);
+
 
             System.out.println(svb.getLogMarginalProbability());
             System.out.println(svb.getLearntBayesianNetwork());
 
         }
+
+        System.out.println(pred);
 
     }
 }

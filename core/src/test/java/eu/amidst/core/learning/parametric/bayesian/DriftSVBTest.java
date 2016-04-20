@@ -11,6 +11,8 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -76,7 +78,7 @@ public class DriftSVBTest extends TestCase {
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
 
         System.out.println(oneNormalVarBN);
-        int batchSize = 5;
+        int batchSize = 100;
 
 
         DriftSVB svb = new DriftSVB();
@@ -92,11 +94,13 @@ public class DriftSVBTest extends TestCase {
 
         svb.initLearning();
 
+        double pred = 0;
+
         for (int i = 0; i < 100; i++) {
 
             if (true) {
                 Normal normal = oneNormalVarBN.getConditionalDistribution(oneNormalVarBN.getVariables().getVariableByName("A"));
-                normal.setMean(normal.getMean()+0.5);
+                normal.setMean(normal.getMean()+5);
                 normal.setVariance(normal.getVariance()+0.5);
 
                 //System.out.println(oneNormalVarBN);
@@ -105,8 +109,13 @@ public class DriftSVBTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
             sampler.setSeed(i);
 
-            svb.updateModelWithConceptDrift(sampler.sampleToDataStream(batchSize).toDataOnMemory());
-            //svb.updateModel(sampler.sampleToDataStream(batchSize).toDataOnMemory());
+            DataOnMemory<DataInstance> batch = sampler.sampleToDataStream(batchSize).toDataOnMemory();
+
+            if (i>0)
+                pred+=svb.predictedLogLikelihood(batch);
+
+            svb.updateModelWithConceptDrift(batch);
+            //svb.updateModel(batch);
 
             //System.out.println(svb.getLearntBayesianNetwork());
 
@@ -121,6 +130,9 @@ public class DriftSVBTest extends TestCase {
         }
 
         System.out.println(svb.getLearntBayesianNetwork());
+
+
+        System.out.println(pred);
 
     }
 
