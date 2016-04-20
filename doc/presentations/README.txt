@@ -1,0 +1,1 @@
+The file "template.tex" must be built using "pdftex"

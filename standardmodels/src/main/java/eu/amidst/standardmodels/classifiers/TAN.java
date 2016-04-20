@@ -96,6 +96,7 @@ public class TAN extends Classifier {
             System.out.println(e.getMessage());
         }
 
+        dvmp=null;
         learningAlgorithm = new SVB();
         learningAlgorithm.setDAG(this.dag);
         learningAlgorithm.setDataStream(dataStream);

@@ -23,7 +23,6 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.utils.DataSetGenerator;
 import junit.framework.TestCase;
 
-
 /**
  * Created by ana@cs.aau.dk on 09/03/16.
  */

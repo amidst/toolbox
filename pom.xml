@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.4.1</version>
+    <version>1.0.0</version>
 
     <name>AmidstToolbox</name>
 
@@ -21,9 +21,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
-    
-
 
 
     <scm>
@@ -31,25 +28,6 @@
         <developerConnection>scm:git:git@github.com:amidst/toolbox.git</developerConnection>
         <url>git@github.com:amidst/toolbox.git</url>
     </scm>
-    
-    
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/mvn-repo</url>
-        </repository>
-    </distributionManagement>
-    
-
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <slf4j.version>1.7.6</slf4j.version>
-        <junit.version>4.11</junit.version>
-         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
-        <github.global.server>github</github.global.server>
-    </properties>
 
 
     <developers>
@@ -101,12 +79,6 @@
             <organization>University of Almeria, Spain</organization>
             <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
         </developer>
-        <developer>
-            <name>Rafael Cabañas</name>
-            <email>rcabanas@cs.aau.dk</email>
-            <organization>Aalborg University, Denmark</organization>
-            <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
-        </developer>
     </developers>
 
 
@@ -115,13 +87,26 @@
         <module>core</module>
         <module>core-dynamic</module>
         <module>examples</module>
+        <module>flinklink</module>
         <module>moalink</module>
+        <module>sparklink</module>
+        <module>extensions/cajamar</module>
+        <module>extensions/caepia2015</module>
+        <module>extensions/ida2015</module>
+        <module>extensions/scai2015</module>
+        <module>extensions/ecml2016</module>
+        <module>extensions/uai2016</module>
+        <module>extensions/reviewMeeting2016</module>
         <module>standardmodels</module>
         <module>wekalink</module>
     </modules>
 
 
-
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>1.7.6</slf4j.version>
+        <junit.version>4.11</junit.version>
+    </properties>
 
     <build>
         <plugins>
@@ -133,8 +118,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            
-            
             <!-- Uncomment this text to build without running unit tests.-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -160,61 +143,6 @@
                     </archive>
                 </configuration>
             </plugin>
-            
-            
-            <!-- maven-deploy plugin -->
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
-                <configuration>
-                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
-                </configuration>
-            </plugin>
-
-            
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.11</version>
-                <configuration>
-                    <message>Maven artifacts for ${artifactId}-${version}</message>  
-                    <noJekyll>true</noJekyll>                                  
-                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> 
-                    <branch>refs/heads/mvn-repo</branch>                       
-                    <includes><include>**/*</include></includes>
-                    <repositoryName>toolbox</repositoryName>      
-                    <repositoryOwner>amidst</repositoryOwner>    
-                    <merge>true</merge>
-                </configuration>
-                <executions>
-
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-            <configuration>
-              <keyname>1D3E048C</keyname>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-            
         </plugins>
     </build>
 </project>

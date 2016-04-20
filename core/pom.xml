@@ -13,13 +13,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.1</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>core</artifactId>
-    <version>0.4.1</version>
+    <version>1.0.0</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -88,12 +88,6 @@
             <organization>University of Almeria, Spain</organization>
             <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
         </developer>
-        <developer>
-            <name>Rafael Cabañas</name>
-            <email>rcabanas@cs.aau.dk</email>
-            <organization>Aalborg University, Denmark</organization>
-            <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
-        </developer>
     </developers>
 
 
@@ -156,9 +150,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

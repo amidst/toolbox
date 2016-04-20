@@ -5,13 +5,11 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.1</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>eu.amidst</groupId>
     <artifactId>huginlink</artifactId>
-    <version>0.4.1</version>
 
 
     <url>http://amidst.github.io/toolbox/</url>
@@ -81,12 +79,6 @@
             <organization>University of Almeria, Spain</organization>
             <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
         </developer>
-        <developer>
-            <name>Rafael Cabañas</name>
-            <email>rcabanas@cs.aau.dk</email>
-            <organization>Aalborg University, Denmark</organization>
-            <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
-        </developer>
     </developers>
 
 
@@ -95,12 +87,12 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.4.1</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.4.1</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.hugin</groupId>
@@ -128,54 +120,42 @@
     </dependencies>
 
 
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>attach-sources</id>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <executions>
-                <execution>
-                    <id>attach-javadocs</id>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
-                    <configuration>
-                        <additionalparam>-Xdoclint:none</additionalparam>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.9</version>
-            <configuration>
-                <argLine>-Djava.library.path=${project.basedir}/huginlib/</argLine>
-            </configuration>
-        </plugin>
-    </plugins>
-    
-    <extensions>
-        <!-- begin - needed for deploying to repository using webdav -->
-        <extension>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-webdav</artifactId>
-            <version>1.0-beta-2</version>
-        </extension>
-        <!-- end - needed for deploying to repository using webdav -->
-    </extensions>
-</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <extensions>
+            <!-- begin - needed for deploying to repository using webdav -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+            <!-- end - needed for deploying to repository using webdav -->
+        </extensions>
+    </build>
 
 </project>
