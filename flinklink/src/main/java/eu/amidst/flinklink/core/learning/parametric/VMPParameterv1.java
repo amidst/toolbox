@@ -18,7 +18,7 @@ import eu.amidst.core.inference.messagepassing.Message;
 import eu.amidst.core.inference.messagepassing.MessagePassingAlgorithm;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;

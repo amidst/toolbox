@@ -22,7 +22,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgorithm;
 import eu.amidst.core.conceptdrift.utils.Fading;
-import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;

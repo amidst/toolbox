@@ -20,7 +20,7 @@ package eu.amidst.core.conceptdrift.utils;
 
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.Node;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;

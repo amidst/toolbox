@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * This class defines a Plateu Structure.
  */
-public abstract class PlateuStructure extends eu.amidst.core.learning.parametric.bayesian.PlateuStructure implements Serializable {
+public abstract class PlateuStructure extends eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure implements Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;

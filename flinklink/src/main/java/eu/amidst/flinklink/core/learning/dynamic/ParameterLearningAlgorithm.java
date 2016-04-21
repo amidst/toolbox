@@ -18,7 +18,7 @@
 package eu.amidst.flinklink.core.learning.dynamic;
 
 
-import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;

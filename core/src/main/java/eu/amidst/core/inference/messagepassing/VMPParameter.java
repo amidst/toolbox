@@ -20,7 +20,7 @@ package eu.amidst.core.inference.messagepassing;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.Sampler;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.utils.CompoundVector;
 
 import java.util.Optional;

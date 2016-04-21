@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.flinklink.core.learning.parametric;
+package eu.amidst.core.learning.parametric.bayesian.utils;
 
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.InferenceAlgorithm;
@@ -18,7 +18,6 @@ import eu.amidst.core.inference.messagepassing.Message;
 import eu.amidst.core.inference.messagepassing.MessagePassingAlgorithm;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.utils.CompoundVector;
 import org.slf4j.LoggerFactory;
 
@@ -33,23 +32,14 @@ import java.util.Optional;
  * <p> For an example of use follow this link
  * <a href="http://amidst.github.io/toolbox/CodeExamples.html#vmpexample"> http://amidst.github.io/toolbox/CodeExamples.html#vmpexample </a>  </p>
  */
-public class VMPParameter extends VMP {
+public class VMPLocalUpdates extends VMP {
 
-    static org.slf4j.Logger logger = LoggerFactory.getLogger(VMPParameter.class);
+    static org.slf4j.Logger logger = LoggerFactory.getLogger(VMPLocalUpdates.class);
 
-    int maxGlobaIter = 1;
     PlateuStructure plateuStructure;
 
-    public VMPParameter(PlateuStructure plateuStructure) {
+    public VMPLocalUpdates(PlateuStructure plateuStructure) {
         this.plateuStructure = plateuStructure;
-    }
-
-    public int getMaxGlobaIter() {
-        return maxGlobaIter;
-    }
-
-    public void setMaxGlobaIter(int maxGlobaIter) {
-        this.maxGlobaIter = maxGlobaIter;
     }
 
     /**
@@ -60,15 +50,11 @@ public class VMPParameter extends VMP {
 
         nIter = 0;
 
-        boolean globalconvergence = false;
-
         boolean convergence = false;
         probOfEvidence = Double.NEGATIVE_INFINITY;
         local_elbo = Double.NEGATIVE_INFINITY;
         local_iter = 0;
         int global_iter = 0;
-
-//        while (!globalconvergence && (global_iter++)<maxGlobaIter) {
 
         this.testConvergence();
 
@@ -90,10 +76,6 @@ public class VMPParameter extends VMP {
                     if (message.isPresent())
                         selfMessage.combine(message.get());
 
-                    //for (Node child: node.getChildren()){
-                    //    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);
-                    //}
-
                     updateCombinedMessage(node, selfMessage);
                     done &= node.isDone();
                 }
@@ -109,7 +91,7 @@ public class VMPParameter extends VMP {
             CompoundVector posteriorOLD = this.plateuStructure.getPlateauNaturalParameterPosterior();
             CompoundVector posteriorNew = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
-            //Collect messages from active nodes to non-active nodes.
+            //Collect messages from active nodes to non-replicated nodes.
             int count = 0;
             for (Node node : nodes) {
                 if (!node.isActive() || node.isObserved() || plateuStructure.isReplicatedVar(node.getMainVariable()))
@@ -127,10 +109,6 @@ public class VMPParameter extends VMP {
                 if (message.isPresent())
                     selfMessage.combine(message.get());
 
-                //for (Node child: node.getChildren()){
-                //    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);
-                //}
-
                 updateCombinedMessage(node, selfMessage);
 
 
@@ -144,20 +122,7 @@ public class VMPParameter extends VMP {
 
             this.plateuStructure.updateNaturalParameterPosteriors(posteriorNew);
 
-            //probOfEvidence = local_elbo;
-
-            //this.testConvergence();
-
-            /*double percentage = 100 * Math.abs(local_elbo - probOfEvidence) / Math.abs(probOfEvidence);
-            if (percentage < threshold) {
-                globalconvergence = true;
-            }else{
-                System.out.println();
-            }*/
-
-
             probOfEvidence = local_elbo;
- //       }
 
         probOfEvidence = local_elbo;
         if (output){

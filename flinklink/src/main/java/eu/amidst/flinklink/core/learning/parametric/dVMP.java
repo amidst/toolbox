@@ -24,6 +24,7 @@ import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.*;
+import eu.amidst.core.learning.parametric.bayesian.utils.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
@@ -157,9 +158,8 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
-        VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
-        vmpParameter.setMaxGlobaIter(1);
-        this.svb.getPlateuStructure().setVmp(vmpParameter);
+        VMPLocalUpdates vmpLocalUpdates = new VMPLocalUpdates(this.svb.getPlateuStructure());
+        this.svb.getPlateuStructure().setVmp(vmpLocalUpdates);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svb.setDAG(this.dag);

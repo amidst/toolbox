@@ -21,9 +21,10 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
+import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
+import eu.amidst.core.learning.parametric.bayesian.utils.VMPLocalUpdates;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
@@ -119,8 +120,8 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
-        VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
-        this.svb.getPlateuStructure().setVmp(vmpParameter);
+        VMPLocalUpdates vmpLocalUpdates = new VMPLocalUpdates(this.svb.getPlateuStructure());
+        this.svb.getPlateuStructure().setVmp(vmpLocalUpdates);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svb.setDAG(this.dag);

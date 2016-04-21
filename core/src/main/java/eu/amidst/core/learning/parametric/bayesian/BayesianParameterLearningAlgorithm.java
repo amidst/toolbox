@@ -21,6 +21,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;

@@ -78,7 +78,7 @@ public class DriftSVBTest extends TestCase {
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
 
         System.out.println(oneNormalVarBN);
-        int batchSize = 100;
+        int batchSize = 1;
 
 
         DriftSVB svb = new DriftSVB();
@@ -98,7 +98,7 @@ public class DriftSVBTest extends TestCase {
 
         for (int i = 0; i < 100; i++) {
 
-            if (true) {
+            if (false) {
                 Normal normal = oneNormalVarBN.getConditionalDistribution(oneNormalVarBN.getVariables().getVariableByName("A"));
                 normal.setMean(normal.getMean()+5);
                 normal.setVariance(normal.getVariance()+0.5);
@@ -114,8 +114,8 @@ public class DriftSVBTest extends TestCase {
             if (i>0)
                 pred+=svb.predictedLogLikelihood(batch);
 
-            svb.updateModelWithConceptDrift(batch);
-            //svb.updateModel(batch);
+            //svb.updateModelWithConceptDrift(batch);
+            svb.updateModel(batch);
 
             //System.out.println(svb.getLearntBayesianNetwork());
 
