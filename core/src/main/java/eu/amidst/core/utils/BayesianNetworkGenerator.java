@@ -90,7 +90,7 @@ public final class BayesianNetworkGenerator{
 
     //TODO Check this method!! Maybe also moved to ida2015 package
     /**
-     * Generates a {@link eu.amidst.core.classifiers.NaiveBayesClassifier} with a global Gaussian hidden variable.
+     * Generates a NaiveBayesClassifier with a global Gaussian hidden variable.
      * The global Gaussian hidden variable is a child of the class variable and a parent of all the remaining variables.
      * @param nClassLabels the number of states for the class variable.
      * @param nameGlobalHiddenVar a {@code String} that represents the name of the global hidden variable.
@@ -124,7 +124,7 @@ public final class BayesianNetworkGenerator{
     }
 
     /**
-     * Generates a {@link eu.amidst.core.classifiers.NaiveBayesClassifier}.
+     * Generates a NaiveBayesClassifier.
      * @param nClassLabels the number of states for the class variable.
      * @return a {@link BayesianNetwork} object.
      */
