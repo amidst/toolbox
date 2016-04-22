@@ -1,6 +1,6 @@
-# New Release of AMIDST 0.4.1
+# New Release of AMIDST 0.4.2
 
-We have made a new release of AMIDST 0.4.1.
+We have made a new release of AMIDST 0.4.2.
 
 The new features of this release are incorporated in the Core Dynamic module, specifically the Dynamic Inference Engine, 
 including all the inference algorithms for dynamic Bayesian networks. 
