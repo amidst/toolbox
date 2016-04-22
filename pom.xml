@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.4.1</version>
+    <version>${AMIDSTver}</version>
 
     <name>AmidstToolbox</name>
 
@@ -40,7 +40,7 @@
             <url>file://${project.build.directory}/mvn-repo</url>
         </repository>
     </distributionManagement>
-    
+
 
     
     <properties>
@@ -49,6 +49,8 @@
         <junit.version>4.11</junit.version>
          <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
+        <AMIDSTver>0.4.1</AMIDSTver>
+        <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
 

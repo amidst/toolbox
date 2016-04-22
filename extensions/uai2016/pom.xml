@@ -6,15 +6,14 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.1</version>
+        <version>${AMIDSTver}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>eu.amidst</groupId>
     <artifactId>uai2016</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>${AMIDSTver}</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -34,12 +33,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.4.1</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
-        <groupId>eu.amidst</groupId>
-        <artifactId>flinklink</artifactId>
-        <version>0.4.1</version>
+            <groupId>eu.amidst</groupId>
+            <artifactId>flinklink</artifactId>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>com.google.gdata</groupId>
@@ -49,7 +48,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>0.4.1</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
