@@ -38,7 +38,7 @@ public class IDAConceptDriftDetectorDBNTest{
         generateData.setRscriptsPath("./extensions/uai2016/doc-experiments/dataGenerationForFlink");
         generateData.setNumFiles(3);
         generateData.setNumSamplesPerFile(1000);
-        generateData.setOutputFullPath("~/core/datasets/dataFlink/IDAlikeDataCD");
+        generateData.setOutputFullPath("~/core/datasets/dataStream/IDAlikeDataCD");
         generateData.setPrintINDEX(true);
         generateData.setAddConceptDrift(true);//At points 35 and 60
         generateData.generateData();

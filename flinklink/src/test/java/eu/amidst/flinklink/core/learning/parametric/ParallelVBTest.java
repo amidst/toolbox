@@ -520,8 +520,8 @@ public class ParallelVBTest extends TestCase {
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
-        //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
-        //        "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
+        //DataFlink<DataInstance> dataStream = DataFlinkLoader.loadDataFromFile(env,
+        //        "./datasets/dataStream/test_not_modify/SmallDataSet.arff", false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -562,8 +562,8 @@ public class ParallelVBTest extends TestCase {
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
 
-        //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
-        //        "./datasets/dataFlink/test_not_modify/SmallDataSet.arff", false);
+        //DataFlink<DataInstance> dataStream = DataFlinkLoader.loadDataFromFile(env,
+        //        "./datasets/dataStream/test_not_modify/SmallDataSet.arff", false);
 
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
@@ -798,7 +798,7 @@ public class ParallelVBTest extends TestCase {
         network.randomInitialization(new Random(0));
         System.out.println(network.toString());
 
-        //String dataset= "./datasets/dataFlink/conceptdrift/data0.arff";
+        //String dataset= "./datasets/dataStream/conceptdrift/data0.arff";
         String dataset= "../datasets/simulated/tmp.arff";
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
         sampler.setSeed(1);

@@ -397,7 +397,7 @@ public class DAGsGeneration {
 
         System.out.println(getUAIMultiLocalGlobalDAG(data.getAttributes(),2));
 
-        DataFlinkWriter.writeDataToARFFFolder(data, "./datasets/dataFlink/data.arff");
+        DataFlinkWriter.writeDataToARFFFolder(data, "./datasets/dataStream/data.arff");
 
     }
 

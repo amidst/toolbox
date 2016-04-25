@@ -157,7 +157,7 @@ public class ExperimentsParallelML {
             if(j>4){
                 average+=seconds;
             }
-            //dataFlink.restart();
+            //dataStream.restart();
         }
         System.out.println(average/10.0 + " secs");
     }

@@ -56,7 +56,7 @@ public class CajaMarDemoHNB {
 
         // The demo can be run on your local computer or a cluster with hadoop, (un)comment as appropriate
         String fileName = "hdfs:///tmp_conceptdrift_data";
-        //String fileName = "./datasets/dataFlink/conceptdrift/data";
+        //String fileName = "./datasets/dataStream/conceptdrift/data";
 
         // Load the first batch of data (first month) to get the model header (attributes) necessary to create
         // the dynamic DAG

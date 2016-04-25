@@ -57,7 +57,7 @@ public class ParallelVMP {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./tmp.arff");
+        //DataFlink<DataInstance> dataStream = DataFlinkLoader.loadData(env, "./tmp.arff");
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,args[2], false);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure

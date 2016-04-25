@@ -136,7 +136,7 @@ public class NormalizeData {
 
 
     public static void main(String[] args) throws Exception{
-        //String fileName = "./datasets/dataFlink/uai1K.arff";
+        //String fileName = "./datasets/dataStream/uai1K.arff";
 
 
         String fileName = args[0];
@@ -147,7 +147,7 @@ public class NormalizeData {
 
         assignRanges(dataFlink, fileName, env);
 
-        //normalizeWithFlinkML(dataFlink, fileName);
+        //normalizeWithFlinkML(dataStream, fileName);
 
     }
 }

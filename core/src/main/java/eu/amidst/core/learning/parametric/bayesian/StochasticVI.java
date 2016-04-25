@@ -1,0 +1,276 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
+package eu.amidst.core.learning.parametric.bayesian;
+
+
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
+import eu.amidst.core.learning.parametric.bayesian.utils.VMPLocalUpdates;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Serialization;
+import eu.amidst.core.variables.Variable;
+
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.List;
+
+/**
+ * This class implements the {@link ParameterLearningAlgorithm} interface, and defines the parallel Maximum Likelihood algorithm.
+ *
+ * <p> For an example of use follow this link </p>
+ * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
+ *
+ */
+public class StochasticVI implements BayesianParameterLearningAlgorithm, Serializable {
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
+
+    public static String SVB="SVB";
+    public static String PRIOR="PRIOR";
+
+
+    /**
+     * Represents the {@link DataStream} used for learning the parameters.
+     */
+    protected DataStream<DataInstance> dataStream;
+
+    /**
+     * Represents the directed acyclic graph {@link DAG}.
+     */
+    protected DAG dag;
+
+    protected SVB svb;
+
+    protected int batchSize = 100;
+
+    protected int maximumLocalIterations = 100;
+
+    protected double localThreshold = 0.1;
+
+    protected long dataSetSize;
+
+    private long timiLimit;
+
+    private double learningFactor;
+
+    public void setLearningFactor(double learningFactor) {
+        this.learningFactor = learningFactor;
+    }
+
+    public void setTimiLimit(long seconds) {
+        this.timiLimit = seconds;
+    }
+
+    public void setDataSetSize(long dataSetSize) {
+        this.dataSetSize = dataSetSize;
+    }
+
+    public StochasticVI(){
+        this.svb = new SVB();
+    }
+
+    public void setPlateuStructure(PlateuStructure plateuStructure){
+        this.svb.setPlateuStructure(plateuStructure);
+    }
+
+    public void setTransitionMethod(TransitionMethod transitionMethod){
+        this.svb.setTransitionMethod(transitionMethod);
+    }
+
+    public void setLocalThreshold(double localThreshold) {
+        this.localThreshold = localThreshold;
+    }
+
+    public void setMaximumLocalIterations(int maximumLocalIterations) {
+        this.maximumLocalIterations = maximumLocalIterations;
+    }
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public SVB getSVB() {
+        return svb;
+    }
+
+    public void initLearning() {
+        VMPLocalUpdates vmpLocalUpdates = new VMPLocalUpdates(this.svb.getPlateuStructure());
+        this.svb.getPlateuStructure().setVmp(vmpLocalUpdates);
+        this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
+        this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
+        this.svb.setDAG(this.dag);
+        this.svb.setWindowsSize(batchSize);
+        this.svb.initLearning(); //Init learning is peformed in each mapper.
+    }
+
+    @Override
+    public double updateModel(DataOnMemory<DataInstance> batch) {
+        return 0;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDataStream(DataStream<DataInstance> data) {
+        this.dataStream = data;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getLogMarginalProbability() {
+        return Double.NaN;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void runLearning() {
+        this.initLearning();
+
+        DecimalFormat df = new DecimalFormat("0.0000");
+
+        boolean convergence=false;
+
+        CompoundVector prior = svb.getNaturalParameterPrior();
+
+        CompoundVector initialPosterior = Serialization.deepCopy(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+        initialPosterior.sum(prior);
+
+        this.svb.updateNaturalParameterPosteriors(initialPosterior);
+
+        CompoundVector currentParam =  svb.getNaturalParameterPrior();
+
+        double totalTimeElbo=0;
+
+        double totalTime=0;
+        double t = 0;
+        while(!convergence){
+
+            long startBatch= System.nanoTime();
+
+            DataOnMemory<DataInstance> batch = this.dataStream.subsample(this.svb.getSeed(), this.batchSize);
+
+            NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
+
+            newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
+            newParam.sum(prior);
+
+            double stepSize = Math.pow(1+t,-learningFactor);
+
+            newParam.multiplyBy(stepSize);
+
+            currentParam.multiplyBy((1-stepSize));
+            currentParam.sum(newParam);
+
+            this.svb.updateNaturalParameterPosteriors(currentParam);
+
+
+
+
+            long startBatchELBO= System.nanoTime();
+
+            long endBatch= System.nanoTime();
+
+            totalTimeElbo += endBatch - startBatchELBO;
+
+            System.out.println("TIME ELBO:" + totalTimeElbo/1e9);
+
+            totalTime+=endBatch-startBatch;
+
+
+            System.out.println("SVI ELBO: "+t+", "+stepSize+", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds" + (totalTime - totalTimeElbo)/1e9 + " seconds");
+
+
+            if ((totalTime-totalTimeElbo)/1e9>timiLimit){
+                convergence=true;
+            }
+
+            t++;
+
+        }
+
+
+        this.svb.updateNaturalParameterPrior(currentParam);
+
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDAG(DAG dag_) {
+        this.dag = dag_;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setSeed(int seed) {
+        this.svb.setSeed(seed);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BayesianNetwork getLearntBayesianNetwork() {
+        return this.svb.getLearntBayesianNetwork();
+    }
+
+    @Override
+    public void setParallelMode(boolean parallelMode) {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setOutput(boolean activateOutput) {
+        this.svb.setOutput(activateOutput);
+    }
+
+
+    @Override
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch) {
+        return null;
+    }
+
+    @Override
+    public List<DataPosterior> computePosterior(DataOnMemory<DataInstance> batch, List<Variable> latentVariables) {
+        return null;
+    }
+
+    public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter) {
+        return this.svb.getParameterPosterior(parameter);
+    }
+
+    @Override
+    public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
+        return 0;
+    }
+
+}

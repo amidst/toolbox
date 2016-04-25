@@ -49,7 +49,7 @@ public class ParallelMLE2 {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        //DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadData(env, "./tmp.arff");
+        //DataFlink<DataInstance> dataStream = DataFlinkLoader.loadData(env, "./tmp.arff");
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,"hdfs:///tmp.arff", false);
 
 
