@@ -18,8 +18,7 @@
 
 package eu.amidst.ida2016;
 
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
@@ -29,6 +28,7 @@ import eu.amidst.core.variables.Variables;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.stream.IntStream;
 
 /**
@@ -39,6 +39,9 @@ public class RemoveURresiduals {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
+
+    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
+    static String outputPath = "/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
 
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
@@ -58,8 +61,7 @@ public class RemoveURresiduals {
 
         //We can open the data stream using the static class DataStreamLoader
 
-        DataStream<DataInstance> dataMonth = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-                "dataWekaUnemploymentRate/dataWekaUnemploymentRate0.arff");
+        DataStream<DataInstance> dataMonth = DataStreamLoader.openFromFile(path+"0.arff");
 
 
         //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
@@ -68,7 +70,7 @@ public class RemoveURresiduals {
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
-        virtualDriftDetector.setSeed(1);
+        virtualDriftDetector.setSeed(154);
 
         //We set the data which is going to be used
         virtualDriftDetector.setData(dataMonth);
@@ -100,6 +102,12 @@ public class RemoveURresiduals {
         } catch (UnsupportedOperationException e) {
         }
 
+        //New dataset in which we remove the UR att
+        List<Attribute> atts = dataMonth.getAttributes().getFullListOfAttributes();
+        atts.remove(dataMonth.getAttributes().getAttributeByName(unemploymentRateAttName));
+        Attributes attsNoUR = new Attributes(atts);
+        DataOnMemoryListContainer<DataInstance> newData = new DataOnMemoryListContainer<>(attsNoUR);
+
         System.out.println();
 
         virtualDriftDetector.setTransitionVariance(0);
@@ -115,8 +123,7 @@ public class RemoveURresiduals {
             if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
                 continue;
 
-            dataMonth = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-                    "dataWekaUnemploymentRate/dataWekaUnemploymentRate"+currentMonth+".arff");
+            dataMonth = DataStreamLoader.openFromFile(path+currentMonth+".arff");
 
             virtualDriftDetector.setTransitionVariance(0);
 
@@ -145,7 +152,6 @@ public class RemoveURresiduals {
                         .filter(var -> !var.equals(unemploymentRateVar))
                         .filter(var -> !var.equals(classVar))
                         .forEach(var->{
-                            double [] parameterVector = parameters.get(var);
                             int classVal = (int)instance.getValue(classVar);
 
                             Normal_MultinomialNormalParents dist = learntBN.getConditionalDistribution(var);
@@ -154,18 +160,20 @@ public class RemoveURresiduals {
                             double UR = instance.getValue(unemploymentRateVar);
 
                             instance.setValue(var, instance.getValue(var) - b0 - b1*UR);
-
-
                         });
+                //instance.setValue(unemploymentRateVar, 0);
                 //System.out.println(instance);
                 return instance;
             });
 
             dataMonth.restart();
 
+            for (DataInstance dataInstance : dataMonth) {
+                newData.add(dataInstance);
+            }
+
             //Print new dataset
-            DataStreamWriter.writeDataToFile(dataMonth,"/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRateMinusResiduals/" +
-                        "dataWekaUnemploymentRateMinusResiduals"+currentMonth+".arff");
+            DataStreamWriter.writeDataToFile(newData,outputPath+currentMonth+".arff");
 
         }
     }

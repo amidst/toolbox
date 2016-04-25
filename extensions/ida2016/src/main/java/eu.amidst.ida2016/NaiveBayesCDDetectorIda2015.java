@@ -1,150 +1,116 @@
-/*
- *
- *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
- *
- */
-
-
 package eu.amidst.ida2016;
 
-import eu.amidst.core.datastream.*;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
 import java.util.stream.IntStream;
 
 /**
- * This example shows how to use the class eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift
- * detector detailed in
- *
- * <i>Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.</i>
- *
+ * Created by ana@cs.aau.dk on 20/04/16.
  */
 public class NaiveBayesCDDetectorIda2015 {
+
+    private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
+    private static Variable unemploymentRateVar;
+
+    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
+    private static void printOutput(double [] meanHiddenVars, int currentMonth){
+        for (int j = 0; j < meanHiddenVars.length; j++) {
+            System.out.print(currentMonth + "\t" + meanHiddenVars[j] + "\t");
+            meanHiddenVars[j] = 0;
+        }
+        if (unemploymentRateVar != null) {
+            System.out.print(virtualDriftDetector.getSvb().getPlateuStructure().
+                    getNodeOfNonReplicatedVar(unemploymentRateVar).getAssignment().getValue(unemploymentRateVar) + "\t");
+        }
+        System.out.println();
+    }
+
     public static void main(String[] args) {
 
+        int NSETS = 84;
+
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-                "datosWeka.arff");
 
-        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DynamicDataContinuous.arff");
-
-        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-        //        "dataWekaDummyAttribute1.arff");
-
-        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-        //          "dataWekaUnemploymentRate.arff");
+        DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(path+"0.arff");
+        //DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+        //        "dataWeka/dataWeka0.arff");
 
 
         //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
-        NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+        virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
 
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
-        virtualDriftDetector.setSeed(325);
+        virtualDriftDetector.setSeed(1);
 
         //We set the data which is going to be used
-        virtualDriftDetector.setData(data);
+        virtualDriftDetector.setData(dataMonth0);
 
         //We fix the size of the window
         int windowSize = 100;
         virtualDriftDetector.setWindowsSize(windowSize);
 
-        //We fix the so-called transition variance
-        virtualDriftDetector.setTransitionVariance(0.1);
-
         //We fix the number of global latent variables
         virtualDriftDetector.setNumberOfGlobalVars(1);
 
         //We should invoke this method before processing any data
-        virtualDriftDetector.initLearningWithUR();
+        virtualDriftDetector.initLearning();
 
-        int[] peakMonths = {2,8,14,20,26,32,38,44,47,50,53,56,59,62,65,68,71,74,77,80,83};
+        //If UR is to be included
+        //virtualDriftDetector.initLearningWithUR();
 
-        //virtualDriftDetector.deactivateTransitionMethod();
+        int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 
         //Some prints
-        System.out.print("Month \t");
-        System.out.print("Batch \t");
+        System.out.print("Month");
         for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
             System.out.print("\t" + hiddenVar.getName());
         }
 
-        int countBatch = 0;
-
-        Attributes attributes = data.getAttributes();
-        Attribute timeID = attributes.getTime_id();
-
-        Variable unemploymentRateVar = null;
+        /*
         String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
         try {
             unemploymentRateVar = virtualDriftDetector.getSvb().getDAG().getVariables().getVariableByName(unemploymentRateAttName);
-            System.out.println("\t UnempRate");
-        }catch (UnsupportedOperationException e){}
+            System.out.print("\t UnempRate");
+        } catch (UnsupportedOperationException e) {
+        }
+        */
 
         System.out.println();
 
+        double[] meanHiddenVars;
 
-        DataOnMemoryListContainer<DataInstance> batch = new DataOnMemoryListContainer(attributes);
-        double currentTimeID = 0;
-        double[] meanHiddenVars = new double[virtualDriftDetector.getHiddenVars().size()];;
-        for (DataInstance dataInstance : data) {
+        //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
-            if (IntStream.of(peakMonths).anyMatch(x -> x == dataInstance.getValue(timeID)))
+        for (int i = 0; i < NSETS; i++) {
+
+            int currentMonth = i;
+
+            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
                 continue;
 
-            if (dataInstance.getValue(timeID) != currentTimeID) {
+            DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path+currentMonth+".arff");
+            //DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
+            //          "dataWeka/dataWeka"+currentMonth+".arff");
 
-                virtualDriftDetector.setTransitionVariance(0);
+            virtualDriftDetector.setTransitionVariance(0);
 
-                double[] out;
-                for (DataOnMemory<DataInstance> minibatch: batch.iterableOverBatches(windowSize)) {
-                    out= virtualDriftDetector.updateModel(minibatch);
+            meanHiddenVars = virtualDriftDetector.updateModel(dataMonthi);
 
+            virtualDriftDetector.setTransitionVariance(0.1);
+            virtualDriftDetector.getSvb().applyTransition();
 
-                    for (int i = 0; i < meanHiddenVars.length; i++) {
-                        meanHiddenVars[i] += out[i];
-                    }
-                }
+            //We print the output
+            printOutput(meanHiddenVars, currentMonth);
 
 
-                //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
-
-                virtualDriftDetector.setTransitionVariance(0.1);
-                virtualDriftDetector.getSvb().applyTransition();
-
-                //We print the output
-                System.out.print(currentTimeID + "\t");
-                System.out.print(countBatch + "\t");
-                for (int i = 0; i < meanHiddenVars.length; i++) {
-                    System.out.print(meanHiddenVars[i]+"\t");
-                    meanHiddenVars[i]=0;
-                }
-                if(unemploymentRateVar!=null) {
-                    System.out.print(virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(unemploymentRateVar).getAssignment().getValue(unemploymentRateVar)+"\t");
-                }
-
-                System.out.println();
-                currentTimeID = dataInstance.getValue(timeID);
-                batch = new DataOnMemoryListContainer(attributes);
-            }
-            batch.add(dataInstance);
-            countBatch++;
         }
-
-
-       // }
     }
 }
+
+
+

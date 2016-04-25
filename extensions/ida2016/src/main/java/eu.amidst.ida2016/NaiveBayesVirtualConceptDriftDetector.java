@@ -169,24 +169,18 @@ public class NaiveBayesVirtualConceptDriftDetector {
     private void buildGlobalDAG(){
         Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
-        hiddenVars = new ArrayList<Variable>();
-        List<Variable> hiddenVarsWithUR = new ArrayList<>();
+        hiddenVars = new ArrayList<>();
 
         for (int i = 0; i < this.numberOfGlobalVars ; i++) {
             Variable globalHidden = variables.newGaussianVariable("GlobalHidden_"+i);
             hiddenVars.add(globalHidden);
-            hiddenVarsWithUR.add(globalHidden);
         }
 
         Variable classVariable = variables.getVariableByName(className);
 
         DAG dag = new DAG(variables);
 
-        Variable unemploymentRateVar = null;
         String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
-        try {
-            unemploymentRateVar = variables.getVariableByName(unemploymentRateAttName);
-        }catch (UnsupportedOperationException e){}
 
         for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
             if (att.getName().equals(className) || att.getName().equals(unemploymentRateAttName))
