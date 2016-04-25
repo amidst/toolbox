@@ -159,7 +159,8 @@ public class RemoveURresiduals {
                             double b1=dist.getNormal_NormalParentsDistribution(classVal).getCoeffForParent(unemploymentRateVar);
                             double UR = instance.getValue(unemploymentRateVar);
 
-                            instance.setValue(var, instance.getValue(var) - b0 - b1*UR);
+                            if(instance.getValue(var) !=0 )
+                                instance.setValue(var, instance.getValue(var) - b0 - b1*UR);
                         });
                 //instance.setValue(unemploymentRateVar, 0);
                 //System.out.println(instance);
