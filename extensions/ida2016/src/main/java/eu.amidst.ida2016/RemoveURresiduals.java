@@ -70,7 +70,7 @@ public class RemoveURresiduals {
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
-        virtualDriftDetector.setSeed(154);
+        virtualDriftDetector.setSeed(1);
 
         //We set the data which is going to be used
         virtualDriftDetector.setData(dataMonth);
@@ -104,7 +104,7 @@ public class RemoveURresiduals {
 
         //New dataset in which we remove the UR att
         List<Attribute> atts = dataMonth.getAttributes().getFullListOfAttributes();
-        atts.remove(dataMonth.getAttributes().getAttributeByName(unemploymentRateAttName));
+        //atts.remove(dataMonth.getAttributes().getAttributeByName(unemploymentRateAttName));
         Attributes attsNoUR = new Attributes(atts);
         DataOnMemoryListContainer<DataInstance> newData = new DataOnMemoryListContainer<>(attsNoUR);
 
@@ -174,6 +174,8 @@ public class RemoveURresiduals {
 
             //Print new dataset
             DataStreamWriter.writeDataToFile(newData,outputPath+currentMonth+".arff");
+
+            newData = new DataOnMemoryListContainer<>(attsNoUR);
 
         }
     }

@@ -14,11 +14,13 @@ public class NaiveBayesCDDetectorIda2015 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
+    private static boolean includeUR = true;
 
-    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
+    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
+    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
-            System.out.print(currentMonth + "\t" + meanHiddenVars[j] + "\t");
+            System.out.print(currentMonth + "\t" + meanHiddenVars[j]);
             meanHiddenVars[j] = 0;
         }
         if (unemploymentRateVar != null) {
@@ -35,9 +37,6 @@ public class NaiveBayesCDDetectorIda2015 {
         //We can open the data stream using the static class DataStreamLoader
 
         DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(path+"0.arff");
-        //DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-        //        "dataWeka/dataWeka0.arff");
-
 
         //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
         virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
@@ -58,7 +57,10 @@ public class NaiveBayesCDDetectorIda2015 {
         virtualDriftDetector.setNumberOfGlobalVars(1);
 
         //We should invoke this method before processing any data
-        virtualDriftDetector.initLearning();
+        if(includeUR)
+            virtualDriftDetector.initLearningWithUR();
+        else
+            virtualDriftDetector.initLearning();
 
         //If UR is to be included
         //virtualDriftDetector.initLearningWithUR();
@@ -94,8 +96,6 @@ public class NaiveBayesCDDetectorIda2015 {
                 continue;
 
             DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path+currentMonth+".arff");
-            //DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-            //          "dataWeka/dataWeka"+currentMonth+".arff");
 
             virtualDriftDetector.setTransitionVariance(0);
 
