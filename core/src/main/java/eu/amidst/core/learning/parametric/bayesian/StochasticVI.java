@@ -28,10 +28,11 @@ import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * This class implements the {@link ParameterLearningAlgorithm} interface, and defines the parallel Maximum Likelihood algorithm.
+ * This class implements the {@link BayesianParameterLearningAlgorithm} interface, and defines the parallel Maximum Likelihood algorithm.
  *
  * <p> For an example of use follow this link </p>
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
@@ -165,11 +166,19 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
         double totalTime=0;
         double t = 0;
+
+        Iterator<DataOnMemory<DataInstance>> iterator = this.dataStream.iterableOverBatches(this.batchSize).iterator();
+
+
+
         while(!convergence){
 
             long startBatch= System.nanoTime();
 
-            DataOnMemory<DataInstance> batch = this.dataStream.subsample(this.svb.getSeed(), this.batchSize);
+            DataOnMemory<DataInstance> batch = iterator.next();
+
+            if (!iterator.hasNext())
+                iterator = this.dataStream.iterableOverBatches(this.batchSize).iterator();
 
             NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
 
@@ -268,9 +277,12 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         return this.svb.getParameterPosterior(parameter);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
-        return 0;
+        return this.svb.predictedLogLikelihood(batch);
     }
 
 }
