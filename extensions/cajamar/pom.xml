@@ -16,7 +16,7 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>1.0.0</version>
+        <version>${AMIDSTver}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -43,12 +43,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
@@ -58,12 +58,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
     </dependencies>
 

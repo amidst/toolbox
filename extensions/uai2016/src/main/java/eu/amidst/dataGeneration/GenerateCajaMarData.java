@@ -200,8 +200,8 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
 
     /**
      * This method returns a DynamicDAG object with naive Bayes structure for the given attributes.
-     * @param attributes
-     * @return
+     * @param attributes object of the class Attributes
+     * @return object with the dynamic DAG
      */
     public static DynamicDAG getNaiveBayesStructure(Attributes attributes){
 

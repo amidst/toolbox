@@ -56,7 +56,7 @@ public class GaussianMixture extends Model {
      * Constructor of classifier from a list of attributes (e.g. from a datastream).
      * The following parameters are set to their default values: numStatesHiddenVar = 2
      * and diagonal = true.
-     * @param attributes
+     * @param attributes object of the class Attributes
      */
     public GaussianMixture(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
@@ -135,7 +135,7 @@ public class GaussianMixture extends Model {
 
     /**
      * Method to obtain the number of states of the hidden (latent) variable
-     * @param numStatesHiddenVar
+     * @param numStatesHiddenVar integer value
      */
     public void setNumStatesHiddenVar(int numStatesHiddenVar) {
         this.numStatesHiddenVar = numStatesHiddenVar;
@@ -144,7 +144,7 @@ public class GaussianMixture extends Model {
 
     /**
      * Method to obtain the hidden (latent) variable
-     * @return
+     * @return object of the class Variable
      */
     public Variable getHiddenVar() {
         return hiddenVar;

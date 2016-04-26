@@ -29,7 +29,7 @@ import eu.amidst.core.models.BayesianNetwork;
  * This example shows how to adaptively learn the parameters of a Bayesian network from a stream of data using exponential
  * forgetting with a given fading factor, directly inspired by the approach presented in
  *
- * <i>     Olesen, K. G., Lauritzen, S. L., & Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal
+ * <i>     Olesen, K. G., Lauritzen, S. L., and Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal
  *      probabilistic networks. In Proceedings of the Eighth international conference on Uncertainty
  *      in Artificial Intelligence (pp. 223-229). Morgan Kaufmann Publishers Inc.
  * </i>

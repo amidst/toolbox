@@ -5,11 +5,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>1.0.0</version>
+        <version>${AMIDSTver}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>eu.amidst</groupId>
     <artifactId>moalink</artifactId>
+    <version>${AMIDSTver}</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -78,15 +80,20 @@
             <organization>University of Almeria, Spain</organization>
             <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
         </developer>
+        <developer>
+            <name>Rafael Cabañas</name>
+            <email>rcabanas@cs.aau.dk</email>
+            <organization>Aalborg University, Denmark</organization>
+            <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
+        </developer>
     </developers>
-
 
 
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
 
         <dependency>
@@ -102,6 +109,10 @@
         </dependency>
 
     </dependencies>
+
+
+
+
 
     <build>
         <plugins>
@@ -141,6 +152,9 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
