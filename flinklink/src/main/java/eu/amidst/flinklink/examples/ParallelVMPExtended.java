@@ -107,7 +107,7 @@ public class ParallelVMPExtended {
      *
      * Other test with windowSize = 100
      *
-     * @param args
+     * @param args command-line input arguments
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {

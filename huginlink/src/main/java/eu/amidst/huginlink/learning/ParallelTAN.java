@@ -315,7 +315,6 @@ public class ParallelTAN implements AmidstOptionsHandler {
      * Learns the parameters of a TAN structure using the {@link eu.amidst.core.learning.parametric.ParallelMaximumLikelihood}.
      * @param dataStream a stream of data instances for learning the parameters.
      * @return a <code>BayesianNetwork</code> object in ADMIST format.
-     * @throws ExceptionHugin
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream) {
         try {
