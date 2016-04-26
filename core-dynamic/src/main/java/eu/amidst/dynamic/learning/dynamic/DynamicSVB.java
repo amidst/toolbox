@@ -21,12 +21,15 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements the {@link DynamicBayesianLearningAlgorithm } interface.
@@ -247,7 +250,17 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
      */
     @Override
     public DynamicBayesianNetwork getLearntDBN() {
-        return new DynamicBayesianNetwork(this.dag, this.ef_extendedBNTime0.toConditionalDistribution(), this.ef_extendedBNTimeT.toConditionalDistribution());
+
+        Map<Variable, Vector > expectedValueParameterVariablesTime0 = new HashMap<>();
+        this.getDynamicPlateauStructure().parametersNodeTime0
+                .forEach(node -> expectedValueParameterVariablesTime0.put(node.getMainVariable(),node.getQDist().getExpectedParameters()));
+
+        Map<Variable, Vector > expectedValueParameterVariablesTimeT = new HashMap<>();
+        this.getDynamicPlateauStructure().parametersNodeTimeT
+                .forEach(node -> expectedValueParameterVariablesTimeT.put(node.getMainVariable(),node.getQDist().getExpectedParameters()));
+
+
+        return new DynamicBayesianNetwork(this.dag, this.ef_extendedBNTime0.toConditionalDistribution(expectedValueParameterVariablesTime0), this.ef_extendedBNTimeT.toConditionalDistribution(expectedValueParameterVariablesTimeT));
     }
 
 }
