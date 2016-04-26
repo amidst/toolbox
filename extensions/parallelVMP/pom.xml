@@ -28,6 +28,16 @@
             <artifactId>core</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core</artifactId>
+            <version>0.4.1</version>
+        </dependency>
     </dependencies>
 
 
