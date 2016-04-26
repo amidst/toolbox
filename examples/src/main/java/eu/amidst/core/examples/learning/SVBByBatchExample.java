@@ -33,7 +33,7 @@ import eu.amidst.core.utils.DAGGenerator;
  * This example shows how to learn incrementally the parameters of a Bayesian network from a stream of data with a Bayesian
  * approach using the following algorithm
  *
- * <i> Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
+ * <i> Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational bayes.
  * In Advances in Neural Information Processing Systems (pp. 1727-1735). </i>
  *
  *
@@ -65,7 +65,8 @@ public class SVBByBatchExample {
 
         //Then we show how we can perform parameter learning by a sequential updating of data batches.
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(5)){
-            parameterLearningAlgorithm.updateModel(batch);
+            double log_likelhood_of_batch = parameterLearningAlgorithm.updateModel(batch);
+            System.out.println("Log-Likelihood of Batch: "+ log_likelhood_of_batch);
         }
 
         //And we get the model

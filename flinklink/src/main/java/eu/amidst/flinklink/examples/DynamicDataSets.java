@@ -98,7 +98,7 @@ public class DynamicDataSets {
      *
      *
      *
-     * @param args
+     * @param args command line arguments
      * @throws Exception
      */
 

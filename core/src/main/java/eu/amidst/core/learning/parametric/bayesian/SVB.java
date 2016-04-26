@@ -249,6 +249,22 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      * {@inheritDoc}
      */
     @Override
+    public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
+        this.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
+
+        double elbo =  this.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> this.getPlateuStructure().getVMP().computeELBO(node)).sum();
+
+        elbo += this.updateModelOnBatchParallel(batch).getElbo();
+
+        this.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(true));
+
+        return elbo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
         double elboBatch = 0;
         if (!nonSequentialModel){
@@ -518,7 +534,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
     /**
      * Updas the parameters of the posteriors Qs distributions.
-     * @param parameterVector
+     * @param parameterVector object of the class CompoundVector
      */
     public void updateNaturalParameterPosteriors(CompoundVector parameterVector){
         this.plateuStructure.updateNaturalParameterPosteriors(parameterVector);

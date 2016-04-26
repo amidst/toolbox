@@ -39,9 +39,9 @@ public class MLforDBNfromDataset {
 
     /**
      * This method returns a DynamicDAG object with naive Bayes structure for the given attributes.
-     * @param attributes
-     * @param classIndex
-     * @return
+     * @param attributes object of the class Attributes
+     * @param classIndex integer value indicating the possition of the class
+     * @return object of the class DynamicDAG
      */
     public static DynamicDAG getNaiveBayesStructure(Attributes attributes, int classIndex){
 

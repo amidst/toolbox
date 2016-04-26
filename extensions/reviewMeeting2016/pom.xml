@@ -13,11 +13,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>AmidstToolbox</artifactId>
+        <groupId>eu.amidst</groupId>
+        <version>${AMIDSTver}</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>reviewMeeting2016</artifactId>
-    <version>1.0.0</version>
+    <version>${AMIDSTver}</version>
 
 
     <url>http://amidst.github.io/toolbox/</url>
@@ -101,22 +109,22 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core-dynamic</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
     </dependencies>
 
