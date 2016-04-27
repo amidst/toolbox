@@ -78,6 +78,10 @@ public class NaiveBayesVirtualConceptDriftDetector {
     /** Represents whether there is or not a global hidden variable modelling concept drift*/
     boolean globalHidden = true;
 
+    boolean includeUR = false;
+
+    boolean includeIndicators = false;
+
     /**
      * Returns the class variable of the classifier
      * @return A <code>Variable</code> object
@@ -163,81 +167,62 @@ public class NaiveBayesVirtualConceptDriftDetector {
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
     }
 
+    public boolean isIncludeIndicators() {
+        return includeIndicators;
+    }
+
+    public void setIncludeIndicators(boolean includeIndicators) {
+        this.includeIndicators = includeIndicators;
+    }
+
+    public boolean isIncludeUR() {
+        return includeUR;
+    }
+
+    public void setIncludeUR(boolean includeUR) {
+        this.includeUR = includeUR;
+    }
+
+
     /**
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
     private void buildGlobalDAG(){
         Variables variables = new Variables(data.getAttributes());
-        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
-        hiddenVars = new ArrayList<>();
 
-        for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-            Variable globalHidden = variables.newGaussianVariable("GlobalHidden_"+i);
-            hiddenVars.add(globalHidden);
-        }
+        /**
+         * Create indicator variables if includeIndicators is set to true
+         */
+        if(this.isIncludeIndicators()){
+            for (Attribute attribute : data.getAttributes()) {
 
-        Variable classVariable = variables.getVariableByName(className);
-
-        DAG dag = new DAG(variables);
-
-        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
-
-        for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
-            if (att.getName().equals(className) || att.getName().equals(unemploymentRateAttName))
-                continue;
-
-            Variable variable = variables.getVariableByName(att.getName());
-            dag.getParentSet(variable).addParent(classVariable);
-            if (this.globalHidden) {
-                for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-                    dag.getParentSet(variable).addParent(hiddenVars.get(i));
-                }
             }
         }
 
-        System.out.println(dag.toString());
-
-        svb = new SVB();
-        svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVars));
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(fading);
-        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
-        svb.setWindowsSize(this.windowsSize);
-        svb.setDAG(dag);
-
-        svb.setOutput(false);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
-        svb.getPlateuStructure().getVMP().setThreshold(0.001);
-
-        // svb.setParallelMode(true);
-
-
-
-        svb.initLearning();
-    }
-
-    /**
-     * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
-     */
-    private void buildGlobalDAGWithUR(){
-        Variables variables = new Variables(data.getAttributes());
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
-        List<Variable> hiddenVarsWithUR = new ArrayList<>();
+        List<Variable> hiddenVars = new ArrayList<>();
 
         for (int i = 0; i < this.numberOfGlobalVars ; i++) {
             Variable globalHidden = variables.newGaussianVariable("GlobalHidden_"+i);
+            this.hiddenVars.add(globalHidden);
             hiddenVars.add(globalHidden);
-            hiddenVarsWithUR.add(globalHidden);
         }
 
         Variable unemploymentRateVar = null;
         String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
-        try {
-            unemploymentRateVar = variables.getVariableByName(unemploymentRateAttName);
-            hiddenVarsWithUR.add(unemploymentRateVar);
-        }catch (UnsupportedOperationException e){}
+
+        /**
+         * Include indicator variable if includeIndicators is set to true
+         */
+
+        if(this.isIncludeUR()) {
+            try {
+                unemploymentRateVar = variables.getVariableByName(unemploymentRateAttName);
+                hiddenVars.add(unemploymentRateVar);
+            } catch (UnsupportedOperationException e) {
+            }
+        }
 
 
         Variable classVariable = variables.getVariableByName(className);
@@ -252,7 +237,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
             dag.getParentSet(variable).addParent(classVariable);
             if (this.globalHidden) {
                 for (int i = 0; i < this.numberOfGlobalVars ; i++) {
-                    dag.getParentSet(variable).addParent(hiddenVars.get(i));
+                    dag.getParentSet(variable).addParent(this.hiddenVars.get(i));
                 }
             }
             if(unemploymentRateVar!=null)
@@ -263,8 +248,8 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
         svb = new SVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVarsWithUR));
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
+        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVars));
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(this.hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(fading);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setWindowsSize(this.windowsSize);
@@ -296,20 +281,6 @@ public class NaiveBayesVirtualConceptDriftDetector {
         }
     }
 
-    /**
-     * Initialises the class for concept drift detection.
-     */
-    public void initLearningWithUR() {
-        if (classIndex == -1)
-            classIndex = data.getAttributes().getNumberOfAttributes()-1;
-
-
-        switch (this.conceptDriftDetector){
-            case GLOBAL:
-                this.buildGlobalDAGWithUR();
-                break;
-        }
-    }
 
     /**
      * Update the model with a new data stream of instances.

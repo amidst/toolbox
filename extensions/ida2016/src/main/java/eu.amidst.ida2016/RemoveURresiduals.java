@@ -82,8 +82,10 @@ public class RemoveURresiduals {
         //We fix the number of global latent variables
         virtualDriftDetector.setNumberOfGlobalVars(0);
 
+        virtualDriftDetector.setIncludeUR(true);
+
         //We should invoke this method before processing any data
-        virtualDriftDetector.initLearningWithUR();
+        virtualDriftDetector.initLearning();
 
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 

@@ -8,20 +8,27 @@ import eu.amidst.core.variables.Variable;
 import java.util.stream.IntStream;
 
 /**
- * Created by ana@cs.aau.dk on 20/04/16.
+ * Created by ana@cs.aau.dk on 27/04/16.
  */
-public class NaiveBayesCDDetectorIda2015 {
+public class NaiveBayesCDDetectorIda2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
+    private static Variable unemploymentRateVar;
+    private static boolean includeUR = false;
+    private static boolean includeIndicators = false;
 
     static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
-
+    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
+    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
             System.out.print(currentMonth + "\t" + meanHiddenVars[j]);
             meanHiddenVars[j] = 0;
         }
-
+        if (unemploymentRateVar != null) {
+            System.out.print(virtualDriftDetector.getSvb().getPlateuStructure().
+                    getNodeOfNonReplicatedVar(unemploymentRateVar).getAssignment().getValue(unemploymentRateVar) + "\t");
+        }
         System.out.println();
     }
 
@@ -51,6 +58,10 @@ public class NaiveBayesCDDetectorIda2015 {
         //We fix the number of global latent variables
         virtualDriftDetector.setNumberOfGlobalVars(1);
 
+        virtualDriftDetector.setIncludeUR(includeUR);
+
+        virtualDriftDetector.setIncludeIndicators(includeIndicators);
+
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
 
@@ -63,6 +74,14 @@ public class NaiveBayesCDDetectorIda2015 {
         System.out.print("Month");
         for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
             System.out.print("\t" + hiddenVar.getName());
+        }
+
+
+        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
+        try {
+            unemploymentRateVar = virtualDriftDetector.getSvb().getDAG().getVariables().getVariableByName(unemploymentRateAttName);
+            System.out.print("\t UnempRate");
+        } catch (UnsupportedOperationException e) {
         }
 
 
@@ -95,6 +114,3 @@ public class NaiveBayesCDDetectorIda2015 {
         }
     }
 }
-
-
-
