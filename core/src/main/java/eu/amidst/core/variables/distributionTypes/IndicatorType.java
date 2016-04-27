@@ -19,41 +19,45 @@ package eu.amidst.core.variables.distributionTypes;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.exponentialfamily.EF_Multinomial;
 import eu.amidst.core.variables.DistributionType;
-import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.Variable;
+
 import java.util.List;
 
 /**
- * This class extends the abstract class {@link DistributionType} and defines the Multinomial distribution type.
+ * This class extends the abstract class {@link DistributionType} and defines the Indicator type.
  */
-public class MultinomialType extends DistributionType{
+public class IndicatorType extends DistributionType {
+
+    private double deltaValue = 0.0;
 
     /**
-     * Creates a new MultinomialType for the given variable.
-     * @param variable the Variable to which the Multinomial distribution type will be assigned.
+     * Creates a new IndicatorType for the given variable.
+     * @param var_ the Variable to which the "Indicator" distribution will be assigned.
      */
-    public MultinomialType(Variable variable){
-        super(variable);
+    public IndicatorType(Variable var_) {
+        super(var_);
+    }
+
+    public double getDeltaValue() {
+        return deltaValue;
+    }
+
+    public void setDeltaValue(double deltaValue) {
+        this.deltaValue = deltaValue;
     }
 
     /**
-     *{@inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public boolean isParentCompatible(Variable parent) {
-        if (parent.getDistributionTypeEnum()== DistributionTypeEnum.MULTINOMIAL ||
-                parent.getDistributionTypeEnum()==DistributionTypeEnum.MULTINOMIAL_LOGISTIC ||
-                parent.getDistributionTypeEnum()==DistributionTypeEnum.INDICATOR)
-            return true;
-        else
-            return false;
+        return false;
     }
 
     /**
-     * Creates a new univariate distribution.
-     * @return a multinomial distribution for this Variable.
+     * {@inheritDoc}
      */
     @Override
     public Multinomial newUnivariateDistribution() {
@@ -61,16 +65,21 @@ public class MultinomialType extends DistributionType{
     }
 
     /**
+     * Creates a new exponential family univariate distribution.
+     * @return an exponential family Indicator distribution.
+     */
+    @Override
+    public EF_Multinomial newEFUnivariateDistribution() {
+        Multinomial multinomial = new Multinomial(variable);
+        return multinomial.toEFUnivariateDistribution();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
-        if (!this.areParentsCompatible(parents))
-            throw new IllegalArgumentException("Parents are not compatible");
-
-        if (parents.isEmpty())
-            return (E) new Multinomial(this.variable);
-        else
-            return (E) new Multinomial_MultinomialParents(this.variable, parents);
+        //throw new UnsupportedOperationException("Indicator Type does not allow conditional distributions");
+        return (E) new Multinomial(this.variable);
     }
 }

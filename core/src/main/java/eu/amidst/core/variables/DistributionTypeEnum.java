@@ -47,7 +47,10 @@ public enum DistributionTypeEnum {
     DIRICHLET_PARAMETER,
 
     /** The normal-gamma parameter distribution. */
-    NORMAL_GAMMA_PARAMETER;
+    NORMAL_GAMMA_PARAMETER,
+
+    /** The "indicator" distribution. */
+    INDICATOR;
 
     /**
      * Creates a new distribution type for a given variable.
@@ -73,6 +76,8 @@ public enum DistributionTypeEnum {
                 return (E) new DirichletParameterType(var);
             case NORMAL_GAMMA_PARAMETER:
                 return (E) new NormalGammaParameterType(var);
+            case INDICATOR:
+                return (E) new IndicatorType(var);
             default:
                 throw new IllegalArgumentException("Unknown Distribution Type");
         }
