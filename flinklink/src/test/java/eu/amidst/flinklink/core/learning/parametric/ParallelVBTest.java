@@ -30,7 +30,7 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
 import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.PlateuIIDReplication;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -834,7 +834,7 @@ public class ParallelVBTest extends TestCase {
         parallelVB.setMaximumGlobalIterations(100);
 
         List<Variable> hiddenVars = Arrays.asList(dag.getVariables().getVariableByName("GlobalHidden_0"));
-        parallelVB.setPlateuStructure(new PlateuStructure(hiddenVars));
+        parallelVB.setPlateuStructure(new PlateuIIDReplication(hiddenVars));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, 0.1);
         gaussianHiddenTransitionMethod.setFading(1.0);
         parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);

@@ -18,7 +18,7 @@
 package eu.amidst.reviewMeeting2016;
 
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.PlateuIIDReplication;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -104,7 +104,7 @@ public class CajaMarDemoNB {
         DynamicParallelVB parallelVB = new DynamicParallelVB();
 
         //
-        parallelVB.setPlateuStructure(new PlateuStructure());
+        parallelVB.setPlateuStructure(new PlateuIIDReplication());
         // Convergence parameters
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(100);

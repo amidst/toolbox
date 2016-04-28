@@ -34,14 +34,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * This class defines a Plateu Structure.
  */
-public class PlateuStructure implements Serializable {
+public abstract class PlateuStructure implements Serializable {
 
     /**
      * Represents the serial version ID for serializing the object.
@@ -302,54 +301,7 @@ public class PlateuStructure implements Serializable {
     /**
      * Replicates the model of this PlateuStructure.
      */
-    public void replicateModel() {
-        nonReplictedNodes = new ArrayList();
-        replicatedNodes = new ArrayList<>(nReplications);
-
-        replicatedVarsToNode = new ArrayList<>();
-        nonReplicatedVarsToNode = new ConcurrentHashMap<>();
-        nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
-                .filter(dist -> isNonReplicatedVar(dist.getVariable()))
-                .map(dist -> {
-                    Node node = new Node(dist);
-                    nonReplicatedVarsToNode.put(dist.getVariable(), node);
-                    return node;
-                })
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < nReplications; i++) {
-
-            Map<Variable, Node> map = new ConcurrentHashMap<>();
-            List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
-                    .filter(dist -> isReplicatedVar(dist.getVariable()))
-                    .map(dist -> {
-                        Node node = new Node(dist);
-                        map.put(dist.getVariable(), node);
-                        return node;
-                    })
-                    .collect(Collectors.toList());
-            this.replicatedVarsToNode.add(map);
-            replicatedNodes.add(tmpNodes);
-        }
-
-        for (int i = 0; i < nReplications; i++) {
-            for (Node node : replicatedNodes.get(i)) {
-                final int slice = i;
-                node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, slice)).collect(Collectors.toList()));
-                node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, slice).getChildren().add(node));
-            }
-        }
-
-        List<Node> allNodes = new ArrayList();
-
-        allNodes.addAll(this.nonReplictedNodes);
-
-        for (int i = 0; i < nReplications; i++) {
-            allNodes.addAll(this.replicatedNodes.get(i));
-        }
-
-        this.vmp.setNodes(allNodes);
-    }
+    public abstract void replicateModel();
 
     /**
      * Sets the evidence for this PlateuStructure.

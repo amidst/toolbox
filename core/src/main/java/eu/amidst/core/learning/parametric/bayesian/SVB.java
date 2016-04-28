@@ -61,7 +61,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     EF_LearningBayesianNetwork ef_extendedBN;
 
     /** Represents the plateu structure {@link PlateuStructure}*/
-    PlateuStructure plateuStructure = new PlateuStructure();
+    PlateuStructure plateuStructure = new PlateuIIDReplication();
 
     /** Represents a directed acyclic graph {@link DAG}. */
     DAG dag;

@@ -31,6 +31,23 @@ import java.util.stream.Collectors;
  */
 public class PlateuIIDReplication extends PlateuStructure{
 
+
+    /**
+     * Empty builder.
+     */
+    public PlateuIIDReplication() {
+        super();
+    }
+
+    /**
+     * Builder which initially specify a list of non-replicated variables.
+     *
+     * @param initialNonReplicatedVariablesList list of variables
+     */
+    public PlateuIIDReplication(List<Variable> initialNonReplicatedVariablesList) {
+        super(initialNonReplicatedVariablesList);
+    }
+
     /**
      * Replicates this model.
      */
@@ -41,7 +58,7 @@ public class PlateuIIDReplication extends PlateuStructure{
         replicatedVarsToNode = new ArrayList<>();
         nonReplicatedVarsToNode = new ConcurrentHashMap<>();
         nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
-                .filter(dist -> dist.getVariable().isParameterVariable())
+                .filter(dist -> isNonReplicatedVar(dist.getVariable()))
                 .map(dist -> {
                     Node node = new Node(dist);
                     nonReplicatedVarsToNode.put(dist.getVariable(), node);
@@ -53,7 +70,7 @@ public class PlateuIIDReplication extends PlateuStructure{
 
             Map<Variable, Node> map = new ConcurrentHashMap<>();
             List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
-                    .filter(dist -> !dist.getVariable().isParameterVariable())
+                    .filter(dist -> isReplicatedVar(dist.getVariable()))
                     .map(dist -> {
                         Node node = new Node(dist);
                         map.put(dist.getVariable(), node);
