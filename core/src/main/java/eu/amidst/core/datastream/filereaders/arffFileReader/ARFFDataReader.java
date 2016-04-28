@@ -96,6 +96,8 @@ public class ARFFDataReader implements DataFileReader {
             List<String> statesNames = Arrays.stream(states).map(String::trim).collect(Collectors.toList());
 
             return new Attribute(index, name, new FiniteStateSpace(statesNames));
+        }else if (parts[2].equals("LargeMultinomial")) {
+            return new Attribute(index, name, new FiniteStateSpace(Integer.parseInt(parts[3])));
         }else{
             throw new UnsupportedOperationException("We can not create an attribute from this line: "+line);
         }
