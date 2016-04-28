@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 /**
  * Created by ana@cs.aau.dk on 27/04/16.
  */
-public class NaiveBayesCDDetectorIda2016 {
+public class NaiveBayesCDDetectorICDM2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
