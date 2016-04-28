@@ -1,24 +1,22 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 
-package eu.amidst.core.datastream;
+package eu.amidst.lda;
+
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.DataStream;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -27,55 +25,49 @@ import static java.util.Spliterators.spliterator;
 import static java.util.stream.StreamSupport.stream;
 
 /**
- * The BatchesSpliterator class implements a {@link Spliterator} for iterating over data batches of a {@link DataStream}.
- * The data batches are explicitly stored in {@link DataOnMemory} objects.
- * This class is used by the class {@link DataStream}.
- *
- * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
- *
- * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
- *
- * @param <T> A generic Type that extends the interface {@link DataInstance}.
+ * The DataSequenceSpliterator class implements a {@link Spliterator} of {@link DataOnMemory}.
  */
 public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator<DataOnMemory<T>> {
 
-    /** Represents the data stream. */
+    /** Represents a DataStream of DynamicDataInstance objects. */
     private final DataStream<T> dataStream;
 
-    /** Represents the Spliterator. */
+    /** Represents a Spliterator of DynamicDataInstance objects. */
     private final Spliterator<T> spliterator;
+
+    private final int characteristics;
+
+    private long est;
+
+    private T tailInstance=null;
+
+    private boolean advance = true;
 
     /** Represents the batch size. */
     private final int batchSize;
 
-    /** Represents the characteristics. */
-    private final int characteristics;
-
-    /** Represents est. */
-    private long est;
-
     /**
-     * Creates a new BatchesSpliterator.
-     * @param dataStream_ the data stream.
-     * @param est est.
-     * @param batchSize the batch size.
+     * Creates a new DataSequenceSpliterator.
+     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @param est the estimated size
+     * @param batchSize
      */
     public BatchSpliteratorByID(DataStream<T> dataStream_, long est, int batchSize) {
         this.dataStream = dataStream_;
+        this.batchSize = batchSize;
         this.spliterator = this.dataStream.stream().spliterator();
         final int c = spliterator.characteristics();
         this.characteristics = (c & SIZED) != 0 ? c | SUBSIZED : c;
         this.est = est;
-        this.batchSize = batchSize;
     }
 
     /**
-     * Creates a new BatchesSpliterator.
-     * @param dataStream_ the data stream.
-     * @param batchSize the batch size.
+     * Creates a new DataSequenceSpliterator.
+     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @param batchSize
      */
     public BatchSpliteratorByID(DataStream<T> dataStream_, int batchSize) {
-        this(dataStream_, dataStream_.stream().spliterator().estimateSize()/batchSize, batchSize);
+        this(dataStream_, dataStream_.stream().spliterator().estimateSize(), batchSize);
     }
 
     /**
@@ -86,59 +78,53 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
      * @return a new parallel {@code Stream}.
      */
     public static <T extends DataInstance> Stream<DataOnMemory<T>> toFixedBatchStream(DataStream<T> dataStream_, int batchSize) {
-        return stream(new BatchesSpliterator<>(dataStream_, batchSize), true);
+        return stream(new BatchSpliteratorByID<>(dataStream_, batchSize), true);
     }
 
-    /**
-     * This class defines a batch iterator over the stream.
-     * @param <T> the type of stream elements.
-     */
-    static class BatchIterator <T extends DataInstance> implements Iterable<DataOnMemory<T>>{
-
-        Stream<DataOnMemory<T>> stream;
-
-        BatchIterator(Stream<DataOnMemory<T>> stream_){
-            stream=stream_;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Iterator<DataOnMemory<T>> iterator() {
-            return this.stream.iterator();
-        }
-    }
-
-    /**
-     * Creates a new BatchIterator from a given data stream and batch size.
-     * @param dataStream_ the data stream.
-     * @param batchSize the batch size.
-     * @param <T> the type of stream elements.
-     * @return a new BatchIterator.
-     */
-    public static <T extends DataInstance> Iterable<DataOnMemory<T>> toFixedBatchIterable(DataStream<T> dataStream_, int batchSize) {
-        return new BatchIterator<T>(toFixedBatchStream(dataStream_, batchSize));
-    }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Spliterator<DataOnMemory<T>> trySplit() {
-        final HoldingConsumer<T> holder = new HoldingConsumer<>();
-        if (!spliterator.tryAdvance(holder))
-            return null;
+    @Override public Spliterator<DataOnMemory<T>> trySplit() {
+        if (!advance) return null;
 
-        final DataOnMemoryListContainer<T> container = new DataOnMemoryListContainer<>(dataStream.getAttributes());
-        final Object[] a = new Object[1];
+        final HoldingConsumer<T> holder = new HoldingConsumer<>();
+
+
+        final DataOnMemoryListContainer container = new DataOnMemoryListContainer(dataStream.getAttributes());
+        final DataOnMemoryListContainer[] a = new DataOnMemoryListContainer[1];
         a[0]=container;
-        int j = 0;
-        do{
-            container.add(holder.value);
-        }while (++j < batchSize && spliterator.tryAdvance(holder));
-        if (est != Long.MAX_VALUE) est -= 1;
-        return spliterator(a, 0, 1, characteristics());
+
+        if (tailInstance==null) {
+            if (spliterator.tryAdvance(holder)) {
+                tailInstance = holder.value;
+                container.add(tailInstance);
+            }else{
+                return null;
+            }
+        }else{
+            container.add(tailInstance);
+        }
+
+        int count = 0;
+        while (count<this.batchSize && tailInstance!=null){
+            while ((advance=spliterator.tryAdvance(holder)) && getSequenceID(holder.value)==getSequenceID(tailInstance)){
+                tailInstance=holder.value;
+                container.add(tailInstance);
+            };
+
+            tailInstance=holder.value;
+            count++;
+        }
+
+
+        if (est != Long.MAX_VALUE) est -= container.getNumberOfDataInstances();
+
+        if (container.getNumberOfDataInstances()>0) {
+            return spliterator(a, 0, 1, characteristics());
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -146,24 +132,42 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
      */
     @Override
     public boolean tryAdvance(Consumer<? super DataOnMemory<T>> action) {
+        if (!advance) return false;
+
         final HoldingConsumer<T> holder = new HoldingConsumer<>();
-        if (!spliterator.tryAdvance(holder))
-            return false;
 
-        final DataOnMemoryListContainer<T> container = new DataOnMemoryListContainer<>(dataStream.getAttributes());
-        int j = 0;
-        do{
-            container.add(holder.value);
-        }while (++j < batchSize && spliterator.tryAdvance(holder));
+        final DataOnMemoryListContainer container = new DataOnMemoryListContainer(dataStream.getAttributes());
 
-        if (j>0 && est != Long.MAX_VALUE) est -= 1;
+        if (tailInstance==null) {
+            if (spliterator.tryAdvance(holder)) {
+                tailInstance = holder.value;
+                container.add(tailInstance);
+            }else{
+                return false;
+            }
+        }else{
+            container.add(tailInstance);
+        }
 
-        if (j>0) {
+        while ((advance=spliterator.tryAdvance(holder)) && getSequenceID(holder.value)==getSequenceID(tailInstance)){
+            tailInstance=holder.value;
+            container.add(tailInstance);
+        };
+
+        tailInstance=holder.value;
+
+        if (est != Long.MAX_VALUE) est -= container.getNumberOfDataInstances();
+
+        if (container.getNumberOfDataInstances()>0) {
             action.accept(container);
             return true;
         }else{
             return false;
         }
+    }
+
+    private static long getSequenceID(DataInstance tailInstance){
+        return (long)tailInstance.getValue(tailInstance.getAttributes().getSeq_id());
     }
 
     /**
@@ -186,10 +190,8 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
 
     static final class HoldingConsumer<T> implements Consumer<T> {
         T value;
-
-        /**
-         * {@inheritDoc}
-         */
         @Override public void accept(T value) { this.value = value; }
     }
+
+
 }
