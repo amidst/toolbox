@@ -86,7 +86,7 @@ public class DynamicLatentClassificationModel extends DynamicClassifier{
 
     /**
      * method for getting the list of continuous hidden variables
-     * @return
+     * @return object of the class List<Variable> containing the list
      */
     public List<Variable> getContHiddenList() {
         return contHiddenList;

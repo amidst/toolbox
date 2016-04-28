@@ -220,4 +220,14 @@ public interface Variable {
     default  boolean isNormalParameter(){
         return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.NORMAL_PARAMETER)==0);
     }
+
+    /**
+     * Tests whether this Variable follows a "indicator" distribution.
+     * @return true if this Variable follows a indicator distribution, false otherwise.
+     */
+    default  boolean isIndicator(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.INDICATOR)==0);
+    }
+
+
 }

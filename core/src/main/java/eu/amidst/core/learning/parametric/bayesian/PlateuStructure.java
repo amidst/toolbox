@@ -111,7 +111,7 @@ public class PlateuStructure implements Serializable {
     /**
      * Builder which initially specify a list of non-replicated variables.
      *
-     * @param initialNonReplicatedVariablesList
+     * @param initialNonReplicatedVariablesList list of variables
      */
     public PlateuStructure(List<Variable> initialNonReplicatedVariablesList) {
         this.initialNonReplicatedVariablesList = new ArrayList<>();
@@ -220,7 +220,7 @@ public class PlateuStructure implements Serializable {
     /**
      * Returns the list of non replicated Variables
      *
-     * @return
+     * @return list of variables
      */
     public List<Variable> getNonReplicatedVariables() {
         return this.nonReplicatedVariablesList;

@@ -13,7 +13,7 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>1.0.0</version>
+        <version>${AMIDSTver}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -39,7 +39,7 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
 
         <dependency>

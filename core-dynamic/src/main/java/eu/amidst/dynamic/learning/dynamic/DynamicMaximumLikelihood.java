@@ -40,7 +40,7 @@ public final class DynamicMaximumLikelihood {
 
     /**
      * Returns the batch size.
-     * @return an {@int} that represents the the batch size.
+     * @return an integer that represents the the batch size.
      */
     public static int getBatchSize() {
         return batchSize;
@@ -48,7 +48,7 @@ public final class DynamicMaximumLikelihood {
 
     /**
      * Sets the batch size.
-     * @param batchSize an {@int} that represents the the batch size.
+     * @param batchSize an integer that represents the the batch size.
      */
     public static void setBatchSize(int batchSize) {
         DynamicMaximumLikelihood.batchSize = batchSize;

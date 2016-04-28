@@ -76,7 +76,7 @@ public class DynamicDAG implements Serializable {
     /**
      * Update the DAG with a new DynamicVariables. This must be the same object passed to
      * the builder, but with new variables created.
-     * @param dynamicVariables1
+     * @param dynamicVariables1, object of the class DynamicVariables
      */
     public void updateDynamicVariables(DynamicVariables dynamicVariables1){
         this.dynamicVariables = dynamicVariables1;

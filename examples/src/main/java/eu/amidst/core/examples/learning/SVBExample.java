@@ -31,7 +31,7 @@ import eu.amidst.core.utils.DAGGenerator;
  * This example shows how to learn the parameters of a Bayesian network from a stream of data with a Bayesian
  * approach using the following algorithm
  *
- * <i> Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
+ * <i> Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational bayes.
  * In Advances in Neural Information Processing Systems (pp. 1727-1735). </i>
  *
  *

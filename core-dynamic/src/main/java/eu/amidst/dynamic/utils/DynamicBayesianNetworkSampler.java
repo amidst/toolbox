@@ -150,7 +150,7 @@ public class DynamicBayesianNetworkSampler {
      * @param random an object of type {@link java.util.Random}.
      * @param sequenceID an {@code int} that represents the sequence ID.
      * @param sequenceLength an {@code int} that represents the length of the sequence.
-     * @return
+     * @return an object of the class Stream<DynamicDataInstance>
      */
     private Stream<DynamicDataInstance> sample(DynamicBayesianNetwork network, List<Variable> causalOrderTime0, List<Variable> causalOrderTimeT, Random random, int sequenceID, int sequenceLength) {
 

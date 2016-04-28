@@ -40,9 +40,9 @@ public class MaximimumLikelihoodByBatchExample {
 
     /**
      * This method returns a DAG object with naive Bayes structure for the attributes of the passed data stream.
-     * @param dataStream
-     * @param classIndex
-     * @return
+     * @param dataStream object of the class DataStream<DataInstance>
+     * @param classIndex integer value indicating the position of the class
+     * @return object of the class DAG
      */
     public static DAG getNaiveBayesStructure(DataStream<DataInstance> dataStream, int classIndex){
 

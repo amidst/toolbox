@@ -190,27 +190,32 @@ public class NaiveBayesVirtualConceptDriftDetector {
     private void buildGlobalDAG(){
         Variables variables = new Variables(data.getAttributes());
 
+        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
+        Variable classVariable = variables.getVariableByName(className);
+
+        Variable unemploymentRateVar = null;
+        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
+
         /**
          * Create indicator variables if includeIndicators is set to true
          */
         if(this.isIncludeIndicators()){
-            for (Attribute attribute : data.getAttributes()) {
-
+            for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
+                if(!att.getName().equals(className) && !att.getName().equals(unemploymentRateAttName)) {
+                    variables.newIndicatorVariable(variables.getVariableByName(att.getName()), 0.0);
+                }
             }
         }
 
-        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
-        hiddenVars = new ArrayList<Variable>();
-        List<Variable> hiddenVars = new ArrayList<>();
+        hiddenVars = new ArrayList<>();
+        List<Variable> hiddenVarsWithUR = new ArrayList<>();
 
         for (int i = 0; i < this.numberOfGlobalVars ; i++) {
             Variable globalHidden = variables.newGaussianVariable("GlobalHidden_"+i);
             this.hiddenVars.add(globalHidden);
-            hiddenVars.add(globalHidden);
+            hiddenVarsWithUR.add(globalHidden);
         }
 
-        Variable unemploymentRateVar = null;
-        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
 
         /**
          * Include indicator variable if includeIndicators is set to true
@@ -219,13 +224,10 @@ public class NaiveBayesVirtualConceptDriftDetector {
         if(this.isIncludeUR()) {
             try {
                 unemploymentRateVar = variables.getVariableByName(unemploymentRateAttName);
-                hiddenVars.add(unemploymentRateVar);
+                hiddenVarsWithUR.add(unemploymentRateVar);
             } catch (UnsupportedOperationException e) {
             }
         }
-
-
-        Variable classVariable = variables.getVariableByName(className);
 
         DAG dag = new DAG(variables);
 
@@ -244,11 +246,23 @@ public class NaiveBayesVirtualConceptDriftDetector {
                 dag.getParentSet(variable).addParent(unemploymentRateVar);
         }
 
+        /**
+         * Include indicator variables as parents of its corresponding variables if includeIndicators is set to true
+         */
+        if(this.isIncludeIndicators()){
+            for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
+                if(!att.getName().equals(className) && !att.getName().equals(unemploymentRateAttName)) {
+                    Variable predictiveVar = variables.getVariableByName(att.getName());
+                    dag.getParentSet(predictiveVar).addParent(variables.getVariableByName(att.getName() + "_INDICATOR"));
+                }
+            }
+        }
+
         System.out.println(dag.toString());
 
         svb = new SVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVars));
+        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVarsWithUR));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(this.hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(fading);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);

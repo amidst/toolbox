@@ -20,6 +20,7 @@ package eu.amidst.core.datastream;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.distributionTypes.IndicatorType;
 
 import java.util.Set;
 
@@ -50,7 +51,12 @@ public interface DataInstance extends Assignment {
     default double getValue(Variable var) {
         if (var.getAttribute()==null)
             return Utils.missingValue();
-        else
+        else if(var.isIndicator() && (!Utils.isMissingValue(this.getValue(var.getAttribute()))
+                                        || (Utils.isMissingValue(this.getValue(var.getAttribute())) &&
+                                            ((IndicatorType)var.getDistributionType()).getDeltaValue()!= Double.NaN))){
+            return (this.getValue(var.getAttribute())==((IndicatorType)var.getDistributionType()).getDeltaValue())?
+                    0.0:1.0;
+        }else
             return this.getValue(var.getAttribute());
     }
 

@@ -14,23 +14,25 @@ public class NaiveBayesCDDetectorIda2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
-    private static boolean includeUR = false;
-    private static boolean includeIndicators = false;
+    private static boolean includeUR = true;
+    private static boolean includeIndicators = true;
 
-    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
-    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
+    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
+    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
             System.out.print(currentMonth + "\t" + meanHiddenVars[j]);
             meanHiddenVars[j] = 0;
         }
+
         if (unemploymentRateVar != null) {
-            System.out.print(virtualDriftDetector.getSvb().getPlateuStructure().
-                    getNodeOfNonReplicatedVar(unemploymentRateVar).getAssignment().getValue(unemploymentRateVar) + "\t");
+            System.out.print("\t" +virtualDriftDetector.getSvb().getPlateuStructure().
+                    getNodeOfNonReplicatedVar(unemploymentRateVar).getAssignment().getValue(unemploymentRateVar));
         }
         System.out.println();
     }
+
 
     public static void main(String[] args) {
 
@@ -89,7 +91,7 @@ public class NaiveBayesCDDetectorIda2016 {
 
         double[] meanHiddenVars;
 
-        //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
+
 
         for (int i = 0; i < NSETS; i++) {
 
@@ -106,6 +108,8 @@ public class NaiveBayesCDDetectorIda2016 {
 
             virtualDriftDetector.setTransitionVariance(0.1);
             virtualDriftDetector.getSvb().applyTransition();
+
+            //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
             //We print the output
             printOutput(meanHiddenVars, currentMonth);
