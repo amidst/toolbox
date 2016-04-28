@@ -136,7 +136,7 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
 
         final HoldingConsumer<T> holder = new HoldingConsumer<>();
 
-        final DataOnMemoryListContainer container = new DataOnMemoryListContainer(dataStream.getAttributes());
+        final DataOnMemoryListContainer<T> container = new DataOnMemoryListContainer(dataStream.getAttributes());
 
         if (tailInstance==null) {
             if (spliterator.tryAdvance(holder)) {
