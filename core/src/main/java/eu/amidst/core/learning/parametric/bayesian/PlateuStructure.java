@@ -308,34 +308,7 @@ public abstract class PlateuStructure implements Serializable {
      *
      * @param data a {@code List} of {@link DataInstance}.
      */
-    public void setEvidence(List<? extends DataInstance> data) {
-        if (data.size() > nReplications)
-            throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
-
-        for (int i = 0; i < nReplications && i < data.size(); i++) {
-            final int slice = i;
-            this.replicatedNodes.get(i).forEach(node -> {
-                node.setAssignment(data.get(slice));
-                node.setActive(true);
-            });
-        }
-
-        for (int i = data.size(); i < nReplications; i++) {
-            this.replicatedNodes.get(i).forEach(node -> {
-                node.setAssignment(null);
-                node.setActive(false);
-            });
-        }
-
-
-
-        //Non-replicated nodes can have evidende, which is taken from the first data sample in the list
-        for (Node nonReplictedNode : this.nonReplictedNodes) {
-            nonReplictedNode.setAssignment(data.get(0));
-        }
-
-        
-    }
+    public abstract void setEvidence(List<? extends DataInstance> data);
 
     public Node getNodeOfNonReplicatedVar(Variable variable) {
         if (isNonReplicatedVar(variable))

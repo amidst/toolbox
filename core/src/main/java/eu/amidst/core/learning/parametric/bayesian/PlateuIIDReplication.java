@@ -17,6 +17,7 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.variables.Variable;
 
@@ -47,6 +48,43 @@ public class PlateuIIDReplication extends PlateuStructure{
     public PlateuIIDReplication(List<Variable> initialNonReplicatedVariablesList) {
         super(initialNonReplicatedVariablesList);
     }
+
+
+    /**
+     * Sets the evidence for this PlateuStructure.
+     *
+     * @param data a {@code List} of {@link DataInstance}.
+     */
+    @Override
+    public void setEvidence(List<? extends DataInstance> data) {
+        if (data.size() > nReplications)
+            throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
+
+        for (int i = 0; i < nReplications && i < data.size(); i++) {
+            final int slice = i;
+            this.replicatedNodes.get(i).forEach(node -> {
+                node.setAssignment(data.get(slice));
+                node.setActive(true);
+            });
+        }
+
+        for (int i = data.size(); i < nReplications; i++) {
+            this.replicatedNodes.get(i).forEach(node -> {
+                node.setAssignment(null);
+                node.setActive(false);
+            });
+        }
+
+
+
+        //Non-replicated nodes can have evidende, which is taken from the first data sample in the list
+        for (Node nonReplictedNode : this.nonReplictedNodes) {
+            nonReplictedNode.setAssignment(data.get(0));
+        }
+
+
+    }
+
 
     /**
      * Replicates this model.

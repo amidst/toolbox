@@ -20,7 +20,7 @@ package eu.amidst.core.conceptdrift.utils;
 
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.Node;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.PlateuIIDReplication;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -32,12 +32,13 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 10/03/15.
  */
-public class PlateuHiddenVariableConceptDrift extends PlateuStructure {
+public class PlateuHiddenVariableConceptDrift extends PlateuIIDReplication {
 
     List<Variable> localHiddenVars;
     List<Node> localHiddenNodes;
     Map<Variable,Node> hiddenToNode;
     boolean dynamic;
+
     public PlateuHiddenVariableConceptDrift(List<Variable> localHiddenVars_, boolean dynamic_){
         this.localHiddenVars = localHiddenVars_;
         this.dynamic = dynamic_;
