@@ -51,12 +51,9 @@ public class PlateuIIDReplication extends PlateuStructure{
     /**
      * Replicates this model.
      */
+    @Override
     public void replicateModel(){
-        nonReplictedNodes = new ArrayList();
-        replicatedNodes = new ArrayList<>(nReplications);
 
-        replicatedVarsToNode = new ArrayList<>();
-        nonReplicatedVarsToNode = new ConcurrentHashMap<>();
         nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
                 .filter(dist -> isNonReplicatedVar(dist.getVariable()))
                 .map(dist -> {

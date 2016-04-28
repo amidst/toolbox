@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,17 +51,17 @@ public abstract class PlateuStructure implements Serializable {
     /**
      * Represents a map describing which variables are replicated
      */
-    Map<Variable, Boolean> replicatedVariables;
+    protected Map<Variable, Boolean> replicatedVariables = new HashMap<>();
 
     /**
      * Represents the list of non replicated {@link Node}s.
      */
-    transient protected List<Node> nonReplictedNodes;
+    transient protected List<Node> nonReplictedNodes = new ArrayList();
 
     /**
      * Represents the list of replicated nodes {@link Node}s.
      */
-    transient protected List<List<Node>> replicatedNodes;
+    transient protected List<List<Node>> replicatedNodes = new ArrayList<>();
 
     /**
      * Represents the {@link EF_LearningBayesianNetwork} model.
@@ -80,12 +81,12 @@ public abstract class PlateuStructure implements Serializable {
     /**
      * Represents a {@code Map} object that maps {@link Variable} parameters to the corresponding {@link Node}s.
      */
-    transient protected Map<Variable, Node> nonReplicatedVarsToNode;
+    transient protected Map<Variable, Node> nonReplicatedVarsToNode = new ConcurrentHashMap<>();
 
     /**
      * Represents the list of {@code Map} objects that map {@link Variable}s to the corresponding {@link Node}s.
      */
-    transient protected List<Map<Variable, Node>> replicatedVarsToNode;
+    transient protected List<Map<Variable, Node>> replicatedVarsToNode = new ArrayList<>();
 
 
     /**
@@ -188,7 +189,6 @@ public abstract class PlateuStructure implements Serializable {
                 .collect(Collectors.toList());
 
         ef_learningmodel = new EF_LearningBayesianNetwork(dists, this.initialNonReplicatedVariablesList);
-        this.replicatedVariables = new HashMap<>();
         this.ef_learningmodel.getListOfParametersVariables().stream().forEach(var -> this.replicatedVariables.put(var, false));
         this.ef_learningmodel.getListOfNonParameterVariables().stream().forEach(var -> this.replicatedVariables.put(var, true));
 
