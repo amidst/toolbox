@@ -26,12 +26,10 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.filereaders.DataRow;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 
-import java.util.function.Function;
-
 /**
  * This class implements the interface {@link DataRow} and defines a Weka data row.
  */
-public class DataRowWeka implements DataRow, Function<String,DataRow> {
+public class DataRowWeka implements DataRow{
 
     /** Represents an {@code array} of double. */
     double[] data;
@@ -46,43 +44,6 @@ public class DataRowWeka implements DataRow, Function<String,DataRow> {
      */
     public DataRowWeka(Attributes atts_, String line){
         atts = atts_;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double getValue(Attribute att) {
-        return data[att.getIndex()];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setValue(Attribute att, double value) {
-        this.data[att.getIndex()]=value;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Attributes getAttributes() {
-        return atts;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public double[] toArray() {
-        return data;
-    }
-
-
-    @Override
-    public DataRow apply(String line) {
         data = new double[atts.getNumberOfAttributes()];
         String[] parts = line.split(",");
         if (parts.length!=atts.getNumberOfAttributes()) {
@@ -123,7 +84,39 @@ public class DataRowWeka implements DataRow, Function<String,DataRow> {
                 }
             }
         }
-
-        return this;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double getValue(Attribute att) {
+        return data[att.getIndex()];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setValue(Attribute att, double value) {
+        this.data[att.getIndex()]=value;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Attributes getAttributes() {
+        return atts;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double[] toArray() {
+        return data;
+    }
+
+
 }

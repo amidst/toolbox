@@ -34,7 +34,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -61,13 +60,6 @@ public class ARFFDataReader implements DataFileReader {
 
     /** Represents a {@code Stream} of {@code DataRow}. */
     private Stream<DataRow> streamString;
-
-    private Function<String,DataRow> converter = DataRowWeka::new;
-
-
-    public void setConverter(Function<String, DataRow> converter) {
-        this.converter = converter;
-    }
 
     /**
      * Creates an {@link Attribute} from a given index and line.
@@ -195,16 +187,16 @@ public class ARFFDataReader implements DataFileReader {
     @Override
     public Stream<DataRow> stream() {
         //if (streamString ==null) {
-            try {
-                streamString = Files.lines(pathFile)
-                                .filter(w -> !w.isEmpty())
-                                .filter(w -> !w.startsWith("%"))
-                                .skip(this.dataLineCount)
-                                .filter(w -> !w.isEmpty())
-                                .map(line -> converter.apply(line));
-            } catch (IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
+        try {
+            streamString = Files.lines(pathFile)
+                    .filter(w -> !w.isEmpty())
+                    .filter(w -> !w.startsWith("%"))
+                    .skip(this.dataLineCount)
+                    .filter(w -> !w.isEmpty())
+                    .map(line -> new DataRowWeka(this.attributes, line));
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
         //}
         return streamString;
     }
