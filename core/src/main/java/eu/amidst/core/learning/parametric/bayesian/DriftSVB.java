@@ -45,6 +45,16 @@ public class DriftSVB extends SVB{
 
     CompoundVector prior=null;
 
+    double delta = 0.1;
+
+    public double getDelta() {
+        return delta;
+    }
+
+    public void setDelta(double delta) {
+        this.delta = delta;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -52,8 +62,8 @@ public class DriftSVB extends SVB{
     public void initLearning() {
         super.initLearning();
         truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
-        this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(0.1);
-        this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(0.1);
+        this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+        this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
         firstBatch=true;
         prior = this.plateuStructure.getPlateauNaturalParameterPrior();
     }
