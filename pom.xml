@@ -226,8 +226,8 @@
                 <configuration>
                     <aggregate>true</aggregate>
                 </configuration>
-            </plugin>
+            </plugin-->
             
-        </plugins-->
+        </plugins>
     </build>
 </project>
