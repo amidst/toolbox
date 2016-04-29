@@ -106,15 +106,23 @@ public class PlateauLDATest extends TestCase {
 
         plateauLDA.runInference();
 
+        System.out.println(plateauLDA.getPlateauNaturalParameterPrior().output());
+        System.out.println(plateauLDA.getPlateauNaturalParameterPosterior().output());
+
         plateauLDA.getNonReplictedNodes().forEach( node -> {
             EF_Dirichlet dist = (EF_Dirichlet)node.getQDist();
 
             System.out.println(dist.getExpectedParameters().output());
+
         });
 
+        plateauLDA.updateNaturalParameterPrior(plateauLDA.getPlateauNaturalParameterPosterior());
 
         plateauLDA.setEvidence(listA.get(1).getList());
         plateauLDA.runInference();
+
+        System.out.println(plateauLDA.getPlateauNaturalParameterPrior().output());
+        System.out.println(plateauLDA.getPlateauNaturalParameterPosterior().output());
 
         plateauLDA.getNonReplictedNodes().forEach( node -> {
             EF_Dirichlet dist = (EF_Dirichlet)node.getQDist();

@@ -95,6 +95,9 @@ public class PlateauLDA extends PlateuStructure {
     public void setEvidence(List<? extends DataInstance> data) {
         this.data = data;
         this.replicateModelForDocs();
+
+        //And reset the Q's of the new replicated nodes.
+        this.getReplicatedNodes().forEach(node -> {node.resetQDist(this.vmp.getRandom());});
     }
 
 
