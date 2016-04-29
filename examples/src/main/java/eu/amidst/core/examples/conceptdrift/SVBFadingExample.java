@@ -30,13 +30,13 @@ import eu.amidst.core.utils.DAGGenerator;
  * This example shows how to adaptively learn in the parameters of a Bayesian network from a stream of data with a Bayesian
  * approach using a combination of the the following two algorithms,
  *
- * Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., & Jordan, M. I. (2013). Streaming variational bayes.
+ * Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational bayes.
  * In Advances in Neural Information Processing Systems (pp. 1727-1735).
  *
- * <i>     Olesen, K. G., Lauritzen, S. L., & Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal
+ * <i>     Olesen, K. G., Lauritzen, S. L., and Jensen, F. V. (1992, July). aHUGIN: A system creating adaptive causal
  *      probabilistic networks. In Proceedings of the Eighth international conference on Uncertainty
  *      in Artificial Intelligence (pp. 223-229). Morgan Kaufmann Publishers Inc.
- * <\i>
+ * </i>
  * Created by andresmasegosa on 18/6/15.
  */
 public class SVBFadingExample {

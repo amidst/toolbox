@@ -5,12 +5,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>1.0.0</version>
+        <version>${AMIDSTver}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>wekalink</artifactId>
+    <version>${AMIDSTver}</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -85,7 +86,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
@@ -93,5 +94,50 @@
             <version>3.7.12</version>
         </dependency>
     </dependencies>
+    
+    
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        
+        <extensions>
+            <!-- begin - needed for deploying to repository using webdav -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+            <!-- end - needed for deploying to repository using webdav -->
+        </extensions>
+    </build>
+
 
 </project>

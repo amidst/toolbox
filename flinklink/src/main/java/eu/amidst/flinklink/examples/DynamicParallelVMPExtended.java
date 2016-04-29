@@ -127,7 +127,7 @@ public class DynamicParallelVMPExtended {
      *              -c eu.amidst.flinklink.examples.DynamicParallelVMPExtended ../flinklink.jar 0 10 1000000 100 100 100 3 0
      *
      *
-     * @param args
+     * @param args command line arguments
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
