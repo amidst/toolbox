@@ -60,6 +60,9 @@ public class VariableBuilder {
             case FINITE_SET:
                 this.distributionType = DistributionTypeEnum.MULTINOMIAL;
                 break;
+            case LARGE_FINITE_SET:
+                this.distributionType = DistributionTypeEnum.MULTINOMIAL;
+                break;
             default:
                 throw new IllegalArgumentException(" The string \"" + att.getStateSpaceType() + "\" does not map to any Type.");
         }

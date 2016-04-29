@@ -28,7 +28,7 @@ public class LargeFiniteStateSpace extends StateSpaceType {
      * @param numberOfStates1 the number of states.
      */
     public LargeFiniteStateSpace(int numberOfStates1) {
-        super(StateSpaceTypeEnum.FINITE_SET);
+        super(StateSpaceTypeEnum.LARGE_FINITE_SET);
         this.numberOfStates=numberOfStates1;
     }
 

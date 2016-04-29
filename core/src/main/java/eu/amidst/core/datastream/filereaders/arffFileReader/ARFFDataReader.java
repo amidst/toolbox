@@ -23,6 +23,7 @@ import eu.amidst.core.datastream.filereaders.DataFileReader;
 import eu.amidst.core.datastream.filereaders.DataRow;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.LargeFiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.File;
@@ -97,7 +98,7 @@ public class ARFFDataReader implements DataFileReader {
 
             return new Attribute(index, name, new FiniteStateSpace(statesNames));
         }else if (parts[2].equals("LargeMultinomial")) {
-            return new Attribute(index, name, new FiniteStateSpace(Integer.parseInt(parts[3])));
+            return new Attribute(index, name, new LargeFiniteStateSpace(Integer.parseInt(parts[3])));
         }else{
             throw new UnsupportedOperationException("We can not create an attribute from this line: "+line);
         }

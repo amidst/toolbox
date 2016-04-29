@@ -25,5 +25,8 @@ public enum StateSpaceTypeEnum {
     REAL,
 
     /** The finite set or discrete state space. */
-    FINITE_SET;
+    FINITE_SET,
+
+    /** A large finite set set**/
+    LARGE_FINITE_SET;
 }
