@@ -70,7 +70,7 @@ public class PlateauLDA extends PlateuStructure {
         dagLDA.getParentSet(word).addParent(topicIndicator);
 
 
-        List<EF_ConditionalDistribution> dists = dag.getParentSets().stream()
+        List<EF_ConditionalDistribution> dists = dagLDA.getParentSets().stream()
                 .map(pSet -> pSet.getMainVar().getDistributionType().<EF_ConditionalDistribution>newEFConditionalDistribution(pSet.getParents()))
                 .collect(Collectors.toList());
 
@@ -80,7 +80,7 @@ public class PlateauLDA extends PlateuStructure {
 
         //The Dirichlet parent of the topic is not replicated
         dirichletMixingTopics = ef_learningmodel.getDistribution(topicIndicator).getConditioningVariables().get(0);
-        this.replicatedVariables.put(dirichletMixingTopics,false);
+        this.replicatedVariables.put(dirichletMixingTopics,true);
 
 
         this.nonReplicatedVariablesList = this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).sorted((a,b) -> a.getVarID()-b.getVarID()).collect(Collectors.toList());
@@ -130,14 +130,9 @@ public class PlateauLDA extends PlateuStructure {
                 tmpNodes.add(nodeDirichletMixingTopics);
             }
 
-            if (currentID == data.get(i).getValue(seqIDAtt)) {
-                nodeTopic = new Node(ef_learningmodel.getDistribution(topicIndicator));
-                nodeWord = new Node(ef_learningmodel.getDistribution(word));
-                nodeWord.setAssignment(data.get(i));
-                tmpNodes.add(nodeTopic);
-                tmpNodes.add(nodeWord);
 
-            }else{
+
+            if (currentID != data.get(i).getValue(seqIDAtt)) {
                 currentID = data.get(i).getValue(seqIDAtt);
                 this.replicatedNodes.add(tmpNodes);
                 tmpNodes = new ArrayList<>();
@@ -145,17 +140,21 @@ public class PlateauLDA extends PlateuStructure {
                 nodeDirichletMixingTopics = new Node(ef_learningmodel.getDistribution(dirichletMixingTopics));
                 tmpNodes.add(nodeDirichletMixingTopics);
 
-                nodeTopic = new Node(ef_learningmodel.getDistribution(topicIndicator));
-                nodeWord = new Node(ef_learningmodel.getDistribution(word));
-                nodeWord.setAssignment(data.get(i));
-                tmpNodes.add(nodeTopic);
-                tmpNodes.add(nodeWord);
+
             }
 
 
+            nodeTopic = new Node(ef_learningmodel.getDistribution(topicIndicator));
+            nodeWord = new Node(ef_learningmodel.getDistribution(word));
+            nodeWord.setAssignment(data.get(i));
+            tmpNodes.add(nodeTopic);
+            tmpNodes.add(nodeWord);
+
             //Set Parents and children
             nodeTopic.setParents(Arrays.asList(nodeDirichletMixingTopics));
-            nodeTopic.setChildren(Arrays.asList(nodeTopic));
+            nodeTopic.setChildren(Arrays.asList(nodeWord));
+
+            nodeDirichletMixingTopics.getChildren().add(nodeTopic);
 
             List<Node> p = new ArrayList<>();
             p.addAll(this.nonReplictedNodes);
@@ -164,6 +163,10 @@ public class PlateauLDA extends PlateuStructure {
 
             childrenDirichletTopics.add(nodeWord);
         }
+
+        //Add the last ones created.
+        this.replicatedNodes.add(tmpNodes);
+
 
         for (Node nonReplictedNode : nonReplictedNodes) {
             nonReplictedNode.setChildren(childrenDirichletTopics);
@@ -174,7 +177,7 @@ public class PlateauLDA extends PlateuStructure {
 
         allNodes.addAll(this.nonReplictedNodes);
 
-        for (int i = 0; i < nReplications; i++) {
+        for (int i = 0; i < replicatedNodes.size(); i++) {
             allNodes.addAll(this.replicatedNodes.get(i));
         }
 
