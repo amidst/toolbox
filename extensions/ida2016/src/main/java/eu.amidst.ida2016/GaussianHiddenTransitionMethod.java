@@ -66,8 +66,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
 
             double varPrior, precisionPrior, meanPrior;
             if(paramVariable.getName().contains("_INDICATOR = 0.000}")){
-                varPrior = 0.00000001;
-                precisionPrior = 1 / varPrior;
+                precisionPrior = Double.MAX_VALUE;
                 meanPrior = 0;
             }else {
                 varPrior = 1;

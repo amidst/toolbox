@@ -14,11 +14,11 @@ public class NaiveBayesCDDetectorICDM2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
-    private static boolean includeUR = true;
+    private static boolean includeUR = false;
     private static boolean includeIndicators = true;
 
-    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
-    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
+    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
+    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
