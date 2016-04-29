@@ -107,7 +107,7 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
         }
 
         int count = 0;
-        while (count<this.batchSize && tailInstance!=null){
+        while (count<this.batchSize && advance){
             while ((advance=spliterator.tryAdvance(holder)) && getSequenceID(holder.value)==getSequenceID(tailInstance)){
                 tailInstance=holder.value;
                 container.add(tailInstance);
@@ -115,6 +115,9 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
 
             tailInstance=holder.value;
             count++;
+            if (count<this.batchSize && advance)
+                container.add(tailInstance);
+
         }
 
 
