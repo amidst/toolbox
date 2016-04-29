@@ -20,6 +20,7 @@ package eu.amidst.core.variables;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.LargeFiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.Serializable;
@@ -406,7 +407,9 @@ public class Variables implements Iterable<Variable>, Serializable {
             if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
                 this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
             }
-
+            if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.LARGE_FINITE_SET) {
+                this.numberOfStates = ((LargeFiniteStateSpace) this.stateSpaceType).getNumberOfStates();
+            }
             this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 
