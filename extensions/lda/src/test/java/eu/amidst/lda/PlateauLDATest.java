@@ -36,9 +36,8 @@ public class PlateauLDATest extends TestCase {
 
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word");
-
         plateauLDA.setNTopics(2);
-
+        plateauLDA.replicateModel();
         plateauLDA.setEvidence(listA.get(0).getList());
 
 
@@ -95,15 +94,26 @@ public class PlateauLDATest extends TestCase {
 
         plateauLDA.setNTopics(2);
 
-        plateauLDA.setEvidence(listA.get(0).getList());
-
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(1000);
         plateauLDA.getVMP().setOutput(true);
         plateauLDA.getVMP().setThreshold(0.0001);
-        plateauLDA.getVMP().resetQs();
+
+        plateauLDA.replicateModel();
+        plateauLDA.resetQs();
+
+        plateauLDA.setEvidence(listA.get(0).getList());
+
+        plateauLDA.runInference();
+
+        plateauLDA.getNonReplictedNodes().forEach( node -> {
+            EF_Dirichlet dist = (EF_Dirichlet)node.getQDist();
+
+            System.out.println(dist.getExpectedParameters().output());
+        });
 
 
+        plateauLDA.setEvidence(listA.get(1).getList());
         plateauLDA.runInference();
 
         plateauLDA.getNonReplictedNodes().forEach( node -> {

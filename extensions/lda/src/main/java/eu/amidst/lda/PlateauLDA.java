@@ -94,25 +94,11 @@ public class PlateauLDA extends PlateuStructure {
      */
     public void setEvidence(List<? extends DataInstance> data) {
         this.data = data;
-        this.replicateModel();
+        this.replicateModelForDocs();
     }
 
 
-    /**
-     * Replicates this model.
-     */
-    public void replicateModel(){
-
-        //nonReplicatedNodes are the Dirichlet storing topics distributions.
-        nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
-                .filter(dist -> isNonReplicatedVar(dist.getVariable()))
-                .map(dist -> {
-                    Node node = new Node(dist);
-                    nonReplicatedVarsToNode.put(dist.getVariable(), node);
-                    return node;
-                })
-                .collect(Collectors.toList());
-
+    private void replicateModelForDocs(){
         replicatedNodes = new ArrayList<>();
         Attribute seqIDAtt = this.attributes.getSeq_id();
         double currentID=0;
@@ -121,7 +107,7 @@ public class PlateauLDA extends PlateuStructure {
         Node nodeDirichletMixingTopics=null;
         Node nodeTopic = null;
         Node nodeWord = null;
-        List<Node> childrenDirichletTopics = new ArrayList<>();
+        List<Node> wordNodes = new ArrayList<>();
         for (int i = 0; i < this.data.size(); i++) {
 
             if (i == 0) {
@@ -161,7 +147,7 @@ public class PlateauLDA extends PlateuStructure {
             p.add(nodeTopic);
             nodeWord.setParents(p);
 
-            childrenDirichletTopics.add(nodeWord);
+            wordNodes.add(nodeWord);
         }
 
         //Add the last ones created.
@@ -169,9 +155,8 @@ public class PlateauLDA extends PlateuStructure {
 
 
         for (Node nonReplictedNode : nonReplictedNodes) {
-            nonReplictedNode.setChildren(childrenDirichletTopics);
+            nonReplictedNode.setChildren(wordNodes);
         }
-
 
         List<Node> allNodes = new ArrayList<>();
 
@@ -180,6 +165,31 @@ public class PlateauLDA extends PlateuStructure {
         for (int i = 0; i < replicatedNodes.size(); i++) {
             allNodes.addAll(this.replicatedNodes.get(i));
         }
+
+        this.vmp.setNodes(allNodes);
+    }
+
+
+    /**
+     * Replicates this model.
+     */
+    @Override
+    public void replicateModel(){
+        //nonReplicatedNodes are the Dirichlet storing topics distributions.
+        nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
+                .filter(dist -> isNonReplicatedVar(dist.getVariable()))
+                .map(dist -> {
+                    Node node = new Node(dist);
+                    nonReplicatedVarsToNode.put(dist.getVariable(), node);
+                    return node;
+                })
+                .collect(Collectors.toList());
+
+
+
+        List<Node> allNodes = new ArrayList<>();
+
+        allNodes.addAll(this.nonReplictedNodes);
 
         this.vmp.setNodes(allNodes);
     }
