@@ -12,8 +12,8 @@ public class NIPS_ConvertNFSAbstractFilesToARFF {
 
     public static void main(String[] args) throws FileNotFoundException, IOException {
 
-        String originalDataFolder = "/Users/dario/Desktop/datosNSFAbstracts/";
-        String outputFolder = "/Users/dario/Desktop/datosNSFAbstracts/formatoARFF/";
+        String originalDataFolder = "/Users/dario/Desktop/AMIDST otros/datos/datosNSFAbstracts/";
+        String outputFolder = "/Users/dario/Desktop/AMIDST otros/datos/datosNSFAbstracts/abstractsFormatoARFF/";
 
         String abstractIdentifiersFile = "identificadoresTodos.txt";
         String wordsIdentifiersFile = "words.txt";
@@ -21,11 +21,17 @@ public class NIPS_ConvertNFSAbstractFilesToARFF {
         String line;
 
         // TRANSFORM THE DICTIONARY OF WORDS INTO WEKA SPARSE FORMAT
-        FileReader reader = new FileReader(originalDataFolder + wordsIdentifiersFile);
-        BufferedReader input =  new BufferedReader(reader);
+        FileReader reader; //= new FileReader(originalDataFolder + wordsIdentifiersFile);
 
-        FileWriter writer = new FileWriter(outputFolder  + wordsIdentifiersFile);
-        BufferedWriter output =  new BufferedWriter(writer);
+        FileInputStream fileInputStream = new FileInputStream(originalDataFolder + wordsIdentifiersFile);
+        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "Windows-1252");
+        BufferedReader input =  new BufferedReader(inputStreamReader);
+
+        FileWriter writer;
+
+        FileOutputStream fileOutputStream = new FileOutputStream(outputFolder  + wordsIdentifiersFile);
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, "Windows-1252");
+        BufferedWriter output =  new BufferedWriter(outputStreamWriter);
 
 
         output.write("@RELATION NSFAbstracts");
@@ -34,35 +40,49 @@ public class NIPS_ConvertNFSAbstractFilesToARFF {
 
 
         int lineNumber = 0;
-        while ( input.readLine() != null ) {
+        while ( (line=input.readLine()) != null ) {
 
             lineNumber++;
 
-            output.write("@ATTRIBUTE " + lineNumber + " integer");
+            StringTokenizer tokenizer = new StringTokenizer(line);
+            int word_index = Integer.parseInt(tokenizer.nextToken());
+            String word = tokenizer.nextToken();
+
+            output.write("@ATTRIBUTE " + word + " integer");
             output.newLine();
+
+            if(lineNumber>30783) {
+                System.out.println(word);
+            }
 
         }
 
         output.close();
-        writer.close();
+        outputStreamWriter.close();
+        fileOutputStream.close();
+        //writer.close();
         input.close();
-        reader.close();
-
+        inputStreamReader.close();
+        fileInputStream.close();
+        //reader.close();
 
         // GENERATE AN ARFF FILE FOR EACH YEAR AND SET THE ATTRIBUTE DEFINITIONS
         for (int i = 1990; i <= 2003; i++) {
 
-            reader = new FileReader(outputFolder + wordsIdentifiersFile);
-            input =  new BufferedReader(reader);
+            //reader = new FileReader(outputFolder + wordsIdentifiersFile);
+            fileInputStream = new FileInputStream(outputFolder + wordsIdentifiersFile);
+            inputStreamReader = new InputStreamReader(fileInputStream, "Windows-1252");
+            input =  new BufferedReader(inputStreamReader);
 
-            writer = new FileWriter(outputFolder  + "year" + i + ".arff");
-            output =  new BufferedWriter(writer);
+            //writer = new FileWriter(outputFolder  + "year" + i + ".arff");
+            fileOutputStream = new FileOutputStream(outputFolder  + "year" + i + ".arff");
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream, "Windows-1252");
+            output =  new BufferedWriter(outputStreamWriter);
 
             while( (line = input.readLine())!=null ) {
                 output.write(line);
                 output.newLine();
             }
-
 
             output.newLine();
             output.write("@DATA");
@@ -70,9 +90,11 @@ public class NIPS_ConvertNFSAbstractFilesToARFF {
             output.newLine();
 
             output.close();
-            writer.close();
+            outputStreamWriter.close();
+            fileOutputStream.close();
             input.close();
-            reader.close();
+            inputStreamReader.close();
+            fileInputStream.close();
         }
 
 
@@ -156,7 +178,7 @@ public class NIPS_ConvertNFSAbstractFilesToARFF {
                     previous_year = year;
                 }
 
-                dataLine.append(word_index);
+                dataLine.append(word_index-1);
                 dataLine.append(" ");
                 dataLine.append(word_frequency);
                 dataLine.append(",");
