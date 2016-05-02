@@ -11,6 +11,7 @@
 
 package eu.amidst.lda;
 
+import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -35,7 +36,7 @@ public class PlateauLDATest extends TestCase {
                 BatchSpliteratorByID.toFixedBatchStream(dataInstances, 2).collect(Collectors.toList());
 
 
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word");
+        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word","count");
         plateauLDA.setNTopics(2);
         plateauLDA.replicateModel();
         plateauLDA.setEvidence(listA.get(0).getList());
@@ -76,8 +77,9 @@ public class PlateauLDATest extends TestCase {
 
         assertEquals(6,listNodeWords.size());
 
+        Attribute count = listA.get(0).getAttributes().getAttributeByName("count");
         for (int i = 0; i < listA.get(0).getList().size(); i++) {
-            assertEquals(1.0,listNodeWords.get(i).getSufficientStatistics().get((int)listA.get(0).getDataInstance(i).getValue(plateauLDA.word)));
+            assertEquals(listA.get(0).getDataInstance(i).getValue(count),listNodeWords.get(i).getSufficientStatistics().get((int)listA.get(0).getDataInstance(i).getValue(plateauLDA.word)));
         }
 
 
@@ -90,7 +92,7 @@ public class PlateauLDATest extends TestCase {
                 BatchSpliteratorByID.toFixedBatchStream(dataInstances, 2).collect(Collectors.toList());
 
 
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word");
+        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word", "count");
 
         plateauLDA.setNTopics(2);
 

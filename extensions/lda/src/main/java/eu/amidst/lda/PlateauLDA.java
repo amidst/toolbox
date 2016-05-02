@@ -38,15 +38,17 @@ public class PlateauLDA extends PlateuStructure {
 
     final Attributes attributes;
     final String wordDocumentName;
+    final Attribute wordCountAtt;
 
     int nTopics= 2;
 
 
     List<? extends DataInstance> data;
 
-    public PlateauLDA(Attributes attributes, String wordDocumentName) {
+    public PlateauLDA(Attributes attributes, String wordDocumentName, String wordCountName) {
         this.attributes = attributes;
         this.wordDocumentName = wordDocumentName;
+        this.wordCountAtt = this.attributes.getAttributeByName(wordCountName);
         this.setDAG(null);
     }
 
@@ -60,8 +62,9 @@ public class PlateauLDA extends PlateuStructure {
             throw new IllegalStateException("No possbile to define DAG");
 
 
-        Variables variables = new Variables(attributes);
-        word = variables.getVariableByName(wordDocumentName);
+
+        Variables variables = new Variables();
+        word = variables.newMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
 
         topicIndicator = variables.newMultionomialVariable("TopicIndicator",nTopics);
 
@@ -136,6 +139,9 @@ public class PlateauLDA extends PlateuStructure {
             nodeTopic = new Node(ef_learningmodel.getDistribution(topicIndicator));
             nodeWord = new Node(ef_learningmodel.getDistribution(word));
             nodeWord.setAssignment(data.get(i));
+
+            nodeWord.getSufficientStatistics().multiplyBy(data.get(i).getValue(wordCountAtt));
+
             tmpNodes.add(nodeTopic);
             tmpNodes.add(nodeWord);
 
