@@ -79,12 +79,10 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.timiLimit = seconds;
     }
 
-    public void setDataSetSize(long dataSetSize) {
-        this.dataSetSize = dataSetSize;
-    }
 
-    public StochasticVI(){
+    public StochasticVI(long dataSetSize){
         this.svb = new SVB();
+        this.dataSetSize = dataSetSize;
     }
 
     public void setPlateuStructure(PlateuStructure plateuStructure){

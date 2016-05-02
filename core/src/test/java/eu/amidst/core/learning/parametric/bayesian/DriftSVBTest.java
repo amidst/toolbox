@@ -114,8 +114,8 @@ public class DriftSVBTest extends TestCase {
             if (i>0)
                 pred+=svb.predictedLogLikelihood(batch);
 
-            //svb.updateModelWithConceptDrift(batch);
-            svb.updateModel(batch);
+            svb.updateModelWithConceptDrift(batch);
+            //svb.updateModel(batch);
 
             //System.out.println(svb.getLearntBayesianNetwork());
 
