@@ -32,7 +32,7 @@ The figure below shows a non-exhaustive taxonomy of relevant data mining tools d
 
 * [Dynamic Bayesian networks: Code Examples](http://amidst.github.io/toolbox/DynamicCodeExamples.html) includes some source code examples of functionalities related to Dynamic Bayesian networks.
 
-* [API JavaDoc](http://amidst.github.io/toolbox/javadoc/index.html) of the AMIDST toolbox. 
+* [API JavaDoc](http://amidst.github.io/toolbox/javadoc/0.4.2/index.html) of the AMIDST toolbox. 
 
 # Scalability
 
