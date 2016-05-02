@@ -27,7 +27,6 @@ import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -70,6 +69,10 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
     private long timiLimit;
 
     private double learningFactor;
+    private CompoundVector prior;
+    private CompoundVector initialPosterior;
+    private CompoundVector currentParam;
+    private int iteration;
 
     public void setLearningFactor(double learningFactor) {
         this.learningFactor = learningFactor;
@@ -79,10 +82,12 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.timiLimit = seconds;
     }
 
-
-    public StochasticVI(long dataSetSize){
-        this.svb = new SVB();
+    public void setDataSetSize(long dataSetSize) {
         this.dataSetSize = dataSetSize;
+    }
+
+    public StochasticVI(){
+        this.svb = new SVB();
     }
 
     public void setPlateuStructure(PlateuStructure plateuStructure){
@@ -116,11 +121,40 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.svb.setDAG(this.dag);
         this.svb.setWindowsSize(batchSize);
         this.svb.initLearning(); //Init learning is peformed in each mapper.
+
+
+
+        prior = svb.getNaturalParameterPrior();
+
+        initialPosterior = Serialization.deepCopy(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+        initialPosterior.sum(prior);
+
+        this.svb.updateNaturalParameterPosteriors(initialPosterior);
+
+        currentParam =  svb.getNaturalParameterPrior();
+
+        iteration=0;
+
     }
 
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
-        return 0;
+        NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
+
+        newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
+        newParam.sum(prior);
+
+        double stepSize = Math.pow(1+ iteration,-learningFactor);
+
+        newParam.multiplyBy(stepSize);
+
+        currentParam.multiplyBy((1-stepSize));
+        currentParam.sum(newParam);
+
+        this.svb.updateNaturalParameterPosteriors(currentParam);
+
+
+        return Double.NaN;
     }
 
 
@@ -147,23 +181,12 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
     public void runLearning() {
         this.initLearning();
 
-        DecimalFormat df = new DecimalFormat("0.0000");
-
         boolean convergence=false;
 
-        CompoundVector prior = svb.getNaturalParameterPrior();
-
-        CompoundVector initialPosterior = Serialization.deepCopy(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
-        initialPosterior.sum(prior);
-
-        this.svb.updateNaturalParameterPosteriors(initialPosterior);
-
-        CompoundVector currentParam =  svb.getNaturalParameterPrior();
 
         double totalTimeElbo=0;
 
         double totalTime=0;
-        double t = 0;
 
         Iterator<DataOnMemory<DataInstance>> iterator = this.dataStream.iterableOverBatches(this.batchSize).iterator();
 
@@ -183,7 +206,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
             newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
             newParam.sum(prior);
 
-            double stepSize = Math.pow(1+t,-learningFactor);
+            double stepSize = Math.pow(1+ iteration,-learningFactor);
 
             newParam.multiplyBy(stepSize);
 
@@ -206,21 +229,16 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
             totalTime+=endBatch-startBatch;
 
 
-            System.out.println("SVI ELBO: "+t+", "+stepSize+", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds" + (totalTime - totalTimeElbo)/1e9 + " seconds");
+            System.out.println("SVI ELBO: "+ iteration +", "+stepSize+", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds" + (totalTime - totalTimeElbo)/1e9 + " seconds");
 
 
             if ((totalTime-totalTimeElbo)/1e9>timiLimit){
                 convergence=true;
             }
 
-            t++;
+            iteration++;
 
         }
-
-
-        this.svb.updateNaturalParameterPrior(currentParam);
-
-
     }
 
     /**
@@ -244,6 +262,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
      */
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
+
         return this.svb.getLearntBayesianNetwork();
     }
 
