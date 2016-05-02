@@ -152,12 +152,19 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
             container.add(tailInstance);
         }
 
-        while ((advance=spliterator.tryAdvance(holder)) && getSequenceID(holder.value)==getSequenceID(tailInstance)){
-            tailInstance=holder.value;
-            container.add(tailInstance);
-        };
+        int count = 0;
+        while (count<this.batchSize && advance){
+            while ((advance=spliterator.tryAdvance(holder)) && getSequenceID(holder.value)==getSequenceID(tailInstance)){
+                tailInstance=holder.value;
+                container.add(tailInstance);
+            };
 
-        tailInstance=holder.value;
+            tailInstance=holder.value;
+            count++;
+            if (count<this.batchSize && advance)
+                container.add(tailInstance);
+
+        }
 
         if (est != Long.MAX_VALUE) est -= container.getNumberOfDataInstances();
 

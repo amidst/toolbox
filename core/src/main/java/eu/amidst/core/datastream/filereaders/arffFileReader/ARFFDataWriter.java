@@ -91,9 +91,11 @@ public class ARFFDataWriter implements DataFileWriter {
         } else if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.FINITE_SET) {
             StringBuilder stringBuilder = new StringBuilder("@attribute " + att.getName() + " {");
             FiniteStateSpace stateSpace = att.getStateSpaceType();
-            stateSpace.getStatesNames().stream().limit(stateSpace.getNumberOfStates()-1).forEach(e -> stringBuilder.append(e+", "));
-            stringBuilder.append(stateSpace.getStatesName(stateSpace.getNumberOfStates()-1)+"}");
+            stateSpace.getStatesNames().stream().limit(stateSpace.getNumberOfStates() - 1).forEach(e -> stringBuilder.append(e + ", "));
+            stringBuilder.append(stateSpace.getStatesName(stateSpace.getNumberOfStates() - 1) + "}");
             return stringBuilder.toString();
+        }else if (att.getStateSpaceType().getStateSpaceTypeEnum()== StateSpaceTypeEnum.LARGE_FINITE_SET) {
+                return "@attribute " + att.getName() + " LargeMultinomial "+att.getNumberOfStates();
         }else{
             throw new IllegalArgumentException("Unknown SateSapaceType");
         }
@@ -163,6 +165,9 @@ public class ARFFDataWriter implements DataFileWriter {
             } else {
                 builder.append(assignment.getValue(att) + separator);
             }
+        } else if (att.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.LARGE_FINITE_SET) {
+            int val = ((int)assignment.getValue(att));
+            builder.append( val + separator);
         } else {
             throw new IllegalArgumentException("Illegal State Space Type: " + att.getStateSpaceType().getStateSpaceTypeEnum());
         }
