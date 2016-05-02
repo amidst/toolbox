@@ -246,7 +246,7 @@ public class PosteriorDistributionsComparisonToHugin {
 //        dynMAP.setMAPvariable(MAPVariable);
 //        dynMAP.setNumberOfTimeSteps(nTimeSteps);
 //
-//        dynMAP.setSampleSize(nSamplesForIS);
+//        dynMAP.setNumberOfStartingPoints(nSamplesForIS);
 //
 //
 //        dynMAP.setNumberOfMergedClassVars(4);
@@ -299,7 +299,7 @@ public class PosteriorDistributionsComparisonToHugin {
 //        dynMAP.setMAPvariable(MAPVariable);
 //        dynMAP.setNumberOfTimeSteps(nTimeSteps);
 //
-//        dynMAP.setSampleSize(nSamplesForIS);
+//        dynMAP.setNumberOfStartingPoints(nSamplesForIS);
 //
 //
 //        dynMAP.setNumberOfMergedClassVars(6);
@@ -352,7 +352,7 @@ public class PosteriorDistributionsComparisonToHugin {
 //        dynMAP.setMAPvariable(MAPVariable);
 //        dynMAP.setNumberOfTimeSteps(nTimeSteps);
 //
-//        dynMAP.setSampleSize(nSamplesForIS);
+//        dynMAP.setNumberOfStartingPoints(nSamplesForIS);
 //
 //
 //        dynMAP.setNumberOfMergedClassVars(10);
