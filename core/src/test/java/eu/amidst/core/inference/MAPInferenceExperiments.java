@@ -128,7 +128,7 @@ public class MAPInferenceExperiments {
 //        MAPInference mapInference = new MAPInference();
 //        mapInference.setModel(bn);
 //        mapInference.setParallelMode(true);
-//        mapInference.setSampleSize(1);
+//        mapInference.setNumberOfStartingPoints(1);
 //
 //        List<Variable> causalOrder = Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG());
 //
@@ -139,7 +139,7 @@ public class MAPInferenceExperiments {
 //
 //        int parallelSamples=20;
 //        int samplingMethodSize=50000;
-//        mapInference.setSampleSize(parallelSamples);
+//        mapInference.setNumberOfStartingPoints(parallelSamples);
 //
 //
 //
@@ -249,7 +249,7 @@ public class MAPInferenceExperiments {
 //         ************************************************/
 //
 //        // MAP INFERENCE WITH SIMULATION AND PICKING MAX
-//        mapInference.setSampleSize(samplingMethodSize);
+//        mapInference.setNumberOfStartingPoints(samplingMethodSize);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(-1);
 //
@@ -346,7 +346,7 @@ public class MAPInferenceExperiments {
         MAPInference mapInference = new MAPInference();
         mapInference.setModel(bn);
         mapInference.setParallelMode(true);
-        mapInference.setSampleSize(1);
+        mapInference.setNumberOfStartingPoints(1);
 
         List<Variable> causalOrder = Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG());
 
@@ -357,7 +357,7 @@ public class MAPInferenceExperiments {
 
         int parallelSamples=20;
         int samplingMethodSize=100000;
-        mapInference.setSampleSize(parallelSamples);
+        mapInference.setNumberOfStartingPoints(parallelSamples);
 
 
 
@@ -468,7 +468,7 @@ public class MAPInferenceExperiments {
          ************************************************/
 
         // MAP INFERENCE WITH SIMULATION AND PICKING MAX
-        mapInference.setSampleSize(samplingMethodSize);
+        mapInference.setNumberOfStartingPoints(samplingMethodSize);
         timeStart = System.nanoTime();
         mapInference.runInference(MAPInference.SearchAlgorithm.SAMPLING);
 
@@ -555,7 +555,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE WITH A BIG SAMPLE TO CHECK
-//        mapInference.setSampleSize(50000);
+//        mapInference.setNumberOfStartingPoints(50000);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(-1);
 //
@@ -683,7 +683,7 @@ public class MAPInferenceExperiments {
 //
 //        /*
 //        // MAP INFERENCE WITH A SMALL SAMPLE AND SIMULATED ANNEALING
-//        mapInference.setSampleSize(100);
+//        mapInference.setNumberOfStartingPoints(100);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(1);
 //
@@ -699,7 +699,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE WITH A BIG SAMPLE  AND SIMULATED ANNEALING
-//        mapInference.setSampleSize(100);
+//        mapInference.setNumberOfStartingPoints(100);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(1);
 //
@@ -716,7 +716,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE WITH A BIG SAMPLE AND SIMULATED ANNEALING ON ONE VARIABLE EACH TIME
-//        mapInference.setSampleSize(100);
+//        mapInference.setNumberOfStartingPoints(100);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(0);
 //
@@ -734,7 +734,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE WITH A BIG SAMPLE  AND HILL CLIMBING
-//        mapInference.setSampleSize(100);
+//        mapInference.setNumberOfStartingPoints(100);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(3);
 //
@@ -751,7 +751,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE WITH A BIG SAMPLE AND HILL CLIMBING ON ONE VARIABLE EACH TIME
-//        mapInference.setSampleSize(100);
+//        mapInference.setNumberOfStartingPoints(100);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(2);
 //
@@ -770,7 +770,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE WITH SIMULATION AND PICKING MAX
-//        mapInference.setSampleSize(100);
+//        mapInference.setNumberOfStartingPoints(100);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(-1);
 //
@@ -786,7 +786,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE, DETERMINISTIC
-//        mapInference.setSampleSize(1);
+//        mapInference.setNumberOfStartingPoints(1);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(-2);
 //
@@ -830,7 +830,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE
-//        mapInference.setSampleSize(1);
+//        mapInference.setNumberOfStartingPoints(1);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(1);
 //
@@ -847,7 +847,7 @@ public class MAPInferenceExperiments {
 //
 //
 //        // MAP INFERENCE
-//        mapInference.setSampleSize(100);
+//        mapInference.setNumberOfStartingPoints(100);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(-3);
 //

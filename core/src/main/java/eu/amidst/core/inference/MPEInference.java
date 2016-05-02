@@ -829,7 +829,7 @@ public class MPEInference implements PointEstimator {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/simulated/asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/dataWeka/asia.bn");
 
         System.out.println(bn.toString());
 

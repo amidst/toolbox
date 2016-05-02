@@ -17,7 +17,6 @@
 
 package eu.amidst.core.inference;
 
-import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -157,7 +156,7 @@ public class MAPInference implements PointEstimator {
         causalOrder = newCausalOrder;*/
     }
 
-    public void setSampleSize(int sampleSize) {
+    public void setNumberOfStartingPoints(int sampleSize) {
         this.sampleSize = sampleSize;
     }
 
@@ -799,7 +798,7 @@ public class MAPInference implements PointEstimator {
 
         int parallelSamples=20;
         int samplingMethodSize=1000;
-        mapInference.setSampleSize(parallelSamples);
+        mapInference.setNumberOfStartingPoints(parallelSamples);
 
 
         /***********************************************
@@ -853,7 +852,7 @@ public class MAPInference implements PointEstimator {
 
 
 //        // MAP INFERENCE
-//        mapInference.setSampleSize(1);
+//        mapInference.setNumberOfStartingPoints(1);
 //        timeStart = System.nanoTime();
 //        mapInference.runInference(1);
 //
@@ -930,12 +929,12 @@ public class MAPInference implements PointEstimator {
         System.out.println();
 
 
-        /***********************************************
+        /************************************************
          *        SAMPLING
          ************************************************/
 
         // MAP INFERENCE WITH SIMULATION AND PICKING MAX
-        mapInference.setSampleSize(samplingMethodSize);
+        mapInference.setNumberOfStartingPoints(samplingMethodSize);
         timeStart = System.nanoTime();
         mapInference.runInference(SearchAlgorithm.SAMPLING);
 

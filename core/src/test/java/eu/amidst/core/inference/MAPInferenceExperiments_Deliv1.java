@@ -181,7 +181,7 @@ public class MAPInferenceExperiments_Deliv1 {
 
         mapInference.setNumberOfIterations(numberOfIterations);
 
-        mapInference.setSampleSize(parallelSamples);
+        mapInference.setNumberOfStartingPoints(parallelSamples);
         mapInference.setSeed(seed);
 
         double[] SA_All_prob = new double[repetitions];
@@ -221,7 +221,7 @@ public class MAPInferenceExperiments_Deliv1 {
 
         for(int k=0; k<repetitions; k++) {
 
-            mapInference.setSampleSize(parallelSamples);
+            mapInference.setNumberOfStartingPoints(parallelSamples);
 
             /***********************************************
              *        SIMULATED ANNEALING
@@ -328,7 +328,7 @@ public class MAPInferenceExperiments_Deliv1 {
 
             // MPE INFERENCE WITH SIMULATION AND PICKING MAX
 
-            mapInference.setSampleSize(samplingMethodSize);
+            mapInference.setNumberOfStartingPoints(samplingMethodSize);
 
             timeStart = System.nanoTime();
             mapInference.runInference(MAPInference.SearchAlgorithm.SAMPLING);
