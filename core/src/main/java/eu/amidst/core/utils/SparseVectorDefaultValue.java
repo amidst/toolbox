@@ -15,6 +15,7 @@ import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +24,10 @@ import java.util.function.Function;
 /**
  * Created by andresmasegosa on 2/5/16.
  */
-public class SparseVectorDefaultValue implements Vector, NaturalParameters, MomentParameters, SufficientStatistics {
+public class SparseVectorDefaultValue implements Vector, NaturalParameters, MomentParameters, SufficientStatistics, Serializable {
+
+    /** Represents the serial version ID for serializing the object. */
+    private static final long serialVersionUID = 4107783324901370839L;
 
     Map<Integer, Double> values;
     final int dimension;
@@ -139,14 +143,8 @@ public class SparseVectorDefaultValue implements Vector, NaturalParameters, Mome
     @Override
     public void copy(Vector vector) {
         SparseVectorDefaultValue sparseVector = (SparseVectorDefaultValue) vector;
-
-        this.values = new HashMap<>();
-
-        for (Integer integer : sparseVector.getNonZeroEntries()) {
-            this.set(integer, sparseVector.get(integer));
-        }
-
-        this.setDefaultValue(sparseVector.getDefaultValue());
+        this.values= new HashMap<>(sparseVector.values);
+        this.defaultValue = sparseVector.getDefaultValue();
     }
 
     @Override
