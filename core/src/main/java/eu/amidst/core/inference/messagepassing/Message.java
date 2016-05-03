@@ -105,8 +105,17 @@ public class Message<E extends Vector> {
         if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
             throw new IllegalArgumentException();
         }
-        m2.getVector().sum(m1.vector);
-        m2.setDone(m2.isDone() && m1.isDone());
-        return m2;
+        m1.getVector().sum(m2.vector);
+        m1.setDone(m2.isDone() && m1.isDone());
+        return m1;
     }
+
+//    public static <E extends Vector> Message<E> combineNonStateless(Message<E> m1, Message<E> m2){
+//        if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
+//            throw new IllegalArgumentException();
+//        }
+//        m2.getVector().sum(m1.vector);
+//        m2.setDone(m2.isDone() && m1.isDone());
+//        return m2;
+//    }
 }
