@@ -2,7 +2,9 @@ package eu.amidst.nips2016;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.distribution.Normal_MultinomialParents;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
@@ -11,7 +13,10 @@ import eu.amidst.core.learning.parametric.bayesian.PopulationVI;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.learning.parametric.bayesian.StochasticVI;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 
 import java.io.PrintWriter;
 import java.util.Random;
@@ -22,11 +27,6 @@ import java.util.Random;
 public class PreliminaryExperiments {
 
     public static BayesianNetwork network;
-
-    //public static int[] batchSize = {50, 100, 1000};
-    //public static int[] memoryPopulationVI = {50, 100, 1000};
-    //public static double[] learningRate = {0.01, 0.1, 0.5};
-    //public static double[] deltaValue = {-5, 0, 0.1, 5};
 
     public static int[] batchSize = {100};
     public static int[] memoryPopulationVI = {1000};
@@ -46,7 +46,6 @@ public class PreliminaryExperiments {
     public static PrintWriter writerMean;
     public static PrintWriter writerGamma;
 
-    public static double[] predLLAcum = new double[4];
     public static int iter = 0;
 
 
@@ -116,13 +115,14 @@ public class PreliminaryExperiments {
     }
 
 
-    public static void counts(DataOnMemory<DataInstance> batch) throws Exception{
+    public static void printCounts() throws Exception{
 
-        predLLAcum[0] = svb.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        predLLAcum[1] = driftSVB.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        predLLAcum[2] = stochasticVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        predLLAcum[3] = populationVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        writerGamma.println(predLLAcum[0]+"\t"+predLLAcum[1]+"\t"+predLLAcum[2]+"\t"+predLLAcum[3]);
+        double[] outputs = new double[4];
+        outputs[0] = svb.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        outputs[1] = driftSVB.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        outputs[2] = stochasticVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        outputs[3] = populationVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        writerGamma.println(outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
 
 
 
@@ -130,12 +130,12 @@ public class PreliminaryExperiments {
 
     public static void printPredLL(DataOnMemory<DataInstance> batch) throws Exception{
 
-
-        predLLAcum[0] += svb.predictedLogLikelihood(batch);
-        predLLAcum[1] += driftSVB.predictedLogLikelihood(batch);
-        predLLAcum[2] += stochasticVI.predictedLogLikelihood(batch);
-        predLLAcum[3] += populationVI.predictedLogLikelihood(batch);
-        writerPredLL.println(predLLAcum[0]/iter+"\t"+predLLAcum[1]/iter+"\t"+predLLAcum[2]/iter+"\t"+predLLAcum[3]/iter);
+        double[] outputs = new double[4];
+        outputs[0] += svb.predictedLogLikelihood(batch);
+        outputs[1] += driftSVB.predictedLogLikelihood(batch);
+        outputs[2] += stochasticVI.predictedLogLikelihood(batch);
+        outputs[3] += populationVI.predictedLogLikelihood(batch);
+        writerPredLL.println(outputs[0]/iter+"\t"+outputs[1]/iter+"\t"+outputs[2]/iter+"\t"+outputs[3]/iter);
 
 
     }
@@ -160,14 +160,37 @@ public class PreliminaryExperiments {
         double realMean = ((Normal)network.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getMean();
         writerMean.println(realMean+"\t"+meanML+"\t"+meanSVB+"\t"+meanDriftSVB+"\t"+meanStochasticVI+"\t"+meanPopulationVI);
 
-        //writerPopulationSize.println("\t"+"\t"+"\t"+"\t");
-
         writerLambda.println(driftSVB.getLambdaValue());
+    }
+
+    public static void introduceAbruptConceptDrift(double parentValue, int iter){
+
+        //Single Gaussian, without parents
+        if(parentValue == -1){
+            Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+            normal.setMean(normal.getMean()*new Random(iter).nextDouble());
+            normal.setVariance(normal.getVariance()*new Random(iter).nextDouble());
+        }else{
+
+        }
+    }
+
+    public static void introduceSmoothConceptDrift(double parentValue, int iter){
+
+        //Single Gaussian, without parents
+        if(parentValue == -1){
+            Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+            normal.setMean(normal.getMean()+new Random(iter).nextDouble());
+            normal.setVariance(normal.getVariance()+new Random(iter).nextDouble());
+        }else{
+
+        }
     }
 
     public static void scenarioMixedConceptDrift(int batchSize) throws Exception{
 
-        double predLL = 0;
+
+        System.out.println(network);
         for (int i = 0; i < numIter; i++) {
 
             iter++;
@@ -180,9 +203,10 @@ public class PreliminaryExperiments {
              * GRADUAL CONCEPT DRIFT 20-30
              */
             if (i>20 && i<30) {
-                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
-                normal.setMean(normal.getMean()+new Random(i).nextDouble());
-                normal.setVariance(normal.getVariance()+new Random(i).nextDouble());
+                introduceSmoothConceptDrift(-1, i);
+//                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+//                normal.setMean(normal.getMean()+new Random(i).nextDouble());
+//                normal.setVariance(normal.getVariance()+new Random(i).nextDouble());
             }
 
             /**
@@ -190,20 +214,19 @@ public class PreliminaryExperiments {
              */
 
             if (i>30 && i<40 && i % 3 == 0) {
-                network.randomInitialization(new Random(i));
-                //System.out.println(network);
-                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
-                normal.setMean(normal.getMean()*new Random(i).nextDouble());
-                normal.setVariance(normal.getVariance()*new Random(i).nextDouble());
-
+                introduceAbruptConceptDrift(-1, i);
+//                network.randomInitialization(new Random(i));
+//                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+//                normal.setMean(normal.getMean()*new Random(i).nextDouble());
+//                normal.setVariance(normal.getVariance()*new Random(i).nextDouble());
             }
 
             /**
              * ABRUPT CONCEPT DRIFT 40-70 (%4)
              */
             if (i>40 && i<70 && i % 4 == 0) {
-                network.randomInitialization(new Random(i));
-                //System.out.println(network);
+                introduceAbruptConceptDrift(-1, i);
+//                network.randomInitialization(new Random(i));
             }
 
             /**
@@ -214,9 +237,10 @@ public class PreliminaryExperiments {
              * GRADUAL CONCEPT DRIFT 90-100
              */
             if (i>90 && i<100) {
-                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
-                normal.setMean(normal.getMean()+5);
-                normal.setVariance(normal.getVariance()+0.1);
+                introduceSmoothConceptDrift(-1, i);
+//                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+//                normal.setMean(normal.getMean()+5);
+//                normal.setVariance(normal.getVariance()+0.1);
             }
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
@@ -226,9 +250,8 @@ public class PreliminaryExperiments {
 
 
             if(i>0) {
-                //counts(batch);
+                printCounts();
                 printPredLL(batch);
-
             }
 
             /**
@@ -271,9 +294,6 @@ public class PreliminaryExperiments {
             populationVI.updateModel(batch);
             stochasticVI.updateModel(batch);
 
-            BayesianNetwork bnSVB = svb.getLearntBayesianNetwork();
-            BayesianNetwork bnStochasticVI = stochasticVI.getLearntBayesianNetwork();
-
             /* Learn maximum likelihood to get the real means*/
             ml.updateModel(batch);
 
@@ -285,6 +305,32 @@ public class PreliminaryExperiments {
         }
     }
 
+    public static BayesianNetwork createNetwork() throws Exception{
+
+        Variables variables = new Variables();
+        Variable varA = variables.newGaussianVariable("A");
+        Variable varB = variables.newMultionomialVariable("B",2);
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(varA).addParent(varB);
+        BayesianNetwork bayesianNetwork = new BayesianNetwork(dag);
+
+        ((Multinomial)bayesianNetwork.getConditionalDistribution(varB)).setProbabilities(new double[]{0.4,0.6});
+
+        Normal normal0 = ((Normal_MultinomialParents)bayesianNetwork.getConditionalDistribution(varA)).getNormal(0);
+        Normal normal1 = ((Normal_MultinomialParents)bayesianNetwork.getConditionalDistribution(varA)).getNormal(1);
+
+        normal0.setMean(-2.5);
+        normal0.setVariance(0.75);
+
+        normal1.setMean(2.5);
+        normal1.setVariance(0.5);
+
+        return BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
+        //return bayesianNetwork;
+    }
+
+
     public static void main(String[] args) throws Exception{
 
         /**
@@ -294,10 +340,9 @@ public class PreliminaryExperiments {
          *                     learningRate in StochasticVB & populationIV
          */
 
-        network = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
+        network = createNetwork();
 
         System.out.println(network);
-
 
 
         for (int i = 0; i < batchSize.length; i++) {
@@ -307,6 +352,9 @@ public class PreliminaryExperiments {
                 for (int k = 0; k < memoryPopulationVI.length; k++) {
 
                     for (int l = 0; l < learningRate.length; l++) {
+
+
+                        network = createNetwork();
 
                         /**
                          * Define Learning VI techniques
