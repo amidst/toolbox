@@ -101,17 +101,22 @@ public class SparseVectorDefaultValue implements Vector, NaturalParameters, Mome
     public void sum(Vector vector) {
         SparseVectorDefaultValue sparseVector = (SparseVectorDefaultValue) vector;
 
-        for (Integer integer : this.getNonZeroEntries()) {
-            this.set(integer, this.get(integer) + sparseVector.get(integer));
+        if (sparseVector.getDefaultValue()==0){
+            for (Integer integer : sparseVector.getNonZeroEntries()) {
+                this.set(integer, this.get(integer) + sparseVector.get(integer));
+            }
+        }else {
+            for (Integer integer : this.getNonZeroEntries()) {
+                this.set(integer, this.get(integer) + sparseVector.get(integer));
+            }
+
+            for (Integer integer : sparseVector.getNonZeroEntries()) {
+                if (!this.values.containsKey(integer))
+                    this.set(integer, this.getDefaultValue() + sparseVector.get(integer));
+            }
+
+            this.setDefaultValue(this.getDefaultValue() + sparseVector.getDefaultValue());
         }
-
-        for (Integer integer : sparseVector.getNonZeroEntries()) {
-            if (!this.values.containsKey(integer))
-                this.set(integer, this.getDefaultValue() + sparseVector.get(integer));
-        }
-
-        this.setDefaultValue(this.getDefaultValue() + sparseVector.getDefaultValue());
-
     }
 
     @Override
@@ -177,30 +182,43 @@ public class SparseVectorDefaultValue implements Vector, NaturalParameters, Mome
     public double dotProduct(Vector vector) {
         SparseVectorDefaultValue sparseVector = (SparseVectorDefaultValue) vector;
 
-        double sum = 0;
 
-        double cont = this.dimension;
-        for (Integer integer : this.getNonZeroEntries()) {
-            if (!sparseVector.values.containsKey(integer)) {
-                sum += this.get(integer) * sparseVector.getDefaultValue();
-                cont--;
-            } else {
+        if (sparseVector.getDefaultValue()==0){
+            double sum = 0;
+            for (Integer integer : sparseVector.getNonZeroEntries()) {
+                    sum += this.get(integer) * sparseVector.get(integer);
+            }
+            return sum;
+        }else if (this.getDefaultValue()==0){
+            double sum = 0;
+            for (Integer integer : this.getNonZeroEntries()) {
                 sum += this.get(integer) * sparseVector.get(integer);
-                cont--;
             }
-        }
-
-        for (Integer integer : sparseVector.getNonZeroEntries()) {
-            if (!this.values.containsKey(integer)) {
-                sum += this.getDefaultValue() * sparseVector.get(integer);
-                cont--;
+            return sum;
+        }else{
+            double sum = 0;
+            double cont = this.dimension;
+            for (Integer integer : this.getNonZeroEntries()) {
+                if (!sparseVector.values.containsKey(integer)) {
+                    sum += this.get(integer) * sparseVector.getDefaultValue();
+                    cont--;
+                } else {
+                    sum += this.get(integer) * sparseVector.get(integer);
+                    cont--;
+                }
             }
 
+            for (Integer integer : sparseVector.getNonZeroEntries()) {
+                if (!this.values.containsKey(integer)) {
+                    sum += this.getDefaultValue() * sparseVector.get(integer);
+                    cont--;
+                }
+
+            }
+
+            sum += cont * this.getDefaultValue() * sparseVector.getDefaultValue();
+            return sum;
         }
-
-        sum += cont * this.getDefaultValue() * sparseVector.getDefaultValue();
-
-        return sum;
     }
 
     @Override
