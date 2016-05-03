@@ -16,7 +16,7 @@ package eu.amidst.core.learning.parametric.bayesian;
  */
 public class PopulationVI extends StochasticVI {
 
-    public void setWindowSize(long windowSize) {
+    public void setMemorySize(long windowSize) {
         this.dataSetSize = windowSize;
     }
 
