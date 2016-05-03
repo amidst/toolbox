@@ -389,22 +389,42 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
     @Override
     public double getExpectedValue(Variable var, Function<Double,Double> function) {
 
-//        if(keepDataOnMemory) {
-//            weightedSampleStream = weightedSampleList.stream().sequential();
-//        }else{
-//            computeWeightedSampleStream(false);
-//        }
+//        List<Double> sum = weightedSampleStream
+//                .map(ws -> Arrays.asList(Math.exp(ws.logWeight), Math.exp(ws.logWeight) * function.apply(ws.assignment.getValue(var))))
+//                .filter(array -> (Double.isFinite(array.get(0)) && Double.isFinite(array.get(1)) ))
+//                .reduce(Arrays.asList(new Double(0.0), new Double(0.0)), (e1, e2) -> Arrays.asList(e1.get(0) + e2.get(0), e1.get(1) + e2.get(1)));
+//
+//        return sum.get(1)/sum.get(0);
 
-        if(parallelMode) {
-            weightedSampleStream.parallel();
+
+        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+        IntStream weightedSampleStream = IntStream.range(0, sampleSize).parallel();
+
+        if (!parallelMode) {
+            weightedSampleStream = weightedSampleStream.sequential();
         }
-        List<Double> sum = weightedSampleStream
-                .map(ws -> Arrays.asList(Math.exp(ws.logWeight), Math.exp(ws.logWeight) * function.apply(ws.assignment.getValue(var))))
-                .filter(array -> (Double.isFinite(array.get(0)) && Double.isFinite(array.get(1)) ))
-                .reduce(Arrays.asList(new Double(0.0), new Double(0.0)), (e1, e2) -> Arrays.asList(e1.get(0) + e2.get(0), e1.get(1) + e2.get(1)));
 
-        return sum.get(1)/sum.get(0);
+        double[] logSumWeights = weightedSampleStream
+                .mapToObj(i -> {
+                    WeightedAssignment weightedSample = generateSample(randomGenerator.current());
+
+                    return new double[]{Math.exp(weightedSample.logWeight), Math.exp(weightedSample.logWeight) * function.apply(weightedSample.assignment.getValue(var))};
+                })
+                .filter(doubleArray -> Double.isFinite(doubleArray[0]) && Double.isFinite(doubleArray[1]))
+                .reduce(((doubleArray1, doubleArray2) -> {
+                    double [] result = new double[2];
+//                    result[0] = robustSumOfLogarithms(doubleArray1[0],doubleArray2[0]);
+//                    result[1] = robustSumOfLogarithms(doubleArray1[1],doubleArray2[1]);
+                    result[0] = (doubleArray1[0] + doubleArray2[0]);
+                    result[1] = (doubleArray1[1] + doubleArray2[1]);
+                    return result;
+                })).get();
+
+        System.out.println(logSumWeights[1]);
+        System.out.println(logSumWeights[0]);
+        return logSumWeights[1]/logSumWeights[0];
     }
+
 
     private static double robustSumOfLogarithms(double log_x1, double log_x2) {
         double result;
@@ -419,7 +439,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
                 tail = Math.log1p( aux );
             }
             else {
-                tail = Math.log( 1+aux );
+                tail = Math.log( 1 + aux );
             }
 //            tail = Math.log( 1+aux );
 
@@ -609,24 +629,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 //    }
 
 
-   /* */
 
-//    private void computeWeightedSampleStream(boolean saveDataOnMemory_) {
-//
-//        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-//        if (parallelMode) {
-//            weightedSampleStream = IntStream.range(0, sampleSize).parallel()
-//                    .mapToObj(i -> generateSample(randomGenerator.current()));
-//        } else {
-//            weightedSampleStream = IntStream.range(0, sampleSize).sequential()
-//                    .mapToObj(i -> generateSample(randomGenerator.current()));
-//        }
-//
-//        if(saveDataOnMemory_) {
-//            weightedSampleList = weightedSampleStream.collect(Collectors.toList());
-//            //weightedSampleList.forEach(weightedAssignment -> System.out.println("Weight: " + weightedAssignment.logWeight + " for assignment " + weightedAssignment.assignment.getValue(this.model.getVariables().getListOfVariables().get(0)) + " prob " + model.getLogProbabiltyOf(weightedAssignment.assignment)));
-//        }
-//    }
 
     /**
      * {@inheritDoc}
@@ -649,21 +652,22 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 //                    .mapToObj(i -> generateSample(randomGenerator.current()));
 //        }
 
-        double logSumWeights = weightedSampleStream.mapToDouble(i -> {
-            WeightedAssignment weightedSample = generateSample(randomGenerator.current());
-            updatePosteriorDistributions(weightedSample.assignment,weightedSample.logWeight);
-            //updateLogProbabilityOfEvidence(weightedSample.logWeight);
+        double logSumWeights = weightedSampleStream
+                .mapToDouble(i -> {
+                    WeightedAssignment weightedSample = generateSample(randomGenerator.current());
+                    updatePosteriorDistributions(weightedSample.assignment,weightedSample.logWeight);
+                    //updateLogProbabilityOfEvidence(weightedSample.logWeight);
 
 
-            //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,weightedSample.logWeight-Math.log(sampleSize));
+                    //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,weightedSample.logWeight-Math.log(sampleSize));
 
-            //System.out.println(weightedSample.logWeight);
+                    //System.out.println(weightedSample.logWeight);
 
-            //System.out.println(logProbOfEvidence);
+                    //System.out.println(logProbOfEvidence);
 
-            return weightedSample.logWeight;
+                    return weightedSample.logWeight;
 
-        }).reduce(ImportanceSamplingRobust::robustSumOfLogarithms).getAsDouble();
+                }).reduce(ImportanceSamplingRobust::robustSumOfLogarithms).getAsDouble();
 
         //        return weightedSampleStream.mapToDouble(ws -> ws.logWeight - Math.log(sampleSize)).reduce(this::robustSumOfLogarithms).getAsDouble();
 
@@ -696,35 +700,35 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         System.out.println(bn);
 
 
-        ImportanceSamplingRobust importanceSampling = new ImportanceSamplingRobust();
-        importanceSampling.setModel(bn);
-        //importanceSampling.setSamplingModel(vmp.getSamplingModel());
+        ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
+        importanceSamplingRobust.setModel(bn);
+        //importanceSamplingRobust.setSamplingModel(vmp.getSamplingModel());
 
-        importanceSampling.setParallelMode(true);
-        importanceSampling.setSampleSize(5000);
-        importanceSampling.setSeed(57457);
+        importanceSamplingRobust.setParallelMode(true);
+        importanceSamplingRobust.setSampleSize(50000);
+        importanceSamplingRobust.setSeed(57457);
 
-        List<Variable> causalOrder = importanceSampling.causalOrder;
+        List<Variable> causalOrder = importanceSamplingRobust.causalOrder;
         Variable varPosterior = causalOrder.get(0);
 
         List<Variable> variablesPosteriori = new ArrayList<>(1);
         variablesPosteriori.add(varPosterior);
-        importanceSampling.setVariablesAPosteriori( variablesPosteriori);
+        importanceSamplingRobust.setVariablesAPosteriori( variablesPosteriori);
 
 
 
-        importanceSampling.runInference();
+        importanceSamplingRobust.runInference();
 //
 
 //
 ////        for (Variable var: causalOrder) {
-////            System.out.println("Posterior (IS) of " + var.getName() + ":" + importanceSampling.getPosterior(var).toString());
+////            System.out.println("Posterior (IS) of " + var.getName() + ":" + importanceSamplingRobust.getPosterior(var).toString());
 ////        }
 //
 
-        System.out.println("Posterior (IS) of " + varPosterior.getName() + ":" + importanceSampling.getPosterior(varPosterior).toString());
+        System.out.println("Posterior (IS) of " + varPosterior.getName() + ":" + importanceSamplingRobust.getPosterior(varPosterior).toString());
         System.out.println(bn.getConditionalDistribution(varPosterior).toString());
-        System.out.println("Log-Prob. of Evidence: " + importanceSampling.getLogProbabilityOfEvidence());
+        System.out.println("Log-Prob. of Evidence: " + importanceSamplingRobust.getLogProbabilityOfEvidence());
 
 
 
@@ -741,34 +745,22 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         assignment.setValue(variableEvidence,varEvidenceValue);
 
 
-        importanceSampling.setEvidence(assignment);
+        importanceSamplingRobust.setEvidence(assignment);
 
         long time_start = System.nanoTime();
-        importanceSampling.runInference();
+        importanceSamplingRobust.runInference();
         long time_end = System.nanoTime();
         double execution_time = (((double)time_end)-time_start)/1E9;
         System.out.println("Execution time: " + execution_time + " s");
 
-        System.out.println("Posterior of " + varPosterior.getName() + " (IS with Evidence) :" + importanceSampling.getPosterior(varPosterior).toString());
+        System.out.println("Posterior of " + varPosterior.getName() + " (IS with Evidence) :" + importanceSamplingRobust.getPosterior(varPosterior).toString());
 
 
-        System.out.println("Log-Prob. of Evidence: " + importanceSampling.getLogProbabilityOfEvidence());
-        System.out.println("Prob of Evidence: " + Math.exp(importanceSampling.getLogProbabilityOfEvidence()));
+        System.out.println("Log-Prob. of Evidence: " + importanceSamplingRobust.getLogProbabilityOfEvidence());
+        System.out.println("Prob of Evidence: " + Math.exp(importanceSamplingRobust.getLogProbabilityOfEvidence()));
 
-
-
-//        Complex complex = new Complex(1,0);
-//        Complex log_complex = complex.log();
-//        System.out.println(log_complex.getReal() + " + 1i * " + log_complex.getImaginary());
-//
-//
-//        Complex complex1 = new Complex(0.5,-0.3);
-//        Complex complex2 = new Complex(0.2,0.1);
-//
-//        Complex sum = complex1.add(complex2);
-//        System.out.println(sum.getReal() + " + 1i * " + sum.getImaginary());
-
-
+        double proportion = importanceSamplingRobust.getExpectedValue(varPosterior, double1 -> (Double.compare(double1,0.0)==0 ? (1.0) : (0.0)));
+        System.out.println(proportion);
     }
 
 }
