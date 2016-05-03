@@ -11,41 +11,57 @@
 
 package eu.amidst.core.variables.distributionTypes;
 
-import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_SparseDirichlet;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
 
 /**
- * Created by andresmasegosa on 26/4/16.
+ * This class extends the abstract class {@link DistributionType} and defines the Dirichlet parameter type.
  */
-public class SparseMultinomial extends DistributionType{
+public class SparseDirichletParameterType extends DistributionType {
 
-    List<Attribute> attributes;
-
-    public SparseMultinomial(Variable var_) {
+    /**
+     * Creates a new DirichletParameterType for the given variable.
+     * @param var_ the Variable to which the Dirichlet distribution will be assigned.
+     */
+    public SparseDirichletParameterType(Variable var_) {
         super(var_);
     }
 
-    public List<Attribute> getAttributes() {
-        return attributes;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isParentCompatible(Variable parent) {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public <E extends UnivariateDistribution> E newUnivariateDistribution() {
-        return null;
+    public UnivariateDistribution newUnivariateDistribution() {
+        throw new UnsupportedOperationException("Dirichlet Parameter Type does not allow standard distributions");
     }
 
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @return an exponential family Dirichlet distribution.
+     */
+    @Override
+    public EF_SparseDirichlet newEFUnivariateDistribution() {
+         return new EF_SparseDirichlet(this.variable,2);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
-        return null;
+        throw new UnsupportedOperationException("Dirichlet Parameter Type does not allow conditional distributions");
     }
 }

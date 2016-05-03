@@ -17,6 +17,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.inference.messagepassing.Node;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -64,7 +65,8 @@ public class PlateauLDA extends PlateuStructure {
 
 
         Variables variables = new Variables();
-        word = variables.newMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
+        word = variables.newSparseMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
+        //word = variables.newMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
 
         topicIndicator = variables.newMultionomialVariable("TopicIndicator",nTopics);
 
@@ -100,7 +102,7 @@ public class PlateauLDA extends PlateuStructure {
         this.replicateModelForDocs();
 
         //And reset the Q's of the new replicated nodes.
-        this.getReplicatedNodes().forEach(node -> {node.resetQDist(this.vmp.getRandom());});
+        this.getReplicatedNodes().filter(node -> !node.isObserved()).forEach(node -> {node.resetQDist(this.vmp.getRandom());});
     }
 
 
@@ -203,4 +205,10 @@ public class PlateauLDA extends PlateuStructure {
         this.vmp.setNodes(allNodes);
     }
 
+    /**
+     * Resets the exponential family distributions of all nodes for the {@link VMP} object of this PlateuStructure.
+     */
+    public void resetQs() {
+
+    }
 }

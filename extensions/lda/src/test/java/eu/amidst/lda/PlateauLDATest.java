@@ -15,7 +15,6 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.exponentialfamily.EF_Dirichlet;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.io.DataStreamLoader;
 import junit.framework.TestCase;
@@ -112,9 +111,7 @@ public class PlateauLDATest extends TestCase {
         System.out.println(plateauLDA.getPlateauNaturalParameterPosterior().output());
 
         plateauLDA.getNonReplictedNodes().forEach( node -> {
-            EF_Dirichlet dist = (EF_Dirichlet)node.getQDist();
-
-            System.out.println(dist.getExpectedParameters().output());
+            System.out.println(node.getQDist().getExpectedParameters().output());
 
         });
 
@@ -127,9 +124,7 @@ public class PlateauLDATest extends TestCase {
         System.out.println(plateauLDA.getPlateauNaturalParameterPosterior().output());
 
         plateauLDA.getNonReplictedNodes().forEach( node -> {
-            EF_Dirichlet dist = (EF_Dirichlet)node.getQDist();
-
-            System.out.println(dist.getExpectedParameters().output());
+            System.out.println(node.getQDist().getExpectedParameters().output());
         });
 
     }

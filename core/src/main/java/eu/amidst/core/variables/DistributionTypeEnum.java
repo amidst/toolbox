@@ -47,7 +47,13 @@ public enum DistributionTypeEnum {
     DIRICHLET_PARAMETER,
 
     /** The normal-gamma parameter distribution. */
-    NORMAL_GAMMA_PARAMETER;
+    NORMAL_GAMMA_PARAMETER,
+
+    /** The sparse multinomial distribution**/
+    SPARSE_MULTINOMIAL,
+
+    /** The sparse Dirichlet distribution**/
+    SPARSE_DIRICHLET_PARAMETER;
 
     /**
      * Creates a new distribution type for a given variable.
@@ -73,6 +79,10 @@ public enum DistributionTypeEnum {
                 return (E) new DirichletParameterType(var);
             case NORMAL_GAMMA_PARAMETER:
                 return (E) new NormalGammaParameterType(var);
+            case SPARSE_MULTINOMIAL:
+                return (E) new SparseMultinomialType(var);
+            case SPARSE_DIRICHLET_PARAMETER:
+                return (E) new SparseDirichletParameterType(var);
             default:
                 throw new IllegalArgumentException("Unknown Distribution Type");
         }

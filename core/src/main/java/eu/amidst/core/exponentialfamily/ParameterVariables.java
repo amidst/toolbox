@@ -29,6 +29,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.variables.*;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.SparseFiniteStateSpace;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -108,10 +109,21 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
      * Creates a new parameter Dirichlet Variable from a given name.
      * @param nOfStates the number of states of this variable.
      * @param name a given name.
-     * @return a new gaussian {@link Variable}.
+     * @return a new Dirichlet {@link Variable}.
      */
     public Variable newDirichletParameter(String name, int nOfStates) {
         return this.newVariable(name, DistributionTypeEnum.DIRICHLET_PARAMETER, new FiniteStateSpace(nOfStates));
+    }
+
+
+    /**
+     * Creates a new parameter sparse Dirichlet Variable from a given name.
+     * @param nOfStates the number of states of this variable.
+     * @param name a given name.
+     * @return a new sparse Dirichlet {@link Variable}.
+     */
+    public Variable newSparseDirichletParameter(String name, int nOfStates) {
+        return this.newVariable(name, DistributionTypeEnum.SPARSE_DIRICHLET_PARAMETER, new SparseFiniteStateSpace(nOfStates));
     }
 
     /**
@@ -220,6 +232,10 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
 
             if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
                 this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
+            }
+
+            if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.SPARSE_FINITE_SET) {
+                this.numberOfStates = ((SparseFiniteStateSpace) this.stateSpaceType).getNumberOfStates();
             }
 
             this.distributionType=distributionTypeEnum.newDistributionType(this);

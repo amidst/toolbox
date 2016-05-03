@@ -1,17 +1,11 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 //TODO suff. stats for first form to be implemented (if required)
@@ -20,7 +14,7 @@ package eu.amidst.core.exponentialfamily;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.utils.ArrayVector;
+import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
@@ -37,7 +31,7 @@ import java.util.Map;
  * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
-public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
+public class EF_SparseMultinomial_SparseDirichlet extends EF_ConditionalDistribution{
 
     /** Represents the conditioninig Dirichlet variable of this EF_Multinomial_Dirichlet distribution. */
     Variable dirichletVariable;
@@ -50,18 +44,19 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
      * @param var a {@link Variable} object with a Multinomial distribution type.
      * @param dirichletVariable a {@link Variable} object with a Dirichlet distribution type.
      */
-    public EF_Multinomial_Dirichlet(Variable var, Variable dirichletVariable) {
+    public EF_SparseMultinomial_SparseDirichlet(Variable var, Variable dirichletVariable) {
 
-        if (!var.isMultinomial()) {
+        if (!var.isSparseMultinomial()) {
             throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution for a non-multinomial variable.");
         }
-        if (!dirichletVariable.isDirichletParameter()) {
+        if (!dirichletVariable.isSparseDirichletParameter()) {
             throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution with a non-dirichlet variable.");
         }
 
         if (var.getNumberOfStates()!=dirichletVariable.getNumberOfStates()) {
             throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution with differetnt number of states.");
         }
+
 
         this.var=var;
         nOfStates = var.getNumberOfStates();
@@ -94,7 +89,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
 
-        NaturalParameters naturalParameters = new ArrayVector(this.nOfStates);
+        NaturalParameters naturalParameters = new SparseVectorDefaultValue(this.nOfStates,0.0);
         naturalParameters.copy(momentParents.get(this.dirichletVariable));
 
         return naturalParameters;
@@ -106,7 +101,7 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
     @Override
     public NaturalParameters getExpectedNaturalToParent(Variable parent, Map<Variable, MomentParameters> momentChildCoParents) {
 
-        NaturalParameters naturalParameters = new ArrayVector(this.nOfStates);
+        NaturalParameters naturalParameters = new SparseVectorDefaultValue(this.nOfStates,0.0);
 
         naturalParameters.copy(momentChildCoParents.get(this.var));
 
