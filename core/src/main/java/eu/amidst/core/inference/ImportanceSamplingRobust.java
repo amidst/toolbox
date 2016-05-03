@@ -17,9 +17,7 @@
 
 package eu.amidst.core.inference;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.distribution.ConditionalDistribution;
-import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
@@ -29,12 +27,10 @@ import eu.amidst.core.utils.*;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import org.apache.commons.math.complex.Complex;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
-import java.util.concurrent.SynchronousQueue;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -179,6 +175,9 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
     }
 
+    public List<SufficientStatistics> getSSvariablesAPosteriori() {
+        return SSvariablesAPosteriori;
+    }
 
     /**
      * Sets the sampling model for this ImportanceSampling.
@@ -271,7 +270,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 //                System.out.println(Arrays.toString(SS.toArray()));
 //                System.out.println();
 
-                newSSposterior = robustSumOfMultinomialSufficientStatistics(SSposterior, SSsample);
+                newSSposterior = robustSumOfMultinomialLogSufficientStatistics(SSposterior, SSsample);
             }
             else {
 //                if (variable.isNormal() ) {
@@ -407,7 +406,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         return sum.get(1)/sum.get(0);
     }
 
-    private double robustSumOfLogarithms(double log_x1, double log_x2) {
+    private static double robustSumOfLogarithms(double log_x1, double log_x2) {
         double result;
         if(log_x1!=0 && log_x2!=0) {
 
@@ -436,7 +435,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         return result;
     }
 
-    private ArrayVector robustSumOfMultinomialSufficientStatistics(ArrayVector ss1, ArrayVector ss2) {
+    public static ArrayVector robustSumOfMultinomialLogSufficientStatistics(ArrayVector ss1, ArrayVector ss2) {
         double[] ss1_values = ss1.toArray();
         double[] ss2_values = ss2.toArray();
         double[] ss_result = new double[ss1_values.length];
@@ -472,7 +471,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
     }
 
-    private ArrayVector robustNormalizationOfLogProbabilitiesVector(ArrayVector ss) {
+    public static ArrayVector robustNormalizationOfLogProbabilitiesVector(ArrayVector ss) {
 
         //System.out.println("ROBUST NORMALIZATION OF: \n\n" + Arrays.toString(ss.toArray()));
         double log_sumProbabilities = 0;
@@ -596,7 +595,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 ////                    }
 //                    return SS;
 //                })
-//                .reduce(this::robustSumOfMultinomialSufficientStatistics).get();
+//                .reduce(this::robustSumOfMultinomialLogSufficientStatistics).get();
 //
 //
 //        sumSS = robustNormalizationOfLogProbabilitiesVector(sumSS);
@@ -664,7 +663,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
             return weightedSample.logWeight;
 
-        }).reduce(this::robustSumOfLogarithms).getAsDouble();
+        }).reduce(ImportanceSamplingRobust::robustSumOfLogarithms).getAsDouble();
 
         //        return weightedSampleStream.mapToDouble(ws -> ws.logWeight - Math.log(sampleSize)).reduce(this::robustSumOfLogarithms).getAsDouble();
 
