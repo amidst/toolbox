@@ -88,6 +88,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
     public StochasticVI(){
         this.svb = new SVB();
+        this.svb.setNonSequentialModel(true);
     }
 
     public void setPlateuStructure(PlateuStructure plateuStructure){
@@ -153,6 +154,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
         this.svb.updateNaturalParameterPosteriors(currentParam);
 
+        iteration++;
 
         return Double.NaN;
     }

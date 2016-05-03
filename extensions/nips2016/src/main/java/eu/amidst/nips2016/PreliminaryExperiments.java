@@ -21,7 +21,7 @@ import java.util.Random;
  */
 public class PreliminaryExperiments {
 
-    public static BayesianNetwork oneNormalVarBN;
+    public static BayesianNetwork network;
 
     //public static int[] batchSize = {50, 100, 1000};
     //public static int[] memoryPopulationVI = {50, 100, 1000};
@@ -29,8 +29,8 @@ public class PreliminaryExperiments {
     //public static double[] deltaValue = {-5, 0, 0.1, 5};
 
     public static int[] batchSize = {100};
-    public static int[] memoryPopulationVI = {100};
-    public static double[] learningRate = {0.1};
+    public static int[] memoryPopulationVI = {1000};
+    public static double[] learningRate = {0.51,0.99};
     public static double[] deltaValue = {-5};
 
     public static int numIter = 100;
@@ -44,7 +44,11 @@ public class PreliminaryExperiments {
     public static PrintWriter writerPredLL;
     public static PrintWriter writerLambda ;
     public static PrintWriter writerMean;
-    //public static PrintWriter writerPopulationSize;
+    public static PrintWriter writerGamma;
+
+    public static double[] predLLAcum = new double[4];
+    public static int iter = 0;
+
 
 
     public static void initSVBLearners(int batchSize, double deltaValue) {
@@ -57,7 +61,7 @@ public class PreliminaryExperiments {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        driftSVB.setDAG(oneNormalVarBN.getDAG());
+        driftSVB.setDAG(network.getDAG());
         driftSVB.initLearning();
 
         svb = new SVB();
@@ -68,7 +72,7 @@ public class PreliminaryExperiments {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        svb.setDAG(oneNormalVarBN.getDAG());
+        svb.setDAG(network.getDAG());
         svb.initLearning();
 
     }
@@ -84,7 +88,7 @@ public class PreliminaryExperiments {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        populationVI.setDAG(oneNormalVarBN.getDAG());
+        populationVI.setDAG(network.getDAG());
         populationVI.initLearning();
 
         stochasticVI = new StochasticVI();
@@ -97,7 +101,7 @@ public class PreliminaryExperiments {
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        stochasticVI.setDAG(oneNormalVarBN.getDAG());
+        stochasticVI.setDAG(network.getDAG());
         stochasticVI.initLearning();
 
         maximumLikelihoodInit();
@@ -107,14 +111,33 @@ public class PreliminaryExperiments {
     private static void maximumLikelihoodInit(){
         ml = new ParallelMaximumLikelihood();
         ml.setParallelMode(true);
-        ml.setDAG(oneNormalVarBN.getDAG());
+        ml.setDAG(network.getDAG());
         ml.initLearning();
     }
 
 
+    public static void counts(DataOnMemory<DataInstance> batch) throws Exception{
+
+        predLLAcum[0] = svb.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        predLLAcum[1] = driftSVB.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        predLLAcum[2] = stochasticVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        predLLAcum[3] = populationVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        writerGamma.println(predLLAcum[0]+"\t"+predLLAcum[1]+"\t"+predLLAcum[2]+"\t"+predLLAcum[3]);
+
+
+
+    }
+
     public static void printPredLL(DataOnMemory<DataInstance> batch) throws Exception{
-        writerPredLL.println(svb.predictedLogLikelihood(batch)+"\t"+driftSVB.predictedLogLikelihood(batch)+"\t"+
-                "\t"+stochasticVI.predictedLogLikelihood(batch)+"\t"+populationVI.predictedLogLikelihood(batch));
+
+
+        predLLAcum[0] += svb.predictedLogLikelihood(batch);
+        predLLAcum[1] += driftSVB.predictedLogLikelihood(batch);
+        predLLAcum[2] += stochasticVI.predictedLogLikelihood(batch);
+        predLLAcum[3] += populationVI.predictedLogLikelihood(batch);
+        writerPredLL.println(predLLAcum[0]/iter+"\t"+predLLAcum[1]/iter+"\t"+predLLAcum[2]/iter+"\t"+predLLAcum[3]/iter);
+
+
     }
 
     public static void printOutput() throws Exception{
@@ -122,15 +145,20 @@ public class PreliminaryExperiments {
         BayesianNetwork bnML = ml.getLearntBayesianNetwork();
         BayesianNetwork bnSVB = svb.getLearntBayesianNetwork();
         BayesianNetwork bnDriftSVB = driftSVB.getLearntBayesianNetwork();
+        BayesianNetwork bnStochasticVI = stochasticVI.getLearntBayesianNetwork();
+        BayesianNetwork bnPopulationVI = populationVI.getLearntBayesianNetwork();
 
         /**
          * Normal A variable
          */
-        double meanML = ((Normal)bnML.getConditionalDistribution(oneNormalVarBN.getVariables().getVariableByName("A"))).getMean();
-        double meanSVB = ((Normal)bnSVB.getConditionalDistribution(oneNormalVarBN.getVariables().getVariableByName("A"))).getMean();
-        double meanDriftSVB = ((Normal)bnDriftSVB.getConditionalDistribution(oneNormalVarBN.getVariables().getVariableByName("A"))).getMean();
+        double meanML = ((Normal)bnML.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getMean();
+        double meanSVB = ((Normal)bnSVB.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getMean();
+        double meanDriftSVB = ((Normal)bnDriftSVB.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getMean();
+        double meanStochasticVI = ((Normal)bnStochasticVI.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getMean();
+        double meanPopulationVI = ((Normal)bnPopulationVI.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getMean();
 
-        writerMean.println(meanML+"\t"+meanSVB+"\t"+meanDriftSVB);
+        double realMean = ((Normal)network.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getMean();
+        writerMean.println(realMean+"\t"+meanML+"\t"+meanSVB+"\t"+meanDriftSVB+"\t"+meanStochasticVI+"\t"+meanPopulationVI);
 
         //writerPopulationSize.println("\t"+"\t"+"\t"+"\t");
 
@@ -139,36 +167,43 @@ public class PreliminaryExperiments {
 
     public static void scenarioMixedConceptDrift(int batchSize) throws Exception{
 
+        double predLL = 0;
         for (int i = 0; i < numIter; i++) {
 
-            /**
-             * GRADUAL CONCEPT DRIFT 1-19
-             */
-            if (i>0 && i<20) {
-                Normal normal = oneNormalVarBN.getConditionalDistribution(oneNormalVarBN.getVariables().getVariableByName("A"));
-                normal.setMean(normal.getMean()+5);
-                normal.setVariance(normal.getVariance()+0.5);
-            }
+            iter++;
 
             /**
-             * NO CONCEPT DRIFT 20-30
+             * NO CONCEPT DRIFT 1-19
              */
+
+            /**
+             * GRADUAL CONCEPT DRIFT 20-30
+             */
+            if (i>20 && i<30) {
+                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+                normal.setMean(normal.getMean()+new Random(i).nextDouble());
+                normal.setVariance(normal.getVariance()+new Random(i).nextDouble());
+            }
 
             /**
              * ABRUPT CONCEPT DRIFT 30-40 (%3)
              */
 
             if (i>30 && i<40 && i % 3 == 0) {
-                oneNormalVarBN.randomInitialization(new Random(i));
-                //System.out.println(oneNormalVarBN);
+                network.randomInitialization(new Random(i));
+                //System.out.println(network);
+                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+                normal.setMean(normal.getMean()*new Random(i).nextDouble());
+                normal.setVariance(normal.getVariance()*new Random(i).nextDouble());
+
             }
 
             /**
              * ABRUPT CONCEPT DRIFT 40-70 (%4)
              */
             if (i>40 && i<70 && i % 4 == 0) {
-                oneNormalVarBN.randomInitialization(new Random(i));
-                //System.out.println(oneNormalVarBN);
+                network.randomInitialization(new Random(i));
+                //System.out.println(network);
             }
 
             /**
@@ -179,19 +214,22 @@ public class PreliminaryExperiments {
              * GRADUAL CONCEPT DRIFT 90-100
              */
             if (i>90 && i<100) {
-                Normal normal = oneNormalVarBN.getConditionalDistribution(oneNormalVarBN.getVariables().getVariableByName("A"));
-                normal.setMean(normal.getMean()-5);
-                normal.setVariance(normal.getVariance()-1);
+                Normal normal = network.getConditionalDistribution(network.getVariables().getVariableByName("A"));
+                normal.setMean(normal.getMean()+5);
+                normal.setVariance(normal.getVariance()+0.1);
             }
 
-            BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
             sampler.setSeed(i);
 
             DataOnMemory<DataInstance> batch = sampler.sampleToDataStream(batchSize).toDataOnMemory();
 
 
-            if(i>0)
+            if(i>0) {
+                //counts(batch);
                 printPredLL(batch);
+
+            }
 
             /**
              * Update with all different learning techniques
@@ -205,7 +243,7 @@ public class PreliminaryExperiments {
             ml.updateModel(batch);
 
             /**
-             * Outputs: predLL, lambda, mean, population size
+             * Outputs: lambda, mean, population size
              */
             printOutput();
 
@@ -216,7 +254,7 @@ public class PreliminaryExperiments {
 
         for (int i = 0; i < numIter; i++) {
 
-            BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
             sampler.setSeed(i);
 
             DataOnMemory<DataInstance> batch = sampler.sampleToDataStream(batchSize).toDataOnMemory();
@@ -256,9 +294,11 @@ public class PreliminaryExperiments {
          *                     learningRate in StochasticVB & populationIV
          */
 
-        oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
+        network = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
 
-        System.out.println(oneNormalVarBN);
+        System.out.println(network);
+
+
 
         for (int i = 0; i < batchSize.length; i++) {
 
@@ -279,23 +319,25 @@ public class PreliminaryExperiments {
                          * Output files for predLL, lambda, mean, population size
                          */
                         String path = "extensions/nips2016/doc-Experiments/preliminaryExperiments/";
-                        writerPredLL = new PrintWriter(path + "predLL_" + "bs_" + batchSize[i] + "delta_" +
-                                deltaValue[j]+ "mem_" + memoryPopulationVI[k] + "lr_" + learningRate[i] +
+                        writerPredLL = new PrintWriter(path + "predLL_" + "bs" + batchSize[i] + "_delta" +
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[i] +
                                 ".txt", "UTF-8");
-                        writerLambda = new PrintWriter(path + "lamda_" + "bs_" + batchSize[i] + "delta_" +
-                                deltaValue[j]+ "mem_" + memoryPopulationVI[k] + "lr_" + learningRate[i] +
+                        writerLambda = new PrintWriter(path + "lamda_" + "_bs" + batchSize[i] + "_delta" +
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[i] +
                                 ".txt", "UTF-8");
-                        writerMean = new PrintWriter(path + "mean_" + "bs_" + batchSize[i] + "delta_" +
-                                deltaValue[j]+ "mem_" + memoryPopulationVI[k] + "lr_" + learningRate[i] +
+                        writerMean = new PrintWriter(path + "mean_" + "bs" + batchSize[i] + "_delta" +
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[i] +
                                 ".txt", "UTF-8");
-                        //writerPopulationSize = new PrintWriter("populationSize.txt", "UTF-8");
+                        writerGamma = new PrintWriter(path + "gamma_" + "bs" + batchSize[i] + "_delta" +
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[i] +
+                                ".txt", "UTF-8");
 
 
                         /**
                          * Choose concept drift scenario
                          */
-                        //scenarioMixedConceptDrift(batchSize[i]);
-                        scenarioNoConceptDrift(batchSize[i]);
+                        scenarioMixedConceptDrift(batchSize[i]);
+                        //scenarioNoConceptDrift(batchSize[i]);
 
                         /**
                          * Close all output files
@@ -303,7 +345,7 @@ public class PreliminaryExperiments {
                         writerPredLL.close();
                         writerLambda.close();
                         writerMean.close();
-                        //writerPopulationSize.close();
+                        writerGamma.close();
                     }
                 }
             }

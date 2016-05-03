@@ -253,7 +253,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
         this.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
 
-        double elbo =  this.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> this.getPlateuStructure().getVMP().computeELBO(node)).sum();
+        double elbo = 0;// this.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> this.getPlateuStructure().getVMP().computeELBO(node)).sum();
 
         elbo += this.updateModelOnBatchParallel(batch).getElbo();
 
