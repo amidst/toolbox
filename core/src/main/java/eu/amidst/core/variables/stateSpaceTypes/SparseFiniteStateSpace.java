@@ -18,7 +18,7 @@ import eu.amidst.core.variables.StateSpaceTypeEnum;
  * This class extends the abstract class {@link StateSpaceType} and implements the interface {@code Iterable<String>}.
  * It defines and handles the state space for discrete variables, i.e., the finite state space.
  */
-public class LargeFiniteStateSpace extends StateSpaceType {
+public class SparseFiniteStateSpace extends StateSpaceType {
 
     /** Represents the number of states. */
     private int numberOfStates;
@@ -27,8 +27,8 @@ public class LargeFiniteStateSpace extends StateSpaceType {
      * Creates a new FiniteStateSpace given the number of states.
      * @param numberOfStates1 the number of states.
      */
-    public LargeFiniteStateSpace(int numberOfStates1) {
-        super(StateSpaceTypeEnum.LARGE_FINITE_SET);
+    public SparseFiniteStateSpace(int numberOfStates1) {
+        super(StateSpaceTypeEnum.SPARSE_FINITE_SET);
         this.numberOfStates=numberOfStates1;
     }
 

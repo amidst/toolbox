@@ -28,5 +28,5 @@ public enum StateSpaceTypeEnum {
     FINITE_SET,
 
     /** A large finite set set**/
-    LARGE_FINITE_SET;
+    SPARSE_FINITE_SET;
 }

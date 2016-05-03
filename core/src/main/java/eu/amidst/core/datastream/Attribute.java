@@ -29,7 +29,7 @@ package eu.amidst.core.datastream;
 import eu.amidst.core.variables.StateSpaceType;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.LargeFiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.SparseFiniteStateSpace;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
@@ -219,8 +219,8 @@ public final class Attribute implements Serializable {
     public int getNumberOfStates(){
         if (this.getStateSpaceType().getStateSpaceTypeEnum()==StateSpaceTypeEnum.FINITE_SET)
             return ((FiniteStateSpace)this.getStateSpaceType()).getNumberOfStates();
-        else if (this.getStateSpaceType().getStateSpaceTypeEnum()==StateSpaceTypeEnum.LARGE_FINITE_SET)
-            return ((LargeFiniteStateSpace)this.getStateSpaceType()).getNumberOfStates();
+        else if (this.getStateSpaceType().getStateSpaceTypeEnum()==StateSpaceTypeEnum.SPARSE_FINITE_SET)
+            return ((SparseFiniteStateSpace)this.getStateSpaceType()).getNumberOfStates();
         else
             return -1;
     }
