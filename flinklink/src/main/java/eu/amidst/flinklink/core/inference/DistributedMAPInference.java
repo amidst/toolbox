@@ -65,6 +65,10 @@ public class DistributedMAPInference {
     }
 
     public void runInference() throws Exception {
+        this.runInference(MAPInference.SearchAlgorithm.HC_LOCAL);
+    }
+
+    public void runInference(MAPInference.SearchAlgorithm searchAlgorithm) throws Exception {
 
         MAPVariables = new ArrayList<>(1);
         MAPVariables.add(model.getVariables().getVariableByName("ClassVar"));
@@ -75,7 +79,7 @@ public class DistributedMAPInference {
         System.out.println(env.getParallelism());
 
         Tuple2<Assignment, Double> MAPResult = env.generateSequence(0,numberOfStartingPoints)
-                .map(new LocalMAPInference(model, MAPVariables, evidence, numberOfIterations, seed))
+                .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed))
                 .reduce( new ReduceFunction<Tuple2 <Assignment, Double>>() {
                     public Tuple2<Assignment, Double> reduce(Tuple2 <Assignment, Double> tuple1, Tuple2 <Assignment, Double> tuple2) {
                         if (tuple1.f1 > tuple2.f1) {
@@ -101,13 +105,15 @@ public class DistributedMAPInference {
         private Assignment evidence;
         private int seed;
         private int numberOfIterations;
+        private String searchAlgorithm;
 
-        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, Assignment evidence, int numberOfIterations, int seed) {
+        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, MAPInference.SearchAlgorithm searchAlgorithm, Assignment evidence, int numberOfIterations, int seed) {
             this.model = model;
             this.MAPVariables = MAPVariables;
             this.evidence = evidence;
             this.numberOfIterations = numberOfIterations;
             this.seed = seed;
+            this.searchAlgorithm = searchAlgorithm.name();
 
         }
 
@@ -122,7 +128,7 @@ public class DistributedMAPInference {
             localMAPInference.setNumberOfIterations(numberOfIterations);
             localMAPInference.setEvidence(evidence);
 
-            localMAPInference.runInference();
+            localMAPInference.runInference(MAPInference.SearchAlgorithm.valueOf(searchAlgorithm));
 
             Assignment MAPEstimate = localMAPInference.getEstimate();
             double logProbMAPEstimate = localMAPInference.getLogProbabilityOfEstimate();
