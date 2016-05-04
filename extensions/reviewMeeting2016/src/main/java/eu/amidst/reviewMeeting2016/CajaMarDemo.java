@@ -20,7 +20,7 @@ package eu.amidst.reviewMeeting2016;
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuIIDReplication;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -108,7 +108,7 @@ public class CajaMarDemo {
         DynamicParallelVB parallelVB = new DynamicParallelVB();
 
         //
-        parallelVB.setPlateuStructure(new PlateuStructure());
+        parallelVB.setPlateuStructure(new PlateuIIDReplication());
         // Convergence parameters
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(100);
@@ -169,7 +169,7 @@ public class CajaMarDemo {
         start = System.nanoTime();
 
         // Create the plateu structure to replicate
-        parallelVB.setPlateuStructure(new PlateuStructure(Arrays.asList(globalHiddenVar)));
+        parallelVB.setPlateuStructure(new PlateuIIDReplication(Arrays.asList(globalHiddenVar)));
 
         // Define the transition for the global hidden variable, starting with a standard N(0,1)
         // Gaussian and transition variance (that is summed to that of the previous step) 1.

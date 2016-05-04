@@ -97,6 +97,14 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     }
 
     /**
+     * Gets whether output for this MessagePassingAlgorithm.
+     * @return
+     */
+    public boolean isOutput() {
+        return output;
+    }
+
+    /**
      * Sets the threshold for this MessagePassingAlgorithm.
      * @param threshold a {@code double} that represents the threshold value to be set.
      */
@@ -159,6 +167,8 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
             boolean done = true;
             for (Node node : nodes) {
+
+
                 if (!node.isActive() || node.isObserved())
                     continue;
 
@@ -179,13 +189,15 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
                 updateCombinedMessage(node, selfMessage);
                 done &= node.isDone();
+
             }
 
-            convergence = this.testConvergence();
+              convergence = this.testConvergence();
 
             if (done) {
                 convergence = true;
             }
+
 
         }
 

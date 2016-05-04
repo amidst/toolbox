@@ -59,6 +59,10 @@ public class EF_Multinomial_Dirichlet extends EF_ConditionalDistribution{
             throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution with a non-dirichlet variable.");
         }
 
+        if (var.getNumberOfStates()!=dirichletVariable.getNumberOfStates()) {
+            throw new UnsupportedOperationException("Creating a Multinomial_Dirichlet EF distribution with differetnt number of states.");
+        }
+
         this.var=var;
         nOfStates = var.getNumberOfStates();
         this.dirichletVariable = dirichletVariable;

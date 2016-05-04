@@ -20,6 +20,7 @@ package eu.amidst.core.variables;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.SparseFiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.Serializable;
@@ -133,6 +134,29 @@ public class Variables implements Iterable<Variable>, Serializable {
      */
     public Variable newMultionomialVariable(String name, int nOfStates) {
         return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(nOfStates));
+    }
+
+
+    /**
+     * Creates a new sparse multionomial Variable from a given Attribute.
+     * @param att a given Attribute.
+     * @return a new multionomial Variable.
+     */
+    public Variable newSparseMultionomialVariable(Attribute att) {
+        if (att.getStateSpaceType().getStateSpaceTypeEnum()!=StateSpaceTypeEnum.SPARSE_FINITE_SET)
+            throw new UnsupportedOperationException("A Sparse Multinomial can not be created from a non-sparse attribute");
+        return this.newVariable(att, DistributionTypeEnum.SPARSE_MULTINOMIAL);
+    }
+
+
+    /**
+     * Creates a new sparse multionomial Variable from a given name and number of states.
+     * @param name a given name.
+     * @param nOfStates number of states.
+     * @return a new multionomial Variable.
+     */
+    public Variable newSparseMultionomialVariable(String name, int nOfStates) {
+        return this.newVariable(name, DistributionTypeEnum.SPARSE_MULTINOMIAL, new SparseFiniteStateSpace(nOfStates));
     }
 
     /**
@@ -416,7 +440,9 @@ public class Variables implements Iterable<Variable>, Serializable {
             if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET) {
                 this.numberOfStates = ((FiniteStateSpace) this.stateSpaceType).getNumberOfStates();
             }
-
+            if (this.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.SPARSE_FINITE_SET) {
+                this.numberOfStates = ((SparseFiniteStateSpace) this.stateSpaceType).getNumberOfStates();
+            }
             this.distributionType=distributionTypeEnum.newDistributionType(this);
         }
 

@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 /**
  * This class defines a Plateu Structure.
  */
-public class PlateuStructure implements Serializable {
+public abstract class PlateuStructure implements Serializable {
 
     /**
      * Represents the serial version ID for serializing the object.
@@ -45,17 +45,17 @@ public class PlateuStructure implements Serializable {
     /**
      * Represents a map describing which variables are replicated
      */
-    Map<Variable, Boolean> replicatedVariables;
+    protected Map<Variable, Boolean> replicatedVariables = new HashMap<>();
 
     /**
      * Represents the list of non replicated {@link Node}s.
      */
-    transient protected List<Node> nonReplictedNodes;
+    transient protected List<Node> nonReplictedNodes = new ArrayList();
 
     /**
      * Represents the list of replicated nodes {@link Node}s.
      */
-    transient protected List<List<Node>> replicatedNodes;
+    transient protected List<List<Node>> replicatedNodes = new ArrayList<>();
 
     /**
      * Represents the {@link EF_LearningBayesianNetwork} model.
@@ -75,12 +75,12 @@ public class PlateuStructure implements Serializable {
     /**
      * Represents a {@code Map} object that maps {@link Variable} parameters to the corresponding {@link Node}s.
      */
-    transient protected Map<Variable, Node> nonReplicatedVarsToNode;
+    transient protected Map<Variable, Node> nonReplicatedVarsToNode = new ConcurrentHashMap<>();
 
     /**
      * Represents the list of {@code Map} objects that map {@link Variable}s to the corresponding {@link Node}s.
      */
-    transient protected List<Map<Variable, Node>> replicatedVarsToNode;
+    transient protected List<Map<Variable, Node>> replicatedVarsToNode = new ArrayList<>();
 
 
     /**
@@ -183,7 +183,6 @@ public class PlateuStructure implements Serializable {
                 .collect(Collectors.toList());
 
         ef_learningmodel = new EF_LearningBayesianNetwork(dists, this.initialNonReplicatedVariablesList);
-        this.replicatedVariables = new HashMap<>();
         this.ef_learningmodel.getListOfParametersVariables().stream().forEach(var -> this.replicatedVariables.put(var, false));
         this.ef_learningmodel.getListOfNonParameterVariables().stream().forEach(var -> this.replicatedVariables.put(var, true));
 
@@ -296,88 +295,14 @@ public class PlateuStructure implements Serializable {
     /**
      * Replicates the model of this PlateuStructure.
      */
-    public void replicateModel() {
-        nonReplictedNodes = new ArrayList();
-        replicatedNodes = new ArrayList<>(nReplications);
-
-        replicatedVarsToNode = new ArrayList<>();
-        nonReplicatedVarsToNode = new ConcurrentHashMap<>();
-        nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
-                .filter(dist -> isNonReplicatedVar(dist.getVariable()))
-                .map(dist -> {
-                    Node node = new Node(dist);
-                    nonReplicatedVarsToNode.put(dist.getVariable(), node);
-                    return node;
-                })
-                .collect(Collectors.toList());
-
-        for (int i = 0; i < nReplications; i++) {
-
-            Map<Variable, Node> map = new ConcurrentHashMap<>();
-            List<Node> tmpNodes = ef_learningmodel.getDistributionList().stream()
-                    .filter(dist -> isReplicatedVar(dist.getVariable()))
-                    .map(dist -> {
-                        Node node = new Node(dist);
-                        map.put(dist.getVariable(), node);
-                        return node;
-                    })
-                    .collect(Collectors.toList());
-            this.replicatedVarsToNode.add(map);
-            replicatedNodes.add(tmpNodes);
-        }
-
-        for (int i = 0; i < nReplications; i++) {
-            for (Node node : replicatedNodes.get(i)) {
-                final int slice = i;
-                node.setParents(node.getPDist().getConditioningVariables().stream().map(var -> this.getNodeOfVar(var, slice)).collect(Collectors.toList()));
-                node.getPDist().getConditioningVariables().stream().forEach(var -> this.getNodeOfVar(var, slice).getChildren().add(node));
-            }
-        }
-
-        List<Node> allNodes = new ArrayList();
-
-        allNodes.addAll(this.nonReplictedNodes);
-
-        for (int i = 0; i < nReplications; i++) {
-            allNodes.addAll(this.replicatedNodes.get(i));
-        }
-
-        this.vmp.setNodes(allNodes);
-    }
+    public abstract void replicateModel();
 
     /**
      * Sets the evidence for this PlateuStructure.
      *
      * @param data a {@code List} of {@link DataInstance}.
      */
-    public void setEvidence(List<? extends DataInstance> data) {
-        if (data.size() > nReplications)
-            throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
-
-        for (int i = 0; i < nReplications && i < data.size(); i++) {
-            final int slice = i;
-            this.replicatedNodes.get(i).forEach(node -> {
-                node.setAssignment(data.get(slice));
-                node.setActive(true);
-            });
-        }
-
-        for (int i = data.size(); i < nReplications; i++) {
-            this.replicatedNodes.get(i).forEach(node -> {
-                node.setAssignment(null);
-                node.setActive(false);
-            });
-        }
-
-
-
-        //Non-replicated nodes can have evidende, which is taken from the first data sample in the list
-        for (Node nonReplictedNode : this.nonReplictedNodes) {
-            nonReplictedNode.setAssignment(data.get(0));
-        }
-
-        
-    }
+    public abstract void setEvidence(List<? extends DataInstance> data);
 
     public Node getNodeOfNonReplicatedVar(Variable variable) {
         if (isNonReplicatedVar(variable))

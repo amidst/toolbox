@@ -50,7 +50,13 @@ public enum DistributionTypeEnum {
     NORMAL_GAMMA_PARAMETER,
 
     /** The truncated exponential distribution. */
-    TRUNCATED_EXPONENTIAL;
+    TRUNCATED_EXPONENTIAL,
+
+    /** The sparse multinomial distribution**/
+    SPARSE_MULTINOMIAL,
+
+    /** The sparse Dirichlet distribution**/
+    SPARSE_DIRICHLET_PARAMETER;
 
     /**
      * Creates a new distribution type for a given variable.
@@ -78,6 +84,10 @@ public enum DistributionTypeEnum {
                 return (E) new NormalGammaParameterType(var);
             case TRUNCATED_EXPONENTIAL:
                 return (E) new TruncatedExponentialType(var);
+            case SPARSE_MULTINOMIAL:
+                return (E) new SparseMultinomialType(var);
+            case SPARSE_DIRICHLET_PARAMETER:
+                return (E) new SparseDirichletParameterType(var);
             default:
                 throw new IllegalArgumentException("Unknown Distribution Type");
         }

@@ -21,7 +21,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuIIDReplication;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -202,7 +202,7 @@ public class IDAConceptDriftDetector {
 
         svb = new ParallelVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructure(hiddenVars));
+        svb.setPlateuStructure(new PlateuIIDReplication(hiddenVars));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(1.0);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);

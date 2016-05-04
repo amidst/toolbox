@@ -23,6 +23,7 @@ import eu.amidst.core.datastream.filereaders.DataFileReader;
 import eu.amidst.core.datastream.filereaders.DataRow;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
+import eu.amidst.core.variables.stateSpaceTypes.SparseFiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 
 import java.io.File;
@@ -96,6 +97,8 @@ public class ARFFDataReader implements DataFileReader {
             List<String> statesNames = Arrays.stream(states).map(String::trim).collect(Collectors.toList());
 
             return new Attribute(index, name, new FiniteStateSpace(statesNames));
+        }else if (parts[2].equals("SparseMultinomial")) {
+            return new Attribute(index, name, new SparseFiniteStateSpace(Integer.parseInt(parts[3])));
         }else{
             throw new UnsupportedOperationException("We can not create an attribute from this line: "+line);
         }
@@ -187,16 +190,16 @@ public class ARFFDataReader implements DataFileReader {
     @Override
     public Stream<DataRow> stream() {
         //if (streamString ==null) {
-            try {
-                streamString = Files.lines(pathFile)
-                                .filter(w -> !w.isEmpty())
-                                .filter(w -> !w.startsWith("%"))
-                                .skip(this.dataLineCount)
-                                .filter(w -> !w.isEmpty())
-                                .map(line -> new DataRowWeka(this.attributes, line));
-            } catch (IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
+        try {
+            streamString = Files.lines(pathFile)
+                    .filter(w -> !w.isEmpty())
+                    .filter(w -> !w.startsWith("%"))
+                    .skip(this.dataLineCount)
+                    .filter(w -> !w.isEmpty())
+                    .map(line -> new DataRowWeka(this.attributes, line));
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
         //}
         return streamString;
     }
