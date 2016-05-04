@@ -29,9 +29,9 @@ public class LDA {
         SVB svb = new SVB();
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word","count");
-        plateauLDA.setNTopics(2);
+        plateauLDA.setNTopics(10);
         plateauLDA.getVMP().setTestELBO(true);
-        plateauLDA.getVMP().setMaxIter(100);
+        plateauLDA.getVMP().setMaxIter(10);
         plateauLDA.getVMP().setOutput(true);
         plateauLDA.getVMP().setThreshold(0.1);
 
@@ -44,7 +44,7 @@ public class LDA {
 
         //svb.updateModel(dataInstances);
 
-        BatchSpliteratorByID.toFixedBatchStream(dataInstances, 100).sequential().forEach(batch -> {
+        BatchSpliteratorByID.toFixedBatchStream(dataInstances, 500).sequential().forEach(batch -> {
             System.out.println("Batch: "+ batch.getNumberOfDataInstances());
             svb.updateModel(batch);
         });
