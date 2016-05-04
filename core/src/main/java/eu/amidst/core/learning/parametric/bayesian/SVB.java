@@ -459,6 +459,9 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public void initLearning(){
 
+
+        this.plateuStructure.initTransientDataStructure();
+
         this.getPlateuStructure().getVMP().setOutput(activateOutput);
         this.getPlateuStructure().getVMP().setTestELBO(activateOutput);
 

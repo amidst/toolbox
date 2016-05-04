@@ -94,7 +94,7 @@ public class StochasticVITest extends TestCase {
 
 
         //for (int i = 2; i <3; i++) {
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal_MultinomialParents.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialParents.bn");
         //bn.randomInitialization(new Random(0));
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);

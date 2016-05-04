@@ -113,6 +113,16 @@ public abstract class PlateuStructure implements Serializable {
     }
 
 
+    /**
+     * Initializes the interal transient data structures.
+     */
+    public void initTransientDataStructure(){
+        replicatedVarsToNode = new ArrayList<>();
+        nonReplicatedVarsToNode = new ConcurrentHashMap<>();
+        replicatedNodes = new ArrayList<>();
+        nonReplictedNodes = new ArrayList();
+    }
+
     public Stream<Node> getNonReplictedNodes() {
         return nonReplictedNodes.stream();
     }

@@ -81,6 +81,7 @@ public class DataRowWeka implements DataRow{
 
                             new Exception();
                         }
+                        break;
                     case SPARSE_FINITE_SET:
                         data[i] = Integer.parseInt(parts[i]);
                 }
