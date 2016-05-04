@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.nips2016;
+package eu.amidst.nips2016.text;
 
 import java.io.*;
 import java.util.HashMap;
