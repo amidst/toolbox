@@ -17,6 +17,7 @@
 
 package eu.amidst.core.inference.messagepassing;
 
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Vector;
 
 /**
@@ -105,8 +106,35 @@ public class Message<E extends Vector> {
         if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
             throw new IllegalArgumentException();
         }
-        m2.getVector().sum(m1.vector);
-        m2.setDone(m2.isDone() && m1.isDone());
-        return m2;
+        m1.getVector().sum(m2.vector);
+        m1.setDone(m2.isDone() && m1.isDone());
+        return m1;
+    }
+
+//    public static <E extends Vector> Message<E> combineNonStateless(Message<E> m1, Message<E> m2){
+//        if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
+//            throw new IllegalArgumentException();
+//        }
+//        m2.getVector().sum(m1.vector);
+//        m2.setDone(m2.isDone() && m1.isDone());
+//        return m2;
+//    }
+
+    /**
+     * Combines two given Messages.
+     * @param <E> a class extending {@link Vector}
+     * @param m1 a first given message.
+     * @param m2 a second given message.
+     * @return the message that represents the result of the combination of the two input messages.
+     */
+    public static <E extends Vector> Message<E> combineStateless(Message<E> m1, Message<E> m2){
+        if (m1.getNode().getMainVariable()!=m2.getNode().getMainVariable()) {
+            throw new IllegalArgumentException();
+        }
+        Message<E> newmessage = new Message<>(m1.getNode());
+        newmessage.setVector(Serialization.deepCopy(m1.getVector()));
+        newmessage.getVector().sum(m2.vector);
+        newmessage.setDone(m2.isDone() && m1.isDone());
+        return newmessage;
     }
 }

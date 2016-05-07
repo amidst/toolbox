@@ -33,6 +33,7 @@ import eu.amidst.core.variables.Variable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,16 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
 
     /** Represents a test of the evidence lower bound (ELBO). */
     boolean testELBO=false;
+
+
+    /**
+     * Gets the random number generator.
+     * @return
+     */
+    public Random getRandom(){
+        return this.random;
+    }
+
 
     /**
      * Sets the testELBO value.

@@ -30,7 +30,7 @@ public class DriftSVBTest extends TestCase {
     public static void test1() throws Exception {
 
 
-        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
+        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal.bn");
 
         //System.out.println(oneNormalVarBN);
         int batchSize = 100;
@@ -75,7 +75,7 @@ public class DriftSVBTest extends TestCase {
     public static void test2() throws Exception {
 
 
-        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
+        BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal.bn");
 
         System.out.println(oneNormalVarBN);
         int batchSize = 1;

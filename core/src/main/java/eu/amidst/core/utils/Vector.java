@@ -171,5 +171,14 @@ public interface Vector {
         return vec2;
     }
 
+    default String output(){
+        StringBuilder stringBuilder = new StringBuilder("{");
+        for (int i = 0; i < this.size(); i++) {
+            stringBuilder.append(this.get(i));
+            stringBuilder.append(", ");
+        }
+        stringBuilder.append("}");
+        return stringBuilder.toString();
+    }
 
 }
