@@ -139,8 +139,6 @@ public class PreliminaryExperiments {
         outputs[2] += stochasticVI.predictedLogLikelihood(batch);
         outputs[3] += populationVI.predictedLogLikelihood(batch);
         writerPredLL.println(outputs[0]/iter+"\t"+outputs[1]/iter+"\t"+outputs[2]/iter+"\t"+outputs[3]/iter);
-
-
     }
 
     public static void printOutput() throws Exception{
