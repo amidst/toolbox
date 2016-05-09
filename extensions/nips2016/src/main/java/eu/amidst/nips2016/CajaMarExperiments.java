@@ -133,7 +133,7 @@ public class CajaMarExperiments {
         mlPerBatch.initLearning();
     }
 
-    public static void printOutput() throws Exception{
+    public static void printOutput(int currentMonth) throws Exception{
 
         //BayesianNetwork bnML = ml.getLearntBayesianNetwork();
         BayesianNetwork bnSVB = svb.getLearntBayesianNetwork();
@@ -169,32 +169,32 @@ public class CajaMarExperiments {
         for (int i = 0; i < 2; i++) {
             if(i!=0)
                 means += "\t";
-            means += realMean[i]+"\t"+meanML[i]+"\t"+meanSVB[i]+"\t"+meanDriftSVB[i]+"\t"+meanStochasticVI[i]+"\t"+meanPopulationVI[i];
+            means += currentMonth+"\t"+realMean[i]+"\t"+meanML[i]+"\t"+meanSVB[i]+"\t"+meanDriftSVB[i]+"\t"+meanStochasticVI[i]+"\t"+meanPopulationVI[i];
         }
 
 
         writerMean.println(means);
 
 
-        writerLambda.println(driftSVB.getLambdaValue());
+        writerLambda.println(currentMonth+"\t"+driftSVB.getLambdaValue());
 
     }
 
-    public static void printCounts() throws Exception{
+    public static void printCounts(int currentMonth) throws Exception{
 
         double[] outputs = new double[4];
         outputs[0] = svb.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
         outputs[1] = driftSVB.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
         outputs[2] = stochasticVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
         outputs[3] = populationVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        writerGamma.println(outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
+        writerGamma.println(currentMonth+"\t"+outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
 
 
 
     }
 
-    public static void printPredLL(double[] outputs) throws Exception{
-        writerPredLL.println(outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
+    public static void printPredLL(double[] outputs, int monthID) throws Exception{
+        writerPredLL.println(monthID+"\t"+outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
     }
 
     public static double[] calculatePredLL(DataOnMemory<DataInstance> batch) throws Exception{
@@ -399,12 +399,12 @@ public class CajaMarExperiments {
                                     for (int o = 0; o < outputs.length; o++) {
                                         outputsAverage[o]/=monthsToEvaluate;
                                     }
-                                    printPredLL(outputsAverage);
-                                    printCounts();
+                                    printPredLL(outputsAverage, currentMonth);
+                                    printCounts(currentMonth);
                                 }else if(m>0) {
                                     double[] outputs = calculatePredLL(batch);
-                                    printPredLL(outputs);
-                                    printCounts();
+                                    printPredLL(outputs, currentMonth);
+                                    printCounts(currentMonth);
                                 }
                                 batchCount++;
 
@@ -412,7 +412,7 @@ public class CajaMarExperiments {
                                 /**
                                  * Outputs: lambda, mean, population size
                                  */
-                                printOutput();
+                                printOutput(currentMonth);
 
                                 if(onlyFirstBatch)
                                     break;
