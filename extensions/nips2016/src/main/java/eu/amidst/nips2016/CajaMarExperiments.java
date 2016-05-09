@@ -295,7 +295,7 @@ public class CajaMarExperiments {
         numIter = Integer.parseInt(args[4]);
 
 
-        String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
+        String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWekaShuffled";
         String outputPath = "extensions/nips2016/doc-Experiments/preliminaryExperiments/";
 
         for (int i = 0; i < batchSize.length; i++) {
@@ -323,16 +323,16 @@ public class CajaMarExperiments {
                          * Output files for predLL, lambda, mean, population size
                          */
                         writerPredLL = new PrintWriter(outputPath + "CajaMar/CajaMar_predLL_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
                         writerLambda = new PrintWriter(outputPath + "CajaMar/CajaMar_lamda_" + "_bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
                         writerMean = new PrintWriter(outputPath + "CajaMar/CajaMar_mean_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
                         writerGamma = new PrintWriter(outputPath + "CajaMar/CajaMar_gamma_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
 
 
