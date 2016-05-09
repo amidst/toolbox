@@ -58,6 +58,11 @@
             <artifactId>huginlink</artifactId>
             <version>${AMIDSTver}</version>
         </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>flinklink</artifactId>
+            <version>${AMIDSTver}</version>
+        </dependency>
     </dependencies>
 
     <build>
