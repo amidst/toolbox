@@ -27,8 +27,11 @@ import java.util.List;
  */
 public class CajaMarExperiments {
 
-    public static boolean classVarInModel = true;
+    public static boolean includeClassVar = true;
     public static boolean linkHidden = true;
+    public static boolean addMixtures = true;
+    public static boolean onlyFirstBatch = true;
+    public static int monthsToEvaluate = 5;
 
     public static int[] batchSize = {1000};
     public static int[] memoryPopulationVI = {1000};
@@ -51,7 +54,6 @@ public class CajaMarExperiments {
 
     public static int numIter = 84;
 
-    public static int iter = 0;
 
     public static int maxIterVI = 100;
     public static double thresholdVI = 0.001;
@@ -145,7 +147,7 @@ public class CajaMarExperiments {
                 meanPopulationVI=new double[2], realMean=new double[2];
 
         Variable var = dag.getVariables().getVariableByName("VAR01");
-        if(!classVarInModel) {
+        if(!includeClassVar) {
             //meanML[0] = ((ConditionalLinearGaussian) bnML.getConditionalDistribution(var)).getIntercept();
             meanSVB[0] = ((ConditionalLinearGaussian) bnSVB.getConditionalDistribution(var)).getIntercept();
             meanDriftSVB[0] = ((ConditionalLinearGaussian) bnDriftSVB.getConditionalDistribution(var)).getIntercept();
@@ -191,18 +193,19 @@ public class CajaMarExperiments {
 
     }
 
-    public static void printPredLL(DataOnMemory<DataInstance> batch) throws Exception{
+    public static void printPredLL(double[] outputs) throws Exception{
+        writerPredLL.println(outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
+    }
 
+    public static double[] calculatePredLL(DataOnMemory<DataInstance> batch) throws Exception{
         double[] outputs = new double[4];
         outputs[0] = svb.predictedLogLikelihood(batch);
         outputs[1] = driftSVB.predictedLogLikelihood(batch);
         outputs[2] = stochasticVI.predictedLogLikelihood(batch);
         outputs[3] = populationVI.predictedLogLikelihood(batch);
-        writerPredLL.println(outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
 
-
+        return outputs;
     }
-
 
     public static DAG createDAGforML(Attributes attributes){
 
@@ -216,14 +219,13 @@ public class CajaMarExperiments {
         DAG dag = new DAG(variables);
 
         // Link the class as parent of all attributes
-        if(classVarInModel) {
+        if(includeClassVar) {
             dag.getParentSets()
                     .stream()
                     .filter(w -> w.getMainVar() != classVar)
                     .filter(w -> !w.getMainVar().getName().startsWith("Hidden"))
                     .forEach(w -> w.addParent(classVar));
         }
-
 
 
         // Show the new dynamic DAG structure
@@ -245,28 +247,43 @@ public class CajaMarExperiments {
             localHiddenVars.add(variables.newGaussianVariable("Hidden_"+i));
         }
 
+        List<Variable> localMixtures = new ArrayList<>();
+        if(addMixtures){
+            for (int i = 0; i < attributes.getListOfNonSpecialAttributes().size()-1; i++) {
+                localMixtures.add(variables.newMultionomialVariable("Mixture_"+i,2));
+            }
+        }
 
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
 
         // Link the class as parent of all attributes
-        if(classVarInModel) {
+        if(includeClassVar) {
             dag.getParentSets()
                     .stream()
                     .filter(w -> w.getMainVar() != classVar)
                     .filter(w -> !w.getMainVar().getName().startsWith("Hidden"))
+                    .filter(w -> !w.getMainVar().getName().startsWith("Mixture"))
                     .forEach(w -> w.addParent(classVar));
         }
 
-        // Link the local hidden as parent of all predictive attributes
+        // Link the local gaussian hidden as parent of all predictive attributes
         for (Variable localHiddenVar : localHiddenVars) {
             dag.getParentSets()
                     .stream()
                     .filter(w -> w.getMainVar() != classVar)
                     .filter(w -> !w.getMainVar().getName().startsWith("Hidden"))
+                    .filter(w -> !w.getMainVar().getName().startsWith("Mixture"))
                     .forEach(w -> w.addParent(localHiddenVar));
         }
 
+        if(addMixtures){
+            int index = 0;
+            for (Variable predictedVariable : variables.getVariablesForListOfAttributes(attributes.getListOfNonSpecialAttributes())) {
+                dag.getParentSet(predictedVariable).addParent(localMixtures.get(index));
+                index++;
+            }
+        }
 
         // Connect local hidden variables with each other
         if(linkHidden) {
@@ -288,14 +305,17 @@ public class CajaMarExperiments {
 
         //int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 
-        classVarInModel = Boolean.parseBoolean(args[0]);
+        includeClassVar = Boolean.parseBoolean(args[0]);
         linkHidden = Boolean.parseBoolean(args[1]);
         maxIterVI = Integer.parseInt(args[2]);
         thresholdVI = Double.parseDouble(args[3]);
         numIter = Integer.parseInt(args[4]);
+        onlyFirstBatch = Boolean.parseBoolean(args[5]);
+        monthsToEvaluate = Integer.parseInt(args[6]);
+        addMixtures = Boolean.parseBoolean(args[7]);
 
 
-        String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWekaShuffled";
+        String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaShuffled/dataWekaSuffled";
         String outputPath = "extensions/nips2016/doc-Experiments/preliminaryExperiments/";
 
         for (int i = 0; i < batchSize.length; i++) {
@@ -323,16 +343,16 @@ public class CajaMarExperiments {
                          * Output files for predLL, lambda, mean, population size
                          */
                         writerPredLL = new PrintWriter(outputPath + "CajaMar/CajaMar_predLL_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
                         writerLambda = new PrintWriter(outputPath + "CajaMar/CajaMar_lamda_" + "_bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
                         writerMean = new PrintWriter(outputPath + "CajaMar/CajaMar_mean_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
                         writerGamma = new PrintWriter(outputPath + "CajaMar/CajaMar_gamma_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+classVarInModel+"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
                                 ".txt", "UTF-8");
 
 
@@ -362,8 +382,28 @@ public class CajaMarExperiments {
                                 //mlPerBatch.initLearning();
                                 //mlPerBatch.updateModel(batch);
 
-                                if(m>0) {
-                                    printPredLL(batch);
+                                if(monthsToEvaluate>1){
+                                    double[] outputs = new double[4];
+                                    double[] outputsAverage = new double[4];
+                                    for (int n = m+1; n < (m+1+monthsToEvaluate); n++) {
+                                        DataStream<DataInstance> dataMonthiEval = DataStreamLoader.openFromFile(path + n + ".arff");
+                                        for (DataOnMemory<DataInstance> batchEval : dataMonthiEval.iterableOverBatches(batchSize[i])) {
+                                            outputs = calculatePredLL(batchEval);
+                                            if(onlyFirstBatch)
+                                                break;
+                                        }
+                                        for (int o = 0; o < outputs.length; o++) {
+                                            outputsAverage[o] += outputs[o];
+                                        }
+                                    }
+                                    for (int o = 0; o < outputs.length; o++) {
+                                        outputsAverage[o]/=monthsToEvaluate;
+                                    }
+                                    printPredLL(outputsAverage);
+                                    printCounts();
+                                }else if(m>0) {
+                                    double[] outputs = calculatePredLL(batch);
+                                    printPredLL(outputs);
                                     printCounts();
                                 }
                                 batchCount++;
@@ -373,6 +413,9 @@ public class CajaMarExperiments {
                                  * Outputs: lambda, mean, population size
                                  */
                                 printOutput();
+
+                                if(onlyFirstBatch)
+                                    break;
                             }
                         }
 
