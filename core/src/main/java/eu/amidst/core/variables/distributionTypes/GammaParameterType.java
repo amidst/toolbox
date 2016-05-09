@@ -74,6 +74,6 @@ public class GammaParameterType extends DistributionType {
      */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
-        throw new UnsupportedOperationException("Inverse Gamma Parameter Type does not allow conditional distributions");
+        throw new UnsupportedOperationException("Gamma Parameter Type does not allow conditional distributions");
     }
 }

@@ -19,6 +19,7 @@ package eu.amidst.core.variables;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.variables.distributionTypes.IndicatorType;
 import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.SparseFiniteStateSpace;
 import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
@@ -224,6 +225,57 @@ public class Variables implements Iterable<Variable>, Serializable {
      */
     public Variable newTruncatedExponential(String name) {
         return this.newVariable(name, DistributionTypeEnum.TRUNCATED_EXPONENTIAL, new RealStateSpace(0,1));
+    }
+
+    /**
+     * Creates a new Indicator Variable from a given Variable.
+     * @param var a given Variable.
+     * @return a new indicator Variable.
+     */
+    public Variable newIndicatorVariable(Variable var, double deltaValue) {
+        VariableBuilder variableBuilder = new VariableBuilder();
+        variableBuilder.setAttribute(var.getAttribute());
+        variableBuilder.setDistributionType(DistributionTypeEnum.INDICATOR);
+        String newVarName = var.getName()+"_INDICATOR";
+        variableBuilder.setName(newVarName);
+        variableBuilder.setObservable(true);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Zero","NonZero")));
+        Variable newVariable = new VariableImplementation(variableBuilder,this.getNumberOfVars());
+        IndicatorType indicatorType = newVariable.getDistributionType();
+        indicatorType.setDeltaValue(deltaValue);
+        if (mapping.containsKey(newVarName)) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(newVarName, newVariable.getVarID());
+        allVariables.add(newVariable);
+        return newVariable;
+    }
+
+    /**
+     * Creates a new Indicator Variable from a given Variable.
+     * @param var a given Variable.
+     * @return a new indicator Variable.
+     */
+    public Variable newIndicatorVariable(Variable var, String deltaValueLabel) {
+        VariableBuilder variableBuilder = new VariableBuilder();
+        variableBuilder.setAttribute(var.getAttribute());
+        variableBuilder.setDistributionType(DistributionTypeEnum.INDICATOR);
+        String newVarName = var.getName()+"_INDICATOR";
+        variableBuilder.setName(newVarName);
+        variableBuilder.setObservable(true);
+        variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Zero","NonZero")));
+        Variable newVariable = new VariableImplementation(variableBuilder,this.getNumberOfVars());
+        IndicatorType indicatorType = newVariable.getDistributionType();
+
+        if(!(var.getStateSpaceType().getStateSpaceTypeEnum() == StateSpaceTypeEnum.FINITE_SET))
+            throw new UnsupportedOperationException("String labels can only be used for multinomial variables");
+        indicatorType.setDeltaValue(((FiniteStateSpace)var.getStateSpaceType()).getIndexOfState(deltaValueLabel));
+        if (mapping.containsKey(newVarName)) {
+            throw new IllegalArgumentException("Attribute list contains duplicated names");
+        }
+        this.mapping.put(newVarName, newVariable.getVarID());
+        allVariables.add(newVariable);
+        return newVariable;
     }
 
     /**

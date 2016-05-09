@@ -46,7 +46,7 @@ public class EF_Multinomial extends EF_UnivariateDistribution {
      */
     public EF_Multinomial(Variable var) {
 
-        if (!var.isMultinomial()) {
+        if (!var.isMultinomial() && !var.isIndicator()) {
             throw new UnsupportedOperationException("Creating a Multinomial EF distribution for a non-multinomial variable.");
         }
 
