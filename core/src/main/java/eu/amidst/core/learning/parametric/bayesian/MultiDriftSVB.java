@@ -15,6 +15,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
 import eu.amidst.core.exponentialfamily.MomentParameters;
+import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
@@ -27,11 +28,12 @@ import eu.amidst.core.variables.Variables;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created by andresmasegosa on 14/4/16.
  */
-public class DriftSVB extends SVB{
+public class MultiDriftSVB extends SVB{
 
 
     EF_TruncatedExponential ef_TExpP;
@@ -122,20 +124,47 @@ public class DriftSVB extends SVB{
             //Compute elbo
             double newELBO = this.plateuStructure.getLogProbabilityOfEvidence();
 
+            double[] kl_q_p0_vals = new double[(int)this.plateuStructure.getNonReplictedNodes().count()];
+            double[] kl_q_pt_1_vals = new double[(int)this.plateuStructure.getNonReplictedNodes().count()];
+
+
+
+            double kl_q_p0 =0;
+            int count = 0;
             //Messages to TExp
             this.plateuStructure.updateNaturalParameterPrior(this.prior);
-            double kl_q_p0 = this.plateuStructure.getNonReplictedNodes().mapToDouble(node-> {
+            for (Node node : this.plateuStructure.getNonReplictedNodes().collect(Collectors.toList())) {
                 Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                return node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
+                kl_q_p0_vals[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
                         node.getPDist().getExpectedLogNormalizer(momentParents));
-            }).sum();
+                kl_q_p0+=kl_q_p0_vals[count];
+                count++;
+            }
 
+//            double kl_q_p0 = this.plateuStructure.getNonReplictedNodes().mapToDouble(node-> {
+//                Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+//                return node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
+//                        node.getPDist().getExpectedLogNormalizer(momentParents));
+//            }).sum();
+
+            double kl_q_pt_1 =0;
+            count = 0;
+            //Messages to TExp
             this.plateuStructure.updateNaturalParameterPrior(this.posteriorT_1);
-            double kl_q_pt_1 = this.plateuStructure.getNonReplictedNodes().mapToDouble(node-> {
+            for (Node node : this.plateuStructure.getNonReplictedNodes().collect(Collectors.toList())) {
                 Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                return node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
+                kl_q_pt_1_vals[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
                         node.getPDist().getExpectedLogNormalizer(momentParents));
-            }).sum();
+                kl_q_pt_1+=kl_q_pt_1_vals[count];
+                count++;
+            }
+
+//            this.plateuStructure.updateNaturalParameterPrior(this.posteriorT_1);
+//            double kl_q_pt_1 = this.plateuStructure.getNonReplictedNodes().mapToDouble(node-> {
+//                Map<Variable, MomentParameters> momentParents = node.getMomentParents();
+//                return node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
+//                        node.getPDist().getExpectedLogNormalizer(momentParents));
+//            }).sum();
 
             ef_TExpQ.getNaturalParameters().set(0,
                     - kl_q_pt_1 + kl_q_p0 +
@@ -152,7 +181,12 @@ public class DriftSVB extends SVB{
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
-            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
+            System.out.print("Delta: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda+ ", " + (- kl_q_pt_1 + kl_q_p0));
+
+            for (int i = 0; i < kl_q_p0_vals.length; i++) {
+                System.out.print(", "+ (- kl_q_pt_1_vals[i] + kl_q_p0_vals[i]));
+            }
+            System.out.println();
 
             if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
@@ -182,7 +216,7 @@ public class DriftSVB extends SVB{
         int batchSize = 1000;
 
 
-        DriftSVB svb = new DriftSVB();
+        MultiDriftSVB svb = new MultiDriftSVB();
         svb.setWindowsSize(batchSize);
         svb.setSeed(0);
         VMP vmp = svb.getPlateuStructure().getVMP();

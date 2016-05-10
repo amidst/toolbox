@@ -17,6 +17,7 @@ import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -77,11 +78,19 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
      * @param <T> the type of stream elements.
      * @return a new parallel {@code Stream}.
      */
-    public static <T extends DataInstance> Stream<DataOnMemory<T>> toFixedBatchStream(DataStream<T> dataStream_, int batchSize) {
+    public static <T extends DataInstance> Stream<DataOnMemory<T>> streamOverDocuments(DataStream<T> dataStream_, int batchSize) {
         return stream(new BatchSpliteratorByID<>(dataStream_, batchSize), true);
     }
 
 
+    public static <T extends DataInstance> Iterable<DataOnMemory<T>> iterableOverDocuments(DataStream<T> dataStream_, int batchSize) {
+        return new Iterable<DataOnMemory<T>>() {
+            @Override
+            public Iterator<DataOnMemory<T>> iterator() {
+                return BatchSpliteratorByID.streamOverDocuments(dataStream_,batchSize).iterator();
+            }
+        };
+    }
     /**
      * {@inheritDoc}
      */

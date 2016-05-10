@@ -36,11 +36,30 @@ public class Main {
     public static void main(String[] args) throws IOException {
         DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/docswords-joint.arff");
 
+        double minWord = Double.MAX_VALUE;
+        double maxWord = -Double.MAX_VALUE;
+
+        for (DataInstance dataInstance : dataInstances) {
+            double word = dataInstance.getValue(dataInstance.getAttributes().getAttributeByName("word"));
+            if (minWord>word)
+                minWord = word;
+
+            if (maxWord<word)
+                maxWord=word;
+        }
+
+        System.out.println(minWord);
+        System.out.println(maxWord);
+    }
+
+    public static void process(String[] args) throws IOException {
+        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/docswords-joint.arff");
+
 //        List<DataOnMemory<DataInstance>> listA =
-//                BatchSpliteratorByID.toFixedBatchStream(dataInstances,2).collect(Collectors.toList());
+//                BatchSpliteratorByID.streamOverDocuments(dataInstances,2).collect(Collectors.toList());
 
 
-        Stream<DataOnMemory<DataInstance>> stream = BatchSpliteratorByID.toFixedBatchStream(dataInstances,2);
+        Stream<DataOnMemory<DataInstance>> stream = BatchSpliteratorByID.streamOverDocuments(dataInstances,2);
 
         Stream<String> lines = Files.lines(Paths.get("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/idnsfid-joint.txt"));
 
