@@ -32,10 +32,10 @@ public class PreliminaryExperiments {
 
     public static int[] batchSize = {1000};
     public static int[] memoryPopulationVI = {1000};
-    public static double[] learningRate = {0.51};
-    public static double[] deltaValue = {-5};
+    public static double[] learningRate = {0.8};
+    public static double[] deltaValue = {100};
 
-    public static int numIter = 100;
+    public static int numIter = 150;
 
     public static SVB svb;
     public static DriftSVB driftSVB;
@@ -139,8 +139,6 @@ public class PreliminaryExperiments {
         outputs[2] += stochasticVI.predictedLogLikelihood(batch);
         outputs[3] += populationVI.predictedLogLikelihood(batch);
         writerPredLL.println(outputs[0]/iter+"\t"+outputs[1]/iter+"\t"+outputs[2]/iter+"\t"+outputs[3]/iter);
-
-
     }
 
     public static void printOutput() throws Exception{
@@ -176,7 +174,9 @@ public class PreliminaryExperiments {
 
         String means = "";
         for (int i = 0; i < 2; i++) {
-            means += realMean[i]+"\t"+meanML[i]+"\t"+meanSVB[i]+"\t"+meanDriftSVB[i]+"\t"+meanStochasticVI[i]+"\t"+meanPopulationVI[i]+ "\t";
+            if(i!=0)
+                means += "\t";
+            means += realMean[i]+"\t"+meanML[i]+"\t"+meanSVB[i]+"\t"+meanDriftSVB[i]+"\t"+meanStochasticVI[i]+"\t"+meanPopulationVI[i];
         }
 
 
@@ -185,7 +185,7 @@ public class PreliminaryExperiments {
         writerLambda.println(driftSVB.getLambdaValue());
     }
 
-    public static void introduceAbruptConceptDrift(int iter){
+    public static void introduceAbruptConceptDrift(){
 
         //Single Gaussian, without parents
         if(!mixture){
@@ -199,7 +199,7 @@ public class PreliminaryExperiments {
         }
     }
 
-    public static void introduceSmoothConceptDrift(int iter){
+    public static void introduceSmoothConceptDrift(){
 
         //Single Gaussian, without parents
         if(!mixture){
@@ -218,13 +218,23 @@ public class PreliminaryExperiments {
         }
     }
 
-    public static void scenarioMixedConceptDrift(int batchSize) throws Exception{
+    public static void randomInitialization(){
+        if(!mixture){
+            network.randomInitialization(new Random(iter));
+        }else{
+            Normal normal0 = ((Normal_MultinomialParents)network.getConditionalDistribution(network.getVariables().getVariableByName("A"))).getNormal(0);
+            normal0.randomInitialization(new Random(iter));
+        }
+    }
 
+    /**
+     * scenario 1 for concept drift: includes some random concept drift
+     * @param batchSize
+     * @throws Exception
+     */
+    public static void scenario1MixedConceptDrift(int batchSize) throws Exception{
 
-        //System.out.println(network);
         for (int i = 0; i < numIter; i++) {
-
-            iter++;
 
             /**
              * NO CONCEPT DRIFT 1-19
@@ -234,7 +244,7 @@ public class PreliminaryExperiments {
              * GRADUAL CONCEPT DRIFT 20-30
              */
             if (i>20 && i<30) {
-                introduceSmoothConceptDrift(i);
+                introduceSmoothConceptDrift();
             }
 
             /**
@@ -242,15 +252,15 @@ public class PreliminaryExperiments {
              */
 
             if (i>30 && i<40 && i % 3 == 0) {
-                introduceAbruptConceptDrift(i);
+                introduceAbruptConceptDrift();
             }
 
             /**
              * RANDOM "ABRUPT" CONCEPT DRIFT 40-70 (%4)
              */
             if (i>40 && i<70 && i % 4 == 0) {
-                //introduceAbruptConceptDrift(i);
-                network.randomInitialization(new Random(i));
+                //introduceAbruptConceptDrift();
+                randomInitialization();
             }
 
             /**
@@ -260,8 +270,8 @@ public class PreliminaryExperiments {
             /**
              * GRADUAL CONCEPT DRIFT 90-100
              */
-            if (i>90 && i<100) {
-                introduceSmoothConceptDrift(i);
+            if (i>90 && i<numIter) {
+                introduceSmoothConceptDrift();
             }
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
@@ -290,6 +300,87 @@ public class PreliminaryExperiments {
              * Outputs: lambda, mean, population size
              */
             printOutput();
+
+            iter++;
+
+        }
+    }
+
+    /**
+     * scenario 2 for concept drift: no random concept drift
+     * @param batchSize
+     * @throws Exception
+     */
+
+    public static void scenario2MixedConceptDrift(int batchSize) throws Exception{
+
+        for (int i = 0; i < numIter; i++) {
+
+            /**
+             * NO CONCEPT DRIFT 1-19
+             */
+
+            /**
+             * GRADUAL CONCEPT DRIFT 20-30
+             */
+            if (i>20 && i<30) {
+                introduceSmoothConceptDrift();
+            }
+
+            /**
+             * ABRUPT CONCEPT DRIFT 30-40 (%3)
+             */
+
+            if (i>30 && i<40 && i % 3 == 0) {
+                introduceAbruptConceptDrift();
+            }
+
+            /**
+             * ABRUPT CONCEPT DRIFT 40-70 (%4)
+             */
+            if (i>40 && i<70 && i % 4 == 0) {
+                introduceAbruptConceptDrift();
+            }
+
+            /**
+             * NO CONCEPT DRIFT 70-90
+             */
+
+            /**
+             * GRADUAL CONCEPT DRIFT 90-100
+             */
+            if (i>90 && i<numIter) {
+                introduceSmoothConceptDrift();
+            }
+
+            BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
+            sampler.setSeed(i);
+
+            DataOnMemory<DataInstance> batch = sampler.sampleToDataStream(batchSize).toDataOnMemory();
+
+
+            if(i>0) {
+                printCounts();
+                printPredLL(batch);
+            }
+
+            /**
+             * Update with all different learning techniques
+             */
+            driftSVB.updateModelWithConceptDrift(batch);
+            svb.updateModel(batch);
+            populationVI.updateModel(batch);
+            stochasticVI.updateModel(batch);
+
+            /* Learn maximum likelihood to get the real means*/
+            ml.updateModel(batch);
+
+            /**
+             * Outputs: lambda, mean, population size
+             */
+            printOutput();
+
+            iter++;
 
         }
     }
@@ -407,8 +498,9 @@ public class PreliminaryExperiments {
                         /**
                          * Choose concept drift scenario
                          */
-                        scenarioMixedConceptDrift(batchSize[i]);
                         //scenarioNoConceptDrift(batchSize[i]);
+                        //scenario1MixedConceptDrift(batchSize[i]);
+                        scenario2MixedConceptDrift(batchSize[i]);
 
                         /**
                          * Close all output files
