@@ -68,7 +68,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
     private long timiLimit;
 
-    private double learningFactor;
+    private double learningFactor=0.75;
     private CompoundVector prior;
     private CompoundVector initialPosterior;
     private CompoundVector currentParam;

@@ -20,6 +20,7 @@ import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
@@ -51,7 +52,6 @@ public class PlateauLDA extends PlateuStructure {
         this.attributes = attributes;
         this.wordDocumentName = wordDocumentName;
         this.wordCountAtt = this.attributes.getAttributeByName(wordCountName);
-        this.setDAG(null);
     }
 
     public void setNTopics(int nTopics) {
@@ -89,6 +89,16 @@ public class PlateauLDA extends PlateuStructure {
 
 
         this.nonReplicatedVariablesList = this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).sorted((a, b) -> a.getVarID() - b.getVarID()).collect(Collectors.toList());
+
+        for (int i = 0; i < nTopics; i++) {
+            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i,0.1);
+        }
+
+
+        for (Variable variable : this.nonReplicatedVariablesList) {
+            SparseVectorDefaultValue  vec = (SparseVectorDefaultValue)this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
+            vec.setDefaultValue(0.01);
+        }
 
     }
 
@@ -225,25 +235,6 @@ public class PlateauLDA extends PlateuStructure {
             long start = System.nanoTime();
 
 
-            this.nonReplictedNodes
-                    .parallelStream()
-                    .filter(node -> node.isActive() && !node.isObserved())
-                    .forEach(node -> {
-                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
-
-                        Optional<Message<NaturalParameters>> message = node.getChildren()
-                                .stream()
-                                .filter(children -> children.isActive())
-                                .map(children -> this.vmp.newMessageToParent(children, node))
-                                .reduce(Message::combineNonStateless);
-
-                        if (message.isPresent())
-                            selfMessage.combine(message.get());
-
-
-                        this.vmp.updateCombinedMessage(node, selfMessage);
-                    });
-
             this.replicatedNodes
                     .parallelStream()
                     .forEach(nodes -> {
@@ -272,18 +263,44 @@ public class PlateauLDA extends PlateuStructure {
                         }
                     });
 
+            this.nonReplictedNodes
+                    .parallelStream()
+                    .filter(node -> node.isActive() && !node.isObserved())
+                    .forEach(node -> {
+                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                        Optional<Message<NaturalParameters>> message = node.getChildren()
+                                .stream()
+                                .filter(children -> children.isActive())
+                                .map(children -> this.vmp.newMessageToParent(children, node))
+                                .reduce(Message::combineNonStateless);
+
+                        if (message.isPresent())
+                            selfMessage.combine(message.get());
+
+
+                        this.vmp.updateCombinedMessage(node, selfMessage);
+                    });
+
             convergence = this.testConvergence();
 
-            System.out.println(local_iter + " " + local_elbo + " " + (System.nanoTime() - start) / (double) 1e09);
+            //System.out.println(local_iter + " " + local_elbo + " " + (System.nanoTime() - start) / (double) 1e09);
 
         }
 
-        double probOfEvidence = local_elbo;
         if (this.vmp.isOutput()) {
             System.out.println("N Iter: " + local_iter + ", elbo:" + local_elbo);
         }
     }
 
+    /**
+     * Returns the log probability of the evidence.
+     *
+     * @return the log probability of the evidence.
+     */
+    public double getLogProbabilityOfEvidence() {
+        return local_elbo;
+    }
 
     private boolean testConvergence() {
         boolean convergence = false;

@@ -112,7 +112,11 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
     public void updateMomentFromNaturalParameters() {
         double delta =this.getNaturalParameters().get(0);
 
-        this.momentParameters.set(0, Math.exp(delta)/(Math.exp(delta)-1) - 1/delta);
+        if (Math.exp(delta)>Double.MAX_VALUE){
+            this.momentParameters.set(0, 1.0 - 1/delta);
+        }else {
+            this.momentParameters.set(0, Math.exp(delta) / (Math.exp(delta) - 1) - 1 / delta);
+        }
     }
 
     @Override

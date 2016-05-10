@@ -30,14 +30,14 @@ public class BatchSpliteratorByIDTest extends TestCase {
         DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("./datasets/simulated/simulatedText.arff");
 
         List<DataOnMemory<DataInstance>> listA =
-                BatchSpliteratorByID.toFixedBatchStream(dataInstances,2).collect(Collectors.toList());
+                BatchSpliteratorByID.streamOverDocuments(dataInstances,2).collect(Collectors.toList());
 
         assertEquals(2,listA.size());
         assertEquals(6,listA.get(0).getNumberOfDataInstances());
         assertEquals(3,listA.get(1).getNumberOfDataInstances());
 
 
-        List<DataOnMemory<DataInstance>> list = BatchSpliteratorByID.toFixedBatchStream(dataInstances,1).collect(Collectors.toList());
+        List<DataOnMemory<DataInstance>> list = BatchSpliteratorByID.streamOverDocuments(dataInstances,1).collect(Collectors.toList());
 
         assertEquals(4,list.size());
 
@@ -48,7 +48,7 @@ public class BatchSpliteratorByIDTest extends TestCase {
         assertEquals(1,list.get(3).getNumberOfDataInstances());
 
 
-        list = BatchSpliteratorByID.toFixedBatchStream(dataInstances,3).collect(Collectors.toList());
+        list = BatchSpliteratorByID.streamOverDocuments(dataInstances,3).collect(Collectors.toList());
 
         assertEquals(2,list.size());
 

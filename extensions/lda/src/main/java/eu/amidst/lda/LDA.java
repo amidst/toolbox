@@ -44,7 +44,7 @@ public class LDA {
 
         //svb.updateModel(dataInstances);
 
-        BatchSpliteratorByID.toFixedBatchStream(dataInstances, 500).sequential().forEach(batch -> {
+        BatchSpliteratorByID.streamOverDocuments(dataInstances, 500).sequential().forEach(batch -> {
             System.out.println("Batch: "+ batch.getNumberOfDataInstances());
             svb.updateModel(batch);
         });

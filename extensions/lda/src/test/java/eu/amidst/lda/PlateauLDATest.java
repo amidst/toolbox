@@ -29,13 +29,14 @@ public class PlateauLDATest extends TestCase {
 
     public static void test1() {
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("./datasets/simulated/simulatedText.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("../datasets/simulated/simulatedText.arff");
 
         List<DataOnMemory<DataInstance>> listA =
-                BatchSpliteratorByID.toFixedBatchStream(dataInstances, 2).collect(Collectors.toList());
+                BatchSpliteratorByID.streamOverDocuments(dataInstances, 2).collect(Collectors.toList());
 
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word","count");
+        plateauLDA.setDAG(null);
         plateauLDA.setNTopics(2);
         plateauLDA.replicateModel();
         plateauLDA.setEvidence(listA.get(0).getList());
@@ -85,14 +86,14 @@ public class PlateauLDATest extends TestCase {
     }
 
     public static void test2() {
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("./datasets/simulated/simulatedText.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("../datasets/simulated/simulatedText.arff");
 
         List<DataOnMemory<DataInstance>> listA =
-                BatchSpliteratorByID.toFixedBatchStream(dataInstances, 2).collect(Collectors.toList());
+                BatchSpliteratorByID.streamOverDocuments(dataInstances, 2).collect(Collectors.toList());
 
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word", "count");
-
+        plateauLDA.setDAG(null);
         plateauLDA.setNTopics(2);
 
         plateauLDA.getVMP().setTestELBO(true);
