@@ -4,8 +4,8 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
-import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.distribution.Normal_MultinomialParents;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
@@ -135,41 +135,49 @@ public class CajaMarExperiments {
 
     public static void printOutput(int currentMonth) throws Exception{
 
-        //BayesianNetwork bnML = ml.getLearntBayesianNetwork();
+        BayesianNetwork bnML = ml.getLearntBayesianNetwork();
         BayesianNetwork bnSVB = svb.getLearntBayesianNetwork();
         BayesianNetwork bnDriftSVB = driftSVB.getLearntBayesianNetwork();
         BayesianNetwork bnStochasticVI = stochasticVI.getLearntBayesianNetwork();
         BayesianNetwork bnPopulationVI = populationVI.getLearntBayesianNetwork();
-        //BayesianNetwork bnMLPerBatch = mlPerBatch.getLearntBayesianNetwork();
+        BayesianNetwork bnMLPerBatch = mlPerBatch.getLearntBayesianNetwork();
 
 
         double[] meanML=new double[2], meanSVB=new double[2], meanDriftSVB=new double[2], meanStochasticVI=new double[2],
                 meanPopulationVI=new double[2], realMean=new double[2];
 
-        Variable var = dag.getVariables().getVariableByName("VAR01");
-        if(!includeClassVar) {
-            //meanML[0] = ((ConditionalLinearGaussian) bnML.getConditionalDistribution(var)).getIntercept();
-            meanSVB[0] = ((ConditionalLinearGaussian) bnSVB.getConditionalDistribution(var)).getIntercept();
-            meanDriftSVB[0] = ((ConditionalLinearGaussian) bnDriftSVB.getConditionalDistribution(var)).getIntercept();
-            meanStochasticVI[0] = ((ConditionalLinearGaussian) bnStochasticVI.getConditionalDistribution(var)).getIntercept();
-            meanPopulationVI[0] = ((ConditionalLinearGaussian) bnPopulationVI.getConditionalDistribution(var)).getIntercept();
-            //realMean[0] = ((ConditionalLinearGaussian)bnMLPerBatch.getConditionalDistribution(var)).getIntercept();
-        }else{
-            for (int i = 0; i < 2; i++) {
-                //meanML[i] = ((Normal_MultinomialNormalParents) bnML.getConditionalDistribution(var)).getNormal_NormalParentsDistribution(i).getIntercept();
-                meanSVB[i] = ((Normal_MultinomialNormalParents) bnSVB.getConditionalDistribution(var)).getNormal_NormalParentsDistribution(i).getIntercept();
-                meanDriftSVB[i] = ((Normal_MultinomialNormalParents) bnDriftSVB.getConditionalDistribution(var)).getNormal_NormalParentsDistribution(i).getIntercept();
-                meanStochasticVI[i] = ((Normal_MultinomialNormalParents) bnStochasticVI.getConditionalDistribution(var)).getNormal_NormalParentsDistribution(i).getIntercept();
-                meanPopulationVI[i] = ((Normal_MultinomialNormalParents) bnPopulationVI.getConditionalDistribution(var)).getNormal_NormalParentsDistribution(i).getIntercept();
-                //realMean[i] = ((Normal_MultinomialNormalParents)bnMLPerBatch.getConditionalDistribution(var)).getNormal_NormalParentsDistribution(i).getIntercept();
-            }
-        }
+        Variable var01 = dag.getVariables().getVariableByName("VAR01");
+        Variable var10 = dag.getVariables().getVariableByName("VAR01");
+        List<Variable> varsToCheck = new ArrayList<>();
+        varsToCheck.add(var01); varsToCheck.add(var10);
 
         String means = "";
-        for (int i = 0; i < 2; i++) {
-            if(i!=0)
-                means += "\t";
-            means += currentMonth+"\t"+realMean[i]+"\t"+meanML[i]+"\t"+meanSVB[i]+"\t"+meanDriftSVB[i]+"\t"+meanStochasticVI[i]+"\t"+meanPopulationVI[i];
+        for (Variable var : varsToCheck) {
+            if(!includeClassVar) {
+                meanML[0] = ((Normal) bnML.getConditionalDistribution(var)).getMean();
+                meanSVB[0] = ((Normal) bnSVB.getConditionalDistribution(var)).getMean();
+                meanDriftSVB[0] = ((Normal) bnDriftSVB.getConditionalDistribution(var)).getMean();
+                meanStochasticVI[0] = ((Normal) bnStochasticVI.getConditionalDistribution(var)).getMean();
+                meanPopulationVI[0] = ((Normal) bnPopulationVI.getConditionalDistribution(var)).getMean();
+                realMean[0] = ((Normal)bnMLPerBatch.getConditionalDistribution(var)).getMean();
+            }else{
+                for (int i = 0; i < 2; i++) {
+                    meanML[i] = ((Normal_MultinomialParents) bnML.getConditionalDistribution(var)).getNormal(i).getMean();
+                    meanSVB[i] = ((Normal_MultinomialParents) bnSVB.getConditionalDistribution(var)).getNormal(i).getMean();
+                    meanDriftSVB[i] = ((Normal_MultinomialParents) bnDriftSVB.getConditionalDistribution(var)).getNormal(i).getMean();
+                    meanStochasticVI[i] = ((Normal_MultinomialParents) bnStochasticVI.getConditionalDistribution(var)).getNormal(i).getMean();
+                    meanPopulationVI[i] = ((Normal_MultinomialParents) bnPopulationVI.getConditionalDistribution(var)).getNormal(i).getMean();
+                    realMean[i] = ((Normal_MultinomialParents)bnMLPerBatch.getConditionalDistribution(var)).getNormal(i).getMean();
+                }
+            }
+
+            for (int i = 0; i < 2; i++) {
+                if(i!=0)
+                    means += "\t";
+                means += currentMonth+"\t"+realMean[i]+"\t"+meanML[i]+"\t"+meanSVB[i]+"\t"+meanDriftSVB[i]+"\t"+meanStochasticVI[i]+"\t"+meanPopulationVI[i];
+            }
+            means += "\t";
+
         }
 
 
@@ -280,8 +288,10 @@ public class CajaMarExperiments {
         if(addMixtures){
             int index = 0;
             for (Variable predictedVariable : variables.getVariablesForListOfAttributes(attributes.getListOfNonSpecialAttributes())) {
-                dag.getParentSet(predictedVariable).addParent(localMixtures.get(index));
-                index++;
+                if(predictedVariable != classVar) {
+                    dag.getParentSet(predictedVariable).addParent(localMixtures.get(index));
+                    index++;
+                }
             }
         }
 
@@ -329,7 +339,7 @@ public class CajaMarExperiments {
 
                         DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path + 0 + ".arff");
 
-                        dag = createDAG(dataMonthi.getAttributes(), 5);
+                        dag = createDAGforML(dataMonthi.getAttributes());
 
                         /**
                          * Define Learning VI techniques
@@ -343,16 +353,16 @@ public class CajaMarExperiments {
                          * Output files for predLL, lambda, mean, population size
                          */
                         writerPredLL = new PrintWriter(outputPath + "CajaMar/CajaMar_predLL_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+"_"+addMixtures+
                                 ".txt", "UTF-8");
                         writerLambda = new PrintWriter(outputPath + "CajaMar/CajaMar_lamda_" + "_bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+"_"+addMixtures+
                                 ".txt", "UTF-8");
                         writerMean = new PrintWriter(outputPath + "CajaMar/CajaMar_mean_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+"_"+addMixtures+
                                 ".txt", "UTF-8");
                         writerGamma = new PrintWriter(outputPath + "CajaMar/CajaMar_gamma_" + "bs" + batchSize[i] + "_delta" +
-                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+
+                                deltaValue[j]+ "_mem" + memoryPopulationVI[k] + "_lr" + learningRate[l] + "_"+ includeClassVar +"_"+linkHidden+"_"+maxIterVI+"_"+thresholdVI+"_"+numIter+"_"+addMixtures+
                                 ".txt", "UTF-8");
 
 
@@ -378,9 +388,9 @@ public class CajaMarExperiments {
                                 stochasticVI.updateModel(batch);
 
                                 /* Learn maximum likelihood to get the real means*/
-                                //ml.updateModel(batch);
-                                //mlPerBatch.initLearning();
-                                //mlPerBatch.updateModel(batch);
+                                ml.updateModel(batch);
+                                mlPerBatch.initLearning();
+                                mlPerBatch.updateModel(batch);
 
                                 if(monthsToEvaluate>1){
                                     double[] outputs = new double[4];
@@ -408,15 +418,16 @@ public class CajaMarExperiments {
                                 }
                                 batchCount++;
 
-                                //We print the output
-                                /**
-                                 * Outputs: lambda, mean, population size
-                                 */
-                                printOutput(currentMonth);
 
                                 if(onlyFirstBatch)
                                     break;
                             }
+                            //We print the output
+                            /**
+                             * Outputs: lambda, mean, population size
+                             */
+                            printOutput(currentMonth);
+
                         }
 
                         /**
