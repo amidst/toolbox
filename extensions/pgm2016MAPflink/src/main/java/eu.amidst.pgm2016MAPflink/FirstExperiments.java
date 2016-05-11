@@ -1,6 +1,6 @@
 package eu.amidst.pgm2016MAPflink;
 
-import eu.amidst.core.inference.MAPInference;
+import eu.amidst.core.inference.MAPInferenceRobust;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -30,7 +30,7 @@ public class FirstExperiments {
         int startingPoints=30;
         int samplingSize=20000;
 
-        int numberOfCores=2;
+        int numberOfCores=4;
 
 
         /***********************************************
@@ -39,7 +39,7 @@ public class FirstExperiments {
 
         Variable varInterest1 = bn.getVariables().getVariableById(6);
         Variable varInterest2 = bn.getVariables().getVariableById(50);
-        Variable varInterest3 = bn.getVariables().getVariableById(170);
+        Variable varInterest3 = bn.getVariables().getVariableById(70);
 
         List<Variable> varsInterest = new ArrayList<>(3);
         varsInterest.add(varInterest1);
@@ -47,7 +47,6 @@ public class FirstExperiments {
         varsInterest.add(varInterest3);
         System.out.println("MAP Variables of Interest: " + Arrays.toString(varsInterest.stream().map(Variable::getName).toArray()));
         System.out.println();
-
 
 
         DistributedMAPInference distributedMAPInference = new DistributedMAPInference();
@@ -90,18 +89,18 @@ public class FirstExperiments {
          *        RUN INFERENCE
          ************************************************/
 
-        distributedMAPInference.runInference(MAPInference.SearchAlgorithm.HC_LOCAL);
+        distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_LOCAL);
 
-        System.out.println(distributedMAPInference.getMAPEstimate().outputString(varsInterest));
-        System.out.println("log-prob of estimate: " + distributedMAPInference.getMAPEstimateLogProbability());
+        System.out.println(distributedMAPInference.getEstimate().outputString(varsInterest));
+        System.out.println("log-prob of estimate: " + distributedMAPInference.getLogProbabilityOfEstimate());
 
 
 
         distributedMAPInference.setNumberOfStartingPoints(samplingSize);
-        distributedMAPInference.runInference(MAPInference.SearchAlgorithm.SAMPLING);
+        distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SAMPLING);
 
-        System.out.println(distributedMAPInference.getMAPEstimate().outputString(varsInterest));
-        System.out.println("log-prob of estimate: " + distributedMAPInference.getMAPEstimateLogProbability());
+        System.out.println(distributedMAPInference.getEstimate().outputString(varsInterest));
+        System.out.println("log-prob of estimate: " + distributedMAPInference.getLogProbabilityOfEstimate());
     }
 
 

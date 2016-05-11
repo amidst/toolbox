@@ -278,6 +278,7 @@ public class MAPInferenceRobust implements PointEstimator {
 //        Stream<Assignment > samples = bnSampler.sampleToDataStream(this.sampleSize).stream().map(sample -> (Assignment)sample);
         ImportanceSamplingRobust isSampler = new ImportanceSamplingRobust();
         isSampler.setSeed(this.seed);
+        this.seed = new Random(this.seed).nextInt();
         isSampler.setModel(this.model);
         isSampler.setEvidence(this.evidence);
         isSampler.setSampleSize(this.sampleSize);
@@ -291,6 +292,7 @@ public class MAPInferenceRobust implements PointEstimator {
         }
         switch(searchAlgorithm) {
             case SAMPLING:
+//                System.out.println("Using " + searchAlgorithm);
 
                 Map<Assignment, List<Assignment>> groupedSamples =
                         samples.collect(Collectors.groupingBy(this::getMAPVariablesFromAssignment))
@@ -321,6 +323,8 @@ public class MAPInferenceRobust implements PointEstimator {
                 break;
 
             default:   // HILL CLIMBING OR SIMULATED ANNEALING METHODS WITH DIFFERENT STARTING POINTS
+//                System.out.println("Using " + searchAlgorithm);
+
                 weightedAssignment = samples
                         .map(sample -> this.runOptimizationAlgorithm(sample, searchAlgorithm))
                         .filter(partialResult -> {
