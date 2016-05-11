@@ -1,6 +1,7 @@
 package eu.amidst.flinklink.core.inference;
 
 import eu.amidst.core.inference.MAPInference;
+import eu.amidst.core.inference.MAPInferenceRobust;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.variables.Assignment;
@@ -11,6 +12,7 @@ import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.varia.NullAppender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,12 @@ public class DistributedMAPInference {
 
     private Assignment MAPEstimate;
     private double MAPEstimateLogProbability;
+
+    private int numberOfCoresToUse = 2;
+
+    public void setNumberOfCores(int numberOfCoresToUse) {
+        this.numberOfCoresToUse = numberOfCoresToUse;
+    }
 
     public void setModel(BayesianNetwork model) {
         this.model = model;
@@ -70,13 +78,14 @@ public class DistributedMAPInference {
 
     public void runInference(MAPInference.SearchAlgorithm searchAlgorithm) throws Exception {
 
-        MAPVariables = new ArrayList<>(1);
-        MAPVariables.add(model.getVariables().getVariableByName("ClassVar"));
+        //MAPVariables = new ArrayList<>(1);
+        //MAPVariables.add(model.getVariables().getVariableByName("ClassVar"));
 
-        BasicConfigurator.configure();
+        BasicConfigurator.configure(new NullAppender());
+
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
-        System.out.println(env.getParallelism());
+        env.setParallelism(this.numberOfCoresToUse);
+        env.getConfig().disableSysoutLogging();
 
         Tuple2<Assignment, Double> MAPResult = env.generateSequence(0,numberOfStartingPoints)
                 .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed))
@@ -120,15 +129,16 @@ public class DistributedMAPInference {
         @Override
         public Tuple2<Assignment, Double> map(Long value) throws Exception {
 
-            MAPInference localMAPInference = new MAPInference();
+            MAPInferenceRobust localMAPInference = new MAPInferenceRobust();
             localMAPInference.setModel(model);
             localMAPInference.setMAPVariables(MAPVariables);
             localMAPInference.setSeed(seed + value.intValue());
             localMAPInference.setNumberOfStartingPoints(1);
             localMAPInference.setNumberOfIterations(numberOfIterations);
+            localMAPInference.setParallelMode(false);
             localMAPInference.setEvidence(evidence);
 
-            localMAPInference.runInference(MAPInference.SearchAlgorithm.valueOf(searchAlgorithm));
+            localMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.valueOf(searchAlgorithm));
 
             Assignment MAPEstimate = localMAPInference.getEstimate();
             double logProbMAPEstimate = localMAPInference.getLogProbabilityOfEstimate();

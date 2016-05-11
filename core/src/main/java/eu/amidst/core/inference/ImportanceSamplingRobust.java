@@ -152,6 +152,21 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         return this.samplingModel;
     }
 
+    public Stream<Assignment> getSamples() {
+
+        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+
+        IntStream weightedSampleStream = IntStream.range(0, sampleSize).parallel();
+
+        if (!parallelMode) {
+            weightedSampleStream = weightedSampleStream.sequential();
+        }
+
+        return weightedSampleStream.mapToObj(i -> {
+            WeightedAssignment weightedSample = generateSample(randomGenerator.current());
+            return weightedSample.assignment;
+        });
+    }
 
     /**
      * {@inheritDoc}
@@ -425,8 +440,8 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         return logSumWeights[1]/logSumWeights[0];
     }
 
-
-    private static double robustSumOfLogarithms(double log_x1, double log_x2) {
+    // TODO: Make a separate class for robust operation algorithms
+    public static double robustSumOfLogarithms(double log_x1, double log_x2) {
         double result;
         if(log_x1!=0 && log_x2!=0) {
 
