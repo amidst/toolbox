@@ -20,6 +20,7 @@ import eu.amidst.core.variables.Variables;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,13 +31,14 @@ public class CajaMarExperiments {
     public static boolean includeClassVar = true;
     public static boolean linkHidden = true;
     public static boolean addMixtures = true;
-    public static boolean onlyFirstBatch = true;
+    public static boolean onlyFirstBatch = false;
+    public static boolean addIndicators = false;
     public static int monthsToEvaluate = 5;
 
     public static int[] batchSize = {1000};
-    public static int[] memoryPopulationVI = {1000};
+    public static int[] memoryPopulationVI = {10000};
     public static double[] learningRate = {0.8};
-    public static double[] deltaValue = {100};
+    public static double[] deltaValue = {1};
 
     public static SVB svb;
     public static DriftSVB driftSVB;
@@ -95,7 +97,7 @@ public class CajaMarExperiments {
         populationVI.setSeed(0);
         populationVI.setOutput(true);
         populationVI.setLearningFactor(learningRate);
-        VMP vmp = svb.getPlateuStructure().getVMP();
+        VMP vmp = populationVI.getSVB().getPlateuStructure().getVMP();
         vmp.setOutput(true);
         vmp.setTestELBO(true);
         vmp.setMaxIter(maxIterVI);
@@ -109,7 +111,7 @@ public class CajaMarExperiments {
         stochasticVI.setSeed(0);
         stochasticVI.setOutput(true);
         stochasticVI.setLearningFactor(learningRate);
-        vmp = svb.getPlateuStructure().getVMP();
+        vmp = stochasticVI.getSVB().getPlateuStructure().getVMP();
         //vmp.setOutput(true);
         vmp.setTestELBO(true);
         vmp.setMaxIter(maxIterVI);
@@ -147,9 +149,9 @@ public class CajaMarExperiments {
                 meanPopulationVI=new double[2], realMean=new double[2];
 
         Variable var01 = dag.getVariables().getVariableByName("VAR01");
-        Variable var10 = dag.getVariables().getVariableByName("VAR01");
+        //Variable var10 = dag.getVariables().getVariableByName("VAR10");
         List<Variable> varsToCheck = new ArrayList<>();
-        varsToCheck.add(var01); varsToCheck.add(var10);
+        varsToCheck.add(var01);// varsToCheck.add(var10);
 
         String means = "";
         for (Variable var : varsToCheck) {
@@ -188,14 +190,95 @@ public class CajaMarExperiments {
 
     }
 
+    public static void printOutputMixtures(int currentMonth) throws Exception{
+
+        BayesianNetwork bnML = ml.getLearntBayesianNetwork();
+        BayesianNetwork bnSVB = svb.getLearntBayesianNetwork();
+        BayesianNetwork bnDriftSVB = driftSVB.getLearntBayesianNetwork();
+        BayesianNetwork bnStochasticVI = stochasticVI.getLearntBayesianNetwork();
+        BayesianNetwork bnPopulationVI = populationVI.getLearntBayesianNetwork();
+        BayesianNetwork bnMLPerBatch = mlPerBatch.getLearntBayesianNetwork();
+
+
+        System.out.println(bnML);
+        System.out.println(bnSVB);
+        System.out.println(bnDriftSVB);
+        System.out.println(bnStochasticVI);
+        System.out.println(bnPopulationVI);
+        System.out.println(bnMLPerBatch);
+
+
+
+        double[] meanML=new double[4], meanSVB=new double[4], meanDriftSVB=new double[4], meanStochasticVI=new double[4],
+                meanPopulationVI=new double[4], realMean=new double[4];
+
+        Variable var01 = dag.getVariables().getVariableByName("VAR01");
+        //Variable var10 = dag.getVariables().getVariableByName("VAR10");
+        List<Variable> varsToCheck = new ArrayList<>();
+        varsToCheck.add(var01);
+        //varsToCheck.add(var10);
+
+        String means = "";
+        for (Variable var : varsToCheck) {
+            if(!addMixtures && !addIndicators) {
+                for (int i = 0; i < 1; i++) {
+                    meanML[i] = ((Normal) bnML.getConditionalDistribution(var)).getMean();
+                    meanSVB[i] = ((Normal) bnSVB.getConditionalDistribution(var)).getMean();
+                    meanDriftSVB[i] = ((Normal) bnDriftSVB.getConditionalDistribution(var)).getMean();
+                    meanStochasticVI[i] = ((Normal) bnStochasticVI.getConditionalDistribution(var)).getMean();
+                    meanPopulationVI[i] = ((Normal) bnPopulationVI.getConditionalDistribution(var)).getMean();
+                    realMean[i] = ((Normal) bnMLPerBatch.getConditionalDistribution(var)).getMean();
+                }
+            }
+            else if(!includeClassVar) {
+                for (int i = 0; i < 1; i++) {
+                    meanML[i] = ((Normal_MultinomialParents) bnML.getConditionalDistribution(var)).getNormal(1).getMean();
+                    meanSVB[i] = ((Normal_MultinomialParents) bnSVB.getConditionalDistribution(var)).getNormal(1).getMean();
+                    meanDriftSVB[i] = Math.max(((Normal_MultinomialParents) bnDriftSVB.getConditionalDistribution(var)).getNormal(0).getMean(),
+                            ((Normal_MultinomialParents) bnDriftSVB.getConditionalDistribution(var)).getNormal(1).getMean());
+                    meanStochasticVI[i] = ((Normal_MultinomialParents) bnStochasticVI.getConditionalDistribution(var)).getNormal(1).getMean();
+                    meanPopulationVI[i] = ((Normal_MultinomialParents) bnPopulationVI.getConditionalDistribution(var)).getNormal(1).getMean();
+                    realMean[i] = ((Normal_MultinomialParents) bnMLPerBatch.getConditionalDistribution(var)).getNormal(1).getMean();
+                }
+            }else{
+                for (int i = 0; i < 4; i++) {
+                    meanML[i] = ((Normal) bnML.getConditionalDistribution(var)).getMean();
+                    meanSVB[i] = ((Normal_MultinomialParents) bnSVB.getConditionalDistribution(var)).getNormal(i).getMean();
+                    meanDriftSVB[i] = ((Normal_MultinomialParents) bnDriftSVB.getConditionalDistribution(var)).getNormal(i).getMean();
+                    meanStochasticVI[i] = ((Normal_MultinomialParents) bnStochasticVI.getConditionalDistribution(var)).getNormal(i).getMean();
+                    meanPopulationVI[i] = ((Normal_MultinomialParents) bnPopulationVI.getConditionalDistribution(var)).getNormal(i).getMean();
+                    realMean[i] = ((Normal)bnMLPerBatch.getConditionalDistribution(var)).getMean();
+                }
+            }
+
+            for (int i = 0; i < 2; i++) {
+                if(i!=0)
+                    means += "\t";
+                means += currentMonth+"\t"+realMean[i]+"\t"+meanML[i]+"\t"+meanSVB[i]+"\t"+meanDriftSVB[i]+"\t"+meanStochasticVI[i]+"\t"+meanPopulationVI[i];
+            }
+            means += "\t";
+
+        }
+
+
+        writerMean.println(means);
+        writerMean.flush();
+
+
+        writerLambda.println(currentMonth+"\t"+driftSVB.getLambdaValue());
+        writerLambda.flush();
+
+    }
+
     public static void printCounts(int currentMonth) throws Exception{
 
         double[] outputs = new double[4];
-        outputs[0] = svb.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        outputs[1] = driftSVB.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        outputs[2] = stochasticVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
-        outputs[3] = populationVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(0);
+        outputs[0] = svb.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(1);
+        outputs[1] = driftSVB.getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(1);
+        outputs[2] = stochasticVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(1);
+        outputs[3] = populationVI.getSVB().getPlateuStructure().getNonReplictedNodes().findFirst().get().getQDist().getNaturalParameters().get(1);
         writerGamma.println(currentMonth+"\t"+outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
+        writerGamma.flush();
 
 
 
@@ -203,6 +286,7 @@ public class CajaMarExperiments {
 
     public static void printPredLL(double[] outputs, int monthID) throws Exception{
         writerPredLL.println(monthID+"\t"+outputs[0]+"\t"+outputs[1]+"\t"+outputs[2]+"\t"+outputs[3]);
+        writerPredLL.flush();
     }
 
     public static double[] calculatePredLL(DataOnMemory<DataInstance> batch) throws Exception{
@@ -215,13 +299,36 @@ public class CajaMarExperiments {
         return outputs;
     }
 
+
+
     public static DAG createDAGforML(Attributes attributes){
+
+        attributes = new Attributes(Arrays.asList(attributes.getListOfNonSpecialAttributes().get(0)));
 
         // Create a Variables object from the attributes of the input data stream.
         Variables variables = new Variables(attributes);
 
+
+        //Variable indicator = variables.newIndicatorVariable(variables.getVariableById(0),0.0);
+
+
+        DAG dag = new DAG(variables);
+
+        //dag.getParentSet(variables.getVariableById(0)).addParent(indicator);
+
+        return dag;
+        /*
         // Define the class variable.
         Variable classVar = variables.getVariableByName("DEFAULTING");
+
+
+        List<Variable> localMixtures = new ArrayList<>();
+        if(addMixtures){
+            for (int i = 0; i < attributes.getListOfNonSpecialAttributes().size()-1; i++) {
+                localMixtures.add(variables.newMultionomialVariable("Mixture_"+i,2));
+            }
+        }
+
 
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
@@ -235,19 +342,49 @@ public class CajaMarExperiments {
                     .forEach(w -> w.addParent(classVar));
         }
 
+        if(addMixtures){
+            int index = 0;
+            for (Variable predictedVariable : variables.getVariablesForListOfAttributes(attributes.getListOfNonSpecialAttributes())) {
+                if(predictedVariable != classVar) {
+                    dag.getParentSet(predictedVariable).addParent(localMixtures.get(index));
+                    index++;
+                }
+            }
+        }
 
         // Show the new dynamic DAG structure
         System.out.println(dag.toString());
 
-        return dag;
+        return dag;*/
     }
 
+
     public static DAG createDAG(Attributes attributes, int nlocals){
+
+        attributes = new Attributes(Arrays.asList(attributes.getListOfNonSpecialAttributes().get(0)));
+
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+
+        //Variable indicator = variables.newIndicatorVariable(variables.getVariableById(0),0.0);
+        //Variable mixture = variables.newMultionomialVariable("Mixture_",3);
+
+        DAG dag = new DAG(variables);
+
+        //dag.getParentSet(variables.getVariableById(0)).addParent(indicator);
+        //dag.getParentSet(variables.getVariableById(0)).addParent(mixture);
+
+        return dag;
+
+       /*
+        attributes = new Attributes(Arrays.asList(attributes.getListOfNonSpecialAttributes().get(0)));
+
         // Create a Variables object from the attributes of the input data stream.
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULTING");
+        Variable classVar = null;// = variables.getVariableByName("DEFAULTING");
 
         // Define the local hidden variables.
         List<Variable> localHiddenVars = new ArrayList<>();
@@ -257,8 +394,9 @@ public class CajaMarExperiments {
 
         List<Variable> localMixtures = new ArrayList<>();
         if(addMixtures){
-            for (int i = 0; i < attributes.getListOfNonSpecialAttributes().size()-1; i++) {
-                localMixtures.add(variables.newMultionomialVariable("Mixture_"+i,2));
+            for (int i = 0; i < attributes.getListOfNonSpecialAttributes().size(); i++) {
+                if (attributes.getListOfNonSpecialAttributes().get(i).getName().compareTo("DEFAULTING")!=0)
+                    localMixtures.add(variables.newMultionomialVariable("Mixture_"+i,2));
             }
         }
 
@@ -308,7 +446,7 @@ public class CajaMarExperiments {
         // Show the new dynamic DAG structure
         System.out.println(dag.toString());
 
-        return dag;
+        return dag;*/
     }
 
     public static void main(String[] args) throws Exception{
@@ -339,12 +477,14 @@ public class CajaMarExperiments {
 
                         DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path + 0 + ".arff");
 
-                        dag = createDAGforML(dataMonthi.getAttributes());
+                        dag = createDAG(dataMonthi.getAttributes(), 0);
 
                         /**
                          * Define Learning VI techniques
                          */
+                        addMixtures = false;
                         maximumLikelihoodInit(createDAGforML(dataMonthi.getAttributes()));
+                        addMixtures = Boolean.parseBoolean(args[7]);
                         initSVBLearners(batchSize[i], deltaValue[j]);
                         initVILearners(batchSize[i], memoryPopulationVI[k], learningRate[l]);
 
@@ -392,28 +532,30 @@ public class CajaMarExperiments {
                                 mlPerBatch.initLearning();
                                 mlPerBatch.updateModel(batch);
 
-                                if(monthsToEvaluate>1){
+                                if(monthsToEvaluate>0){
                                     double[] outputs = new double[4];
                                     double[] outputsAverage = new double[4];
-                                    for (int n = m+1; n < (m+1+monthsToEvaluate); n++) {
+                                    int nOfMonthsEvaluated = 0;
+                                    for (int n = m+1; n < (m+1+monthsToEvaluate) && n< numIter; n++) {
                                         DataStream<DataInstance> dataMonthiEval = DataStreamLoader.openFromFile(path + n + ".arff");
                                         for (DataOnMemory<DataInstance> batchEval : dataMonthiEval.iterableOverBatches(batchSize[i])) {
-                                            outputs = calculatePredLL(batchEval);
+                                            double[] tmp = calculatePredLL(batchEval);
+                                            for (int o = 0; o < tmp.length; o++) {
+                                                outputs[o]+=tmp[o];
+                                            }
+
                                             if(onlyFirstBatch)
                                                 break;
                                         }
                                         for (int o = 0; o < outputs.length; o++) {
                                             outputsAverage[o] += outputs[o];
                                         }
+                                        nOfMonthsEvaluated++;
                                     }
                                     for (int o = 0; o < outputs.length; o++) {
-                                        outputsAverage[o]/=monthsToEvaluate;
+                                        outputsAverage[o]/=nOfMonthsEvaluated;
                                     }
                                     printPredLL(outputsAverage, currentMonth);
-                                    printCounts(currentMonth);
-                                }else if(m>0) {
-                                    double[] outputs = calculatePredLL(batch);
-                                    printPredLL(outputs, currentMonth);
                                     printCounts(currentMonth);
                                 }
                                 batchCount++;
@@ -426,6 +568,9 @@ public class CajaMarExperiments {
                             /**
                              * Outputs: lambda, mean, population size
                              */
+                        if(addMixtures)
+                            printOutputMixtures(currentMonth);
+                        else
                             printOutput(currentMonth);
 
                         }
