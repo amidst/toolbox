@@ -470,6 +470,37 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         return result;
     }
 
+    public static double robustDifferenceOfLogarithms(double log_x1, double log_x2) {
+        double result;
+        if(log_x1!=0 && log_x2!=0) {
+
+            double aux_max = Math.max(log_x1,log_x2);
+            double aux_min = Math.min(log_x1,log_x2);
+
+            double tail;
+            double aux = Math.exp(aux_min-aux_max);
+            if (aux<0.5) {
+                tail = Math.log1p( -aux );
+            }
+            else {
+                tail = Math.log( 1 - aux );
+            }
+
+            tail = Math.log( 1 - aux );
+//            tail = Math.log( 1+aux );
+
+            //double tail = Math.log1p( Math.exp(aux_min-aux_max) );
+            result = aux_max + (Double.isFinite(tail) ? tail : 0);
+        }
+        else if (log_x1==0) {
+            result=log_x2;
+        }
+        else {
+            result=log_x1;
+        }
+        return result;
+    }
+
     public static ArrayVector robustSumOfMultinomialLogSufficientStatistics(ArrayVector ss1, ArrayVector ss2) {
         double[] ss1_values = ss1.toArray();
         double[] ss2_values = ss2.toArray();

@@ -283,6 +283,7 @@ public class MAPInferenceRobust implements PointEstimator {
         isSampler.setEvidence(this.evidence);
         isSampler.setSampleSize(this.sampleSize);
         isSampler.setVariablesAPosteriori(new ArrayList<>());
+        isSampler.setParallelMode(this.parallelMode);
         //isSampler.runInference();
         Stream<Assignment> samples = isSampler.getSamples();
 
@@ -691,8 +692,10 @@ public class MAPInferenceRobust implements PointEstimator {
                 currentLogProbability = nextLogProbability;
             }
             else if (optAlg<0) {
+//                System.out.println("Simulated Annealing");
 //                double diff = currentLogProbability - nextLogProbability;
-                double diff = Math.exp(ImportanceSamplingRobust.robustSumOfLogarithms(currentLogProbability, -nextLogProbability));
+                double diff = Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(currentLogProbability, nextLogProbability));
+//                System.out.println("Current: " + currentLogProbability + ", next: " + nextLogProbability + ", sum: " + ImportanceSamplingRobust.robustDiffereceOfLogarithms(currentLogProbability, -nextLogProbability) + ", diff: " + diff);
                 if(diff<0) {
                     System.out.println("Error in Simulated Annealing from MAPInferenceRobust");
                     System.exit(-50);

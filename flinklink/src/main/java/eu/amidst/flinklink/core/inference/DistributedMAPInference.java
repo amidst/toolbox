@@ -84,18 +84,26 @@ public class DistributedMAPInference {
         BasicConfigurator.configure(new NullAppender());
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+
         env.setParallelism(this.numberOfCoresToUse);
         env.getConfig().disableSysoutLogging();
 
 
 
         int endSequence = numberOfStartingPoints;
-        if(searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING)) {
-            numberOfStartingPoints = numberOfStartingPoints/100;
+        if (searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING)) {
+            endSequence = 2 * numberOfCoresToUse;
         }
 
-        Tuple2<Assignment, Double> MAPResult = env.generateSequence(1, numberOfStartingPoints)
-                .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed))
+        Tuple2<Assignment, Double> MAPResult = env.generateSequence(1, endSequence)
+                .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING) ? numberOfStartingPoints / (2 * numberOfCoresToUse) : 1))
+//                        aa -> {
+//                    if(searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING))
+//                        return new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, numberOfStartingPoints/(2*numberOfCoresToUse));
+//                    else
+//                        return new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, 1);
+//                      })
                 .reduce(new ReduceFunction<Tuple2<Assignment, Double>>() {
                     public Tuple2<Assignment, Double> reduce(Tuple2<Assignment, Double> tuple1, Tuple2<Assignment, Double> tuple2) {
                         if (tuple1.f1 > tuple2.f1) {
@@ -106,11 +114,9 @@ public class DistributedMAPInference {
                     }
                 }).collect().get(0);
 
-
         this.seed = new Random(seed).nextInt();
         MAPEstimate = MAPResult.f0;
         MAPEstimateLogProbability = MAPResult.f1;
-
 
     }
 
@@ -123,15 +129,16 @@ public class DistributedMAPInference {
         private int seed;
         private int numberOfIterations;
         private String searchAlgorithm;
+        private int numberOfStartingPoints;
 
-        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, MAPInferenceRobust.SearchAlgorithm searchAlgorithm, Assignment evidence, int numberOfIterations, int seed) {
+        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, MAPInferenceRobust.SearchAlgorithm searchAlgorithm, Assignment evidence, int numberOfIterations, int seed, int numberOfStartingPoints) {
             this.model = model;
             this.MAPVariables = MAPVariables;
             this.evidence = evidence;
             this.numberOfIterations = numberOfIterations;
             this.seed = seed;
             this.searchAlgorithm = searchAlgorithm.name();
-
+            this.numberOfStartingPoints = numberOfStartingPoints;
         }
 
         @Override
@@ -141,12 +148,9 @@ public class DistributedMAPInference {
             localMAPInference.setModel(model);
             localMAPInference.setMAPVariables(MAPVariables);
             localMAPInference.setSeed(seed + value.intValue());
-            if(searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING.toString())) {
-                localMAPInference.setNumberOfStartingPoints(100);
-            }
-            else {
-                localMAPInference.setNumberOfStartingPoints(1);
-            }
+
+            localMAPInference.setNumberOfStartingPoints(numberOfStartingPoints);
+
             localMAPInference.setNumberOfIterations(numberOfIterations);
             localMAPInference.setParallelMode(false);
             localMAPInference.setEvidence(evidence);
