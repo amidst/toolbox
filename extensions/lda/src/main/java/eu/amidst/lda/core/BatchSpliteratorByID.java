@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.lda;
+package eu.amidst.lda.core;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;

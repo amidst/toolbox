@@ -18,8 +18,8 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.SparseVectorDefaultValue;
-import eu.amidst.lda.BatchSpliteratorByID;
-import eu.amidst.lda.PlateauLDA;
+import eu.amidst.lda.core.BatchSpliteratorByID;
+import eu.amidst.lda.core.PlateauLDA;
 
 import java.io.FileWriter;
 import java.util.*;

@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.lda;
+package eu.amidst.lda.core;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -19,7 +19,7 @@ import eu.amidst.core.learning.parametric.bayesian.SVB;
 /**
  * Created by andresmasegosa on 2/5/16.
  */
-public class LDA {
+public class SVB_LDA {
     public static void main(String[] args) {
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/abstract_90.arff");

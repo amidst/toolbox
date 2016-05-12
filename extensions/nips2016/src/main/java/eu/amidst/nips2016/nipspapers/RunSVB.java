@@ -16,8 +16,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.lda.BatchSpliteratorByID;
-import eu.amidst.lda.PlateauLDA;
+import eu.amidst.lda.core.BatchSpliteratorByID;
+import eu.amidst.lda.core.PlateauLDA;
 
 import java.io.FileWriter;
 import java.util.Arrays;

@@ -17,6 +17,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.lda.core.PlateauLDA;
+import eu.amidst.lda.core.BatchSpliteratorByID;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 29/4/16.
  */
-public class PlateauLDATest extends TestCase {
+public class PlateauSVBLDATest extends TestCase {
 
     public static void test1() {
 

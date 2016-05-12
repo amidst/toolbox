@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.lda;
+package eu.amidst.lda.flink;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.flinklink.core.data.DataFlink;
@@ -21,7 +21,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 /**
  * Created by andresmasegosa on 12/5/16.
  */
-public class LDAFlink {
+public class dVMP_LDA {
 
     public static void main(String[] args) throws Exception {
 

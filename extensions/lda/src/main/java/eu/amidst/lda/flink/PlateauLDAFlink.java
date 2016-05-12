@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.lda;
+package eu.amidst.lda.flink;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;

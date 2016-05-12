@@ -15,6 +15,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.lda.core.BatchSpliteratorByID;
 import junit.framework.TestCase;
 
 import java.util.List;
